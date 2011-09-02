@@ -1,0 +1,53 @@
+.pmpro_admin {background: url(../images/PaidMembershipsPro-grey.gif) bottom right no-repeat !important; padding-bottom: 70px; }
+
+.pmpro_admin .pmpro_banner {margin: 2em 0; font-family: Georgia, "Times New Roman", Times, serif; }
+.pmpro_admin .pmpro_banner .pmpro_meta {float: right; margin: 2em 0 1em 1em; font-size: 12px; font-style: italic; }
+.pmpro_admin .pmpro_banner .pmpro_logo {float: left; margin: 0 1em 1em 0; width: 350px; } 
+.pmpro_admin .pmpro_banner .pmpro_tagline {float: left; width: 350px; font-family: "Arial Black", Gadget, sans-serif; color: #412f5b; text-transform: uppercase; font-size: 13px; padding: 15px 0; }
+.pmpro_admin .pmpro_banner ul.pmpro_menu {clear: both; border: 1px solid #CCC; border-radius: 5px; -moz-border-radius: 5px; background: #FFF; }
+.pmpro_admin .pmpro_banner ul.pmpro_menu li {display: inline-block; margin: 10px 0; padding: 0px 10px; border-right: 1px solid #CCC; }
+.pmpro_admin .pmpro_banner ul.pmpro_menu li a, .pmpro_admin .pmpro_banner ul.pmpro_menu li a:link {color: #1e0741; text-decoration: none; }
+.pmpro_admin .pmpro_banner ul.pmpro_menu li a:hover {text-decoration: underline; color: #412f5b; }
+
+.pmpro_admin .topborder {border-top: 1px solid #CCC; margin-top: 1em; padding-top: 1em; }
+.pmpro_admin #editorcontainer #description {width: 100%; height: 180px; }
+.pmpro_admin .widefat {margin-top: 1em; }
+
+.ssp_description #description {width: 100%;}
+.checkbox_box {width: 300px; background: #FFFFFF; border: 1px solid #CCC;}
+.checkbox_box div {border-bottom: 1px solid #CCC; padding: 3px;}
+.checkbox_box .clickable {cursor: pointer;}
+.checkbox_box .clickable:hover {background: #FFC;}
+.top0em {margin-top: 0;}
+
+tr.pmpro_gray td {color: #AAA;}
+
+/* messages */
+.pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
+
+.pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); color: #208A1B; }
+.pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); color: #E36154; }
+.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
+
+.pmpro_message a {color: #345395; }
+.pmpro_success a {color: #208A1B; }
+.pmpro_error a {color: #E36154; }
+.pmpro_alert a {color: #CF8516; }
+
+/* discount levels */
+.pmpro_discount_levels {border: 1px solid #CCC;}
+.pmpro_discount_levels div {padding: 5px; border: 1px solid #CCC;}
+.pmpro_discount_levels div div {margin-top: 5px; background: #F5F5F5;}
+
+/* pagination */
+div.pmpro_pagination {padding: 3px; margin: 5px 0px 5px 0px; font-size: 10px; float: right; }
+div.pmpro_pagination a {padding: 2px 5px 2px 5px; margin: 1px; border: 1px solid #666; text-decoration: none; /* no underline */ color: #666; background: #EEE; }
+div.pmpro_pagination a:hover, div.pmpro_pagination a:active {background: #FFF; }
+div.pmpro_pagination span.current {border: 1px solid #FFF; color: #FFF; background: #666; padding: 2px 5px 2px 5px; margin: 1px; font-weight: bold; }
+div.pmpro_pagination span.disabled {padding: 2px 5px 2px 5px; margin: 2px; border: 1px solid #BBB; color: #BBB; background: #EFEFEF;}
+
+p.pmpro_meta_notice {font-size: .6em; padding-top: 5px; border-top: 1px solid #CCC;}
+
+/* misc */
+.pmpro_lite {color: #AAA;}
+.pmpro_pad20 {padding: 20px !important;}

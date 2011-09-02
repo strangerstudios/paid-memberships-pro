@@ -1,0 +1,700 @@
+
+Logged On: 10/14/2010 19:30:13
+	Array
+(
+    [payment_cycle] => Monthly
+    [txn_type] => recurring_payment_profile_created
+    [last_name] => Dungey
+    [next_payment_date] => 03:00:00 Oct 14, 2010 PDT
+    [residence_country] => US
+    [initial_payment_amount] => 0.00
+    [currency_code] => USD
+    [time_created] => 12:28:02 Oct 14, 2010 PDT
+    [verify_sign] => Ag0KaZGLN9pir9O3XvqlqoaQpeyOAHNmE1mLxsKCsuU4Lptz6E9Jm4O4
+    [period_type] =>  Trial
+    [payer_status] => unverified
+    [test_ipn] => 1
+    [tax] => 0.00
+    [first_name] => David
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payer_id] => HNQQQHBFP2F4W
+    [product_type] => 1
+    [shipping] => 0.00
+    [amount_per_cycle] => 0.00
+    [profile_status] => Active
+    [charset] => windows-1252
+    [notify_version] => 3.0
+    [amount] => 0.00
+    [outstanding_balance] => 0.00
+    [recurring_payment_id] => I-YNHHDMRMCE0K
+    [product_name] => 19.95
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/14/2010 19:31:06
+	Array
+(
+    [payment_cycle] => Monthly
+    [txn_type] => recurring_payment_profile_created
+    [last_name] => Finaldi
+    [next_payment_date] => 03:00:00 Oct 14, 2010 PDT
+    [residence_country] => US
+    [initial_payment_amount] => 0.00
+    [currency_code] => USD
+    [time_created] => 12:28:59 Oct 14, 2010 PDT
+    [verify_sign] => Aszr-hG-0g45wpjvi2kNcnanvPAKAGyznBExPCIybITqEDcF.N-Ruzwe
+    [period_type] =>  Trial
+    [payer_status] => unverified
+    [test_ipn] => 1
+    [tax] => 0.00
+    [first_name] => Ralph
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payer_id] => HNQQQHBFP2F4W
+    [product_type] => 1
+    [shipping] => 0.00
+    [amount_per_cycle] => 0.00
+    [profile_status] => Active
+    [charset] => windows-1252
+    [notify_version] => 3.0
+    [amount] => 0.00
+    [outstanding_balance] => 0.00
+    [recurring_payment_id] => I-500GV650UE10
+    [product_name] => 19.95
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/14/2010 22:06:32
+	Array
+(
+    [payment_cycle] => Monthly
+    [txn_type] => recurring_payment_profile_created
+    [last_name] => Moser
+    [next_payment_date] => 03:00:00 Oct 14, 2010 PDT
+    [residence_country] => US
+    [initial_payment_amount] => 0.00
+    [currency_code] => USD
+    [time_created] => 15:04:21 Oct 14, 2010 PDT
+    [verify_sign] => Aq3H3K19yixwZZdrHiB6xwhyGeB7AhYbD2--E1VSEcx7BbFqgle-DMbm
+    [period_type] =>  Trial
+    [payer_status] => unverified
+    [test_ipn] => 1
+    [tax] => 0.00
+    [first_name] => Lauren
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payer_id] => HNQQQHBFP2F4W
+    [product_type] => 1
+    [shipping] => 0.00
+    [amount_per_cycle] => 0.00
+    [profile_status] => Active
+    [charset] => windows-1252
+    [notify_version] => 3.0
+    [amount] => 0.00
+    [outstanding_balance] => 0.00
+    [recurring_payment_id] => I-V0KW6SKHN0SJ
+    [product_name] => 19.95
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/15/2010 01:56:16
+	Array
+(
+    [payment_cycle] => Monthly
+    [txn_type] => recurring_payment_profile_created
+    [last_name] => Dungey
+    [next_payment_date] => 03:00:00 Oct 15, 2010 PDT
+    [residence_country] => US
+    [initial_payment_amount] => 0.00
+    [currency_code] => USD
+    [time_created] => 18:53:59 Oct 14, 2010 PDT
+    [verify_sign] => AlncTCGzPyzN6rrW2a84EjOvPUdHAmMUEG9eup7k2bj86kQ.lCakGmae
+    [period_type] =>  Trial
+    [payer_status] => unverified
+    [test_ipn] => 1
+    [tax] => 0.00
+    [first_name] => David
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payer_id] => GQESH6WUJV9DQ
+    [product_type] => 1
+    [shipping] => 0.00
+    [amount_per_cycle] => 0.00
+    [profile_status] => Active
+    [charset] => windows-1252
+    [notify_version] => 3.0
+    [amount] => 0.00
+    [outstanding_balance] => 0.00
+    [recurring_payment_id] => I-EKLGUNTAD203
+    [product_name] => 19.95
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/15/2010 02:06:30
+	Array
+(
+    [payment_cycle] => Monthly
+    [txn_type] => recurring_payment_profile_created
+    [last_name] => Dungey
+    [next_payment_date] => 03:00:00 Oct 15, 2010 PDT
+    [residence_country] => US
+    [initial_payment_amount] => 0.00
+    [currency_code] => USD
+    [time_created] => 19:04:24 Oct 14, 2010 PDT
+    [verify_sign] => AxICdrSXW2JfVH2-YVcwiaRRB.HjAvknPbsEg5ZHvqsX7xXeF4JcQ5uq
+    [period_type] =>  Trial
+    [payer_status] => unverified
+    [test_ipn] => 1
+    [tax] => 0.00
+    [first_name] => David
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payer_id] => HNQQQHBFP2F4W
+    [product_type] => 1
+    [shipping] => 0.00
+    [amount_per_cycle] => 0.00
+    [profile_status] => Active
+    [charset] => windows-1252
+    [notify_version] => 3.0
+    [amount] => 0.00
+    [outstanding_balance] => 0.00
+    [recurring_payment_id] => I-5L3X76RBXEN5
+    [product_name] => 19.95
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:35
+	Array
+(
+    [mc_gross] => 25.00
+    [period_type] =>  Regular
+    [outstanding_balance] => 0.00
+    [next_payment_date] => 02:00:00 Nov 09, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => GSQWJ47YL947G
+    [payment_date] => 05:18:22 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 25.00
+    [charset] => windows-1252
+    [recurring_payment_id] => I-B6XYVJMNYY0D
+    [first_name] => Jason
+    [mc_fee] => 1.03
+    [notify_version] => 3.0
+    [amount_per_cycle] => 25.00
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => AXyFR94vRDyonCUXQ3tgZzXlqiDNA05Muhegrty2YjPw7OAesu7wh2eh
+    [payer_email] => ideadude@gmail.com
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 25.00
+    [txn_id] => 2VB711532Y9913422
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.03
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 1268-4406-7483-2525
+    [transaction_subject] => 
+    [payment_gross] => 25.00
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 15:14:35 Sep 09, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:38
+	Array
+(
+    [mc_gross] => 25.00
+    [period_type] =>  Regular
+    [outstanding_balance] => 0.00
+    [next_payment_date] => 02:00:00 Nov 09, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => GSQWJ47YL947G
+    [payment_date] => 05:18:25 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 25.00
+    [charset] => windows-1252
+    [recurring_payment_id] => I-JWS7PFY078TJ
+    [first_name] => Jason
+    [mc_fee] => 1.03
+    [notify_version] => 3.0
+    [amount_per_cycle] => 25.00
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => Aeh4oMA.0i5lAQOkhDOkDeOUVlOFAe2r1HPZoB9MHgRjDLJW3..qryrO
+    [payer_email] => ideadude@gmail.com
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 25.00
+    [txn_id] => 67X52313DV528241X
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.03
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 1335-8723-2780-0674
+    [transaction_subject] => 
+    [payment_gross] => 25.00
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 15:15:11 Sep 09, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:47
+	Array
+(
+    [mc_gross] => 24.95
+    [period_type] =>  Regular
+    [outstanding_balance] => 0.00
+    [next_payment_date] => 02:00:00 Nov 10, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => GSQWJ47YL947G
+    [payment_date] => 05:18:33 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 24.95
+    [charset] => windows-1252
+    [recurring_payment_id] => I-CY95VFUC0YY2
+    [first_name] => Jason
+    [mc_fee] => 1.02
+    [notify_version] => 3.0
+    [amount_per_cycle] => 24.95
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => ACQcBElBUqi07b9jq-Nwf1iGL8REAL9aNr6XhcyzVGSCHkSbdZC7ZwCr
+    [payer_email] => jason@strangerstudios.com
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 24.95
+    [txn_id] => 9HE31986DK060733K
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.02
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 1502-1401-9005-2402
+    [transaction_subject] => 
+    [payment_gross] => 24.95
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 08:32:03 Sep 10, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:47
+	Array
+(
+    [mc_gross] => 25.00
+    [outstanding_balance] => 0.00
+    [period_type] =>  Regular
+    [next_payment_date] => 02:00:00 Nov 10, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => GSQWJ47YL947G
+    [payment_date] => 05:18:30 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 25.00
+    [charset] => windows-1252
+    [recurring_payment_id] => I-KJ7F9SS1VP11
+    [first_name] => Jason
+    [mc_fee] => 1.03
+    [notify_version] => 3.0
+    [amount_per_cycle] => 25.00
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => Aa-L5hFXdtId0kyUYDjQjbvLLvDeAisiKzRFYvgerjXQbjtc4AuOsWGG
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 25.00
+    [txn_id] => 22L21275T5312494T
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.03
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 3272-2584-6261-8645
+    [transaction_subject] => 
+    [payment_gross] => 25.00
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 07:52:10 Sep 10, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:48
+	Array
+(
+    [mc_gross] => 24.95
+    [outstanding_balance] => 0.00
+    [period_type] =>  Regular
+    [next_payment_date] => 02:00:00 Nov 10, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => GSQWJ47YL947G
+    [payment_date] => 05:18:36 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 24.95
+    [charset] => windows-1252
+    [recurring_payment_id] => I-X8AEE7B6X8HR
+    [first_name] => Jason
+    [mc_fee] => 1.02
+    [notify_version] => 3.0
+    [amount_per_cycle] => 24.95
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => AdpVUusEoGgUVNxEUmiFKGA-ipViAS11FCbNrmtoHKOKdOWguC7F.UG1
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 24.95
+    [txn_id] => 1JG97827AD5811039
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.02
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 5294-0897-9873-1128
+    [transaction_subject] => 
+    [payment_gross] => 24.95
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 08:53:23 Sep 10, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:55
+	Array
+(
+    [mc_gross] => 5.00
+    [outstanding_balance] => 0.00
+    [period_type] =>  Regular
+    [next_payment_date] => 02:00:00 Nov 13, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => S73BJXVHP8BK4
+    [payment_date] => 05:18:40 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 5.00
+    [charset] => windows-1252
+    [recurring_payment_id] => I-S979E4N55GW3
+    [first_name] => Jason
+    [mc_fee] => 0.45
+    [notify_version] => 3.0
+    [amount_per_cycle] => 5.00
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => ADVw35mEnE9O32wMLzW3b-36zMyKAjYRcxzBaSNhhcMYmky9dD-MdwKx
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 5.00
+    [txn_id] => 9TB18910BA834753E
+    [payment_type] => instant
+    [last_name] => Coleman
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 0.45
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 3456-5398-7319-6737
+    [transaction_subject] => 
+    [payment_gross] => 5.00
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 10:38:28 Oct 13, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 10/17/2010 12:20:55
+	Array
+(
+    [mc_gross] => 24.95
+    [period_type] =>  Regular
+    [outstanding_balance] => 0.00
+    [next_payment_date] => 02:00:00 Nov 16, 2010 PST
+    [protection_eligibility] => Ineligible
+    [payment_cycle] => Monthly
+    [tax] => 0.00
+    [payer_id] => HNQQQHBFP2F4W
+    [payment_date] => 05:18:44 Oct 17, 2010 PDT
+    [payment_status] => Completed
+    [product_name] => 24.95
+    [charset] => windows-1252
+    [recurring_payment_id] => I-144TKVDLNGP8
+    [first_name] => Jose
+    [mc_fee] => 1.02
+    [notify_version] => 3.0
+    [amount_per_cycle] => 24.95
+    [payer_status] => unverified
+    [currency_code] => USD
+    [business] => jason_1203902547_per@strangerstudios.com
+    [verify_sign] => A.424mslPh9ApgjZeaxFATOV3IgPAQ.61P87EGGjqZyjWWH2b5QhyVSK
+    [payer_email] => jpalomino@valueprop.com
+    [initial_payment_amount] => 0.00
+    [profile_status] => Active
+    [amount] => 24.95
+    [txn_id] => 06Y57991HM0754423
+    [payment_type] => instant
+    [last_name] => Palomino
+    [receiver_email] => jason_1203902547_per@strangerstudios.com
+    [payment_fee] => 1.02
+    [receiver_id] => 9FZJUN66FELP2
+    [txn_type] => recurring_payment
+    [mc_currency] => USD
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 3555-3760-8248-0317
+    [transaction_subject] => 
+    [payment_gross] => 24.95
+    [shipping] => 0.00
+    [product_type] => 1
+    [time_created] => 13:11:48 Sep 16, 2010 PDT
+)
+
+	Resource id #104
+	FP!
+	VERIFIED
+
+-------------
+Logged On: 04/05/2011 23:05:35
+Log something!
+-------------
+Logged On: 04/06/2011 03:08:57
+Log something!	Array
+(
+)
+
+	Resource id #179
+
+-------------
+Logged On: 04/06/2011 03:10:48
+Log something!	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:23:26
+Log something!	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:28:25
+Log something!	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:28:40
+Log something!	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:31:50
+Log something!	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:32:16
+	Array
+(
+    [test_ipn] => 1
+    [payment_type] => instant
+    [payment_date] => 19:50:32 Apr 05, 2011 PDT
+    [payment_status] => Completed
+    [address_status] => confirmed
+    [payer_status] => verified
+    [first_name] => John
+    [last_name] => Smith
+    [payer_email] => buyer@paypalsandbox.com
+    [payer_id] => TESTBUYERID01
+    [address_name] => John Smith
+    [address_country] => United States
+    [address_country_code] => US
+    [address_zip] => 95131
+    [address_state] => CA
+    [address_city] => San Jose
+    [address_street] => 123, any street
+    [business] => seller@paypalsandbox.com
+    [receiver_email] => seller@paypalsandbox.com
+    [receiver_id] => TESTSELLERID1
+    [residence_country] => US
+    [item_name] => something
+    [item_number] => AK-1234
+    [quantity] => 1
+    [shipping] => 3.04
+    [tax] => 2.02
+    [mc_currency] => USD
+    [mc_fee] => 0.44
+    [mc_gross] => 12.34
+    [mc_gross_1] => 9.34
+    [txn_type] => web_accept
+    [txn_id] => 3246250
+    [notify_version] => 2.1
+    [custom] => xyz123
+    [charset] => windows-1252
+    [verify_sign] => AkyaJsZ3vTAqAyn28K-K-vkNAQbxAC33xhz.0-ELT9zM8tauMIIKp8d2
+)
+
+	Resource id #171
+	FP!
+	VERIFIED
+	ERROR: receiver_email (seller@paypalsandbox.com) did not match (jason_1203902547_per@strangerstudios.com)
+
+-------------
+Logged On: 04/06/2011 03:50:51
+	Array
+(
+)
+
+	Resource id #179
+	FP!
+	INAVLID
+
+-------------
+Logged On: 04/06/2011 03:52:22
+	Array
+(
+    [test_ipn] => 1
+    [payment_type] => instant
+    [payment_date] => 20:30:50 Apr 05, 2011 PDT
+    [payment_status] => Completed
+    [address_status] => confirmed
+    [payer_status] => verified
+    [first_name] => John
+    [last_name] => Smith
+    [payer_email] => buyer@paypalsandbox.com
+    [payer_id] => TESTBUYERID01
+    [address_name] => John Smith
+    [address_country] => United States
+    [address_country_code] => US
+    [address_zip] => 95131
+    [address_state] => CA
+    [address_city] => San Jose
+    [address_street] => 123, any street
+    [business] => seller@paypalsandbox.com
+    [receiver_email] => seller@paypalsandbox.com
+    [receiver_id] => TESTSELLERID1
+    [residence_country] => US
+    [item_name] => something
+    [item_number] => AK-1234
+    [quantity] => 1
+    [shipping] => 3.04
+    [tax] => 2.02
+    [mc_currency] => USD
+    [mc_fee] => 0.44
+    [mc_gross] => 12.34
+    [mc_gross_1] => 9.34
+    [txn_type] => web_accept
+    [txn_id] => 5046330
+    [notify_version] => 2.1
+    [custom] => xyz123
+    [charset] => windows-1252
+    [verify_sign] => An5ns1Kso7MWUdW4ErQKJJJ4qi4-ACrH-doGr3tQaM1NWdM58hpiPigR
+)
+
+	Resource id #171
+	FP!
+	VERIFIED
+	ERROR: receiver_email (seller@paypalsandbox.com) did not match (jason_1203902547_per@strangerstudios.com)
+
+-------------
