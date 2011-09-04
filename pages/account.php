@@ -23,6 +23,10 @@
 			<li><strong>Duration:</strong> <?=$current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></li>
 		<?php } ?>
 		
+		<?php if($current_user->membership_level->enddate) { ?>
+			<li><strong>Membership Expires:</strong> <?=date("n/j/Y", $current_user->membership_level->enddate)?></li>
+		<?php } ?>
+		
 		<?php if($current_user->membership_level->trial_limit) { ?>
 			Your first <?=$current_user->membership_level->trial_limit?> <?=sornot("payment",$current_user->membership_level->trial_limit)?> will cost $<?=$current_user->membership_level->trial_amount?>.
 		<?php } ?>   

@@ -103,6 +103,17 @@
 				return false;
 		}
 		
+		function getDiscountCode($force = false)
+		{
+			if($this->discount_code && !$force)
+				return $this->discount_code;
+				
+			global $wpdb;
+			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
+			
+			return $this->discount_code;
+		}
+		
 		function getUser()
 		{
 			global $wpdb;
@@ -115,14 +126,14 @@
 			return $this->user;						
 		}
 		
-		function getMembershipLevel()
+		function getMembershipLevel($force = false)
 		{
 			global $wpdb;
 			
-			if($this->membership_level)
+			if($this->membership_level && !$force)
 				return $this->membership_level;
-				
-			$this->membership_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $this->membership_id . "' LIMIT 1");				
+						
+			$this->membership_level = $wpdb->get_row("SELECT l.id, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");				
 			return $this->membership_level;	
 		}
 		

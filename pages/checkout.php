@@ -38,6 +38,7 @@
 						The <strong><?=$discountcode?></strong> code has been applied to your order.
 					<?php } ?>
 					<?=pmpro_getLevelCost($pmpro_level)?>
+					<?=pmpro_getLevelExpiration($pmpro_level)?>
 				</p>
 				
 				<?php if($discountcode) { ?>

@@ -381,7 +381,7 @@
                         <td>
 							$<input name="billing_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
 							<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
-							<select id="cycle_period" name="cycle_period" onchange="updateCyclePeriod();">
+							<select id="cycle_period" name="cycle_period">
 							  <?php
 								$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
 								foreach ( $cycles as $name => $value ) {
@@ -391,14 +391,7 @@
 								}
 							  ?>
 							</select>
-							<br /><small>The amount to be billed one cycle after the initial payment.</small>
-							<script>
-								function updateCyclePeriod()
-								{
-									jQuery('#trial_cycle_period_select').val(jQuery('#cycle_period').val());
-									jQuery('#trial_cycle_period').val(jQuery('#cycle_period').val());
-								}
-							</script>
+							<br /><small>The amount to be billed one cycle after the initial payment.</small>							
 						</td>
                     </tr>                                        
                     
@@ -424,6 +417,7 @@
                             <small>subscription payments.</small>																			
 						</td>
                     </tr>
+										 
 				</tbody>
 			</table>
 			<h3 class="topborder">Other Settings</h3>
@@ -433,6 +427,29 @@
                         <th scope="row" valign="top"><label>Disable New Signups:</label></th>
                         <td><input name="disable_signups" type="checkbox" value="yes" <?php if($level->id && !$level->allow_signups) { ?>checked="checked"<?php } ?> /> Check to hide this level from the membership levels page and disable registration.</td>
                     </tr>
+					
+					<tr>
+                        <th scope="row" valign="top"><label>Membership Expiration:</label></th>
+                        <td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <small>Check this to set an expiration date for new sign ups.</small></td>
+                    </tr>
+					
+					<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
+                        <th scope="row" valign="top"><label for="billing_amount">Expire In:</label></th>
+                        <td>							
+							<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
+							<select id="expiration_period" name="expiration_period">
+							  <?php
+								$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
+								foreach ( $cycles as $name => $value ) {
+								  echo "<option value='$value'";
+								  if ( $level->expiration_period == $value ) echo " selected='selected'";
+								  echo ">$name</option>";
+								}
+							  ?>
+							</select>
+							<br /><small>How long before the expiration expires. Not that any future payments will be canceled when the membership expires.</small>							
+						</td>
+                    </tr> 
 				</tbody>
 			</table>
 			<h3 class="topborder">Content Settings</h3>
@@ -964,6 +981,7 @@ if(pmpro_displayAds())
 				<th>Initial Payment</th>
 				<th>Billing Cycle</th>        
 				<th>Trial Cycle</th>
+				<th>Expiration</th>
 				<th>Allow Signups</th>
 				<th></th>
 				<th></th>
@@ -1007,6 +1025,13 @@ if(pmpro_displayAds())
 						--
 					<?php } else { ?>		
 						$<?=$level->trial_amount?> for <?=$level->trial_limit?> <?=sornot("payment",$level->trial_limit)?>
+					<?php } ?>
+				</td>
+				<td>
+					<?php if(!pmpro_isLevelExpiring($level)) { ?>
+						--
+					<?php } else { ?>		
+						After <?=$level->expiration_number?> <?=sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
 				</td>
 				<td><?php if($level->allow_signups) { ?>Yes<?php } else { ?>No<?php } ?></td>

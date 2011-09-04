@@ -27,6 +27,7 @@ else
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/lib/name-parser.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/functions.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/upgradecheck.php");
+require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/scheduled/crons.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.memberorder.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.pmproemail.php");
 require_once(ABSPATH . "/wp-includes/class-phpmailer.php");	
@@ -57,10 +58,6 @@ $gateway_environment = pmpro_getOption("gateway_environment");
 
 global $all_membership_levels; //when checking levels, we save the info here for caching
 
-/* SQL
-
-*/
-
 function pmpro_memberslist()
 {
 	require_once(dirname(__FILE__) . "/adminpages/memberslist.php");
@@ -85,7 +82,7 @@ function pmpro_set_current_user()
 	$id = intval($current_user->ID);
 	if($id)
 	{
-		$current_user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.id as id, l.name, l.description, mu.initial_payment, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.billing_limit, mu.trial_amount, mu.trial_limit, mu.code_id as code_id
+		$current_user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.id as id, l.name, l.description, mu.initial_payment, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.billing_limit, mu.trial_amount, mu.trial_limit, mu.code_id as code_id, UNIX_TIMESTAMP(startdate) as startdate, UNIX_TIMESTAMP(enddate) as enddate
 															FROM {$wpdb->pmpro_membership_levels} AS l
 															JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 															WHERE mu.user_id = $id
@@ -1220,5 +1217,20 @@ function pmpro_footer_link()
 	}
 }
 add_action("wp_footer", "pmpro_footer_link");
+
+function pmpro_activation()
+{
+	wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
+	wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');
+	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
+}
+function pmpro_deactivation()
+{
+	wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
+	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
+	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
+}
+register_activation_hook(__FILE__, 'pmpro_activation');
+register_deactivation_hook(__FILE__, 'pmpro_deactivation');
 
 ?>

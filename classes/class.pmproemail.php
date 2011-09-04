@@ -104,7 +104,7 @@
 		
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{
-			global $current_user;
+			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -145,6 +145,11 @@
 				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
 				$this->data["expirationmonth"] = $invoice->expirationmonth;
 				$this->data["expirationyear"] = $invoice->expirationyear;
+				
+				if($invoice->getDiscountCode())
+					$this->data["discount_code"] = "<p>Discount Code: " . $invoice->discount_code . "</p>\n";
+				else
+					$this->data["discount_code"] = "";
 			}
 			elseif(pmpro_isLevelFree($user->membership_level))
 			{
@@ -154,6 +159,12 @@
 			{
 				$this->template = "checkout_freetrial";
 			}
+			
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");
+			if($enddate)
+				$this->data["membership_expiration"] = "<p>This membership will expire on " . date("n/j/Y", $enddate) . ".</p>\n";
+			else
+				$this->data["membership_expiration"] = "";
 			
 			return $this->sendEmail();
 		}
@@ -301,6 +312,97 @@
 								"invoice_link" => pmpro_url("invoice", "?invoice=" . $invoice->code)
 							);
 		
+			if($invoice->getDiscountCode())
+				$this->data["discount_code"] = "<p>Discount Code: " . $invoice->discount_code . "</p>\n";
+			else
+				$this->data["discount_code"] = "";
+		
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");
+			if($enddate)
+				$this->data["membership_expiration"] = "<p>This membership will expire on " . date("n/j/Y", $enddate) . ".</p>\n";
+			else
+				$this->data["membership_expiration"] = "";
+		
+			return $this->sendEmail();
+		}
+		
+		function sendTrialEndingEmail($user = NULL)
+		{
+			global $current_user, $wpdb;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user)
+				return false;
+			
+			//make sure we have the current membership level data
+			$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(mu.startdate) as startdate, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.trial_amount, mu.trial_limit
+														FROM {$wpdb->pmpro_membership_levels} AS l
+														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+														WHERE mu.user_id = " . $user->ID . "
+														LIMIT 1");		
+						
+			$this->email = $user->user_email;
+			$this->subject = "Your trial membership at " . get_option("blogname") . " is ending soon";
+			$this->template = "trial_ending";
+			$this->data = array(
+				"subject" => $this->subject, 
+				"name" => $user->display_name, 
+				"sitename" => get_option("blogname"), 
+				"membership_level_name" => $user->membership_level->name, 
+				"siteemail" => get_bloginfo("admin_email"), 
+				"login_link" => wp_login_url(), 
+				"display_name" => $user->display_name, 
+				"user_email" => $user->user_email, 
+				"billing_amount" => $user->membership_level->billing_amount, 
+				"cycle_number" => $user->membership_level->cycle_number, 
+				"cycle_period" => $user->membership_level->cycle_period, 
+				"trial_amount" => $user->membership_level->trial_amount, 
+				"trial_limit" => $user->membership_level->trial_limit,
+				"trial_end" => date("n/j/Y", strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period))
+			);			
+			
+			return $this->sendEmail();
+		}
+		
+		function sendMembershipExpiredEmail($user = NULL)
+		{
+			global $current_user, $wpdb;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user)
+				return false;						
+						
+			$this->email = $user->user_email;
+			$this->subject = "Your membership at " . get_option("blogname") . " has ended";
+			$this->template = "membership_expired";
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));			
+			
+			return $this->sendEmail();
+		}
+		
+		function sendMembershipExpiringEmail($user = NULL)
+		{
+			global $current_user, $wpdb;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user)
+				return false;
+			
+			//make sure we have the current membership level data
+			$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(mu.enddate) as enddate
+														FROM {$wpdb->pmpro_membership_levels} AS l
+														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+														WHERE mu.user_id = " . $user->ID . "
+														LIMIT 1");		
+						
+			$this->email = $user->user_email;
+			$this->subject = "Your membership at " . get_option("blogname") . " will end soon";
+			$this->template = "membership_expiring";
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url(), "enddate" => date("n/j/Y", $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);			
+			
 			return $this->sendEmail();
 		}
 		

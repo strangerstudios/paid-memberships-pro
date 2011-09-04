@@ -2,6 +2,7 @@
 	//vars
 	global $wpdb;
 	$edit = $_REQUEST['edit'];
+	$delete = $_REQUEST['delete'];
 	$saveid = $_POST['saveid'];
 	
 	if($saveid)
@@ -69,6 +70,9 @@
 			$custom_trial_a = $_REQUEST['custom_trial'];
 			$trial_amount_a = $_REQUEST['trial_amount'];
 			$trial_limit_a = $_REQUEST['trial_limit'];						
+			$expiration_a = $_REQUEST['expiration'];
+			$expiration_number_a = $_REQUEST['expiration_number'];
+			$expiration_period_a = $_REQUEST['expiration_period'];
 			
 			//clear the old rows
 			$sqlQuery = "DELETE FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = '" . $edit . "'";
@@ -132,8 +136,29 @@
 					$trial_limit = '';
 				}
 				
+				if($expiration_a)
+				{
+					if(in_array($level_id, $expiration_a))
+						$expiration = 1;
+					else
+						$expiration = 0;
+				}
+				else
+					$expiration = 0;
+				
+				if($expiration)
+				{
+					$expiration_number = $expiration_number_a[$n];
+					$expiration_period = $expiration_period_a[$n];
+				}
+				else
+				{
+					$expiration_number = '';
+					$expiration_period = '';
+				}
+				
 				//okay, do the insert
-				$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . $wpdb->escape($initial_payment) . "', '" . $wpdb->escape($billing_amount) . "', '" . $wpdb->escape($cycle_number) . "', '" . $wpdb->escape($cycle_period) . "', '" . $wpdb->escape($billing_limit) . "', '" . $wpdb->escape($trial_amount) . "', '" . $wpdb->escape($trial_limit) . "')";
+				$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . $wpdb->escape($initial_payment) . "', '" . $wpdb->escape($billing_amount) . "', '" . $wpdb->escape($cycle_number) . "', '" . $wpdb->escape($cycle_period) . "', '" . $wpdb->escape($billing_limit) . "', '" . $wpdb->escape($trial_amount) . "', '" . $wpdb->escape($trial_limit) . "', '" . $wpdb->escape($expiration_number) . "', '" . $wpdb->escape($expiration_period) . "')";
 								
 				if($wpdb->query($sqlQuery) !== false)
 				{
@@ -156,6 +181,45 @@
 				//all good. set edit = NULL so we go back to the overview page
 				$edit = NULL;
 			}
+		}
+	}
+	
+	//are we deleting?
+	if($delete)
+	{
+		//is this a code?
+		$code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = '" . $delete . "' LIMIT 1");
+		if($code)
+		{
+			//delete the code levels
+			$r1 = $wpdb->query("DELETE FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = '" . $delete . "'");
+			
+			if($r1 !== false)
+			{
+				//delete the code
+				$r2 = $wpdb->query("DELETE FROM $wpdb->pmpro_discount_codes WHERE id = '" . $delete . "' LIMIT 1");
+				
+				if($r2 !== false)
+				{
+					$pmpro_msg = "Code $code deleted successfully.";
+					$pmpro_msgt = "success";
+				}
+				else
+				{
+					$pmpro_msg = "Error deleting discount code. The code was only partially deleted. Please try again.";
+					$pmpro_msgt = "error";
+				}
+			}
+			else
+			{
+				$pmpro_msg = "Error deleting code. Please try again.";
+				$pmpro_msgt = "error";
+			}
+		}
+		else
+		{
+			$pmpro_msg = "Code not found.";
+			$pmpro_msgt = "error";
 		}
 	}
 ?>
@@ -395,6 +459,29 @@
 									<small>subscription payments.</small>																			
 								</td>
 							</tr>
+							
+							<tr>
+								<th scope="row" valign="top"><label>Membership Expiration:</label></th>
+								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?=$level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <small>Check this to set an expiration date for new sign ups.</small></td>
+							</tr>
+							
+							<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
+								<th scope="row" valign="top"><label for="billing_amount">Expire In:</label></th>
+								<td>							
+									<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
+									<select id="expiration_period" name="expiration_period[]">
+									  <?php
+										$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
+										foreach ( $cycles as $name => $value ) {
+										  echo "<option value='$value'";
+										  if ( $level->expiration_period == $value ) echo " selected='selected'";
+										  echo ">$name</option>";
+										}
+									  ?>
+									</select>
+									<br /><small>How long before the expiration expires. Not that any future payments will be canceled when the membership expires.</small>							
+								</td>
+							</tr> 
 						</tbody>
 					</table>
 					
@@ -410,7 +497,7 @@
 			
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button-primary" value="Save Code" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?=home_url('/wp-admin/admin.php?page=pmpro-discountcodes')?>';" />		
+				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?=home_url('/wp-admin/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
@@ -446,7 +533,8 @@
 				<th>Expires</th>        
 				<th>Uses</th>
 				<th>Levels</th>
-				<th></th>			
+				<th></th>		
+				<th></th>						
 			</tr>
 		</thead>
 		<tbody>
@@ -506,7 +594,10 @@
 							?>
 						</td>
 						<td>
-							<a href="?page=pmpro-discountcodes&edit=<?=$code->id?>">edit</a>							
+							<a href="?page=pmpro-discountcodes&edit=<?=$code->id?>">edit</a>																
+						</td>
+						<td>
+							<a href="javascript:askfirst('Are you sure you want to delete the <?=$code->code?> discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', '?page=pmpro-discountcodes&delete=<?=$code->id?>'); void(0);">delete</a>	
 						</td>
 					</tr>
 					<?php

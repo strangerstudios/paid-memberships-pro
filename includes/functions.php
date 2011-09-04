@@ -129,6 +129,14 @@
 			return false;
 	}
 	
+	function pmpro_isLevelExpiring(&$level)
+	{
+		if($level->expiration_number > 0)
+			return true;
+		else
+			return false;
+	}
+	
 	function pmpro_getLevelCost(&$level)
 	{
 		$r = '
@@ -186,7 +194,21 @@
 			$r .= " Customers in " . $tax_state . " will be charged " . round($tax_rate * 100) . "% tax.";
 		}
 		
+		$r = apply_filters("pmpro_level_cost_text", $r, $level);		
 		return $r;
+	}
+	
+	function pmpro_getLevelExpiration(&$level)
+	{		
+		if($level->expiration_number)
+		{
+			$expiration_text = "Membership expires after " . $level->expiration_number . " " . sornot(strtolower($level->expiration_period), $level->expiration_number) . ".";
+		}
+		else
+			$expiration_text = "";
+			
+		$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+		return $expiration_text;
 	}
 	
 	function pmpro_hideAds()

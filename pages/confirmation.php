@@ -17,13 +17,18 @@
 		$pmpro_invoice->getMembershipLevel();			
 	?>
 	<p>Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to <strong><?=$pmpro_invoice->user->user_email?></strong>.</p>
-
 	
 	<h3>Invoice #<?=$pmpro_invoice->code?> on <?=date("F j, Y", $pmpro_invoice->timestamp)?></h3>
 	<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
 	<ul>
 		<li><strong>Account:</strong> <?=$pmpro_invoice->user->display_name?> (<?=$pmpro_invoice->user->user_email?>)</li>
 		<li><strong>Membership Level:</strong> <?=$current_user->membership_level->name?></li>
+		<?php if($current_user->membership_level->enddate) { ?>
+			<li><strong>Membership Expires:</strong> <?=date("n/j/Y", $current_user->membership_level->enddate)?></li>
+		<?php } ?>
+		<?php if($pmpro_invoice->getDiscountCode()) { ?>
+			<li><strong>Discount Code:</strong> <?=$pmpro_invoice->discount_code->code?></li>
+		<?php } ?>
 	</ul>
 	
 	<table class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">

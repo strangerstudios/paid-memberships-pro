@@ -59,8 +59,16 @@ if($pmpro_msg)
 		  if ($level->billing_limit > 0 ) 
 		  {		
 			?>
-				<p>Membership ends after <strong><?=$level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></strong>.</p>
+				<p>Payments end after <strong><?=$level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></strong>.</p>
 			<?php
+		  }
+		  
+		  $expiration_text = pmpro_getLevelExpiration($level);
+		  if($expiration_text)
+		  {
+		  ?>
+			<p><?=$expiration_text?></p>
+		  <?php
 		  }
 		?>
 		</td>

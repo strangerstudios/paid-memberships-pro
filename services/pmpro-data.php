@@ -25,7 +25,10 @@
     $ml_custom_trial = $_REQUEST['custom_trial'];
     $ml_trial_amount = addslashes($_REQUEST['trial_amount']);
     $ml_trial_limit = addslashes($_REQUEST['trial_limit']);  
-    $ml_categories = array();
+    $ml_expiration = $_REQUEST['expiration'];
+	$ml_expiration_number = addslashes($_REQUEST['expiration_number']);
+	$ml_expiration_period = addslashes($_REQUEST['expiration_period']);
+	$ml_categories = array();
 	$ml_disable_signups = $_REQUEST['disable_signups'];
 	if($ml_disable_signups)
 		$ml_allow_signups = 0;
@@ -48,6 +51,11 @@
     {
       $ml_trial_amount = $ml_trial_limit = 0;
     }
+	
+	if($ml_expiration != "yes")
+	{
+		$ml_expiration_number = $ml_expiration_period = 0;
+	}
 
     if($saveid > 0)
     {
@@ -61,6 +69,8 @@
                       billing_limit = '$ml_billing_limit',
                       trial_amount = '$ml_trial_amount',
                       trial_limit = '$ml_trial_limit',                    
+					  expiration_number = '$ml_expiration_number',
+                      expiration_period = '$ml_expiration_period',
 					  allow_signups = '$ml_allow_signups'
                     WHERE id = '$saveid' LIMIT 1;";	 
       $wpdb->query($sqlQuery);
@@ -81,9 +91,9 @@
     else
     {
       $sqlQuery = " INSERT INTO {$wpdb->pmpro_membership_levels}
-                    ( name, description, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, allow_signups)
+                    ( name, description, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period, allow_signups)
                     VALUES
-                    ( '$ml_name', '$ml_description', '$ml_initial_payment', '$ml_billing_amount', '$ml_cycle_number', '$ml_cycle_period', '$ml_billing_limit', '$ml_trial_amount', '$ml_trial_limit', '$ml_allow_signups' )";
+                    ( '$ml_name', '$ml_description', '$ml_initial_payment', '$ml_billing_amount', '$ml_cycle_number', '$ml_cycle_period', '$ml_billing_limit', '$ml_trial_amount', '$ml_trial_limit', '$ml_expiration_number', '$ml_expiration_period', '$ml_allow_signups' )";
 	  $wpdb->query($sqlQuery);
       if(!mysql_errno())
       {
