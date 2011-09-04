@@ -18,11 +18,11 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = pmpro_upgrade_1();	
 	elseif($pmpro_db_version < 1.115)
 		$pmpro_db_version = pmpro_upgrade_1_1_15();		
-	elseif($pmpro_db_version < 1.22)
-		$pmpro_db_version = pmpro_upgrade_1_2_2();		
+	elseif($pmpro_db_version < 1.23)
+		$pmpro_db_version = pmpro_upgrade_1_2_3();		
 }
 
-function pmpro_upgrade_1_2_2()
+function pmpro_upgrade_1_2_3()
 {
 	global $wpdb;
 	$wpdb->hide_errors();
@@ -51,7 +51,7 @@ ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	
 	//end date for members
 	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `enddate` DATETIME NULL AFTER  `startdate`
+		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `enddate` DATETIME NULL AFTER  `startdate`
 	";
 	$wpdb->query($sqlQuery);
 	
@@ -60,8 +60,8 @@ ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
 	$wpdb->query($sqlQuery);
 	
-	pmpro_setOption("db_version", "1.22");	
-	return 1.22;
+	pmpro_setOption("db_version", "1.23");	
+	return 1.23;
 }
 
 function pmpro_upgrade_1_1_15()
