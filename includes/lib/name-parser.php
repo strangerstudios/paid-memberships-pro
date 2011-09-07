@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 	Taken from: http://code.google.com/p/php-name-parser/
 	
