@@ -52,15 +52,21 @@ if($pmpro_msg)
 		  if (pmpro_isLevelTrial($level)) 
 		  {			
 			?>
-				<p><?php if($level->trial_amount == '0.00') { ?><strong>Free</strong><?php } else { ?>$<?=$level->trial_amount?><?php } ?> for the first <?=$level->trial_limit.' ' .sornot("payment",$level->trial_limit)?>.</p>
+				<p><?php if($level->trial_amount == '0.00') { ?><strong>Free</strong><?php } else { ?>$<?=$level->trial_amount?><?php } ?> for the next <?=$level->trial_limit.' ' .sornot("payment",$level->trial_limit)?>.</p>
 			<?php
 		  }		  
 		  
-		  if ($level->billing_limit > 0 ) 
+		  if($level->billing_limit > 0 && $level->initial_payment > 0) 
 		  {		
 			?>
-				<p>Payments end after <strong><?=$level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></strong>.</p>
+				<p><strong><?=($level->billing_limit+1).' '.sornot("payment",($level->billing_limit+1))?></strong> total.</p>
 			<?php
+		  }
+		  elseif($level->billing_limit)
+		  {
+		   ?>
+				<p><strong><?=$level->billing_limit.' '.sornot("payment",$level->billing_limit)?></strong> total.</p>
+		   <?php
 		  }
 		  
 		  $expiration_text = pmpro_getLevelExpiration($level);

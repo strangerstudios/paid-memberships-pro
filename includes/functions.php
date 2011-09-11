@@ -140,7 +140,7 @@
 	function pmpro_getLevelCost(&$level)
 	{
 		$r = '
-		The price for membership is <strong>$' . number_format($level->initial_payment, 2) . '</strong> ';
+		The price for membership is <strong>$' . number_format($level->initial_payment, 2) . '</strong> now ';
 		if($level->billing_amount != '0.00')
 		{
 			$r .= 'and then <strong>$' . $level->billing_amount;
@@ -148,17 +148,21 @@
 			{ 
 				$r .= ' per ';
 			}
+			elseif($level->billing_limit == 1)
+			{ 
+				$r .= ' after ' . $level->cycle_number . ' ';
+			}
 			else
 			{ 
-				$r .= 'every ' . $level->cycle_number . ' ';
+				$r .= ' every ' . $level->cycle_number . ' ';
 			}
 
 			$r .= sornot($level->cycle_period,$level->cycle_number);
 			
-			if($level->billing_limit) 
-			{  
-				$r .= ' for ' . $level->billing_limit . ' ' . sornot($level->cycle_period,$level->billing_limit) . '.';
-			} 
+			if($level->billing_limit > 1)
+			{
+				$r .= ' for ' . $level->billing_limit . ' more ' . sornot("payment",$level->billing_limit) . '.';
+			}
 			else
 				$r .= '.';
 			

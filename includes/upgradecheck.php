@@ -231,7 +231,8 @@ function pmpro_upgrade_1()
 	
 	$from_name = "WordPress";
 	pmpro_setOption("from_name", $from_name);
-		
+	
+	pmpro_setOption("tospage", "");			
 	
 	/*
 		DB table setup	

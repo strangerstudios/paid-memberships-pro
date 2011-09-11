@@ -1,12 +1,12 @@
 <?php
-	global $wpdb, $besecure, $discountcode, $pmpro_level, $pmpro_msg, $pmpro_msgt, $skip_account_fields;
+	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_msg, $pmpro_msgt, $skip_account_fields;
 	
 	//what level are they purchasing? (discount code passed)
-	if($_REQUEST['level'] && $_REQUEST['discountcode'])
+	if($_REQUEST['level'] && $_REQUEST['discount_code'])
 	{
-		$discountcode = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['discountcode']);
+		$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['discount_code']);
 		//check code
-		$code_check = pmpro_checkDiscountCode($discountcode, (int)$_REQUEST['level'], true);		
+		$code_check = pmpro_checkDiscountCode($discount_code, (int)$_REQUEST['level'], true);		
 		if($code_check[0] == false)
 		{
 			//error
@@ -18,7 +18,7 @@
 		}
 		else
 		{			
-			$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discountcode . "' AND cl.level_id = '" . (int)$_REQUEST['level'] . "' LIMIT 1";			
+			$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int)$_REQUEST['level'] . "' LIMIT 1";			
 			$pmpro_level = $wpdb->get_row($sqlQuery);
 			
 			$use_discount_code = true;
@@ -71,7 +71,7 @@
 		$tospage = get_post($tospage);
 	
 	//load em up (other fields)
-	global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+	global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	$order_id = $_REQUEST['order_id'];
 	$bfirstname = $_REQUEST['bfirstname'];	
@@ -91,7 +91,7 @@
 	$ExpirationYear = $_REQUEST['ExpirationYear'];
 	$CVV = $_REQUEST['CVV'];
 	
-	$discountcode = $_REQUEST['discountcode'];
+	$discount_code = $_REQUEST['discount_code'];
 	$username = $_REQUEST['username'];
 	$password = $_REQUEST['password'];
 	$password2 = $_REQUEST['password2'];
@@ -211,7 +211,7 @@
 							$morder = new MemberOrder();			
 							$morder->membership_id = $pmpro_level->id;
 							$morder->membership_name = $pmpro_level->name;
-							$morder->discountcode = $discountcode;
+							$morder->discount_code = $discount_code;
 							$morder->InitialPayment = $pmpro_level->initial_payment;
 							$morder->PaymentAmount = $pmpro_level->billing_amount;
 							$morder->ProfileStartDate = date("Y-m-d") . "T0:0:0";
@@ -372,10 +372,10 @@
 								pmpro_set_current_user();
 							
 								//add discount code use
-								if($discountcode && $use_discount_code)
+								if($discount_code && $use_discount_code)
 								{
-									$discountcode_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discountcode . "' LIMIT 1");
-									$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discountcode_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");
+									$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+									$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");
 								}
 							
 								//save billing info ect, as user meta																		
@@ -397,7 +397,7 @@
 									$invoice = NULL;
 								$user->membership_level = $pmpro_level;		//make sure they have the right level info
 								$pmproemail->sendCheckoutEmail($current_user, $invoice);
-											
+																
 								//redirect to confirmation
 								wp_redirect(pmpro_url("confirmation"));
 								exit;

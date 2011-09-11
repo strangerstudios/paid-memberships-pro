@@ -1,6 +1,6 @@
 <?php
 	global $skip_account_fields, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage;
-	global $discountcode, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 ?>
 
 <form class="pmpro_form" action="<?=pmpro_url("checkout", "", "https")?>" method="post">
@@ -34,27 +34,27 @@
 				<p>You have selected the <strong><?=$pmpro_level->name?></strong> membership level.</p>
 				
 				<p id="pmpro_level_cost">
-					<?php if($discountcode && pmpro_checkDiscountCode($discountcode)) { ?>
-						The <strong><?=$discountcode?></strong> code has been applied to your order.
+					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
+						The <strong><?=$discount_code?></strong> code has been applied to your order.
 					<?php } ?>
 					<?=pmpro_getLevelCost($pmpro_level)?>
 					<?=pmpro_getLevelExpiration($pmpro_level)?>
 				</p>
 				
-				<?php if($discountcode) { ?>
-					<p id="other_discountcode_p" class="pmpro_small"><a id="other_discountcode_a" href="#discountcode">Click here to change your discount code</a>.</p>
+				<?php if($discount_code) { ?>
+					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code">Click here to change your discount code</a>.</p>
 				<?php } else { ?>
-					<p id="other_discountcode_p" class="pmpro_small">Do you have a discount code? <a id="other_discountcode_a" href="#discountcode">Click here to enter your discount code</a>.</p>
+					<p id="other_discount_code_p" class="pmpro_small">Do you have a discount code? <a id="other_discount_code_a" href="#discount_code">Click here to enter your discount code</a>.</p>
 				<?php } ?>
 								
 			</td>
 		</tr>
-		<tr id="other_discountcode_tr" style="display: none;">
+		<tr id="other_discount_code_tr" style="display: none;">
 			<td>
 				<div>
-					<label for="other_discountcode">Discount Code</label>
-					<input id="other_discountcode" name="other_discountcode" type="text" class="input" size="20" value="<?=$discountcode?>" /> 
-					<input type="button" name="other_discountcode_button" id="other_discountcode_button" value="Apply" />					
+					<label for="other_discount_code">Discount Code</label>
+					<input id="other_discount_code" name="other_discount_code" type="text" class="input" size="20" value="<?=$discount_code?>" /> 
+					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="Apply" />					
 				</div>				
 			</td>
 		</tr>
@@ -62,41 +62,41 @@
 	</table>
 	<script>
 		//update discount code link to show field at top of form
-		jQuery('#other_discountcode_a').attr('href', 'javascript:void(0);');
-		jQuery('#other_discountcode_a').click(function() {
-			jQuery('#other_discountcode_tr').show();
-			jQuery('#other_discountcode_p').hide();		
-			jQuery('#other_discountcode').focus();
+		jQuery('#other_discount_code_a').attr('href', 'javascript:void(0);');
+		jQuery('#other_discount_code_a').click(function() {
+			jQuery('#other_discount_code_tr').show();
+			jQuery('#other_discount_code_p').hide();		
+			jQuery('#other_discount_code').focus();
 		});
 		
 		//update real discount code field as the other discount code field is updated
-		jQuery('#other_discountcode').keyup(function() {
-			jQuery('#discountcode').val(jQuery('#other_discountcode').val());
+		jQuery('#other_discount_code').keyup(function() {
+			jQuery('#discount_code').val(jQuery('#other_discount_code').val());
 		});
-		jQuery('#other_discountcode').blur(function() {
-			jQuery('#discountcode').val(jQuery('#other_discountcode').val());
+		jQuery('#other_discount_code').blur(function() {
+			jQuery('#discount_code').val(jQuery('#other_discount_code').val());
 		});
 		
 		//update other discount code field as the real discount code field is updated
-		jQuery('#discountcode').keyup(function() {
-			jQuery('#other_discountcode').val(jQuery('#discountcode').val());
+		jQuery('#discount_code').keyup(function() {
+			jQuery('#other_discount_code').val(jQuery('#discount_code').val());
 		});
-		jQuery('#discountcode').blur(function() {
-			jQuery('#other_discountcode').val(jQuery('#discountcode').val());
+		jQuery('#discount_code').blur(function() {
+			jQuery('#other_discount_code').val(jQuery('#discount_code').val());
 		});
 		
 		//applying a discount code
-		jQuery('#other_discountcode_button').click(function() {
-			var code = jQuery('#other_discountcode').val();
+		jQuery('#other_discount_code_button').click(function() {
+			var code = jQuery('#other_discount_code').val();
 			var level_id = jQuery('#level').val();
 												
 			if(code)
 			{									
 				//hide any previous message
-				jQuery('.pmpro_discountcode_msg').hide();
+				jQuery('.pmpro_discount_code_msg').hide();
 				
 				//disable the apply button
-				jQuery('#other_discountcode_button').attr('disabled', 'disabled');
+				jQuery('#other_discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
 					url: '<?=plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
@@ -106,7 +106,7 @@
 						alert('Error applying discount code [1]');
 						
 						//enable apply button
-						jQuery('#other_discountcode_button').removeAttr('disabled');
+						jQuery('#other_discount_code_button').removeAttr('disabled');
 					},
 					success: function(responseHTML){
 						if (responseHTML == 'error')
@@ -119,7 +119,7 @@
 						}		
 						
 						//enable invite button
-						jQuery('#other_discountcode_button').removeAttr('disabled');										
+						jQuery('#other_discount_code_button').removeAttr('disabled');										
 					}
 				});
 			}																		
@@ -361,14 +361,14 @@
 			
 				<div>
 					<label for="CVV">CVV</label>
-					<input class="input" id="CVV" name="CVV" type="text" size="4" value="" />  <small>(<a href="#" onclick="javascript:window.open('<?=plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?=$_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?=PMPRO_URL?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 				</div>
 				
 				<div>
-					<label for="discountcode">Discount Code</label>
-					<input class="input" id="discountcode" name="discountcode" type="text" size="20" value="<?=$discountcode?>" />
-					<input type="button" id="discountcode_button" name="discountcode_button" value="Apply" />
-					<p id="discountcode_message" class="pmpro_message" style="display: none;"></p>
+					<label for="discount_code">Discount Code</label>
+					<input class="input" id="discount_code" name="discount_code" type="text" size="20" value="<?=$discount_code?>" />
+					<input type="button" id="discount_code_button" name="discount_code_button" value="Apply" />
+					<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
 				</div>
 			</td>			
 		</tr>
@@ -376,27 +376,27 @@
 	</table>	
 	<script>
 		//checking a discount code
-		jQuery('#discountcode_button').click(function() {
-			var code = jQuery('#discountcode').val();
+		jQuery('#discount_code_button').click(function() {
+			var code = jQuery('#discount_code').val();
 			var level_id = jQuery('#level').val();
 												
 			if(code)
 			{									
 				//hide any previous message
-				jQuery('.pmpro_discountcode_msg').hide();				
+				jQuery('.pmpro_discount_code_msg').hide();				
 				
 				//disable the apply button
-				jQuery('#discountcode_button').attr('disabled', 'disabled');
+				jQuery('#discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
 					url: '<?=plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
 					dataType: 'html',
-					data: "code=" + code + "&level=" + level_id + "&msgfield=discountcode_message",
+					data: "code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 					error: function(xml){
 						alert('Error applying discount code [1]');
 						
 						//enable apply button
-						jQuery('#discountcode_button').removeAttr('disabled');
+						jQuery('#discount_code_button').removeAttr('disabled');
 					},
 					success: function(responseHTML){
 						if (responseHTML == 'error')
@@ -405,11 +405,11 @@
 						}
 						else
 						{
-							jQuery('#discountcode_message').html(responseHTML);
+							jQuery('#discount_code_message').html(responseHTML);
 						}		
 						
 						//enable invite button
-						jQuery('#discountcode_button').removeAttr('disabled');										
+						jQuery('#discount_code_button').removeAttr('disabled');										
 					}
 				});
 			}																		

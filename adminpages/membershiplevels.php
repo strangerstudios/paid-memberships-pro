@@ -399,7 +399,7 @@
                         <th scope="row" valign="top"><label for="billing_limit">Billing Cycle Limit:</label></th>
                         <td>
 							<input name="billing_limit" type="text" size="20" value="<?=$level->billing_limit?>" />
-							<br /><small>The <strong>total</strong> number of billing cycles for this level, including the trial period (if applicable). Set to zero if membership is indefinite.</small>
+							<br /><small>The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.</small>
 						</td>
                     </tr>            								
 	

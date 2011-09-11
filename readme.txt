@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 
 An infinitely customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.2.4 =
+* VERY IMPORTANT BUG FIX: The getMembershipLevel function of the MemberOrder class had an error where the membership level object was not being created properly during signup and so * recurring subscriptions were not being created *. This update fixes the bug. Thanks to mvp29 for catching this.
+* Fixed another bug that was causing warnings on some setups, e.g. WAMP server for Windows.
+* Fixed a bug that would show warnings when visiting a login page over HTTPS.
+* Fixed membership pricing wording for certain cases, e.g. every 4 months for 4 more payments.
+
 = 1.2.3 =
 * Fixed an error in the DB upgrade code that was keeping the "enddate" from being added to new members' records.
 
