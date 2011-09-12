@@ -511,6 +511,10 @@
                         <?php
 							wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[account]));
 						?>	
+						<?php if($pmpro_pages[account]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[account]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_account].</small>
 					</td>
 				<tr>
                     <th scope="row" valign="top">
@@ -520,6 +524,10 @@
                         <?php
 							wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[billing]));
 						?>
+						<?php if($pmpro_pages[billing]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[billing]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_billing].</small>
 					</td>
 				<tr>
                     <th scope="row" valign="top">	
@@ -529,46 +537,66 @@
                         <?php
 							wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[cancel]));
 						?>	
+						<?php if($pmpro_pages[cancel]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[cancel]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_cancel].</small>
 					</td>
 				</tr>
 				<tr>
                     <th scope="row" valign="top">	
-						<label for="cancel_page_id">Checkout Page:</label>
+						<label for="checkout_page_id">Checkout Page:</label>
 					</th>
 					<td>
                         <?php
 							wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[checkout]));
 						?>
+						<?php if($pmpro_pages[checkout]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[checkout]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_checkout].</small>
 					</td>
 				</tr>
 				<tr>
                     <th scope="row" valign="top">		
-						<label for="cancel_page_id">Confirmation Page:</label>
+						<label for="confirmation_page_id">Confirmation Page:</label>
 					</th>
 					<td>
                         <?php
 							wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[confirmation]));
 						?>	
+						<?php if($pmpro_pages[confirmation]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[confirmation]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_confirmation].</small>
 					</td>
 				</tr>
 				<tr>
                     <th scope="row" valign="top">	
-						<label for="cancel_page_id">Invoice Page:</label>
+						<label for="invoice_page_id">Invoice Page:</label>
 					</th>
 					<td>
                         <?php
 							wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[invoice]));
 						?>
+						<?php if($pmpro_pages[invoice]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[invoice]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_invoice].</small>
 					</td>
 				</tr>
 				<tr>
                     <th scope="row" valign="top">	
-						<label for="cancel_page_id">Levels Page:</label>
+						<label for="levels_page_id">Levels Page:</label>
 					</th>
 					<td>
                         <?php
 							wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[levels]));
 						?>
+						<?php if($pmpro_pages[levels]) { ?>
+							<a target="_blank" href="post.php?post=<?=$pmpro_pages[levels]?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<?php } ?>
+						<br /><small class="pmpro_lite">Include the shortcode [pmpro_levels].</small>
 					</td>
 				</tr>				
 			</tbody>
@@ -604,7 +632,8 @@
 					<td>
                         <select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
 							<option value="">-- choose one --</option>
-                        	<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal</option>
+                        	<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
+							<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
 							<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
                         </select>                        
                     </td>
@@ -629,7 +658,7 @@
 						</script>
                     </td>
                </tr>
-               <tr class="gateway gateway_paypal" <?php if($gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+               <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">	
                     	<label for="gateway_email">Gateway Account Email:</label>
 					</th>
@@ -637,7 +666,7 @@
                         <input type="text" name="gateway_email" size="60" value="<?=$gateway_email?>" />
                     </td>
                 </tr>                
-				<tr class="gateway gateway_paypal" <?php if($gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+				<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">
                     	<label for="apiusername">API Username:</label>
 					</th>
@@ -645,7 +674,7 @@
                         <input type="text" name="apiusername" size="60" value="<?=$apiusername?>" />
                     </td>
                 </tr>
-                <tr class="gateway gateway_paypal" <?php if($gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+                <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">
                     	<label for="apipassword">API Password:</label>
 					</th>
@@ -653,7 +682,7 @@
                         <input type="text" name="apipassword" size="60" value="<?=$apipassword?>" />
                     </td>
                 </tr> 
-                <tr class="gateway gateway_paypal" <?php if($gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+                <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">
                     	<label for="apisignature">API Signature:</label>
 					</th>
@@ -677,7 +706,7 @@
                         <input type="text" name="transactionkey" size="60" value="<?=$transactionkey?>" />
                     </td>
                 </tr>
-				<tr>
+				<tr class="gateway gateway_authorizenet gateway_paypal" <?php if($gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">
                     	<label for="creditcards">Accepted Credit Card Types</label>
 					</th>
@@ -688,7 +717,7 @@
 						<input type="checkbox" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Discover<br />
                     </td>
                 </tr>
-				<tr>
+				<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top">
 						<label for="tax">Sales Tax <small>(optional)</small></label>
 					</th>

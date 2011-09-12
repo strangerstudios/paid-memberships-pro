@@ -328,6 +328,10 @@
 					}
 				}				
 			}				
+			elseif($gateway == "paypalexpress")
+			{				
+				return $this->processWithPayPalExpress();
+			}
 			elseif($gateway == "authorizenet")
 			{				
 				if(floatval($this->InitialPayment) == 0)
@@ -744,6 +748,80 @@
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
+		}
+		
+		function processWithPayPalExpress()
+		{			
+			if(!$this->code)
+				$this->code = $this->getRandomCode();			
+														
+			//taxes on the amount
+			$amount = $this->PaymentAmount;
+			$amount_tax = $this->getTaxForPrice($amount);						
+			$this->subtotal = $amount;
+			$amount = round((float)$amount + (float)$amount_tax, 2);
+						
+			//paypal profile stuff
+			$nvpStr = "";
+			if($this->Token)
+				$nvpStr .= "&TOKEN=" . $this->Token;
+			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			$nvpStr .= "&DESC=" . $amount;
+			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			
+			//if billing cycles are defined						
+			if($this->TotalBillingCycles)
+				$nvpStr .= "&TOTALBILLINGCYCLES=" . $this->TotalBillingCycles;
+			
+			//if a trial period is defined
+			if($this->TrialBillingPeriod)
+			{
+				$trial_amount = $this->TrialAmount;
+				$trial_tax = $this->getTaxForPrice($trial_amount);
+				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				
+				$nvpStr .= "&TRIALBILLINGPERIOD=" . $this->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $this->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
+			}
+			if($this->TrialBillingCycles)
+				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
+			
+			$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?review=" . $this->code));
+			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
+			
+			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
+						
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+				$this->status = "token";				
+				$this->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
+				
+				//update order
+				
+				
+				//redirect to paypal
+				$paypal_url = "https://www.paypal.com/webscr&cmd=_express-checkout&token=" . $this->httpParsedResponseAr[TOKEN];
+				$environment = pmpro_getOption("gateway_environment");				
+				if("sandbox" === $environment || "beta-sandbox" === $environment) 
+				{
+					$paypal_url = "https://www.sandbox.paypal.com/webscr&cmd=_express-checkout&token="  . $this->httpParsedResponseAr[TOKEN];
+				}		
+								
+				wp_redirect($paypal_url);				
+				exit;
+				
+				//exit('SetExpressCheckout Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
+			} else  {				
+				$this->status = "error";
+				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
+				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
+				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				return false;
+				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
+			}
+			
+			//write session?
+			
+			//redirect to PayPal
 		}
 		
 		//Authorize.net Function

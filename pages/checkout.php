@@ -1,6 +1,8 @@
 <?php
 	global $skip_account_fields, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage;
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+	
+	$gateway = pmpro_getOption("gateway");
 ?>
 
 <form class="pmpro_form" action="<?=pmpro_url("checkout", "", "https")?>" method="post">
@@ -223,7 +225,7 @@
 		}
 	?>
 				
-	<table id="pmpro_billing_address_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+	<table id="pmpro_billing_address_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>
 			<th>Billing Address</th>
@@ -248,10 +250,67 @@
 					<label for="baddress2">Address 2</label>
 					<input id="baddress2" name="baddress2" type="text" class="input" size="30" value="<?=$baddress2?>" /> <small class="lite">(optional)</small>
 				</div>
+				
+				<?php
+					$longform_address = apply_filters("pmpro_longform_address", false);
+					if($longform_address)
+					{
+				?>
+					<div>
+						<label for="bcity">City</label>
+						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?=$bcity?>" /> 
+					</div>
+					<div>
+						<label for="bstate">State</label>
+						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?=$bstate?>" /> 
+					</div>
+					<div>
+						<label for="bzipcode">Zip/Postal Code</label>
+						<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?=$bzipcode?>" /> 
+					</div>					
+				<?php
+					}
+					else
+					{
+					?>
+					<div>
+						<label for="bcity_state_zip">City, State Zip</label>
+						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?=$bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?=$bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?=$bzipcode?>" /> 
+					</div>
+					<?php
+					}
+				?>
+				
+				<?php
+					$show_country = apply_filters("pmpro_international_addresses", false);
+					if($show_country)
+					{
+				?>
 				<div>
-					<label for="bcity_state_zip">City, State Zip</label>
-					<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?=$bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?=$bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?=$bzipcode?>" /> 
+					<label for="bcountry">Country</label>
+					<select name="bcountry">
+						<?php
+							global $pmpro_countries, $pmpro_default_country;
+							foreach($pmpro_countries as $abbr => $country)
+							{
+								if(!$bcountry)
+									$bcountry = $pmpro_default_country;
+							?>
+							<option value="<?=$abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?=$country?></option>
+							<?php
+							}
+						?>
+					</select>
 				</div>
+				<?php
+					}
+					else
+					{
+					?>
+						<input type="hidden" name="bcountry" value="US" />
+					<?php
+					}
+				?>
 				<div>
 					<label for="bphone">Phone</label>
 					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?=$bphone?>" /> 
@@ -300,7 +359,7 @@
 		}
 	?>
 	
-	<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+	<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>
 			<th colspan="2"><span class="pmpro_thead-msg">We Accept <?=$pmpro_accepted_credit_cards_string?></span>Payment Information</th>
@@ -361,7 +420,7 @@
 			
 				<div>
 					<label for="CVV">CVV</label>
-					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?=$_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?=PMPRO_URL?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?=$_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?=pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 				</div>
 				
 				<div>

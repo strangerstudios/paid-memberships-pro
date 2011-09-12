@@ -1,5 +1,6 @@
 <?php
 	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_msg, $pmpro_msgt, $skip_account_fields;
+	$gateway = pmpro_getOption("gateway");
 	
 	//what level are they purchasing? (discount code passed)
 	if($_REQUEST['level'] && $_REQUEST['discount_code'])
@@ -37,18 +38,22 @@
 		exit(0);
 	}		
 	
-	global $wpdb, $current_user, $pmpro_requirebilling;
+	global $wpdb, $current_user, $pmpro_requirebilling;	
 	if(!pmpro_isLevelFree($pmpro_level))
 	{
-		//just skip them through
+		//require billing and ssl
 		$pagetitle = "Checkout: Payment Information";
 		$pmpro_requirebilling = true;
-		$besecure = true;			
-	}	
+		if($gateway != "paypalexpress")
+			$besecure = true;			
+		else
+			$besecure = false;
+	}		
 	else
 	{
 		//no payment so we don't need ssl
 		$pagetitle = "Setup Your Account";
+		$pmpro_requirebilling = false;
 		$besecure = false;		
 	}
 	
@@ -82,6 +87,7 @@
 	$bcity = $_REQUEST['bcity'];
 	$bstate = $_REQUEST['bstate'];
 	$bzipcode = $_REQUEST['bzipcode'];
+	$bcountry = $_REQUEST['bcountry'];
 	$bphone = $_REQUEST['bphone'];
 	$bemail = $_REQUEST['bemail'];
 	$bconfirmemail = $_REQUEST['bconfirmemail'];
@@ -111,12 +117,42 @@
 			$username = pmpro_generateUsername($bfirstname, $blastname, $bemail);
 			$password = pmpro_getDiscountCode() . pmpro_getDiscountCode();	//using two random discount codes
 			$password2 = $password;
-		}
+		}	
 		
-		
-		if($pmpro_requirebilling && (!$bfirstname || !$blastname || !$baddress1 || !$bcity || !$bstate || !$bzipcode || !$bphone || !$bemail || !$CardType || !$AccountNumber || !$ExpirationMonth || !$ExpirationYear || !$CVV))
+		if($pmpro_requirebilling && $gateway != "paypalexpress")
 		{
-			//krumo(array($bname, $baddress1, $bcity, $bstate, $bzipcode, $bemail, $name, $address1, $city, $state, $zipcode));
+			$pmpro_required_billing_fields = array(
+				"bfirstname" => $bfirstname,
+				"blastname" => $blastname,
+				"baddress1" => $baddress1,
+				"bcity" => $bcity,
+				"bstate" => $bstate,
+				"bzipcode" => $bzipcode,
+				"bphone" => $bphone,
+				"bemail" => $bemail,
+				"bcountry" => $bcountry,
+				"CardyType" => $CardType,
+				"AccountNumber" => $AccountNumber,
+				"ExpirationMonth" => $ExpirationMonth,
+				"ExpirationYear" => $ExpirationYear,
+				"CVV" => $CVV
+			);
+			
+			//filter
+			$pmpro_required_billing_fields = apply_filters("pmpro_required_billing_fields", $pmpro_required_billing_fields);			
+						
+			foreach($pmpro_required_billing_fields as $key => $field)
+			{
+				if(!$field)
+				{					
+					$missing_billing_field = true;										
+					break;
+				}
+			}
+		}
+				
+		if($missing_billing_field)
+		{
 			$pmpro_msg = "Please complete all required fields.";
 			$pmpro_msgt = "pmpro_error";
 		}
@@ -206,6 +242,17 @@
 					//no errors yet
 					if($pmpro_msgt != "pmpro_error")
 					{				
+						//save user fields for PayPal Express
+						if(!$current_user->ID && $gateway == "paypalexpress")
+						{
+							$_SESSION['pmpro_signup_username'] = $username;
+							$_SESSION['pmpro_signup_password'] = $password;
+							$_SESSION['pmpro_signup_email'] = $email;
+							
+							//can use this hook to save some other variables to the session
+							do_action("pmpro_paypalexpress_session_vars");
+						}
+						
 						if($pmpro_requirebilling)
 						{
 							$morder = new MemberOrder();			
@@ -252,7 +299,7 @@
 							$morder->billing->street = trim($baddress1 . " " . $baddress2);
 							$morder->billing->city = $bcity;
 							$morder->billing->state = $bstate;
-							$morder->billing->country = "US";
+							$morder->billing->country = $bcountry;
 							$morder->billing->zip = $bzipcode;
 							$morder->billing->phone = $bphone;
 									
@@ -278,7 +325,7 @@
 								$pmpro_msgt = "pmpro_error";								
 							}	
 														
-						}	//end if($pmpro_requirebilling)
+						}	//end if($pmpro_requirebilling)						
 					}
 					
 					//must be all good. create/update the user.
