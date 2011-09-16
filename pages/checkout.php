@@ -1,5 +1,5 @@
 <?php
-	global $skip_account_fields, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage;
+	global $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage;
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 	
 	$gateway = pmpro_getOption("gateway");
@@ -43,10 +43,12 @@
 					<?=pmpro_getLevelExpiration($pmpro_level)?>
 				</p>
 				
-				<?php if($discount_code) { ?>
+				<?php if($discount_code && !$pmpro_review) { ?>
 					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code">Click here to change your discount code</a>.</p>
-				<?php } else { ?>
+				<?php } elseif(!$pmpro_review) { ?>
 					<p id="other_discount_code_p" class="pmpro_small">Do you have a discount code? <a id="other_discount_code_a" href="#discount_code">Click here to enter your discount code</a>.</p>
+				<?php } elseif($pmpro_review && $discount_code) { ?>
+					<p><strong>Discount Code:</strong> <?=$discount_code?></p>
 				<?php } ?>
 								
 			</td>
@@ -128,7 +130,7 @@
 		});
 	</script>
 	
-	<?php if(!$skip_account_fields) { ?>
+	<?php if(!$skip_account_fields && !$pmpro_review) { ?>
 	<table class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
@@ -196,12 +198,12 @@
 				
 			</td>
 	</table>   
-	<?php } elseif($current_user->ID) { ?>                        	                       										
+	<?php } elseif($current_user->ID && !$pmpro_review) { ?>                        	                       										
 		<p>You are logged in as <strong><?=$current_user->user_login?></strong>. If you would like to use a different account for this membership, <a href="<?=wp_logout_url(pmpro_url("checkout", "?level=" . $pmpro_level->id));?>">log out now</a>.</p>
 	<?php } ?>
 	
 	<?php					
-		if($tospage)
+		if($tospage && !$pmpro_review)
 		{						
 		?>
 		<table class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -475,9 +477,18 @@
 		});
 	</script>
 	
-	<div align="center">
-		<input type="hidden" name="submit-checkout" value="1" />
-		<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
+	<div align="center">		
+		<?php if($pmpro_review) { ?>
+			<input type="hidden" name="confirm" value="1" />
+			<input type="hidden" name="token" value="<?=$pmpro_paypal_token?>" />
+			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
+		<?php } elseif($gateway == "paypalexpress") { ?>
+			<input type="hidden" name="submit-checkout" value="1" />		
+			<input type="image" value="Checkout with PayPal &raquo;" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
+		<?php } else { ?>
+			<input type="hidden" name="submit-checkout" value="1" />		
+			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
+		<?php } ?>
 	</div>	
 		
 </form>

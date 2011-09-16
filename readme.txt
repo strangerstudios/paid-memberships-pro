@@ -43,6 +43,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Fixed another bug that was causing warnings on some setups, e.g. WAMP server for Windows.
 * Fixed a bug that would show warnings when visiting a login page over HTTPS.
 * Fixed membership pricing wording for certain cases, e.g. every 4 months for 4 more payments.
+* Fixed a bug in the email generation for order confirmations when discount codes were used. This will no longer freeze the screen.
 
 = 1.2.3 =
 * Fixed an error in the DB upgrade code that was keeping the "enddate" from being added to new members' records.

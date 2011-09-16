@@ -31,7 +31,7 @@
 				$this->session_id = $dbobj->session_id;
 				$this->user_id = $dbobj->user_id;
 				$this->membership_id = $dbobj->membership_id;
-				$this->paypal_token = $dbobj->paypal_token;
+				$this->paypal_token = $dbobj->paypal_token;				
 				$this->billing->name = $dbobj->billing_name;
 				$this->billing->street = $dbobj->billing_street;
 				$this->billing->city = $dbobj->billing_city;
@@ -103,13 +103,23 @@
 				return false;
 		}
 		
+		function getMemberOrderByPayPalToken($token)
+		{
+			global $wpdb;
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = '" . $token . "' LIMIT 1");
+			if($id)
+				return $this->getMemberOrderByID($id);
+			else
+				return false;
+		}
+		
 		function getDiscountCode($force = false)
 		{
 			if($this->discount_code && !$force)
 				return $this->discount_code;
 				
 			global $wpdb;
-			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
+			$this->discount_code = $wpdb->get_var("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
 			
 			return $this->discount_code;
 		}
@@ -216,7 +226,7 @@
 									   '" . session_id() . "',
 									   '" . $this->user_id . "',
 									   '" . $this->membership_id . "',
-									   '" . $this->Token . "',
+									   '" . $this->paypal_token . "',
 									   '" . $wpdb->escape(trim($this->billing->name)) . "',
 									   '" . $wpdb->escape(trim($this->billing->street)) . "',
 									   '" . $wpdb->escape($this->billing->city) . "',
@@ -769,6 +779,7 @@
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOSHIPPING=1&L_PAYMENTREQUEST_n_NAMEm=" . get_bloginfo("name") . "&L_PAYMENTREQUEST_n_NUMBERm=" . $this->membership_level->name;
 			
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)
@@ -786,18 +797,26 @@
 			if($this->TrialBillingCycles)
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
 			
-			$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?review=" . $this->code));
+			if($this->discount_code)
+			{
+				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&discount_code=" . $this->discount_code . "&review=" . $this->code));				
+			}
+			else
+			{
+				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&review=" . $this->code));				
+			}
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
-			
+
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$this->status = "token";				
+				$this->paypal_token = urldecode($this->httpParsedResponseAr[TOKEN]);
 				$this->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
-				
+												
 				//update order
-				
-				
+				$this->saveOrder();							
+							
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr&cmd=_express-checkout&token=" . $this->httpParsedResponseAr[TOKEN];
 				$environment = pmpro_getOption("gateway_environment");				
@@ -822,6 +841,88 @@
 			//write session?
 			
 			//redirect to PayPal
+		}
+		
+		function getPayPalExpressCheckoutDetails()
+		{			
+			$nvpStr="&TOKEN=".$this->Token;
+			
+			/* Make the API call and store the results in an array.  If the
+			call was a success, show the authorization details, and provide
+			an action to complete the payment.  If failed, show the error
+			*/
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $nvpStr);
+			
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+				$this->status = "review";				
+								
+				return true;										
+			} else  {				
+				$this->status = "error";
+				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
+				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
+				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				return false;
+				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
+			}
+		}
+		
+		function doPayPalExpressCheckoutPayment()
+		{
+			if(!$this->code)
+				$this->code = $this->getRandomCode();			
+														
+			//taxes on the amount
+			$amount = $this->PaymentAmount;
+			$amount_tax = $this->getTaxForPrice($amount);						
+			$this->subtotal = $amount;
+			$amount = round((float)$amount + (float)$amount_tax, 2);
+						
+			//paypal profile stuff
+			$nvpStr = "";
+			if($this->Token)
+				$nvpStr .= "&TOKEN=" . $this->Token;
+			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			$nvpStr .= "&DESC=" . $amount;
+			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOSHIPPING=1&L_PAYMENTREQUEST_n_NAMEm=" . get_bloginfo("name") . "&L_PAYMENTREQUEST_n_NUMBERm=" . $this->membership_level->name;
+			
+			//if billing cycles are defined						
+			if($this->TotalBillingCycles)
+				$nvpStr .= "&TOTALBILLINGCYCLES=" . $this->TotalBillingCycles;
+			
+			//if a trial period is defined
+			if($this->TrialBillingPeriod)
+			{
+				$trial_amount = $this->TrialAmount;
+				$trial_tax = $this->getTaxForPrice($trial_amount);
+				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				
+				$nvpStr .= "&TRIALBILLINGPERIOD=" . $this->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $this->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
+			}
+			if($this->TrialBillingCycles)
+				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
+			
+			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";					
+			
+			$this->nvpStr = $nvpStr;
+			
+			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
+						
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+				$this->status = "success";				
+				$this->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
+				
+				return true;				
+			} else  {				
+				$this->status = "error";
+				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
+				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
+				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				return false;
+				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
+			}
 		}
 		
 		//Authorize.net Function
