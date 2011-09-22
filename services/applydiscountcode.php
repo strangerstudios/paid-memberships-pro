@@ -52,7 +52,7 @@
 		jQuery('#pmpro_level_cost').html('The <strong><?=$discount_code?></strong> code has been applied to your order. <?=pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
 		
 		<?php
-			if(pmpro_isLevelFree($code_level))
+			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress")
 			{
 				//hide billing
 			?>

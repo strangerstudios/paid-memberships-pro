@@ -555,8 +555,10 @@
 			//credit card fields
 			if($this->cardtype == "American Express")
 				$cardtype = "Amex";
+			else
+				$cardtype = $this->cardtype;
 			
-			if($this->cardtype)			
+			if($cardtype)			
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $this->accountnumber . "&EXPDATE=" . $this->ExpirationDate . "&CVV2=" . $this->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
@@ -574,6 +576,8 @@
 				$nvpStr .= "&CITY=" . $this->billing->city . "&STATE=" . $this->billing->state . "&COUNTRYCODE=" . $this->billing->country . "&ZIP=" . $this->billing->zip . "&SHIPTOPHONENUM=" . $this->billing->phone;
 			}
 
+			$this->nvpStr = $nvpStr;
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -631,8 +635,10 @@
 			//credit card fields
 			if($this->cardtype == "American Express")
 				$cardtype = "Amex";
+			else
+				$cardtype = $this->cardtype;
 
-			if($this->cardtype)			
+			if($cardtype)			
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $this->accountnumber . "&EXPDATE=" . $this->ExpirationDate . "&CVV2=" . $this->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
@@ -705,8 +711,10 @@
 			//credit card fields
 			if($this->cardtype == "American Express")
 				$cardtype = "Amex";
+			else
+				$cardtype = $this->cardtype;
 			
-			if($this->cardtype)			
+			if($cardtype)			
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $this->accountnumber . "&EXPDATE=" . $this->ExpirationDate . "&CVV2=" . $this->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
@@ -724,6 +732,8 @@
 				$nvpStr .= "&CITY=" . $this->billing->city . "&STATE=" . $this->billing->state . "&COUNTRYCODE=" . $this->billing->country . "&ZIP=" . $this->billing->zip . "&SHIPTOPHONENUM=" . $this->billing->phone;
 			}
 
+			$this->nvpStr = $nvpStr;
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -770,8 +780,14 @@
 			$nvpStr .= "&PROFILEID=" . $this->subscription_transaction_id;
 			
 			//credit card fields
-			if($this->cardtype)			
-				$nvpStr .= "&CREDITCARDTYPE=" . $this->cardtype . "&ACCT=" . $this->accountnumber . "&EXPDATE=" . $this->ExpirationDate . "&CVV2=" . $this->CVV2;
+			if($this->cardtype == "American Express")
+				$cardtype = "Amex";
+			else
+				$cardtype = $this->cardtype;
+			
+			//credit card fields
+			if($cardtype)			
+				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $this->accountnumber . "&EXPDATE=" . $this->ExpirationDate . "&CVV2=" . $this->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
 			if($this->StartDate)

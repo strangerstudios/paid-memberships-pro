@@ -304,7 +304,7 @@
 							$morder->billing->phone = $bphone;
 									
 							$gateway = pmpro_getOption("gateway");										
-							
+														
 							//setup level var
 							$morder->getMembershipLevel();
 							
@@ -331,14 +331,19 @@
 								$pmpro_confirmed = true;
 							}			
 							else
-							{
+							{																
 								$pmpro_msg = $morder->error;
 								if(!$pmpro_msg)
 									$pmpro_msg = "Unknown error generating account. Please contact us to setup your membership.";
 								$pmpro_msgt = "pmpro_error";								
 							}	
 														
-						}	//end if($pmpro_requirebilling)						
+						}		
+						else // !$pmpro_requirebilling
+						{
+							//must have been a free membership, continue
+							$pmpro_confirmed = true;
+						}
 					}													
 				}
 			}	//endif($pmpro_continue_registration)
