@@ -215,10 +215,7 @@
 			//Todo: Tax?!, Coupons, Certificates, affiliates
 			$this->subtotal = $amount;
 			$tax = $this->getTax(true);
-			
-			//Todo: Different Payment Types?
-			$payment_type = "";
-			
+					
 			//build query			
 			if($this->id)
 			{
@@ -278,7 +275,7 @@
 									   '" . $certificate_id . "',
 									   '" . $certficate_amount . "',
 									   '" . ((float)$amount + (float)$tax) . "',
-									   '" . $payment_type . "',
+									   '" . $this->payment_type . "',
 									   '" . $this->cardtype . "',
 									   '" . hideCardNumber($this->accountnumber, false) . "',
 									   '" . substr($this->ExpirationDate, 0, 2) . "',
@@ -343,7 +340,7 @@
 					if($authorization_id)
 					{
 						$this->voidAuthorizationWithPayPal($authorization_id);						
-						$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";
+						$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
 						return $this->processWithPayPal();
 					}
 					else
@@ -361,7 +358,7 @@
 						//setup recurring billing
 						if(pmpro_isLevelRecurring($this->membership_level))
 						{
-							$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";
+							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
 							return $this->processWithPayPal();
 						}
 						else
@@ -382,35 +379,13 @@
 			}				
 			elseif($gateway == "paypalexpress")
 			{																																		
-				if(floatval($this->InitialPayment) == 0)
+				if(pmpro_isLevelRecurring($this->membership_level))
 				{
-					//just a subscription
-					return $this->processWithPayPalExpress();							
+					$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
+					return $this->processWithPayPalExpress();				
 				}
 				else
-				{
-					if($this->chargeWithPayPalExpress())
-					{
-						//setup recurring billing
-						if(pmpro_isLevelRecurring($this->membership_level))
-						{					
-							$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";						
-							return $this->processWithPayPalExpress();
-						}
-						else
-						{
-							//only a one time charge							
-							$this->status = "success";	//saved on checkout page											
-							return true;
-						}	
-					}
-					else
-					{
-						if(!$this->error)
-							$this->error = "Unknown error: Payment failed.";
-						return false;
-					}								
-				}									
+					return $this->chargeWithPayPalExpress();				
 			}	
 			elseif($gateway == "authorizenet")
 			{				
@@ -419,7 +394,7 @@
 					//auth first, then process
 					if($this->authorizeWithAuthorizeNet())
 					{						
-						$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";						
+						$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";						
 						return $this->processWithAuthorizeNet();
 					}
 					else
@@ -437,7 +412,7 @@
 						//setup recurring billing
 						if(pmpro_isLevelRecurring($this->membership_level))
 						{
-							$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";
+							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
 							return $this->processWithAuthorizeNet();
 						}
 						else
@@ -858,7 +833,7 @@
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name) . "&L_PAYMENTTYPE0=Any";
+			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name")) . "&L_PAYMENTTYPE0=Any";
 					
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)
@@ -885,7 +860,7 @@
 				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&review=" . $this->code));				
 			}
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));			
-			
+						
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -948,7 +923,7 @@
 				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
 			}
 		}
-		
+				
 		function chargeWithPayPalExpress()
 		{
 			if(!$this->code)
@@ -997,6 +972,11 @@
 		{
 			if(!$this->code)
 				$this->code = $this->getRandomCode();						
+			
+			//taxes on initial amount
+			$initial_payment = $this->InitialPayment;
+			$initial_payment_tax = $this->getTaxForPrice($initial_payment);
+			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
 						
 			//taxes on the amount
 			$amount = $this->PaymentAmount;
@@ -1008,11 +988,10 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;		
-			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
-			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
-			$nvpStr .= "&DESC=" . $amount;
+			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name);
+			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name"));
 			
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)

@@ -314,7 +314,9 @@
 							
 							if($gateway == "paypalexpress")
 							{
-								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $morder->BillingPeriod)) . "T0:0:0";
+								$morder->payment_type = "PayPal Express";
+								$morder->cardtype = "";
+								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
 								$pmpro_processed = $morder->setExpressCheckout();
 							}
 							else
@@ -429,8 +431,7 @@
 				}
 			}
 			else
-			{				
-				krumo($morder);
+			{								
 				$pmpro_msg = $morder->error;
 				$pmpro_msgt = "error";
 			}
