@@ -167,7 +167,7 @@ function pmpro_is_ready()
 			else
 				$pmpro_gateway_ready = false;
 		}
-		elseif($gateway == "paypal")
+		elseif($gateway == "paypal" || $gateway == "paypalexpress")
 		{
 			if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email") && pmpro_getOption("apiusername") && pmpro_getOption("apipassword") && pmpro_getOption("apisignature"))
 				$pmpro_gateway_ready = true;

@@ -220,7 +220,46 @@
 			$payment_type = "";
 			
 			//build query			
-			$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders  
+			if($this->id)
+			{
+				//update
+				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
+									SET `code` = '" . $this->code . "',
+									`session_id` = '" . $this->session_id . "',
+									`user_id` = '" . $this->user_id . "',
+									`membership_id` = '" . $this->membership_id . "',
+									`paypal_token` = '" . $this->paypal_token . "',
+									`billing_name` = '" . $this->billing->name . "',
+									`billing_street` = '" . $this->billing->street . "',
+									`billing_city` = '" . $this->billing->city . "',
+									`billing_state` = '" . $this->billing->state . "',
+									`billing_zip` = '" . $this->billing->zip . "',
+									`billing_phone` = '" . $this->billing->phone . "',
+									`subtotal` = '" . $this->subtotal . "',
+									`tax` = '" . $this->tax . "',
+									`couponamount` = '" . $this->couponamount . "',
+									`certificate_id` = '" . $this->certificate_id . "',
+									`certificateamount` = '" . $this->certificateamount . "',
+									`total` = '" . $this->total . "',
+									`payment_type` = '" . $this->payment_type . "',
+									`cardtype` = '" . $this->cardtype . "',
+									`accountnumber` = '" . $this->accountnumber . "',
+									`expirationmonth` = '" . $this->expirationmonth . "',
+									`expirationyear` = '" . $this->expirationyear . "',
+									`status` = '" . $this->status . "',
+									`gateway` = '" . $this->gateway . "',
+									`gateway_environment` = '" . $this->gateway_environment . "',
+									`payment_transaction_id` = '" . $this->payment_transaction_id . "',
+									`subscription_transaction_id` = '" . $this->subscription_transaction_id . "',									
+									`affiliate_id` = '" . $this->affiliate_id . "',
+									`affiliate_subid` = '" . $this->affiliate_subid . "'
+									WHERE id = '" . $this->id . "'
+									LIMIT 1";
+			}
+			else
+			{
+				//insert
+				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders  
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`) 
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
@@ -252,7 +291,9 @@
 									   now(),
 									   '" . $affiliate_id . "',
 									   '" . $affiliate_subid . "'
-									   )";			
+									   )";		
+			}
+									   
 			if($wpdb->query($this->sqlQuery) !== false)
 				return $this->getMemberOrderByID($wpdb->insert_id);
 			else
@@ -327,6 +368,7 @@
 						{
 							//only a one time charge							
 							$this->status = "success";	//saved on checkout page											
+							$this->saveOrder();
 							return true;
 						}
 					}
@@ -339,9 +381,37 @@
 				}				
 			}				
 			elseif($gateway == "paypalexpress")
-			{				
-				return $this->processWithPayPalExpress();
-			}
+			{																																		
+				if(floatval($this->InitialPayment) == 0)
+				{
+					//just a subscription
+					return $this->processWithPayPalExpress();							
+				}
+				else
+				{
+					if($this->chargeWithPayPalExpress())
+					{
+						//setup recurring billing
+						if(pmpro_isLevelRecurring($this->membership_level))
+						{					
+							$this->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $this->BillingPeriod)) . "T0:0:0";						
+							return $this->processWithPayPalExpress();
+						}
+						else
+						{
+							//only a one time charge							
+							$this->status = "success";	//saved on checkout page											
+							return true;
+						}	
+					}
+					else
+					{
+						if(!$this->error)
+							$this->error = "Unknown error: Payment failed.";
+						return false;
+					}								
+				}									
+			}	
 			elseif($gateway == "authorizenet")
 			{				
 				if(floatval($this->InitialPayment) == 0)
@@ -403,7 +473,7 @@
 			if(!$gateway)			
 				$gateway = pmpro_getOption("gateway");
 						
-			if($gateway == "paypal")
+			if($gateway == "paypal" || $gateway == "paypalexpress")
 				return $this->cancelWithPayPal();
 			elseif($gateway == "authorizenet")
 				return $this->cancelWithAuthorizeNet();
@@ -447,7 +517,7 @@
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";
 			}						
 			
-			$version = urlencode('51.0');
+			$version = urlencode('72.0');
 		
 			// setting the curl parameters.
 			$ch = curl_init();
@@ -760,11 +830,22 @@
 			}
 		}
 		
-		function processWithPayPalExpress()
+		//PayPal Express, this is run first to authorize from PayPal
+		function setExpressCheckout()
 		{			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();			
-														
+			
+			//clean up a couple values
+			$this->payment_type = "PayPal Express";
+			$this->CardType = "";
+			$this->cardtype = "";
+			
+			//taxes on initial amount
+			$initial_payment = $this->InitialPayment;
+			$initial_payment_tax = $this->getTaxForPrice($initial_payment);
+			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			
 			//taxes on the amount
 			$amount = $this->PaymentAmount;
 			$amount_tax = $this->getTaxForPrice($amount);						
@@ -773,14 +854,12 @@
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			if($this->Token)
-				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $initial_payment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&NOSHIPPING=1&L_PAYMENTREQUEST_n_NAMEm=" . get_bloginfo("name") . "&L_PAYMENTREQUEST_n_NUMBERm=" . $this->membership_level->name;
-			
+			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name) . "&L_PAYMENTTYPE0=Any";
+					
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $this->TotalBillingCycles;
@@ -805,8 +884,8 @@
 			{
 				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&review=" . $this->code));				
 			}
-			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
-
+			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));			
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -855,7 +934,10 @@
 			
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$this->status = "review";				
-								
+				
+				//update order
+				$this->saveOrder();		
+				
 				return true;										
 			} else  {				
 				$this->status = "error";
@@ -867,11 +949,55 @@
 			}
 		}
 		
-		function doPayPalExpressCheckoutPayment()
+		function chargeWithPayPalExpress()
 		{
 			if(!$this->code)
 				$this->code = $this->getRandomCode();			
 														
+			//taxes on the amount
+			$amount = $this->InitialPayment;
+			$amount_tax = $this->getTaxForPrice($amount);						
+			$this->subtotal = $amount;
+			$amount = round((float)$amount + (float)$amount_tax, 2);
+						
+			//paypal profile stuff
+			$nvpStr = "";
+			if($this->Token)
+				$nvpStr .= "&TOKEN=" . $this->Token;
+			$nvpStr .="&AMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			$nvpStr .= "&DESC=" . $amount;
+			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOSHIPPING=1";
+			
+			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";								
+			$this->nvpStr = $nvpStr;
+			
+			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
+						
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {			
+				$this->payment_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);								
+				$this->status = "firstpayment";				
+				
+				//update order
+				$this->saveOrder();	
+				
+				return true;	
+			} else  {				
+				$this->status = "error";
+				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
+				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
+				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				return false;
+				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
+			}
+		}
+		
+		function processWithPayPalExpress()
+		{
+			if(!$this->code)
+				$this->code = $this->getRandomCode();						
+						
 			//taxes on the amount
 			$amount = $this->PaymentAmount;
 			$amount_tax = $this->getTaxForPrice($amount);						
@@ -881,12 +1007,12 @@
 			//paypal profile stuff
 			$nvpStr = "";
 			if($this->Token)
-				$nvpStr .= "&TOKEN=" . $this->Token;
+				$nvpStr .= "&TOKEN=" . $this->Token;		
 			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&NOSHIPPING=1&L_PAYMENTREQUEST_n_NAMEm=" . get_bloginfo("name") . "&L_PAYMENTREQUEST_n_NUMBERm=" . $this->membership_level->name;
+			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name);
 			
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)
@@ -904,15 +1030,17 @@
 			if($this->TrialBillingCycles)
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
 			
-			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";					
-			
 			$this->nvpStr = $nvpStr;
 			
-			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
+			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$this->status = "success";				
+				$this->payment_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
 				$this->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
+				
+				//update order
+				$this->saveOrder();					
 				
 				return true;				
 			} else  {				
@@ -920,8 +1048,8 @@
 				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
 				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
 				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
-				return false;
-				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
+				
+				return false;				
 			}
 		}
 		

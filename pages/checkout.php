@@ -22,6 +22,10 @@
 		}
 	?>
 	
+	<?php if($pmpro_review) { ?>
+		<p>Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.</p>
+	<?php } ?>
+		
 	<table class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
@@ -32,7 +36,7 @@
 	</thead>
 	<tbody>                
 		<tr>
-			<td>
+			<td>				
 				<p>You have selected the <strong><?=$pmpro_level->name?></strong> membership level.</p>
 				
 				<p id="pmpro_level_cost">

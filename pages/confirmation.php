@@ -54,6 +54,8 @@
 					<?php if($pmpro_invoice->accountnumber) { ?>
 						<?=$pmpro_invoice->cardtype?> ending in <?=last4($pmpro_invoice->accountnumber)?><br />
 						<small>Expiration: <?=$pmpro_invoice->expirationmonth?>/<?=$pmpro_invoice->expirationyear?></small>
+					<?php } elseif($pmpro_invoice->payment_type) { ?>
+						<?=$pmpro_invoice->payment_type?>
 					<?php } ?>
 				</td>
 				<td><?=$pmpro_invoice->membership_level->name?></td>					

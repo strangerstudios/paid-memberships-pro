@@ -311,8 +311,18 @@
 							//tax
 							$morder->subtotal = $morder->InitialPayment;
 							$morder->getTax();						
-								
-							if($morder->process())
+							
+							if($gateway == "paypalexpress")
+							{
+								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ 1 " . $morder->BillingPeriod)) . "T0:0:0";
+								$pmpro_processed = $morder->setExpressCheckout();
+							}
+							else
+							{
+								$pmpro_processed = $morder->process();
+							}
+							
+							if($pmpro_processed)
 							{
 								$pmpro_msg = "Payment accepted.";
 								$pmpro_msgt = "pmpro_success";	
@@ -399,7 +409,7 @@
 				$morder->TrialAmount = $pmpro_level->trial_amount;
 			}
 						
-			if($morder->doPayPalExpressCheckoutPayment())
+			if($morder->process())
 			{						
 				$submit = true;
 				$pmpro_confirmed = true;
@@ -495,7 +505,7 @@
 				'" . $pmpro_level->trial_limit . "',
 				NOW(),
 				" . $enddate . ")";
-			
+					
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//we're good
