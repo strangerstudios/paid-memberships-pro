@@ -304,7 +304,8 @@
 							$morder->billing->phone = $bphone;
 									
 							$gateway = pmpro_getOption("gateway");										
-														
+							$morder->gateway = $gateway;
+							
 							//setup level var
 							$morder->getMembershipLevel();
 							

@@ -128,7 +128,9 @@
 			
 			if($invoice)
 			{									
-				if(pmpro_isLevelTrial($user->membership_level))
+				if($invoice->gateway == "paypalexpress")
+					$this->template = "checkout_express";
+				elseif(pmpro_isLevelTrial($user->membership_level))
 					$this->template = "checkout_trial";
 				else
 					$this->template = "checkout_paid";
