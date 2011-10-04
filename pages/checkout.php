@@ -320,6 +320,7 @@
 				<div>
 					<label for="bphone">Phone</label>
 					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?=$bphone?>" /> 
+					<?php echo formatPhone($bphone); ?>
 				</div>		
 				<?php if($skip_account_fields) { ?>
 				<?php

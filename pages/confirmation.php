@@ -59,7 +59,7 @@
 					<?php } ?>
 				</td>
 				<td><?=$pmpro_invoice->membership_level->name?></td>					
-				<td><?php if($pmpro_invoice->total) echo '$'.number_format($pmpro_invoice->total, 2); else echo "---";?></td>
+				<td><?php if($pmpro_invoice->total) echo $pmpro_currency_symbol . number_format($pmpro_invoice->total, 2); else echo "---";?></td>
 			</tr>
 		</tbody>
 	</table>		

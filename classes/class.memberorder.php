@@ -613,6 +613,8 @@
 		
 		function chargeWithPayPal()
 		{			
+			global $pmpro_currency;
+			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();
 			
@@ -626,7 +628,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=" . $amount . "&ITEMAMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD";			
+			$nvpStr .="&AMT=" . $amount . "&ITEMAMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency;			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $this->PaymentAmount;
 			
@@ -673,6 +675,8 @@
 		
 		function processWithPayPal()
 		{										
+			global $pmpro_currency;
+			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();			
 			
@@ -686,7 +690,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -824,6 +828,8 @@
 		//PayPal Express, this is run first to authorize from PayPal
 		function setExpressCheckout()
 		{			
+			global $pmpro_currency;
+			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();			
 			
@@ -845,7 +851,7 @@
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			$nvpStr .="&AMT=" . $initial_payment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $initial_payment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -942,6 +948,8 @@
 				
 		function chargeWithPayPalExpress()
 		{
+			global $pmpro_currency;
+			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();			
 														
@@ -955,7 +963,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -986,6 +994,8 @@
 		
 		function processWithPayPalExpress()
 		{
+			global $pmpro_currency;
+			
 			if(!$this->code)
 				$this->code = $this->getRandomCode();						
 			
@@ -1004,7 +1014,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;		
-			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=USD" . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
 			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name"));

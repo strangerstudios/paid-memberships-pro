@@ -141,10 +141,10 @@
 	{
 		global $pmpro_currency_symbol;
 		$r = '
-		The price for membership is <strong>' . $pmpro_currency_symbol . number_format($level->initial_payment, 2) . '</strong> now ';
+		The price for membership is <strong>' . $pmpro_currency_symbol . number_format($level->initial_payment, 2) . '</strong> now';
 		if($level->billing_amount != '0.00')
 		{
-			$r .= 'and then <strong>' . $pmpro_currency_symbol . $level->billing_amount;
+			$r .= ' and then <strong>' . $pmpro_currency_symbol . $level->billing_amount;
 			if($level->cycle_number == '1') 
 			{ 
 				$r .= ' per ';
@@ -168,7 +168,9 @@
 				$r .= '.';
 			
 			$r .= '</strong>';
-		}		
+		}	
+		else
+			$r .= '.';
 		
 		if($level->trial_limit)
 		{ 
@@ -304,6 +306,10 @@
 	{
 		function cleanPhone($phone)
 		{
+			//if a + is passed, just pass it along
+			if(strpos($phone, "+") !== false)
+				return $phone;
+			
 			//clean the phone
 			$phone = str_replace("-", "", $phone);
 			$phone = str_replace(".", "", $phone);

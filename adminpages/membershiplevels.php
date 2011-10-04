@@ -1,5 +1,5 @@
 <?php
-	global $wpdb;
+	global $wpdb, $pmpro_currency_symbol;
 	$edit = $_REQUEST['edit'];
 	$view = $_REQUEST['view'];
 	$copy = $_REQUEST['copy'];
@@ -1076,14 +1076,14 @@ if(pmpro_displayAds())
 					<?php if(pmpro_isLevelFree($level)) { ?>
 						FREE
 					<?php } else { ?>
-						$<?=$level->initial_payment?>
+						<?=$pmpro_currency_symbol?><?=$level->initial_payment?>
 					<?php } ?>
 				</td>
 				<td>
 					<?php if(!pmpro_isLevelRecurring($level)) { ?>
 						--
 					<?php } else { ?>						
-						$<?=$level->billing_amount?> every <?=$level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
+						<?=$pmpro_currency_symbol?><?=$level->billing_amount?> every <?=$level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
 						
 						<?php if($level->billing_limit) { ?>(for <?=$level->billing_limit?> <?=sornot($level->cycle_period,$level->cycle_number)?>)<?php } ?>
 						
@@ -1093,7 +1093,7 @@ if(pmpro_displayAds())
 					<?php if(!pmpro_isLevelTrial($level)) { ?>
 						--
 					<?php } else { ?>		
-						$<?=$level->trial_amount?> for <?=$level->trial_limit?> <?=sornot("payment",$level->trial_limit)?>
+						<?=$pmpro_currency_symbol?><?=$level->trial_amount?> for <?=$level->trial_limit?> <?=sornot("payment",$level->trial_limit)?>
 					<?php } ?>
 				</td>
 				<td>
