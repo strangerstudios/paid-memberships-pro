@@ -34,6 +34,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.2.6 =
+* Fixed bug with discount codes showing up in emails, confirmation pages, and invoices.
+* Added currency option to gateway settings.
+
 = 1.2.5 =
 * PayPal Express support! PayPal Express requires just a verified PayPal Business account (no monthly fees from PayPal).
 * Fixed a bug when plans with a "cycle number"/billing frequency that was greater than 1 (e.g. every 4 months). Before the first payment was being scheduled 1 day/month ext out instead of e.g. 4 months out... resulting in an extra payment.

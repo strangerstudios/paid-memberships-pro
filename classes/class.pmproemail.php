@@ -104,7 +104,7 @@
 		
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user;
+			global $wpdb, $current_user, $pmpro_currency_symbol;
 			if(!$user)
 				$user = $current_user;
 			
@@ -135,7 +135,7 @@
 				else
 					$this->template = "checkout_paid";
 				$this->data["invoice_id"] = $invoice->code;
-				$this->data["invoice_total"] = number_format($invoice->total, 2);
+				$this->data["invoice_total"] = $pmpro_currency_symbol . number_format($invoice->total, 2);
 				$this->data["invoice_date"] = date("F j, Y", $invoice->timestamp);
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
@@ -149,7 +149,7 @@
 				$this->data["expirationyear"] = $invoice->expirationyear;
 				
 				if($invoice->getDiscountCode())
-					$this->data["discount_code"] = "<p>Discount Code: " . $invoice->discount_code . "</p>\n";
+					$this->data["discount_code"] = "<p>Discount Code: " . $invoice->discount_code->code . "</p>\n";
 				else
 					$this->data["discount_code"] = "";
 			}
@@ -279,7 +279,7 @@
 		
 		function sendInvoiceEmail($user = NULL, $invoice = NULL)
 		{
-			global $current_user;
+			global $current_user, $pmpro_currency_symbol;
 			if(!$user)
 				$user = $current_user;
 			
@@ -298,7 +298,7 @@
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->payment_transaction_id,
-								"invoice_total" => number_format($invoice->total, 2),
+								"invoice_total" => $pmpro_currency_symbol . number_format($invoice->total, 2),
 								"invoice_date" => date("F j, Y", $invoice->timestamp),								
 								"billing_name" => $invoice->billing->name,
 								"billing_street" => $invoice->billing->street,
@@ -330,7 +330,7 @@
 		
 		function sendTrialEndingEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user, $wpdb, $pmpro_currency_symbol;
 			if(!$user)
 				$user = $current_user;
 			
@@ -356,10 +356,10 @@
 				"login_link" => wp_login_url(), 
 				"display_name" => $user->display_name, 
 				"user_email" => $user->user_email, 
-				"billing_amount" => $user->membership_level->billing_amount, 
+				"billing_amount" => $pmpro_currency_symbol . $user->membership_level->billing_amount, 
 				"cycle_number" => $user->membership_level->cycle_number, 
 				"cycle_period" => $user->membership_level->cycle_period, 
-				"trial_amount" => $user->membership_level->trial_amount, 
+				"trial_amount" => $pmpro_currency_symbol . $user->membership_level->trial_amount, 
 				"trial_limit" => $user->membership_level->trial_limit,
 				"trial_end" => date("n/j/Y", strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period))
 			);			

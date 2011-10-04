@@ -219,6 +219,9 @@ function pmpro_upgrade_1()
 	$gateway_environment = "sandbox";
 	pmpro_setOption("gateway_environment", $gateway_environment);
 	
+	$pmpro_currency = "USD";
+	pmpro_setOption("currency", $pmpro_currency);
+	
 	$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
 	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);		
 	

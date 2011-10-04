@@ -46,6 +46,14 @@
 			pmpro_setOption("loginname");
 			pmpro_setOption("transactionkey");
 
+			//currency
+			$currency_paypal = $_POST['currency_paypal'];
+			$currency_authorizenet = $_POST['currency_authorizenet'];
+			if($_POST['gateway'] == "authorizenet")
+				pmpro_setOption("currency", $currency_authorizenet);
+			else
+				pmpro_setOption("currency", $currency_paypal);
+				
 			//credit cards
 			$pmpro_accepted_credit_cards = array();
 			if($_REQUEST['creditcards_visa'])
@@ -125,6 +133,8 @@
 	$apisignature = pmpro_getOption("apisignature");
 	$loginname = pmpro_getOption("loginname");
 	$transactionkey = pmpro_getOption("transactionkey");
+	
+	$currency = pmpro_getOption("currency");
 	
 	$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 	
@@ -336,7 +346,9 @@
 													FROM $wpdb->pmpro_memberships_categories c
 													WHERE c.membership_id = '" . $temp_id . "'");       		
 				if(!$level->categories)
-					$level->categories = array();			
+					$level->categories = array();	
+
+				global $pmpro_currency_symbol;
 			?>
 			<form action="<?=PMPRO_URL?>/services/pmpro-data.php?action=save_membershiplevel" method="post" enctype="multipart/form-data">
 				<input name="saveid" type="hidden" value="<?=$edit?>" />
@@ -368,7 +380,7 @@
                 <tbody>
                     <tr>
                         <th scope="row" valign="top"><label for="initial_payment">Initial Payment:</label></th>
-                        <td>$<input name="initial_payment" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
+                        <td><?=$pmpro_currency_symbol?><input name="initial_payment" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
                     </tr>
 					
 					<tr>
@@ -379,7 +391,7 @@
 					<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
                         <th scope="row" valign="top"><label for="billing_amount">Billing Amount:</label></th>
                         <td>
-							$<input name="billing_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
+							<?=$pmpro_currency_symbol?><input name="billing_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
 							<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 							<select id="cycle_period" name="cycle_period">
 							  <?php
@@ -411,7 +423,7 @@
                     <tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
                         <th scope="row" valign="top"><label for="trial_amount">Trial Billing Amount:</label></th>
                         <td>
-							$<input name="trial_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+							<?=$pmpro_currency_symbol?><input name="trial_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
 							<small>for the first</small>
 							<input name="trial_limit" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
                             <small>subscription payments.</small>																			
@@ -706,6 +718,34 @@
                         <input type="text" name="transactionkey" size="60" value="<?=$transactionkey?>" />
                     </td>
                 </tr>
+				<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+                    <th scope="row" valign="top">
+                    	<label for="transactionkey">Currency:</label>
+					</th>
+					<td>
+                        <input type="hidden" name="currency_authorizenet" size="60" value="USD" />
+						USD
+                    </td>
+                </tr>
+				<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+                    <th scope="row" valign="top">
+                    	<label for="transactionkey">Currency:</label>
+					</th>
+					<td>
+						<select name="currency_paypal">
+						<?php 
+							global $pmpro_currencies;
+							foreach($pmpro_currencies as $ccode => $cdescription)
+							{
+							?>
+							<option value="<?=$ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?=$cdescription?></option>
+							<?php
+							}
+						?>
+						</select>
+                    </td>
+                </tr>
+				
 				<tr class="gateway gateway_authorizenet gateway_paypal" <?php if($gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
                     <th scope="row" valign="top">
                     	<label for="creditcards">Accepted Credit Card Types</label>
@@ -717,7 +757,7 @@
 						<input type="checkbox" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Discover<br />
                     </td>
                 </tr>
-				<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+				<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top">
 						<label for="tax">Sales Tax <small>(optional)</small></label>
 					</th>

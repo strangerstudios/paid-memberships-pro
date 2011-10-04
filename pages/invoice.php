@@ -1,5 +1,5 @@
 <?php 
-	global $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
+	global $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
 	
 	if($pmpro_msg)
 	{
@@ -58,9 +58,9 @@
 				<td><?=$pmpro_invoice->membership_level->name?></td>					
 				<td align="center">
 					<?php if($pmpro_invoice->total != '0.00') { ?>
-						$<?=number_format($pmpro_invoice->total, 2)?>
+						<?=$pmpro_currency_symbol?><?=number_format($pmpro_invoice->total, 2)?>
 					<?php } else { ?>
-						<small class="pmpro_grey">$0</small>
+						<small class="pmpro_grey"><?=$pmpro_currency_symbol?>0</small>
 					<?php } ?>		
 				</td>
 			</tr>

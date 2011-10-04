@@ -1,6 +1,6 @@
 <?php
 	//vars
-	global $wpdb;
+	global $wpdb, $pmpro_currency_symbol;
 	$edit = $_REQUEST['edit'];
 	$delete = $_REQUEST['delete'];
 	$saveid = $_POST['saveid'];
@@ -410,7 +410,7 @@
 						<tbody>
 							<tr>
 								<th scope="row" valign="top"><label for="initial_payment">Initial Payment:</label></th>
-								<td>$<input name="initial_payment[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
+								<td><?=$pmpro_currency_symbol?><input name="initial_payment[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
 							</tr>
 							
 							<tr>
@@ -421,7 +421,7 @@
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_amount">Billing Amount:</label></th>
 								<td>
-									$<input name="billing_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
+									<?=$pmpro_currency_symbol?><input name="billing_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
 									<input name="cycle_number[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 									<select name="cycle_period[]" onchange="updateCyclePeriod();">
 									  <?php
@@ -453,7 +453,7 @@
 							<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
 								<th scope="row" valign="top"><label for="trial_amount">Trial Billing Amount:</label></th>
 								<td>
-									$<input name="trial_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+									<?=$pmpro_currency_symbol?><input name="trial_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
 									<small>for the first</small>
 									<input name="trial_limit[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
 									<small>subscription payments.</small>																			

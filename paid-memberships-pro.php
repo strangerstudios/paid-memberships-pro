@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.2.5
+Version: 1.2.6
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -201,8 +201,9 @@ function pmpro_is_ready()
 function pmpro_init()
 {
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/countries.php");
+	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/currencies.php");
 	
-	global $pmpro_pages, $pmpro_ready;
+	global $pmpro_pages, $pmpro_ready, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
 	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
@@ -213,6 +214,26 @@ function pmpro_init()
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
 	
 	$pmpro_ready = pmpro_is_ready();
+	
+	//set currency
+	$pmpro_currency = pmpro_getOption("currency");
+	if(!$pmpro_currency)
+	{
+		global $pmpro_default_currency;
+		$pmpro_currency = $pmpro_default_currency;		
+	}
+	
+	//figure out what symbol to show for currency
+	if(in_array($pmpro_currency, array("USD", "AUD", "BRL", "CAD", "HKD", "MXN", "NZD", "SGD")))
+		$pmpro_currency_symbol = "&#36;";
+	elseif($pmpro_currency == "EUR")
+		$pmpro_currency_symbol = "&euro;";
+	elseif($pmpro_currency == "GBP")
+		$pmpro_currency_symbol = "&pound;";
+	elseif($pmpro_currency == "JPY")
+		$pmpro_currency_symbol = "&yen;";
+	else
+		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code	
 }
 add_action("init", "pmpro_init");
 

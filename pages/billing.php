@@ -1,5 +1,5 @@
 <?php 				
-	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
+	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	$level = $current_user->membership_level;
@@ -11,7 +11,7 @@
 			<li><strong>Level:</strong> <?=$level->name?></li>
 		<?php if($level->billing_amount > 0) { ?>
 			<li><strong>Membership Fee:</strong>
-			$<?=$level->billing_amount?>
+			<?=$pmpro_currency_symbol?><?=$level->billing_amount?>
 			<?php if($level->cycle_number > 1) { ?>
 				per <?=$level->cycle_number?> <?=sornot($level->cycle_period,$level->cycle_number)?>
 			<?php } elseif($level->cycle_number == 1) { ?>

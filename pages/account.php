@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels;
+	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels, $pmpro_currency_symbol;
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	if($current_user->membership_level->ID)
@@ -10,7 +10,7 @@
 			<li><strong>Level:</strong> <?=$current_user->membership_level->name?></li>
 		<?php if($current_user->membership_level->billing_amount > 0) { ?>
 			<li><strong>Membership Fee:</strong>
-			$<?=$current_user->membership_level->billing_amount?>
+			<?=$pmpro_currency_symbol?><?=$current_user->membership_level->billing_amount?>
 			<?php if($current_user->membership_level->cycle_number > 1) { ?>
 				per <?=$current_user->membership_level->cycle_number?> <?=sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
 			<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
@@ -124,7 +124,7 @@
 				<h3>Past Invoices</h3>
 				<ul>
 					<?php foreach($invoices as $invoice) { ?>
-					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?=pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?=date("F j, Y", $invoice->timestamp)?> ($<?=$invoice->total?>)</a></li>
+					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?=pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?=date("F j, Y", $invoice->timestamp)?> (<?=$pmpro_currency_symbol?><?=$invoice->total?>)</a></li>
 					<?php } ?>
 					<?php if($count > 10) { ?>
 						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);">show <?=(count($invoices) - 10)?> more</a></li>

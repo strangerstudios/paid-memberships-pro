@@ -119,7 +119,7 @@
 				return $this->discount_code;
 				
 			global $wpdb;
-			$this->discount_code = $wpdb->get_var("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
+			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
 			
 			return $this->discount_code;
 		}
@@ -546,7 +546,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=1.00&CURRENCYCODE=USD";			
+			$nvpStr .="&AMT=1.00&CURRENCYCODE=" . pmpro_getOption("currency");			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $this->PaymentAmount;
 			

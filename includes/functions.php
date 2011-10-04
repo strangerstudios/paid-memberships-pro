@@ -139,11 +139,12 @@
 	
 	function pmpro_getLevelCost(&$level)
 	{
+		global $pmpro_currency_symbol;
 		$r = '
-		The price for membership is <strong>$' . number_format($level->initial_payment, 2) . '</strong> now ';
+		The price for membership is <strong>' . $pmpro_currency_symbol . number_format($level->initial_payment, 2) . '</strong> now ';
 		if($level->billing_amount != '0.00')
 		{
-			$r .= 'and then <strong>$' . $level->billing_amount;
+			$r .= 'and then <strong>' . $pmpro_currency_symbol . $level->billing_amount;
 			if($level->cycle_number == '1') 
 			{ 
 				$r .= ' per ';
@@ -185,7 +186,7 @@
 			} 
 			else
 			{ 				
-				$r .= $level->trial_limit.' ' .sornot("payment", $level->trial_limit) . ' will cost $' . $level->trial_amount . '.';
+				$r .= $level->trial_limit.' ' .sornot("payment", $level->trial_limit) . ' will cost ' . $pmpro_currency_symbol . $level->trial_amount . '.';
 			} 
 		}  
 		

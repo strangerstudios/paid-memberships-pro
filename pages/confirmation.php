@@ -1,5 +1,5 @@
 <?php 
-	global $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
+	global $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
 	
 	if($pmpro_msg)
 	{
