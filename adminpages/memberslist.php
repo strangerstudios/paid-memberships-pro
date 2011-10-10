@@ -6,10 +6,10 @@
 ?>
 <div class="wrap pmpro_admin">	
 	<div class="pmpro_banner">		
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?=PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
 		
-		<div class="pmpro_meta"><a href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?=PMPRO_VERSION?></strong></div>
+		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
 	</div>
 	<br style="clear:both;" />
 	
@@ -19,7 +19,7 @@
 	<div id="pmpro_notifications">
 	</div>
 	<script>
-		jQuery.get('<?=pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
+		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
 		  jQuery('#pmpro_notifications').html(data);		 
 		});
 	</script>
@@ -27,7 +27,7 @@
 	<form id="posts-filter" method="get" action="">	
 	<h2>
 		Members Report
-		<small>(<a target="_blank" href="<?=PMPRO_URL?>/adminpages/memberslist-csv.php?s=<?=$s?>&l=<?=$l?>">Export to CSV</a>)</small>
+		<small>(<a target="_blank" href="<?php echo PMPRO_URL?>/adminpages/memberslist-csv.php?s=<?php echo $s?>&l=<?php echo $l?>">Export to CSV</a>)</small>
 	</h2>		
 	<ul class="subsubsub">
 		<li>			
@@ -38,7 +38,7 @@
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?=$level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?=$level->name?></option>
+					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
 				<?php
 					}
 				?>
@@ -48,7 +48,7 @@
 	<p class="search-box">
 		<label class="hidden" for="post-search-input">Search Members:</label>
 		<input type="hidden" name="page" value="pmpro-memberslist" />		
-		<input id="post-search-input" type="text" value="<?=$s?>" name="s"/>
+		<input id="post-search-input" type="text" value="<?php echo $s?>" name="s"/>
 		<input class="button" type="submit" value="Search Members"/>
 	</p>
 	<?php 
@@ -62,7 +62,7 @@
 					
 		if($s)
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
 		
 			if($l)
 				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";					
@@ -71,7 +71,7 @@
 		}
 		else
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 			$sqlQuery .= "WHERE mu.membership_id > 0 ";
 			if($l)
 				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";										
@@ -86,7 +86,7 @@
 			$initial_payments = pmpro_calculateInitialPaymentRevenue($s, $l);
 			$recurring_payments = pmpro_calculateRecurringRevenue($s, $l);
 		?>
-		<p class="clear">Members shown below have paid <strong>$<?=number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?=number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?=number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
+		<p class="clear"><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
 		<?php
 		}		
 	?>
@@ -100,7 +100,8 @@
 				<th>Email</th>
 				<th>Membership</th>	
 				<th>Fee</th>
-				<th>Joined</th>				
+				<th>Joined</th>
+				<th>Expires</th>
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -112,23 +113,31 @@
 					$metavalues = pmpro_getMetavalues($sqlQuery);																		
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
-							<td><?=$theuser->ID?></td>
+							<td><?php echo $theuser->ID?></td>
 							<td>
-								<?=get_avatar($theuser->ID, 32)?>
-								<strong><a href="user-edit.php?user_id=<?=$theuser->ID?>"><?=$theuser->user_login?></a></strong>
+								<?php echo get_avatar($theuser->ID, 32)?>
+								<strong><a href="user-edit.php?user_id=<?php echo $theuser->ID?>"><?php echo $theuser->user_login?></a></strong>
 							</td>
-							<td><?=$metavalues->first_name?></td>
-							<td><?=$metavalues->last_name?></td>
-							<td><a href="mailto:<?=$theuser->user_email?>"><?=$theuser->user_email?></a></td>
-							<td><?=$theuser->membership?></td>	
+							<td><?php echo $metavalues->first_name?></td>
+							<td><?php echo $metavalues->last_name?></td>
+							<td><a href="mailto:<?php echo $theuser->user_email?>"><?php echo $theuser->user_email?></a></td>
+							<td><?php echo $theuser->membership?></td>	
 							<td>
 								<?php if($theuser->billing_amount > 0) { ?>
-									$<?=$theuser->billing_amount?>/<?=$theuser->cycle_period?>
+									$<?php echo $theuser->billing_amount?>/<?php echo $theuser->cycle_period?>
 								<?php } else { ?>
 									-
 								<?php } ?>
 							</td>						
-							<td><?=date("m/d/Y", $theuser->joindate)?></td>
+							<td><?php echo date("m/d/Y", $theuser->joindate)?></td>
+							<td>
+								<?php 
+									if($theuser->enddate) 
+										echo date("m/d/Y", $theuser->enddate);
+									else
+										echo "Never";
+								?>
+							</td>
 						</tr>
 					<?php
 				}
@@ -137,7 +146,7 @@
 				{
 				?>
 				<tr>
-					<td colspan="9"><p>No members found. <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?=$s?>">Search all levels</a>.<?php } ?></p></td>
+					<td colspan="9"><p>No members found. <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo $s?>">Search all levels</a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}

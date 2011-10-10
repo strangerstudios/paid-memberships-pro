@@ -225,10 +225,10 @@
 ?>
 <div class="wrap pmpro_admin">	
 	<div class="pmpro_banner">		
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?=PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
 		
-		<div class="pmpro_meta"><a href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?=PMPRO_VERSION?></strong></div>
+		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
 	</div>
 	<br style="clear:both;" />
 	
@@ -238,7 +238,7 @@
 	<div id="pmpro_notifications">
 	</div>
 	<script>
-		jQuery.get('<?=pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
+		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
 		  jQuery('#pmpro_notifications').html(data);		 
 		});
 	</script>
@@ -255,7 +255,7 @@
 		</h2>
 		
 		<?php if($pmpro_msg){?>
-			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?=$pmpro_msg?></p></div>
+			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
 		<?php } ?>
 		
 		<div>
@@ -286,7 +286,7 @@
 				}								
 			?>
 			<form action="" method="post">
-				<input name="saveid" type="hidden" value="<?=$edit?>" />
+				<input name="saveid" type="hidden" value="<?php echo $edit?>" />
 				<table class="form-table">
                 <tbody>
                     <tr>
@@ -296,7 +296,7 @@
                     
                     <tr>
                         <th scope="row" valign="top"><label for="code">Code:</label></th>
-                        <td><input name="code" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($code->code))?>" /></td>
+                        <td><input name="code" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($code->code))?>" /></td>
                     </tr>
                     
 					<?php
@@ -340,13 +340,13 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?=$i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?=date("M", strtotime($i . "/1/" . $current_year))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
 									<?php
 									}
 								?>
 							</select>
-							<input name="starts_day" type="text" size="2" value="<?=$selected_starts_day?>" />
-							<input name="starts_year" type="text" size="4" value="<?=$selected_starts_year?>" />
+							<input name="starts_day" type="text" size="2" value="<?php echo $selected_starts_day?>" />
+							<input name="starts_year" type="text" size="4" value="<?php echo $selected_starts_year?>" />
 						</td>
                     </tr>
 					
@@ -358,20 +358,20 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?=$i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?=date("M", strtotime($i . "/1/" . $current_year))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
 									<?php
 									}
 								?>
 							</select>
-							<input name="expires_day" type="text" size="2" value="<?=$selected_expires_day?>" />
-							<input name="expires_year" type="text" size="4" value="<?=$selected_expires_year?>" />
+							<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
+							<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
 						</td>
                     </tr>
 					
 					<tr>
                         <th scope="row" valign="top"><label for="uses">Uses:</label></th>
                         <td>
-							<input name="uses" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($code->uses))?>" />
+							<input name="uses" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($code->uses))?>" />
 							<small class="pmpro_lite">Leave blank for unlimited uses.</small>
 						</td>
                     </tr>
@@ -402,27 +402,27 @@
 						$level_checked = false;											
 				?>
 				<div>
-					<input type="hidden" name="all_levels[]" value="<?=$level->id?>" />
-					<input type="checkbox" name="levels[]" value="<?=$level->id?>" <?php if($level->checked) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().show();	else jQuery(this).next().hide();" />
-					<?=$level->name?>
-					<div class="pmpro_discount_levels_pricing level_<?=$level->id?>" <?php if(!$level->checked) { ?>style="display: none;"<?php } ?>>
+					<input type="hidden" name="all_levels[]" value="<?php echo $level->id?>" />
+					<input type="checkbox" name="levels[]" value="<?php echo $level->id?>" <?php if($level->checked) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().show();	else jQuery(this).next().hide();" />
+					<?php echo $level->name?>
+					<div class="pmpro_discount_levels_pricing level_<?php echo $level->id?>" <?php if(!$level->checked) { ?>style="display: none;"<?php } ?>>
 						<table class="form-table">
 						<tbody>
 							<tr>
 								<th scope="row" valign="top"><label for="initial_payment">Initial Payment:</label></th>
-								<td><?=$pmpro_currency_symbol?><input name="initial_payment[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
+								<td><?php echo $pmpro_currency_symbol?><input name="initial_payment[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
 							</tr>
 							
 							<tr>
 								<th scope="row" valign="top"><label>Recurring Subscription:</label></th>
-								<td><input class="recurring_checkbox" name="recurring[]" type="checkbox" value="<?=$level->id?>" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) {					jQuery(this).parent().parent().siblings('.recurring_info').show(); if(!jQuery('#custom_trial_<?=$level->id?>').is(':checked')) jQuery(this).parent().parent().siblings('.trial_info').hide();} else					jQuery(this).parent().parent().siblings('.recurring_info').hide();" /> <small>Check if this level has a recurring subscription payment.</small></td>
+								<td><input class="recurring_checkbox" name="recurring[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) {					jQuery(this).parent().parent().siblings('.recurring_info').show(); if(!jQuery('#custom_trial_<?php echo $level->id?>').is(':checked')) jQuery(this).parent().parent().siblings('.trial_info').hide();} else					jQuery(this).parent().parent().siblings('.recurring_info').hide();" /> <small>Check if this level has a recurring subscription payment.</small></td>
 							</tr>
 							
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_amount">Billing Amount:</label></th>
 								<td>
-									<?=$pmpro_currency_symbol?><input name="billing_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
-									<input name="cycle_number[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
+									<?php echo $pmpro_currency_symbol?><input name="billing_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
+									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 									<select name="cycle_period[]" onchange="updateCyclePeriod();">
 									  <?php
 										$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
@@ -440,35 +440,35 @@
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_limit">Billing Cycle Limit:</label></th>
 								<td>
-									<input name="billing_limit[]" type="text" size="20" value="<?=$level->billing_limit?>" />
+									<input name="billing_limit[]" type="text" size="20" value="<?php echo $level->billing_limit?>" />
 									<br /><small>The <strong>total</strong> number of billing cycles for this level, including the trial period (if applicable). Set to zero if membership is indefinite.</small>
 								</td>
 							</tr>            								
 			
 							<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
 								<th scope="row" valign="top"><label>Custom Trial:</label></th>
-								<td><input id="custom_trial_<?=$level->id?>" name="custom_trial[]" type="checkbox" value="<?=$level->id?>" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) jQuery(this).parent().parent().siblings('.trial_info').show();	else jQuery(this).parent().parent().siblings('.trial_info').hide();" /> Check to add a custom trial period.</td>
+								<td><input id="custom_trial_<?php echo $level->id?>" name="custom_trial[]" type="checkbox" value="<?php echo $level->id?>" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) jQuery(this).parent().parent().siblings('.trial_info').show();	else jQuery(this).parent().parent().siblings('.trial_info').hide();" /> Check to add a custom trial period.</td>
 							</tr>
 			
 							<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
 								<th scope="row" valign="top"><label for="trial_amount">Trial Billing Amount:</label></th>
 								<td>
-									<?=$pmpro_currency_symbol?><input name="trial_amount[]" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+									<?php echo $pmpro_currency_symbol?><input name="trial_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
 									<small>for the first</small>
-									<input name="trial_limit[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
+									<input name="trial_limit[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
 									<small>subscription payments.</small>																			
 								</td>
 							</tr>
 							
 							<tr>
 								<th scope="row" valign="top"><label>Membership Expiration:</label></th>
-								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?=$level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <small>Check this to set an expiration date for new sign ups.</small></td>
+								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <small>Check this to set an expiration date for new sign ups.</small></td>
 							</tr>
 							
 							<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_amount">Expire In:</label></th>
 								<td>							
-									<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
+									<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
 									<select id="expiration_period" name="expiration_period[]">
 									  <?php
 										$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
@@ -497,7 +497,7 @@
 			
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button-primary" value="Save Code" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?=home_url('/wp-admin/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo home_url('/wp-admin/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
@@ -510,14 +510,14 @@
 		</h2>		
 		
 		<?php if($pmpro_msg){?>
-			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?=$pmpro_msg?></p></div>
+			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
 		<?php } ?>
 		
 		<form id="posts-filter" method="get" action="">			
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input">Search Discount Codes:</label>
 				<input type="hidden" name="page" value="pmpro-discountcodes" />
-				<input id="post-search-input" type="text" value="<?=$s?>" name="s" size="30" />
+				<input id="post-search-input" type="text" value="<?php echo $s?>" name="s" size="30" />
 				<input class="button" type="submit" value="Search" id="search-submit "/>
 			</p>		
 		</form>	
@@ -560,15 +560,15 @@
 					{
 					?>
 					<tr>
-						<td><?=$code->id?></td>
+						<td><?php echo $code->id?></td>
 						<td>
-							<a href="?page=pmpro-discountcodes&edit=<?=$code->id?>"><?=$code->code?></a>
+							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>
 						</td>
 						<td>
-							<?=date("m/d/Y", $code->starts)?>
+							<?php echo date("m/d/Y", $code->starts)?>
 						</td>
 						<td>
-							<?=date("m/d/Y", $code->expires)?>
+							<?php echo date("m/d/Y", $code->expires)?>
 						</td>				
 						<td>
 							<?php
@@ -594,10 +594,10 @@
 							?>
 						</td>
 						<td>
-							<a href="?page=pmpro-discountcodes&edit=<?=$code->id?>">edit</a>																
+							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>">edit</a>																
 						</td>
 						<td>
-							<a href="javascript:askfirst('Are you sure you want to delete the <?=$code->code?> discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', '?page=pmpro-discountcodes&delete=<?=$code->id?>'); void(0);">delete</a>	
+							<a href="javascript:askfirst('Are you sure you want to delete the <?php echo $code->code?> discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', '?page=pmpro-discountcodes&delete=<?php echo $code->id?>'); void(0);">delete</a>	
 						</td>
 					</tr>
 					<?php

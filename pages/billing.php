@@ -6,22 +6,22 @@
 	if($level) 
 	{ 
 	?>
-		<p>Logged in as <strong><?=$current_user->user_login?></strong>. <small><a href="<?=wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>">logout</a></small></p>
+		<p>Logged in as <strong><?php echo $current_user->user_login?></strong>. <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>">logout</a></small></p>
 		<ul>
-			<li><strong>Level:</strong> <?=$level->name?></li>
+			<li><strong>Level:</strong> <?php echo $level->name?></li>
 		<?php if($level->billing_amount > 0) { ?>
 			<li><strong>Membership Fee:</strong>
-			<?=$pmpro_currency_symbol?><?=$level->billing_amount?>
+			<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?>
 			<?php if($level->cycle_number > 1) { ?>
-				per <?=$level->cycle_number?> <?=sornot($level->cycle_period,$level->cycle_number)?>
+				per <?php echo $level->cycle_number?> <?php echo sornot($level->cycle_period,$level->cycle_number)?>
 			<?php } elseif($level->cycle_number == 1) { ?>
-				per <?=$level->cycle_period?>
+				per <?php echo $level->cycle_period?>
 			<?php } ?>
 			</li>
 		<?php } ?>						
 		
 		<?php if($level->billing_limit) { ?>
-			<li><strong>Duration:</strong> <?=$level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
+			<li><strong>Duration:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
 		<?php } ?>
 		
 		<?php
@@ -31,7 +31,7 @@
 			if($nextpayment)
 			{
 			?>
-				<li><strong>Next Invoice:</strong> <?=date("F j, Y", $nextpayment)?></li>
+				<li><strong>Next Invoice:</strong> <?php echo date("F j, Y", $nextpayment)?></li>
 			<?php
 			}
 			*/
@@ -42,13 +42,13 @@
 ?>
 
 <?php if(pmpro_isLevelRecurring($level)) { ?>
-	<form class="pmpro_form" action="<?=pmpro_url("billing", "", "https")?>" method="post">
+	<form class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
-		<input type="hidden" name="level" value="<?=$level->id?>" />		
+		<input type="hidden" name="level" value="<?php echo $level->id?>" />		
 		<?php if($pmpro_msg) 
 			{
 		?>
-			<div class="pmpro_message <?=$pmpro_msgt?>"><?=$pmpro_msg?></div>
+			<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 		<?php
 			}
 		?>                        	                       	                       														          
@@ -64,27 +64,27 @@
 				<td>
 					<div>
 						<label for="bfirstname">First Name</label>
-						<input id="bfirstname" name="bfirstname" type="text" class="input" size="20" value="<?=$bfirstname?>" /> 
+						<input id="bfirstname" name="bfirstname" type="text" class="input" size="20" value="<?php echo $bfirstname?>" /> 
 					</div>	
 					<div>
 						<label for="blastname">Last Name</label>
-						<input id="blastname" name="blastname" type="text" class="input" size="20" value="<?=$blastname?>" /> 
+						<input id="blastname" name="blastname" type="text" class="input" size="20" value="<?php echo $blastname?>" /> 
 					</div>					
 					<div>
 						<label for="baddress1">Address 1</label>
-						<input id="baddress1" name="baddress1" type="text" class="input" size="20" value="<?=$baddress1?>" /> 
+						<input id="baddress1" name="baddress1" type="text" class="input" size="20" value="<?php echo $baddress1?>" /> 
 					</div>
 					<div>
 						<label for="baddress2">Address 2</label>
-						<input id="baddress2" name="baddress2" type="text" class="input" size="20" value="<?=$baddress2?>" /> <small class="lite">(optional)</small>
+						<input id="baddress2" name="baddress2" type="text" class="input" size="20" value="<?php echo $baddress2?>" /> <small class="lite">(optional)</small>
 					</div>
 					<div>
 						<label for="bcity_state_zip">City, State Zip</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?=$bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?=$bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?=$bzipcode?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo $bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo $bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo $bzipcode?>" /> 
 					</div>
 					<div>
 						<label for="bphone">Phone</label>
-						<input id="bphone" name="bphone" type="text" class="input" size="20" value="<?=$bphone?>" /> 
+						<input id="bphone" name="bphone" type="text" class="input" size="20" value="<?php echo $bphone?>" /> 
 					</div>		
 					<?php if($current_user->ID) { ?>
 					<?php
@@ -95,11 +95,11 @@
 					?>
 					<div>
 						<label for="bemail">E-mail Address</label>
-						<input id="bemail" name="bemail" type="text" class="input" size="20" value="<?=$bemail?>" /> 
+						<input id="bemail" name="bemail" type="text" class="input" size="20" value="<?php echo $bemail?>" /> 
 					</div>
 					<div>
 						<label for="bconfirmemail">Confirm E-mail</label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="20" value="<?=$bconfirmemail?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="20" value="<?php echo $bconfirmemail?>" /> 
 
 					</div>	                        
 					<?php } ?>    
@@ -122,7 +122,7 @@
 						if($sslseal)
 						{
 						?>
-							<div class="pmpro_sslseal"><?=stripslashes($sslseal)?></div>
+							<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
 						<?php
 						}
 					?>
@@ -138,7 +138,7 @@
 				
 					<div>
 						<label for="AccountNumber">Card Number</label>
-						<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?=$AccountNumber?>" /> 
+						<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo $AccountNumber?>" /> 
 					</div>
 				
 					<div>
@@ -161,7 +161,7 @@
 								for($i = date("Y"); $i < date("Y") + 10; $i++)
 								{
 							?>
-								<option value="<?=$i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?=$i?></option>
+								<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
 							<?php
 								}
 							?>
@@ -170,7 +170,7 @@
 				
 					<div>
 						<label for="CVV">CVV</label>
-						<input class="input" id="CVV" name="CVV" type="text" size="4" value="" />  <small>(<a href="#" onclick="javascript:window.open('<?=plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+						<input class="input" id="CVV" name="CVV" type="text" size="4" value="" />  <small>(<a href="#" onclick="javascript:window.open('<?php echo plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 					</div>													
 				</td>
 			</tr>		
@@ -180,7 +180,7 @@
 		<div align="center">
 			<input type="hidden" name="update-billing" value="1" />
 			<input type="submit" class="pmpro_btn pmpro_btn-submit" value="Update" />
-			<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="Cancel" onclick="location.href='<?=pmpro_url("account")?>';" />
+			<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="Cancel" onclick="location.href='<?php echo pmpro_url("account")?>';" />
 		</div>	
 									
 	</form>	

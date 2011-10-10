@@ -34,6 +34,17 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.2.8 =
+* Ordering levels by id (ascending) on the levels page now. Added a "pmpro_levels_array" filter that can be used to reorder the levels or alter the levels before displaying them on the levels page. The array of levels is the only parameter.
+* Added expiration date to the member list and export.
+* Showing a member count on the member list page.
+* Added filter to change subject lines for PMPro emails. (pmpro_email_subject) The filter's first paramter is the subject, the second parameter is an object containg all of the email information. There are also filters for pmpro_email_recipient, pmpro_email_sender, pmpro_email_sender_name, pmpro_email_template, amd pmpro_email_body.
+* Added an RSS feed from the PMPro blog to the dashboard.
+* Now only showing the discount code field at checkout if there are discount codes in the database. Can be overriden by the pmpro_show_discount_code filter.
+* Cancelling with PayPal now properly updates status to "cancelled".
+* No longer trying to unsubscribe from PayPal or Authorize.net if there is no subscription ID to check against (e.g. when the user was manually added to a membership level) or if the last order does not have "success" status (e.g. they already cancelled).
+* Removed PHP short tags (e.g., <?=$variable?>) for wider compatibility.
+
 = 1.2.7 =
 * Fixed bug with non-USD currencies.
 * Fixed bug with phone number formatting.

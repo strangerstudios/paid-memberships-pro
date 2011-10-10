@@ -19,10 +19,10 @@
 		echo pmpro_no_quotes($codecheck[1]);
 		?>
 		<script>			
-			jQuery('#<?=$msgfield?>').show();
-			jQuery('#<?=$msgfield?>').removeClass('pmpro_success');
-			jQuery('#<?=$msgfield?>').addClass('pmpro_error');
-			jQuery('#<?=$msgfield?>').addClass('pmpro_discount_code_msg');
+			jQuery('#<?php echo $msgfield?>').show();
+			jQuery('#<?php echo $msgfield?>').removeClass('pmpro_success');
+			jQuery('#<?php echo $msgfield?>').addClass('pmpro_error');
+			jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
 		</script>
 		<?php
 		
@@ -35,10 +35,10 @@
 	?>
 	The discount code has been applied to your order.
 	<script>		
-		jQuery('#<?=$msgfield?>').show();
-		jQuery('#<?=$msgfield?>').removeClass('pmpro_error');
-		jQuery('#<?=$msgfield?>').addClass('pmpro_success');
-		jQuery('#<?=$msgfield?>').addClass('pmpro_discount_code_msg');
+		jQuery('#<?php echo $msgfield?>').show();
+		jQuery('#<?php echo $msgfield?>').removeClass('pmpro_error');
+		jQuery('#<?php echo $msgfield?>').addClass('pmpro_success');
+		jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
 		
 		jQuery('#other_discount_code_tr').hide();
 		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);">Click here to change your discount code</a>.');
@@ -49,7 +49,7 @@
 			jQuery('#other_discount_code_p').hide();			
 		});
 		
-		jQuery('#pmpro_level_cost').html('The <strong><?=$discount_code?></strong> code has been applied to your order. <?=pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
+		jQuery('#pmpro_level_cost').html('The <strong><?php echo $discount_code?></strong> code has been applied to your order. <?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
 		
 		<?php
 			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress")

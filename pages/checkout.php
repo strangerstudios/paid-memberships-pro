@@ -1,17 +1,17 @@
 <?php
-	global $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage, $pmpro_currency_symbol;
+	global $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code;
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 	
 	$gateway = pmpro_getOption("gateway");
 ?>
 
-<form class="pmpro_form" action="<?=pmpro_url("checkout", "", "https")?>" method="post">
+<form class="pmpro_form" action="<?php echo pmpro_url("checkout", "", "https")?>" method="post">
 
-	<input type="hidden" id="level" name="level" value="<?=$pmpro_level->id?>" />		
+	<input type="hidden" id="level" name="level" value="<?php echo $pmpro_level->id?>" />		
 	<?php if($pmpro_msg) 
 		{
 	?>
-		<div id="pmpro_message" class="pmpro_message <?=$pmpro_msgt?>"><?=$pmpro_msg?></div>
+		<div id="pmpro_message" class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 	<?php
 		}
 		else
@@ -37,37 +37,44 @@
 	<tbody>                
 		<tr>
 			<td>				
-				<p>You have selected the <strong><?=$pmpro_level->name?></strong> membership level.</p>
+				<p>You have selected the <strong><?php echo $pmpro_level->name?></strong> membership level.</p>
 				
 				<p id="pmpro_level_cost">
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
-						The <strong><?=$discount_code?></strong> code has been applied to your order.
+						The <strong><?php echo $discount_code?></strong> code has been applied to your order.
 					<?php } ?>
-					<?=pmpro_getLevelCost($pmpro_level)?>
-					<?=pmpro_getLevelExpiration($pmpro_level)?>
+					<?php echo pmpro_getLevelCost($pmpro_level)?>
+					<?php echo pmpro_getLevelExpiration($pmpro_level)?>
 				</p>
 				
-				<?php if($discount_code && !$pmpro_review) { ?>
-					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code">Click here to change your discount code</a>.</p>
-				<?php } elseif(!$pmpro_review) { ?>
-					<p id="other_discount_code_p" class="pmpro_small">Do you have a discount code? <a id="other_discount_code_a" href="#discount_code">Click here to enter your discount code</a>.</p>
-				<?php } elseif($pmpro_review && $discount_code) { ?>
-					<p><strong>Discount Code:</strong> <?=$discount_code?></p>
+				<?php if($pmpro_show_discount_code) { ?>
+				
+					<?php if($discount_code && !$pmpro_review) { ?>
+						<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code">Click here to change your discount code</a>.</p>
+					<?php } elseif(!$pmpro_review) { ?>
+						<p id="other_discount_code_p" class="pmpro_small">Do you have a discount code? <a id="other_discount_code_a" href="#discount_code">Click here to enter your discount code</a>.</p>
+					<?php } elseif($pmpro_review && $discount_code) { ?>
+						<p><strong>Discount Code:</strong> <?php echo $discount_code?></p>
+					<?php } ?>
+				
 				<?php } ?>
-								
 			</td>
 		</tr>
+		<?php if($pmpro_show_discount_code) { ?>
 		<tr id="other_discount_code_tr" style="display: none;">
 			<td>
 				<div>
 					<label for="other_discount_code">Discount Code</label>
-					<input id="other_discount_code" name="other_discount_code" type="text" class="input" size="20" value="<?=$discount_code?>" /> 
+					<input id="other_discount_code" name="other_discount_code" type="text" class="input" size="20" value="<?php echo $discount_code?>" /> 
 					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="Apply" />					
 				</div>				
 			</td>
 		</tr>
+		<?php } ?>
 	</tbody>
 	</table>
+	
+	<?php if($pmpro_show_discount_code) { ?>
 	<script>
 		//update discount code link to show field at top of form
 		jQuery('#other_discount_code_a').attr('href', 'javascript:void(0);');
@@ -107,7 +114,7 @@
 				jQuery('#other_discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
-					url: '<?=plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
+					url: '<?php echo plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
 					dataType: 'html',
 					data: "code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
 					error: function(xml){
@@ -133,13 +140,14 @@
 			}																		
 		});
 	</script>
+	<?php } ?>
 	
 	<?php if(!$skip_account_fields && !$pmpro_review) { ?>
 	<table class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
 			<th>
-				<span class="pmpro_thead-msg">If you already have an account, <a href="<?=get_bloginfo("url")?>/wp-login.php?redirect_to=<?=urlencode(pmpro_url("checkout", "?level=" . $pmpro_level->id))?>">log in here</a>.</span>Account Information
+				<span class="pmpro_thead-msg">If you already have an account, <a href="<?php echo get_bloginfo("url")?>/wp-login.php?redirect_to=<?php echo urlencode(pmpro_url("checkout", "?level=" . $pmpro_level->id))?>">log in here</a>.</span>Account Information
 			</th>						
 		</tr>
 	</thead>
@@ -148,7 +156,7 @@
 			<td>
 				<div>
 					<label for="username">Username</label>
-					<input id="username" name="username" type="text" class="input" size="30" value="<?=$username?>" /> 
+					<input id="username" name="username" type="text" class="input" size="30" value="<?php echo $username?>" /> 
 				</div>
 				
 				<?php
@@ -157,11 +165,11 @@
 				
 				<div>
 					<label for="password">Password</label>
-					<input id="password" name="password" type="password" class="input" size="30" value="<?=$password?>" /> 
+					<input id="password" name="password" type="password" class="input" size="30" value="<?php echo $password?>" /> 
 				</div>
 				<div>
 					<label for="password2">Confirm Password</label>
-					<input id="password2" name="password2" type="password" class="input" size="30" value="<?=$password2?>" /> 
+					<input id="password2" name="password2" type="password" class="input" size="30" value="<?php echo $password2?>" /> 
 				</div>
 				
 				<?php
@@ -170,11 +178,11 @@
 				
 				<div>
 					<label for="bemail">E-mail Address</label>
-					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?=$bemail?>" /> 
+					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo $bemail?>" /> 
 				</div>
 				<div>
 					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?=$bconfirmemail?>" /> 
+					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo $bconfirmemail?>" /> 
 				</div>
 				
 				<?php
@@ -183,7 +191,7 @@
 				
 				<div class="pmpro_hidden">
 					<label for="fullname">Full Name</label>
-					<input id="fullname" name="fullname" type="text" class="input" size="30" value="<?=$fullname?>" /> <strong>LEAVE THIS BLANK</strong>
+					<input id="fullname" name="fullname" type="text" class="input" size="30" value="<?php echo $fullname?>" /> <strong>LEAVE THIS BLANK</strong>
 				</div>				
 
 				<div class="pmpro_captcha">
@@ -203,7 +211,7 @@
 			</td>
 	</table>   
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>                        	                       										
-		<p>You are logged in as <strong><?=$current_user->user_login?></strong>. If you would like to use a different account for this membership, <a href="<?=wp_logout_url(pmpro_url("checkout", "?level=" . $pmpro_level->id));?>">log out now</a>.</p>
+		<p>You are logged in as <strong><?php echo $current_user->user_login?></strong>. If you would like to use a different account for this membership, <a href="<?php echo wp_logout_url(pmpro_url("checkout", "?level=" . $pmpro_level->id));?>">log out now</a>.</p>
 	<?php } ?>
 	
 	<?php					
@@ -213,16 +221,16 @@
 		<table class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<thead>
 		<tr>
-			<th><?=$tospage->post_title?></th>
+			<th><?php echo $tospage->post_title?></th>
 		</tr>
 	</thead>
 		<tbody>
 			<tr class="odd">
 				<td>								
 					<div id="pmpro_license">
-<?=wpautop($tospage->post_content)?>
+<?php echo wpautop($tospage->post_content)?>
 					</div>								
-					<input type="checkbox" name="tos" value="1" /> I agree to the <?=$tospage->post_title?>
+					<input type="checkbox" name="tos" value="1" /> I agree to the <?php echo $tospage->post_title?>
 				</td>
 			</tr>
 		</tbody>
@@ -242,19 +250,19 @@
 			<td>
 				<div>
 					<label for="bfirstname">First Name</label>
-					<input id="bfirstname" name="bfirstname" type="text" class="input" size="30" value="<?=$bfirstname?>" /> 
+					<input id="bfirstname" name="bfirstname" type="text" class="input" size="30" value="<?php echo $bfirstname?>" /> 
 				</div>	
 				<div>
 					<label for="blastname">Last Name</label>
-					<input id="blastname" name="blastname" type="text" class="input" size="30" value="<?=$blastname?>" /> 
+					<input id="blastname" name="blastname" type="text" class="input" size="30" value="<?php echo $blastname?>" /> 
 				</div>					
 				<div>
 					<label for="baddress1">Address 1</label>
-					<input id="baddress1" name="baddress1" type="text" class="input" size="30" value="<?=$baddress1?>" /> 
+					<input id="baddress1" name="baddress1" type="text" class="input" size="30" value="<?php echo $baddress1?>" /> 
 				</div>
 				<div>
 					<label for="baddress2">Address 2</label>
-					<input id="baddress2" name="baddress2" type="text" class="input" size="30" value="<?=$baddress2?>" /> <small class="lite">(optional)</small>
+					<input id="baddress2" name="baddress2" type="text" class="input" size="30" value="<?php echo $baddress2?>" /> <small class="lite">(optional)</small>
 				</div>
 				
 				<?php
@@ -264,15 +272,15 @@
 				?>
 					<div>
 						<label for="bcity">City</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?=$bcity?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?php echo $bcity?>" /> 
 					</div>
 					<div>
 						<label for="bstate">State</label>
-						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?=$bstate?>" /> 
+						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo $bstate?>" /> 
 					</div>
 					<div>
 						<label for="bzipcode">Zip/Postal Code</label>
-						<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?=$bzipcode?>" /> 
+						<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?php echo $bzipcode?>" /> 
 					</div>					
 				<?php
 					}
@@ -281,7 +289,7 @@
 					?>
 					<div>
 						<label for="bcity_state_zip">City, State Zip</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?=$bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?=$bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?=$bzipcode?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo $bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo $bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo $bzipcode?>" /> 
 					</div>
 					<?php
 					}
@@ -302,7 +310,7 @@
 								if(!$bcountry)
 									$bcountry = $pmpro_default_country;
 							?>
-							<option value="<?=$abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?=$country?></option>
+							<option value="<?php echo $abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
 							<?php
 							}
 						?>
@@ -319,7 +327,7 @@
 				?>
 				<div>
 					<label for="bphone">Phone</label>
-					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?=$bphone?>" /> 
+					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?php echo $bphone?>" /> 
 					<?php echo formatPhone($bphone); ?>
 				</div>		
 				<?php if($skip_account_fields) { ?>
@@ -334,11 +342,11 @@
 				?>
 				<div>
 					<label for="bemail">E-mail Address</label>
-					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?=$bemail?>" /> 
+					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo $bemail?>" /> 
 				</div>
 				<div>
 					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?=$bconfirmemail?>" /> 
+					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo $bconfirmemail?>" /> 
 
 				</div>	                        
 				<?php } ?>    
@@ -369,7 +377,7 @@
 	<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>
-			<th colspan="2"><span class="pmpro_thead-msg">We Accept <?=$pmpro_accepted_credit_cards_string?></span>Payment Information</th>
+			<th colspan="2"><span class="pmpro_thead-msg">We Accept <?php echo $pmpro_accepted_credit_cards_string?></span>Payment Information</th>
 		</tr>
 	</thead>
 	<tbody>                    
@@ -380,7 +388,7 @@
 					if($sslseal)
 					{
 					?>
-						<div class="pmpro_sslseal"><?=stripslashes($sslseal)?></div>
+						<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
 					<?php
 					}
 				?>
@@ -388,14 +396,14 @@
 					<label for="CardType">Card Type</label>
 					<select name="CardType">
 						<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-							<option value="<?=$cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?=$cc?></option>
+							<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 						<?php } ?>												
 					</select> 
 				</div>
 			
 				<div>
 					<label for="AccountNumber">Card Number</label>
-					<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?=$AccountNumber?>" /> 
+					<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo $AccountNumber?>" /> 
 				</div>
 			
 				<div>
@@ -418,7 +426,7 @@
 							for($i = date("Y"); $i < date("Y") + 10; $i++)
 							{
 						?>
-							<option value="<?=$i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?=$i?></option>
+							<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
 						<?php
 							}
 						?>
@@ -427,15 +435,18 @@
 			
 				<div>
 					<label for="CVV">CVV</label>
-					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?=$_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?=pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php echo $_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 				</div>
 				
+				<?php if($pmpro_show_discount_code) { ?>
 				<div>
 					<label for="discount_code">Discount Code</label>
-					<input class="input" id="discount_code" name="discount_code" type="text" size="20" value="<?=$discount_code?>" />
+					<input class="input" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo $discount_code?>" />
 					<input type="button" id="discount_code_button" name="discount_code_button" value="Apply" />
 					<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
 				</div>
+				<?php } ?>
+				
 			</td>			
 		</tr>
 	</tbody>
@@ -455,7 +466,7 @@
 				jQuery('#discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
-					url: '<?=plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
+					url: '<?php echo plugins_url("paid-memberships-pro/services/applydiscountcode.php")?>',type:'POST',timeout:2000,
 					dataType: 'html',
 					data: "code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 					error: function(xml){
@@ -485,7 +496,7 @@
 	<div align="center">		
 		<?php if($pmpro_review) { ?>
 			<input type="hidden" name="confirm" value="1" />
-			<input type="hidden" name="token" value="<?=$pmpro_paypal_token?>" />
+			<input type="hidden" name="token" value="<?php echo $pmpro_paypal_token?>" />
 			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
 		<?php } elseif($gateway == "paypalexpress") { ?>
 			<input type="hidden" name="submit-checkout" value="1" />		

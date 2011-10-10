@@ -269,17 +269,17 @@
 	if($msg)
 	{
 	?>
-		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?=$msgt?></p></div>
+		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
 	<?php
 	}		
 
 ?>
 <div class="wrap pmpro_admin">	
 	<div class="pmpro_banner">		
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?=PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
 		
-		<div class="pmpro_meta"><a href="<?=pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?=PMPRO_VERSION?></strong></div>
+		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
 	</div>
 	<br style="clear:both;" />
 	
@@ -289,7 +289,7 @@
 	<div id="pmpro_notifications">
 	</div>
 	<script>
-		jQuery.get('<?=pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
+		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
 		  jQuery('#pmpro_notifications').html(data);		 
 		});
 	</script>
@@ -350,25 +350,25 @@
 
 				global $pmpro_currency_symbol;
 			?>
-			<form action="<?=PMPRO_URL?>/services/pmpro-data.php?action=save_membershiplevel" method="post" enctype="multipart/form-data">
-				<input name="saveid" type="hidden" value="<?=$edit?>" />
+			<form action="<?php echo PMPRO_URL?>/services/pmpro-data.php?action=save_membershiplevel" method="post" enctype="multipart/form-data">
+				<input name="saveid" type="hidden" value="<?php echo $edit?>" />
 				<table class="form-table">
                 <tbody>
                     <tr>
                         <th scope="row" valign="top"><label>ID:</label></th>
-                        <td><?=$level->id?></td>
+                        <td><?php echo $level->id?></td>
                     </tr>								                
                     
                     <tr>
                         <th scope="row" valign="top"><label for="name">Name:</label></th>
-                        <td><input name="name" type="text" size="50" value="<?=str_replace("\"", "&quot;", stripslashes($level->name))?>" /></td>
+                        <td><input name="name" type="text" size="50" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->name))?>" /></td>
                     </tr>
                     
                     <tr>
                         <th scope="row" valign="top"><label for="description">Description:</label></th>
                         <td>
 	                        <div id="poststuff" class="pmpro_description">
-							<textarea rows="10" cols="80" name="description" id="description"><?=str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>							
+							<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>							
                         	</div>    
                         </td>
                     </tr>
@@ -380,7 +380,7 @@
                 <tbody>
                     <tr>
                         <th scope="row" valign="top"><label for="initial_payment">Initial Payment:</label></th>
-                        <td><?=$pmpro_currency_symbol?><input name="initial_payment" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
+                        <td><?php echo $pmpro_currency_symbol?><input name="initial_payment" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small>The initial amount collected at registration.</small></td>
                     </tr>
 					
 					<tr>
@@ -391,8 +391,8 @@
 					<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
                         <th scope="row" valign="top"><label for="billing_amount">Billing Amount:</label></th>
                         <td>
-							<?=$pmpro_currency_symbol?><input name="billing_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
-							<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
+							<?php echo $pmpro_currency_symbol?><input name="billing_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
+							<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 							<select id="cycle_period" name="cycle_period">
 							  <?php
 								$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
@@ -410,7 +410,7 @@
                     <tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
                         <th scope="row" valign="top"><label for="billing_limit">Billing Cycle Limit:</label></th>
                         <td>
-							<input name="billing_limit" type="text" size="20" value="<?=$level->billing_limit?>" />
+							<input name="billing_limit" type="text" size="20" value="<?php echo $level->billing_limit?>" />
 							<br /><small>The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.</small>
 						</td>
                     </tr>            								
@@ -423,9 +423,9 @@
                     <tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
                         <th scope="row" valign="top"><label for="trial_amount">Trial Billing Amount:</label></th>
                         <td>
-							<?=$pmpro_currency_symbol?><input name="trial_amount" type="text" size="20" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+							<?php echo $pmpro_currency_symbol?><input name="trial_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
 							<small>for the first</small>
-							<input name="trial_limit" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
+							<input name="trial_limit" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
                             <small>subscription payments.</small>																			
 						</td>
                     </tr>
@@ -448,7 +448,7 @@
 					<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
                         <th scope="row" valign="top"><label for="billing_amount">Expire In:</label></th>
                         <td>							
-							<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?=str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
+							<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
 							<select id="expiration_period" name="expiration_period">
 							  <?php
 								$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
@@ -486,7 +486,7 @@
 			</table>			
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button-primary" value="Save Level" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?=home_url('/wp-admin/admin.php?page=pmpro-membershiplevels')?>';" /> 					
+				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo home_url('/wp-admin/admin.php?page=pmpro-membershiplevels')?>';" /> 					
 			</p>
 		</form>
 		</div>
@@ -524,7 +524,7 @@
 							wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[account]));
 						?>	
 						<?php if($pmpro_pages[account]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[account]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[account]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_account].</small>
 					</td>
@@ -537,7 +537,7 @@
 							wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[billing]));
 						?>
 						<?php if($pmpro_pages[billing]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[billing]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[billing]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_billing].</small>
 					</td>
@@ -550,7 +550,7 @@
 							wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[cancel]));
 						?>	
 						<?php if($pmpro_pages[cancel]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[cancel]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[cancel]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_cancel].</small>
 					</td>
@@ -564,7 +564,7 @@
 							wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[checkout]));
 						?>
 						<?php if($pmpro_pages[checkout]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[checkout]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[checkout]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_checkout].</small>
 					</td>
@@ -578,7 +578,7 @@
 							wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[confirmation]));
 						?>	
 						<?php if($pmpro_pages[confirmation]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[confirmation]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[confirmation]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_confirmation].</small>
 					</td>
@@ -592,7 +592,7 @@
 							wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[invoice]));
 						?>
 						<?php if($pmpro_pages[invoice]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[invoice]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[invoice]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_invoice].</small>
 					</td>
@@ -606,7 +606,7 @@
 							wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[levels]));
 						?>
 						<?php if($pmpro_pages[levels]) { ?>
-							<a target="_blank" href="post.php?post=<?=$pmpro_pages[levels]?>&action=edit" class="pmpro_page_edit">edit page</a>
+							<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[levels]?>&action=edit" class="pmpro_page_edit">edit page</a>
 						<?php } ?>
 						<br /><small class="pmpro_lite">Include the shortcode [pmpro_levels].</small>
 					</td>
@@ -634,7 +634,7 @@
                     	<label for="sslseal">SSL Seal Code:</label>
                     </th>
 					<td>
-						<textarea name="sslseal" rows="3" cols="80"><?=stripslashes($sslseal)?></textarea>
+						<textarea name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
                     </td>
                </tr>
 			   <tr>
@@ -675,7 +675,7 @@
                     	<label for="gateway_email">Gateway Account Email:</label>
 					</th>
 					<td>
-                        <input type="text" name="gateway_email" size="60" value="<?=$gateway_email?>" />
+                        <input type="text" name="gateway_email" size="60" value="<?php echo $gateway_email?>" />
                     </td>
                 </tr>                
 				<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -683,7 +683,7 @@
                     	<label for="apiusername">API Username:</label>
 					</th>
 					<td>
-                        <input type="text" name="apiusername" size="60" value="<?=$apiusername?>" />
+                        <input type="text" name="apiusername" size="60" value="<?php echo $apiusername?>" />
                     </td>
                 </tr>
                 <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -691,7 +691,7 @@
                     	<label for="apipassword">API Password:</label>
 					</th>
 					<td>
-                        <input type="text" name="apipassword" size="60" value="<?=$apipassword?>" />
+                        <input type="text" name="apipassword" size="60" value="<?php echo $apipassword?>" />
                     </td>
                 </tr> 
                 <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -699,7 +699,7 @@
                     	<label for="apisignature">API Signature:</label>
 					</th>
 					<td>
-                        <input type="text" name="apisignature" size="60" value="<?=$apisignature?>" />
+                        <input type="text" name="apisignature" size="60" value="<?php echo $apisignature?>" />
                     </td>
                 </tr> 
 				<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -707,7 +707,7 @@
                     	<label for="loginname">Login Name:</label>
 					</th>
 					<td>
-                        <input type="text" name="loginname" size="60" value="<?=$loginname?>" />
+                        <input type="text" name="loginname" size="60" value="<?php echo $loginname?>" />
                     </td>
                 </tr>
                 <tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -715,7 +715,7 @@
                     	<label for="transactionkey">Transaction Key:</label>
 					</th>
 					<td>
-                        <input type="text" name="transactionkey" size="60" value="<?=$transactionkey?>" />
+                        <input type="text" name="transactionkey" size="60" value="<?php echo $transactionkey?>" />
                     </td>
                 </tr>
 				<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -738,7 +738,7 @@
 							foreach($pmpro_currencies as $ccode => $cdescription)
 							{
 							?>
-							<option value="<?=$ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?=$cdescription?></option>
+							<option value="<?php echo $ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
 							<?php
 							}
 						?>
@@ -763,9 +763,9 @@
 					</th>
 					<td>
 						Tax State:
-						<input type="text" name="tax_state" size="4" value="<?=$tax_state?>" /> <small>(abbreviation, e.g. "PA")</small>
+						<input type="text" name="tax_state" size="4" value="<?php echo $tax_state?>" /> <small>(abbreviation, e.g. "PA")</small>
 						&nbsp; Tax Rate:
-						<input type="text" name="tax_rate" size="10" value="<?=$tax_rate?>" /> <small>(decimal, e.g. "0.06")</small>
+						<input type="text" name="tax_rate" size="10" value="<?php echo $tax_rate?>" /> <small>(decimal, e.g. "0.06")</small>
 						<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
 					</td>
 				</tr>
@@ -793,7 +793,7 @@
                     	<label for="from_email">From Email:</label>
 					</th>
 					<td>
-                        <input type="text" name="from_email" size="60" value="<?=$from_email?>" />
+                        <input type="text" name="from_email" size="60" value="<?php echo $from_email?>" />
                     </td>
 				</tr>
 				<tr>
@@ -801,7 +801,7 @@
                     	<label for="from_name">From Name:</label>
 					</th>
 					<td>
-                        <input type="text" name="from_name" size="60" value="<?=$from_name?>" />
+                        <input type="text" name="from_name" size="60" value="<?php echo $from_name?>" />
                     </td>
                 </tr>
 			</tbody>
@@ -825,7 +825,7 @@
                         <label for="nonmembertext">Message for Logged-in Non-members:</label>
 					</th>
 					<td>
-                        <textarea name="nonmembertext" rows="3" cols="80"><?=stripslashes($nonmembertext)?></textarea><br />
+                        <textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea><br />
 						<small class="litegray">This message replaces the post content for non-members. Available variables: !!levels!!, !!referrer!!</small>
                     </td>
                 </tr> 
@@ -834,7 +834,7 @@
                     	<label for="notloggedintext">Message for Logged-out Users:</label>
 					</th>
 					<td>
-                    	<textarea name="notloggedintext" rows="3" cols="80"><?=stripslashes($notloggedintext)?></textarea><br />
+                    	<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea><br />
 						<small class="litegray">This message replaces the post content for logged-out visitors.</small>
                     </td>
                 </tr> 
@@ -843,7 +843,7 @@
                     	<label for="rsstext">Message for RSS Feed:</label>
 					</th>
 					<td>
-                    	<textarea name="rsstext" rows="3" cols="80"><?=stripslashes($rsstext)?></textarea><br />
+                    	<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea><br />
 						<small class="litegray">This message replaces the post content in RSS feeds.</small>
                     </td>
                 </tr> 
@@ -900,7 +900,7 @@ if(pmpro_displayAds())
 								foreach($levels as $level) 
 								{ 
 							?>
-                            	<div class="clickable"><input type="checkbox" id="hideadslevels_<?=$level->id?>" name="hideadslevels[]" value="<?=$level->id?>" <?php if(in_array($level->id, $hideadslevels)) { ?>checked="checked"<?php } ?>> <?=$level->name?></div>
+                            	<div class="clickable"><input type="checkbox" id="hideadslevels_<?php echo $level->id?>" name="hideadslevels[]" value="<?php echo $level->id?>" <?php if(in_array($level->id, $hideadslevels)) { ?>checked="checked"<?php } ?>> <?php echo $level->name?></div>
                             <?php 
 								} 
 							?>
@@ -947,10 +947,10 @@ if(pmpro_displayAds())
                 	<th scope="row" valign="top">&nbsp;</th>
 					<td>                        
 						<label for="recaptcha_publickey">reCAPTCHA Public Key:</label>
-                        <input type="text" name="recaptcha_publickey" size="60" value="<?=$recaptcha_publickey?>" />
+                        <input type="text" name="recaptcha_publickey" size="60" value="<?php echo $recaptcha_publickey?>" />
 						<br /><br />
 						<label for="recaptcha_privatekey">reCAPTCHA Private Key:</label>
-                        <input type="text" name="recaptcha_privatekey" size="60" value="<?=$recaptcha_privatekey?>" />						
+                        <input type="text" name="recaptcha_privatekey" size="60" value="<?php echo $recaptcha_privatekey?>" />						
                     </td>
                 </tr>
 				<tr>
@@ -1035,7 +1035,7 @@ if(pmpro_displayAds())
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input">Search Levels:</label>
 				<input type="hidden" name="page" value="pmpro-membershiplevels" />
-				<input id="post-search-input" type="text" value="<?=$s?>" name="s" size="30" />
+				<input id="post-search-input" type="text" value="<?php echo $s?>" name="s" size="30" />
 				<input class="button" type="submit" value="Search Levels" id="search-submit "/>
 			</p>		
 		</form>	
@@ -1070,22 +1070,22 @@ if(pmpro_displayAds())
 				{
 			?>
 			<tr <?php if(!$level->allow_signups) { ?>class="pmpro_gray"<?php } ?>>
-				<td><?=$level->id?></td>
-				<td><?=$level->name?></td>
+				<td><?php echo $level->id?></td>
+				<td><?php echo $level->name?></td>
 				<td>
 					<?php if(pmpro_isLevelFree($level)) { ?>
 						FREE
 					<?php } else { ?>
-						<?=$pmpro_currency_symbol?><?=$level->initial_payment?>
+						<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
 					<?php } ?>
 				</td>
 				<td>
 					<?php if(!pmpro_isLevelRecurring($level)) { ?>
 						--
 					<?php } else { ?>						
-						<?=$pmpro_currency_symbol?><?=$level->billing_amount?> every <?=$level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
+						<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> every <?php echo $level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
 						
-						<?php if($level->billing_limit) { ?>(for <?=$level->billing_limit?> <?=sornot($level->cycle_period,$level->cycle_number)?>)<?php } ?>
+						<?php if($level->billing_limit) { ?>(for <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->cycle_number)?>)<?php } ?>
 						
 					<?php } ?>
 				</td>				
@@ -1093,20 +1093,20 @@ if(pmpro_displayAds())
 					<?php if(!pmpro_isLevelTrial($level)) { ?>
 						--
 					<?php } else { ?>		
-						<?=$pmpro_currency_symbol?><?=$level->trial_amount?> for <?=$level->trial_limit?> <?=sornot("payment",$level->trial_limit)?>
+						<?php echo $pmpro_currency_symbol?><?php echo $level->trial_amount?> for <?php echo $level->trial_limit?> <?php echo sornot("payment",$level->trial_limit)?>
 					<?php } ?>
 				</td>
 				<td>
 					<?php if(!pmpro_isLevelExpiring($level)) { ?>
 						--
 					<?php } else { ?>		
-						After <?=$level->expiration_number?> <?=sornot($level->expiration_period,$level->expiration_number)?>
+						After <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
 				</td>
 				<td><?php if($level->allow_signups) { ?>Yes<?php } else { ?>No<?php } ?></td>
-				<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?=$level->id?>" class="edit">edit</a></td>
-				<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?=$level->id?>&edit=-1" class="edit">copy</a></td>
-				<td align="center"><a href="javascript: askfirst('Are you sure you want to delete membership level <?=$level->name?>? All subscriptions will be canceled.','<?=PMPRO_URL?>/services/pmpro-data.php?action=delete_membership_level&deleteid=<?=$level->id?>'); void(0);" class="delete">delete</a></td>
+				<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit">edit</a></td>
+				<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit">copy</a></td>
+				<td align="center"><a href="javascript: askfirst('Are you sure you want to delete membership level <?php echo $level->name?>? All subscriptions will be canceled.','<?php echo PMPRO_URL?>/services/pmpro-data.php?action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete">delete</a></td>
 			</tr>
 			<?php
 				}

@@ -7,28 +7,28 @@
 	?>			
 		<p>Your membership is <strong>active</strong>.</p>
 		<ul>
-			<li><strong>Level:</strong> <?=$current_user->membership_level->name?></li>
+			<li><strong>Level:</strong> <?php echo $current_user->membership_level->name?></li>
 		<?php if($current_user->membership_level->billing_amount > 0) { ?>
 			<li><strong>Membership Fee:</strong>
-			<?=$pmpro_currency_symbol?><?=$current_user->membership_level->billing_amount?>
+			<?php echo $pmpro_currency_symbol?><?php echo $current_user->membership_level->billing_amount?>
 			<?php if($current_user->membership_level->cycle_number > 1) { ?>
-				per <?=$current_user->membership_level->cycle_number?> <?=sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
+				per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
 			<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
-				per <?=$current_user->membership_level->cycle_period?>
+				per <?php echo $current_user->membership_level->cycle_period?>
 			<?php } ?>
 			</li>
 		<?php } ?>						
 		
 		<?php if($current_user->membership_level->billing_limit) { ?>
-			<li><strong>Duration:</strong> <?=$current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></li>
+			<li><strong>Duration:</strong> <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></li>
 		<?php } ?>
 		
 		<?php if($current_user->membership_level->enddate) { ?>
-			<li><strong>Membership Expires:</strong> <?=date("n/j/Y", $current_user->membership_level->enddate)?></li>
+			<li><strong>Membership Expires:</strong> <?php echo date("n/j/Y", $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		
 		<?php if($current_user->membership_level->trial_limit) { ?>
-			Your first <?=$current_user->membership_level->trial_limit?> <?=sornot("payment",$current_user->membership_level->trial_limit)?> will cost $<?=$current_user->membership_level->trial_amount?>.
+			Your first <?php echo $current_user->membership_level->trial_limit?> <?php echo sornot("payment",$current_user->membership_level->trial_limit)?> will cost $<?php echo $current_user->membership_level->trial_amount?>.
 		<?php } ?>   
 
 		<?php
@@ -38,7 +38,7 @@
 			if($nextpayment)
 			{
 			?>
-				<li><strong>Next Invoice:</strong> <?=date("F j, Y", $nextpayment)?></li>
+				<li><strong>Next Invoice:</strong> <?php echo date("F j, Y", $nextpayment)?></li>
 			<?php
 			}
 			*/
@@ -48,15 +48,15 @@
 		<div class="pmpro_left">
 			<div class="pmpro_box">
 				<?php get_currentuserinfo(); ?> 
-				<h3><a class="pmpro_a-right" href="<?=home_url()?>/wp-admin/profile.php">Edit</a>My Account</h3>
+				<h3><a class="pmpro_a-right" href="<?php echo home_url()?>/wp-admin/profile.php">Edit</a>My Account</h3>
 				<p>
 				<?php if($current_user->user_firstname) { ?>
-					<?=$current_user->user_firstname?> <?=$current_user->user_lastname?><br />
+					<?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?><br />
 				<?php } ?>
 				<small>
-					<strong>Username:</strong> <?=$current_user->user_login?><br />
-					<strong>Email:</strong> <?=$current_user->user_email?><br />
-					<strong>Password:</strong> ****** <small><a href="<?=home_url()?>/wp-admin/profile.php">change</a></small>				
+					<strong>Username:</strong> <?php echo $current_user->user_login?><br />
+					<strong>Email:</strong> <?php echo $current_user->user_email?><br />
+					<strong>Password:</strong> ****** <small><a href="<?php echo home_url()?>/wp-admin/profile.php">change</a></small>				
 				</small>
 				</a>
 			</div>
@@ -83,22 +83,22 @@
 					$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
 				?>		
 				<div class="pmpro_box">				
-					<h3><a class="pmpro_a-right" href="<?=pmpro_url("billing", "", "https")?>">Edit</a>Billing Information</h3>
+					<h3><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "", "https")?>">Edit</a>Billing Information</h3>
 					<p>
 						<strong>Billing Address</strong><br />
-						<?=$bfirstname . " " . $blastname?>
+						<?php echo $bfirstname . " " . $blastname?>
 						<br />		
-						<?=$baddress1?><br />
+						<?php echo $baddress1?><br />
 						<?php if($baddress2) echo $baddress2 . "<br />";?>
 						<?php if($bcity && $bstate) { ?>
-							<?=$bcity?>, <?=$bstate?> <?=$bzipcode?>
+							<?php echo $bcity?>, <?php echo $bstate?> <?php echo $bzipcode?>
 						<?php } ?>                         
 						<br />
-						<?=formatPhone($bphone)?>
+						<?php echo formatPhone($bphone)?>
 					</p>
 					<p>
 						<strong>Payment Method</strong><br />
-						<?=$CardType?>: <?=last4($AccountNumber)?> (<?=$ExpirationMonth?>/<?=$ExpirationYear?>)
+						<?php echo $CardType?>: <?php echo last4($AccountNumber)?> (<?php echo $ExpirationMonth?>/<?php echo $ExpirationYear?>)
 					</p>
 				</div>					
 			<?php
@@ -108,12 +108,12 @@
 				<h3>Member Links</h3>
 				<ul>
 					<?php if($ssorder) { ?>
-						<li><a href="<?=pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
+						<li><a href="<?php echo pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
 					<?php } ?>
 					<?php if(count($pmpro_levels) > 1) { ?>
-						<li><a href="<?=pmpro_url("levels")?>">Change Membership Level</a></li>
+						<li><a href="<?php echo pmpro_url("levels")?>">Change Membership Level</a></li>
 					<?php } ?>
-					<li><a href="<?=pmpro_url("cancel")?>">Cancel Membership</a></li>
+					<li><a href="<?php echo pmpro_url("cancel")?>">Cancel Membership</a></li>
 				</ul>
 			</div>
 		</div> <!-- end pmpro_left -->
@@ -124,10 +124,10 @@
 				<h3>Past Invoices</h3>
 				<ul>
 					<?php foreach($invoices as $invoice) { ?>
-					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?=pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?=date("F j, Y", $invoice->timestamp)?> (<?=$pmpro_currency_symbol?><?=$invoice->total?>)</a></li>
+					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date("F j, Y", $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
 					<?php } ?>
 					<?php if($count > 10) { ?>
-						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);">show <?=(count($invoices) - 10)?> more</a></li>
+						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);">show <?php echo (count($invoices) - 10)?> more</a></li>
 					<?php } ?>
 				</ul>
 			</div>

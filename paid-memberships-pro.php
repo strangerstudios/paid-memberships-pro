@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.2.7
+Version: 1.2.8
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -51,7 +51,7 @@ $urlparts = split("//", get_bloginfo("home"));
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.2.7");
+define("PMPRO_VERSION", "1.2.8");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -295,7 +295,7 @@ function pmpro_membership_level_profile_fields($user)
 				{
 					$current_level = ($user->membership_level->ID == $level->id);	
 			?>
-            	<option value="<?=$level->id?>" <?php if($current_level) { ?>selected="selected"<?php } ?>><?=$level->name?></option>
+            	<option value="<?php echo $level->id?>" <?php if($current_level) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
             <?php
 				}
 			?>
@@ -317,18 +317,18 @@ function pmpro_membership_level_profile_fields($user)
 				{
 				?>
 					<?php if($current_user->membership_level->billing_amount > 0) { ?>
-						at $<?=$current_user->membership_level->billing_amount?>
+						at $<?php echo $current_user->membership_level->billing_amount?>
 						<?php if($current_user->membership_level->cycle_number > 1) { ?>
-							per <?=$current_user->membership_level->cycle_number?> <?=sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
+							per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
 						<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
-							per <?=$current_user->membership_level->cycle_period?>
+							per <?php echo $current_user->membership_level->cycle_period?>
 						<?php } ?>
 					<?php } ?>						
 					
-					<?php if($current_user->membership_level->billing_limit) { ?> for <?=$current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?><?php } ?>.
+					<?php if($current_user->membership_level->billing_limit) { ?> for <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?><?php } ?>.
 					
 					<?php if($current_user->membership_level->trial_limit) { ?>
-						The first <?=$current_user->membership_level->trial_limit?> <?=sornot("payments",$current_user->membership_level->trial_limit)?> will cost $<?=$current_user->membership_level->trial_amount?>.
+						The first <?php echo $current_user->membership_level->trial_limit?> <?php echo sornot("payments",$current_user->membership_level->trial_limit)?> will cost $<?php echo $current_user->membership_level->trial_amount?>.
 					<?php } ?>   
 				<?php
 				}
@@ -691,14 +691,14 @@ function pmpro_page_meta()
 	$page_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'");
 ?>
     <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
-    <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?=wp_create_nonce( plugin_basename(__FILE__) )?>" />
+    <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
 	<?php				
 		foreach($membership_levels as $level)
 		{
 	?>
-    	<li id="membership-level-<?=$level->id?>">
+    	<li id="membership-level-<?php echo $level->id?>">
         	<label class="selectit">
-            	<input id="in-membership-level-<?=$level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?=$level->id?>" /> <?=$level->name?>
+            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" /> <?php echo $level->name?>
             </label>
         </li>
     <?php
@@ -761,6 +761,8 @@ if (is_admin())
 {
 	add_action('admin_menu', 'pmpro_page_meta_wrapper');
 	add_action('save_post', 'pmpro_page_save');
+	
+	require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/adminpages/dashboard.php");
 }
 
 function pmpro_add_pages() 
@@ -1235,7 +1237,7 @@ function pmpro_footer_link()
 	if(!pmpro_getOption("hide_footer_link"))
 	{
 		?>
-		<!-- <?=pmpro_link()?> -->
+		<!-- <?php echo pmpro_link()?> -->
 		<?php
 	}
 }

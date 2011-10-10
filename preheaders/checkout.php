@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token;
+	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
 	$gateway = pmpro_getOption("gateway");		
 	
 	//what level are they purchasing? (discount code passed)
@@ -57,6 +57,13 @@
 		$besecure = false;		
 	}
 	
+	//should we show the discount code field?
+	if($wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1"))
+		$pmpro_show_discount_code = true;
+	else
+		$pmpro_show_discount_code = false;
+	$pmpro_show_discount_code = apply_filters("pmpro_show_discount_code", $pmpro_show_discount_code);
+		
 	//by default we show the account fields if the user isn't logged in
 	if($current_user->ID)
 	{

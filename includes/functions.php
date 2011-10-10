@@ -497,20 +497,17 @@
 			//get last order
 			$order = new MemberOrder();
 			$order->getLastMemberOrder($user_id);						
-						
-			if($order->subscription_transaction_id)
+									
+			if($order->cancel())
 			{
-				if($order->cancel())
-				{
-					//we're good					
-				}
-				else
-				{				
-					//uh oh										
-					$pmpro_error = "There was an error canceling your membership: " . $order->error;				
-					return false;
-				}				
+				//we're good					
 			}
+			else
+			{				
+				//uh oh										
+				$pmpro_error = "There was an error canceling your membership: " . $order->error;				
+				return false;
+			}							
 		}
 			
 		//adding, changing, or deleting
@@ -1034,4 +1031,15 @@
 
 		return implode (', ', $array).' and '.$last; 
 	} 
+	
+	//from yoast wordpress seo
+	function pmpro_text_limit( $text, $limit, $finish = '&hellip;') 
+	{
+		if( strlen( $text ) > $limit ) {
+			$text = substr( $text, 0, $limit );
+			$text = substr( $text, 0, - ( strlen( strrchr( $text,' ') ) ) );
+			$text .= $finish;
+		}
+		return $text;
+	}
 ?>

@@ -65,6 +65,14 @@
 				}
 			}
 			
+			//filters
+			$this->email = apply_filters("pmpro_email_recipient", $this->email, $this);
+			$this->from = apply_filters("pmpro_email_sender", $this->from, $this);
+			$this->fromname = apply_filters("pmpro_email_sender_name", $this->fromname, $this);
+			$this->subject = apply_filters("pmpro_email_subject", $this->subject, $this);
+			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
+			$this->body = apply_filters("pmpro_email_body", $this->body, $this);
+									
 			//prep email
 			$this->mailer = new PHPMailer();
 			$this->mailer->From = $this->from;

@@ -444,6 +444,14 @@
 		{
 			$gateway = $this->gateway;
 			
+			//if there is no subscription id or this subscription has a status != success, it was already cancelled (or never existed)
+			if(!$this->subscription_transaction_id || !$this->status != "success")
+			{
+				//cancel
+				$this->updateStatus("cancelled");
+				return true;
+			}
+			
 			//if no gateway specified for the order, assume it is the current gateway
 			if(!$gateway)			
 				$gateway = pmpro_getOption("gateway");
@@ -763,8 +771,8 @@
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 									
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$this->status = "success";				
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {				
+				$this->updateStatus("cancelled");					
 				return true;
 				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {				

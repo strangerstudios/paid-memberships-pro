@@ -19,7 +19,7 @@
 	
 	if($s)
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.billing_amount, mu.cycle_period, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
 	
 		if($l)
 			$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";					
@@ -28,7 +28,7 @@
 	}
 	else
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.billing_amount, mu.cycle_period, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 		$sqlQuery .= "WHERE mu.membership_id > 0 ";
 		if($l)
 			$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";										
@@ -36,7 +36,7 @@
 	}
 		
 	$theusers = $wpdb->get_results($sqlQuery);	
-	$csvoutput = "id,username,firstname,lastname,email,membership,fee,term,joined\n";	
+	$csvoutput = "id,username,firstname,lastname,email,membership,fee,term,joined,expires\n";	
 	
 	if($theusers)
 	{
@@ -54,7 +54,12 @@
 						  enclose($theuser->membership) . "," .
 						  enclose($theuser->billing_amount) . "," .
 						  enclose($theuser->cycle_period) . "," .					  
-						  enclose(date("m/d/Y", $theuser->joindate)) . "\n";
+						  enclose(date("m/d/Y", $theuser->joindate)) . ",";
+			if($theuser->enddate)
+				$csvoutput .= enclose(date("m/d/Y", $theuser->enddate));
+			else
+				$csvoutput .= enclose("Never");
+			$csvoutput .= "\n";
 											
 		}
 	}
