@@ -150,7 +150,7 @@ function pmpro_is_ready()
 	
 	//check if the gateway settings are good. first check if it's needed (is there paid membership level)
 	$paid_membership_level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE allow_signups = 1 AND (initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0) LIMIT 1");
-	$paid_user_subscription = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1");
+	$paid_user_subscription = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1");
 	
 	if(!$paid_membership_level && !$paid_user_susbcription)
 	{
