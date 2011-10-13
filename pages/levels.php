@@ -8,7 +8,7 @@ if($pmpro_msg)
 }
 ?>
 
-<table class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
+<table id="pmpro_levels_table" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 <thead>
   <tr>
 	<th>Level</th>

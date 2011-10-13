@@ -26,7 +26,7 @@
 		<p>Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.</p>
 	<?php } ?>
 		
-	<table class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
+	<table id="pmpro_pricing_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
 			<th>
@@ -143,7 +143,7 @@
 	<?php } ?>
 	
 	<?php if(!$skip_account_fields && !$pmpro_review) { ?>
-	<table class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
+	<table id="pmpro_user_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
 			<th>
@@ -218,7 +218,7 @@
 		if($tospage && !$pmpro_review)
 		{						
 		?>
-		<table class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
+		<table id="pmpro_tos_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<thead>
 		<tr>
 			<th><?php echo $tospage->post_title?></th>

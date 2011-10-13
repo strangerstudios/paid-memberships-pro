@@ -254,7 +254,7 @@
 						{
 							$_SESSION['pmpro_signup_username'] = $username;
 							$_SESSION['pmpro_signup_password'] = $password;
-							$_SESSION['pmpro_signup_email'] = $email;
+							$_SESSION['pmpro_signup_email'] = $bemail;
 							
 							//can use this hook to save some other variables to the session
 							do_action("pmpro_paypalexpress_session_vars");

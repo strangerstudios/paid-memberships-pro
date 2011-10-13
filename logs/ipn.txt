@@ -1,0 +1,593 @@
+Logged On: 10/13/2011 01:59:32
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:03:46
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:04:00
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:04:05
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:08:06
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:08:30
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:08:50
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:09:20
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:09:29
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:09:59
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:10:15
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:10:32
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:10:52
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:12:01
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:23:32
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:28:11
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:28:32
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:30:56
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:31:08
+	Array
+(
+)
+
+	Resource id #95
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:34:15
+	Array
+(
+)
+
+	Array
+(
+    [headers] => Array
+        (
+            [date] => Thu, 13 Oct 2011 02:27:37 GMT
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [set-cookie] => Array
+                (
+                    [0] => c9MWDuvPtT9GIMyPc3jwol1VSlO=ZLtPeknlscvzrOCOYi_nSkDBBlvVyz4nkEh3-IvBql8qDgCdOLQHsWBD1fIDVdIiyTgGKFnXSAFfDi22mqeZJqp0zfW896rvcXRKql9XaDkZ37FaCzfjLgvHQVZG9rfdK4Wa5m%7c4Ft04QdxVsRP-z1Zt6MFX2b1QKLzLIYah-mZYmXAJWDk41LilWZoVuUo_FuHeflI7ojO00%7cYX6QHje5EhSDK9lIRjvPenePrcj8rZ_SUZez6d0lTA3TM2JehpumgE27FMsnOJH69_8QzG%7c1318472858; domain=.paypal.com; path=/; HttpOnly
+                    [1] => cookie_check=yes; expires=Sun, 10-Oct-2021 02:27:38 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; HttpOnly
+                    [3] => navlns=0.0; expires=Wed, 08-Oct-2031 02:27:38 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [4] => Apache=10.72.109.11.1318472857734311; path=/; expires=Sat, 05-Oct-41 02:27:37 GMT
+                )
+
+            [connection] => close
+            [content-type] => text/html; charset=UTF-8
+        )
+
+    [body] => INVALID
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => c9MWDuvPtT9GIMyPc3jwol1VSlO
+                    [value] => ZLtPeknlscvzrOCOYi_nSkDBBlvVyz4nkEh3-IvBql8qDgCdOLQHsWBD1fIDVdIiyTgGKFnXSAFfDi22mqeZJqp0zfW896rvcXRKql9XaDkZ37FaCzfjLgvHQVZG9rfdK4Wa5m|4Ft04QdxVsRP-z1Zt6MFX2b1QKLzLIYah-mZYmXAJWDk41LilWZoVuUo_FuHeflI7ojO00|YX6QHje5EhSDK9lIRjvPenePrcj8rZ_SUZez6d0lTA3TM2JehpumgE27FMsnOJH69_8QzG|1318472858
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1633832858
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 1949192858
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.72.109.11.1318472857734311
+                    [expires] => 2264552857
+                    [path] => /
+                    [domain] => 
+                )
+
+        )
+
+    [filename] => 
+)
+
+	FP!
+	INAVLID
+
+-------------
+Logged On: 10/13/2011 02:35:42
+	Array
+(
+    [test_ipn] => 1
+    [payment_type] => instant
+    [payment_date] => 19:28:56 Oct 12, 2011 PDT
+    [payment_status] => Completed
+    [address_status] => confirmed
+    [payer_status] => unverified
+    [first_name] => John
+    [last_name] => Smith
+    [payer_email] => buyer@paypalsandbox.com
+    [payer_id] => TESTBUYERID01
+    [address_name] => John Smith
+    [address_country] => United States
+    [address_country_code] => US
+    [address_zip] => 95131
+    [address_state] => CA
+    [address_city] => San Jose
+    [address_street] => 123, any street
+    [receiver_email] => seller@paypalsandbox.com
+    [receiver_id] => TESTSELLERID1
+    [residence_country] => US
+    [item_name1] => something
+    [item_number1] => AK-1234
+    [quantity1] => 1
+    [tax] => 2.02
+    [mc_currency] => USD
+    [mc_fee] => 0.44
+    [mc_gross_1] => 9.34
+    [mc_handling] => 2.06
+    [mc_handling1] => 1.67
+    [mc_shipping] => 3.02
+    [mc_shipping1] => 1.02
+    [txn_type] => cart
+    [txn_id] => 561013228
+    [notify_version] => 2.4
+    [custom] => xyz123
+    [invoice] => abc1234
+    [charset] => windows-1252
+    [verify_sign] => AzmyvT1c1tSsFbXZcIP4vr95xggZAICjfdvjh6xpgQf8J0Hlr1PVT6eR
+)
+
+	Array
+(
+    [headers] => Array
+        (
+            [date] => Thu, 13 Oct 2011 02:29:04 GMT
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [set-cookie] => Array
+                (
+                    [0] => c9MWDuvPtT9GIMyPc3jwol1VSlO=1N9WYBKt5bc8QQzTfabEIjX47mUOKNjtBvc4iv3ql_vGgTY8s67GMIR6T62fj70REwP1HBSp8gqPco38ygVIa1oLWegWpEW-P1PH9lA_GGvD31yBvm4H_Qh0cNL_j5wBSF2DIW%7c3c2INchn_0qHbyJkZsptuqOhdMgtfuj92hSVgDqzg6wKp8ikJ81Ms_8NR0uG1zOuK8Syj0%7c91Uy3CUgWgkHGxh5BCBi24tgs0d1FoMz-XFg69x2h-homYXD9Owsurm_3lF8Z0octIq790%7c1318472944; domain=.paypal.com; path=/; HttpOnly
+                    [1] => cookie_check=yes; expires=Sun, 10-Oct-2021 02:29:04 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; HttpOnly
+                    [3] => navlns=0.0; expires=Wed, 08-Oct-2031 02:29:04 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [4] => Apache=10.72.109.11.1318472944105661; path=/; expires=Sat, 05-Oct-41 02:29:04 GMT
+                )
+
+            [connection] => close
+            [content-type] => text/html; charset=UTF-8
+        )
+
+    [body] => VERIFIED
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => c9MWDuvPtT9GIMyPc3jwol1VSlO
+                    [value] => 1N9WYBKt5bc8QQzTfabEIjX47mUOKNjtBvc4iv3ql_vGgTY8s67GMIR6T62fj70REwP1HBSp8gqPco38ygVIa1oLWegWpEW-P1PH9lA_GGvD31yBvm4H_Qh0cNL_j5wBSF2DIW|3c2INchn_0qHbyJkZsptuqOhdMgtfuj92hSVgDqzg6wKp8ikJ81Ms_8NR0uG1zOuK8Syj0|91Uy3CUgWgkHGxh5BCBi24tgs0d1FoMz-XFg69x2h-homYXD9Owsurm_3lF8Z0octIq790|1318472944
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1633832944
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 1949192944
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.72.109.11.1318472944105661
+                    [expires] => 2264552944
+                    [path] => /
+                    [domain] => 
+                )
+
+        )
+
+    [filename] => 
+)
+
+	FP!
+	VERIFIED
+	ERROR: receiver_email (seller@paypalsandbox.com) did not match (billin_1203902703_biz@strangerstudios.com)
+
+-------------
+Logged On: 10/13/2011 02:36:05
+	Array
+(
+    [test_ipn] => 1
+    [payment_type] => instant
+    [payment_date] => 19:28:56 Oct 12, 2011 PDT
+    [payment_status] => Completed
+    [address_status] => confirmed
+    [payer_status] => unverified
+    [first_name] => John
+    [last_name] => Smith
+    [payer_email] => buyer@paypalsandbox.com
+    [payer_id] => TESTBUYERID01
+    [address_name] => John Smith
+    [address_country] => United States
+    [address_country_code] => US
+    [address_zip] => 95131
+    [address_state] => CA
+    [address_city] => San Jose
+    [address_street] => 123, any street
+    [receiver_email] => seller@paypalsandbox.com
+    [receiver_id] => TESTSELLERID1
+    [residence_country] => US
+    [item_name1] => something
+    [item_number1] => AK-1234
+    [quantity1] => 1
+    [tax] => 2.02
+    [mc_currency] => USD
+    [mc_fee] => 0.44
+    [mc_gross_1] => 9.34
+    [mc_handling] => 2.06
+    [mc_handling1] => 1.67
+    [mc_shipping] => 3.02
+    [mc_shipping1] => 1.02
+    [txn_type] => cart
+    [txn_id] => 561013228
+    [notify_version] => 2.4
+    [custom] => xyz123
+    [invoice] => abc1234
+    [charset] => windows-1252
+    [verify_sign] => A8Nmxvx.Gdb3fUQD1Co8WMKVXMqTA2Sq8RVY6-27fNIAb2fk3bRZaVEY
+)
+
+	Array
+(
+    [headers] => Array
+        (
+            [date] => Thu, 13 Oct 2011 02:29:27 GMT
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [set-cookie] => Array
+                (
+                    [0] => c9MWDuvPtT9GIMyPc3jwol1VSlO=dOpU7vNRxWr69lx-5f0PYncobVYLfbTMv3sGu1NThkf1pPgDC13ND5729y8qvZ3cYKPZq2YD4FbLO4QNoaOkjjTu5a9DDJ68f91R3ve_ncQgkaVFwTiLqoHEOgF_cb1jO4jDhW%7c1AkJPBfKbHMIzVyX2HmwpgpdK4MgJuaGSo2F_uFzlArs2PkU9RnQRKB1N7L6LMKn_6kdwW%7cPb-6UTdkQhBpQmRPnmEec0g3pb6a9hoftNdzANbz8l6Ugzk3lfxxMS7t-V6reijqsAT-90%7c1318472968; domain=.paypal.com; path=/; HttpOnly
+                    [1] => cookie_check=yes; expires=Sun, 10-Oct-2021 02:29:28 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; HttpOnly
+                    [3] => navlns=0.0; expires=Wed, 08-Oct-2031 02:29:28 GMT; domain=.paypal.com; path=/; HttpOnly
+                    [4] => Apache=10.72.109.11.1318472967767146; path=/; expires=Sat, 05-Oct-41 02:29:27 GMT
+                )
+
+            [connection] => close
+            [content-type] => text/html; charset=UTF-8
+        )
+
+    [body] => VERIFIED
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => c9MWDuvPtT9GIMyPc3jwol1VSlO
+                    [value] => dOpU7vNRxWr69lx-5f0PYncobVYLfbTMv3sGu1NThkf1pPgDC13ND5729y8qvZ3cYKPZq2YD4FbLO4QNoaOkjjTu5a9DDJ68f91R3ve_ncQgkaVFwTiLqoHEOgF_cb1jO4jDhW|1AkJPBfKbHMIzVyX2HmwpgpdK4MgJuaGSo2F_uFzlArs2PkU9RnQRKB1N7L6LMKn_6kdwW|Pb-6UTdkQhBpQmRPnmEec0g3pb6a9hoftNdzANbz8l6Ugzk3lfxxMS7t-V6reijqsAT-90|1318472968
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1633832968
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 1949192968
+                    [path] => /
+                    [domain] => .paypal.com
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.72.109.11.1318472967767146
+                    [expires] => 2264552967
+                    [path] => /
+                    [domain] => 
+                )
+
+        )
+
+    [filename] => 
+)
+
+	FP!
+	VERIFIED
+	ERROR: receiver_email (seller@paypalsandbox.com) did not match (billin_1203902703_biz@strangerstudios.com)
+
+-------------
+Logged On: 10/13/2011 02:37:33
+	Array
+(
+    [test_ipn] => 1
+    [payment_type] => instant
+    [payment_date] => 19:28:56 Oct 12, 2011 PDT
+    [payment_status] => Completed
+    [address_status] => confirmed
+    [payer_status] => unverified
+    [first_name] => John
+    [last_name] => Smith
+    [payer_email] => buyer@paypalsandbox.com
+    [payer_id] => TESTBUYERID01
+    [address_name] => John Smith
+    [address_country] => United States
+    [address_country_code] => US
+    [address_zip] => 95131
+    [address_state] => CA
+    [address_city] => San Jose
+    [address_street] => 123, any street
+    [receiver_email] => seller@paypalsandbox.com
+    [receiver_id] => TESTSELLERID1
+    [residence_country] => US
+    [item_name1] => something
+    [item_number1] => AK-1234
+    [quantity1] => 1
+    [tax] => 2.02
+    [mc_currency] => USD
+    [mc_fee] => 0.44
+    [mc_gross_1] => 9.34
+    [mc_handling] => 2.06
+    [mc_handling1] => 1.67
+    [mc_shipping] => 3.02
+    [mc_shipping1] => 1.02
+    [txn_type] => cart
+    [txn_id] => 561013228
+    [notify_version] => 2.4
+    [custom] => xyz123
+    [invoice] => abc1234
+    [charset] => windows-1252
+    [verify_sign] => AFcWxV21C7fd0v3bYYYRCpSSRl31AlYHeo.5fx2v.wkq124XAp5tvlIk
+)
+
+	Resource id #89
+	FP!
+	VERIFIED
+	ERROR: receiver_email (seller@paypalsandbox.com) did not match (billin_1203902703_biz@strangerstudios.com)
+
+-------------

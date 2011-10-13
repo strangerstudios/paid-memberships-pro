@@ -1422,7 +1422,8 @@
 			
 			//customer stuff
 			$customer_email = $this->Email;
-			$customer_phone = $this->billing->phone;
+			if(strpos($this->billing->phone, "+") === false)
+				$customer_phone = $this->billing->phone;
 			
 			//build xml to post
 			$content =

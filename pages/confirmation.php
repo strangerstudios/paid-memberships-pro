@@ -31,7 +31,7 @@
 		<?php } ?>
 	</ul>
 	
-	<table class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
+	<table id="pmpro_confirmation_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<thead>
 			<tr>
 				<th>Billing Address</th>
