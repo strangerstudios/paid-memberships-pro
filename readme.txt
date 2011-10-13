@@ -5,7 +5,7 @@ Requires at least: 3.0
 Tested up to: 3.2.1
 Stable tag: 1.2.9
 
-An infinitely customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
+A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
 
 == Description ==
