@@ -238,7 +238,9 @@
 		<?php
 		}
 	?>
-				
+	
+	<?php do_action("pmpro_checkout_boxes"); ?>	
+	
 	<table id="pmpro_billing_address_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>

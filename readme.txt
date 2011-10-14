@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.2.9
+Stable tag: 1.2.10
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,11 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.2.10 =
+* Added pmpro_confirmation_message hook to change the output on the confirmation page without having to templatize it. The filter passes the constructed html string with the confirmation message and a second parameter containing the order/invoice object if it is a paid membership.
+* Added a pmpro_checkout_boxes hook that can be used to output extra fields and other content in the middle of the checkout page.
+* 
+
 = 1.2.9 =
 * IMPORTANT fix so new user email addresses are properly captured when using PayPal Express.
 * rewrote the IPN handler to use the WordPress HTTP API for better compatibility.

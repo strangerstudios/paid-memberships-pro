@@ -442,7 +442,7 @@
 					
 					<tr>
                         <th scope="row" valign="top"><label>Membership Expiration:</label></th>
-                        <td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <small>Check this to set an expiration date for new sign ups.</small></td>
+                        <td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> Check this to set an expiration date for new sign ups.</td>
                     </tr>
 					
 					<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
@@ -1085,7 +1085,7 @@ if(pmpro_displayAds())
 					<?php } else { ?>						
 						<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> every <?php echo $level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
 						
-						<?php if($level->billing_limit) { ?>(for <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->cycle_number)?>)<?php } ?>
+						<?php if($level->billing_limit) { ?>(for <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->billing_limit)?>)<?php } ?>
 						
 					<?php } ?>
 				</td>				

@@ -7,16 +7,23 @@
 		<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 	<?php
 	}
+	
+	$confirmation_message = "<p>Thank you for your membership to " . get_bloginfo('name') . ". Your " . $current_user->membership_level->name . " membership is now active.</p>";
+
 ?>	
 
-<p>Thank you for your membership to <?php bloginfo('name'); ?>. Your <?php echo $current_user->membership_level->name?> membership is now active.</p>
-
 <?php if($pmpro_invoice) { ?>		
+	
 	<?php
 		$pmpro_invoice->getUser();
 		$pmpro_invoice->getMembershipLevel();			
+		
+		$confirmation_message .= "<p>Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to <strong>" . $pmpro_invoice->user->user_email . "</strong>.</p>";
+		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);
+		
+		echo $confirmation_message;
 	?>
-	<p>Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to <strong><?php echo $pmpro_invoice->user->user_email?></strong>.</p>
+	
 	
 	<h3>Invoice #<?php echo $pmpro_invoice->code?> on <?php echo date("F j, Y", $pmpro_invoice->timestamp)?></h3>
 	<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
@@ -63,12 +70,22 @@
 			</tr>
 		</tbody>
 	</table>		
-<?php } else { ?>
-	<p>Below are details about your membership account. A welcome email has been sent to <strong><?php echo $current_user->user_email?></strong>.</p>
+<?php 
+	} 
+	else 
+	{
+		$confirmation_message .= "<p>Below are details about your membership account. A welcome email has been sent to <strong>" . $current_user->user_email . "</strong>.</p>";
+		
+		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, false);
+		
+		echo $confirmation_message;
+	?>	
 	<ul>
 		<li><strong>Account:</strong> <?php echo $current_user->display_name?> (<?php echo $current_user->user_email?>)</li>
 		<li><strong>Membership Level:</strong> <?php echo $current_user->membership_level->name?></li>
 	</ul>	
-<?php } ?>  
+<?php 
+	} 
+?>  
 
 <p align="center"><a href="<?php echo pmpro_url("account")?>">View Your Membership Account &raquo;</a></p>           
