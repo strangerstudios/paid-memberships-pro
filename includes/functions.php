@@ -198,7 +198,7 @@
 		
 		if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
 		{
-			$r .= " Customers in " . $tax_state . " will be charged " . round($tax_rate * 100) . "% tax.";
+			$r .= " Customers in " . $tax_state . " will be charged " . round($tax_rate * 100, 2) . "% tax.";
 		}
 		
 		$r = apply_filters("pmpro_level_cost_text", $r, $level);		

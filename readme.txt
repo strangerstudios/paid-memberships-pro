@@ -37,7 +37,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 = 1.2.10 =
 * Added pmpro_confirmation_message hook to change the output on the confirmation page without having to templatize it. The filter passes the constructed html string with the confirmation message and a second parameter containing the order/invoice object if it is a paid membership.
 * Added a pmpro_checkout_boxes hook that can be used to output extra fields and other content in the middle of the checkout page.
-* 
+* Now showing 2 decimals places for the tax rate when showing a membership level's cost.
 
 = 1.2.9 =
 * IMPORTANT fix so new user email addresses are properly captured when using PayPal Express.
