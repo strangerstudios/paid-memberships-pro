@@ -507,9 +507,12 @@
 			}
 			
 			//update membership_user table.
-			$sqlQuery = "REPLACE INTO $wpdb->pmpro_memberships_users (user_id, membership_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
+			if($discount_code && $use_discount_code)
+				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+			$sqlQuery = "REPLACE INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
 				VALUES('" . $user_id . "',
 				'" . $pmpro_level->id . "',
+				'" . $discount_code_id . "',
 				'" . $pmpro_level->initial_payment . "',
 				'" . $pmpro_level->billing_amount . "',
 				'" . $pmpro_level->cycle_number . "',
@@ -548,9 +551,8 @@
 			
 				//add discount code use
 				if($discount_code && $use_discount_code)
-				{
-					$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
-					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");
+				{					
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");					
 				}
 			
 				//save billing info ect, as user meta																		

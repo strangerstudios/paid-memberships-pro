@@ -13,10 +13,12 @@
 	$pn = $_REQUEST['pn'];
 		if(!$pn) $pn = 1;
 	$limit = $_REQUEST['limit'];
-		if(!$limit) $limit = 15;
-	$end = $pn * $limit;
-	$start = $end - $limit;		
-	
+	if($limit)
+	{	
+		$end = $pn * $limit;
+		$start = $end - $limit;		
+	}
+		
 	if($s)
 	{
 		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
@@ -32,7 +34,9 @@
 		$sqlQuery .= "WHERE mu.membership_id > 0 ";
 		if($l)
 			$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";										
-		$sqlQuery .= "ORDER BY user_registered DESC LIMIT $start, $limit";
+		$sqlQuery .= "ORDER BY user_registered DESC ";
+		if($limit)
+			$sqlQuery .= "LIMIT $start, $limit";
 	}
 		
 	$theusers = $wpdb->get_results($sqlQuery);	

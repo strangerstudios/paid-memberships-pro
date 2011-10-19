@@ -10,7 +10,24 @@
 	$uri = $_SERVER['REQUEST_URI'];
 	if($uri[0] == "/")
 		$uri = substr($uri, 1, strlen($uri) - 1);
-	$filename = ABSPATH . $uri;
+	
+	//if WP is installed in a subdirectory, that directory(s) will be in both the PATH and URI
+	$home_url_parts = explode("/", str_replace("//", "", home_url()));	
+	if(count($home_url_parts) > 1)
+	{
+		//found a directory or more
+		$uri_parts = explode("/", $uri);
+		
+		//create new uri without the directories in front
+		$new_uri_parts = array();		
+		for($i = count($home_url_parts) - 1; $i < count($uri_parts); $i++)
+			$new_uri_parts[] = $uri_parts[$i];
+		$new_uri = implode("/", $new_uri_parts);
+	}
+	else
+		$new_uri = $uri;
+	
+	$filename = ABSPATH . $new_uri;
 	$pathParts = pathinfo($filename);			
 		
 	//only checking if the image is pulled from outside the admin
@@ -18,12 +35,12 @@
 	{
 		//get some info to use
 		$upload_dir = wp_upload_dir();			//wp upload dir
-		$filename_small = substr($filename, strlen($upload_dir[basedir]) + 1, strlen($filename) - strlen($upload_dir[basedir]) - 1);  //just the part wp saves				
+		$filename_small = substr($filename, strlen($upload_dir[basedir]) + 1, strlen($filename) - strlen($upload_dir[basedir]) - 1);  //just the part wp saves							
 		
 		//look the file up in the db				
 		$sqlQuery = "SELECT post_parent FROM $wpdb->posts WHERE ID = (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wp_attached_file' AND meta_value = '" . $wpdb->escape($filename_small) . "' LIMIT 1) LIMIT 1";		
 		$file_post_parent = $wpdb->get_var($sqlQuery);
-				
+		
 		//has access?
 		if($file_post_parent)
 		{

@@ -21,10 +21,10 @@
 	}
 	
 	// post back to PayPal system to validate
-	if($gateway_environment)
-		$fp = wp_remote_post('http://www.' . $gateway_environment . '.paypal.com?' . $req);
+	if($gateway_environment == "sandbox")
+		$fp = wp_remote_post('https://www.' . $gateway_environment . '.paypal.com?' . $req);
 	else
-		$fp = wp_remote_post('http://www.paypal.com?' . $req);
+		$fp = wp_remote_post('https://www.paypal.com?' . $req);
 			
 	// assign posted variables to local variables
 	$item_name = $_POST['item_name'];
