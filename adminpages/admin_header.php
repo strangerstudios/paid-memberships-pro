@@ -1,0 +1,57 @@
+<?php
+	$view = $_REQUEST['page'];
+	
+	global $pmpro_ready, $msg, $msgt;
+	$pmpro_ready = pmpro_is_ready();
+	if(!$pmpro_ready)
+	{
+		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;		
+		$edit = $_REQUEST['edit'];
+		if(!$msg)
+			$msg = -1;		
+		if(!$pmpro_level_ready && !$edit)
+			$msgt .= " <a href=\"?page=pmpro-membershiplevels&edit=-1\">Add a membership level</a> to get started.";
+		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
+			$msgt .= " <a href=\"?page=pmpro-pagesettings\">Setup the membership pages</a>.";		
+		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
+			$msgt .= " <a href=\"?page=pmpro-paymentsettings\">Setup your SSL certificate and payment gateway</a>.";
+			
+		if(!$msgt)
+			$msg = false;
+	}
+	
+	if($msg)
+	{
+	?>
+		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
+	<?php
+	}		
+
+?>
+<div class="wrap pmpro_admin">	
+	<div class="pmpro_banner">		
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
+		
+		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
+	</div>
+	<br style="clear:both;" />
+	
+	<?php
+		//include(pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
+	?>
+	<div id="pmpro_notifications">
+	</div>
+	<script>
+		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
+		  jQuery('#pmpro_notifications').html(data);		 
+		});
+	</script>
+	
+	<h3 class="nav-tab-wrapper">
+		<a href="admin.php?page=pmpro-membershiplevels" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>">Membership Levels</a>
+		<a href="admin.php?page=pmpro-pagesettings" class="nav-tab<?php if($view == 'pmpro-pagesettings') { ?> nav-tab-active<?php } ?>">Pages</a>
+		<a href="admin.php?page=pmpro-paymentsettings" class="nav-tab<?php if($view == 'pmpro-paymentsettings') { ?> nav-tab-active<?php } ?>">SSL &amp; Payment Gateway</a>
+		<a href="admin.php?page=pmpro-emailsettings" class="nav-tab<?php if($view == 'pmpro-emailsettings') { ?> nav-tab-active<?php } ?>">Email</a>
+		<a href="admin.php?page=pmpro-advancedsettings" class="nav-tab<?php if($view == 'pmpro-advancedsettings') { ?> nav-tab-active<?php } ?>">Advanced</a>	
+	</h3>
