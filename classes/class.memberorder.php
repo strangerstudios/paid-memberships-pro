@@ -341,6 +341,7 @@
 					{
 						$this->voidAuthorizationWithPayPal($authorization_id);						
 						$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
+						$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 						return $this->processWithPayPal();
 					}
 					else
@@ -359,6 +360,7 @@
 						if(pmpro_isLevelRecurring($this->membership_level))
 						{
 							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
+							$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 							return $this->processWithPayPal();
 						}
 						else
@@ -382,6 +384,7 @@
 				if(pmpro_isLevelRecurring($this->membership_level))
 				{
 					$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
+					$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 					return $this->processWithPayPalExpress();				
 				}
 				else
@@ -395,6 +398,7 @@
 					if($this->authorizeWithAuthorizeNet())
 					{						
 						$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";						
+						$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 						return $this->processWithAuthorizeNet();
 					}
 					else
@@ -413,6 +417,7 @@
 						if(pmpro_isLevelRecurring($this->membership_level))
 						{
 							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
+							$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 							return $this->processWithAuthorizeNet();
 						}
 						else

@@ -1,13 +1,13 @@
 <?php
 	global $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code;
-	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 	
 	$gateway = pmpro_getOption("gateway");
 ?>
 
 <form class="pmpro_form" action="<?php echo pmpro_url("checkout", "", "https")?>" method="post">
 
-	<input type="hidden" id="level" name="level" value="<?php echo $pmpro_level->id?>" />		
+	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
 	<?php if($pmpro_msg) 
 		{
 	?>
@@ -65,7 +65,7 @@
 			<td>
 				<div>
 					<label for="other_discount_code">Discount Code</label>
-					<input id="other_discount_code" name="other_discount_code" type="text" class="input" size="20" value="<?php echo $discount_code?>" /> 
+					<input id="other_discount_code" name="other_discount_code" type="text" class="input" size="20" value="<?php echo esc_attr($discount_code)?>" /> 
 					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="Apply" />					
 				</div>				
 			</td>
@@ -156,7 +156,7 @@
 			<td>
 				<div>
 					<label for="username">Username</label>
-					<input id="username" name="username" type="text" class="input" size="30" value="<?php echo $username?>" /> 
+					<input id="username" name="username" type="text" class="input" size="30" value="<?php echo esc_attr($username)?>" /> 
 				</div>
 				
 				<?php
@@ -165,11 +165,11 @@
 				
 				<div>
 					<label for="password">Password</label>
-					<input id="password" name="password" type="password" class="input" size="30" value="<?php echo $password?>" /> 
+					<input id="password" name="password" type="password" class="input" size="30" value="<?php echo esc_attr($password)?>" /> 
 				</div>
 				<div>
 					<label for="password2">Confirm Password</label>
-					<input id="password2" name="password2" type="password" class="input" size="30" value="<?php echo $password2?>" /> 
+					<input id="password2" name="password2" type="password" class="input" size="30" value="<?php echo esc_attr($password2)?>" /> 
 				</div>
 				
 				<?php
@@ -178,11 +178,11 @@
 				
 				<div>
 					<label for="bemail">E-mail Address</label>
-					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo $bemail?>" /> 
+					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<div>
 					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo $bconfirmemail?>" /> 
+					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 				</div>
 				
 				<?php
@@ -191,7 +191,7 @@
 				
 				<div class="pmpro_hidden">
 					<label for="fullname">Full Name</label>
-					<input id="fullname" name="fullname" type="text" class="input" size="30" value="<?php echo $fullname?>" /> <strong>LEAVE THIS BLANK</strong>
+					<input id="fullname" name="fullname" type="text" class="input" size="30" value="<?php echo esc_attr($fullname)?>" /> <strong>LEAVE THIS BLANK</strong>
 				</div>				
 
 				<div class="pmpro_captcha">
@@ -252,19 +252,19 @@
 			<td>
 				<div>
 					<label for="bfirstname">First Name</label>
-					<input id="bfirstname" name="bfirstname" type="text" class="input" size="30" value="<?php echo $bfirstname?>" /> 
+					<input id="bfirstname" name="bfirstname" type="text" class="input" size="30" value="<?php echo esc_attr($bfirstname)?>" /> 
 				</div>	
 				<div>
 					<label for="blastname">Last Name</label>
-					<input id="blastname" name="blastname" type="text" class="input" size="30" value="<?php echo $blastname?>" /> 
+					<input id="blastname" name="blastname" type="text" class="input" size="30" value="<?php echo esc_attr($blastname)?>" /> 
 				</div>					
 				<div>
 					<label for="baddress1">Address 1</label>
-					<input id="baddress1" name="baddress1" type="text" class="input" size="30" value="<?php echo $baddress1?>" /> 
+					<input id="baddress1" name="baddress1" type="text" class="input" size="30" value="<?php echo esc_attr($baddress1)?>" /> 
 				</div>
 				<div>
 					<label for="baddress2">Address 2</label>
-					<input id="baddress2" name="baddress2" type="text" class="input" size="30" value="<?php echo $baddress2?>" /> <small class="lite">(optional)</small>
+					<input id="baddress2" name="baddress2" type="text" class="input" size="30" value="<?php echo esc_attr($baddress2)?>" /> <small class="lite">(optional)</small>
 				</div>
 				
 				<?php
@@ -274,15 +274,15 @@
 				?>
 					<div>
 						<label for="bcity">City</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?php echo $bcity?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?php echo esc_attr($bcity)?>" /> 
 					</div>
 					<div>
 						<label for="bstate">State</label>
-						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo $bstate?>" /> 
+						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo esc_attr($bstate)?>" /> 
 					</div>
 					<div>
 						<label for="bzipcode">Zip/Postal Code</label>
-						<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?php echo $bzipcode?>" /> 
+						<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?php echo esc_attr($bzipcode)?>" /> 
 					</div>					
 				<?php
 					}
@@ -291,7 +291,7 @@
 					?>
 					<div>
 						<label for="bcity_state_zip">City, State Zip</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo $bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo $bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo $bzipcode?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
 					</div>
 					<?php
 					}
@@ -329,7 +329,7 @@
 				?>
 				<div>
 					<label for="bphone">Phone</label>
-					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?php echo $bphone?>" /> 
+					<input id="bphone" name="bphone" type="text" class="input" size="30" value="<?php echo esc_attr($bphone)?>" /> 
 					<?php echo formatPhone($bphone); ?>
 				</div>		
 				<?php if($skip_account_fields) { ?>
@@ -344,11 +344,11 @@
 				?>
 				<div>
 					<label for="bemail">E-mail Address</label>
-					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo $bemail?>" /> 
+					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<div>
 					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo $bconfirmemail?>" /> 
+					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 				</div>	                        
 				<?php } ?>    
@@ -405,7 +405,7 @@
 			
 				<div>
 					<label for="AccountNumber">Card Number</label>
-					<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo $AccountNumber?>" /> 
+					<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" /> 
 				</div>
 			
 				<div>
@@ -437,13 +437,13 @@
 			
 				<div>
 					<label for="CVV">CVV</label>
-					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php echo $_REQUEST['CVV']?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 				</div>
 				
 				<?php if($pmpro_show_discount_code) { ?>
 				<div>
 					<label for="discount_code">Discount Code</label>
-					<input class="input" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo $discount_code?>" />
+					<input class="input" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
 					<input type="button" id="discount_code_button" name="discount_code_button" value="Apply" />
 					<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
 				</div>
@@ -498,7 +498,7 @@
 	<div align="center">		
 		<?php if($pmpro_review) { ?>
 			<input type="hidden" name="confirm" value="1" />
-			<input type="hidden" name="token" value="<?php echo $pmpro_paypal_token?>" />
+			<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token)?>" />
 			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
 		<?php } elseif($gateway == "paypalexpress") { ?>
 			<input type="hidden" name="submit-checkout" value="1" />		

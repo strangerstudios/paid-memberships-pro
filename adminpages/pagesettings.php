@@ -88,7 +88,7 @@
 			else 
 			{ 
 			?>
-				<p>Assign the WordPress pages for each required Paid Memberships Pro page or <a href="?page=pmpro-membershiplevels&view=pages&createpages=1">click here to let us generate them for you</a>.</p>
+				<p>Assign the WordPress pages for each required Paid Memberships Pro page or <a href="?page=pmpro-pagesettings&createpages=1">click here to let us generate them for you</a>.</p>
 			<?php
 			}
 		?>       			        

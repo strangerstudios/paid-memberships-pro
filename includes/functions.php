@@ -52,7 +52,7 @@
 	
 	function pmpro_getOption($s)
 	{
-		if($_REQUEST[$s])
+		if(isset($_REQUEST[$s]))
 			return $_REQUEST[$s];
 		elseif(get_option("pmpro_" . $s))
 			return get_option("pmpro_" . $s);

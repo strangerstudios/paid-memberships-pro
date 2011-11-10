@@ -3,7 +3,7 @@
 	$gateway = pmpro_getOption("gateway");		
 	
 	//what level are they purchasing? (discount code passed)
-	if($_REQUEST['level'] && $_REQUEST['discount_code'])
+	if(!empty($_REQUEST['level']) && !empty($_REQUEST['discount_code']))
 	{
 		$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['discount_code']);
 		//check code
@@ -31,6 +31,9 @@
 	{
 		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
 	}
+	
+	//filter the level (for upgrades, etc)
+	$pmpro_level = apply_filters("pmpro_checkout_level", $pmpro_level);		
 	
 	if(!$pmpro_level)
 	{
@@ -83,37 +86,65 @@
 		$tospage = get_post($tospage);
 	
 	//load em up (other fields)
-	global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
-	$order_id = $_REQUEST['order_id'];
-	$bfirstname = $_REQUEST['bfirstname'];	
-	$blastname = $_REQUEST['blastname'];	
-	$fullname = $_REQUEST['fullname'];		//honeypot for spammers
-	$baddress1 = $_REQUEST['baddress1'];
-	$baddress2 = $_REQUEST['baddress2'];
-	$bcity = $_REQUEST['bcity'];
-	$bstate = $_REQUEST['bstate'];
-	$bzipcode = $_REQUEST['bzipcode'];
-	$bcountry = $_REQUEST['bcountry'];
-	$bphone = $_REQUEST['bphone'];
-	$bemail = $_REQUEST['bemail'];
-	$bconfirmemail = $_REQUEST['bconfirmemail'];
-	$CardType = $_REQUEST['CardType'];
-	$AccountNumber = $_REQUEST['AccountNumber'];
-	$ExpirationMonth = $_REQUEST['ExpirationMonth'];
-	$ExpirationYear = $_REQUEST['ExpirationYear'];
-	$CVV = $_REQUEST['CVV'];
+	if(isset($_REQUEST['order_id']))
+		$order_id = $_REQUEST['order_id'];
+	if(isset($_REQUEST['bfirstname']))
+		$bfirstname = $_REQUEST['bfirstname'];	
+	if(isset($_REQUEST['blastname']))
+		$blastname = $_REQUEST['blastname'];	
+	if(isset($_REQUEST['fullname']))
+		$fullname = $_REQUEST['fullname'];		//honeypot for spammers
+	if(isset($_REQUEST['baddress1']))
+		$baddress1 = $_REQUEST['baddress1'];		
+	if(isset($_REQUEST['baddress2']))
+		$baddress2 = $_REQUEST['baddress2'];
+	if(isset($_REQUEST['bcity']))
+		$bcity = $_REQUEST['bcity'];
+	if(isset($_REQUEST['bstate']))
+		$bstate = $_REQUEST['bstate'];
+	if(isset($_REQUEST['bzipcode']))
+		$bzipcode = $_REQUEST['bzipcode'];
+	if(isset($_REQUEST['bcountry']))
+		$bcountry = $_REQUEST['bcountry'];
+	if(isset($_REQUEST['bphone']))
+		$bphone = $_REQUEST['bphone'];
+	if(isset($_REQUEST['bemail']))
+		$bemail = $_REQUEST['bemail'];
+	if(isset($_REQUEST['bconfirmemail']))
+		$bconfirmemail = $_REQUEST['bconfirmemail'];
+	if(isset($_REQUEST['CardType']))
+		$CardType = $_REQUEST['CardType'];
+	if(isset($_REQUEST['AccountNumber']))
+		$AccountNumber = $_REQUEST['AccountNumber'];
+	if(isset($_REQUEST['ExpirationMonth']))
+		$ExpirationMonth = $_REQUEST['ExpirationMonth'];
+	if(isset($_REQUEST['ExpirationYear']))
+		$ExpirationYear = $_REQUEST['ExpirationYear'];
+	if(isset($_REQUEST['CVV']))
+		$CVV = $_REQUEST['CVV'];
 	
-	$discount_code = $_REQUEST['discount_code'];
-	$username = $_REQUEST['username'];
-	$password = $_REQUEST['password'];
-	$password2 = $_REQUEST['password2'];
-	$tos = $_REQUEST['tos'];		
+	if(isset($_REQUEST['discount_code']))
+		$discount_code = $_REQUEST['discount_code'];
+	if(isset($_REQUEST['username']))
+		$username = $_REQUEST['username'];
+	if(isset($_REQUEST['password']))
+		$password = $_REQUEST['password'];
+	if(isset($_REQUEST['password2']))
+		$password2 = $_REQUEST['password2'];
+	if(isset($_REQUEST['tos']))
+		$tos = $_REQUEST['tos'];		
 	
 	//_x stuff in case they clicked on the image button with their mouse
-	$submit = $_REQUEST['submit-checkout'];
-	if(!$submit) $submit = $_REQUEST['submit-checkout_x'];	
-	if($submit === "0") $submit = true;		
+	if(isset($_REQUEST['submit-checkout']))
+		$submit = $_REQUEST['submit-checkout'];
+	if(empty($submit) && isset($_REQUEST['submit-checkout_x']) )
+		$submit = $_REQUEST['submit-checkout_x'];	
+	if(isset($submit) && $submit === "0") 
+		$submit = true;	
+	elseif(!isset($submit))
+		$submit = false;
 	
 	//check their fields if they clicked continue
 	if($submit && $pmpro_msgt != "pmpro_error")
@@ -151,7 +182,7 @@
 			foreach($pmpro_required_billing_fields as $key => $field)
 			{
 				if(!$field)
-				{					
+				{										
 					$missing_billing_field = true;										
 					break;
 				}
@@ -325,6 +356,7 @@
 								$morder->payment_type = "PayPal Express";
 								$morder->cardtype = "";
 								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
+								$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);
 								$pmpro_processed = $morder->setExpressCheckout();
 							}
 							else
@@ -359,7 +391,7 @@
 	}		
 	
 	//PayPal Express Call Backs
-	if($_REQUEST['review'])
+	if(!empty($_REQUEST['review']))
 	{
 		$_SESSION['payer_id'] = $_REQUEST['PayerID'];
 		$_SESSION['paymentAmount']=$_REQUEST['paymentAmount'];
@@ -387,7 +419,7 @@
 			$pmpro_msgt = "error";
 		}
 	}
-	elseif($_REQUEST['confirm'])
+	elseif(!empty($_REQUEST['confirm']))
 	{		
 		$morder = new MemberOrder();
 		$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
@@ -457,7 +489,7 @@
 	}
 	
 	//if payment was confirmed create/update the user.
-	if($pmpro_confirmed)
+	if(!empty($pmpro_confirmed))
 	{
 		//do we need to create a user account?
 		if(!$current_user->ID)
@@ -509,6 +541,10 @@
 			//update membership_user table.
 			if($discount_code && $use_discount_code)
 				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+			
+			//set the start date to NOW() but allow filters
+			$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $user_id, $pmpro_level);			
+			
 			$sqlQuery = "REPLACE INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
 				VALUES('" . $user_id . "',
 				'" . $pmpro_level->id . "',
@@ -520,7 +556,7 @@
 				'" . $pmpro_level->billing_limit . "',
 				'" . $pmpro_level->trial_amount . "',
 				'" . $pmpro_level->trial_limit . "',
-				NOW(),
+				" . $startdate . ",
 				" . $enddate . ")";
 					
 			if($wpdb->query($sqlQuery) !== false)
@@ -595,7 +631,7 @@
 	}	
 	
 	//default values
-	if(!$submit)
+	if(empty($submit))
 	{
 		//show message if the payment gateway is not setup yet
 		if($pmpro_requirebilling && !pmpro_getOption("gateway"))

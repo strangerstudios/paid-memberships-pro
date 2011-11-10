@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3
+Version: 1.3.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -47,11 +47,11 @@ $wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 pmpro_checkForUpgrades();
 
 define("SITENAME", str_replace("&#039;", "'", get_bloginfo("name")));
-$urlparts = split("//", get_bloginfo("home"));
+$urlparts = split("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3");
+define("PMPRO_VERSION", "1.3.1");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -223,6 +223,8 @@ function pmpro_init()
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/countries.php");
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/currencies.php");
 	
+	wp_enqueue_script('ssmemberships_js', '/wp-content/plugins/paid-memberships-pro/js/paid-memberships-pro.js', array('jquery'));
+	
 	global $pmpro_pages, $pmpro_ready, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -373,7 +375,7 @@ function pmpro_membership_level_profile_fields_update()
 	if( $_REQUEST['user_id'] ) $user_ID = $_REQUEST['user_id'];
 		
 	if ( !current_user_can( 'edit_user', $user_ID ) ) { return false; }	
-	if(isset($_REQUEST['membership_level']))
+	if(!empty($_REQUEST['membership_level']))
 	{
 		if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID))
 		{
@@ -441,15 +443,16 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 			
 	$post_membership_levels = $wpdb->get_results($sqlQuery);
 	
+	$post_membership_levels_ids = array();
+	$post_membership_levels_names = array();
+	
 	if(!$post_membership_levels)
 	{
 		$hasaccess = true;
 	}
 	else
 	{
-		//we need to see if the user has access		
-		$post_membership_levels_ids = array();
-		$post_membership_levels_names = array();
+		//we need to see if the user has access				
 		foreach($post_membership_levels as $level)
 		{
 			$post_membership_levels_ids[] = $level->id;
@@ -847,8 +850,6 @@ function pmpro_admin_bar_menu() {
 }
 add_action('admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
-wp_enqueue_script('ssmemberships_js', '/wp-content/plugins/paid-memberships-pro/js/paid-memberships-pro.js', array('jquery'));
-
 //css
 function pmpro_addFrontendHeaderCode()
 {
@@ -879,7 +880,7 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 	global $wpdb;	
 		
 	//is a user logging in?	
-	if($user->ID)
+	if(!empty($user->ID))
 	{
 		//logging in, let's figure out where to send them
 				
@@ -939,25 +940,28 @@ function pmpro_besecure()
 	global $besecure, $post;	
 		
 	//check the post option
-	if(!$besecure)
+	if(!empty($post->ID) && !$besecure)
 		$besecure = get_post_meta($post->ID, "besecure", true);
 		
 	if(!$besecure && (force_ssl_admin() || force_ssl_login()))
 		$besecure = true;
 		
 	$besecure = apply_filters("pmpro_besecure", $besecure);
-		
-	if ($besecure && !$_SERVER['HTTPS'])
-	{				
-		//need to be secure												
-		wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-		exit;
-	}
-	elseif(!$besecure && $_SERVER['HTTPS'])
-	{		
-		//don't need to be secure				
-		wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-		exit;
+			
+	if(!empty($_SERVER['HTTPS']))
+	{
+		if ($besecure && !$_SERVER['HTTPS'])
+		{				
+			//need to be secure												
+			wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			exit;
+		}
+		elseif(!$besecure && $_SERVER['HTTPS'])
+		{		
+			//don't need to be secure				
+			wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			exit;
+		}
 	}	
 }
 add_action('wp', 'pmpro_besecure');
@@ -966,14 +970,17 @@ add_action('login_head', 'pmpro_besecure');
 //capturing case where a user links to https admin without admin over https
 function pmpro_admin_https_handler()
 {
-	if($_SERVER['HTTPS'] && is_admin())
+	if(!empty($_SERVER['HTTPS']))
 	{
-		if(substr(get_option("siteurl"), 0, 5) == "http:" && !force_ssl_admin())
+		if($_SERVER['HTTPS'] && is_admin())
 		{
-			//need to redirect to non https
-			wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-			exit;
-		}		
+			if(substr(get_option("siteurl"), 0, 5) == "http:" && !force_ssl_admin())
+			{
+				//need to redirect to non https
+				wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+				exit;
+			}		
+		}
 	}
 }
 add_action('init', 'pmpro_admin_https_handler');
@@ -1042,29 +1049,6 @@ function pmpro_delete_post($post_id = NULL)
 }
 add_action('delete_post', 'pmpro_delete_post');
 
-//thanks: http://wordpress.org/support/topic/adding-editor-on-my-plugin-need-htmlvisual-tabs-to-look-right?replies=6#post-1446687
-function pmpro_tinymce()
-{
-  wp_enqueue_script('common');
-  wp_enqueue_script('jquery-color');
-  wp_admin_css('thickbox');
-  wp_print_scripts('post');
-  wp_print_scripts('media-upload');
-  wp_print_scripts('jquery');
-  wp_print_scripts('jquery-ui-core');
-  wp_print_scripts('jquery-ui-tabs');
-  wp_print_scripts('tiny_mce');
-  wp_print_scripts('editor');
-  wp_print_scripts('editor-functions');
-  add_thickbox();
-  wp_tiny_mce();
-  wp_admin_css();
-  wp_enqueue_script('utils');
-  do_action("admin_print_styles-post-php");
-  do_action('admin_print_styles');
-  remove_all_filters('mce_external_plugins');
-}
-
 function pmpro_shortcode($atts, $content=null, $code="") 
 {
 	// $atts    ::= array of attributes
@@ -1107,7 +1091,7 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	//must not be a member
 	return "";	//just hide it
 }
-add_shortcode("membership", pmpro_shortcode);
+add_shortcode("membership", "pmpro_shortcode");
 
 function pmpro_wp_signup_location($location)
 {
@@ -1125,8 +1109,8 @@ function pmpro_login_head()
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	if((pmpro_is_login_page() || is_page("login")) && $login_redirect)
 	{		
-		//redirect registration page to levels page
-		if($_REQUEST['action'] == "register" || $_REQUEST['registration'] == "disabled")
+		//redirect registration page to levels page				
+		if(isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled")
 		{									
 			wp_redirect(pmpro_url("levels"));	
 			exit;		
@@ -1149,7 +1133,7 @@ function pmpro_login_head()
 					exit;
 				}			
 			}
-			elseif(isset($GLOBALS['theme_my_login']->options))
+			elseif(!empty($GLOBALS['theme_my_login']->options))
 			{		
 				if($GLOBALS['theme_my_login']->options->options['page_id'] !== $post->ID)
 				{									
