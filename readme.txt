@@ -39,8 +39,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Added hook pmpro_checkout_level which allows you to tweak the $level object before checkout, e.g. to change pricing for upgrades.
 * Added hook pmpro_checkout_start_date which allows you to change the start date of a membership before checkout. (preheaders/checkout.php)
 * Added hook pmpro_profile_start_date which allows you to change the start date of a membership that is sent to the gateway. (classes/class.memberorder.php)
-* Cleaned up notices and warnings.
+* Cleaned up some notices and warnings. Will hopefully finish the remaining ones next update.
 * Removed some old tinyMCE code that wasn't in use anymore. FYI, WP 3.3 will have a way to include visual editors on other pages, so we may add it to the description field of the membership levels.
+* Updated order class to send phone and email to Authorize.net when creating subscriptions.
 
 = 1.3 =
 * Added a filter pmpro_login_redirect. You can return false to allow users to signup via the default WP login page.
