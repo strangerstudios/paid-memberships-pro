@@ -163,11 +163,13 @@
 			}
 			elseif(pmpro_isLevelFree($user->membership_level))
 			{
-				$this->template = "checkout_free";				
+				$this->template = "checkout_free";		
+				$this->data["discount_code"] = "";		
 			}						
 			else
 			{
 				$this->template = "checkout_freetrial";
+				$this->data["discount_code"] = "";
 			}
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");

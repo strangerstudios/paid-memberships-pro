@@ -1176,9 +1176,7 @@
 				
 			//customer stuff
 			$customer_email = $this->Email;
-			$pmpro_force_phone = apply_filters("pmpro_force_phone", false);
-			if(strpos($this->billing->phone, "+") === false || $pmpro_force_phone)
-				$customer_phone = $this->billing->phone;
+			$customer_phone = $this->billing->phone;
 			
 			$post_values = array(
 				
@@ -1283,9 +1281,7 @@
 			
 			//customer stuff
 			$customer_email = $this->Email;
-			$pmpro_force_phone = apply_filters("pmpro_force_phone", false);
-			if(strpos($this->billing->phone, "+") === false || $pmpro_force_phone)
-				$customer_phone = $this->billing->phone;
+			$customer_phone = $this->billing->phone;
 			
 			$post_values = array(
 				
@@ -1443,9 +1439,15 @@
 			
 			//customer stuff
 			$customer_email = $this->Email;
-			$pmpro_force_phone = apply_filters("pmpro_force_phone", false);
-			if(strpos($this->billing->phone, "+") === false || $pmpro_force_phone)
+			if(strpos($this->billing->phone, "+") === false)
 				$customer_phone = $this->billing->phone;
+			else
+				$customer_phone = "";
+				
+			//make sure the phone is in an okay format
+			$customer_phone = preg_replace("/[^0-9]/", "", $customer_phone);
+			if(strlen($customer_phone) > 10)
+				$customer_phone = "";
 			
 			//build xml to post
 			$content =

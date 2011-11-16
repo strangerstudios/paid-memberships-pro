@@ -41,7 +41,8 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Added hook pmpro_profile_start_date which allows you to change the start date of a membership that is sent to the gateway. (classes/class.memberorder.php)
 * Cleaned up some notices and warnings. Will hopefully finish the remaining ones next update.
 * Removed some old tinyMCE code that wasn't in use anymore. FYI, WP 3.3 will have a way to include visual editors on other pages, so we may add it to the description field of the membership levels.
-* Updated order class to send phone and email to Authorize.net when creating subscriptions.
+* Updated order class to send phone and email to Authorize.net when creating subscriptions. The charge/authorize API support international phone numbers, but the ARB API does not. So if a customer enters an international phone number (or other phone number over 10 characters), the number will be sent for any initial payment/charge, but not for the subscription setup.
+* Fixed where !!discount_code!! was not being parsed out in emails.
 
 = 1.3 =
 * Added a filter pmpro_login_redirect. You can return false to allow users to signup via the default WP login page.
