@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
+	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
 	$gateway = pmpro_getOption("gateway");		
 	
 	//what level are they purchasing? (discount code passed)
@@ -60,6 +60,10 @@
 		$besecure = false;		
 	}
 	
+	//get all levels in case we need them
+	global $pmpro_levels;
+	$pmpro_levels = $wpdb->get_results( "SELECT * FROM " . $wpdb->pmpro_membership_levels . " WHERE allow_signups = 1", OBJECT );	
+	
 	//should we show the discount code field?
 	if($wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1"))
 		$pmpro_show_discount_code = true;
@@ -91,29 +95,29 @@
 	if(isset($_REQUEST['order_id']))
 		$order_id = $_REQUEST['order_id'];
 	if(isset($_REQUEST['bfirstname']))
-		$bfirstname = $_REQUEST['bfirstname'];	
+		$bfirstname = stripslashes($_REQUEST['bfirstname']);	
 	if(isset($_REQUEST['blastname']))
-		$blastname = $_REQUEST['blastname'];	
+		$blastname = stripslashes($_REQUEST['blastname']);	
 	if(isset($_REQUEST['fullname']))
 		$fullname = $_REQUEST['fullname'];		//honeypot for spammers
 	if(isset($_REQUEST['baddress1']))
-		$baddress1 = $_REQUEST['baddress1'];		
+		$baddress1 = stripslashes($_REQUEST['baddress1']);		
 	if(isset($_REQUEST['baddress2']))
-		$baddress2 = $_REQUEST['baddress2'];
+		$baddress2 = stripslashes($_REQUEST['baddress2']);
 	if(isset($_REQUEST['bcity']))
-		$bcity = $_REQUEST['bcity'];
+		$bcity = stripslashes($_REQUEST['bcity']);
 	if(isset($_REQUEST['bstate']))
-		$bstate = $_REQUEST['bstate'];
+		$bstate = stripslashes($_REQUEST['bstate']);
 	if(isset($_REQUEST['bzipcode']))
-		$bzipcode = $_REQUEST['bzipcode'];
+		$bzipcode = stripslashes($_REQUEST['bzipcode']);
 	if(isset($_REQUEST['bcountry']))
-		$bcountry = $_REQUEST['bcountry'];
+		$bcountry = stripslashes($_REQUEST['bcountry']);
 	if(isset($_REQUEST['bphone']))
-		$bphone = $_REQUEST['bphone'];
+		$bphone = stripslashes($_REQUEST['bphone']);
 	if(isset($_REQUEST['bemail']))
-		$bemail = $_REQUEST['bemail'];
+		$bemail = stripslashes($_REQUEST['bemail']);
 	if(isset($_REQUEST['bconfirmemail']))
-		$bconfirmemail = $_REQUEST['bconfirmemail'];
+		$bconfirmemail = stripslashes($_REQUEST['bconfirmemail']);
 	if(isset($_REQUEST['CardType']))
 		$CardType = $_REQUEST['CardType'];
 	if(isset($_REQUEST['AccountNumber']))
@@ -189,37 +193,37 @@
 			}
 		}
 				
-		if($missing_billing_field)
+		if(!empty($missing_billing_field))
 		{
 			$pmpro_msg = "Please complete all required fields.";
 			$pmpro_msgt = "pmpro_error";
 		}
-		elseif(!$current_user->ID && (!$username || !$password || !$password2))
+		elseif(empty($current_user->ID) && (empty($username) || empty($password) || empty($password2)))
 		{
 			$pmpro_msg = "Please complete all account fields.";
 			$pmpro_msgt = "pmpro_error";
 		}
-		elseif($password != $password2)
+		elseif(isset($password) && $password != $password2)
 		{
 			$pmpro_msg = "Your passwords do not match. Please try again.";
 			$pmpro_msgt = "pmpro_error";
 		}
-		elseif($bemail != $bconfirmemail)
+		elseif(isset($bemail) && $bemail != $bconfirmemail)
 		{
 			$pmpro_msg = "Your email addresses do not match. Please try again.";
 			$pmpro_msgt = "pmpro_error";
 		}		
-		elseif($bemail && !is_email($bemail))
+		elseif(!empty($bemail) && !is_email($bemail))
 		{
 			$pmpro_msg = "The email address entered is in an invalid format. Please try again.";	
 			$pmpro_msgt = "pmpro_error";
 		}
-		elseif($tospage && !$tos)
+		elseif(!empty($tospage) && empty($tos))
 		{
 			$pmpro_msg = "Please check the box to agree to the " . $tospage->post_title . ".";	
 			$pmpro_msgt = "pmpro_error";
 		}
-		elseif($fullname)
+		elseif(!empty($fullname))
 		{
 			$pmpro_msg = "Are you a spammer?";
 			$pmpro_msgt = "pmpro_error";
@@ -232,7 +236,7 @@
 			if($pmpro_continue_registration)
 			{											
 				//if creating a new user, check that the email and username are available
-				if(!$current_user->ID)
+				if(empty($current_user->ID))
 				{
 					$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . $wpdb->escape($username) . "' LIMIT 1");
 					$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . $wpdb->escape($bemail) . "' LIMIT 1");
@@ -241,12 +245,12 @@
 					$oldemail = apply_filters("pmpro_checkout_oldemail", $oldemail);
 				}
 				
-				if($oldusername)
+				if(!empty($oldusername))
 				{
 					$pmpro_msg = "That username is already taken. Please try another.";
 					$pmpro_msgt = "pmpro_error";
 				}
-				elseif($oldemail)
+				elseif(!empty($oldemail))
 				{
 					$pmpro_msg = "That email address is already taken. Please try another.";
 					$pmpro_msgt = "pmpro_error";

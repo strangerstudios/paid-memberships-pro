@@ -123,12 +123,18 @@
 			<div class="pmpro_box">
 				<h3>Past Invoices</h3>
 				<ul>
-					<?php foreach($invoices as $invoice) { ?>
+					<?php 
+						$count = 0;
+						foreach($invoices as $invoice) 
+						{ 
+					?>
 					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date("F j, Y", $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
 					<?php } ?>
 					<?php if($count > 10) { ?>
 						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);">show <?php echo (count($invoices) - 10)?> more</a></li>
-					<?php } ?>
+					<?php 
+						} 
+					?>
 				</ul>
 			</div>
 			<?php } ?>

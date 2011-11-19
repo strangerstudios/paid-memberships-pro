@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.1
+Version: 1.3.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -51,7 +51,7 @@ $urlparts = split("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.1");
+define("PMPRO_VERSION", "1.3.2");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -107,8 +107,7 @@ function pmpro_set_current_user()
 															JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 															WHERE mu.user_id = $id
 															LIMIT 1");
-		
-		if($current_user->membership_level->ID)
+		if(!empty($current_user->membership_level->ID))
 		{
 			$user_pricing = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' LIMIT 1");
 			if($user_pricing->billing_amount !== NULL)
@@ -120,19 +119,20 @@ function pmpro_set_current_user()
 				$current_user->membership_level->trial_amount = $user_pricing->trial_amount;
 				$current_user->membership_level->trial_limit = $user_pricing->trial_limit;								
 			}			
-		}
-			
-		$categories = $wpdb->get_results("SELECT c.category_id
-											FROM {$wpdb->pmpro_memberships_categories} AS c
-											WHERE c.membership_id = '" . $current_user->membership_level->ID . "'", ARRAY_N);										
-		$current_user->membership_level->categories = array();
-		if(is_array($categories))
-		{
-			foreach ( $categories as $cat )
+		
+			$categories = $wpdb->get_results("SELECT c.category_id
+												FROM {$wpdb->pmpro_memberships_categories} AS c
+												WHERE c.membership_id = '" . $current_user->membership_level->ID . "'", ARRAY_N);		
+																			
+			$current_user->membership_level->categories = array();
+			if(is_array($categories))
 			{
-			  $current_user->membership_level->categories[] = $cat;
-			}
-		}				
+				foreach ( $categories as $cat )
+				{
+				  $current_user->membership_level->categories[] = $cat;
+				}
+			}			
+		}	
 	}
 	
 	//hiding ads?
@@ -948,21 +948,18 @@ function pmpro_besecure()
 		
 	$besecure = apply_filters("pmpro_besecure", $besecure);
 			
-	if(!empty($_SERVER['HTTPS']))
-	{
-		if ($besecure && !$_SERVER['HTTPS'])
-		{				
-			//need to be secure												
-			wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-			exit;
-		}
-		elseif(!$besecure && $_SERVER['HTTPS'])
-		{		
-			//don't need to be secure				
-			wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-			exit;
-		}
-	}	
+	if ($besecure && empty($_SERVER['HTTPS']))
+	{				
+		//need to be secure												
+		wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		exit;
+	}
+	elseif(!$besecure && !empty($_SERVER['HTTPS']))
+	{		
+		//don't need to be secure				
+		wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+		exit;
+	}
 }
 add_action('wp', 'pmpro_besecure');
 add_action('login_head', 'pmpro_besecure');

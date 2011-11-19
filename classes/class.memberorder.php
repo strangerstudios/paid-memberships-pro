@@ -140,24 +140,24 @@
 		{
 			global $wpdb;
 			
-			if($this->membership_level && !$force)
+			if(!empty($this->membership_level) && empty($force))
 				return $this->membership_level;
 			
 			//check if there is an entry in memberships_users first
-			if($this->user_id)
+			if(!empty($this->user_id))
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.id, l.name, l.description, l.allow_signups, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");			
 			}			
 			
 			//okay, do I have a discount code to check? (if there is no membership_level->membership_id value, that means there was no entry in memberships_users)
-			if($this->discount_code && !$this->membership_level->membership_id)
+			if(!empty($this->discount_code) && empty($this->membership_level->membership_id))
 			{
 				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $this->discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";			
 				$this->membership_level = $wpdb->get_row($sqlQuery);
 			}
 			
 			//just get the info from the membership table	(sigh, I really need to standardize the column names for membership_id/level_id) but we're checking if we got the information already or not
-			if(!$this->membership_level->membership_id && !$this->membership_level->level_id)
+			if(empty($this->membership_level->membership_id) && empty($this->membership_level->level_id))
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");			
 			}
@@ -190,7 +190,7 @@
 		
 		function getTax($force = false)
 		{
-			if($this->tax && !$force)
+			if(!empty($this->tax) && !$force)
 				return $this->tax;
 		
 			//reset
@@ -301,7 +301,7 @@
 		{
 			global $wpdb;
 			
-			while(!$code)
+			while(empty($code))
 			{
 				$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
 				$code = substr($scramble, 0, 10);
@@ -317,7 +317,7 @@
 		{
 			global $wpdb;
 			
-			if(!$this->id)
+			if(empty($this->id))
 				return false;
 		
 			$this->status = $newstatus;
@@ -1178,6 +1178,9 @@
 			$customer_email = $this->Email;
 			$customer_phone = $this->billing->phone;
 			
+			if(!isset($this->level->name))
+				$this->level->name = "";
+			
 			$post_values = array(
 				
 				// the API Login ID and Transaction Key must be replaced with valid values
@@ -1252,11 +1255,12 @@
 		//charge first periods payment
 		function chargeWithAuthorizeNet()
 		{
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 			
-			$gateway_environment = $this->gateway_environment;
-			if(!$gateway_environment)
+			if(!empty($this->gateway_environment))
+				$gateway_environment = $this->gateway_environment;
+			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
 					$host = "secure.authorize.net";		
@@ -1282,6 +1286,9 @@
 			//customer stuff
 			$customer_email = $this->Email;
 			$customer_phone = $this->billing->phone;
+			
+			if(!isset($this->level->name))
+				$this->level->name = "";
 			
 			$post_values = array(
 				
@@ -1360,11 +1367,12 @@
 		{		
 			//define variables to send
 
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 			
-			$gateway_environment = $this->gateway_environment;
-			if(!$gateway_environment)
+			if(!empty($this->gateway_environment))
+				$gateway_environment = $this->gateway_environment;
+			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
 					$host = "api.authorize.net";		
@@ -1400,10 +1408,16 @@
 				
 			$startDate = substr($this->ProfileStartDate, 0, 10);
 			$totalOccurrences = (int)$this->TotalBillingCycles;
-			if(!$totalOccurrences)
-				$totalOccurrences = 9999;
-			$trialOccurrences = (int)$this->TrialBillingCycles;
-			$trialAmount = $this->TrialAmount;
+			if(empty($totalOccurrences))
+				$totalOccurrences = 9999;	
+			if(isset($this->TrialBillingCycles))						
+				$trialOccurrences = (int)$this->TrialBillingCycles;
+			else
+				$trialOccurrences = 0;
+			if(isset($this->TrialAmount))
+				$trialAmount = $this->TrialAmount;
+			else
+				$trialAmount = NULL;
 			
 			//taxes
 			$amount_tax = $this->getTaxForPrice($amount);
@@ -1415,7 +1429,7 @@
 			
 			//authorize.net doesn't support different periods between trial and actual
 			
-			if($this->TrialBillingPeriod && $this->TrialBillingPeriod != $this->BillingPeriod)
+			if(!empty($this->TrialBillingPeriod) && $this->TrialBillingPeriod != $this->BillingPeriod)
 			{
 				echo "F";
 				return false;

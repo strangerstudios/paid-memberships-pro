@@ -14,6 +14,8 @@
 if(!function_exists("pnp_split_full_name"))
 {
 	function pnp_split_full_name($full_name) {
+		$fname = $lname = $initials = NULL;
+		
 		$full_name = trim($full_name);
 		// split into words
 		$unfiltered_name_parts = explode(" ",$full_name);

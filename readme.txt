@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.2 =
+* Fixed issue introduced in 1.3.1 where checkout page would not redirect to HTTPS when it should have.
+* Fixing issues with slashes in addresses/etc in the checkout form.
+* Updated the PMProEmail class to use the wp_mail function instead of use PHPMailer directly. (Thanks VadaPrime: http://wordpress.org/support/topic/plugin-paid-memberships-pro-wp_mail?replies=6#post-2449672)
+* Fixed some more notices and warnings.
+
 = 1.3.1 =
 * Fixed automatic page creation, which broke in the last update.
 * Added hook pmpro_checkout_level which allows you to tweak the $level object before checkout, e.g. to change pricing for upgrades.

@@ -2,7 +2,7 @@
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
 	
 	//get/set settings	
-	if($_REQUEST['savesettings'])
+	if(!empty($_REQUEST['savesettings']))
 	{                   
 		pmpro_setOption("sslseal");
 			
@@ -65,12 +65,12 @@
 	$tax_rate = pmpro_getOption("tax_rate");
 	
 	//default settings			
-	if(!$gateway_environment)
+	if(empty($gateway_environment))
 	{
 		$gateway_environment = "sandbox";
 		pmpro_setOption("gateway_environment", $gateway_environment);
 	}
-	if(!$pmpro_accepted_credit_cards)
+	if(empty($pmpro_accepted_credit_cards))
 	{
 		$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
 		pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);		

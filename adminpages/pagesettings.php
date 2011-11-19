@@ -3,7 +3,7 @@
 			
 	//get/set settings
 	global $pmpro_pages;
-	if($_REQUEST['savesettings'])
+	if(!empty($_REQUEST['savesettings']))
 	{                   		
 		//page ids
 		pmpro_setOption("account_page_id");
@@ -29,7 +29,7 @@
 	}	
 			
 	//are we generating pages?
-	if($_REQUEST['createpages'])
+	if(!empty($_REQUEST['createpages']))
 	{
 		global $pmpro_pages;
 		
@@ -64,7 +64,7 @@
 			}
 		}
 		
-		if($pages_created)
+		if(!empty($pages_created))
 		{
 			$msg = true;
 			$msgt = "The following pages have been created for you: " . implode(", ", $pages_created) . ".";
@@ -100,12 +100,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[account]));
+						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['account']));
 					?>	
-					<?php if($pmpro_pages[account]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[account]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['account'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_account].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_account'].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">
@@ -113,12 +113,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[billing]));
+						wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['billing']));
 					?>
-					<?php if($pmpro_pages[billing]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[billing]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['billing'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_billing].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_billing'].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">	
@@ -126,12 +126,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[cancel]));
+						wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['cancel']));
 					?>	
-					<?php if($pmpro_pages[cancel]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[cancel]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['cancel'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_cancel].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_cancel'].</small>
 				</td>
 			</tr>
 			<tr>
@@ -140,12 +140,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[checkout]));
+						wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['checkout']));
 					?>
-					<?php if($pmpro_pages[checkout]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[checkout]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['checkout'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_checkout].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_checkout'].</small>
 				</td>
 			</tr>
 			<tr>
@@ -154,12 +154,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[confirmation]));
+						wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['confirmation']));
 					?>	
-					<?php if($pmpro_pages[confirmation]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[confirmation]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['confirmation'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_confirmation].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_confirmation'].</small>
 				</td>
 			</tr>
 			<tr>
@@ -168,12 +168,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[invoice]));
+						wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['invoice']));
 					?>
-					<?php if($pmpro_pages[invoice]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[invoice]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['invoice'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_invoice].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_invoice'].</small>
 				</td>
 			</tr>
 			<tr>
@@ -182,12 +182,12 @@
 				</th>
 				<td>
 					<?php
-						wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages[levels]));
+						wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['levels']));
 					?>
-					<?php if($pmpro_pages[levels]) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages[levels]?>&action=edit" class="pmpro_page_edit">edit page</a>
+					<?php if(!empty($pmpro_pages['levels'])) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_levels].</small>
+					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_levels'].</small>
 				</td>
 			</tr>				
 		</tbody>

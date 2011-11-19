@@ -6,13 +6,27 @@
 	require('../../../../wp-load.php');
 
 	//get users	
-	$s = $_REQUEST['s'];
-	$l = $_REQUEST['l'];
+	if(isset($_REQUEST['s']))
+		$s = $_REQUEST['s'];
+	else
+		$s = "";
+	
+	if(isset($_REQUEST['l']))
+		$l = $_REQUEST['l'];
+	else
+		$l = false;
 	
 	//some vars for the search
-	$pn = $_REQUEST['pn'];
-		if(!$pn) $pn = 1;
-	$limit = $_REQUEST['limit'];
+	if(!empty($_REQUEST['pn']))
+		$pn = $_REQUEST['pn'];
+	else
+		$pn = 1;
+	
+	if(!empty($_REQUEST['limit']))
+		$limit = $_REQUEST['limit'];
+	else
+		$limit = false;
+		
 	if($limit)
 	{	
 		$end = $pn * $limit;

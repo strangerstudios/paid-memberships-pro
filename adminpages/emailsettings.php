@@ -3,7 +3,7 @@
 	
 	//get/set settings
 	global $pmpro_pages;
-	if($_REQUEST['savesettings'])
+	if(!empty($_REQUEST['savesettings']))
 	{                   		
 		//email options
 		pmpro_setOption("from_email");
@@ -17,7 +17,7 @@
 	$from_email = pmpro_getOption("from_email");
 	$from_name = pmpro_getOption("from_name");
 	
-	if(!$from_email)
+	if(empty($from_email))
 	{
 		$parsed = parse_url(home_url()); 
 		$hostname = $parsed[host];
@@ -27,7 +27,7 @@
 		pmpro_setOption("from_email", $from_email);
 	}
 	
-	if(!$from_name)
+	if(empty($from_name))
 	{		
 		$from_name = "WordPress";
 		pmpro_setOption("from_name", $from_name);

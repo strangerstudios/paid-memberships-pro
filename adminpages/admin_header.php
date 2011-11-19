@@ -1,26 +1,32 @@
 <?php
-	$view = $_REQUEST['page'];
+	if(isset($_REQUEST['page']))
+		$view = $_REQUEST['page'];
+	else
+		$view = "";
 	
 	global $pmpro_ready, $msg, $msgt;
 	$pmpro_ready = pmpro_is_ready();
 	if(!$pmpro_ready)
 	{
 		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;		
-		$edit = $_REQUEST['edit'];
-		if(!$msg)
+		if(isset($_REQUEST['edit']))
+			$edit = $_REQUEST['edit'];
+		else
+			$edit = false;
+		if(empty($msg))
 			$msg = -1;		
-		if(!$pmpro_level_ready && !$edit)
+		if(empty($pmpro_level_ready) && empty($edit))
 			$msgt .= " <a href=\"?page=pmpro-membershiplevels&edit=-1\">Add a membership level</a> to get started.";
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
 			$msgt .= " <a href=\"?page=pmpro-pagesettings\">Setup the membership pages</a>.";		
 		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
 			$msgt .= " <a href=\"?page=pmpro-paymentsettings\">Setup your SSL certificate and payment gateway</a>.";
 			
-		if(!$msgt)
+		if(empty($msgt))
 			$msg = false;
 	}
 	
-	if($msg)
+	if(!empty($msg))
 	{
 	?>
 		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>

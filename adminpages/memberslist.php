@@ -1,8 +1,15 @@
 <?php
 	//vars
 	global $wpdb;
-	$s = $_REQUEST['s'];
-	$l = $_REQUEST['l'];
+	if(isset($_REQUEST['s']))
+		$s = $_REQUEST['s'];
+	else
+		$s = "";
+	
+	if(isset($_REQUEST['l']))
+		$l = $_REQUEST['l'];
+	else
+		$l = false;
 ?>
 <div class="wrap pmpro_admin">	
 	<div class="pmpro_banner">		
@@ -53,10 +60,16 @@
 	</p>
 	<?php 
 		//some vars for the search
-		$pn = $_REQUEST['pn'];
-			if(!$pn) $pn = 1;
-		$limit = $_REQUEST['limit'];
-			if(!$limit) $limit = 15;
+		if(isset($_REQUEST['pn']))
+			$pn = $_REQUEST['pn'];
+		else
+			$pn = 1;
+			
+		if(isset($_REQUEST['limit']))
+			$limit = $_REQUEST['limit'];
+		else
+			$limit = 15;
+		
 		$end = $pn * $limit;
 		$start = $end - $limit;				
 					
@@ -105,7 +118,8 @@
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
-			<?php								
+			<?php	
+				$count = 0;							
 				foreach($theusers as $theuser)
 				{
 					//get meta

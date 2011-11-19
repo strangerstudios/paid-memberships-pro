@@ -14,21 +14,40 @@
 	if($submit)
 	{		
 		//load em up (other fields)	
-		$bfirstname = $_REQUEST['bfirstname'];	
-		$blastname = $_REQUEST['blastname'];	
-		$baddress1 = $_REQUEST['baddress1'];
-		$baddress2 = $_REQUEST['baddress2'];
-		$bcity = $_REQUEST['bcity'];
-		$bstate = $_REQUEST['bstate'];
-		$bzipcode = $_REQUEST['bzipcode'];
-		$bphone = $_REQUEST['bphone'];
-		$bemail = $_REQUEST['bemail'];
-		$bconfirmemail = $_REQUEST['bconfirmemail'];
-		$CardType = $_REQUEST['CardType'];
-		$AccountNumber = $_REQUEST['AccountNumber'];
-		$ExpirationMonth = $_REQUEST['ExpirationMonth'];
-		$ExpirationYear = $_REQUEST['ExpirationYear'];
-		$CVV = $_REQUEST['CVV'];	
+		if(isset($_REQUEST['bfirstname']))
+			$bfirstname = stripslashes($_REQUEST['bfirstname']);	
+		if(isset($_REQUEST['blastname']))
+			$blastname = stripslashes($_REQUEST['blastname']);	
+		if(isset($_REQUEST['fullname']))
+			$fullname = $_REQUEST['fullname'];		//honeypot for spammers
+		if(isset($_REQUEST['baddress1']))
+			$baddress1 = stripslashes($_REQUEST['baddress1']);		
+		if(isset($_REQUEST['baddress2']))
+			$baddress2 = stripslashes($_REQUEST['baddress2']);
+		if(isset($_REQUEST['bcity']))
+			$bcity = stripslashes($_REQUEST['bcity']);
+		if(isset($_REQUEST['bstate']))
+			$bstate = stripslashes($_REQUEST['bstate']);
+		if(isset($_REQUEST['bzipcode']))
+			$bzipcode = stripslashes($_REQUEST['bzipcode']);
+		if(isset($_REQUEST['bcountry']))
+			$bcountry = stripslashes($_REQUEST['bcountry']);
+		if(isset($_REQUEST['bphone']))
+			$bphone = stripslashes($_REQUEST['bphone']);
+		if(isset($_REQUEST['bemail']))
+			$bemail = stripslashes($_REQUEST['bemail']);
+		if(isset($_REQUEST['bconfirmemail']))
+				$bconfirmemail = stripslashes($_REQUEST['bconfirmemail']);
+		if(isset($_REQUEST['CardType']))
+			$CardType = $_REQUEST['CardType'];
+		if(isset($_REQUEST['AccountNumbe']))
+			$AccountNumber = $_REQUEST['AccountNumber'];
+		if(isset($_REQUEST['ExpirationMonth']))
+			$ExpirationMonth = $_REQUEST['ExpirationMonth'];
+		if(isset($_REQUEST['ExpirationYear']))
+			$ExpirationYear = $_REQUEST['ExpirationYear'];
+		if(isset($_REQUEST['CVV']))
+			$CVV = $_REQUEST['CVV'];	
 		
 		if(!$bfirstname || !$blastname || !$baddress1 || !$bcity || !$bstate || !$bzipcode || !$bphone || !$bemail || !$CardType || !$AccountNumber || !$ExpirationMonth || !$ExpirationYear || !$CVV)
 		{

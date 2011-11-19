@@ -10,7 +10,11 @@
 		wp_redirect(pmpro_url("levels"));
 	}		
 	
-	$pmpro_confirm = $_REQUEST['confirm'];
+	if(isset($_REQUEST['confirm']))
+		$pmpro_confirm = $_REQUEST['confirm'];
+	else
+		$pmpro_confirm = false;
+		
 	if($pmpro_confirm)
 	{		
 		$worked = pmpro_changeMembershipLevel(false, $current_user->ID);		

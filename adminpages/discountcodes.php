@@ -1,9 +1,21 @@
 <?php
 	//vars
 	global $wpdb, $pmpro_currency_symbol;
-	$edit = $_REQUEST['edit'];
-	$delete = $_REQUEST['delete'];
-	$saveid = $_POST['saveid'];
+	
+	if(isset($_REQUEST['edit']))	
+		$edit = $_REQUEST['edit'];
+	else
+		$edit = false;
+	
+	if(isset($_REQUEST['delete']))
+		$delete = $_REQUEST['delete'];
+	else
+		$delete = false;
+		
+	if(isset($_REQUEST['saveid']))
+		$saveid = $_POST['saveid'];
+	else
+		$saveid = false;
 	
 	if($saveid)
 	{

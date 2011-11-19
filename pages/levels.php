@@ -22,7 +22,10 @@ if($pmpro_msg)
 	<?php	
 	foreach($pmpro_levels as $level)
 	{
-	  $current_level = ($current_user->membership_level->ID == $level->id);
+	  if(isset($current_user->membership_level->ID))
+		  $current_level = ($current_user->membership_level->ID == $level->id);
+	  else
+	  	  $current_level = false;
 	?>
 	<tr valign="top" class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
 		<td><?php echo $current_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
@@ -79,7 +82,7 @@ if($pmpro_msg)
 		?>
 		</td>
 		<td>
-		<?php if(!$current_user->membership_level->ID) { ?>
+		<?php if(empty($current_user->membership_level->ID)) { ?>
 			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">I&nbsp;want&nbsp;<?php echo $level->name?>!</a>               
 		<?php } elseif ( !$current_level ) { ?>                	
 			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">I&nbsp;want&nbsp;<?php echo $level->name?>!</a>       			
@@ -96,7 +99,7 @@ if($pmpro_msg)
   <tr>
   	<td colspan="5" align="center">
 		<small>-- 
-		<?php if($current_user->membership_level->ID) { ?>
+		<?php if(!empty($current_user->membership_level->ID)) { ?>
 			<a href="<?php echo pmpro_url("account")?>">return to your membership account</a>
 		<?php } else { ?>
 			<a href="<?php echo home_url()?>">return to the home page</a>

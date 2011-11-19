@@ -2,7 +2,7 @@
 	global $wpdb, $msg, $msgt;
 	
 	//get/set settings	
-	if($_REQUEST['savesettings'])
+	if(!empty($_REQUEST['savesettings']))
 	{                   		
 		//other settings
 		pmpro_setOption("nonmembertext");

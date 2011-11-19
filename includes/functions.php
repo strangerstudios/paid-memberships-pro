@@ -806,7 +806,7 @@
 		
 		//query to sum initial payments
 		$sqlQuery = "SELECT SUM(initial_payment) FROM $wpdb->pmpro_memberships_users WHERE 1 ";
-		if($user_ids_query)	
+		if(!empty($user_ids_query))
 			$sqlQuery .= "AND user_id IN(" . $user_ids_query . ") ";
 		
 		$total = $wpdb->get_var($sqlQuery);
@@ -828,6 +828,8 @@
 				$user_ids_query .= "AND mu.membership_id = '$l' ";
 			$user_ids_query .= ")";
 		}
+		else
+			$user_ids_query = "";
 		
 		//4 queries to get annual earnings for each cycle period. currently ignoring trial periods and billing limits.
 		$sqlQuery = "

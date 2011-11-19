@@ -3,6 +3,7 @@
 	{
 		function PMProEmail()
 		{
+			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
 		}					
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
@@ -73,24 +74,26 @@
 			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $this->body, $this);
 									
-			//prep email
+			/*prep email
 			$this->mailer = new PHPMailer();
 			$this->mailer->From = $this->from;
 			$this->mailer->FromName = $this->fromname;
-			$this->mailer->AddAddress($this->email);	
+			$this->mailer->AddAddress($this->email);
 			$this->mailer->Subject = $this->subject;
-			$this->mailer->Body = $this->body;								
+			$this->mailer->Body = $this->body;
 			$this->mailer->AltBody = strip_tags(pmpro_br2nl($this->body, array("br", "p")));
-			
-			//send email			
-			if($this->mailer->send())
+			*/
+
+			//send email
+			//if($this->mailer->send())
+			if(wp_mail($this->email,$this->subject,$this->body,array("Content-Type: text/html")))
 			{
 				return true;
 			}
 			else
 			{
 				return false;
-			}			
+			}		
 		}
 		
 		function sendCancelEmail($user = NULL)

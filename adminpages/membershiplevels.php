@@ -2,15 +2,29 @@
 	global $wpdb, $msg, $msgt;
 
 	//some vars
-	$edit = $_REQUEST['edit'];	
-	$copy = $_REQUEST['copy'];
-	$s = $_REQUEST['s'];
+	if(isset($_REQUEST['edit']))
+		$edit = $_REQUEST['edit'];	
+	else
+		$edit = false;
+	if(isset($_REQUEST['copy']))
+		$copy = $_REQUEST['copy'];
+	if(isset($_REQUEST['s']))
+		$s = $_REQUEST['s'];
+	else
+		$s = "";
 	
-	$action = $_REQUEST['action'];
-	$saveandnext = $_REQUEST['saveandnext'];
+	if(isset($_REQUEST['action']))
+		$action = $_REQUEST['action'];
+	else
+		$action = false;
+		
+	if(isset($_REQUEST['saveandnext']))
+		$saveandnext = $_REQUEST['saveandnext'];
 
-	$saveid = $_REQUEST['saveid'];
-	$deleteid = $_REQUEST['deleteid'];
+	if(isset($_REQUEST['saveid']))
+		$saveid = $_REQUEST['saveid'];
+	if(isset($_REQUEST['deleteid']))
+		$deleteid = $_REQUEST['deleteid'];
 
 	if($action == "save_membershiplevel")
 	{
@@ -217,7 +231,7 @@
 			if(!$level->categories)
 				$level->categories = array();	
 
-			global $pmpro_currency_symbol;
+			global $pmpro_currency_symbol;			
 		?>
 		<form action="" method="post" enctype="multipart/form-data">
 			<input name="saveid" type="hidden" value="<?php echo $edit?>" />
