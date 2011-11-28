@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.3
+Version: 1.3.4
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -51,7 +51,7 @@ $urlparts = split("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.3");
+define("PMPRO_VERSION", "1.3.4");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -1075,14 +1075,14 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	   
 	   if(pmpro_hasMembershipLevel($levels))
 	   {
-		   return wpautop($content);
+		   return apply_filters("the_content", $content);
 	   }	   
 	}
 	else
 	{
 		//didn't specify a membership level, so check for any
 		if($current_user->membership_level->ID)
-			return wpautop($content);
+			return apply_filters("the_content", $content);
 	}
 	
 	//must not be a member

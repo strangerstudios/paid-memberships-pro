@@ -55,7 +55,7 @@ if($pmpro_msg)
 		  if (pmpro_isLevelTrial($level)) 
 		  {			
 			?>
-				<p><?php if($level->trial_amount == '0.00') { ?><strong>Free</strong><?php } else { ?>$<?php echo $level->trial_amount?><?php } ?> for the next <?php echo $level->trial_limit.' ' .sornot("payment",$level->trial_limit)?>.</p>
+				<p><?php if($level->trial_amount == '0.00') { ?><strong>Free</strong><?php } else { ?><?php echo $pmpro_currency_symbol . $level->trial_amount?><?php } ?> for the next <?php echo $level->trial_limit.' ' .sornot("payment",$level->trial_limit)?>.</p>
 			<?php
 		  }		  
 		  
