@@ -361,7 +361,27 @@
 						{
 							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
 							$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
-							return $this->processWithPayPal();
+							if($this->processWithPayPal())
+							{
+								return true;
+							}
+							else
+							{
+								if($this->refundChargeWithPayPal($this->payment_transaction_id))
+								{
+									if(!$this->error)
+										$this->error = "Unknown error: Payment failed.";							
+								}
+								else
+								{
+									if(!$this->error)
+										$this->error = "Unknown error: Payment failed.";
+									
+									$this->error .= " A partial payment was made that we could not refund. Please contact the site owner immediately to correct this.";
+								}
+								
+								return false;	
+							}
 						}
 						else
 						{
@@ -375,6 +395,7 @@
 					{
 						if(!$this->error)
 							$this->error = "Unknown error: Payment failed.";
+						
 						return false;
 					}
 				}				
@@ -397,6 +418,7 @@
 					//auth first, then process
 					if($this->authorizeWithAuthorizeNet())
 					{						
+						$this->voidWithAuthorizeNet();	
 						$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";						
 						$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
 						return $this->processWithAuthorizeNet();
@@ -418,7 +440,27 @@
 						{
 							$this->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";
 							$this->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
-							return $this->processWithAuthorizeNet();
+							if($this->processWithAuthorizeNet())
+							{
+								return true;
+							}
+							else
+							{
+								if($this->voidWithAuthorizeNet())
+								{
+									if(!$this->error)
+										$this->error = "Unknown error: Payment failed.";							
+								}
+								else
+								{
+									if(!$this->error)
+										$this->error = "Unknown error: Payment failed.";
+									
+									$this->error .= " A partial payment was made that we could not void. Please contact the site owner immediately to correct this.";
+								}
+								
+								return false;								
+							}
 						}
 						else
 						{
@@ -431,8 +473,9 @@
 					{
 						if(!$this->error)
 							$this->error = "Unknown error: Payment failed.";
+						
 						return false;
-					}
+					}											
 				}				
 			}
 			else
@@ -608,6 +651,9 @@
 		
 		function voidAuthorizationWithPayPal($authorization_id)
 		{
+			if(empty($authorization_id))
+				return false;
+			
 			//paypal profile stuff
 			$nvpStr="&AUTHORIZATIONID=" . $authorization_id . "&NOTE=Voiding an authorization for a recurring payment setup.";
 		
@@ -624,11 +670,32 @@
 			}	
 		}
 		
+		function refundChargeWithPayPal($transaction_id)
+		{
+			if(empty($transaction_id))
+				return false;
+			
+			//paypal profile stuff
+			$nvpStr="&TRANSACTIONID=" . $transaction_id . "&NOTE=Refunding a charge.";
+		
+			$this->httpParsedResponseAr = $this->PPHttpPost('RefundTransaction', $nvpStr);
+											
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {				
+				return true;				
+			} else  {				
+				$this->status = "error";
+				$this->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
+				$this->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
+				$this->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				return false;				
+			}	
+		}
+		
 		function chargeWithPayPal()
 		{			
 			global $pmpro_currency;
 			
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 			
 			//taxes on the amount
@@ -672,7 +739,7 @@
 			}
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
-						
+								
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$this->payment_transaction_id = $this->httpParsedResponseAr[TRANSACTIONID];
 				$this->updateStatus("firstpayment");				
@@ -688,9 +755,11 @@
 		
 		function processWithPayPal()
 		{										
+			return false;	//testing
+		
 			global $pmpro_currency;
 			
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();			
 			
 			//taxes on the amount
@@ -843,7 +912,7 @@
 		{			
 			global $pmpro_currency;
 			
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();			
 			
 			//clean up a couple values
@@ -963,7 +1032,7 @@
 		{
 			global $pmpro_currency;
 			
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();			
 														
 			//taxes on the amount
@@ -1009,7 +1078,7 @@
 		{
 			global $pmpro_currency;
 			
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();						
 			
 			//taxes on initial amount
@@ -1152,11 +1221,11 @@
 		//authorize just $1 to test credit card
 		function authorizeWithAuthorizeNet()
 		{
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 			
 			$gateway_environment = $this->gateway_environment;
-			if(!$gateway_environment)
+			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
 					$host = "secure.authorize.net";		
@@ -1233,13 +1302,85 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
+			
+			// This line takes the response and breaks it into an array using the specified delimiting character
+			$response_array = explode($post_values["x_delim_char"],$post_response);
+						
+			if($response_array[0] == 1)
+			{
+				$this->payment_transaction_id = $response_array[6];
+				$this->updateStatus("authorized");					
+									
+				return true;
+			}
+			else
+			{
+				//$this->status = "error";
+				$this->errorcode = $response_array[2];
+				$this->error = $response_array[3];
+				$this->shorterror = $response_array[3];
+				return false;
+			}			
+		}
+		
+		//authorize just $1 to test credit card
+		function voidWithAuthorizeNet()
+		{			
+			if(empty($this->payment_transaction_id))
+				return false;
+			
+			$gateway_environment = $this->gateway_environment;
+			if(empty($gateway_environment))
+				$gateway_environment = pmpro_getOption("gateway_environment");
+			if($gateway_environment == "live")
+				$host = "secure.authorize.net";		
+			else
+				$host = "test.authorize.net";	
+			
+			$path = "/gateway/transact.dll";												
+			$post_url = "https://" . $host . $path;
+												
+			$post_values = array(
+				
+				// the API Login ID and Transaction Key must be replaced with valid values
+				"x_login"			=> pmpro_getOption("loginname"),
+				"x_tran_key"		=> pmpro_getOption("transactionkey"),
 
+				"x_version"			=> "3.1",
+				"x_delim_data"		=> "TRUE",
+				"x_delim_char"		=> "|",
+				"x_relay_response"	=> "FALSE",
+
+				"x_type"			=> "VOID",
+				"x_trans_id"			=> $this->payment_transaction_id
+				// Additional fields can be added here as outlined in the AIM integration
+				// guide at: http://developer.authorize.net
+			);
+			
+			// This section takes the input fields and converts them to the proper format
+			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
+			$post_string = "";
+			foreach( $post_values as $key => $value )
+				{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
+			$post_string = rtrim( $post_string, "& " );
+						
+			//curl
+			$request = curl_init($post_url); // initiate curl object
+				curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
+				curl_setopt($request, CURLOPT_RETURNTRANSFER, 1); // Returns response data instead of TRUE(1)
+				curl_setopt($request, CURLOPT_POSTFIELDS, $post_string); // use HTTP POST to send form data
+				curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE); // uncomment this line if you get no gateway response.
+				$post_response = curl_exec($request); // execute curl post and store results in $post_response
+				// additional options may be required depending upon your server configuration
+				// you can find documentation on curl options at http://www.php.net/curl_setopt
+			curl_close ($request); // close curl object
+			
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
 			{
 				$this->payment_transaction_id = $response_array[4];
-				$this->updateStatus("authorized");					
+				$this->updateStatus("voided");					
 				return true;
 			}
 			else
@@ -1263,9 +1404,9 @@
 			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
-					$host = "secure.authorize.net";		
-				else
-					$host = "test.authorize.net";	
+				$host = "secure.authorize.net";		
+			else
+				$host = "test.authorize.net";	
 			
 			$path = "/gateway/transact.dll";												
 			$post_url = "https://" . $host . $path;
@@ -1349,7 +1490,7 @@
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
 			{
-				$this->payment_transaction_id = $response_array[4];
+				$this->payment_transaction_id = $response_array[6];
 				$this->updateStatus("firstpayment");					
 				return true;
 			}
@@ -1554,7 +1695,7 @@
 			$transactionkey = pmpro_getOption("transactionkey");
 		
 			$gateway_environment = $this->gateway_environment;
-			if(!$gateway_environment)
+			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
 					$host = "api.authorize.net";		
@@ -1616,7 +1757,7 @@
 		{		
 			//define variables to send					
 			$gateway_environment = $this->gateway_environment;
-			if(!$gateway_environment)
+			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
 					$host = "api.authorize.net";		

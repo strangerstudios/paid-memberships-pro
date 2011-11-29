@@ -26,14 +26,20 @@
 			
 		//credit cards
 		$pmpro_accepted_credit_cards = array();
-		if($_REQUEST['creditcards_visa'])
+		if(!empty($_REQUEST['creditcards_visa']))
 			$pmpro_accepted_credit_cards[] = "Visa";
-		if($_REQUEST['creditcards_mastercard'])
+		if(!empty($_REQUEST['creditcards_mastercard']))
 			$pmpro_accepted_credit_cards[] = "Mastercard";
-		if($_REQUEST['creditcards_amex'])
+		if(!empty($_REQUEST['creditcards_amex']))
 			$pmpro_accepted_credit_cards[] = "American Express";
-		if($_REQUEST['creditcards_discover'])
+		if(!empty($_REQUEST['creditcards_discover']))
 			$pmpro_accepted_credit_cards[] = "Discover";
+		if(!empty($_REQUEST['creditcards_dinersclub']))
+			$pmpro_accepted_credit_cards[] = "Diners Club";
+		if(!empty($_REQUEST['creditcards_enroute']))
+			$pmpro_accepted_credit_cards[] = "EnRoute";
+		if(!empty($_REQUEST['creditcards_jcb']))
+			$pmpro_accepted_credit_cards[] = "JCB";
 		
 		//tax
 		pmpro_setOption("tax_state");
@@ -214,6 +220,9 @@
 					<input type="checkbox" name="creditcards_mastercard" value="1" <?php if(in_array("Mastercard", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Mastercard<br />
 					<input type="checkbox" name="creditcards_amex" value="1" <?php if(in_array("American Express", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> American Express<br />
 					<input type="checkbox" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Discover<br />
+					<input type="checkbox" name="creditcards_dinersclub" value="1" <?php if(in_array("Diners Club", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> Diner's Club<br />
+					<input type="checkbox" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> EnRoute<br />
+					<input type="checkbox" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> JCB<br />
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>

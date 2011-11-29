@@ -37,7 +37,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 = 1.3.4 =
 * Swapped the $ in the levels page code for $pmpro_currency_symbol.
 * Changed the membership shortcode to apply the_content filters to the return value instead of just wpautop. This allows shortcodes within that shortcode and other filters to be run on the content. (Let me know if issues arrise from this.)
-* Changed order class to create subscriptions that start on the checkout date instead of one-payment away to avoid errors where the customers credit card "expires before the first subscription payment".
+* Wrapped some post variables in checkout and billing preheaders with trim()
+* Now voiding authorizations with Authorize.net. (The plugin will authorize $1 before setting up a subscription without an initial payment.)
+* Now voiding an initial payment with Authorize.net if the subscription setup fails.
+* Now refunding an intial payment with PayPal if the subscription setup fails.
+* Added a "pmpro_checkout_after_level_cost" to add fields or arbitrary code after the level cost description on the checkout page.
+* Added Diner's Club, EnRoute, and JCB as credit card options. Make sure you congiture your Gateway/Merchant account to accept these card types as well.
 
 = 1.3.3 =
 * Fixed bug where country field was resetting to default when there were errors with the checkout form submission. (If you templatized your checkout page and have international addresses enabled, you will need to add $bcountry to the globals setup at the top of your checkout template .php)

@@ -47,6 +47,8 @@
 					<?php echo pmpro_getLevelExpiration($pmpro_level)?>
 				</p>
 				
+				<?php do_action("pmpro_checkout_after_level_cost"); ?>				
+				
 				<?php if($pmpro_show_discount_code) { ?>
 				
 					<?php if($discount_code && !$pmpro_review) { ?>
