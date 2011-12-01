@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.5 =
+* Important update to Authorize.net processing code to account for the "credit card expires before the start of this subscription" error that comes up. For levels/discount codes with no trials or only free trials/initial payments, the subscription setup with Authorize.net starts the day of checkout and a free trial is tacked on for 1 period vs. setting up the subscription one period out. One period is added to the billing limit as well, if applicable. Check the blog for more information.
+
 = 1.3.4 =
 * Swapped the $ in the levels page code for $pmpro_currency_symbol.
 * Changed the membership shortcode to apply the_content filters to the return value instead of just wpautop. This allows shortcodes within that shortcode and other filters to be run on the content. (Let me know if issues arrise from this.)
@@ -160,12 +163,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Revenue report on members list page. (Rought estimate only that doesn't take into account trial periods and billing limits.)
 * Enabling weekly recurring payments for Authorize.net by converting week period to 7 days * # months.
 * Improved error handling on checkout page.
-* Now running "pmpro_after_change_membership_level" actions after the "pmpro_after_checkout" action. Previously this hook was only called when a membership level was changed via the WP admin.		
+* Now running "pmpro_after_change_membership_level" actions after the "pmpro_after_checkout" action. Previously this hook was only called when a membership level was changed via the WP admin.
 * Won't complain about setting up a Payment Gateway if you only have free membership levels.
 * The "besecure" custom field is not added to the billing or checkout by default anymore when you run the "create the pages for me" option in the settings. Whether or not to use HTTPS on a page is now handled in the preheader files for each page (see below).
 * The plugin won't force SSL on the checkout page anymore unless the membership level requires payment. If your checkout page is still running over HTTPS/SSL for free membership checkouts, make sure the "besecure" custom field has been deleted on your checkout page. You can use the "besecure" custom field or the "pmpro_besecure" filter to override the plugin's decision.
 * The plugin won't force SSL on the cancel page anymore. Again, you can override this using the "besecure" custom field or the "pmpro_besecure" filter.
-							
+
 = 1.1.11 =
 * Removed some debug code from the invoice page that might have shown on error.
 * Added check to recaptcha library code incase it is already installed. (Let's hope other plugin developers are doing the same.)
