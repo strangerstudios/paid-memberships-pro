@@ -62,6 +62,8 @@ form.pmpro_form .pmpro_captcha div {clear: none; margin: 0; }
 
 .pmpro_sslseal {float: right; clear: none !important; margin: 0 !important; }
 
+a.pmpro_radio {text-decoration: none; color: #000;}
+
 /*---------------------------------------
 	Membership Invoice
 ---------------------------------------*/

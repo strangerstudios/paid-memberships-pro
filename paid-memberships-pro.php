@@ -948,7 +948,7 @@ function pmpro_besecure()
 
 	$besecure = apply_filters("pmpro_besecure", $besecure);
 
-	if ($besecure && empty($_SERVER['HTTPS']))
+	if($besecure && empty($_SERVER['HTTPS']))
 	{
 		//need to be secure
 		wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);

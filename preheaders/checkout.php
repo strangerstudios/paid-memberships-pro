@@ -1,6 +1,13 @@
 <?php
-	global $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
-	$gateway = pmpro_getOption("gateway");		
+	global $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
+	
+	//was a gateway passed?
+	if(!empty($_REQUEST['gateway']))
+		$gateway = $_REQUEST['gateway'];
+	elseif(!empty($_REQUEST['review']))
+		$gateway = "paypalexpress";
+	else
+		$gateway = pmpro_getOption("gateway");		
 	
 	//what level are they purchasing? (discount code passed)
 	if(!empty($_REQUEST['level']) && !empty($_REQUEST['discount_code']))
@@ -34,23 +41,23 @@
 	
 	//filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters("pmpro_checkout_level", $pmpro_level);		
-	
+		
 	if(!$pmpro_level)
 	{
 		wp_redirect(pmpro_url("levels"));
 		exit(0);
 	}		
-	
+		
 	global $wpdb, $current_user, $pmpro_requirebilling;	
 	if(!pmpro_isLevelFree($pmpro_level))
 	{
 		//require billing and ssl
 		$pagetitle = "Checkout: Payment Information";
 		$pmpro_requirebilling = true;
-		if($gateway != "paypalexpress")
+		if($gateway != "paypalexpress" || !empty($_REQUEST['gateway']))
 			$besecure = true;			
 		else
-			$besecure = false;
+			$besecure = false;		
 	}		
 	else
 	{
@@ -59,7 +66,7 @@
 		$pmpro_requirebilling = false;
 		$besecure = false;		
 	}
-	
+		
 	//get all levels in case we need them
 	global $pmpro_levels;
 	$pmpro_levels = $wpdb->get_results( "SELECT * FROM " . $wpdb->pmpro_membership_levels . " WHERE allow_signups = 1", OBJECT );	
@@ -345,7 +352,7 @@
 							$morder->billing->zip = $bzipcode;
 							$morder->billing->phone = $bphone;
 									
-							$gateway = pmpro_getOption("gateway");										
+							//$gateway = pmpro_getOption("gateway");										
 							$morder->gateway = $gateway;
 							
 							//setup level var
@@ -376,6 +383,7 @@
 							}			
 							else
 							{																
+								krumo($morder);
 								$pmpro_msg = $morder->error;
 								if(!$pmpro_msg)
 									$pmpro_msg = "Unknown error generating account. Please contact us to setup your membership.";
@@ -392,7 +400,7 @@
 				}
 			}	//endif($pmpro_continue_registration)
 		}
-	}		
+	}				
 	
 	//PayPal Express Call Backs
 	if(!empty($_REQUEST['review']))
@@ -441,7 +449,7 @@
 			$morder->BillingFrequency = $pmpro_level->cycle_number;
 			$morder->Email = $bemail;
 			
-			$gateway = pmpro_getOption("gateway");																	
+			//$gateway = pmpro_getOption("gateway");																	
 			
 			//setup level var
 			$morder->getMembershipLevel();			
@@ -662,5 +670,5 @@
 		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
 		$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
 		$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
-	}
+	}	
 ?>

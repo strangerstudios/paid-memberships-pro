@@ -36,6 +36,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 = 1.3.5 =
 * Important update to Authorize.net processing code to account for the "credit card expires before the start of this subscription" error that comes up. For levels/discount codes with no trials or only free trials/initial payments, the subscription setup with Authorize.net starts the day of checkout and a free trial is tacked on for 1 period vs. setting up the subscription one period out. One period is added to the billing limit as well, if applicable. Check the blog for more information.
+* Important update for PayPal Website Payments Pro users. When using PayPal WPP, the user will have an option to checkout via PayPal Express as well. PayPal requires this and now we support it.
 
 = 1.3.4 =
 * Swapped the $ in the levels page code for $pmpro_currency_symbol.

@@ -50,9 +50,9 @@
 		return($text);
 	}
 	
-	function pmpro_getOption($s)
+	function pmpro_getOption($s, $force = false)
 	{
-		if(isset($_REQUEST[$s]))
+		if(isset($_REQUEST[$s]) && !$force)
 			return $_REQUEST[$s];
 		elseif(get_option("pmpro_" . $s))
 			return get_option("pmpro_" . $s);

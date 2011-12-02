@@ -1,8 +1,6 @@
-<?php
-	global $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code;
-	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
-	
-	$gateway = pmpro_getOption("gateway");
+<?php		
+	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code;
+	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;		
 ?>
 
 <form class="pmpro_form" action="<?php echo pmpro_url("checkout", "", "https")?>" method="post">
@@ -242,6 +240,28 @@
 	?>
 	
 	<?php do_action("pmpro_checkout_boxes"); ?>	
+		
+	<?php if(pmpro_getOption("gateway", true) == "paypal" && empty($pmpro_review)) { ?>
+		<table id="pmpro_payment_method" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+		<thead>
+			<tr>
+				<th>Choose Your Payment Method</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<div>
+						<input type="radio" gateway" name="gateway" value="paypal" <?php if(!$gateway || $gateway == "paypal") { ?>checked="checked"<?php } ?> />
+							<a href="javascript:void(0);" class="pmpro_radio">Checkout with a Credit Card Here</a> &nbsp;
+						<input type="radio" name="gateway" value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>checked="checked"<?php } ?> />
+							<a href="javascript:void(0);" class="pmpro_radio">Checkout with PayPal</a> &nbsp;					
+					</div>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+	<?php } ?>
 	
 	<table id="pmpro_billing_address_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
@@ -499,20 +519,58 @@
 	
 	<div align="center">		
 		<?php if($pmpro_review) { ?>
+			
 			<input type="hidden" name="confirm" value="1" />
 			<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token)?>" />
+			<input type="hidden" name="gateway" value="<?echo $gateway; ?>" />
 			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
-		<?php } elseif($gateway == "paypalexpress") { ?>
-			<input type="hidden" name="submit-checkout" value="1" />		
-			<input type="image" value="Checkout with PayPal &raquo;" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
+			
 		<?php } else { ?>
-			<input type="hidden" name="submit-checkout" value="1" />		
-			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
+					
+			<?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
+			<span id="pmpro_paypalexpress_checkout" <?php if($gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="image" value="Checkout with PayPal &raquo;" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
+			</span>
+			<?php } ?>
+			
+			<span id="pmpro_submit_span" <?php if($gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
+			</span>
 		<?php } ?>
 	</div>	
 		
 </form>
-<script>
+
+<?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
+<script>	
+	//choosing payment method
+	jQuery('input[name=gateway]').click(function() {		
+		if(jQuery(this).val() == 'paypal')
+		{
+			jQuery('#pmpro_paypalexpress_checkout').hide();
+			jQuery('#pmpro_billing_address_fields').show();
+			jQuery('#pmpro_payment_information_fields').show();			
+			jQuery('#pmpro_submit_span').show();
+		}
+		else
+		{			
+			jQuery('#pmpro_billing_address_fields').hide();
+			jQuery('#pmpro_payment_information_fields').hide();			
+			jQuery('#pmpro_submit_span').hide();
+			jQuery('#pmpro_paypalexpress_checkout').show();
+		}
+	});
+	
+	//select the radio button if the label is clicked on
+	jQuery('a.pmpro_radio').click(function() {
+		jQuery(this).prev().click();
+	});
+</script>
+<?php } ?>
+
+<script>	
 	// Find ALL <form> tags on your page
 	jQuery('form').submit(function(){
 		// On submit disable its submit button

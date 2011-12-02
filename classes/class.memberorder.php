@@ -819,9 +819,7 @@
 		}
 		
 		function processWithPayPal()
-		{										
-			return false;	//testing
-		
+		{													
 			global $pmpro_currency;
 			
 			if(empty($this->code))
