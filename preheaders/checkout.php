@@ -382,8 +382,7 @@
 								$pmpro_confirmed = true;
 							}			
 							else
-							{																
-								krumo($morder);
+							{																								
 								$pmpro_msg = $morder->error;
 								if(!$pmpro_msg)
 									$pmpro_msg = "Unknown error generating account. Please contact us to setup your membership.";
