@@ -6,9 +6,16 @@
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	//_x stuff in case they clicked on the image button with their mouse
-	$submit = $_REQUEST['update-billing'];
-	if(!$submit) $submit = $_REQUEST['update-billing_x'];	
-	if($submit === "0") $submit = true;
+	if(isset($_REQUEST['update-billing']))
+		$submit = $_REQUEST['update-billing'];
+	else
+		$submit = false;		
+	
+	if(!$submit && isset($_REQUEST['update-billing_x']))
+		$submit = $_REQUEST['update-billing_x'];	
+	
+	if($submit === "0") 
+		$submit = true;
 		
 	//check their fields if they clicked continue
 	if($submit)

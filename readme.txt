@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.6 =
+* Changed a few split() calls to explode() to avoid warnings.
+* Fixed a couple other warnings/notifices.
+* Updated account page to hide the change billing info link if the user doesn't have an active subscription or signed up with PayPal Express.
+* Added a filter pmpro_paypal_express_return_url_parameters which can be used to add parameters to the ReturnURL when checking out with PayPal Express. Return an array of key, value pairs. { return array("option" => "1"); }
+
 = 1.3.5 =
 * Important update to Authorize.net processing code to account for the "credit card expires before the start of this subscription" error that comes up. For levels/discount codes with no trials or only free trials/initial payments, the subscription setup with Authorize.net starts the day of checkout and a free trial is tacked on for 1 period vs. setting up the subscription one period out. One period is added to the billing limit as well, if applicable. Check the blog for more information.
 * Important update for PayPal Website Payments Pro users. When using PayPal WPP, the user will have an option to checkout via PayPal Express as well. PayPal requires this and now we support it.

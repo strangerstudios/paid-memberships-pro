@@ -32,6 +32,7 @@
 				$this->user_id = $dbobj->user_id;
 				$this->membership_id = $dbobj->membership_id;
 				$this->paypal_token = $dbobj->paypal_token;				
+				$this->billing = new stdClass();
 				$this->billing->name = $dbobj->billing_name;
 				$this->billing->street = $dbobj->billing_street;
 				$this->billing->city = $dbobj->billing_city;
@@ -115,7 +116,7 @@
 		
 		function getDiscountCode($force = false)
 		{
-			if($this->discount_code && !$force)
+			if(!empty($this->discount_code) && !$force)
 				return $this->discount_code;
 				
 			global $wpdb;
@@ -128,7 +129,7 @@
 		{
 			global $wpdb;
 			
-			if($this->user)
+			if(!empty($this->user))
 				return $this->invoice->user;
 				
 			$gmt_offset = get_option('gmt_offset');
@@ -1003,11 +1004,11 @@
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name")) . "&L_PAYMENTTYPE0=Any";
 					
 			//if billing cycles are defined						
-			if($this->TotalBillingCycles)
+			if(!empty($this->TotalBillingCycles))
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $this->TotalBillingCycles;
 			
 			//if a trial period is defined
-			if($this->TrialBillingPeriod)
+			if(!empty($this->TrialBillingPeriod))
 			{
 				$trial_amount = $this->TrialAmount;
 				$trial_tax = $this->getTaxForPrice($trial_amount);
@@ -1015,10 +1016,10 @@
 				
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $this->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $this->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
 			}
-			if($this->TrialBillingCycles)
+			if(!empty($this->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
 			
-			if($this->discount_code)
+			if(!empty($this->discount_code))
 			{
 				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&discount_code=" . $this->discount_code . "&review=" . $this->code));				
 			}
@@ -1026,8 +1027,16 @@
 			{
 				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $this->membership_level->id . "&review=" . $this->code));				
 			}
+			
+			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());									
+			if(!empty($additional_parameters))
+			{
+				foreach($additional_parameters as $key => $value)				
+					$nvpStr .= urlencode("&" . $key . "=" . $value);
+			}						
+			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));			
-						
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {

@@ -62,7 +62,9 @@
 			</div>
 			<?php
 				//last invoice for current info
-				$ssorder = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY timestamp DESC LIMIT 1");				
+				//$ssorder = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY timestamp DESC LIMIT 1");				
+				$ssorder = new MemberOrder();
+				$ssorder->getLastMemberOrder();
 				$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC");
 				if($ssorder)
 				{
@@ -107,7 +109,7 @@
 			<div class="pmpro_box">
 				<h3>Member Links</h3>
 				<ul>
-					<?php if($ssorder) { ?>
+					<?php if($ssorder->status == "success" && in_array($ssorder->gateway, array("authorizenet", "paypal"))) { ?>
 						<li><a href="<?php echo pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
 					<?php } ?>
 					<?php if(count($pmpro_levels) > 1) { ?>

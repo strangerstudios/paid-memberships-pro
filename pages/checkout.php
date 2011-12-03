@@ -191,7 +191,7 @@
 				
 				<div class="pmpro_hidden">
 					<label for="fullname">Full Name</label>
-					<input id="fullname" name="fullname" type="text" class="input" size="30" value="<?php echo esc_attr($fullname)?>" /> <strong>LEAVE THIS BLANK</strong>
+					<input id="fullname" name="fullname" type="text" class="input" size="30" value="" /> <strong>LEAVE THIS BLANK</strong>
 				</div>				
 
 				<div class="pmpro_captcha">
@@ -381,7 +381,7 @@
 		
 	<?php
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
-		$pmpro_accepted_credit_cards = split(",", $pmpro_accepted_credit_cards);
+		$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 		if(count($pmpro_accepted_credit_cards) == 1)
 		{
 			$pmpro_accepted_credit_cards_string = $pmpro_accepted_credit_cards[0];

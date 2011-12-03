@@ -1,0 +1,274 @@
+Logged On: 12/03/2011 19:42:11
+	Array
+(
+    [mc_gross] => 1.00
+    [invoice] => 49764CD815
+    [auth_exp] => 11:34:41 Jan 01, 2012 PST
+    [protection_eligibility] => Ineligible
+    [payer_id] => YWB52LV865K4G
+    [tax] => 0.00
+    [payment_date] => 11:34:41 Dec 03, 2011 PST
+    [payment_status] => Pending
+    [charset] => windows-1252
+    [first_name] => The
+    [transaction_entity] => auth
+    [notify_version] => 3.4
+    [custom] => 
+    [payer_status] => unverified
+    [business] => billin_1203902703_biz@strangerstudios.com
+    [quantity] => 1
+    [verify_sign] => AcG3RcqLywWNUE8R.SCRdEpzekjCA4-CcTCwuo-tDTbTcocMdVECwnLM
+    [payer_email] => jason@strangerstudios.com
+    [parent_txn_id] => 
+    [txn_id] => 07Y70031NU625171K
+    [payment_type] => instant
+    [remaining_settle] => 10
+    [auth_id] => 07Y70031NU625171K
+    [last_name] => Admin
+    [receiver_email] => billin_1203902703_biz@strangerstudios.com
+    [auth_amount] => 1.00
+    [receiver_id] => RVFCZ6PWTFHB8
+    [pending_reason] => authorization
+    [txn_type] => web_accept
+    [item_name] => 
+    [mc_currency] => USD
+    [item_number] => 
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 3960-8289-1197-8142
+    [handling_amount] => 0.00
+    [transaction_subject] => 
+    [payment_gross] => 1.00
+    [auth_status] => Pending
+    [shipping] => 0.00
+    [ipn_track_id] => EpJVLtB62dRKh5regt4xhw
+)
+
+	Array
+(
+    [headers] => Array
+        (
+            [date] => Sat, 03 Dec 2011 19:34:48 GMT
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [set-cookie] => Array
+                (
+                    [0] => c9MWDuvPtT9GIMyPc3jwol1VSlO=lMm2bKhLqvkjGPysPK1mt9ao19bGj9KxZPguQvOHalOa-rkuvtr7byH8KEkrrDVUrQQeV_dbdiGTCOJGuqxG2ooao6fUPPkR1msXIfHf2_pUmh7IIb_Q08PiFGkhVa3m5Mljb0%7c7lqmJJ48zb2BdlbHGr_FTakiFE2SAYfVpgNkFgtWgTWaiGEo4SXGvZFFncfMoAZX6FIoAW%7cs_MfoGo8jGJF7MbyMYtA2X2KDvpDtEcfIXkpSH-UIXrBWiEftWW5rm2rsLDZD8PkKyT_XW%7c1322940889; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [1] => cookie_check=yes; expires=Tue, 30-Nov-2021 19:34:49 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [3] => navlns=0.0; expires=Fri, 28-Nov-2031 19:34:49 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [4] => Apache=10.72.109.11.1322940888414594; path=/; expires=Mon, 25-Nov-41 19:34:48 GMT
+                )
+
+            [connection] => close
+            [content-type] => text/html; charset=UTF-8
+        )
+
+    [body] => VERIFIED
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => c9MWDuvPtT9GIMyPc3jwol1VSlO
+                    [value] => lMm2bKhLqvkjGPysPK1mt9ao19bGj9KxZPguQvOHalOa-rkuvtr7byH8KEkrrDVUrQQeV_dbdiGTCOJGuqxG2ooao6fUPPkR1msXIfHf2_pUmh7IIb_Q08PiFGkhVa3m5Mljb0|7lqmJJ48zb2BdlbHGr_FTakiFE2SAYfVpgNkFgtWgTWaiGEo4SXGvZFFncfMoAZX6FIoAW|s_MfoGo8jGJF7MbyMYtA2X2KDvpDtEcfIXkpSH-UIXrBWiEftWW5rm2rsLDZD8PkKyT_XW|1322940889
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1638300889
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 1953660889
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.72.109.11.1322940888414594
+                    [expires] => 2269020888
+                    [path] => /
+                    [domain] => 
+                )
+
+        )
+
+    [filename] => 
+)
+
+	FP!
+	VERIFIED
+	No recurring payment id.
+
+-------------
+Logged On: 12/03/2011 19:42:12
+	Array
+(
+    [mc_gross] => 1.00
+    [invoice] => 49764CD815
+    [auth_exp] => 11:34:41 Jan 01, 2012 PST
+    [protection_eligibility] => Ineligible
+    [payer_id] => YWB52LV865K4G
+    [tax] => 0.00
+    [payment_date] => 11:34:41 Dec 03, 2011 PST
+    [payment_status] => Voided
+    [charset] => windows-1252
+    [first_name] => The
+    [transaction_entity] => auth
+    [notify_version] => 3.4
+    [custom] => 
+    [payer_status] => unverified
+    [business] => billin_1203902703_biz@strangerstudios.com
+    [quantity] => 1
+    [verify_sign] => AiPC9BjkCyDFQXbSkoZcgqH3hpacAm9PLOTtynWFqAKtSwjP7D-PVExW
+    [payer_email] => jason@strangerstudios.com
+    [parent_txn_id] => 
+    [txn_id] => 07Y70031NU625171K
+    [payment_type] => instant
+    [remaining_settle] => 0
+    [auth_id] => 07Y70031NU625171K
+    [last_name] => Admin
+    [receiver_email] => billin_1203902703_biz@strangerstudios.com
+    [auth_amount] => 1.00
+    [receiver_id] => RVFCZ6PWTFHB8
+    [txn_type] => web_accept
+    [item_name] => 
+    [mc_currency] => USD
+    [item_number] => 
+    [residence_country] => US
+    [test_ipn] => 1
+    [receipt_id] => 3960-8289-1197-8142
+    [handling_amount] => 0.00
+    [transaction_subject] => 
+    [payment_gross] => 1.00
+    [auth_status] => Voided
+    [shipping] => 0.00
+)
+
+	Array
+(
+    [headers] => Array
+        (
+            [date] => Sat, 03 Dec 2011 19:34:49 GMT
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [set-cookie] => Array
+                (
+                    [0] => c9MWDuvPtT9GIMyPc3jwol1VSlO=lmslPcU3aevZd1oTXjH6cEQaNkXWAnq2gKy0BNihCPOcq9DIMFb_FSFzfkdt3zovyvx06QpUaBaicO_qhnXl0CiHUssGHTdRQ3pyWchNdHya6wgPdbsg9DTYOUptlpzm4xoTQG%7c1nnKNgOY0oR-VeANvqitfWRPlt5Cfb3zotryoIw4oiDvxjUd_UTa1bwVYfBaMdKI89AMTW%7cBDsIW433UHy5rpOE7C-ThdIGrpN5nRaWviyRLgiBp3IJjYyxt-MgjnDT18KKved1IdPQAG%7c1322940889; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [1] => cookie_check=yes; expires=Tue, 30-Nov-2021 19:34:49 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [3] => navlns=0.0; expires=Fri, 28-Nov-2031 19:34:49 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [4] => Apache=10.72.109.11.1322940889329709; path=/; expires=Mon, 25-Nov-41 19:34:49 GMT
+                )
+
+            [connection] => close
+            [content-type] => text/html; charset=UTF-8
+        )
+
+    [body] => VERIFIED
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => c9MWDuvPtT9GIMyPc3jwol1VSlO
+                    [value] => lmslPcU3aevZd1oTXjH6cEQaNkXWAnq2gKy0BNihCPOcq9DIMFb_FSFzfkdt3zovyvx06QpUaBaicO_qhnXl0CiHUssGHTdRQ3pyWchNdHya6wgPdbsg9DTYOUptlpzm4xoTQG|1nnKNgOY0oR-VeANvqitfWRPlt5Cfb3zotryoIw4oiDvxjUd_UTa1bwVYfBaMdKI89AMTW|BDsIW433UHy5rpOE7C-ThdIGrpN5nRaWviyRLgiBp3IJjYyxt-MgjnDT18KKved1IdPQAG|1322940889
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1638300889
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 1953660889
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.72.109.11.1322940889329709
+                    [expires] => 2269020889
+                    [path] => /
+                    [domain] => 
+                )
+
+        )
+
+    [filename] => 
+)
+
+	FP!
+	VERIFIED
+	No recurring payment id.
+
+-------------

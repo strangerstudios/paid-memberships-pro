@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.5
+Version: 1.3.6
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -47,11 +47,11 @@ $wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 pmpro_checkForUpgrades();
 
 define("SITENAME", str_replace("&#039;", "'", get_bloginfo("name")));
-$urlparts = split("//", home_url());
+$urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.5");
+define("PMPRO_VERSION", "1.3.6");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -137,7 +137,7 @@ function pmpro_set_current_user()
 
 	//hiding ads?
 	$hideads = pmpro_getOption("hideads");
-	$hideadslevels = split(",", pmpro_getOption("hideadslevels"));
+	$hideadslevels = explode(",", pmpro_getOption("hideadslevels"));
 	if($hideads && $hideadslevels)
 	{
 		if(in_array($current_user->membership_level->ID, $hideadslevels))
@@ -1065,7 +1065,7 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	   if(strpos($level, ","))
 	   {
 		   //they specified many levels
-		   $levels = split(",", $level);
+		   $levels = explode(",", $level);
 	   }
 	   else
 	   {

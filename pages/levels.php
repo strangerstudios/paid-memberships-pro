@@ -20,6 +20,7 @@ if($pmpro_msg)
 </thead>
 <tbody>
 	<?php	
+	$count = 0;
 	foreach($pmpro_levels as $level)
 	{
 	  if(isset($current_user->membership_level->ID))
