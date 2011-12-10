@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.6
+Version: 1.3.7
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -51,7 +51,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.6");
+define("PMPRO_VERSION", "1.3.7");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -102,11 +102,7 @@ function pmpro_set_current_user()
 	$id = intval($current_user->ID);
 	if($id)
 	{
-		$current_user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.id as id, l.name, l.description, mu.initial_payment, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.billing_limit, mu.trial_amount, mu.trial_limit, mu.code_id as code_id, UNIX_TIMESTAMP(startdate) as startdate, UNIX_TIMESTAMP(enddate) as enddate
-															FROM {$wpdb->pmpro_membership_levels} AS l
-															JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-															WHERE mu.user_id = $id
-															LIMIT 1");
+		$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 		if(!empty($current_user->membership_level->ID))
 		{
 			$user_pricing = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' LIMIT 1");
@@ -307,62 +303,133 @@ function pmpro_membership_level_profile_fields($user)
 ?>
 <h3><?php _e("Membership Level", "blank"); ?></h3>
 <table class="form-table">
-    <tr>
-        <th><label for="membership_level"><?php _e("Current Level"); ?></label></th>
-        <td>
-            <select name="membership_level" onchange="pmpro_mchange_warning();">
-            	<option value="" <?php if(!$user->membership_level->ID) { ?>selected="selected"<?php } ?>>-- None --</option>
-			<?php
-				foreach($levels as $level)
-				{
-					$current_level = ($user->membership_level->ID == $level->id);
-			?>
-            	<option value="<?php echo $level->id?>" <?php if($current_level) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
-            <?php
-				}
-			?>
-            </select>
-			<script>
-				var pmpro_mchange_once = 0;
-				function pmpro_mchange_warning()
-				{
-					if(pmpro_mchange_once == 0)
+    <?php
+		$show_membership_level = true;
+		$show_membership_level = apply_filters("pmpro_profile_show_membership_level", $show_membership_level, $user);
+		if($show_membership_level)
+		{
+		?>
+		<tr>
+			<th><label for="membership_level"><?php _e("Current Level"); ?></label></th>
+			<td>
+				<select name="membership_level" onchange="pmpro_mchange_warning();">
+					<option value="" <?php if(!$user->membership_level->ID) { ?>selected="selected"<?php } ?>>-- None --</option>
+				<?php
+					foreach($levels as $level)
 					{
-						alert('Warning: The existing membership will be canceled, and the new membership will be free.');
-						pmpro_mchange_once = 1;
+						$current_level = ($user->membership_level->ID == $level->id);
+				?>
+					<option value="<?php echo $level->id?>" <?php if($current_level) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+				<?php
 					}
-				}
-			</script>
-			<?php
-				$membership_values = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");
-				if($membership_values->billing_amount > 0 || $membership_values->trial_amount > 0)
-				{
 				?>
-					<?php if($current_user->membership_level->billing_amount > 0) { ?>
-						at $<?php echo $current_user->membership_level->billing_amount?>
-						<?php if($current_user->membership_level->cycle_number > 1) { ?>
-							per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
-						<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
-							per <?php echo $current_user->membership_level->cycle_period?>
+				</select>
+				<script>
+					var pmpro_mchange_once = 0;
+					function pmpro_mchange_warning()
+					{
+						if(pmpro_mchange_once == 0)
+						{
+							alert('Warning: The existing membership will be canceled, and the new membership will be free.');
+							pmpro_mchange_once = 1;
+						}
+					}
+				</script>
+				<?php
+					$membership_values = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");
+					if($membership_values->billing_amount > 0 || $membership_values->trial_amount > 0)
+					{
+					?>
+						<?php if($membership_values->billing_amount > 0) { ?>
+							at $<?php echo $membership_values->billing_amount?>
+							<?php if($membership_values->cycle_number > 1) { ?>
+								per <?php echo $membership_values->cycle_number?> <?php echo sornot($membership_values->cycle_period,$membership_values->cycle_number)?>
+							<?php } elseif($membership_values->cycle_number == 1) { ?>
+								per <?php echo $membership_values->cycle_period?>
+							<?php } ?>
 						<?php } ?>
-					<?php } ?>
 
-					<?php if($current_user->membership_level->billing_limit) { ?> for <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?><?php } ?>.
+						<?php if($membership_values->billing_limit) { ?> for <?php echo $membership_values->billing_limit.' '.sornot($membership_values->cycle_period,$membership_values->billing_limit)?><?php } ?>.
 
-					<?php if($current_user->membership_level->trial_limit) { ?>
-						The first <?php echo $current_user->membership_level->trial_limit?> <?php echo sornot("payments",$current_user->membership_level->trial_limit)?> will cost $<?php echo $current_user->membership_level->trial_amount?>.
-					<?php } ?>
-				<?php
-				}
-				else
-				{
+						<?php if($membership_values->trial_limit) { ?>
+							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost $<?php echo $membership_values->trial_amount?>.
+						<?php } ?>
+					<?php
+					}
+					else
+					{
+					?>
+						User is not paying.
+					<?php
+					}
 				?>
-					User is not paying.
-				<?php
-				}
-			?>
-        </td>
-    </tr>
+			</td>
+		</tr>
+		<?php
+		}
+		
+		$show_expiration = true;
+		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
+		if($show_expiration)
+		{					
+			//is there an end date?
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			$end_date = !empty($user->membership_level->enddate);
+			
+			//some vars for the dates
+			$current_day = date("j");			
+			if($end_date)
+				$selected_expires_day = date("j", $user->membership_level->enddate);
+			else
+				$selected_expires_day = $current_day;
+				
+			$current_month = date("M");			
+			if($end_date)
+				$selected_expires_month = date("m", $user->membership_level->enddate);
+			else
+				$selected_expires_month = date("m");
+				
+			$current_year = date("Y");									
+			if($end_date)
+				$selected_expires_year = date("Y", $user->membership_level->enddate);
+			else
+				$selected_expires_year = (int)$current_year + 1;
+		?>
+		<tr>
+			<th><label for="expiration"><?php _e("Expires"); ?></label></th>
+			<td>
+				<select id="expires" name="expires">
+					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>>No</option>
+					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>>Yes</option>
+				</select>
+				<span id="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
+					on
+					<select name="expires_month">
+						<?php																
+							for($i = 1; $i < 13; $i++)
+							{
+							?>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+							<?php
+							}
+						?>
+					</select>
+					<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
+					<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
+				</span>
+				<script>
+					jQuery('#expires').change(function() {
+						if(jQuery(this).val() == 1)
+							jQuery('#expires_date').show();
+						else
+							jQuery('#expires_date').hide();
+					});
+				</script>
+			</td>
+		</tr>
+		<?php
+		}
+		?>
 </table>
 <?php
 }
@@ -370,19 +437,49 @@ function pmpro_membership_level_profile_fields($user)
 function pmpro_membership_level_profile_fields_update()
 {
 	//get the user id
-	global $user_ID;
+	global $wpdb, $current_user, $user_ID;
 	get_currentuserinfo();
-	if( $_REQUEST['user_id'] ) $user_ID = $_REQUEST['user_id'];
+	
+	if(!empty($_REQUEST['user_id'])) 
+		$user_ID = $_REQUEST['user_id'];
 
-	if ( !current_user_can( 'edit_user', $user_ID ) ) { return false; }
+	if(!current_user_can( 'edit_user', $user_ID))
+		return false;
+		
+	//level change
 	if(!empty($_REQUEST['membership_level']))
 	{
 		if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID))
 		{
 			//it changed. send email
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
-		}
+			$level_changed = true;
+		}		
+	}
+	
+	//expiration change
+	if(!empty($_REQUEST['expires']))
+	{
+		//update the expiration date
+		$expiration_date = intval($_REQUEST['expires_year']) . "-" . intval($_REQUEST['expires_month']) . "-" . intval($_REQUEST['expires_day']);
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE user_id = '" . $user_ID . "' LIMIT 1";
+		if($wpdb->query($sqlQuery))
+			$expiration_changed = true;
+	}
+	else
+	{
+		//null out the expiration
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE user_id = '" . $user_ID . "' LIMIT 1";
+		if($wpdb->query($sqlQuery))
+			$expiration_changed = true;
+	}
+	
+	//send email
+	if(!empty($level_changed) || !empty($expiration_changed))
+	{
+		$pmproemail = new PMProEmail();
+		if(!empty($expiration_changed))
+			$pmproemail->expiration_changed = true;
+		$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
 	}
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );

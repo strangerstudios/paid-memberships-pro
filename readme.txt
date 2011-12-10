@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.7 =
+* Added "expiration" field to user profile page. Updated the email class to include information on expiration dates in the admin change emails.
+* Added "pmpro_profile_show_membership_level" and "pmpro_profile_show_expiration" filters which will hide those fields from the edit profile screen if false is returned.
+* Added a pmpro_getMembershipLevelForUser($user_id) function and replaced some redundant code in a few places where we query the DB for this. Maybe we'll have a membership level class as some point. Makes sense now.
+* Fixed bug where the wrong price for levels was showing up on the edit profile page in the admin. (It would show the current user's level info instead of the edited user's info.)
+
 = 1.3.6 =
 * Changed a few split() calls to explode() to avoid warnings.
 * Fixed a couple other warnings/notifices.

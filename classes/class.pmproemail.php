@@ -73,19 +73,7 @@
 			$this->subject = apply_filters("pmpro_email_subject", $this->subject, $this);
 			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $this->body, $this);
-									
-			/*prep email
-			$this->mailer = new PHPMailer();
-			$this->mailer->From = $this->from;
-			$this->mailer->FromName = $this->fromname;
-			$this->mailer->AddAddress($this->email);
-			$this->mailer->Subject = $this->subject;
-			$this->mailer->Body = $this->body;
-			$this->mailer->AltBody = strip_tags(pmpro_br2nl($this->body, array("br", "p")));
-			*/
-
-			//send email
-			//if($this->mailer->send())
+						
 			if(wp_mail($this->email,$this->subject,$this->body,array("Content-Type: text/html")))
 			{
 				return true;
@@ -431,11 +419,7 @@
 				return false;
 			
 			//make sure we have the current membership level data
-			$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = " . $user->ID . "
-														LIMIT 1");		
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 						
 			$this->email = $user->user_email;
 			$this->subject = "Your membership at " . get_option("blogname") . " has been changed";
@@ -445,6 +429,15 @@
 				$this->data["membership_change"] = "new level is " . $user->membership_level->name . ". This membership is free";
 			else
 				$this->data["membership_change"] = "membership has been canceled";
+			
+			if(!empty($user->membership_level->enddate))
+			{
+					$this->data["membership_change"] .= ". Your membership will expire on " . date("m/d/Y", $user->membership_level->enddate);
+			}
+			elseif(!empty($this->expiration_changed))
+			{
+				$this->data["membership_change"] .= ". Your membership does not expire";
+			}
 			
 			return $this->sendEmail();
 		}
