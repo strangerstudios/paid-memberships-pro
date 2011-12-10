@@ -82,7 +82,7 @@
 		pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);		
 	}
 	
-	$pmpro_accepted_credit_cards = split(",", $pmpro_accepted_credit_cards);
+	$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 						
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>

@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $msg, $msgt;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol;
 
 	//some vars
 	if(isset($_REQUEST['edit']))
@@ -230,8 +230,7 @@
 												WHERE c.membership_id = '" . $temp_id . "'");       		
 			if(!$level->categories)
 				$level->categories = array();	
-
-			global $pmpro_currency_symbol;			
+			
 		?>
 		<form action="" method="post" enctype="multipart/form-data">
 			<input name="saveid" type="hidden" value="<?php echo $edit?>" />

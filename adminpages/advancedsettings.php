@@ -63,6 +63,8 @@
 		$rsstext = "This content is for members only. Visit the site and log in/register to read.";
 		pmpro_setOption("rsstext", $rsstext);
 	}   				
+		
+	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 	
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>
@@ -145,7 +147,7 @@ if(pmpro_displayAds())
 						<?php 																
 							$hideadslevels = pmpro_getOption("hideadslevels");
 							if(!is_array($hideadslevels))
-								$hideadslevels = split(",", $hideadslevels);
+								$hideadslevels = explode(",", $hideadslevels);
 							
 							$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";						
 							$levels = $wpdb->get_results($sqlQuery, OBJECT);								

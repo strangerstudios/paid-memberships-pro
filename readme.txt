@@ -39,6 +39,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Added "pmpro_profile_show_membership_level" and "pmpro_profile_show_expiration" filters which will hide those fields from the edit profile screen if false is returned.
 * Added a pmpro_getMembershipLevelForUser($user_id) function and replaced some redundant code in a few places where we query the DB for this. Maybe we'll have a membership level class as some point. Makes sense now.
 * Fixed bug where the wrong price for levels was showing up on the edit profile page in the admin. (It would show the current user's level info instead of the edited user's info.)
+* Cleaned up a few more warnings, etc.
 
 = 1.3.6 =
 * Changed a few split() calls to explode() to avoid warnings.
