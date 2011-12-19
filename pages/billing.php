@@ -1,6 +1,6 @@
 <?php 				
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
-	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	$level = $current_user->membership_level;
 	if($level) 
@@ -44,7 +44,7 @@
 <?php if(pmpro_isLevelRecurring($level)) { ?>
 	<form class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
-		<input type="hidden" name="level" value="<?php echo $level->id?>" />		
+		<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />		
 		<?php if($pmpro_msg) 
 			{
 		?>
@@ -64,27 +64,84 @@
 				<td>
 					<div>
 						<label for="bfirstname">First Name</label>
-						<input id="bfirstname" name="bfirstname" type="text" class="input" size="20" value="<?php echo $bfirstname?>" /> 
+						<input id="bfirstname" name="bfirstname" type="text" class="input" size="20" value="<?php echo esc_attr($bfirstname);?>" /> 
 					</div>	
 					<div>
 						<label for="blastname">Last Name</label>
-						<input id="blastname" name="blastname" type="text" class="input" size="20" value="<?php echo $blastname?>" /> 
+						<input id="blastname" name="blastname" type="text" class="input" size="20" value="<?php echo esc_attr($blastname);?>" /> 
 					</div>					
 					<div>
 						<label for="baddress1">Address 1</label>
-						<input id="baddress1" name="baddress1" type="text" class="input" size="20" value="<?php echo $baddress1?>" /> 
+						<input id="baddress1" name="baddress1" type="text" class="input" size="20" value="<?php echo esc_attr($baddress1);?>" /> 
 					</div>
 					<div>
 						<label for="baddress2">Address 2</label>
-						<input id="baddress2" name="baddress2" type="text" class="input" size="20" value="<?php echo $baddress2?>" /> <small class="lite">(optional)</small>
+						<input id="baddress2" name="baddress2" type="text" class="input" size="20" value="<?php echo esc_attr($baddress2);?>" /> <small class="lite">(optional)</small>
 					</div>
+					
+					<?php
+						$longform_address = apply_filters("pmpro_longform_address", false);
+						if($longform_address)
+						{
+						?>
+							<div>
+								<label for="bcity">City</label>
+								<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?php echo esc_attr($bcity)?>" /> 
+							</div>
+							<div>
+								<label for="bstate">State</label>
+								<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo esc_attr($bstate)?>" /> 
+							</div>
+							<div>
+								<label for="bzipcode">Zip/Postal Code</label>
+								<input id="bzipcode" name="bzipcode" type="text" class="input" size="30" value="<?php echo esc_attr($bzipcode)?>" /> 
+							</div>					
+						<?php
+						}
+						else
+						{
+						?>
+							<div>
+								<label for="bcity_state_zip">City, State Zip</label>
+								<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
+							</div>
+						<?php
+						}
+					?>
+					
+					<?php
+						$show_country = apply_filters("pmpro_international_addresses", false);
+						if($show_country)
+						{
+					?>
 					<div>
-						<label for="bcity_state_zip">City, State Zip</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo $bcity?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo $bstate?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo $bzipcode?>" /> 
+						<label for="bcountry">Country</label>
+						<select name="bcountry">
+							<?php
+								global $pmpro_countries, $pmpro_default_country;
+								foreach($pmpro_countries as $abbr => $country)
+								{
+									if(!$bcountry)
+										$bcountry = $pmpro_default_country;
+								?>
+								<option value="<?php echo $abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
+								<?php
+								}
+							?>
+						</select>
 					</div>
+					<?php
+						}
+						else
+						{
+						?>
+							<input type="hidden" name="bcountry" value="US" />
+						<?php
+						}
+					?>
 					<div>
 						<label for="bphone">Phone</label>
-						<input id="bphone" name="bphone" type="text" class="input" size="20" value="<?php echo $bphone?>" /> 
+						<input id="bphone" name="bphone" type="text" class="input" size="20" value="<?php echo esc_attr($bphone)?>" /> 
 					</div>		
 					<?php if($current_user->ID) { ?>
 					<?php
@@ -95,11 +152,11 @@
 					?>
 					<div>
 						<label for="bemail">E-mail Address</label>
-						<input id="bemail" name="bemail" type="text" class="input" size="20" value="<?php echo $bemail?>" /> 
+						<input id="bemail" name="bemail" type="text" class="input" size="20" value="<?php echo esc_attr($bemail)?>" /> 
 					</div>
 					<div>
 						<label for="bconfirmemail">Confirm E-mail</label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="20" value="<?php echo $bconfirmemail?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="20" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 					</div>	                        
 					<?php } ?>    
@@ -138,7 +195,7 @@
 				
 					<div>
 						<label for="AccountNumber">Card Number</label>
-						<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo $AccountNumber?>" /> 
+						<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" /> 
 					</div>
 				
 					<div>
@@ -170,7 +227,7 @@
 				
 					<div>
 						<label for="CVV">CVV</label>
-						<input class="input" id="CVV" name="CVV" type="text" size="4" value="" />  <small>(<a href="#" onclick="javascript:window.open('<?php echo plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+						<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" />  <small>(<a href="#" onclick="javascript:window.open('<?php echo plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 					</div>													
 				</td>
 			</tr>		

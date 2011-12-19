@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,14 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.8 =
+* Fixed a bug with canceling memberships. Important Note: User requested cancellations were not being forwarded to PayPal and Authorize.net in the past couple updates. Please double check your members lists with your payment gateway subscriptions. Sorry for the inconvenience.
+* Fixed a bug in the billing update form.
+* Wrapped some output on the billing update form in esc_attr.
+* Now sorting countries alphabetically if international orders are turned on.
+* Updated the membership-billing page to show country and long form fields if enabled via the hooks pmpro_international_addresses and pmpro_longform_address. (These were only showing up on the checkout form before.)
+
+
 = 1.3.7 =
 * Added "expiration" field to user profile page. Updated the email class to include information on expiration dates in the admin change emails.
 * Added "pmpro_profile_show_membership_level" and "pmpro_profile_show_expiration" filters which will hide those fields from the edit profile screen if false is returned.

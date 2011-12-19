@@ -254,5 +254,7 @@
 		'VE' => 'Venezuela',
 	);
 	
+	asort($pmpro_countries);
+	
 	$pmpro_countries = apply_filters("pmpro_countries", $pmpro_countries);
 ?>

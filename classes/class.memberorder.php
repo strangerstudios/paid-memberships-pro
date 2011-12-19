@@ -557,9 +557,9 @@
 		function cancel()
 		{
 			$gateway = $this->gateway;
-			
+						
 			//if there is no subscription id or this subscription has a status != success, it was already cancelled (or never existed)
-			if(!$this->subscription_transaction_id || !$this->status != "success")
+			if(empty($this->subscription_transaction_id) || $this->status != "success")
 			{
 				//cancel
 				$this->updateStatus("cancelled");
@@ -1557,7 +1557,7 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
-
+			
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
@@ -1734,7 +1734,7 @@
 			/*
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
-						
+			
 			if($this->response) {				
 				list ($refId, $resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);
 				if($resultCode == "Ok")

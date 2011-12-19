@@ -497,7 +497,7 @@
 			//get last order
 			$order = new MemberOrder();
 			$order->getLastMemberOrder($user_id);						
-									
+						
 			if($order->cancel())
 			{
 				//we're good					

@@ -3,7 +3,7 @@
 	$besecure = true;		
 	
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
-	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	//_x stuff in case they clicked on the image button with their mouse
 	if(isset($_REQUEST['update-billing']))
@@ -47,7 +47,7 @@
 				$bconfirmemail = trim(stripslashes($_REQUEST['bconfirmemail']));
 		if(isset($_REQUEST['CardType']))
 			$CardType = $_REQUEST['CardType'];
-		if(isset($_REQUEST['AccountNumbe']))
+		if(isset($_REQUEST['AccountNumber']))
 			$AccountNumber = trim($_REQUEST['AccountNumber']);
 		if(isset($_REQUEST['ExpirationMonth']))
 			$ExpirationMonth = $_REQUEST['ExpirationMonth'];
@@ -105,7 +105,7 @@
 				$morder->billing->street = trim($baddress1 . " " . $baddress2);
 				$morder->billing->city = $bcity;
 				$morder->billing->state = $bstate;
-				$morder->billing->country = "US";
+				$morder->billing->country = $bcountry;
 				$morder->billing->zip = $bzipcode;
 				$morder->billing->phone = $bphone;							
 				
