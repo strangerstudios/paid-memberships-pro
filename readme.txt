@@ -41,7 +41,6 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Now sorting countries alphabetically if international orders are turned on.
 * Updated the membership-billing page to show country and long form fields if enabled via the hooks pmpro_international_addresses and pmpro_longform_address. (These were only showing up on the checkout form before.)
 
-
 = 1.3.7 =
 * Added "expiration" field to user profile page. Updated the email class to include information on expiration dates in the admin change emails.
 * Added "pmpro_profile_show_membership_level" and "pmpro_profile_show_expiration" filters which will hide those fields from the edit profile screen if false is returned.
