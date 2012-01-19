@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 1.3.8 
+Stable tag: 1.3.9 
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,14 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.9 =
+* Added a "pmpro_has_membership_level" filter ($r = apply_filters("pmpro_has_membership_level", $r, $user_id, $levels);) which can be used to override the default behavior here.
+* Fixed the pmpro shortcodes to allow content above and below the shortcodes on the membership pages. (Thanks, Bluewind!)
+* Now setting the user's first and last name to the billing first and last name after checkout.
+* Added billing first/last name, billing address, and phone number to the members list screen and CSV export.
+* Removed email header/footer code from email class because sometimes it was added twice. Now it is added by the pmpro_send_html function in paid-memberships-pro.php for all emails (WP or PMPro) if a header or footer file are found in your theme folder.
+* Added a pmpro_after_phpmailer_init. (The old hook pmpro_after_pmpmailer_init had a typo -- pmpmailer instead of phpmailer.) I left the old hook in for backwards compatibility.
+
 = 1.3.8 =
 * Fixed a bug with canceling memberships. Important Note: User requested cancellations were not being forwarded to PayPal and Authorize.net in the past couple updates. Please double check your members lists with your payment gateway subscriptions. Sorry for the inconvenience.
 * Fixed a bug in the billing update form.

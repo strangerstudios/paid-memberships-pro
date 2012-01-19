@@ -373,6 +373,8 @@
 	{
 		global $current_user, $all_membership_levels, $wpdb;
 		
+		$r = false;
+		
 		if($user_id)
 		{
 			//get the membership level from the global array
@@ -404,9 +406,9 @@
 			if($levels[0] === "0")
 			{
 				if($membership_level->ID)
-					return false;
+					$r = false;
 				else
-					return true;
+					$r = true;
 			}
 		}
 		else
@@ -414,39 +416,43 @@
 			if($levels === "0")
 			{
 				if($membership_level->ID)
-					return false;
+					$r = false;
 				else
-					return true;
+					$r = true;
 			}
 		}
 			
 		//no levels?
 		if($membership_level == "-1" || !$membership_level)
-			return false;				
+			$r = false;		
 		
 		//if no level var was passed, we're just checking if they have any level
 		if(!$levels)
 		{
 			if($membership_level->ID)
-				return true;
+				$r = true;
 			else
-				return false;
+				$r = false;
 		}		
 		
 		//okay, so something to check let's set the levels
-		if(!is_array($levels))
-			$levels = array($levels);
-			
-		//and check each one
-		foreach($levels as $level)
+		if(!empty($membership_level))
 		{
-			if($level == $membership_level->ID || $level == $membership_level->name)
-			{				
-				return true;
+			if(!is_array($levels))
+				$levels = array($levels);
+				
+			//and check each one
+			foreach($levels as $level)
+			{
+				if($level == $membership_level->ID || $level == $membership_level->name)
+				{				
+					$r = true;
+				}
 			}
 		}
 		
-		return false;
+		$r = apply_filters("pmpro_has_membership_level", $r, $user_id, $levels);		
+		return $r;
 	}
 	
 	/* pmpro_changeMembershipLevel() creatues or updates the membership level of the given user to the given level.

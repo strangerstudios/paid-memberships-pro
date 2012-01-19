@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.8
+Version: 1.3.9
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -51,7 +51,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.8");
+define("PMPRO_VERSION", "1.3.9");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -272,8 +272,11 @@ function pmpro_wp()
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
-					include(ABSPATH . "/wp-content/plugins/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
-					return "";
+					ob_start();
+					include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
+					$temp_content = ob_get_contents();
+					ob_end_clean();
+					return $temp_content;
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
 				break;	//only the first page found gets a shortcode replacement
@@ -1027,6 +1030,7 @@ function pmpro_https_filter($s)
 add_filter('status_header', 'pmpro_status_filter');
 add_filter('bloginfo_url', 'pmpro_https_filter');
 add_filter('wp_list_pages', 'pmpro_https_filter');
+add_filter('option_home', 'pmpro_https_filter');
 add_filter('option_siteurl', 'pmpro_https_filter');
 add_filter('logout_url', 'pmpro_https_filter');
 add_filter('login_url', 'pmpro_https_filter');
@@ -1294,7 +1298,7 @@ function pmpro_send_html( $phpmailer ) {
 	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = nl2br ( make_clickable ($phpmailer->Body) );
-
+	
 	// Add template to message
 	if(file_exists(TEMPLATEPATH . "/email_header.html"))
 	{
@@ -1304,7 +1308,7 @@ function pmpro_send_html( $phpmailer ) {
 	{
 		$phpmailer->Body = $phpmailer->Body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
 	}
-
+	
 	// Replace variables in email
 	global $current_user;
 	$data = array(
@@ -1320,13 +1324,21 @@ function pmpro_send_html( $phpmailer ) {
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
 	}
 
-	do_action("pmpro_after_pmpmailer_init", $phpmailer);
+	do_action("pmpro_after_phpmailer_init", $phpmailer);
+	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }
-function pmpro_wp_mail_content_type( $content_type ) {
-	// Only convert if the message is text/plain and the template is ok
-	if( $content_type == 'text/plain' && (file_exists(TEMPLATEPATH . "/email_header.html") || file_exists(TEMPLATEPATH . "/email_footer.html")) ) {
+function pmpro_wp_mail_content_type( $content_type ) {	
+	
+	//check for template
+	if(file_exists(TEMPLATEPATH . "/email_header.html") || file_exists(TEMPLATEPATH . "/email_footer.html"))
+	{
 		add_action('phpmailer_init', 'pmpro_send_html');
-		return $content_type = 'text/html';
+		
+		//change to html if not already
+		if( $content_type == 'text/plain')
+		{			
+			$content_type = 'text/html';
+		}
 	}
 	return $content_type;
 }

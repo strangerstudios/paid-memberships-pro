@@ -54,7 +54,7 @@
 	}
 		
 	$theusers = $wpdb->get_results($sqlQuery);	
-	$csvoutput = "id,username,firstname,lastname,email,membership,fee,term,joined,expires\n";	
+	$csvoutput = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,phone,membership,fee,term,joined,expires\n";	
 	
 	if($theusers)
 	{
@@ -69,6 +69,14 @@
 						  enclose($metavalues->first_name) . "," .
 						  enclose($metavalues->last_name) . "," .
 						  enclose($theuser->user_email) . "," .
+						  enclose($metavalues->pmpro_bfirstname) . "," .
+						  enclose($metavalues->pmpro_blastname) . "," .
+						  enclose($metavalues->pmpro_baddress1) . "," .
+						  enclose($metavalues->pmpro_baddress2) . "," .
+						  enclose($metavalues->pmpro_bcity) . "," .
+						  enclose($metavalues->pmpro_bstate) . "," .
+						  enclose($metavalues->pmpro_bzipcode) . "," .
+						  enclose($metavalues->pmpro_bphone) . "," .
 						  enclose($theuser->membership) . "," .
 						  enclose($theuser->billing_amount) . "," .
 						  enclose($theuser->cycle_period) . "," .					  

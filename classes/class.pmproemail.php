@@ -44,8 +44,9 @@
 				$this->body = file_get_contents(TEMPLATEPATH . "/membership-email-" . $this->template . ".html");
 			else
 				$this->body = file_get_contents(ABSPATH . "/wp-content/plugins/paid-memberships-pro/email/" . $this->template . ".html");			
-			
+						
 			//header and footer
+			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
 			if(file_exists(TEMPLATEPATH . "/email_header.html"))
 			{
 				$this->body = file_get_contents(TEMPLATEPATH . "/email_header.html") . "\n" . $this->body;
@@ -53,7 +54,8 @@
 			if(file_exists(TEMPLATEPATH . "/email_footer.html"))
 			{
 				$this->body = $this->body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
-			}	
+			}
+			*/
 			
 			//swap data
 			if(is_string($this->data))

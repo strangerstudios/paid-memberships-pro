@@ -510,7 +510,9 @@
 			$user_id = wp_insert_user(array(
 							"user_login" => $username,							
 							"user_pass" => $password,
-							"user_email" => $bemail)
+							"user_email" => $bemail,
+							"first_name" => $bfirstname,
+							"last_name" => $blastname)
 							);
 			if (!$user_id) {
 				$pmpro_msg = "Your payment was accepted, but there was an error setting up your account. Please contact us.";
