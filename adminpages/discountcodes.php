@@ -598,7 +598,7 @@
 								
 								$level_names = array();
 								foreach($levels as $level)
-									$level_names[] = "<a target=\"_blank\" href=\"" . pmpro_url("checkout", "?level=" . $level->id . "&discountcode=" . $code->code) . "\">" . $level->name . "</a>";
+									$level_names[] = "<a target=\"_blank\" href=\"" . pmpro_url("checkout", "?level=" . $level->id . "&discount_code=" . $code->code) . "\">" . $level->name . "</a>";
 								if($level_names)
 									echo implode(", ", $level_names);														
 								else

@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 1.3.9 
+Tested up to: 3.3.1
+Stable tag: 1.3.12
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,17 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.12 =
+* Fixed bug in members list pagination on sites installed in a subdirectory.
+
+= 1.3.11 =
+* Fixed bug with cancelling a user's membership through the admin.
+
+= 1.3.10 =
+* Fixed the links in the discount code table.
+* pmpro_hasMembershipLevel(0) and [membership level="0"] will once again return true for non-members. (This broke whent he pmpro_has_membership_level filter was added.)
+* WP 3.3.1 testing. (Looks good!)
+
 = 1.3.9 =
 * Added a "pmpro_has_membership_level" filter ($r = apply_filters("pmpro_has_membership_level", $r, $user_id, $levels);) which can be used to override the default behavior here.
 * Fixed the pmpro shortcodes to allow content above and below the shortcodes on the membership pages. (Thanks, Bluewind!)

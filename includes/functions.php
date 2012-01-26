@@ -374,6 +374,7 @@
 		global $current_user, $all_membership_levels, $wpdb;
 		
 		$r = false;
+		$non_member_check = false;
 		
 		if($user_id)
 		{
@@ -402,10 +403,11 @@
 		
 		//if 0 was passed, return true if they have no level and false if they have any				
 		if(is_array($levels))
-		{
-			if($levels[0] === "0")
+		{			
+			if($levels[0] === "0" || $levels[0] === 0)
 			{
-				if($membership_level->ID)
+				$non_member_check = true;
+				if(!empty($membership_level->ID))
 					$r = false;
 				else
 					$r = true;
@@ -413,45 +415,50 @@
 		}
 		else
 		{
-			if($levels === "0")
-			{
-				if($membership_level->ID)
+			if($levels === "0" || $levels === 0)
+			{				
+				$non_member_check = true;
+				if(!empty($membership_level->ID))
 					$r = false;
 				else
 					$r = true;
 			}
-		}
-			
-		//no levels?
-		if($membership_level == "-1" || !$membership_level)
-			$r = false;		
-		
-		//if no level var was passed, we're just checking if they have any level
-		if(!$levels)
-		{
-			if($membership_level->ID)
-				$r = true;
-			else
-				$r = false;
 		}		
-		
-		//okay, so something to check let's set the levels
-		if(!empty($membership_level))
-		{
-			if(!is_array($levels))
-				$levels = array($levels);
 				
-			//and check each one
-			foreach($levels as $level)
+		if(!$non_member_check)
+		{
+			//no levels?
+			if($membership_level == "-1" || !$membership_level)
+				$r = false;		
+						
+			//if no level var was passed, we're just checking if they have any level
+			if(!$levels)
 			{
-				if($level == $membership_level->ID || $level == $membership_level->name)
-				{				
+				if($membership_level->ID)
 					$r = true;
+				else
+					$r = false;
+			}		
+								
+			//okay, so something to check let's set the levels
+			if(!empty($membership_level))
+			{
+				if(!is_array($levels))
+					$levels = array($levels);
+					
+				//and check each one
+				foreach($levels as $level)
+				{
+					if($level == $membership_level->ID || $level == $membership_level->name)
+					{				
+						$r = true;
+					}
 				}
 			}
 		}
 		
 		$r = apply_filters("pmpro_has_membership_level", $r, $user_id, $levels);		
+		
 		return $r;
 	}
 	
