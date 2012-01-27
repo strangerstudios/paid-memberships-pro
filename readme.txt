@@ -36,6 +36,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 = 1.3.12 =
 * Fixed bug in members list pagination on sites installed in a subdirectory.
+* Now swapping out the PayPal Express checkout button if the level is free or becomes free with a discount code. (Thanks, Caps!)
 
 = 1.3.11 =
 * Fixed bug with cancelling a user's membership through the admin.

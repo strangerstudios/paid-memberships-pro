@@ -52,20 +52,39 @@
 		jQuery('#pmpro_level_cost').html('The <strong><?php echo $discount_code?></strong> code has been applied to your order. <?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
 		
 		<?php
+			//hide/show billing
 			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress")
-			{
-				//hide billing
-			?>
-			jQuery('#pmpro_billing_address_fields').hide();
-			jQuery('#pmpro_payment_information_fields').hide();
-			<?php
+			{				
+				?>
+				jQuery('#pmpro_billing_address_fields').hide();
+				jQuery('#pmpro_payment_information_fields').hide();			
+				<?php
 			}
 			else			
 			{
-			?>
-			jQuery('#pmpro_billing_address_fields').show();
-			jQuery('#pmpro_payment_information_fields').show();
-			<?php
+				?>			
+				jQuery('#pmpro_billing_address_fields').show();
+				jQuery('#pmpro_payment_information_fields').show();			
+				<?php
+			}
+			
+			//hide/show paypal button
+			if(pmpro_getOption("gateway") == "paypalexpress")			
+			{
+				if(pmpro_isLevelFree($code_level))
+				{
+					?>
+					jQuery('#pmpro_paypalexpress_checkout').hide();
+					jQuery('#pmpro_submit_span').show();
+					<?php
+				}
+				else
+				{
+					?>
+					jQuery('#pmpro_submit_span').hide();
+					jQuery('#pmpro_paypalexpress_checkout').show();				
+					<?php
+				}
 			}
 		?>
 	</script>

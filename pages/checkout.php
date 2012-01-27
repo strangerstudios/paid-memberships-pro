@@ -528,13 +528,13 @@
 		<?php } else { ?>
 					
 			<?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
-			<span id="pmpro_paypalexpress_checkout" <?php if($gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<span id="pmpro_paypalexpress_checkout" <?php if($gateway != "paypalexpress" || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />		
 				<input type="image" value="Checkout with PayPal &raquo;" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
 			</span>
 			<?php } ?>
 			
-			<span id="pmpro_submit_span" <?php if($gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<span id="pmpro_submit_span" <?php if($gateway == "paypalexpress" && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />		
 				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
 			</span>
