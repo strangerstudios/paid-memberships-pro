@@ -54,7 +54,7 @@
 		//require billing and ssl
 		$pagetitle = "Checkout: Payment Information";
 		$pmpro_requirebilling = true;
-		if($gateway != "paypalexpress" || !empty($_REQUEST['gateway']))
+		if($gateway != "paypalexpress" || (!empty($_REQUEST['gateway']) && $_REQUEST['gateway'] != "paypalexpress"))
 			$besecure = true;			
 		else
 			$besecure = false;		
@@ -344,6 +344,7 @@
 							$morder->Address2 = $baddress2;						
 							
 							//other values
+							$morder->billing = new stdClass();
 							$morder->billing->name = $bfirstname . " " . $blastname;
 							$morder->billing->street = trim($baddress1 . " " . $baddress2);
 							$morder->billing->city = $bcity;
@@ -624,7 +625,7 @@
 				$user->membership_level = $pmpro_level;		//make sure they have the right level info
 				$pmproemail->sendCheckoutEmail($current_user, $invoice);
 												
-				//redirect to confirmation
+				//redirect to confirmation			
 				wp_redirect(pmpro_url("confirmation"));
 				exit;
 			}
