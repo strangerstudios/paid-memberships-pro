@@ -171,22 +171,27 @@
 			//get options
 			$tax_state = pmpro_getOption("tax_state");
 			$tax_rate = pmpro_getOption("tax_rate");
-					
+						
+			//default
+			$tax = 0;
+			
 			//calculate tax
 			if($tax_state && $tax_rate)
 			{
 				//we have values, is this order in the tax state?
 				if(trim(strtoupper($this->billing->state)) == trim(strtoupper($tax_state)))
-				{					
-					//set values array for filter
-					$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate, "billing_state" => $this->billing->state, "billing_city" => $this->billing_city, "billing_zip" => $this->billing->zip, "billing_country" => $this->billing->country);
-					
+				{															
 					//return value, pass through filter
-					return apply_filters("pmpro_tax", round((float)$price * (float)$tax_rate, 2), $values);
+					$tax = round((float)$price * (float)$tax_rate, 2);					
 				}
 			}
 			
-			return 0;
+			//set values array for filter
+			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate, "billing_state" => $this->billing->state, "billing_city" => $this->billing_city, "billing_zip" => $this->billing->zip, "billing_country" => $this->billing->country);			
+						
+			//filter
+			$tax = apply_filters("pmpro_tax", $tax, $values, $this);			
+			return $tax;
 		}
 		
 		function getTax($force = false)
@@ -997,7 +1002,7 @@
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			$nvpStr .="&AMT=" . $initial_payment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -1036,8 +1041,8 @@
 			}						
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));			
-			
-			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);
+						
+			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);					
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$this->status = "token";				
@@ -1117,7 +1122,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;
-			$nvpStr .="&AMT=" . $this->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -1168,7 +1173,7 @@
 			$nvpStr = "";
 			if($this->Token)
 				$nvpStr .= "&TOKEN=" . $this->Token;		
-			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
+			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
 			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name"));
@@ -1189,7 +1194,7 @@
 			if($this->TrialBillingCycles)
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $this->TrialBillingCycles;
 			
-			$this->nvpStr = $nvpStr;
+			$this->nvpStr = $nvpStr;						
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 						
