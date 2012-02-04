@@ -41,6 +41,8 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * Passing the level cost to PayPal Express through the description.
 * The billing page doesn't require SSL now if the gateway for the order was PayPal Express. A link to PayPal is shown instead of the form. (Be sure to remove the "becesure" custom field from your billing page if it has one and you don't want this page served over SSL.)
 * Fixed bug where the membership level name wasn't being passed to Authorize.net in the description field for the order.
+* Added a second paramter ($tags = true) to the pmpro_getLevelCost function. If this is false, strip_tags is run on the cost before returning it. (By default we wrap the prices in <strong> tags which is not good for passing to PayPal for example.)
+* Some bug fixes for updating billing against Authorize.net.
 
 = 1.3.13 =
 * Fixed warning on checkout page. (Thanks Caps!)

@@ -1877,8 +1877,9 @@
 			if(strpos($this->billing->phone, "+") === false)
 				$customer_phone = $this->billing->phone;
 			
+			
 			//build xml to post
-			$content =
+			$this->content =
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
 					"<ARBUpdateSubscriptionRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
 					"<merchantAuthentication>".
@@ -1893,14 +1894,13 @@
 					"<cardNumber>" . $cardNumber . "</cardNumber>".
 					"<expirationDate>" . $expirationDate . "</expirationDate>";
 			if(!empty($cardCode))
-				$content .= "<cardCode>" . $cardCode . "</cardCode>";
-			$content = 
-					"<cardCode>" . $cardCode . "</cardCode>".
+				$this->content .= "<cardCode>" . $cardCode . "</cardCode>";
+			$this->content .= 					
 					"</creditCard>".
 					"</payment>".
 					"<customer>".
 					"<email>". $customer_email . "</email>".
-					"<phoneNumber>". formatPhone($customer_phone) . "</phoneNumber>".
+					"<phoneNumber>". str_replace("1 (", "(", formatPhone($customer_phone)) . "</phoneNumber>".
 					"</customer>".
 					"<billTo>".
 					"<firstName>". $firstName . "</firstName>".
@@ -1915,15 +1915,15 @@
 					"</ARBUpdateSubscriptionRequest>";
 		
 			//send the xml via curl
-			$response = $this->send_request_via_curl($host,$path,$content);
+			$this->response = $this->send_request_via_curl($host,$path,$this->content);
 			//if curl is unavilable you can try using fsockopen
 			/*
-			$response = send_request_via_fsockopen($host,$path,$content);
+			$response = send_request_via_fsockopen($host,$path,$this->content);
 			*/
 			
 			
-			if($response) {				
-				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);		
+			if($this->response) {				
+				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);		
 				
 				if($resultCode == "Ok" || $code == "Ok")
 				{					
