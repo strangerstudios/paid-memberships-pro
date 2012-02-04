@@ -137,7 +137,7 @@
 			return false;
 	}
 	
-	function pmpro_getLevelCost(&$level)
+	function pmpro_getLevelCost(&$level, $tags = true)
 	{
 		global $pmpro_currency_symbol;
 		$r = '
@@ -200,6 +200,9 @@
 		{
 			$r .= " Customers in " . $tax_state . " will be charged " . round($tax_rate * 100, 2) . "% tax.";
 		}
+		
+		if(!$tags)
+			$r = strip_tags($r);
 		
 		$r = apply_filters("pmpro_level_cost_text", $r, $level);		
 		return $r;

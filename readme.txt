@@ -35,8 +35,12 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 == Changelog ==
 = 1.3.14 =
-* Added pmpro_show_cvv filter to hide the CVV from the checkout page.
+* Added pmpro_show_cvv filter to hide the CVV from the checkout and billing information pages.
+* Updated the billing page to use the pmpro_required_billing_fields like the checkout page does.
 * Updated the Authorize.net integration to not pass an empty CVV if the value is empty. Authorize.net will still throw an error if you require CVV via your gateway settings. If you update your settings and PMpro to not require a CVV, you won't get an error.
+* Passing the level cost to PayPal Express through the description.
+* The billing page doesn't require SSL now if the gateway for the order was PayPal Express. A link to PayPal is shown instead of the form. (Be sure to remove the "becesure" custom field from your billing page if it has one and you don't want this page served over SSL.)
+* Fixed bug where the membership level name wasn't being passed to Authorize.net in the description field for the order.
 
 = 1.3.13 =
 * Fixed warning on checkout page. (Thanks Caps!)

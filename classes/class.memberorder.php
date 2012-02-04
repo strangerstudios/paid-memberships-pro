@@ -1006,7 +1006,7 @@
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . $amount;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name")) . "&L_PAYMENTTYPE0=Any";
+			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name") . ". " . str_replace("&#36;", "$", pmpro_getLevelCost($this->membership_level, false))) . "&L_PAYMENTTYPE0=Any";
 					
 			//if billing cycles are defined						
 			if(!empty($this->TotalBillingCycles))
@@ -1040,8 +1040,8 @@
 					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}						
 			
-			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));			
-						
+			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);					
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -1176,7 +1176,7 @@
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $this->PaymentAmount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $this->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $this->BillingPeriod . "&BILLINGFREQUENCY=" . $this->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
-			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name"));
+			$nvpStr .= "&DESC=" . urlencode($this->membership_level->name . " at " . get_bloginfo("name") . ". " . str_replace("&#36;", "$", pmpro_getLevelCost($this->membership_level, false)));
 			
 			//if billing cycles are defined						
 			if($this->TotalBillingCycles)
@@ -1324,8 +1324,8 @@
 			$customer_email = $this->Email;
 			$customer_phone = $this->billing->phone;
 			
-			if(!isset($this->level->name))
-				$this->level->name = "";
+			if(!isset($this->membership_level->name))
+				$this->membership_level->name = "";
 			
 			$post_values = array(
 				
@@ -1345,7 +1345,7 @@
 				"x_exp_date"		=> $this->ExpirationDate,
 				
 				"x_amount"			=> $amount,
-				"x_description"		=> $this->level->name . " Membership",
+				"x_description"		=> $this->membership_level->name . " Membership",
 
 				"x_first_name"		=> $this->FirstName,
 				"x_last_name"		=> $this->LastName,
@@ -1507,8 +1507,8 @@
 			$customer_email = $this->Email;
 			$customer_phone = $this->billing->phone;
 			
-			if(!isset($this->level->name))
-				$this->level->name = "";
+			if(!isset($this->membership_level->name))
+				$this->membership_level->name = "";
 			
 			$post_values = array(
 				
@@ -1529,7 +1529,7 @@
 				
 				"x_amount"			=> $amount,
 				"x_tax"				=> $tax,
-				"x_description"		=> $this->level->name . " Membership",
+				"x_description"		=> $this->membership_level->name . " Membership",
 
 				"x_first_name"		=> $this->FirstName,
 				"x_last_name"		=> $this->LastName,
@@ -1544,7 +1544,7 @@
 				
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
-			);
+			);						
 			
 			if(!empty($this->CVV2))
 				$post_values["x_card_code"] = $this->CVV2;

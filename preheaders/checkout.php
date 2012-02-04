@@ -362,13 +362,13 @@
 							//tax
 							$morder->subtotal = $morder->InitialPayment;
 							$morder->getTax();						
-							
+														
 							if($gateway == "paypalexpress")
 							{
 								$morder->payment_type = "PayPal Express";
 								$morder->cardtype = "";
 								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
-								$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);
+								$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);							
 								$pmpro_processed = $morder->setExpressCheckout();
 							}
 							else

@@ -1,9 +1,29 @@
-<?php
-	global $besecure;
-	$besecure = true;		
-	
+<?php	
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	
+	//need to be secure?
+	global $besecure, $show_paypal_link;
+	$user_order = new MemberOrder();
+	$user_order->getLastMemberOrder();
+	if($user_order->gateway == "paypalexpress")
+	{
+		//still they might have website payments pro setup
+		$gateway = pmpro_getOption("gateway");
+		if($gateway == "paypal")
+		{		
+			$besecure = true;	
+		}
+		else
+		{
+			$besecure = false;
+			$show_paypal_link = true;
+		}
+	}
+	else
+	{		
+		$besecure = true;			
+	}
 	
 	//_x stuff in case they clicked on the image button with their mouse
 	if(isset($_REQUEST['update-billing']))
@@ -56,7 +76,36 @@
 		if(isset($_REQUEST['CVV']))
 			$CVV = trim($_REQUEST['CVV']);	
 		
-		if(!$bfirstname || !$blastname || !$baddress1 || !$bcity || !$bstate || !$bzipcode || !$bphone || !$bemail || !$CardType || !$AccountNumber || !$ExpirationMonth || !$ExpirationYear || !$CVV)
+		$pmpro_required_billing_fields = array(
+			"bfirstname" => $bfirstname,
+			"blastname" => $blastname,
+			"baddress1" => $baddress1,
+			"bcity" => $bcity,
+			"bstate" => $bstate,
+			"bzipcode" => $bzipcode,
+			"bphone" => $bphone,
+			"bemail" => $bemail,
+			"bcountry" => $bcountry,
+			"CardyType" => $CardType,
+			"AccountNumber" => $AccountNumber,
+			"ExpirationMonth" => $ExpirationMonth,
+			"ExpirationYear" => $ExpirationYear,
+			"CVV" => $CVV
+		);
+		
+		//filter
+		$pmpro_required_billing_fields = apply_filters("pmpro_required_billing_fields", $pmpro_required_billing_fields);		
+		
+		foreach($pmpro_required_billing_fields as $key => $field)
+		{
+			if(!$field)
+			{										
+				$missing_billing_field = true;										
+				break;
+			}
+		}
+		
+		if(!empty($missing_billing_field))
 		{
 			//krumo(array($bname, $baddress1, $bcity, $bstate, $bzipcode, $bemail, $name, $address1, $city, $state, $zipcode));
 			$pmpro_msg = "Please complete all required fields.";

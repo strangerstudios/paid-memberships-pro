@@ -85,7 +85,7 @@
 					$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
 				?>		
 				<div class="pmpro_box">				
-					<h3><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "", "https")?>">Edit</a>Billing Information</h3>
+					<h3><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "")?>">Edit</a>Billing Information</h3>
 					<p>
 						<strong>Billing Address</strong><br />
 						<?php echo $bfirstname . " " . $blastname?>
