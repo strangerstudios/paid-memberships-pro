@@ -1343,7 +1343,6 @@
 				"x_card_type"		=> $this->cardtype,
 				"x_card_num"		=> $this->accountnumber,
 				"x_exp_date"		=> $this->ExpirationDate,
-				"x_card_code"		=> $this->CVV2,
 				
 				"x_amount"			=> $amount,
 				"x_description"		=> $this->level->name . " Membership",
@@ -1361,6 +1360,9 @@
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
 			);
+			
+			if(!empty($this->CVV2))
+				$post_values["x_card_code"] = $this->CVV2;
 			
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
@@ -1523,8 +1525,7 @@
 				"x_method"			=> "CC",
 				"x_card_type"		=> $this->cardtype,
 				"x_card_num"		=> $this->accountnumber,
-				"x_exp_date"		=> $this->ExpirationDate,
-				"x_card_code"		=> $this->CVV2,
+				"x_exp_date"		=> $this->ExpirationDate,				
 				
 				"x_amount"			=> $amount,
 				"x_tax"				=> $tax,
@@ -1544,7 +1545,10 @@
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
 			);
-						
+			
+			if(!empty($this->CVV2))
+				$post_values["x_card_code"] = $this->CVV2;
+			
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
 			$post_string = "";
@@ -1712,8 +1716,10 @@
 					"<payment>".
 					"<creditCard>".
 					"<cardNumber>" . $cardNumber . "</cardNumber>".
-					"<expirationDate>" . $expirationDate . "</expirationDate>".
-					"<cardCode>" . $cardCode . "</cardCode>".
+					"<expirationDate>" . $expirationDate . "</expirationDate>";
+			if(!empty($cardCode))
+				$this->content .= "<cardCode>" . $cardCode . "</cardCode>";
+			$this->content .=					
 					"</creditCard>".
 					"</payment>".
 					"<order><invoiceNumber>" . $this->code . "</invoiceNumber></order>".
@@ -1885,7 +1891,10 @@
 					"<payment>".
 					"<creditCard>".
 					"<cardNumber>" . $cardNumber . "</cardNumber>".
-					"<expirationDate>" . $expirationDate . "</expirationDate>".
+					"<expirationDate>" . $expirationDate . "</expirationDate>";
+			if(!empty($cardCode))
+				$content .= "<cardCode>" . $cardCode . "</cardCode>";
+			$content = 
 					"<cardCode>" . $cardCode . "</cardCode>".
 					"</creditCard>".
 					"</payment>".
