@@ -6,7 +6,12 @@
 	global $besecure, $show_paypal_link;
 	$user_order = new MemberOrder();
 	$user_order->getLastMemberOrder();
-	if($user_order->gateway == "paypalexpress")
+	if(empty($user_order->gateway))
+	{
+		//no order
+		$besecure = false;
+	}
+	elseif($user_order->gateway == "paypalexpress")
 	{
 		//still they might have website payments pro setup
 		$gateway = pmpro_getOption("gateway");

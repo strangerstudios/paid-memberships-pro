@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.3.14
+Stable tag: 1.3.15
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -34,6 +34,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.15 =
+* Fixed SSL handling on the billing page for members without an order.
+
 = 1.3.14 =
 * Added pmpro_show_cvv filter to hide the CVV from the checkout and billing information pages.
 * Updated the billing page to use the pmpro_required_billing_fields like the checkout page does.
