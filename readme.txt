@@ -27,6 +27,16 @@ Please post it in the WordPress support forum and we'll fix it right away. Thank
 
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
+= Does PMPro Support Multisite/Network Installs? =
+
+"Supporting multisite" means different things to different people.
+
+Out of the box PMPro will basically act as a stand alone plugin for each site. Each site has its own list of membership levels, members, payment settings, etc.
+
+I've written a plugin pmpro-network, which is available on GitHub (https://github.com/strangerstudios/pmpro-network) that shows the basics for allowing users who signs up for a membership at one site to be able to create or reclaim their own site under the multisite setup.
+
+If you would like more help using PMPro on a network install, sign up for support at http://www.paidmembershipspro.com.
+
 == Screenshots ==
 
 1. Paid Memberships Pro supports multiple membership levels.
@@ -36,6 +46,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 = 1.3.15 =
 * Fixed SSL handling on the billing page for members without an order.
+* Removed single quotes from shortcode examples on page settings page. Doh! (Thanks, Caps)
+* Added Multisite/Network FAQ item.
+* Updated the payments settings page to convert tax rates like 7 into 0.07. (Tax rates > 1 are divided by 100.)
 
 = 1.3.14 =
 * Added pmpro_show_cvv filter to hide the CVV from the checkout and billing information pages.

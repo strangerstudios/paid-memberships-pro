@@ -70,6 +70,14 @@
 	$tax_state = pmpro_getOption("tax_state");
 	$tax_rate = pmpro_getOption("tax_rate");
 	
+	//make sure the tax rate is not > 1
+	if((double)$tax_rate > 1)
+	{
+		//assume the entered X%
+		$tax_rate = $tax_rate / 100;
+		pmpro_setOption("tax_rate", $tax_rate);
+	}
+	
 	//default settings			
 	if(empty($gateway_environment))
 	{

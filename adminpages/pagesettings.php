@@ -105,7 +105,7 @@
 					<?php if(!empty($pmpro_pages['account'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_account'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_account].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">
@@ -118,7 +118,7 @@
 					<?php if(!empty($pmpro_pages['billing'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_billing'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_billing].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">	
@@ -131,7 +131,7 @@
 					<?php if(!empty($pmpro_pages['cancel'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_cancel'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_cancel].</small>
 				</td>
 			</tr>
 			<tr>
@@ -145,7 +145,7 @@
 					<?php if(!empty($pmpro_pages['checkout'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_checkout'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_checkout].</small>
 				</td>
 			</tr>
 			<tr>
@@ -159,7 +159,7 @@
 					<?php if(!empty($pmpro_pages['confirmation'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_confirmation'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_confirmation].</small>
 				</td>
 			</tr>
 			<tr>
@@ -173,7 +173,7 @@
 					<?php if(!empty($pmpro_pages['invoice'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_invoice'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_invoice].</small>
 				</td>
 			</tr>
 			<tr>
@@ -187,7 +187,7 @@
 					<?php if(!empty($pmpro_pages['levels'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="pmpro_page_edit">edit page</a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode ['pmpro_levels'].</small>
+					<br /><small class="pmpro_lite">Include the shortcode [pmpro_levels].</small>
 				</td>
 			</tr>				
 		</tbody>
