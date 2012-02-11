@@ -116,9 +116,7 @@
 				
 				$edit = false;
 				$msg = 1;
-				$msgt = "Membership level added successfully.";								
-				
-				krumo($edit);
+				$msgt = "Membership level added successfully.";															
 			}
 			else
 			{
@@ -189,8 +187,7 @@
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>
 
-<?php	
-	krumo($edit);
+<?php		
 	if($edit)
 	{			
 	?>
