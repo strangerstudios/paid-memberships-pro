@@ -9,7 +9,7 @@
 	if(!$pmpro_ready)
 	{
 		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;		
-		if(isset($_REQUEST['edit']))
+		if(isset($_REQUEST['edit']) && !isset($edit))
 			$edit = $_REQUEST['edit'];
 		else
 			$edit = false;

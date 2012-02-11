@@ -117,6 +117,8 @@
 				$edit = false;
 				$msg = 1;
 				$msgt = "Membership level added successfully.";								
+				
+				krumo($edit);
 			}
 			else
 			{
@@ -188,6 +190,7 @@
 ?>
 
 <?php	
+	krumo($edit);
 	if($edit)
 	{			
 	?>

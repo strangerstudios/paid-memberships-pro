@@ -48,6 +48,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Moved the SSL Seal box lower on the payment settings page.
 * Made dashboard menu and admin bar menus consistent. 
 * Fixed bug with selecting categories when adding a new level.
+* Fixed bug where the user was sometimes redirected to the add level page after adding a level.
 
 = 1.3.15 =
 * Fixed SSL handling on the billing page for members without an order.
