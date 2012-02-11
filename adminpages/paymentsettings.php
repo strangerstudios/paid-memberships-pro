@@ -101,15 +101,7 @@
 		<p>Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.</p>
 		
 		<table class="form-table">
-		<tbody>                
-		   <tr>
-				<th scope="row" valign="top">
-					<label for="sslseal">SSL Seal Code:</label>
-				</th>
-				<td>
-					<textarea name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
-				</td>
-		   </tr>
+		<tbody>                		   
 		   <tr>
 				<th scope="row" valign="top">	
 					<label for="gateway">Payment Gateway:</label>
@@ -233,6 +225,14 @@
 					<input type="checkbox" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> JCB<br />
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="sslseal">SSL Seal Code:</label>
+				</th>
+				<td>
+					<textarea name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
+				</td>
+		   </tr>
 			<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>

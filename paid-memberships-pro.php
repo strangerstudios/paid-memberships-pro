@@ -916,11 +916,11 @@ function pmpro_admin_bar_menu() {
 		return;
 	$wp_admin_bar->add_menu( array(
 	'id' => 'paid-memberships-pro',
-	'title' => __( 'Paid Memberships Pro'),
+	'title' => __( 'Memberships'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
 	'parent' => 'paid-memberships-pro',
-	'title' => __( 'Manage Levels'),
+	'title' => __( 'Membership Levels'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
 	'parent' => 'paid-memberships-pro',
@@ -928,7 +928,7 @@ function pmpro_admin_bar_menu() {
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-pagesettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'parent' => 'paid-memberships-pro',
-	'title' => __( 'SSL & Payment Gateway Settings'),
+	'title' => __( 'Payment Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-paymentsettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'parent' => 'paid-memberships-pro',

@@ -112,6 +112,8 @@
 			$wpdb->query($sqlQuery);
 			if(!mysql_errno())
 			{
+				pmpro_updateMembershipCategories( $wpdb->insert_id, $ml_categories );
+				
 				$edit = false;
 				$msg = 1;
 				$msgt = "Membership level added successfully.";								

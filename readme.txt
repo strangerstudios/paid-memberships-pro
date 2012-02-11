@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.3.15
+Stable tag: 1.3.16
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -44,6 +44,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.3.16 =
+* Moved the SSL Seal box lower on the payment settings page.
+* Made dashboard menu and admin bar menus consistent. 
+* Fixed bug with selecting categories when adding a new level.
+
 = 1.3.15 =
 * Fixed SSL handling on the billing page for members without an order.
 * Removed single quotes from shortcode examples on page settings page. Doh! (Thanks, Caps)
