@@ -9,10 +9,14 @@
 	if(!$pmpro_ready)
 	{
 		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;		
-		if(isset($_REQUEST['edit']))
-			$edit = $_REQUEST['edit'];
-		else
-			$edit = false;
+		if(!isset($edit))
+		{
+			if(isset($_REQUEST['edit']))
+				$edit = $_REQUEST['edit'];
+			else
+				$edit = false;
+		}
+		
 		if(empty($msg))
 			$msg = -1;		
 		if(empty($pmpro_level_ready) && empty($edit))
