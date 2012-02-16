@@ -443,17 +443,34 @@
 					$r = false;
 			}		
 								
+			if(!is_array($levels))
+				$levels = array($levels);
+			
 			//okay, so something to check let's set the levels
-			if(!empty($membership_level))
+			if(empty($membership_level))
 			{
-				if(!is_array($levels))
-					$levels = array($levels);
-					
-				//and check each one
+				//non member check
 				foreach($levels as $level)
 				{
-					if($level == $membership_level->ID || $level == $membership_level->name)
+					if(is_numeric($level) && (int)$level < 0)
+						$r = true;	//they don't have a membership level so they don't have this one
+				}
+			}
+			else
+			{						
+				//check levels against the user's level
+				foreach($levels as $level)
+				{
+					if(is_numeric($level) && (int)$level < 0)
+					{
+						//passing -1 will return true if the user does not have membership level #1
+						$abs_level = abs($level);						
+						if($abs_level != $membership_level->ID)
+							$r = true;
+					}
+					elseif($level == $membership_level->ID || $level == $membership_level->name)
 					{				
+						//the user has this level
 						$r = true;
 					}
 				}
