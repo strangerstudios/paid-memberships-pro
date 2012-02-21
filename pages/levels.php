@@ -8,7 +8,7 @@ if($pmpro_msg)
 }
 ?>
 
-<table id="pmpro_levels_table" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
+<table id="pmpro_levels_table" class="pmpro_checkout top1em">
 <thead>
   <tr>
 	<th>Level</th>
@@ -28,7 +28,7 @@ if($pmpro_msg)
 	  else
 	  	  $current_level = false;
 	?>
-	<tr valign="top" class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
+	<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
 		<td><?php echo $current_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
 		<td>
 			<?php if(pmpro_isLevelFree($level)) { ?>
@@ -98,7 +98,7 @@ if($pmpro_msg)
 </tbody>
 <tfoot>
   <tr>
-  	<td colspan="5" align="center">
+  	<td colspan="5">
 		<small>-- 
 		<?php if(!empty($current_user->membership_level->ID)) { ?>
 			<a href="<?php echo pmpro_url("account")?>">return to your membership account</a>

@@ -15,7 +15,12 @@ Paid Memberships Pro is a WordPress Plugin and support community for membership 
 
 1. Upload the `paid-memberships-pro` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-1. Follow the instructions here to setup your memberships: http://www.paidmembershipspro.com/support/initial-plugin-setup/
+1. Follow the instructions in the video below:
+
+[youtube http://www.youtube.com/watch?v=BfKqlO0NRiU]
+
+Written instructions:
+http://www.paidmembershipspro.com/support/initial-plugin-setup/
 
 == Frequently Asked Questions ==
 
@@ -46,6 +51,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.3.17 =
 * Updated pmpro_hasMembershipLevel() and [membership] shortcode to allow passing a level like "-5" which will return true if the user does NOT have level #5.
+* Updated how PMPro notifications are retrieved and shown on the PMPro admin pages. We're using admin-ajax to call the pmpro_notifications function which uses WP's HTTP API to call the www.paidmembershipspro.com server. Only the PMPro version number is passed to check if a notification should be shown. This method shouldn't slow page load since the javascript is called using jQuery's ready function. If the PMPro server is unavailable, you'll get a JS error instead of a PHP one.
+* Fixed warning on discount codes page. Fixed some other warnings.
+* Updated expiration/trial crons to avoid blank ('') and zero ('0000-00-00 00:00:00') DB values in addition to NULLs. (Some backup programs will incorrectly export NULL dates as '' which could be interpretted as 1/1/1970... meaning the membership has expired.)
+* Fixed bug where "Billing Information" was shown on the account page for some free levels.
 
 = 1.3.16 =
 * Moved the SSL Seal box lower on the payment settings page.

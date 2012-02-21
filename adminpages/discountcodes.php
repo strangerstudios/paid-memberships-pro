@@ -91,94 +91,97 @@
 			$wpdb->query($sqlQuery);
 			
 			//add a row for each checked level
-			foreach($levels_a as $level_id)
+			if(!empty($levels_a))
 			{
-				//get the values ready
-				$n = array_search($level_id, $all_levels_a); 	//this is the key location of this level's values
-				$initial_payment = $initial_payment_a[$n];
-				
-				//is this recurring?
-				if($recurring_a)
+				foreach($levels_a as $level_id)
 				{
-					if(in_array($level_id, $recurring_a))
-						$recurring = 1;
+					//get the values ready
+					$n = array_search($level_id, $all_levels_a); 	//this is the key location of this level's values
+					$initial_payment = $initial_payment_a[$n];
+					
+					//is this recurring?
+					if($recurring_a)
+					{
+						if(in_array($level_id, $recurring_a))
+							$recurring = 1;
+						else
+							$recurring = 0;
+					}
 					else
 						$recurring = 0;
-				}
-				else
-					$recurring = 0;
-						
-				if($recurring)
-				{
-					$billing_amount = $billing_amount_a[$n];
-					$cycle_number = $cycle_number_a[$n];
-					$cycle_period = $cycle_period_a[$n];
-					$billing_limit = $billing_limit_a[$n];
-					
-					//custom trial
-					if($custom_trial_a)
+							
+					if($recurring)
 					{
-						if(in_array($level_id, $custom_trial_a))
-							$custom_trial = 1;
+						$billing_amount = $billing_amount_a[$n];
+						$cycle_number = $cycle_number_a[$n];
+						$cycle_period = $cycle_period_a[$n];
+						$billing_limit = $billing_limit_a[$n];
+						
+						//custom trial
+						if($custom_trial_a)
+						{
+							if(in_array($level_id, $custom_trial_a))
+								$custom_trial = 1;
+							else
+								$custom_trial = 0;
+						}
 						else
 							$custom_trial = 0;
+						
+						if($custom_trial)
+						{
+							$trial_amount = $trial_amount_a[$n];
+							$trial_limit = $trial_limit_a[$n];
+						}
+						else
+						{
+							$trial_amount = '';
+							$trial_limit = '';
+						}
 					}
 					else
+					{
+						$billing_amount = '';
+						$cycle_number = '';
+						$cycle_period = '';
+						$billing_limit = '';
 						$custom_trial = 0;
-					
-					if($custom_trial)
-					{
-						$trial_amount = $trial_amount_a[$n];
-						$trial_limit = $trial_limit_a[$n];
-					}
-					else
-					{
 						$trial_amount = '';
 						$trial_limit = '';
 					}
-				}
-				else
-				{
-					$billing_amount = '';
-					$cycle_number = '';
-					$cycle_period = '';
-					$billing_limit = '';
-					$custom_trial = 0;
-					$trial_amount = '';
-					$trial_limit = '';
-				}
-				
-				if($expiration_a)
-				{
-					if(in_array($level_id, $expiration_a))
-						$expiration = 1;
+					
+					if($expiration_a)
+					{
+						if(in_array($level_id, $expiration_a))
+							$expiration = 1;
+						else
+							$expiration = 0;
+					}
 					else
 						$expiration = 0;
-				}
-				else
-					$expiration = 0;
-				
-				if($expiration)
-				{
-					$expiration_number = $expiration_number_a[$n];
-					$expiration_period = $expiration_period_a[$n];
-				}
-				else
-				{
-					$expiration_number = '';
-					$expiration_period = '';
-				}
-				
-				//okay, do the insert
-				$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . $wpdb->escape($initial_payment) . "', '" . $wpdb->escape($billing_amount) . "', '" . $wpdb->escape($cycle_number) . "', '" . $wpdb->escape($cycle_period) . "', '" . $wpdb->escape($billing_limit) . "', '" . $wpdb->escape($trial_amount) . "', '" . $wpdb->escape($trial_limit) . "', '" . $wpdb->escape($expiration_number) . "', '" . $wpdb->escape($expiration_period) . "')";
-								
-				if($wpdb->query($sqlQuery) !== false)
-				{
-					//okay
-				}
-				else
-				{
-					$level_errors[] = "Error saving values for the " . $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1") . " level.";
+					
+					if($expiration)
+					{
+						$expiration_number = $expiration_number_a[$n];
+						$expiration_period = $expiration_period_a[$n];
+					}
+					else
+					{
+						$expiration_number = '';
+						$expiration_period = '';
+					}
+					
+					//okay, do the insert
+					$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . $wpdb->escape($initial_payment) . "', '" . $wpdb->escape($billing_amount) . "', '" . $wpdb->escape($cycle_number) . "', '" . $wpdb->escape($cycle_period) . "', '" . $wpdb->escape($billing_limit) . "', '" . $wpdb->escape($trial_amount) . "', '" . $wpdb->escape($trial_limit) . "', '" . $wpdb->escape($expiration_number) . "', '" . $wpdb->escape($expiration_period) . "')";
+									
+					if($wpdb->query($sqlQuery) !== false)
+					{
+						//okay
+					}
+					else
+					{
+						$level_errors[] = "Error saving values for the " . $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1") . " level.";
+					}
 				}
 			}
 			

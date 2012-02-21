@@ -32,17 +32,6 @@ require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.m
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.pmproemail.php");
 require_once(ABSPATH . "/wp-includes/class-phpmailer.php");
 
-global $wpdb;
-$wpdb->hide_errors();
-$wpdb->pmpro_membership_levels = $table_prefix . 'pmpro_membership_levels';
-$wpdb->pmpro_memberships_users = $table_prefix . 'pmpro_memberships_users';
-$wpdb->pmpro_memberships_categories = $table_prefix . 'pmpro_memberships_categories';
-$wpdb->pmpro_memberships_pages = $table_prefix . 'pmpro_memberships_pages';
-$wpdb->pmpro_membership_orders = $table_prefix . 'pmpro_membership_orders';
-$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
-$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
-
 //setup the DB
 pmpro_checkForUpgrades();
 
@@ -168,7 +157,7 @@ function pmpro_is_ready()
 	$paid_membership_level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE allow_signups = 1 AND (initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0) LIMIT 1");
 	$paid_user_subscription = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1");
 
-	if(!$paid_membership_level && !$paid_user_susbcription)
+	if(empty($paid_membership_level) && empty($paid_user_subscription))
 	{
 		//no paid membership level now or attached to a user. we don't need the gateway setup
 		$pmpro_gateway_ready = true;
@@ -1377,4 +1366,38 @@ function pmpro_deactivation()
 register_activation_hook(__FILE__, 'pmpro_activation');
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');
 
+/*
+This code calls the server at www.memberlitetheme.com to see if there are any notifications to display to the user.
+*/
+function pmpro_notifications()
+{
+	if(current_user_can("manage_options"))
+	{			
+		delete_transient("pmpro_notification_" . PMPRO_VERSION);
+		
+		$pmpro_notification = get_transient("pmpro_notification_" . PMPRO_VERSION);
+		if(empty($pmpro_notification))
+		{
+			if(is_ssl())
+				$pmpro_notification = wp_remote_retrieve_body(wp_remote_get("https://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
+			else
+				$pmpro_notification = wp_remote_retrieve_body(wp_remote_get("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
+				
+			set_transient("pmpro_notification_" . PMPRO_VERSION, $pmpro_notification, 86400);
+		}
+		
+		if($pmpro_notification && $pmpro_notification != "NULL")
+		{
+		?>
+		<div id="pmpro_notifications">
+			<?php echo $pmpro_notification; ?>
+		</div>
+		<?php
+		}
+	}
+	
+	//exit so we just show this content
+	exit;
+}
+add_action('wp_ajax_pmpro_notifications', 'pmpro_notifications');	
 ?>

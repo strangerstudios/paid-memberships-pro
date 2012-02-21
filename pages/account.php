@@ -66,7 +66,7 @@
 				$ssorder = new MemberOrder();
 				$ssorder->getLastMemberOrder();
 				$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC");
-				if($ssorder)
+				if(!empty($ssorder->id))
 				{
 					//default values from DB (should be last order or last update)
 					$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
@@ -121,7 +121,7 @@
 		</div> <!-- end pmpro_left -->
 		
 		<div class="pmpro_right">
-			<?php if($invoices) { ?>
+			<?php if(!empty($invoices)) { ?>
 			<div class="pmpro_box">
 				<h3>Past Invoices</h3>
 				<ul>
