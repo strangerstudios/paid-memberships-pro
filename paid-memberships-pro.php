@@ -33,6 +33,7 @@ require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.p
 require_once(ABSPATH . "/wp-includes/class-phpmailer.php");
 
 //setup the DB
+global $wpdb;
 pmpro_checkForUpgrades();
 
 define("SITENAME", str_replace("&#039;", "'", get_bloginfo("name")));
