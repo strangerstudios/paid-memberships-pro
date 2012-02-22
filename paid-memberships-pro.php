@@ -909,30 +909,37 @@ function pmpro_admin_bar_menu() {
 	'title' => __( 'Memberships'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-membershiplevels',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Membership Levels'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-pagesettings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Page Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-pagesettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-paymentsettings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Payment Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-paymentsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-emailsettings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Email Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-emailsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-advancedsettings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Advanced Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-advancedsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-memberslist',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Members List'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-memberslist') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'paid-memberships-pro-discountcodes',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Discount Codes'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-discountcodes') ) );
