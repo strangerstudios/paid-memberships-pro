@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.17
+Version: 1.3.18
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -41,7 +41,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.17");
+define("PMPRO_VERSION", "1.3.18");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -909,30 +909,37 @@ function pmpro_admin_bar_menu() {
 	'title' => __( 'Memberships'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-membership-levels',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Membership Levels'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-page-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Page Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-pagesettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-payment-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Payment Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-paymentsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-email-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Email Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-emailsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-advanced-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Advanced Settings'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-advancedsettings') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-members-list',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Members List'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-memberslist') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-discount-codes',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Discount Codes'),
 	'href' => home_url('/wp-admin/admin.php?page=pmpro-discountcodes') ) );
