@@ -51,6 +51,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.3.18 =
 * Fixed admin bar warning that showed up on admin pages.
+* Added a pmpro_checkout_confirm_email filter that can return false to hide and not require the "Confirm E-mail" field at checkout.
+* Added a pmpro_checkout_confirm_password filter that can return false to hide and not require the "Confirm Password" field at checkout.
 
 = 1.3.17.1 =
 * Fixing activation bug from 1.3.17.

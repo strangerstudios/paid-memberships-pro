@@ -167,10 +167,24 @@
 					<label for="password">Password</label>
 					<input id="password" name="password" type="password" class="input" size="30" value="<?php echo esc_attr($password)?>" /> 
 				</div>
-				<div>
-					<label for="password2">Confirm Password</label>
-					<input id="password2" name="password2" type="password" class="input" size="30" value="<?php echo esc_attr($password2)?>" /> 
-				</div>
+				<?php
+					$pmpro_checkout_confirm_password = apply_filters("pmpro_checkout_confirm_password", true);					
+					if($pmpro_checkout_confirm_password)
+					{
+					?>
+					<div>
+						<label for="password2">Confirm Password</label>
+						<input id="password2" name="password2" type="password" class="input" size="30" value="<?php echo esc_attr($password2)?>" /> 
+					</div>
+					<?php
+					}
+					else
+					{
+					?>
+					<input type="hidden" name="password2_copy" value="1" />
+					<?php
+					}
+				?>
 				
 				<?php
 					do_action('pmpro_checkout_after_password');
@@ -180,10 +194,25 @@
 					<label for="bemail">E-mail Address</label>
 					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
-				<div>
-					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
-				</div>
+				<?php
+					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
+					if($pmpro_checkout_confirm_email)
+					{
+					?>
+					<div>
+						<label for="bconfirmemail">Confirm E-mail</label>
+						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+
+					</div>	                        
+					<?php
+					}
+					else
+					{
+					?>
+					<input type="hidden" name="bconfirmemail_copy" value="1" />
+					<?php
+					}
+				?>			
 				
 				<?php
 					do_action('pmpro_checkout_after_email');
@@ -368,11 +397,25 @@
 					<label for="bemail">E-mail Address</label>
 					<input id="bemail" name="bemail" type="text" class="input" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
-				<div>
-					<label for="bconfirmemail">Confirm E-mail</label>
-					<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+				<?php
+					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
+					if($pmpro_checkout_confirm_email)
+					{
+					?>
+					<div>
+						<label for="bconfirmemail">Confirm E-mail</label>
+						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
-				</div>	                        
+					</div>	                        
+					<?php
+						}
+						else
+						{
+					?>
+					<input type="hidden" name="bconfirmemail_copy" value="1" />
+					<?php
+						}
+					?>
 				<?php } ?>    
 			</td>						
 		</tr>											

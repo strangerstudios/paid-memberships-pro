@@ -123,8 +123,11 @@
 		$bphone = trim(stripslashes($_REQUEST['bphone']));
 	if(isset($_REQUEST['bemail']))
 		$bemail = trim(stripslashes($_REQUEST['bemail']));
-	if(isset($_REQUEST['bconfirmemail']))
+	if(isset($_REQUEST['bconfirmemail_copy']))
+		$bconfirmemail = $bemail;
+	elseif(isset($_REQUEST['bconfirmemail']))
 		$bconfirmemail = trim(stripslashes($_REQUEST['bconfirmemail']));
+		
 	if(isset($_REQUEST['CardType']))
 		$CardType = $_REQUEST['CardType'];
 	if(isset($_REQUEST['AccountNumber']))
@@ -142,7 +145,9 @@
 		$username = trim($_REQUEST['username']);
 	if(isset($_REQUEST['password']))
 		$password = $_REQUEST['password'];
-	if(isset($_REQUEST['password2']))
+	if(isset($_REQUEST['password2_copy']))
+		$password2 = $password;
+	elseif(isset($_REQUEST['password2']))
 		$password2 = $_REQUEST['password2'];
 	if(isset($_REQUEST['tos']))
 		$tos = $_REQUEST['tos'];		
