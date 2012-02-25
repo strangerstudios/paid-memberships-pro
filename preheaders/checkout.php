@@ -297,11 +297,14 @@
 					if($pmpro_msgt != "pmpro_error")
 					{				
 						//save user fields for PayPal Express
-						if(!$current_user->ID && $gateway == "paypalexpress")
+						if($gateway == "paypalexpress")
 						{
-							$_SESSION['pmpro_signup_username'] = $username;
-							$_SESSION['pmpro_signup_password'] = $password;
-							$_SESSION['pmpro_signup_email'] = $bemail;
+							if(!$current_user->ID)
+							{
+								$_SESSION['pmpro_signup_username'] = $username;
+								$_SESSION['pmpro_signup_password'] = $password;
+								$_SESSION['pmpro_signup_email'] = $bemail;														
+							}
 							
 							//can use this hook to save some other variables to the session
 							do_action("pmpro_paypalexpress_session_vars");

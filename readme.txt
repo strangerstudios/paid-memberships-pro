@@ -53,6 +53,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed admin bar warning that showed up on admin pages.
 * Added a pmpro_checkout_confirm_email filter that can return false to hide and not require the "Confirm E-mail" field at checkout.
 * Added a pmpro_checkout_confirm_password filter that can return false to hide and not require the "Confirm Password" field at checkout.
+* If the PMPRO_DEFAULT_LEVEL constant is set, traffic on the levels page is redirected to the checkout page. This redirect no longer forces HTTPS.
+* Moved the pmpro_paypalexpress_session_vars hook call so it will run even if existing users are checking out (upgrades, etc).
 
 = 1.3.17.1 =
 * Fixing activation bug from 1.3.17.

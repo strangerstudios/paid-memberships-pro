@@ -7,7 +7,7 @@
 		
 	if($default_level)
 	{
-		wp_redirect(pmpro_url("checkout", "?level=" . $default_level, "https"));
+		wp_redirect(pmpro_url("checkout", "?level=" . $default_level));
 		exit;
 	}
 	
