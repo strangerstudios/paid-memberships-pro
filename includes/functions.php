@@ -79,7 +79,7 @@
 	function pmpro_setOption($s, $v = NULL)
 	{
 		//no value is given, set v to the request var
-		if($v === NULL)
+		if($v === NULL && isset($_REQUEST[$s]))
 			$v = $_REQUEST[$s];
 				
 		if(is_array($v))
@@ -447,13 +447,13 @@
 		if(!$non_member_check)
 		{
 			//no levels?
-			if($membership_level == "-1" || !$membership_level)
+			if($membership_level == "-1" || empty($membership_level))
 				$r = false;		
 						
 			//if no level var was passed, we're just checking if they have any level
 			if(!$levels)
 			{
-				if($membership_level->ID)
+				if(!empty($membership_level->ID))
 					$r = true;
 				else
 					$r = false;

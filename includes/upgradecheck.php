@@ -19,7 +19,21 @@ function pmpro_checkForUpgrades()
 	elseif($pmpro_db_version < 1.115)
 		$pmpro_db_version = pmpro_upgrade_1_1_15();		
 	elseif($pmpro_db_version < 1.23)
-		$pmpro_db_version = pmpro_upgrade_1_2_3();		
+		$pmpro_db_version = pmpro_upgrade_1_2_3();	
+	elseif($pmpro_db_version < 1.318)
+		$pmpro_db_version = pmpro_upgrade_1_3_18();
+}
+
+function pmpro_upgrade_1_3_18()
+{
+	//setting new email settings defaults
+	pmpro_setOption("email_admin_checkout", "1");
+	pmpro_setOption("email_admin_changes", "1");
+	pmpro_setOption("email_admin_cancels", "1");
+	pmpro_setOption("email_admin_billing", "1");
+
+	pmpro_setOption("db_version", "1.318");	
+	return 1.318;
 }
 
 function pmpro_upgrade_1_2_3()
@@ -233,7 +247,7 @@ function pmpro_upgrade_1()
 	pmpro_setOption("from_email", $from_email);
 	
 	$from_name = "WordPress";
-	pmpro_setOption("from_name", $from_name);
+	pmpro_setOption("from_name", $from_name);		
 	
 	pmpro_setOption("tospage", "");			
 	

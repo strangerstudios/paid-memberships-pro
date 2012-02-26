@@ -167,9 +167,13 @@
 
 				if($worked)
 				{
-					//send email
+					//send email to member
 					$pmproemail = new PMProEmail();
-					$pmproemail->sendBillingEmail($current_user, $morder);				
+					$pmproemail->sendBillingEmail($current_user, $morder);	
+
+					//send email to admin
+					$pmproemail = new PMProEmail();
+					$pmproemail->sendBillingAdminEmail($current_user, $morder);						
 				}
 			}
 			else

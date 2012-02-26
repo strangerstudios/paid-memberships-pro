@@ -623,15 +623,22 @@
 									
 				//hook
 				do_action("pmpro_after_checkout", $user_id);						
-				do_action("pmpro_after_change_membership_level", $pmpro_level->id, $user_id);																									
-				//send email
-				$pmproemail = new PMProEmail();
+				do_action("pmpro_after_change_membership_level", $pmpro_level->id, $user_id);								
+				
+				//setup some values for the emails
 				if($morder)
 					$invoice = new MemberOrder($morder->id);						
 				else
 					$invoice = NULL;
 				$user->membership_level = $pmpro_level;		//make sure they have the right level info
+				
+				//send email to member
+				$pmproemail = new PMProEmail();				
 				$pmproemail->sendCheckoutEmail($current_user, $invoice);
+												
+				//send email to admin
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCheckoutAdminEmail($current_user, $invoice);
 												
 				//redirect to confirmation			
 				wp_redirect(pmpro_url("confirmation"));

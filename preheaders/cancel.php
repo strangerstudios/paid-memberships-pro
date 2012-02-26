@@ -17,15 +17,20 @@
 		
 	if($pmpro_confirm)
 	{		
+		$old_level_id = $current_user->membership_level->id;
 		$worked = pmpro_changeMembershipLevel(false, $current_user->ID);		
 		if($worked === true)
 		{			
 			$pmpro_msg = "Your membership has been cancelled.";
 			$pmpro_msgt = "pmpro_success";
 			
-			//send an email
+			//send an email to the member
 			$myemail = new PMProEmail();
 			$myemail->sendCancelEmail();
+			
+			//send an email to the admin
+			$myemail = new PMProEmail();
+			$myemail->sendCancelAdminEmail($current_user, $old_level_id);			
 		}
 		else
 		{

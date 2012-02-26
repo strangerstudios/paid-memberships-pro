@@ -306,7 +306,7 @@ function pmpro_membership_level_profile_fields($user)
 			<th><label for="membership_level"><?php _e("Current Level"); ?></label></th>
 			<td>
 				<select name="membership_level" onchange="pmpro_mchange_warning();">
-					<option value="" <?php if(!$user->membership_level->ID) { ?>selected="selected"<?php } ?>>-- None --</option>
+					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- None --</option>
 				<?php
 					foreach($levels as $level)
 					{
@@ -330,7 +330,7 @@ function pmpro_membership_level_profile_fields($user)
 				</script>
 				<?php
 					$membership_values = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1");
-					if($membership_values->billing_amount > 0 || $membership_values->trial_amount > 0)
+					if(!empty($membership_values->billing_amount) || !empty($membership_values->trial_amount))
 					{
 					?>
 						<?php if($membership_values->billing_amount > 0) { ?>
@@ -469,10 +469,17 @@ function pmpro_membership_level_profile_fields_update()
 	//send email
 	if(!empty($level_changed) || !empty($expiration_changed))
 	{
+		//email to member
 		$pmproemail = new PMProEmail();
 		if(!empty($expiration_changed))
 			$pmproemail->expiration_changed = true;
 		$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
+		
+		//email to admin
+		$pmproemail = new PMProEmail();
+		if(!empty($expiration_changed))
+			$pmproemail->expiration_changed = true;
+		$pmproemail->sendAdminChangeAdminEmail(get_userdata($user_ID));
 	}
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );

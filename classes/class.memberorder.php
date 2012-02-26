@@ -1852,7 +1852,7 @@
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
 			
-			$amount = $this->PaymentAmount;
+			//$amount = $this->PaymentAmount;
 			$refId = $this->code;
 			$subscriptionId = $this->subscription_transaction_id;			
 			
