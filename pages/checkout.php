@@ -421,7 +421,9 @@
 		</tr>											
 	</tbody>
 	</table>                   
-		
+	
+	<?php do_action("pmpro_checkout_after_billing_fields"); ?>		
+	
 	<?php
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 		$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
@@ -567,6 +569,8 @@
 			}																		
 		});
 	</script>
+	
+	<?php do_action("pmpro_checkout_before_submit_button"); ?>			
 	
 	<div align="center">		
 		<?php if($pmpro_review) { ?>
