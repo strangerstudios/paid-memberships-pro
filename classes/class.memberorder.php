@@ -187,7 +187,15 @@
 			}
 			
 			//set values array for filter
-			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate, "billing_state" => $this->billing->state, "billing_city" => $this->billing_city, "billing_zip" => $this->billing->zip, "billing_country" => $this->billing->country);			
+			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate);
+			if(!empty($this->billing->state))
+				$values['billing_state'] = $this->billing->state;
+			if(!empty($this->billing->city))
+				$values['billing_city'] = $this->billing->city;
+			if(!empty($this->billing->zip))
+				$values['billing_zip'] = $this->billing->zip;
+			if(!empty($this->billing->country))
+				$values['billing_country'] = $this->billing->country;
 						
 			//filter
 			$tax = apply_filters("pmpro_tax", $tax, $values, $this);			
@@ -214,7 +222,10 @@
 				$this->code = $this->getRandomCode();
 			
 			//figure out how much we charged
-			$amount = $this->InitialPayment;
+			if(!empty($this->InitialPayment))
+				$amount = $this->InitialPayment;
+			else
+				$amount = 0;
 			
 			//Todo: Make sure the session is started
 			

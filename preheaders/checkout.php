@@ -413,10 +413,14 @@
 	//PayPal Express Call Backs
 	if(!empty($_REQUEST['review']))
 	{
-		$_SESSION['payer_id'] = $_REQUEST['PayerID'];
-		$_SESSION['paymentAmount']=$_REQUEST['paymentAmount'];
-		$_SESSION['currCodeType']=$_REQUEST['currencyCodeType'];
-		$_SESSION['paymentType']=$_REQUEST['paymentType'];
+		if(!empty($_REQUEST['PayerID']))
+			$_SESSION['payer_id'] = $_REQUEST['PayerID'];
+		if(!empty($_REQUEST['paymentAmount']))
+			$_SESSION['paymentAmount'] = $_REQUEST['paymentAmount'];
+		if(!empty($_REQUEST['currencyCodeType']))
+			$_SESSION['currCodeType'] = $_REQUEST['currencyCodeType'];
+		if(!empty($_REQUEST['paymentType']))
+			$_SESSION['paymentType'] = $_REQUEST['paymentType'];
 		
 		$morder = new MemberOrder();
 		$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
