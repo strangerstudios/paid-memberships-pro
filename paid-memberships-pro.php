@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.3.18
+Version: 1.3.19
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -41,7 +41,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.3.18");
+define("PMPRO_VERSION", "1.3.19");
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
@@ -126,7 +126,7 @@ function pmpro_set_current_user()
 	$hideadslevels = explode(",", pmpro_getOption("hideadslevels"));
 	if($hideads && $hideadslevels)
 	{
-		if(in_array($current_user->membership_level->ID, $hideadslevels))
+		if(!empty($current_user->membership_level->ID) && in_array($current_user->membership_level->ID, $hideadslevels))
 		{
 			//disable ads in ezAdsense
 			if(class_exists("ezAdSense"))
@@ -255,7 +255,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if($pmpro_page_id == $post->ID)
+			if(!empty($post->ID) && $pmpro_page_id == $post->ID)
 			{
 				include(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/" . $pmpro_page_name . ".php");
 
@@ -562,9 +562,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 			//always block restricted feeds
 			$hasaccess = false;
 		}
-		elseif($myuser->id)
+		elseif(!empty($myuser->ID))
 		{
-			if(in_array($myuser->membership_level->ID, $post_membership_levels_ids))
+			if(!empty($myuser->membership_level->ID) && in_array($myuser->membership_level->ID, $post_membership_levels_ids))
 			{
 				//the users membership id is one that will grant access
 				$hasaccess = true;
@@ -1092,7 +1092,7 @@ function pmpro_hide_pages_redirect()
 {
 	global $post;
 
-	if(!is_admin())
+	if(!is_admin() && !empty($post->ID))
 	{
 		if($post->post_type == "attachment")
 		{
@@ -1186,7 +1186,7 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	else
 	{
 		//didn't specify a membership level, so check for any
-		if($current_user->membership_level->ID)
+		if(!empty($current_user->membership_level->ID))
 			return apply_filters("the_content", $content);
 	}
 

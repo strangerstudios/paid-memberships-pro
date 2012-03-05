@@ -287,11 +287,15 @@
 						else 
 						{
 							// Your code here to handle a successful verification
-							$pmpro_msg = "All good!";
+							if($pmpro_msgt != "pmpro_error")
+								$pmpro_msg = "All good!";
 						}
 					}
 					else
-						$pmpro_msg = "All good!";										
+					{
+						if($pmpro_msgt != "pmpro_error")
+							$pmpro_msg = "All good!";										
+					}
 					
 					//no errors yet
 					if($pmpro_msgt != "pmpro_error")

@@ -31,23 +31,33 @@
 		$ml_name = addslashes($_REQUEST['name']);
 		$ml_description = addslashes($_REQUEST['description']);
 		$ml_initial_payment = addslashes($_REQUEST['initial_payment']);
-		$ml_recurring = $_REQUEST['recurring'];
+		if(!empty($_REQUEST['recurring']))
+			$ml_recurring = 1;
+		else
+			$ml_recurring = 0;
 		$ml_billing_amount = addslashes($_REQUEST['billing_amount']);
 		$ml_cycle_number = addslashes($_REQUEST['cycle_number']);
 		$ml_cycle_period = addslashes($_REQUEST['cycle_period']);		
 		$ml_billing_limit = addslashes($_REQUEST['billing_limit']);
-		$ml_custom_trial = $_REQUEST['custom_trial'];
+		if(!empty($_REQUEST['custom_trial']))
+			$ml_custom_trial = 1;
+		else
+			$ml_custom_trial = 0;
 		$ml_trial_amount = addslashes($_REQUEST['trial_amount']);
 		$ml_trial_limit = addslashes($_REQUEST['trial_limit']);  
-		$ml_expiration = $_REQUEST['expiration'];
+		if(!empty($_REQUEST['expiration']))
+			$ml_expiration = 1;
+		else
+			$ml_expiration = 0;
 		$ml_expiration_number = addslashes($_REQUEST['expiration_number']);
 		$ml_expiration_period = addslashes($_REQUEST['expiration_period']);
 		$ml_categories = array();
-		$ml_disable_signups = $_REQUEST['disable_signups'];
-		if($ml_disable_signups)
-			$ml_allow_signups = 0;
-		else
+		
+		//reversing disable to allow here
+		if(empty($_REQUEST['disable_signups']))
 			$ml_allow_signups = 1;
+		else
+			$ml_allow_signups = 0;
 
 		foreach ( $_REQUEST as $key => $value )
 		{
@@ -57,16 +67,16 @@
 			}
 		}
 
-		if ( $ml_recurring != "yes" )
+		//clearing out values if checkboxes aren't checked
+		if(empty($ml_recurring))
 		{
 			$ml_billing_amount = $ml_cycle_number = $ml_cycle_period = $ml_billing_limit = $ml_trial_amount = $ml_trial_limit = 0;
 		}
-		elseif ( $ml_custom_trial != "yes" )
+		elseif(empty($ml_custom_trial))
 		{
 			$ml_trial_amount = $ml_trial_limit = 0;
 		}
-
-		if($ml_expiration != "yes")
+		if(empty($ml_expiration))
 		{
 			$ml_expiration_number = $ml_expiration_period = 0;
 		}

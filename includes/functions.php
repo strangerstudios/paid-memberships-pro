@@ -595,75 +595,77 @@
 	 *		Success returns boolean true.
 	 *		Failure returns a string containing the error message.
 	 */
-  function pmpro_toggleMembershipCategory( $level, $category, $value )
-  {
-    global $wpdb;
-    $category = intval($category);
+	function pmpro_toggleMembershipCategory( $level, $category, $value )
+	{
+		global $wpdb;
+		$category = intval($category);
 
-		if ( ($level = intval($level)) <= 0 )
-		{
-			$safe = addslashes($level);
-			if ( ($level = intval($wpdb->get_var("SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1"))) <= 0 )
+			if ( ($level = intval($level)) <= 0 )
 			{
-				return "Membership level not found.";
+				$safe = addslashes($level);
+				if ( ($level = intval($wpdb->get_var("SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1"))) <= 0 )
+				{
+					return "Membership level not found.";
+				}
 			}
+
+		if ( $value )
+		{
+		  $sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
+		  $wpdb->query($sql);		
+		  if(mysql_errno()) return mysql_error();
+		}
+		else
+		{
+		  $sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
+		  $wpdb->query($sql);		
+		  if(mysql_errno()) return mysql_error();
 		}
 
-    if ( $value )
-    {
-      $sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
-      $wpdb->query($sql);		
-      if(mysql_errno()) return mysql_error();
-    }
-    else
-    {
-      $sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
-      $wpdb->query($sql);		
-      if(mysql_errno()) return mysql_error();
-    }
-
-    return true;
-  }
+		return true;
+	}
 
 	/* pmpro_updateMembershipCategories() ensures that all those and only those categories given
-   * are associated with the given membership level.
-	 *
-   * $level is a valid membership level ID or name
-   * $categories is an array of post category IDs
-   *
-	 * Return values:
-	 *		Success returns boolean true.
-	 *		Failure returns a string containing the error message.
-	 */
-  function pmpro_updateMembershipCategories( $level, $categories ) {
-    global $wpdb;
-    $category = intval($category);
-
-		if ( ($level = intval($level)) <= 0 )
+	* are associated with the given membership level.
+	*
+	* $level is a valid membership level ID or name
+	* $categories is an array of post category IDs
+	*
+	* Return values:
+	*		Success returns boolean true.
+	*		Failure returns a string containing the error message.
+	*/
+	function pmpro_updateMembershipCategories($level, $categories) 
+	{
+		global $wpdb;
+		
+		if(!is_numeric($level))
 		{
-			$safe = addslashes($level);
-			if ( ($level = intval($wpdb->get_var("SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1"))) <= 0 )
+			$level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . $wpdb->escape($level) . "' LIMIT 1");
+			if(empty($level))
 			{
 				return "Membership level not found.";
 			}
+		}		
+
+		// remove all existing links...
+		$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . $wpdb->escape($level) . "'";
+		$wpdb->query($sqlQuery);		
+		if(mysql_errno()) return mysql_error();
+
+		// add the given links [back?] in...
+		foreach($categories as $cat)
+		{
+			if(is_string($r = pmpro_toggleMembershipCategory( $level, $cat, true)))
+			{
+				//uh oh, error
+				return $r;			
+			}
 		}
 
-    // remove all existing links...
-    $sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level'";
-    $wpdb->query($sql);		
-    if(mysql_errno()) return mysql_error();
-
-    // add the given links [back?] in...
-    foreach ( $categories as $cat )
-    {
-      if ( is_string( $r = pmpro_toggleMembershipCategory( $level, $cat, true ) ) )
-      {
-        return $r;
-      }
-    }
-
-    return true;
-  }
+		//all good
+		return true;
+	}
   
 	function pmpro_isAdmin($user_id = NULL)
 	{
