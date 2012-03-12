@@ -1,5 +1,5 @@
 <?php
-	global $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
+	global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
 	
 	//was a gateway passed?
 	if(!empty($_REQUEST['gateway']))
@@ -34,15 +34,24 @@
 	}
 	
 	//what level are they purchasing? (no discount code)
-	if(!$pmpro_level && $_REQUEST['level'])
+	if(empty($pmpro_level) && !empty($_REQUEST['level']))
 	{
 		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
+	}
+	elseif(empty($pmpro_level))
+	{
+		//check if a level is defined in custom fields
+		$default_level = get_post_meta($post->ID, "pmpro_default_level", true);
+		if(!empty($default_level))
+		{
+			$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($default_level) . "' AND allow_signups = 1 LIMIT 1");	
+		}
 	}
 	
 	//filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters("pmpro_checkout_level", $pmpro_level);		
 		
-	if(!$pmpro_level)
+	if(empty($pmpro_level->id))
 	{
 		wp_redirect(pmpro_url("levels"));
 		exit(0);

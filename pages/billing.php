@@ -109,7 +109,47 @@
 							?>
 								<div>
 									<label for="bcity_state_zip">City, State Zip</label>
-									<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
+									<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, 
+									<?php
+										$state_dropdowns = apply_filters("pmpro_state_dropdowns", false);							
+										if($state_dropdowns === true || $state_dropdowns == "names")
+										{
+											global $pmpro_states;
+										?>
+										<select name="bstate">
+											<option value="">--</option>
+											<?php 									
+												foreach($pmpro_states as $ab => $st) 
+												{ 
+											?>
+												<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$st?></option>
+											<?php } ?>
+										</select>
+										<?php
+										}
+										elseif($state_dropdowns == "abbreviations")
+										{
+											global $pmpro_states_abbreviations;
+										?>
+											<select name="bstate">
+												<option value="">--</option>
+												<?php 									
+													foreach($pmpro_states_abbreviations as $ab) 
+													{ 
+												?>
+													<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$ab?></option>
+												<?php } ?>
+											</select>
+										<?php
+										}
+										else
+										{
+										?>	
+										<input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> 
+										<?php
+										}
+									?>									
+									<input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
 								</div>
 							<?php
 							}

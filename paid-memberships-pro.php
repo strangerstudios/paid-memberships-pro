@@ -207,6 +207,7 @@ function pmpro_is_ready()
 function pmpro_init()
 {
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/countries.php");
+	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/states.php");
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/currencies.php");
 
 	wp_enqueue_script('ssmemberships_js', '/wp-content/plugins/paid-memberships-pro/js/paid-memberships-pro.js', array('jquery'));
@@ -255,6 +256,9 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
 		{
+			if($pmpro_page_name == "checkout")
+				continue;		//we do the checkout shortcode every time now
+				
 			if(!empty($post->ID) && $pmpro_page_id == $post->ID)
 			{
 				include(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/" . $pmpro_page_name . ".php");
@@ -263,7 +267,7 @@ function pmpro_wp()
 				{
 					global $pmpro_page_name;
 					ob_start();
-					include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
+					include_once(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
 					$temp_content = ob_get_contents();
 					ob_end_clean();
 					return $temp_content;
@@ -275,6 +279,19 @@ function pmpro_wp()
 	}
 }
 add_action("wp", "pmpro_wp");
+
+//checkout shortcode separated out so we can have multiple checkout pages
+function pmpro_checkout_shortcode($atts, $content=null, $code="")
+{
+	include_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/checkout.php");
+	
+	ob_start();
+	include(plugin_dir_path(__FILE__) . "/pages/checkout.php");
+	$temp_content = ob_get_contents();
+	ob_end_clean();
+	return $temp_content;
+}
+add_shortcode("pmpro_checkout", "pmpro_checkout_shortcode");
 
 function pmpro_membership_level_profile_fields($user)
 {
@@ -835,7 +852,10 @@ function pmpro_page_save($post_id)
 {
 	global $wpdb;
 
-	if ( !wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename(__FILE__) )) {
+	if(empty($post_id))
+		return false;
+	
+	if (!empty($_POST['pmpro_noncename']) && !wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename(__FILE__) )) {
 		return $post_id;
 	}
 
@@ -845,7 +865,7 @@ function pmpro_page_save($post_id)
 		return $post_id;
 
 	// Check permissions
-	if ( 'page' == $_POST['post_type'] )
+	if(!empty($_POST['post_type']) && 'page' == $_POST['post_type'] )
 	{
 		if ( !current_user_can( 'edit_page', $post_id ) )
 			return $post_id;
@@ -856,8 +876,11 @@ function pmpro_page_save($post_id)
 			return $post_id;
 	}
 
-	// OK, we're authenticated: we need to find and save the data
-	$mydata = $_POST['page_levels'];
+	// OK, we're authenticated: we need to find and save the data	
+	if(!empty($_POST['page_levels']))
+		$mydata = $_POST['page_levels'];
+	else
+		$mydata = array();	
 
 	//remove all memberships for this page
 	$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
@@ -899,7 +922,7 @@ function pmpro_add_pages()
 
 	//rename the automatically added Memberships submenu item
 	global $submenu;
-	if($submenu['pmpro-membershiplevels'])
+	if(!empty($submenu['pmpro-membershiplevels']))
 	{
 		$submenu['pmpro-membershiplevels'][0][0] = "Membership Levels";
 		$submenu['pmpro-membershiplevels'][0][3] = "Membership Levels";
@@ -987,29 +1010,31 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 	if(!empty($user->ID))
 	{
 		//logging in, let's figure out where to send them
-
-		//admins go to dashboard
 		if(pmpro_isAdmin($user->ID))
-			return apply_filters("pmpro_login_redirect", get_bloginfo("url") . "/wp-admin/");
-
-		//if the redirect url includes the word checkout, go there
-		if(strpos($redirect_to, "checkout") !== false)
-			return $redirect_to;
-
-		//if logged in and a member, send to wherever they were going
-		if($wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1"))
 		{
-			return apply_filters("pmpro_login_redirect", $redirect_to, $request, $user);
+			//admins go to dashboard
+			$redirect_to = get_bloginfo("url") . "/wp-admin/";			
 		}
-
-		//not a member, send to subscription page
-		return pmpro_url("levels");
+		elseif(strpos($redirect_to, "checkout") !== false)
+		{
+			//if the redirect url includes the word checkout, leave it alone
+		}
+		elseif($wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' LIMIT 1"))
+		{
+			//if logged in and a member, send to wherever they were going			
+		}
+		else
+		{
+			//not a member, send to subscription page
+			$redirect_to = pmpro_url("levels");
+		}
 	}
 	else
 	{
-		//not logging in (login form) so return what was given
-		return $redirect_to;
+		//not logging in (login form) so return what was given		
 	}
+	
+	return apply_filters("pmpro_login_redirect_url", $redirect_to, $request, $user);
 }
 add_filter('login_redirect','pmpro_login_redirect', 10, 3);
 

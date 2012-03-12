@@ -3,7 +3,7 @@
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;		
 ?>
 
-<form class="pmpro_form" action="<?php echo pmpro_url("checkout", "")?>" method="post">
+<form class="pmpro_form" action="" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
 	<?php if($pmpro_msg) 
@@ -240,7 +240,8 @@
 			</td>
 	</table>   
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>                        	                       										
-		<p>You are logged in as <strong><?php echo $current_user->user_login?></strong>. If you would like to use a different account for this membership, <a href="<?php echo wp_logout_url(pmpro_url("checkout", "?level=" . $pmpro_level->id));?>">log out now</a>.</p>
+		
+		<p>You are logged in as <strong><?php echo $current_user->user_login?></strong>. If you would like to use a different account for this membership, <a href="<?php echo wp_logout_url($_SERVER['REQUEST_URI']);?>">log out now</a>.</p>
 	<?php } ?>
 	
 	<?php					
@@ -328,8 +329,8 @@
 						<input id="bcity" name="bcity" type="text" class="input" size="30" value="<?php echo esc_attr($bcity)?>" /> 
 					</div>
 					<div>
-						<label for="bstate">State</label>
-						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo esc_attr($bstate)?>" /> 
+						<label for="bstate">State</label>																
+						<input id="bstate" name="bstate" type="text" class="input" size="30" value="<?php echo esc_attr($bstate)?>" /> 					
 					</div>
 					<div>
 						<label for="bzipcode">Zip/Postal Code</label>
@@ -342,7 +343,47 @@
 					?>
 					<div>
 						<label for="bcity_state_zip">City, State Zip</label>
-						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, <input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> <input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input" size="14" value="<?php echo esc_attr($bcity)?>" />, 
+						<?php
+							$state_dropdowns = apply_filters("pmpro_state_dropdowns", false);							
+							if($state_dropdowns === true || $state_dropdowns == "names")
+							{
+								global $pmpro_states;
+							?>
+							<select name="bstate">
+								<option value="">--</option>
+								<?php 									
+									foreach($pmpro_states as $ab => $st) 
+									{ 
+								?>
+									<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$st?></option>
+								<?php } ?>
+							</select>
+							<?php
+							}
+							elseif($state_dropdowns == "abbreviations")
+							{
+								global $pmpro_states_abbreviations;
+							?>
+								<select name="bstate">
+									<option value="">--</option>
+									<?php 									
+										foreach($pmpro_states_abbreviations as $ab) 
+										{ 
+									?>
+										<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$ab?></option>
+									<?php } ?>
+								</select>
+							<?php
+							}
+							else
+							{
+							?>	
+							<input id="bstate" name="bstate" type="text" class="input" size="2" value="<?php echo esc_attr($bstate)?>" /> 
+							<?php
+							}
+						?>
+						<input id="bzipcode" name="bzipcode" type="text" class="input" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
 					</div>
 					<?php
 					}

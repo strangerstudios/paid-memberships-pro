@@ -54,6 +54,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * The recaptcha code now checks for a previous error before changing pmpro_msg to "All Good".
 * Fixed warning in pmpro_has_membership_access(). Fixed a bunch of other warnings here and there.
 * Rewrote pmpro_updateMembershipCategories() just to be cleaner
+* Rewrote the pmpro_login_redirect function. It's cleaner now. Important: there was a pmpro_login_redirect hook in there that was fairly redundant with the core login_redirect hook. I've renamed the pmpro hook to pmpro_login_redirect_url because I had a hook with the same name (pmpro_login_redirect) used in a different place to control whether or not PMPro redirects the register page to the levels page. Having one hook for two things is a bad idea. It seems like more people were using the hook for controlling the registration redirect, so I left that one alone and renamed these.
+* Added pmpro_state_dropdowns filter. If you return true, the state field will become a dropdown with US states. Use the pmpro_states and pmpro_states_abbreviations filters to change the array of states used.
 
 = 1.3.18.1 =
 * Added the new email .html templates to svn.
