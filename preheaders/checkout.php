@@ -1,6 +1,6 @@
 <?php
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
-	
+		
 	//was a gateway passed?
 	if(!empty($_REQUEST['gateway']))
 		$gateway = $_REQUEST['gateway'];
@@ -66,7 +66,7 @@
 		if($gateway != "paypalexpress" || (!empty($_REQUEST['gateway']) && $_REQUEST['gateway'] != "paypalexpress"))
 			$besecure = true;			
 		else
-			$besecure = false;		
+			$besecure = false;				
 	}		
 	else
 	{

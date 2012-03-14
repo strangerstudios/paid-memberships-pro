@@ -49,6 +49,13 @@
 					'comment_status' => 'closed',
 					'ping_status' => 'closed'
 					);
+					
+				//make non-account pages a subpage of account
+				if($pmpro_page_name != "account")
+				{
+					$insert['post_parent'] = $pmpro_pages['account'];
+				}				
+				
 				//create the page
 				$pmpro_pages[$pmpro_page_name] = wp_insert_post( $insert );
 				
@@ -60,7 +67,7 @@
 					
 				//update the option too
 				pmpro_setOption($pmpro_page_name . "_page_id", $pmpro_pages[$pmpro_page_name]);
-				$pages_created[] = $pmpro_pages[$pmpro_page_name];
+				$pages_created[] = $pmpro_pages[$pmpro_page_name];			
 			}
 		}
 		

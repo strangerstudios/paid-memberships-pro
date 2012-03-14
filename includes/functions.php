@@ -106,12 +106,12 @@
 			$scheme = "https";
 		elseif(!$scheme)
 			$scheme = "http";
-					
+				
 		if(!$page)
 			$page = "levels";
 			
 		global $pmpro_pages;
-		
+				
 		//? vs &
 		if(strpos(get_permalink($pmpro_pages[$page]), "?"))
 			return home_url(str_replace(home_url(), "", get_permalink($pmpro_pages[$page])) . str_replace("?", "&", $querystring), $scheme);

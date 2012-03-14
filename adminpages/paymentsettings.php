@@ -5,6 +5,7 @@
 	if(!empty($_REQUEST['savesettings']))
 	{                   
 		pmpro_setOption("sslseal");
+		pmpro_setOption("nuclear_HTTPS");
 			
 		//gateway options
 		pmpro_setOption("gateway");					
@@ -53,6 +54,7 @@
 	}
 
 	$sslseal = pmpro_getOption("sslseal");
+	$nuclear_HTTPS = pmpro_getOption("nuclear_HTTPS");
 	
 	$gateway = pmpro_getOption("gateway");
 	$gateway_environment = pmpro_getOption("gateway_environment");
@@ -96,7 +98,7 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">         
-		<h2>SSL &amp; Payment Gateway Settings</h2>
+		<h2>Payment Gateway &amp; SSL Settings</h2>
 		
 		<p>Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.</p>
 		
@@ -224,15 +226,7 @@
 					<input type="checkbox" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> EnRoute<br />
 					<input type="checkbox" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> JCB<br />
 				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top">
-					<label for="sslseal">SSL Seal Code:</label>
-				</th>
-				<td>
-					<textarea name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
-				</td>
-		   </tr>
+			</tr>			
 			<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
@@ -245,6 +239,22 @@
 					<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="sslseal">SSL Seal Code:</label>
+				</th>
+				<td>
+					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
+				</td>
+		   </tr>
+		   <tr>
+				<th scope="row" valign="top">
+					<label for="nuclear_HTTPS">SSL Seal Code:</label>
+				</th>
+				<td>
+					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
+				</td>
+		   </tr>
 		</tbody>
 		</table>            
 		<p class="submit">            
