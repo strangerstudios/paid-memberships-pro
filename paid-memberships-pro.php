@@ -1171,12 +1171,16 @@ function pmpro_delete_user($user_id = NULL)
 	{
 		//couldn't delete the subscription
 		//we should probably notify the admin
-		$pmproemail = new PMProEmail();
-		$pmproemail->data = array("body"=>"<p>There was an error canceling the subscription for user with ID=" . $user_id . ". You will want to check your payment gateway to see if their subscription is still active.</p>");
-		$last_order = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ORDER BY timestamp DESC LIMIT 1");
-		if($last_order)
-			$pmproemail->data["body"] .= "<p>Last Invoice:<br />" . nl2br(var_export($last_order, true)) . "</p>";
-		$pmproemail->sendEmail(get_bloginfo("admin_email"));
+		global $pmpro_error;
+		if(!empty($pmpro_error))
+		{
+			$pmproemail = new PMProEmail();
+			$pmproemail->data = array("body"=>"<p>There was an error canceling the subscription for user with ID=" . $user_id . ". You will want to check your payment gateway to see if their subscription is still active.</p><p>Error: " . $pmpro_error . "</p>");
+			$last_order = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ORDER BY timestamp DESC LIMIT 1");
+			if(!empty($last_order))
+				$pmproemail->data["body"] .= "<p>Last Invoice:<br />" . nl2br(var_export($last_order, true)) . "</p>";
+			$pmproemail->sendEmail(get_bloginfo("admin_email"));
+		}
 	}
 }
 add_action('delete_user', 'pmpro_delete_user');
