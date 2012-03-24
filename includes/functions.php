@@ -534,12 +534,16 @@
 				
 		//are they even changing?
 		$old_level = $wpdb->get_row("SELECT * FROM  $wpdb->pmpro_memberships_users WHERE user_id = '" . $user_id . "'");
-		if($old_level->membership_id == $level)
+		if(empty($old_level->membership_id) && empty($level))
+			return false;	//not changing
+		elseif(!empty($old_level->membership_id) && $old_level->membership_id == $level)
 			return false;	//not changing
 		
 		//are they paying? may need to cancel their old membership				
 		if(!pmpro_isLevelFree($old_level))
 			$paying = true;
+		else
+			$paying = false;
 			
 		if($paying)
 		{					
