@@ -147,7 +147,7 @@
 	<thead>
 		<tr>
 			<th>
-				<span class="pmpro_thead-msg">If you already have an account, <a href="<?php echo get_bloginfo("url")?>/wp-login.php?redirect_to=<?php echo urlencode(pmpro_url("checkout", "?level=" . $pmpro_level->id))?>">log in here</a>.</span>Account Information
+				<span class="pmpro_thead-msg">If you already have an account, <a href="<?php echo wp_login_url(urlencode(pmpro_url("checkout", "?level=" . $pmpro_level->id)))?>">log in here</a>.</span>Account Information
 			</th>						
 		</tr>
 	</thead>
