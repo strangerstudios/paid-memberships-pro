@@ -351,7 +351,7 @@
 		
 		function process()
 		{
-			return $this->Gateway->process($this);
+			//return $this->Gateway->process($this);
 			
 			//old process code
 			$gateway = pmpro_getOption("gateway");
@@ -579,7 +579,7 @@
 		
 		function cancel()
 		{
-			return $this->Gateway->cancel($this);
+			//return $this->Gateway->cancel($this);
 		
 			//old cancel below
 			$gateway = $this->gateway;
@@ -606,7 +606,7 @@
 		
 		function updateBilling()
 		{
-			return $this->Gateway->update($this);
+			//return $this->Gateway->update($this);
 			
 			//old update code below
 			$gateway = $this->gateway;
