@@ -214,34 +214,49 @@
 	<div>
 		<?php
 			// get the level...
-			if($edit > 0)
+			if(!empty($edit) && $edit > 0)
 			{
 				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '$edit' LIMIT 1", OBJECT);
 				$temp_id = $level->id;
 			}
-			elseif($copy > 0)		
+			elseif(!empty($copy) && $copy > 0)		
 			{	
 				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '$copy' LIMIT 1", OBJECT);
 				$temp_id = $level->id;
 				$level->id = NULL;
 			}
+			else
 
 			// didn't find a membership level, let's add a new one...
-			if(!$level) $edit = -1;
+			if(empty($level))
+			{
+				$level = new stdClass();
+				$level->id = NULL;
+				$level->name = NULL;
+				$level->description = NULL;
+				$level->billing_amount = NULL;
+				$level->trial_amount = NULL;
+				$level->initial_payment = NULL;
+				$level->billing_limit = NULL;
+				$level->trial_limit = NULL;
+				$level->expiration_number = NULL;
+				$level->expiration_period = NULL;
+				$edit = -1;
+			}	
 
 			//defaults for new levels
 			if($edit == -1)
-			{
-				$level = new stdClass();
+			{			
 				$level->cycle_number = 1;
 				$level->cycle_period = "Month";
 			}
 			
 			// grab the categories for the given level...
-			$level->categories = $wpdb->get_col("SELECT c.category_id
+			if(!empty($temp_id))
+				$level->categories = $wpdb->get_col("SELECT c.category_id
 												FROM $wpdb->pmpro_memberships_categories c
 												WHERE c.membership_id = '" . $temp_id . "'");       		
-			if(!$level->categories)
+			if(empty($level->categories))
 				$level->categories = array();	
 			
 		?>

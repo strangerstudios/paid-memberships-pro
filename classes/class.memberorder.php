@@ -3,6 +3,10 @@
 	{
 		function MemberOrder($id = NULL)
 		{			
+			//setup the gateway
+			$this->Gateway = new PMProGateway("testing");
+			
+			//get data if an id was passed
 			if($id)
 			{
 				if(is_numeric($id))
@@ -347,6 +351,9 @@
 		
 		function process()
 		{
+			return $this->Gateway->process($this);
+			
+			//old process code
 			$gateway = pmpro_getOption("gateway");
 			if($gateway == "paypal")
 			{												
@@ -572,6 +579,9 @@
 		
 		function cancel()
 		{
+			return $this->Gateway->cancel($this);
+		
+			//old cancel below
 			$gateway = $this->gateway;
 						
 			//if there is no subscription id or this subscription has a status != success, it was already cancelled (or never existed)
@@ -596,6 +606,9 @@
 		
 		function updateBilling()
 		{
+			return $this->Gateway->update($this);
+			
+			//old update code below
 			$gateway = $this->gateway;
 			
 			//if no gateway specified for the order, assume it is the current gateway

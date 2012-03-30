@@ -50,6 +50,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.4 =
+* Fixed the logic around setting the $pmpro_display_ads global, used by the pmpro_displayAds() and pmpro_hideAds() functions.
 * Updated /pages/checkout.php to use wp_login_url function for login link.
 * Small changes to pmpro_changeMembershipLevel function to support deleting users when they cancel their account.
 

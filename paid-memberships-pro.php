@@ -28,6 +28,7 @@ require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/lib/na
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/functions.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/upgradecheck.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/scheduled/crons.php");
+require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.pmprogateway.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.memberorder.php");
 require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/classes/class.pmproemail.php");
 require_once(ABSPATH . "/wp-includes/class-phpmailer.php");
@@ -127,22 +128,24 @@ function pmpro_set_current_user()
 	//hiding ads?
 	$hideads = pmpro_getOption("hideads");
 	$hideadslevels = explode(",", pmpro_getOption("hideadslevels"));
-	if($hideads && $hideadslevels)
+	if($hideads == 1 && pmpro_hasMembershipLevel() || $hideads == 2 && pmpro_hasMembershipLevel($hideadslevels))
 	{
-		if(!empty($current_user->membership_level->ID) && in_array($current_user->membership_level->ID, $hideadslevels))
+		//disable ads in ezAdsense
+		if(class_exists("ezAdSense"))
 		{
-			//disable ads in ezAdsense
-			if(class_exists("ezAdSense"))
-			{
-				global $ezCount, $urCount;
-				$ezCount = 100;
-				$urCount = 100;
-			}
-
-			//set a global variable to hide ads
-			global $pmpro_display_ads;
-			$pmpro_display_ads = false;
+			global $ezCount, $urCount;
+			$ezCount = 100;
+			$urCount = 100;
 		}
+
+		//set a global variable to hide ads
+		global $pmpro_display_ads;
+		$pmpro_display_ads = false;
+	}
+	else
+	{
+		global $pmpro_display_ads;
+		$pmpro_display_ads = true;
 	}
 
 	do_action("pmpro_after_set_current_user");
