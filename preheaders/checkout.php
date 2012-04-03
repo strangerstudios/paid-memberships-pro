@@ -376,6 +376,7 @@
 									
 							//$gateway = pmpro_getOption("gateway");										
 							$morder->gateway = $gateway;
+							$morder->setGateway();
 							
 							//setup level var
 							$morder->getMembershipLevel();
@@ -390,7 +391,7 @@
 								$morder->cardtype = "";
 								$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
 								$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);							
-								$pmpro_processed = $morder->setExpressCheckout();
+								$pmpro_processed = $morder->Gateway->setExpressCheckout($morder);
 							}
 							else
 							{
@@ -440,7 +441,7 @@
 		$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;				
 		if($morder->Token)
 		{
-			if($morder->getPayPalExpressCheckoutDetails())
+			if($morder->Gateway->getExpressCheckoutDetails($morder))
 			{
 				$pmpro_review = true;
 			}

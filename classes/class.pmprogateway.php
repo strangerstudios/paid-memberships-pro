@@ -42,10 +42,10 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";				
+						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";				
 					}
 					
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
+					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $this);
 					return $this->subscribe($order);
 				}
 				else

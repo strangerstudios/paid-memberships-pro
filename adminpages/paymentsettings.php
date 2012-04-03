@@ -194,7 +194,7 @@
 					USD
 				</td>
 			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
@@ -213,7 +213,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_authorizenet gateway_paypal" <?php if($gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_authorizenet gateway_paypal" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards">Accepted Credit Card Types</label>
 				</th>
@@ -227,7 +227,7 @@
 					<input type="checkbox" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> JCB<br />
 				</td>
 			</tr>			
-			<tr class="gateway gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if($gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>

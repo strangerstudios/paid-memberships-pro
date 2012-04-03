@@ -3,8 +3,8 @@
 	{
 		function MemberOrder($id = NULL)
 		{			
-			//setup the gateway
-			$this->Gateway = new PMProGateway("testing");
+			//setup the gateway			
+			$this->setGateway(pmpro_getOption("gateway"));
 			
 			//get data if an id was passed
 			if($id)
@@ -16,7 +16,7 @@
 			}
 			else
 				return true;	//blank constructor
-		}
+		}	
 		
 		function getMemberOrderByID($id)
 		{
@@ -78,10 +78,36 @@
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 				
+				//reset the gateway
+				$this->setGateway();
+				
 				return $this->id;
 			}
 			else
 				return false;	//didn't find it in the DB
+		}
+		
+		function setGateway($gateway = NULL)
+		{
+			//set the gateway property
+			if(isset($gateway))
+			{
+				$this->gateway = $gateway;
+			}
+			
+			//which one to load?
+			$classname = "PMProGateway";	//default test gateway
+			if(!empty($this->gateway))
+				$classname .= "_" . $this->gateway;	//adding the gateway suffix
+							
+			//try to load it
+			require_once(dirname(__FILE__) . "/gateways/class." . strtolower($classname) . ".php");
+			if(class_exists($classname))
+				$this->Gateway = new $classname($this->gateway);
+			else
+				die("Could not locate the gateway class file with class name = " . $classname . ".");
+			
+			return $this->Gateway;
 		}
 		
 		function getLastMemberOrder($user_id = NULL)
@@ -230,9 +256,7 @@
 				$amount = $this->InitialPayment;
 			else
 				$amount = 0;
-			
-			//Todo: Make sure the session is started
-			
+						
 			//Todo: Tax?!, Coupons, Certificates, affiliates
 			$this->subtotal = $amount;
 			$tax = $this->getTax(true);
@@ -351,7 +375,7 @@
 		
 		function process()
 		{
-			//return $this->Gateway->process($this);
+			return $this->Gateway->process($this);
 			
 			//old process code
 			$gateway = pmpro_getOption("gateway");
@@ -579,7 +603,7 @@
 		
 		function cancel()
 		{
-			//return $this->Gateway->cancel($this);
+			return $this->Gateway->cancel($this);
 		
 			//old cancel below
 			$gateway = $this->gateway;
@@ -606,7 +630,7 @@
 		
 		function updateBilling()
 		{
-			//return $this->Gateway->update($this);
+			return $this->Gateway->update($this);
 			
 			//old update code below
 			$gateway = $this->gateway;
