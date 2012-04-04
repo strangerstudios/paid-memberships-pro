@@ -1,4 +1,5 @@
 <?php
+	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	class PMProGateway_paypal
 	{
 		function PMProGateway_paypal($gateway = NULL)
@@ -37,7 +38,7 @@
 					{
 						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-						if($this->subscribe())
+						if($this->subscribe($order))
 						{
 							return true;
 						}
@@ -77,7 +78,7 @@
 									
 			//paypal profile stuff
 			$nvpStr = "";
-			if($order->Token)
+			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&AMT=1.00&CURRENCYCODE=" . pmpro_getOption("currency");			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -115,14 +116,14 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->authorization_id = $this->httpParsedResponseAr[TRANSACTIONID];
+				$order->authorization_id = $this->httpParsedResponseAr['TRANSACTIONID'];
 				$order->updateStatus("authorized");				
 				return $order->authorization_id;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;				
 			}					
 		}
@@ -141,9 +142,9 @@
 				return true;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;				
 			}	
 		}	
@@ -162,9 +163,9 @@
 				return true;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;				
 			}	
 		}
@@ -184,7 +185,7 @@
 			
 			//paypal profile stuff
 			$nvpStr = "";
-			if($order->Token)
+			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&AMT=" . $amount . "&ITEMAMT=" . $order->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency;			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
@@ -198,11 +199,11 @@
 			else
 				$cardtype = $order->cardtype;
 
-			if($cardtype)			
+			if(!empty($cardtype))
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
-			if($order->StartDate)
+			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 			
 			//billing address, etc
@@ -219,14 +220,14 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
 								
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->payment_transaction_id = $this->httpParsedResponseAr[TRANSACTIONID];
+				$order->payment_transaction_id = $this->httpParsedResponseAr['TRANSACTIONID'];
 				$order->updateStatus("firstpayment");				
 				return true;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);				
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);				
 				return false;				
 			}								
 		}
@@ -301,14 +302,14 @@
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "success";				
-				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
+				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 				return true;
 				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
@@ -349,14 +350,14 @@
 									
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "success";
-				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr[PROFILEID]);
+				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 				return true;
 				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
@@ -376,9 +377,9 @@
 				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr[L_ERRORCODE0];
-				$order->error = urldecode($this->httpParsedResponseAr[L_LONGMESSAGE0]);
-				$order->shorterror = urldecode($this->httpParsedResponseAr[L_SHORTMESSAGE0]);
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}

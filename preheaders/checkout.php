@@ -280,7 +280,7 @@
 				{								
 					//check recaptch first
 					global $recaptcha;
-					if(!$skip_account_fields && ($recaptcha == 2 || ($recaptcha == 1 && !(float)$pmpro_level->billing_amount && !(float)$pmpro_level->trial_amount)))
+					if(!$skip_account_fields && ($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level))))
 					{
 						global $recaptcha_privatekey;					
 						$resp = recaptcha_check_answer($recaptcha_privatekey,
