@@ -16,12 +16,14 @@
 		pmpro_setOption("apisignature");
 		pmpro_setOption("loginname");
 		pmpro_setOption("transactionkey");
+		pmpro_setOption("stripe_secretkey");
+		pmpro_setOption("stripe_publishablekey");
 
 		//currency
 		$currency_paypal = $_POST['currency_paypal'];
-		$currency_authorizenet = $_POST['currency_authorizenet'];
-		if($_POST['gateway'] == "authorizenet")
-			pmpro_setOption("currency", $currency_authorizenet);
+		$currency_fixed = $_POST['currency_fixed'];
+		if($_POST['gateway'] == "authorizenet" || $_POST['gateway'] == "stripe")
+			pmpro_setOption("currency", $currency_fixed);
 		else
 			pmpro_setOption("currency", $currency_paypal);
 			
@@ -64,6 +66,8 @@
 	$apisignature = pmpro_getOption("apisignature");
 	$loginname = pmpro_getOption("loginname");
 	$transactionkey = pmpro_getOption("transactionkey");
+	$stripe_secretkey = pmpro_getOption("stripe_secretkey");
+	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");
 	
 	$currency = pmpro_getOption("currency");
 	
@@ -111,6 +115,7 @@
 				<td>
 					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
 						<option value="">Testing Only</option>
+						<option value="stripe" <?php if($gateway == "stripe") { ?>selected="selected"<?php } ?>>Stripe</option>
 						<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
 						<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
@@ -169,6 +174,7 @@
 					<input type="text" name="apisignature" size="60" value="<?php echo $apisignature?>" />
 				</td>
 			</tr> 
+			
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="loginname">Login Name:</label>
@@ -185,15 +191,34 @@
 					<input type="text" name="transactionkey" size="60" value="<?php echo $transactionkey?>" />
 				</td>
 			</tr>
-			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			
+			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="stripe_secretkey">Secret Key:</label>
+				</th>
+				<td>
+					<input type="text" name="stripe_secretkey" size="60" value="<?php echo $stripe_secretkey?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="stripe_publishablekey">Publishable Key:</label>
+				</th>
+				<td>
+					<input type="text" name="stripe_publishablekey" size="60" value="<?php echo $stripe_publishablekey?>" />
+				</td>
+			</tr>
+			
+			<tr class="gateway gateway_stripe gateway_authorizenet" <?php if($gateway != "authorizenet" && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
 				<td>
-					<input type="hidden" name="currency_authorizenet" size="60" value="USD" />
+					<input type="hidden" name="currency_fixed" size="60" value="USD" />
 					USD
 				</td>
 			</tr>
+			
 			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
@@ -213,7 +238,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_authorizenet gateway_paypal" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards">Accepted Credit Card Types</label>
 				</th>
@@ -221,13 +246,13 @@
 					<input type="checkbox" name="creditcards_visa" value="1" <?php if(in_array("Visa", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Visa<br />
 					<input type="checkbox" name="creditcards_mastercard" value="1" <?php if(in_array("Mastercard", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Mastercard<br />
 					<input type="checkbox" name="creditcards_amex" value="1" <?php if(in_array("American Express", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> American Express<br />
-					<input type="checkbox" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Discover<br />
+					<input type="checkbox" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Discover<br />					
 					<input type="checkbox" name="creditcards_dinersclub" value="1" <?php if(in_array("Diners Club", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> Diner's Club<br />
-					<input type="checkbox" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> EnRoute<br />
+					<input type="checkbox" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> EnRoute<br />					
 					<input type="checkbox" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> JCB<br />
 				</td>
 			</tr>			
-			<tr class="gateway gateway_ gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>

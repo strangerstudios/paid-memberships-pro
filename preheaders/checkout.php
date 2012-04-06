@@ -76,6 +76,58 @@
 		$besecure = false;		
 	}
 		
+	//stripe js code if needed
+	if($gateway == "stripe")
+	{
+		//stripe js library
+		wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), "");
+		
+		//stripe js code for checkout
+		function pmpro_stripe_javascript()
+		{
+		?>
+		<script type="text/javascript">
+			// this identifies your website in the createToken call below
+			Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
+			jQuery(document).ready(function() {
+				jQuery(".pmpro_form").submit(function(event) {
+				
+				Stripe.createToken({
+					number: jQuery('#AccountNumber').val(),
+					cvc: jQuery('#CVV').val(),
+					exp_month: jQuery('#ExpirationMonth').val(),
+					exp_year: jQuery('#ExpirationYear').val()
+				}, stripeResponseHandler);
+
+				// prevent the form from submitting with the default action
+				return false;
+				});
+			});
+
+			function stripeResponseHandler(status, response) {
+				if (response.error) {
+					// re-enable the submit button
+                    jQuery('.pmpro_btn-submit-checkout').removeAttr("disabled");
+					
+					// show the errors on the form
+					alert(response.error.message);
+					jQuery(".payment-errors").text(response.error.message);
+				} else {
+					var form$ = jQuery(".pmpro_form");					
+					// token contains id, last4, and card type
+					var token = response['id'];					
+					// insert the token into the form so it gets submitted to the server
+					form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+					// and submit
+					form$.get(0).submit();
+				}
+			}
+		</script>
+		<?php
+		}
+		add_action("wp_head", "pmpro_stripe_javascript");
+	}
+		
 	//get all levels in case we need them
 	global $pmpro_levels;
 	$pmpro_levels = $wpdb->get_results( "SELECT * FROM " . $wpdb->pmpro_membership_levels . " WHERE allow_signups = 1", OBJECT );	
@@ -160,6 +212,14 @@
 		$password2 = $_REQUEST['password2'];
 	if(isset($_REQUEST['tos']))
 		$tos = $_REQUEST['tos'];		
+	
+	//for stripe, load up token values
+	if(isset($_REQUEST['stripeToken']))
+	{
+		$stripeToken = $_REQUEST['stripeToken'];
+		
+		//setup card type, account number, expiration month/year, and CVV
+	}
 	
 	//_x stuff in case they clicked on the image button with their mouse
 	if(isset($_REQUEST['submit-checkout']))

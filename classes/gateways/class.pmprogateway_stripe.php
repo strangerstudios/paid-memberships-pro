@@ -1,8 +1,8 @@
 <?php	
-	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	class PMProGateway
+	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	class PMProGateway_stripe
 	{
-		function PMProGateway($gateway = NULL)
+		function PMProGateway_stripe($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

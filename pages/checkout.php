@@ -504,7 +504,7 @@
 				?>
 				<div>
 					<label for="CardType">Card Type</label>
-					<select name="CardType">
+					<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
 						<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 							<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 						<?php } ?>												
@@ -513,12 +513,12 @@
 			
 				<div>
 					<label for="AccountNumber">Card Number</label>
-					<input id="AccountNumber" name="AccountNumber"  class="input" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" /> 
+					<input id="AccountNumber" <?php if($gateway != "stripe") { ?>name="AccountNumber"<?php } ?> class="input" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" /> 
 				</div>
 			
 				<div>
 					<label for="ExpirationMonth">Expiration Date</label>
-					<select name="ExpirationMonth">
+					<select id="ExpirationMonth" <?php if($gateway != "stripe") { ?>name="ExpirationMonth"<?php } ?>>
 						<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
 						<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
 						<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
@@ -531,7 +531,7 @@
 						<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
 						<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
 						<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-					</select>/<select name="ExpirationYear">
+					</select>/<select id="ExpirationYear" <?php if($gateway != "stripe") { ?>name="ExpirationYear"<?php } ?>>
 						<?php
 							for($i = date("Y"); $i < date("Y") + 10; $i++)
 							{
@@ -550,7 +550,7 @@
 				?>
 				<div>
 					<label for="CVV">CVV</label>
-					<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
+					<input class="input" id="CVV" <?php if($gateway != "stripe") { ?>name="CVV"<?php } ?> type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');">what's this?</a>)</small>
 				</div>
 				<?php
 					}
