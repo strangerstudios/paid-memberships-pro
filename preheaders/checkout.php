@@ -76,7 +76,7 @@
 		$besecure = false;		
 	}
 		
-	//stripe js code if needed
+	//code for stripe
 	if($gateway == "stripe")
 	{
 		//stripe js library
@@ -96,7 +96,23 @@
 					number: jQuery('#AccountNumber').val(),
 					cvc: jQuery('#CVV').val(),
 					exp_month: jQuery('#ExpirationMonth').val(),
-					exp_year: jQuery('#ExpirationYear').val()
+					exp_year: jQuery('#ExpirationYear').val(),
+					name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())
+					
+					<?php
+						$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
+						if(!empty($pmpro_strip_verify_address))
+						{
+						?>
+						,address_line1: jQuery('#baddress1').val(),
+						address_line2: jQuery('#baddress2').val(),
+						address_zip: jQuery('#bzipcode').val(),
+						address_state: jQuery('#bstate').val(),					
+						address_country: jQuery('#bcountry').val()
+					<?php
+						}
+					?>
+					
 				}, stripeResponseHandler);
 
 				// prevent the form from submitting with the default action
@@ -118,6 +134,13 @@
 					var token = response['id'];					
 					// insert the token into the form so it gets submitted to the server
 					form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+										
+					//insert fields for other card fields
+					form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+					form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
+					form$.append("<input type='hidden' name='ExpirationMonth' value='" + response['card']['exp_month'] + "'/>");
+					form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");							
+					
 					// and submit
 					form$.get(0).submit();
 				}
@@ -126,6 +149,14 @@
 		<?php
 		}
 		add_action("wp_head", "pmpro_stripe_javascript");
+		
+		//don't require the CVV
+		function pmpro_stripe_dont_require_CVV($fields)
+		{
+			unset($fields['CVV']);			
+			return $fields;
+		}
+		add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
 	}
 		
 	//get all levels in case we need them
@@ -216,9 +247,7 @@
 	//for stripe, load up token values
 	if(isset($_REQUEST['stripeToken']))
 	{
-		$stripeToken = $_REQUEST['stripeToken'];
-		
-		//setup card type, account number, expiration month/year, and CVV
+		$stripeToken = $_REQUEST['stripeToken'];				
 	}
 	
 	//_x stuff in case they clicked on the image button with their mouse
@@ -243,7 +272,38 @@
 		}	
 		
 		if($pmpro_requirebilling && $gateway != "paypalexpress")
-		{
+		{			
+			//avoid warnings for these fields
+			if(!isset($bfirstname))
+				$bfirstname = "";
+			if(!isset($blastname))
+				$blastname = "";
+			if(!isset($baddress1))
+				$baddress1 = "";
+			if(!isset($bcity))
+				$bcity = "";
+			if(!isset($bstate))
+				$bstate = "";
+			if(!isset($bzipcode))
+				$bzipcode = "";
+			if(!isset($bphone))
+				$bphone = "";
+			if(!isset($bemail))
+				$bemail = "";
+			if(!isset($bcountry))
+				$bcountry = "";
+			if(!isset($CardType))
+				$CardType = "";
+			if(!isset($AccountNumber))
+				$AccountNumber = "";
+			if(!isset($ExpirationMonth))
+				$ExpirationMonth = "";
+			if(!isset($ExpirationYear))
+				$ExpirationYear = "";
+			if(!isset($CVV))
+				$CVV = "";				
+			
+			//require fields
 			$pmpro_required_billing_fields = array(
 				"bfirstname" => $bfirstname,
 				"blastname" => $blastname,
@@ -267,7 +327,7 @@
 			foreach($pmpro_required_billing_fields as $key => $field)
 			{
 				if(!$field)
-				{										
+				{															
 					$missing_billing_field = true;										
 					break;
 				}
@@ -414,6 +474,10 @@
 							$morder->ExpirationDate = $ExpirationMonth . $ExpirationYear;
 							$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
 							$morder->CVV2 = $CVV;												
+							
+							//stripeToken
+							if(isset($stripeToken))
+								$morder->stripeToken = $stripeToken;
 							
 							//not saving email in order table, but the sites need it
 							$morder->Email = $bemail;
@@ -698,6 +762,15 @@
 									
 				//show the confirmation
 				$ordersaved = true;
+				
+				//for Stripe, let's save the customer id in user meta
+				if($gateway == "stripe")
+				{
+					if(!empty($morder->Gateway->customer->id))
+					{
+						update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
+					}
+				}
 									
 				//hook
 				do_action("pmpro_after_checkout", $user_id);						

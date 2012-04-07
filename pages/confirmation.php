@@ -1,5 +1,5 @@
 <?php 
-	global $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
+	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
 	
 	if($pmpro_msg)
 	{
@@ -8,8 +8,12 @@
 	<?php
 	}
 	
-	$confirmation_message = "<p>Thank you for your membership to " . get_bloginfo('name') . ". Your " . $current_user->membership_level->name . " membership is now active.</p>";
-
+	$confirmation_message = "<p>Thank you for your membership to " . get_bloginfo('name') . ". Your " . $current_user->membership_level->name . " membership is now active.</p>";		
+	
+	//confirmation message for this level
+	$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.user_id = '" . $current_user->ID . "' LIMIT 1");
+	if(!empty($level_message))
+		$confirmation_message .= "\n" . $level_message . "\n";
 ?>	
 
 <?php if($pmpro_invoice) { ?>		
@@ -21,7 +25,7 @@
 		$confirmation_message .= "<p>Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to <strong>" . $pmpro_invoice->user->user_email . "</strong>.</p>";
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);
 		
-		echo $confirmation_message;
+		echo apply_filters("the_content", $confirmation_message);		
 	?>
 	
 	

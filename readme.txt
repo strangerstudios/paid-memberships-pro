@@ -50,6 +50,12 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.4 =
+* Rewrote how gateways are handled to make it easier to add and manage new gateway options.
+* Added Stripe as a gateway option. (http://www.stripe.com)
+* Added a "confirmation message" field to the level editor that is shown on the confirmation page after checking out. The message is added to the text that can be filtered using the pmpro_confirmation_message hook.
+* Now applying "the_content" filters on the confirmation message on the confirmation page. e.g. wpautop will be run on the text to automatically add paragraphs.
+* Now showing the level description on the checkout page. You can use this code to remove the description from the checkout page: https://gist.github.com/2323424
+* The description and confirmation fields of the membership level editor now use WP Editor fields with full WYSIWYG support.
 * Fixed the logic around setting the $pmpro_display_ads global, used by the pmpro_displayAds() and pmpro_hideAds() functions.
 * Fixed bug with recaptcha logic.
 * Updated /pages/checkout.php to use wp_login_url function for login link.

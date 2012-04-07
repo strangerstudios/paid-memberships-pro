@@ -30,6 +30,7 @@
 	{
 		$ml_name = addslashes($_REQUEST['name']);
 		$ml_description = addslashes($_REQUEST['description']);
+		$ml_confirmation = addslashes($_REQUEST['confirmation']);
 		$ml_initial_payment = addslashes($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
@@ -84,18 +85,19 @@
 		if($saveid > 0)
 		{
 			$sqlQuery = " UPDATE {$wpdb->pmpro_membership_levels}
-						SET name = '$ml_name',
-						  description = '$ml_description',
-						  initial_payment = '$ml_initial_payment',
-						  billing_amount = '$ml_billing_amount',
-						  cycle_number = '$ml_cycle_number',
-						  cycle_period = '$ml_cycle_period',
-						  billing_limit = '$ml_billing_limit',
-						  trial_amount = '$ml_trial_amount',
-						  trial_limit = '$ml_trial_limit',                    
-						  expiration_number = '$ml_expiration_number',
-						  expiration_period = '$ml_expiration_period',
-						  allow_signups = '$ml_allow_signups'
+						SET name = '" . $wpdb->escape($ml_name) . "',
+						  description = '" . $wpdb->escape($ml_description) . "',
+						  confirmation = '" . $wpdb->escape($ml_confirmation) . "',
+						  initial_payment = '" . $wpdb->escape($ml_initial_payment) . "',
+						  billing_amount = '" . $wpdb->escape($ml_billing_amount) . "',
+						  cycle_number = '" . $wpdb->escape($ml_cycle_number) . "',
+						  cycle_period = '" . $wpdb->escape($ml_cycle_period) . "',
+						  billing_limit = '" . $wpdb->escape($ml_billing_limit) . "',
+						  trial_amount = '" . $wpdb->escape($ml_trial_amount) . "',
+						  trial_limit = '" . $wpdb->escape($ml_trial_limit) . "',                    
+						  expiration_number = '" . $wpdb->escape($ml_expiration_number) . "',
+						  expiration_period = '" . $wpdb->escape($ml_expiration_period) . "',
+						  allow_signups = '" . $wpdb->escape($ml_allow_signups) . "'
 						WHERE id = '$saveid' LIMIT 1;";	 
 			$wpdb->query($sqlQuery);
 			
@@ -116,9 +118,9 @@
 		else
 		{
 			$sqlQuery = " INSERT INTO {$wpdb->pmpro_membership_levels}
-						( name, description, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period, allow_signups)
+						( name, description, confirmation, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period, allow_signups)
 						VALUES
-						( '$ml_name', '$ml_description', '$ml_initial_payment', '$ml_billing_amount', '$ml_cycle_number', '$ml_cycle_period', '$ml_billing_limit', '$ml_trial_amount', '$ml_trial_limit', '$ml_expiration_number', '$ml_expiration_period', '$ml_allow_signups' )";
+						( '" . $wpdb->escape($ml_name) . "', '" . $wpdb->escape($ml_description) . "', '" . $wpdb->escape($ml_confirmation) . "', '" . $wpdb->escape($ml_initial_payment) . "', '" . $wpdb->escape($ml_billing_amount) . "', '" . $wpdb->escape($ml_cycle_number) . "', '" . $wpdb->escape($ml_cycle_period) . "', '" . $wpdb->escape($ml_billing_limit) . "', '" . $wpdb->escape($ml_trial_amount) . "', '" . $wpdb->escape($ml_trial_limit) . "', '" . $wpdb->escape($ml_expiration_number) . "', '" . $wpdb->escape($ml_expiration_period) . "', '" . $wpdb->escape($ml_allow_signups) . "' )";
 			$wpdb->query($sqlQuery);
 			if(!mysql_errno())
 			{
@@ -234,6 +236,7 @@
 				$level->id = NULL;
 				$level->name = NULL;
 				$level->description = NULL;
+				$level->confirmation = NULL;
 				$level->billing_amount = NULL;
 				$level->trial_amount = NULL;
 				$level->initial_payment = NULL;
@@ -279,7 +282,22 @@
 					<th scope="row" valign="top"><label for="description">Description:</label></th>
 					<td>
 						<div id="poststuff" class="pmpro_description">
-						<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>							
+						<?php /*
+						<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>
+						*/ ?>
+						<?php wp_editor($level->description, "description", array("textarea_rows"=>5)); ?>	
+						</div>    
+					</td>
+				</tr>
+				
+				<tr>
+					<th scope="row" valign="top"><label for="confirmation">Confirmation Message:</label></th>
+					<td>
+						<div class="pmpro_confirmation">
+						<?php /*
+						<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo str_replace("\"", "&quot;", stripslashes($level->confirmation))?></textarea>						
+						*/?>
+						<?php wp_editor($level->confirmation, "confirmation", array("textarea_rows"=>5)); ?>	
 						</div>    
 					</td>
 				</tr>

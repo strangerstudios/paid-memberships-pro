@@ -16,12 +16,34 @@ function pmpro_checkForUpgrades()
 	
 	if(!$pmpro_db_version)
 		$pmpro_db_version = pmpro_upgrade_1();	
-	elseif($pmpro_db_version < 1.115)
+	
+	if($pmpro_db_version < 1.115)
 		$pmpro_db_version = pmpro_upgrade_1_1_15();		
-	elseif($pmpro_db_version < 1.23)
+	
+	if($pmpro_db_version < 1.23)
 		$pmpro_db_version = pmpro_upgrade_1_2_3();	
-	elseif($pmpro_db_version < 1.318)
+	
+	if($pmpro_db_version < 1.318)
 		$pmpro_db_version = pmpro_upgrade_1_3_18();
+	
+	if($pmpro_db_version < 1.4)
+		$pmpro_db_version = pmpro_upgrade_1_4();
+}
+
+function pmpro_upgrade_1_4()
+{
+	global $wpdb;
+	$wpdb->hide_errors();
+	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
+	
+	//confirmation message
+	$sqlQuery = "
+		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `confirmation` LONGTEXT NOT NULL AFTER  `description`
+	";
+	$wpdb->query($sqlQuery);
+	
+	pmpro_setOption("db_version", "1.4");
+	return 1.4;
 }
 
 function pmpro_upgrade_1_3_18()

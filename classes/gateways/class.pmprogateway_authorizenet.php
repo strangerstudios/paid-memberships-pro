@@ -46,7 +46,7 @@
 						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";				
 					}
 					
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $this);
+					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
 				else

@@ -37,6 +37,11 @@
 			<td>				
 				<p>You have selected the <strong><?php echo $pmpro_level->name?></strong> membership level.</p>
 				
+				<?php
+					if(!empty($pmpro_level->description))
+						echo apply_filters("the_content", $pmpro_level->description);
+				?>
+				
 				<p id="pmpro_level_cost">
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
 						The <strong><?php echo $discount_code?></strong> code has been applied to your order.
