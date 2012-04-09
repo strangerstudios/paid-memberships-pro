@@ -80,15 +80,16 @@
 	if($gateway == "stripe")
 	{
 		//stripe js library
-		wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), "");
+		wp_enqueue_script("stripe", "https://js.stripe.com/v1/stripe-debug.js", array(), NULL);
 		
 		//stripe js code for checkout
 		function pmpro_stripe_javascript()
 		{
 		?>
 		<script type="text/javascript">
-			// this identifies your website in the createToken call below
+			// this identifies your website in the createToken call below			
 			Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
+			
 			jQuery(document).ready(function() {
 				jQuery(".pmpro_form").submit(function(event) {
 				
@@ -97,8 +98,7 @@
 					cvc: jQuery('#CVV').val(),
 					exp_month: jQuery('#ExpirationMonth').val(),
 					exp_year: jQuery('#ExpirationYear').val(),
-					name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())
-					
+					name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
 					<?php
 						$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
 						if(!empty($pmpro_strip_verify_address))
@@ -111,8 +111,7 @@
 						address_country: jQuery('#bcountry').val()
 					<?php
 						}
-					?>
-					
+					?>					
 				}, stripeResponseHandler);
 
 				// prevent the form from submitting with the default action

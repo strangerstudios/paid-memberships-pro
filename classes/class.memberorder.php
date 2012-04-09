@@ -134,6 +134,16 @@
 				return false;
 		}
 		
+		function getMemberOrderByPaymentTransactionID($payment_transaction_id)
+		{
+			global $wpdb;
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $wpdb->escape($payment_transaction_id . "' LIMIT 1");
+			if($id)
+				return $this->getMemberOrderByID($id);
+			else
+				return false;
+		}
+		
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;
