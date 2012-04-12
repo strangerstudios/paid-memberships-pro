@@ -186,6 +186,13 @@ function pmpro_is_ready()
 			else
 				$pmpro_gateway_ready = false;
 		}
+		elseif($gateway == "stripe")
+		{
+			if(pmpro_getOption("gateway_environment") && pmpro_getOption("stripe_secretkey") && pmpro_getOption("stripe_publishablekey"))
+				$pmpro_gateway_ready = true;
+			else
+				$pmpro_gateway_ready = false;
+		}
 		else
 		{
 			$pmpro_gateway_ready = false;
