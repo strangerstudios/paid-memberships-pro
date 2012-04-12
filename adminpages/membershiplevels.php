@@ -2,6 +2,8 @@
 	global $wpdb, $msg, $msgt, $pmpro_currency_symbol;
 
 	//some vars
+	$gateway = pmpro_getOption("gateway");
+	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
 	else
@@ -332,7 +334,12 @@
 							}
 						  ?>
 						</select>
-						<br /><small>The amount to be billed one cycle after the initial payment.</small>							
+						<br /><small>
+							The amount to be billed one cycle after the initial payment.
+							<?php if($gateway == "stripe") { ?>
+								<br /><strong class="pmpro_red">Stripe integration currently only supports billing periods of "1 Month" or "1 Year".
+							<?php } ?>
+						</small>							
 					</td>
 				</tr>                                        
 				
@@ -340,7 +347,12 @@
 					<th scope="row" valign="top"><label for="billing_limit">Billing Cycle Limit:</label></th>
 					<td>
 						<input name="billing_limit" type="text" size="20" value="<?php echo $level->billing_limit?>" />
-						<br /><small>The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.</small>
+						<br /><small>
+							The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.
+							<?php if($gateway == "stripe") { ?>
+								<br /><strong class="pmpro_red">Stripe integration currently does not support billing limits.</strong>
+							<?php } ?>
+						</small>
 					</td>
 				</tr>            								
 
@@ -355,7 +367,12 @@
 						<?php echo $pmpro_currency_symbol?><input name="trial_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
 						<small>for the first</small>
 						<input name="trial_limit" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
-						<small>subscription payments.</small>																			
+						<small>subscription payments.</small>	
+						<?php if($gateway == "stripe") { ?>
+							<br /><small>
+							<strong class="pmpro_red">Stripe integration currently does not support trial amounts greater than $0.</strong>
+							</small>
+						<?php } ?>						
 					</td>
 				</tr>
 									 
@@ -465,7 +482,7 @@
 			foreach($levels as $level)
 			{
 		?>
-		<tr <?php if(!$level->allow_signups) { ?>class="pmpro_gray"<?php } ?>>
+		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibilty($level)) { ?>pmpro_error<?php } ?>">
 			<td><?php echo $level->id?></td>
 			<td><?php echo $level->name?></td>
 			<td>

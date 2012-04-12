@@ -30,6 +30,24 @@
 			$msg = false;
 	}
 	
+	if(!pmpro_checkLevelForStripeCompatibilty())
+	{		
+		$msg = -1;
+		$msgt = "The billing details for some of your membership levels is not supported by Stripe.";
+		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']))
+		{
+			if(!pmpro_checkLevelForStripeCompatibilty($_REQUEST['edit']))
+			{
+				$msg = -1;
+				$msgt = "The billing details for this level are not supported by Stripe. Please review the notes in the Billing Details section below.";
+			}			
+		}
+		elseif($view == "pmpro-membershiplevels")
+			$msgt .= " The levels with issues are highlighted below.";
+		else
+			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">Please edit your levels</a>.";			
+	}
+	
 	if(!empty($msg))
 	{
 	?>

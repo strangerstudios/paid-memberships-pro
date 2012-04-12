@@ -152,7 +152,60 @@ function pmpro_set_current_user()
 }
 add_action('set_current_user', 'pmpro_set_current_user');
 
-//init code
+/*
+	Checks if PMPro settings are complete or if there are any errors.
+*/
+function pmpro_checkLevelForStripeCompatibilty($level = NULL)
+{
+	$gateway = pmpro_getOption("gateway");
+	if($gateway == "stripe")
+	{
+		global $wpdb;
+		
+		//check ALL the levels
+		if(empty($level))
+		{
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";		
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{
+					/*
+						Stripe currently does not support:
+						* Trial Amounts > 0.
+						* Daily or Weekly billing periods.
+						* Cycle numbers > 1
+						* Billing Limits.										
+					*/
+					if($level->trial_amount > 0 ||
+					   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
+					   $level->cycle_number > 1 || $level->billing_limit > 0)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		else
+		{
+			//need to look it up?
+			if(is_numeric($level))
+				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($level) . "' LIMIT 1");
+			
+			//check this level
+			if($level->trial_amount > 0 ||
+			   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
+			   $level->cycle_number > 1 || $level->billing_limit > 0)
+			{
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
 function pmpro_is_ready()
 {
 	global $wpdb, $pmpro_pages, $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
@@ -217,6 +270,8 @@ function pmpro_is_ready()
 	else
 		return false;
 }
+
+//init code
 function pmpro_init()
 {
 	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/countries.php");
@@ -1511,4 +1566,5 @@ function pmpro_replaceURLsInBuffer($buffer)
 	
 	return $buffer;
 }
+
 ?>

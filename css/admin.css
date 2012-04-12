@@ -34,6 +34,12 @@ tr.pmpro_gray td {color: #AAA;}
 .pmpro_error a {color: #E36154; }
 .pmpro_alert a {color: #CF8516; }
 
+/* highlighted trs */
+tr.pmpro_message {background-image: none;}
+tr.pmpro_success {background-image: none;}
+tr.pmpro_error {background-image: none;}
+tr.pmpro_alert {background-image: none;}
+
 /* discount levels */
 .pmpro_discount_levels {border: 1px solid #CCC;}
 .pmpro_discount_levels div {padding: 5px; border: 1px solid #CCC;}
@@ -51,3 +57,4 @@ p.pmpro_meta_notice {font-size: .6em; padding-top: 5px; border-top: 1px solid #C
 /* misc */
 .pmpro_lite {color: #AAA;}
 .pmpro_pad20 {padding: 20px !important;}
+.pmpro_red {color: #CC0000;}
