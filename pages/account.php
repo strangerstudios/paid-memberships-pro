@@ -85,7 +85,7 @@
 					$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
 				?>		
 				<div class="pmpro_box">				
-					<h3><?php if($ssorder->status == "success" && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe"))) { ?><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "")?>">Edit</a><?php } ?>Billing Information</h3>
+					<h3><?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "")?>">Edit</a><?php } ?>Billing Information</h3>
 					<p>
 						<strong>Billing Address</strong><br />
 						<?php echo $bfirstname . " " . $blastname?>
@@ -109,7 +109,7 @@
 			<div class="pmpro_box">
 				<h3>Member Links</h3>
 				<ul>
-					<?php if($ssorder->status == "success" && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe"))) { ?>
+					<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?>
 						<li><a href="<?php echo pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
 					<?php } ?>
 					<?php if(count($pmpro_levels) > 1) { ?>
