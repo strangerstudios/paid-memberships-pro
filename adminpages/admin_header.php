@@ -38,8 +38,10 @@
 		{
 			if(!pmpro_checkLevelForStripeCompatibilty($_REQUEST['edit']))
 			{
+				global $pmpro_stripe_error;
+				$pmpro_stripe_error = true;
 				$msg = -1;
-				$msgt = "The billing details for this level are not supported by Stripe. Please review the notes in the Billing Details section below.";
+				$msgt = "The billing details for this level are not supported by Stripe. Please review the notes in the Billing Details section below.";				
 			}			
 		}
 		elseif($view == "pmpro-membershiplevels")

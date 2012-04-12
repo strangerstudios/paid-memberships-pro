@@ -3,6 +3,7 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
+	global $pmpro_stripe_error;
 	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
@@ -337,7 +338,7 @@
 						<br /><small>
 							The amount to be billed one cycle after the initial payment.
 							<?php if($gateway == "stripe") { ?>
-								<br /><strong class="pmpro_red">Stripe integration currently only supports billing periods of "1 Month" or "1 Year".
+								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently only supports billing periods of "1 Month" or "1 Year".
 							<?php } ?>
 						</small>							
 					</td>
@@ -350,7 +351,7 @@
 						<br /><small>
 							The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.
 							<?php if($gateway == "stripe") { ?>
-								<br /><strong class="pmpro_red">Stripe integration currently does not support billing limits.</strong>
+								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently does not support billing limits. You can still set an expiration date below.</strong>
 							<?php } ?>
 						</small>
 					</td>
@@ -370,7 +371,7 @@
 						<small>subscription payments.</small>	
 						<?php if($gateway == "stripe") { ?>
 							<br /><small>
-							<strong class="pmpro_red">Stripe integration currently does not support trial amounts greater than $0.</strong>
+							<strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently does not support trial amounts greater than $0.</strong>
 							</small>
 						<?php } ?>						
 					</td>
