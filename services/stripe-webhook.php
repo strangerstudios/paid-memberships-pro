@@ -1,4 +1,4 @@
-<?php
+<?php	
 	global $isapage;
 	$isapage = true;
 	
@@ -10,9 +10,9 @@
 	require('../../../../wp-load.php');
 	
 	require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
-	
+			
 	Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-	
+			
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
 	{
@@ -26,13 +26,19 @@
 	{
 		$event_id = $_REQUEST['event_id'];
 	}
-	
-	
-	//get the event through the API now
-	$event = Stripe_Event::retrieve($event_id);
 		
+	//get the event through the API now
+	try
+	{
+		$event = Stripe_Event::retrieve($event_id);		
+	}
+	catch(Exception $e)
+	{
+		die("Could not find an event with ID #" . $event_id . ". " . $e->getMessage());
+	}
+	
 	//real event?
-	if($event->id)
+	if(!empty($event->id))
 	{	
 		//check what kind of event it is
 		if($event->type == "invoice.payment_succeeded")
@@ -41,14 +47,14 @@
 			$order = getOrderFromInvoiceEvent($event);
 			
 			//no? create it
-			if(!$order)
+			if(empty($order->id))
 			{
 				//last order for this subscription
 				$old_order = getOldOrderFromInvoiceEvent($event);
 				$user_id = $old_order->user_id;	
 				$user = get_userdata($user_id);
 				
-				if(!$old_order->id)
+				if(empty($old_order->id))
 					die("Couldn't find the original subscription.");
 				
 				$invoice = $event->data->object;
@@ -94,7 +100,11 @@
 				//email the user their invoice				
 				$pmproemail = new PMProEmail();				
 				$pmproemail->sendInvoiceEmail($user, $morder);	
-			}		
+			}
+			else
+			{
+				die("We've already processed this order with ID #" . $event->id);
+			}
 		}
 		elseif($event->type == "invoice.payment_failed")
 		{
@@ -103,42 +113,60 @@
 			$user_id = $old_order->user_id;	
 			$user = get_userdata($user_id);
 			
-			//prep this order for the failure emails
-			$morder = new MemberOrder();
-			$morder->user_id = $user_id;
-			$morder->billing->name = $old_order->billing->name;
-			$morder->billing->street = $old_order->billing->street;
-			$morder->billing->city = $old_order->billing->city;
-			$morder->billing->state = $old_order->billing->state;
-			$morder->billing->zip = $old_order->billing->zip;
-			$morder->billing->phone = $old_order->billing->phone;
-			
-			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);										
-						
-			// Email the user and ask them to update their credit card information			
-			$pmproemail = new PMProEmail();				
-			$pmproemail->sendBillingFailureEmail($user, $morder);
-			
-			// Email admin so they are aware of the failure
-			$pmproemail = new PMProEmail();				
-			$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $morder);			
+			if(!empty($old_order->id))
+			{			
+				//prep this order for the failure emails
+				$morder = new MemberOrder();
+				$morder->user_id = $user_id;
+				$morder->billing->name = $old_order->billing->name;
+				$morder->billing->street = $old_order->billing->street;
+				$morder->billing->city = $old_order->billing->city;
+				$morder->billing->state = $old_order->billing->state;
+				$morder->billing->zip = $old_order->billing->zip;
+				$morder->billing->phone = $old_order->billing->phone;
+				
+				//get CC info that is on file
+				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
+				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
+				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
+				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);										
+							
+				// Email the user and ask them to update their credit card information			
+				$pmproemail = new PMProEmail();				
+				$pmproemail->sendBillingFailureEmail($user, $morder);
+				
+				// Email admin so they are aware of the failure
+				$pmproemail = new PMProEmail();				
+				$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $morder);		
+
+				echo "Sent email to the member and site admin. Thanks.";
+				exit;
+			}
+			else
+			{
+				die("Could not find the related subscription for order with ID #" . $event->id);
+			}
 		}
 		elseif($event->type == "customer.subscription.deleted")
 		{						
 			//for one of our users? if they still have a membership, notify the admin			
 			$user = getUserFromCustomerEvent($event);
-			if(!empty($user))
+			if(!empty($user->ID))
 			{			
 				$pmproemail = new PMProEmail();	
-				$pmproemail->data = array("body"=>"<p>" . $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ") has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be.</p>";
+				$pmproemail->data = array("body"=>"<p>" . $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ") has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be.</p>");
 				$pmproemail->sendEmail(get_bloginfo("admin_email"));	
 			}
+			else
+			{
+				die("Not a user here.");
+			}
 		}
-	}	
+	}
+	else
+	{
+		die("Could not find an event with ID #" . $event_id);
+	}
 
 	function getUserFromInvoiceEvent($event)
 	{
