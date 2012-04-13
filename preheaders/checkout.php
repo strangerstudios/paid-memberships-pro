@@ -80,7 +80,7 @@
 	if($gateway == "stripe")
 	{
 		//stripe js library
-		wp_enqueue_script("stripe", "https://js.stripe.com/v1/stripe-debug.js", array(), NULL);
+		wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), NULL);
 		
 		//stripe js code for checkout
 		function pmpro_stripe_javascript()
