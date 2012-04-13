@@ -60,6 +60,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug with recaptcha logic.
 * Updated /pages/checkout.php to use wp_login_url function for login link.
 * Small changes to pmpro_changeMembershipLevel function to support deleting users when they cancel their account.
+* Fixed some more notices.
 
 = 1.3.19 =
 * Rewrote the pmpro_login_redirect function. It's cleaner now. Important: there was a pmpro_login_redirect hook in there that was fairly redundant with the core login_redirect hook. I've renamed the pmpro hook to pmpro_login_redirect_to because I had a hook with the same name (pmpro_login_redirect) used in a different place to control whether or not PMPro redirects the register page to the levels page. Having one hook for two things is a bad idea. It seems like more people were using the hook for controlling the registration redirect, so I left that one alone and renamed these.
