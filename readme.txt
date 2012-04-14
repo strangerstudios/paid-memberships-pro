@@ -1,6 +1,6 @@
 === Paid Memberships Pro ===
 Contributors: strangerstudios
-Tags: memberships, ecommerce, authorize.net, paypal
+Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.3.1
 Stable tag: 1.4
@@ -10,6 +10,8 @@ A customizable Membership Plugin for WordPress integrated with Authorize.net or 
 
 == Description ==
 Paid Memberships Pro is a WordPress Plugin and support community for membership site curators. PMPro's rich feature set allows you to add a new revenue source to your new or current blog or website and is flexible enough to fit the needs of almost all online and offline businesses.
+
+Accept one-time and recurring payments using Stripe, PayPal Website Payments Pro, PayPal Express, or Authorize.net.
 
 == Installation ==
 
