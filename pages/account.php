@@ -109,6 +109,9 @@
 			<div class="pmpro_box">
 				<h3>Member Links</h3>
 				<ul>
+					<?php 
+						do_action("pmpro_member_links_top");
+					?>
 					<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?>
 						<li><a href="<?php echo pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
 					<?php } ?>
@@ -116,6 +119,9 @@
 						<li><a href="<?php echo pmpro_url("levels")?>">Change Membership Level</a></li>
 					<?php } ?>
 					<li><a href="<?php echo pmpro_url("cancel")?>">Cancel Membership</a></li>
+					<?php 
+						do_action("pmpro_member_links_bottom");
+					?>
 				</ul>
 			</div>
 		</div> <!-- end pmpro_left -->

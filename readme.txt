@@ -60,6 +60,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug with recaptcha logic.
 * Updated /pages/checkout.php to use wp_login_url function for login link.
 * Small changes to pmpro_changeMembershipLevel function to support deleting users when they cancel their account.
+* Added the pmpro_member_links_top and pmpro_member_links_bottom hooks so you can add links to the "Member Links" list of the account page. Just output an a tag wrapped in a li tag. (May tweak this to build an array of links that can be filters, but this is good for now.)
 * Fixed some more notices.
 
 = 1.3.19 =
