@@ -390,7 +390,18 @@
 		
 		function cancel()
 		{
-			return $this->Gateway->cancel($this);					
+			//only need to cancel on the gateway if there is a subscription id
+			if(empty($this->subscription_transaction_id))
+			{
+				//just mark as cancelled
+				$this->updateStatus("cancelled");					
+				return true;
+			}
+			else
+			{			
+				//cancel the gateway subscription first				
+				return $this->Gateway->cancel($this);					
+			}
 		}
 		
 		function updateBilling()

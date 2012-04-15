@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.4
+Stable tag: 1.4.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.1 =
+* Fixed critical bugs with PayPal Express.
+* When a PayPal cancellation returns error "11556" (The subscription must have status "active" or "suspended".) I am cancelling the membership without an error. Most likely the PayPal subscription was already cancelled on the PayPal side.
+* No longer trying to cancel a subscription with the gateway if a membership/order doesn't have a subscription_transaction_id. (It was a initial payment only membership probably.)
+
 = 1.4 =
 * Rewrote how gateways are handled to make it easier to add and manage new gateway options.
 * Added Stripe as a gateway option. (http://www.stripe.com)

@@ -164,7 +164,7 @@
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			if($this->Token)
+			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
@@ -215,7 +215,7 @@
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			if($order->Token)
+			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;		
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $order->PaymentAmount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
@@ -267,9 +267,8 @@
 			$nvpStr = "";			
 			$nvpStr .= "&PROFILEID=" . $order->subscription_transaction_id . "&ACTION=Cancel&NOTE=User requested cancel.";							
 			
-			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
-									
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {				
+			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || $this->httpParsedResponseAr['L_ERRORCODE0'] == "11556") {								
 				$order->updateStatus("cancelled");					
 				return true;
 				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
@@ -278,6 +277,7 @@
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+								
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
