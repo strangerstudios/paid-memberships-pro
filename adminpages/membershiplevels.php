@@ -3,7 +3,7 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
-	global $pmpro_stripe_error;
+	global $pmpro_stripe_error, $wp_version;
 	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
@@ -284,11 +284,17 @@
 				<tr>
 					<th scope="row" valign="top"><label for="description">Description:</label></th>
 					<td>
-						<div id="poststuff" class="pmpro_description">
-						<?php /*
-						<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>
-						*/ ?>
-						<?php wp_editor($level->description, "description", array("textarea_rows"=>5)); ?>	
+						<div id="poststuff" class="pmpro_description">						
+						<?php 							
+							if(version_compare($wp_version, "3.3") >= 0)
+								wp_editor($level->description, "description", array("textarea_rows"=>5)); 
+							else
+							{
+							?>
+							<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>
+							<?php
+							}
+						?>	
 						</div>    
 					</td>
 				</tr>
@@ -296,11 +302,17 @@
 				<tr>
 					<th scope="row" valign="top"><label for="confirmation">Confirmation Message:</label></th>
 					<td>
-						<div class="pmpro_confirmation">
-						<?php /*
-						<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo str_replace("\"", "&quot;", stripslashes($level->confirmation))?></textarea>						
-						*/?>
-						<?php wp_editor($level->confirmation, "confirmation", array("textarea_rows"=>5)); ?>	
+						<div class="pmpro_confirmation">					
+						<?php 
+							if(version_compare($wp_version, "3.3") >= 0)
+								wp_editor($level->confirmation, "confirmation", array("textarea_rows"=>5)); 
+							else
+							{
+							?>
+							<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo str_replace("\"", "&quot;", stripslashes($level->confirmation))?></textarea>	
+							<?php
+							}
+						?>	
 						</div>    
 					</td>
 				</tr>
