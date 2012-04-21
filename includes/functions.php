@@ -585,7 +585,7 @@
 		else 
 		{
 			pmpro_set_current_user();
-			do_action("pmpro_after_change_membership_level", $level, $user_id);
+			do_action("pmpro_after_change_membership_level", $level, $user_id);	//$level is the $level_id here
 			return true;
 		}
 	}

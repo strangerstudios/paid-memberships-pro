@@ -17,9 +17,9 @@ Accept one-time and recurring payments using Stripe, PayPal Website Payments Pro
 
 1. Upload the `paid-memberships-pro` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-1. Follow the instructions in the video below:
+1. Follow the instructions in the video here:
 
-[youtube http://www.youtube.com/watch?v=BfKqlO0NRiU]
+http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/
 
 Written instructions:
 http://www.paidmembershipspro.com/support/initial-plugin-setup/
