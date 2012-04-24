@@ -340,7 +340,7 @@ function pmpro_wp()
 					include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
 					$temp_content = ob_get_contents();
 					ob_end_clean();
-					return $temp_content;
+					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
 				break;	//only the first page found gets a shortcode replacement
@@ -361,7 +361,7 @@ function pmpro_checkout_shortcode($atts, $content=null, $code="")
 {	
 	ob_start();
 	include(plugin_dir_path(__FILE__) . "/pages/checkout.php");
-	$temp_content = ob_get_contents();
+	return apply_filters("pmpro_pages_shortcode_checkout", $temp_content);
 	ob_end_clean();
 	return $temp_content;
 }
