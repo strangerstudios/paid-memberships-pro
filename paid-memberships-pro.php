@@ -50,7 +50,12 @@ define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
 
-global $all_membership_levels; //when checking levels, we save the info here for caching
+//when checking levels for users, we save the info here for caching. each key is a user id for an array of levels for that user.
+global $all_membership_levels; 
+
+//we sometimes refer to this array of levels
+global $membership_levels;
+$membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
 function pmpro_memberslist()
 {
@@ -127,7 +132,9 @@ function pmpro_set_current_user()
 
 	//hiding ads?
 	$hideads = pmpro_getOption("hideads");
-	$hideadslevels = explode(",", pmpro_getOption("hideadslevels"));
+	$hideadslevels = pmpro_getOption("hideadslevels");
+	if(!is_array($hideadslevels))
+		$hideadslevels = explode(",", $hideadslevels);
 	if($hideads == 1 && pmpro_hasMembershipLevel() || $hideads == 2 && pmpro_hasMembershipLevel($hideadslevels))
 	{
 		//disable ads in ezAdsense
@@ -310,7 +317,7 @@ function pmpro_init()
 	elseif($pmpro_currency == "JPY")
 		$pmpro_currency_symbol = "&yen;";
 	else
-		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code
+		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code			
 }
 add_action("init", "pmpro_init");
 
@@ -892,9 +899,6 @@ function pmpro_comments_filter($comments, $post_id = NULL)
 }
 add_filter("comments_array", "pmpro_comments_filter");
 add_filter("comments_open", "pmpro_comments_filter");
-
-global $membership_levels;
-$membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
 function pmpro_page_meta()
 {
