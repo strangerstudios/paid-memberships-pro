@@ -361,9 +361,9 @@ function pmpro_checkout_shortcode($atts, $content=null, $code="")
 {	
 	ob_start();
 	include(plugin_dir_path(__FILE__) . "/pages/checkout.php");
-	return apply_filters("pmpro_pages_shortcode_checkout", $temp_content);
+	$temp_content = ob_get_contents();
 	ob_end_clean();
-	return $temp_content;
+	return apply_filters("pmpro_pages_shortcode_checkout", $temp_content);			
 }
 add_shortcode("pmpro_checkout", "pmpro_checkout_shortcode");
 
