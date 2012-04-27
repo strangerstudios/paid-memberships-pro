@@ -270,9 +270,25 @@
 			//Todo: Tax?!, Coupons, Certificates, affiliates
 			$this->subtotal = $amount;
 			$tax = $this->getTax(true);
-					
+			$this->certificate_id = "";
+			$this->certificateamount = "";
+			
+			//these fix some warnings/notices
+			if(empty($this->paypal_token))
+				$this->paypal_token = "";
+			if(empty($this->couponamount))
+				$this->couponamount = "";
+			if(empty($this->payment_type))
+				$this->payment_type = "";
+			if(empty($this->subscription_transaction_id))
+				$this->subscription_transaction_id = "";
+			if(empty($this->affiliate_id))
+				$this->affiliate_id = "";
+			if(empty($this->affiliate_subid))
+				$this->affiliate_subid = "";
+			
 			//build query			
-			if($this->id)
+			if(!empty($this->id))
 			{
 				//update
 				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
@@ -326,9 +342,9 @@
 									   '" . cleanPhone($this->billing->phone) . "',
 									   '" . $amount . "',
 									   '" . $tax . "',
-									   '" . $coupon. "',
-									   '" . $certificate_id . "',
-									   '" . $certficate_amount . "',
+									   '" . $this->couponamount. "',
+									   '" . $this->certificate_id . "',
+									   '" . $this->certficateamount . "',
 									   '" . ((float)$amount + (float)$tax) . "',
 									   '" . $this->payment_type . "',
 									   '" . $this->cardtype . "',

@@ -63,10 +63,13 @@
 		//require billing and ssl
 		$pagetitle = "Checkout: Payment Information";
 		$pmpro_requirebilling = true;
+		$besecure = pmpro_getOption("use_ssl");
+		/*
 		if($gateway != "paypalexpress" || (!empty($_REQUEST['gateway']) && $_REQUEST['gateway'] != "paypalexpress"))
 			$besecure = true;			
 		else
 			$besecure = false;				
+		*/
 	}		
 	else
 	{
@@ -266,6 +269,8 @@
 		if($skip_account_fields && !$current_user->ID)
 		{
 			$username = pmpro_generateUsername($bfirstname, $blastname, $bemail);
+			if(empty($username))
+				$username = pmpro_getDiscountCode();
 			$password = pmpro_getDiscountCode() . pmpro_getDiscountCode();	//using two random discount codes
 			$password2 = $password;
 		}	
@@ -702,8 +707,10 @@
 			}
 			
 			//update membership_user table.
-			if($discount_code && $use_discount_code)
+			if(!empty($discount_code) && !empty($use_discount_code))
 				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+			else
+				$discount_code_id = "";
 			
 			//set the start date to NOW() but allow filters
 			$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $user_id, $pmpro_level);			
@@ -726,7 +733,7 @@
 			{
 				//we're good
 				//add an item to the history table, cancel old subscriptions						
-				if($morder)
+				if(!empty($morder))
 				{
 					$morder->user_id = $user_id;
 					$morder->membership_id = $pmpro_level->id;
@@ -776,7 +783,7 @@
 				do_action("pmpro_after_change_membership_level", $pmpro_level->id, $user_id);								
 				
 				//setup some values for the emails
-				if($morder)
+				if(!empty($morder))
 					$invoice = new MemberOrder($morder->id);						
 				else
 					$invoice = NULL;

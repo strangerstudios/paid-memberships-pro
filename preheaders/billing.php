@@ -15,20 +15,22 @@
 	}
 	elseif($user_order->gateway == "paypalexpress")
 	{
-		//still they might have website payments pro setup		
+		$besecure = pmpro_getOption("use_ssl");
+		//still they might have website payments pro setup				
 		if($gateway == "paypal")
 		{		
-			$besecure = true;	
+			//$besecure = true;	
 		}
 		else
 		{
-			$besecure = false;
+			//$besecure = false;
 			$show_paypal_link = true;
 		}
 	}
 	else
 	{		
-		$besecure = true;			
+		//$besecure = true;			
+		$besecure = pmpro_getOption("use_ssl");
 	}
 	
 	//code for stripe

@@ -54,7 +54,7 @@
 		$msg = true;
 		$msgt = "Your payment settings have been updated.";			
 	}
-
+	
 	$sslseal = pmpro_getOption("sslseal");
 	$nuclear_HTTPS = pmpro_getOption("nuclear_HTTPS");
 	
@@ -68,6 +68,18 @@
 	$transactionkey = pmpro_getOption("transactionkey");
 	$stripe_secretkey = pmpro_getOption("stripe_secretkey");
 	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");
+	
+	//use_ssl is based on gateway
+	if($gateway == "paypal" || $gateway == "authorizenet")
+	{
+		pmpro_setOption("use_ssl", 1);
+		$use_ssl = 1;
+	}
+	else
+	{
+		pmpro_setOption("use_ssl");
+		$use_ssl = pmpro_getOption("use_ssl");
+	}		
 	
 	$currency = pmpro_getOption("currency");
 	
@@ -262,6 +274,25 @@
 					&nbsp; Tax Rate:
 					<input type="text" name="tax_rate" size="10" value="<?php echo $tax_rate?>" /> <small>(decimal, e.g. "0.06")</small>
 					<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="use_ssl">Use SSL:</label>
+				</th>
+				<td>
+					<select id="use_ssl" name="use_ssl">
+						<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>>No</option>
+						<option value="1" <?php if(!empty($use_ssl)) { ?>selected="selected"<?php } ?>>Yes</option>						
+					</select>
+				</td>
+			</tr>
+			<tr class="gateway gateway_paypal gateway_authorizenet" <?php if($gateway != "paypal" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="use_ssl">Use SSL:</label>
+				</th>
+				<td>
+					Yes. (Required by this Gateway Option)
 				</td>
 			</tr>
 			<tr>
