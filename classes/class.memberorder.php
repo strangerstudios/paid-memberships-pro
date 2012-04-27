@@ -344,7 +344,7 @@
 									   '" . $tax . "',
 									   '" . $this->couponamount. "',
 									   '" . $this->certificate_id . "',
-									   '" . $this->certficateamount . "',
+									   '" . $this->certificateamount . "',
 									   '" . ((float)$amount + (float)$tax) . "',
 									   '" . $this->payment_type . "',
 									   '" . $this->cardtype . "',
@@ -357,8 +357,8 @@
 									   '" . $this->payment_transaction_id . "',
 									   '" . $this->subscription_transaction_id . "',
 									   now(),
-									   '" . $affiliate_id . "',
-									   '" . $affiliate_subid . "'
+									   '" . $this->affiliate_id . "',
+									   '" . $this->affiliate_subid . "'
 									   )";		
 			}
 									   

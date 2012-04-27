@@ -739,7 +739,7 @@
 					$morder->membership_id = $pmpro_level->id;
 												
 					$morder->saveOrder();																
-					
+										
 					//cancel any other subscriptions they have
 					$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND id <> '" . $morder->id . "' AND status = 'success' ORDER BY id DESC");
 					foreach($other_order_ids as $order_id)

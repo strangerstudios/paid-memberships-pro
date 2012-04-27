@@ -27,7 +27,7 @@
 						$order->TrialAmount = 0;
 						
 						//add a billing cycle to make up for the trial, if applicable
-						if($order->TotalBillingCycles)
+						if(!empty($order->TotalBillingCycles))
 							$order->TotalBillingCycles++;
 					}
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
@@ -46,7 +46,7 @@
 						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";				
 					}
 					
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $this);
+					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
 				else
@@ -74,7 +74,7 @@
 							$order->TrialAmount = 0;
 							
 							//add a billing cycle to make up for the trial, if applicable
-							if($order->TotalBillingCycles)
+							if(!empty($order->TotalBillingCycles))
 								$order->TotalBillingCycles++;
 						}
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
@@ -84,7 +84,7 @@
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
-							if($order->TotalBillingCycles)
+							if(!empty($order->TotalBillingCycles))
 								$order->TotalBillingCycles++;
 						}
 						else
@@ -93,7 +93,7 @@
 							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod)) . "T0:0:0";				
 						}
 						
-						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $this->ProfileStartDate, $this);
+						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{
 							return true;
