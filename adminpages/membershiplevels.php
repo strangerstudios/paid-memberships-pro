@@ -32,8 +32,8 @@
 	if($action == "save_membershiplevel")
 	{
 		$ml_name = addslashes($_REQUEST['name']);
-		$ml_description = addslashes($_REQUEST['description']);
-		$ml_confirmation = addslashes($_REQUEST['confirmation']);
+		$ml_description = $_REQUEST['description'];
+		$ml_confirmation = $_REQUEST['confirmation'];
 		$ml_initial_payment = addslashes($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
@@ -290,11 +290,11 @@
 						<div id="poststuff" class="pmpro_description">						
 						<?php 							
 							if(version_compare($wp_version, "3.3") >= 0)
-								wp_editor($level->description, "description", array("textarea_rows"=>5)); 
+								wp_editor(stripslashes($level->description), "description", array("textarea_rows"=>5)); 
 							else
 							{
 							?>
-							<textarea rows="10" cols="80" name="description" id="description"><?php echo str_replace("\"", "&quot;", stripslashes($level->description))?></textarea>
+							<textarea rows="10" cols="80" name="description" id="description"><?php echo stripslashes($level->description)?></textarea>
 							<?php
 							}
 						?>	
@@ -308,11 +308,11 @@
 						<div class="pmpro_confirmation">					
 						<?php 
 							if(version_compare($wp_version, "3.3") >= 0)
-								wp_editor($level->confirmation, "confirmation", array("textarea_rows"=>5)); 
+								wp_editor(stripslashes($level->confirmation), "confirmation", array("textarea_rows"=>5)); 
 							else
 							{
 							?>
-							<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo str_replace("\"", "&quot;", stripslashes($level->confirmation))?></textarea>	
+							<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo stripslashes($level->confirmation)?></textarea>	
 							<?php
 							}
 						?>	

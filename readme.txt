@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
-Tested up to: 3.3.1
+Tested up to: 3.3.2
 Stable tag: 1.4.2
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
@@ -52,6 +52,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.4.2 =
+* Fixed bug that was added slashes into a level's description and confirmation when saving.
+* Removed wp_editor use is the blog is running a version of WordPress < 3.3. (Note: We will only officially support the latest version of WordPress with each release.)
 * Added the pmpro_pages_shortcode_{membership page} filter. This can be used to filter the content output by the pmpro_checkout and other page shortcodes. e.g. use pmpro_pages_shortcode_checkout to tweak the HTML output of the pmpro_checkout shortcode. The pages are "account", "billing", "cancel", "checkout", "confirmation", and "levels".
 * Added a "use_ssl" option. For the PayPal Website Payments Pro and Authorize.net gateways, this must be on. For Stripe, this will default to on, but can be switched off. For PayPal Express and the test gateway, it will default to off but can be switched on. When on, the checkout and update billing pages will be forced to be served over SSL. If off, those pages will redirect to non-ssl versions. The previous hooks/filters for overriding this will still work.
 * Added pmpro_save_membership_level and pmpro_membership_level_after_other_settings hooks to be able to add fields to the new/edit membership level page.
