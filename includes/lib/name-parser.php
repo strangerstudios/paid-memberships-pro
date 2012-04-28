@@ -14,14 +14,18 @@
 if(!function_exists("pnp_split_full_name"))
 {
 	function pnp_split_full_name($full_name) {
+		if(empty($full_name))
+			return "";
+			
 		$fname = $lname = $initials = NULL;
 		
 		$full_name = trim($full_name);
 		// split into words
 		$unfiltered_name_parts = explode(" ",$full_name);
+		$name_parts = array();
 		// completely ignore any words in parentheses
 		foreach ($unfiltered_name_parts as $word) {
-			if ($word{0} != "(")
+			if (!empty($word) && $word{0} != "(")
 				$name_parts[] = $word;
 		}
 		$num_words = sizeof($name_parts);

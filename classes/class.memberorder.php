@@ -46,8 +46,16 @@
 				
 				//split up some values
 				$nameparts = pnp_split_full_name($this->billing->name);
-				$this->FirstName = $nameparts['fname'];
-				$this->LastName = $nameparts['lname'];
+				
+				if(!empty($nameparts['fname']))
+					$this->FirstName = $nameparts['fname'];
+				else
+					$this->FirstName = "";
+				if(!empty($nameparts['lname']))
+					$this->LastName = $nameparts['lname'];
+				else
+					$this->LastName = "";
+				
 				$this->Address1 = $this->billing->street;
 				
 				//get email from user_id
