@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.4.2
+Version: 1.4.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -42,7 +42,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.4.2");
+define("PMPRO_VERSION", "1.4.3");
 $domainparts = parse_url(site_url());
 $domainparts = explode(".", $domainparts['host']);
 define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1]);
@@ -354,8 +354,8 @@ function pmpro_wp()
 			}
 		}
 		
-		//make sure you load the preheader for the checkout page. the shortcode for checkout is loaded below
-		if(strpos($post->post_content, "[pmpro_checkout]") !== false)
+		//make sure you load the preheader for the checkout page. the shortcode for checkout is loaded below		
+		if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_checkout]") !== false)
 		{
 			require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/checkout.php");	
 		}
@@ -1423,7 +1423,7 @@ function pmpro_send_html( $phpmailer ) {
 	// Clean < and > around text links in WP 3.1
 	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
 	// Convert line breaks & make links clickable
-	$phpmailer->Body = nl2br ( make_clickable ($phpmailer->Body) );
+	$phpmailer->Body = wpautop ( make_clickable ($phpmailer->Body) );
 	
 	// Add template to message
 	if(file_exists(TEMPLATEPATH . "/email_header.html"))

@@ -212,7 +212,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = "Member Checkout at " . get_option("blogname");	
+			$this->subject = "Member Checkout for " . $user->membership_level->name . " at " . get_option("blogname");	
 			
 			$this->data = array(
 								"subject" => $this->subject, 

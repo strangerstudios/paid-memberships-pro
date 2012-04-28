@@ -13,7 +13,7 @@
 	//confirmation message for this level
 	$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.user_id = '" . $current_user->ID . "' LIMIT 1");
 	if(!empty($level_message))
-		$confirmation_message .= "\n" . $level_message . "\n";
+		$confirmation_message .= "\n" . stripslashes($level_message) . "\n";
 ?>	
 
 <?php if($pmpro_invoice) { ?>		

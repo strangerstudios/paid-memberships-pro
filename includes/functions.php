@@ -970,7 +970,7 @@
 	{
 		global $wpdb;
 		
-		while(!$code)
+		while(empty($code))
 		{
 			$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
 			$code = substr($scramble, 0, 10);
@@ -988,7 +988,7 @@
 		global $wpdb;
 		
 		//no code, no code
-		if(!$code)
+		if(empty($code))
 		{
 			if($return_errors)
 				return array(false, "No code was given to check.");
@@ -998,13 +998,9 @@
 			
 		//get code from db
 		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
-		
-		//fix the date timestamps
-		$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
-		$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));
-		
+				
 		//did we find it?
-		if(!$dbcode->id)
+		if(empty($dbcode->id))
 		{
 			if($return_errors)
 				return array(false, "The code could not be found.");
@@ -1012,11 +1008,15 @@
 				return false;
 		}
 	
+		//fix the date timestamps
+		$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
+		$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));		
+	
 		//today
 		$today = strtotime(date("m/d/Y 00:00:00"));		
 	
 		//has this code started yet?
-		if($dbcode->starts && $dbcode->starts > $today)
+		if(!empty($dbcode->starts) && $dbcode->starts > $today)
 		{
 			if($return_errors)
 				return array(false, "This discount code goes into effect on " . date("m/d/Y", $dbcode->starts) . ".");
@@ -1025,7 +1025,7 @@
 		}
 		
 		//has this code expired?
-		if($dbcode->expires && $dbcode->expires < $today)
+		if(!empty($dbcode->expires) && $dbcode->expires < $today)
 		{
 			if($return_errors)
 				return array(false, "This discount code expired on " . date("m/d/Y", $dbcode->expires) . ".");
@@ -1047,13 +1047,13 @@
 		}
 		
 		//if a level was passed check if this code applies
-		if($level_id)
+		if(!empty($level_id))
 		{
 			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
 			
-			if(!$code_level)
+			if(empty($code_level))
 			{
-				if($return_errors)
+				if(!empty($return_errors))
 					return array(false, "This code does not apply to this membership level.");
 				else
 					return false;
@@ -1061,7 +1061,7 @@
 		}
 		
 		//guess we're all good		
-		if($return_errors)
+		if(!empty($return_errors))
 			return array(true, "This discount code is okay.");
 		else
 			return true;

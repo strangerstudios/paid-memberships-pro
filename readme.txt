@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.3.2
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,13 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.3 =
+* Fixed a bunch of notices and warnings on discount codes page in admin.
+* Added hooks for changing the discount code page: pmpro_save_discount_code_level, pmpro_save_discount_code, pmpro_discount_code_after_settings, pmpro_discount_code_after_level_settings. Look them up in discountcodes.php to see how they work.
+* Updated pmpro_send_html(), which filters emails, to use wpautop instead of nl2br. This will fix any extra double spacing you may have noticed in your emails.
+* Added a stripslashes around the membership level confirmation text on the confirmation page. Extra slashes were breaking links, etc.
+* Added membership level to subject of checkout confirmation email sent to admins.
+
 = 1.4.2 =
 * Fixed bug that was added slashes into a level's description and confirmation when saving.
 * Removed wp_editor use is the blog is running a version of WordPress < 3.3. (Note: We will only officially support the latest version of WordPress with each release.)
