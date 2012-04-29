@@ -756,7 +756,7 @@
 		if($lastpage > 1)
 		{	
 			$pagination .= "<div class=\"pmpro_pagination\"";
-			if($margin || $padding)
+			if(!empty($margin) || !empty($padding))
 			{
 				$pagination .= " style=\"";
 				if($margin)
