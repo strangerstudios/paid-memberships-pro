@@ -71,7 +71,7 @@
 	</div>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo home_url("/wp-admin/admin-ajax.php?action=pmpro_notifications"); ?>', function(data) {
+			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications"); ?>', function(data) {
 			  jQuery('#pmpro_notifications').html(data);		 
 			});
 		});
