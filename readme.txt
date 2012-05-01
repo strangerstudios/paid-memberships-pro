@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.4.4 =
 * Using get_admin_url instead of home_url in the notification code so it works on sites installed in a subdirectory.
+* Wrapping some XML fields in Authorize.net API calls in <![CDATA[ ]]> to avoid issues when non-text characters (e.g. &) are included in the level name, etc.
 
 = 1.4.3 =
 * Fixed a bunch of notices and warnings on discount codes page in admin.

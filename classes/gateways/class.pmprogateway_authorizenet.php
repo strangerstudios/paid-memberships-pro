@@ -466,7 +466,8 @@
 				return false;	//authorize.net only supports months and days
 				
 			$startDate = substr($order->ProfileStartDate, 0, 10);
-			$totalOccurrences = (int)$order->TotalBillingCycles;
+			if(!empty($order->TotalBillingCycles))
+				$totalOccurrences = (int)$order->TotalBillingCycles;
 			if(empty($totalOccurrences))
 				$totalOccurrences = 9999;	
 			if(isset($order->TrialBillingCycles))						
@@ -532,7 +533,7 @@
 					"</merchantAuthentication>".
 					"<refId>" . $refId . "</refId>".
 					"<subscription>".
-					"<name>" . $name . "</name>".
+					"<name><![CDATA[" . $name . "]]></name>".
 					"<paymentSchedule>".
 					"<interval>".
 					"<length>". $length ."</length>".
@@ -565,10 +566,10 @@
 					"<phoneNumber>". $customer_phone . "</phoneNumber>".
 					"</customer>".
 					"<billTo>".
-					"<firstName>". $firstName . "</firstName>".
-					"<lastName>" . $lastName . "</lastName>".
-					"<address>". $address . "</address>".
-					"<city>" . $city . "</city>".
+					"<firstName><![CDATA[". $firstName . "]]></firstName>".
+					"<lastName><![CDATA[" . $lastName . "]]></lastName>".
+					"<address><![CDATA[". $address . "]]></address>".
+					"<city><![CDATA[" . $city . "]]></city>".
 					"<state>". $state . "</state>".
 					"<zip>" . $zip . "</zip>".
 					"<country>". $country . "</country>".					
@@ -654,7 +655,7 @@
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
 					"<ARBUpdateSubscriptionRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
 					"<merchantAuthentication>".
-					"<name>" . $loginname . "</name>".
+					"<name><![CDATA[" . $loginname . "]]></name>".
 					"<transactionKey>" . $transactionkey . "</transactionKey>".
 					"</merchantAuthentication>".
 					"<refId>" . $refId . "</refId>".
@@ -674,11 +675,11 @@
 					"<phoneNumber>". str_replace("1 (", "(", formatPhone($customer_phone)) . "</phoneNumber>".
 					"</customer>".
 					"<billTo>".
-					"<firstName>". $firstName . "</firstName>".
-					"<lastName>" . $lastName . "</lastName>".
-					"<address>". $address . "</address>".
-					"<city>" . $city . "</city>".
-					"<state>". $state . "</state>".
+					"<firstName><![CDATA[". $firstName . "]]></firstName>".
+					"<lastName><![CDATA[" . $lastName . "]]></lastName>".
+					"<address><![CDATA[". $address . "]]></address>".
+					"<city><![CDATA[" . $city . "]]></city>".
+					"<state><![CDATA[". $state . "]]></state>".
 					"<zip>" . $zip . "</zip>".
 					"<country>". $country . "</country>".					
 					"</billTo>".
