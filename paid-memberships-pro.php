@@ -1015,42 +1015,42 @@ function pmpro_admin_bar_menu() {
 	$wp_admin_bar->add_menu( array(
 	'id' => 'paid-memberships-pro',
 	'title' => __( 'Memberships'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-membership-levels',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Membership Levels'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-membershiplevels') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-page-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Page Settings'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-pagesettings') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-pagesettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-payment-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Payment Settings'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-paymentsettings') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-paymentsettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-email-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Email Settings'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-emailsettings') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-emailsettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-advanced-settings',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Advanced Settings'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-advancedsettings') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-advancedsettings') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-members-list',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Members List'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-memberslist') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-memberslist') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-discount-codes',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Discount Codes'),
-	'href' => home_url('/wp-admin/admin.php?page=pmpro-discountcodes') ) );
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes') ) );
 
 }
 add_action('admin_bar_menu', 'pmpro_admin_bar_menu', 1000);

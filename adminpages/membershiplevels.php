@@ -451,7 +451,7 @@
 		</table>			
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button-primary" value="Save Level" /> 					
-			<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo home_url('/wp-admin/admin.php?page=pmpro-membershiplevels')?>';" /> 					
+			<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
 		</p>
 	</form>
 	</div>

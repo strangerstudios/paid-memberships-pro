@@ -520,7 +520,7 @@
 			
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button-primary" value="Save Code" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo home_url('/wp-admin/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>

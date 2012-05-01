@@ -823,7 +823,7 @@
 		if($pmpro_requirebilling && !pmpro_getOption("gateway"))
 		{
 			if(pmpro_isAdmin())			
-				$pmpro_msg = "You must <a href=\"" . home_url('/wp-admin/admin.php?page=pmpro-membershiplevels&view=payment') . "\">setup a Payment Gateway</a> before any payments will be processed.";
+				$pmpro_msg = "You must <a href=\"" . get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels&view=payment') . "\">setup a Payment Gateway</a> before any payments will be processed.";
 			else
 				$pmpro_msg = "A Payment Gateway must be setup before any payments will be processed.";
 			$pmpro_msgt = "";
