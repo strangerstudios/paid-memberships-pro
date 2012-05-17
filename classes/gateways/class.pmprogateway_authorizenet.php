@@ -50,7 +50,7 @@
 					return $this->subscribe($order);
 				}
 				else
-				{
+				{					
 					if(empty($order->error))
 						$order->error = "Unknown error: Authorization failed.";
 					return false;
@@ -112,7 +112,7 @@
 								
 								$order->error .= " A partial payment was made that we could not void. Please contact the site owner immediately to correct this.";
 							}
-							
+														
 							return false;								
 						}
 					}
@@ -124,7 +124,7 @@
 					}
 				}
 				else
-				{
+				{					
 					if(empty($order->error))
 						$order->error = "Unknown error: Payment failed.";
 					
@@ -533,7 +533,7 @@
 					"</merchantAuthentication>".
 					"<refId>" . $refId . "</refId>".
 					"<subscription>".
-					"<name><![CDATA[" . $name . "]]></name>".
+					"<name><![CDATA[" . substr($name, 0, 50) . "]]></name>".
 					"<paymentSchedule>".
 					"<interval>".
 					"<length>". $length ."</length>".
@@ -583,7 +583,7 @@
 			/*
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
-			
+						
 			if($this->response) {				
 				list ($refId, $resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);
 				if($resultCode == "Ok")

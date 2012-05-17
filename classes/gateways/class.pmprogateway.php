@@ -62,6 +62,7 @@
 				if($this->charge($order))
 				{							
 					//setup recurring billing
+					krumo($order->membership_level);
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{						
 						if(!pmpro_isLevelTrial($order->membership_level))

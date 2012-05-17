@@ -331,7 +331,7 @@
 			foreach($pmpro_required_billing_fields as $key => $field)
 			{
 				if(!$field)
-				{															
+				{																				
 					$missing_billing_field = true;										
 					break;
 				}
@@ -741,12 +741,16 @@
 					$morder->saveOrder();																
 										
 					//cancel any other subscriptions they have
-					$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND id <> '" . $morder->id . "' AND status = 'success' ORDER BY id DESC");
-					foreach($other_order_ids as $order_id)
+					$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
+					if($pmpro_cancel_previous_subscriptions)
 					{
-						$c_order = new MemberOrder($order_id);
-						$c_order->cancel();		
-					}						
+						$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND id <> '" . $morder->id . "' AND status = 'success' ORDER BY id DESC");
+						foreach($other_order_ids as $order_id)
+						{
+							$c_order = new MemberOrder($order_id);
+							$c_order->cancel();		
+						}						
+					}
 				}
 			
 				//update the current user
@@ -797,8 +801,10 @@
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCheckoutAdminEmail($current_user, $invoice);
 												
-				//redirect to confirmation			
-				wp_redirect(pmpro_url("confirmation"));
+				//redirect to confirmation		
+				$rurl = pmpro_url("confirmation");
+				$rurl = apply_filters("pmpro_confirmation_url", $rurl, $user_id, $pmpro_level);
+				wp_redirect($rurl);
 				exit;
 			}
 			else

@@ -35,6 +35,8 @@
 	?>
 	The discount code has been applied to your order.
 	<script>		
+		var code_level = <?php echo json_encode($code_level); ?>;				
+		
 		jQuery('#<?php echo $msgfield?>').show();
 		jQuery('#<?php echo $msgfield?>').removeClass('pmpro_error');
 		jQuery('#<?php echo $msgfield?>').addClass('pmpro_success');
