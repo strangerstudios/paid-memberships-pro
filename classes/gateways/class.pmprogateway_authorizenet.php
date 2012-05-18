@@ -531,7 +531,7 @@
 					"<name>" . $loginname . "</name>".
 					"<transactionKey>" . $transactionkey . "</transactionKey>".
 					"</merchantAuthentication>".
-					"<refId>" . $refId . "</refId>".
+					"<refId><![CDATA[" . substr($refId, 0, 20) . "]]></refId>".
 					"<subscription>".
 					"<name><![CDATA[" . substr($name, 0, 50) . "]]></name>".
 					"<paymentSchedule>".
@@ -560,19 +560,19 @@
 			$this->content .=					
 					"</creditCard>".
 					"</payment>".
-					"<order><invoiceNumber>" . $order->code . "</invoiceNumber></order>".
+					"<order><invoiceNumber>" . substr($order->code, 0, 20) . "</invoiceNumber></order>".
 					"<customer>".
-					"<email>". $customer_email . "</email>".
-					"<phoneNumber>". $customer_phone . "</phoneNumber>".
+					"<email>". substr($customer_email, 0, 255) . "</email>".
+					"<phoneNumber>". substr($customer_phone, 0, 25) . "</phoneNumber>".
 					"</customer>".
 					"<billTo>".
-					"<firstName><![CDATA[". $firstName . "]]></firstName>".
-					"<lastName><![CDATA[" . $lastName . "]]></lastName>".
-					"<address><![CDATA[". $address . "]]></address>".
-					"<city><![CDATA[" . $city . "]]></city>".
-					"<state>". $state . "</state>".
-					"<zip>" . $zip . "</zip>".
-					"<country>". $country . "</country>".					
+					"<firstName><![CDATA[". substr($firstName, 0, 50) . "]]></firstName>".
+					"<lastName><![CDATA[" . substr($lastName, 0, 50) . "]]></lastName>".
+					"<address><![CDATA[". substr($address, 0, 60) . "]]></address>".
+					"<city><![CDATA[" . substr($city, 0, 40) . "]]></city>".
+					"<state>". substr($state, 0, 2) . "</state>".
+					"<zip>" . substr($zip, 0, 20) . "</zip>".
+					"<country>". substr($country, 0, 60) . "</country>".					
 					"</billTo>".
 					"</subscription>".
 					"</ARBCreateSubscriptionRequest>";
@@ -658,7 +658,7 @@
 					"<name><![CDATA[" . $loginname . "]]></name>".
 					"<transactionKey>" . $transactionkey . "</transactionKey>".
 					"</merchantAuthentication>".
-					"<refId>" . $refId . "</refId>".
+					"<refId>" . substr($refId, 0, 20) . "</refId>".
 					"<subscriptionId>" . $subscriptionId . "</subscriptionId>".
 					"<subscription>".																	
 					"<payment>".
@@ -671,17 +671,17 @@
 					"</creditCard>".
 					"</payment>".
 					"<customer>".
-					"<email>". $customer_email . "</email>".
-					"<phoneNumber>". str_replace("1 (", "(", formatPhone($customer_phone)) . "</phoneNumber>".
+					"<email>". substr($customer_email, 0, 255) . "</email>".
+					"<phoneNumber>". substr(str_replace("1 (", "(", formatPhone($customer_phone)), 0, 25) . "</phoneNumber>".
 					"</customer>".
 					"<billTo>".
-					"<firstName><![CDATA[". $firstName . "]]></firstName>".
-					"<lastName><![CDATA[" . $lastName . "]]></lastName>".
-					"<address><![CDATA[". $address . "]]></address>".
-					"<city><![CDATA[" . $city . "]]></city>".
-					"<state><![CDATA[". $state . "]]></state>".
-					"<zip>" . $zip . "</zip>".
-					"<country>". $country . "</country>".					
+					"<firstName><![CDATA[". substr($firstName, 0, 50) . "]]></firstName>".
+					"<lastName><![CDATA[" . substr($lastName, 0, 50) . "]]></lastName>".
+					"<address><![CDATA[". substr($address, 0, 60) . "]]></address>".
+					"<city><![CDATA[" . substr($city, 0, 40) . "]]></city>".
+					"<state><![CDATA[". substr($state, 0, 2) . "]]></state>".
+					"<zip>" . substr($zip, 0, 20) . "</zip>".
+					"<country>". substr($country, 0, 60) . "</country>".					
 					"</billTo>".
 					"</subscription>".
 					"</ARBUpdateSubscriptionRequest>";
