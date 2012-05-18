@@ -54,6 +54,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.4.5 =
 * Now setting a var "code_level" in javascript in applydiscountcode.php so it can be used to manipulate prices, etc after applying a discount code.
 * Added the pmpro_cancel_previous_subscriptions filter, which is set to false will skip cancelling the old membership level/subscription at checkout. This is dangerous, but is used by the pmpro-addon-packages plugin to have an addon charge without affecting the old subscription. This works because the user is checking out for the same membership level. (So they don't really have > 1 membership level.)
+* Trimming strings sent to the Authorize.net API in the subscribe and update calls.
 
 = 1.4.4 =
 * Using get_admin_url instead of home_url in various places so the links will work on sites installed in a subdirectory. (Notifications, admin bar, pagination in admin screens, etc.)
