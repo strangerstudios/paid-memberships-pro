@@ -48,7 +48,7 @@
 		<div class="pmpro_left">
 			<div class="pmpro_box">
 				<?php get_currentuserinfo(); ?> 
-				<h3><a class="pmpro_a-right" href="<?php echo home_url()?>/wp-admin/profile.php">Edit</a>My Account</h3>
+				<h3><a class="pmpro_a-right" href="<?php echo admin_url('profile.php')?>">Edit</a>My Account</h3>
 				<p>
 				<?php if($current_user->user_firstname) { ?>
 					<?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?><br />
@@ -56,7 +56,7 @@
 				<small>
 					<strong>Username:</strong> <?php echo $current_user->user_login?><br />
 					<strong>Email:</strong> <?php echo $current_user->user_email?><br />
-					<strong>Password:</strong> ****** <small><a href="<?php echo home_url()?>/wp-admin/profile.php">change</a></small>				
+					<strong>Password:</strong> ****** <small><a href="<?php echo admin_url('profile.php')?>">change</a></small>				
 				</small>
 				</a>
 			</div>
