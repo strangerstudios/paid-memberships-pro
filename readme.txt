@@ -52,7 +52,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.4.5.1 =
-* Removed debug calls to krumo() which would cause fatal errors in certain cituations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
+* Removed debug calls to krumo() which would cause fatal errors in certain situations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
 
 = 1.4.5 =
 * Now setting a var "code_level" in javascript in applydiscountcode.php so it can be used to manipulate prices, etc after applying a discount code.
