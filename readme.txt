@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.3.2
-Stable tag: 1.4.5
+Stable tag: 1.4.5.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.5.1 =
+* Removed debug calls to krumo() which would cause fatal errors in certain cituations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
+
 = 1.4.5 =
 * Now setting a var "code_level" in javascript in applydiscountcode.php so it can be used to manipulate prices, etc after applying a discount code.
 * Added the pmpro_cancel_previous_subscriptions filter, which is set to false will skip cancelling the old membership level/subscription at checkout. This is dangerous, but is used by the pmpro-addon-packages plugin to have an addon charge without affecting the old subscription. This works because the user is checking out for the same membership level. (So they don't really have > 1 membership level.)

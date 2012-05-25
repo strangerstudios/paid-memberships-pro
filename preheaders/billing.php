@@ -226,8 +226,7 @@
 		foreach($pmpro_required_billing_fields as $key => $field)
 		{
 			if(!$field)
-			{														
-				krumo($key);
+			{																		
 				$missing_billing_field = true;										
 				break;
 			}
