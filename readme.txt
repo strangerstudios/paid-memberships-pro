@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.3.2
-Stable tag: 1.4.5.1
+Stable tag: 1.4.6
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.6 =
+* No longer trying to setup a subscription with Stripe for levels with only an Initial Payment amount.
+
 = 1.4.5.1 =
 * Removed debug calls to krumo() which would cause fatal errors in certain situations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
 

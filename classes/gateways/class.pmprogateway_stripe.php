@@ -26,15 +26,24 @@
 				//charge then subscribe
 				if($this->charge($order))
 				{
-					if($this->subscribe($order))
-					{
-						//yay!
-						return true;
+					if(pmpro_isLevelRecurring($order->membership_level))
+					{						
+						if($this->subscribe($order))
+						{
+							//yay!
+							return true;
+						}
+						else
+						{
+							//try to refund initial charge
+							return false;
+						}
 					}
 					else
 					{
-						//try to refund initial charge
-						return false;
+						//only a one time charge
+						$order->status = "success";	//saved on checkout page											
+						return true;
 					}
 				}
 				else
