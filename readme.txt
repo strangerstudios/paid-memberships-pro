@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.4.6 =
 * No longer trying to setup a subscription with Stripe for levels with only an Initial Payment amount.
+* Updated recaptchalib.php, which fixes issues with using recaptcha.
 
 = 1.4.5.1 =
 * Removed debug calls to krumo() which would cause fatal errors in certain situations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
