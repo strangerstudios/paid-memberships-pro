@@ -712,7 +712,7 @@
 				}
 				else
 				{
-					update_user_meta($user_id, $meta_keys[$i], $meta_values[$i]);				
+					update_user_meta($user_id, $meta_keys[$i], $meta_values[$i]);	
 				}
 			}
 		}

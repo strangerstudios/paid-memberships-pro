@@ -54,6 +54,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.4.6 =
 * No longer trying to setup a subscription with Stripe for levels with only an Initial Payment amount.
 * Updated recaptchalib.php, which fixes issues with using recaptcha.
+* Now setting the first_name and last_name meta fields at checkout to match the business first and last name. (Previous scripts to add additional first/last names to the checkout field should override these.)
 
 = 1.4.5.1 =
 * Removed debug calls to krumo() which would cause fatal errors in certain situations. Please upgrade. (Note that PMPro versions that go three dots deep are usually the most important ones :)
