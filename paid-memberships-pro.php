@@ -556,7 +556,7 @@ function pmpro_membership_level_profile_fields_update()
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
 	}
-	else
+	elseif(isset($_REQUEST['expires']))
 	{
 		//null out the expiration
 		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE user_id = '" . $user_ID . "' LIMIT 1";
