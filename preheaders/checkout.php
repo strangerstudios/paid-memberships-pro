@@ -13,6 +13,8 @@
 	if(!empty($_REQUEST['level']) && !empty($_REQUEST['discount_code']))
 	{
 		$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['discount_code']);
+		$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+		
 		//check code
 		$code_check = pmpro_checkDiscountCode($discount_code, (int)$_REQUEST['level'], true);		
 		if($code_check[0] == false)
@@ -28,6 +30,13 @@
 		{			
 			$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int)$_REQUEST['level'] . "' LIMIT 1";			
 			$pmpro_level = $wpdb->get_row($sqlQuery);
+			
+			//if the discount code doesn't adjust the level, let's just get the straight level
+			if(empty($pmpro_level))
+				$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int)$_REQUEST['level'] . "' LIMIT 1");
+
+			//filter adjustments to the level
+			$pmpro_level = apply_filters("pmpro_discount_code_level", $pmpro_level, $discount_code_id);
 			
 			$use_discount_code = true;
 		}	

@@ -1046,8 +1046,9 @@
 			}
 		}
 		
-		//if a level was passed check if this code applies
-		if(!empty($level_id))
+		//if a level was passed check if this code applies		
+		$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);		
+		if(!empty($level_id) && $pmpro_check_discount_code_levels)
 		{
 			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
 			

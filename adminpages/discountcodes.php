@@ -72,7 +72,10 @@
 		{
 			//get the submitted values
 			$all_levels_a = $_REQUEST['all_levels'];
-			$levels_a = $_REQUEST['levels'];
+			if(!empty($_REQUEST['levels']))
+				$levels_a = $_REQUEST['levels'];
+			else
+				$levels_a = array();
 			$initial_payment_a = $_REQUEST['initial_payment'];
 			$recurring_a = $_REQUEST['recurring'];
 			$billing_amount_a = $_REQUEST['billing_amount'];
@@ -177,8 +180,8 @@
 									
 					if($wpdb->query($sqlQuery) !== false)
 					{
-						//okay
-						do_action("pmpro_save_discount_code_level", $saveid, $level_id);
+						//okay												
+						do_action("pmpro_save_discount_code_level", $saveid, $level_id);						
 					}
 					else
 					{
@@ -394,7 +397,7 @@
 							<small class="pmpro_lite">Leave blank for unlimited uses.</small>
 						</td>
                     </tr>
-                    
+                    					
 				</tbody>
 			</table>
 			

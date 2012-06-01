@@ -8,6 +8,7 @@
 	
 	//vars
 	$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['code']);
+	$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
 	$level_id = (int)$_REQUEST['level'];
 	$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", $_REQUEST['msgfield']);
 	
@@ -31,7 +32,14 @@
 	
 	//okay, send back new price info
 	$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";			
-	$code_level = $wpdb->get_row($sqlQuery);	
+	$code_level = $wpdb->get_row($sqlQuery);
+	
+	//if the discount code doesn't adjust the level, let's just get the straight level
+	if(empty($code_level))
+		$code_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1");
+
+	//filter adjustments to the level
+	$code_level = apply_filters("pmpro_discount_code_level", $code_level, $discount_code_id);
 	?>
 	The discount code has been applied to your order.
 	<script>		
