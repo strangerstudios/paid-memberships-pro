@@ -256,11 +256,11 @@
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
 			//if billing cycles are defined						
-			if($order->TotalBillingCycles)
+			if(!empty($order->TotalBillingCycles))
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 			
 			//if a trial period is defined
-			if($order->TrialBillingPeriod)
+			if(!empty($order->TrialBillingPeriod))
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
@@ -268,7 +268,7 @@
 				
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
 			}
-			if($order->TrialBillingCycles)
+			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 			
 			//credit card fields
@@ -281,7 +281,7 @@
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
-			if($order->StartDate)
+			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 			
 			//billing address, etc
