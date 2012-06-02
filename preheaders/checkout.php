@@ -88,8 +88,8 @@
 		$besecure = false;		
 	}
 		
-	//code for stripe
-	if($gateway == "stripe")
+	//code for stripe (unless the level is free)
+	if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
 	{
 		//stripe js library
 		wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), NULL);
