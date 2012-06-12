@@ -51,9 +51,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
-= 1.4.6.1 =
+= 1.4.7 =
 * Fixed some notices in the PayPal gateway code.
 * No longer calling Stripe JS at checkout if the level is free.
+* Fixed some HTTPS handling for ISS hosting. (IIS sets $_SERVER['HTTPS'] to "off" or "on" instead of TRUE or FALSE.)
 
 = 1.4.6 =
 * No longer trying to setup a subscription with Stripe for levels with only an Initial Payment amount.

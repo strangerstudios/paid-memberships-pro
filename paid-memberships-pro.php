@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.4.6.1
+Version: 1.4.7
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -42,7 +42,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.4.6.1");
+define("PMPRO_VERSION", "1.4.7");
 $domainparts = parse_url(site_url());
 $domainparts = explode(".", $domainparts['host']);
 define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1]);
@@ -1171,13 +1171,13 @@ function pmpro_besecure()
 
 	$besecure = apply_filters("pmpro_besecure", $besecure);
 	
-	if($besecure && empty($_SERVER['HTTPS']))
+	if($besecure && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off" || $_SERVER['HTTPS'] == "false"))
 	{
 		//need to be secure
 		wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 		exit;
 	}
-	elseif(!$besecure && !empty($_SERVER['HTTPS']))
+	elseif(!$besecure && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false")
 	{
 		//don't need to be secure
 		wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
@@ -1192,7 +1192,7 @@ function pmpro_admin_https_handler()
 {
 	if(!empty($_SERVER['HTTPS']))
 	{
-		if($_SERVER['HTTPS'] && is_admin())
+		if($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false" && is_admin())
 		{
 			if(substr(get_option("siteurl"), 0, 5) == "http:" && !force_ssl_admin())
 			{
