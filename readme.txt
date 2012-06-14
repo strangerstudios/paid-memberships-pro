@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: 1.4.6.1
+Tested up to: 3.4
+Stable tag: 1.4.7
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
