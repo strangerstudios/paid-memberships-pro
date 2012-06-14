@@ -55,6 +55,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed some notices in the PayPal gateway code.
 * No longer calling Stripe JS at checkout if the level is free.
 * Fixed some HTTPS handling for ISS hosting. (IIS sets $_SERVER['HTTPS'] to "off" or "on" instead of TRUE or FALSE.)
+* Added #pmpro_processing_message to checkout page which is shown when the submit button is clicked. You can override the message with the pmpro_processing_message filter. You can tweak the CSS to show this differently as well.
 
 = 1.4.6 =
 * No longer trying to setup a subscription with Stripe for levels with only an Initial Payment amount.

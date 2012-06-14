@@ -639,9 +639,16 @@
 			
 			<span id="pmpro_submit_span" <?php if($gateway == "paypalexpress" && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />		
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Submit and <?php if($pmpro_requirebilling) { ?>Checkout<?php } else { ?>Confirm<?php } ?> &raquo;" />				
 			</span>
 		<?php } ?>
+		
+		<span id="pmpro_processing_message" style="visibility: hidden;">
+			<?php 
+				$processing_message = apply_filters("pmpro_processing_message", "Processing...");
+				echo $processing_message;
+			?>					
+		</span>
 	</div>	
 		
 </form>
@@ -679,5 +686,6 @@
 		// On submit disable its submit button
 		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 		jQuery('input[type=image]', this).attr('disabled', 'disabled');
+		jQuery('#pmpro_processing_message').css('visibility', 'visible');
 	});
 </script>
