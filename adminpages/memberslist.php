@@ -130,7 +130,7 @@
 								<?php echo $metavalues->pmpro_baddress1; ?><br />
 								<?php if(!empty($metavalues->pmpro_baddress2)) echo $metavalues->pmpro_baddress2 . "<br />"; ?>										
 								<?php if($metavalues->pmpro_bcity && $metavalues->pmpro_bstate) { ?>
-									<?php echo $metavalues->pmpro_bcity?>, <?php echo $metavalues->pmpro_bstate?> <?php echo $metavalues->pmpro_bzipcode?>  <?php echo $metavalues->pmpro_bcountry?><br />												
+									<?php echo $metavalues->pmpro_bcity?>, <?php echo $metavalues->pmpro_bstate?> <?php echo $metavalues->pmpro_bzipcode?>  <?php if(!empty($metavalues->pmpro_bcountry)) echo $metavalues->pmpro_bcountry?><br />												
 								<?php } ?>
 								<?php echo formatPhone($metavalues->pmpro_bphone)?>
 							</td>
