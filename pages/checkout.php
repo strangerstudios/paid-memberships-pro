@@ -620,7 +620,7 @@
 	
 	<?php do_action("pmpro_checkout_before_submit_button"); ?>			
 	
-	<div align="center">		
+	<div class="pmpro_submit">
 		<?php if($pmpro_review) { ?>
 			
 			<input type="hidden" name="confirm" value="1" />

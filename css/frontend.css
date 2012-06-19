@@ -19,6 +19,9 @@ form.pmpro_form .leftmar {margin: 8px 0 0 130px; }
 
 form.pmpro_form .pmpro_captcha {margin: 0 0 0 130px !important; }
 form.pmpro_form .pmpro_captcha div {clear: none; margin: 0; }
+form.pmpro_form .pmpro_submit {margin-left: 140px; }
+form.pmpro_form .pmpro_submit span {float: left; }
+form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: italic; color: #999; }
 
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
