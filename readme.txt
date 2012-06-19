@@ -52,7 +52,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.4.8 =
-* Fixed !siteemail! values for email templates.
+* Fixed !!siteemail!! values for email templates.
 * Planned: Pull international shipping hack into core. Add country to orders table in DB, order class.
 * Planned: Support for Affiliate plugin.
 * Planned: Load services via a parameter on the home url. (Helps when the plugins folder is not where PMPro expects it to be.)
