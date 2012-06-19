@@ -54,7 +54,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.
 * Adjusted display of "processing" message next to checkout button when clicked.
-* Planned: Add country to orders table in DB, order class. Handle country better throughout.
+* Added billing_country to orders table in DB and the memberorder class. Handling countries better through the code.
+* Removing closing ?> at the bottom of various files while working through. This can avoid errors on some setups.
 * Planned: Support for Affiliate plugin.
 * Planned: Load services via a parameter on the home url. (Helps when the plugins folder is not where PMPro expects it to be.)
 * Planned: Add IPN instructions to payment settings page.
