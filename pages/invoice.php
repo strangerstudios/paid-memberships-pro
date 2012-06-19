@@ -43,7 +43,7 @@
 					<?php echo $pmpro_invoice->billing->name?><br />
 					<?php echo $pmpro_invoice->billing->street?><br />						
 					<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?><br />												
+						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />												
 					<?php } ?>
 					<?php echo formatPhone($pmpro_invoice->billing->phone)?>
 				</td>

@@ -339,6 +339,7 @@
 		$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
 		$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
 		$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
+		$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
 		$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
 		$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
 		$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);

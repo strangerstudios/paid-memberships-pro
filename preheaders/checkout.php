@@ -775,8 +775,8 @@
 				}
 			
 				//save billing info ect, as user meta																		
-				$meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bphone", "pmpro_bemail", "pmpro_CardType", "pmpro_AccountNumber", "pmpro_ExpirationMonth", "pmpro_ExpirationYear");
-				$meta_values = array($bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bphone, $bemail, $CardType, hideCardNumber($AccountNumber), $ExpirationMonth, $ExpirationYear);						
+				$meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bcountry", "pmpro_bphone", "pmpro_bemail", "pmpro_CardType", "pmpro_AccountNumber", "pmpro_ExpirationMonth", "pmpro_ExpirationYear");
+				$meta_values = array($bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, hideCardNumber($AccountNumber), $ExpirationMonth, $ExpirationYear);						
 				pmpro_replaceUserMeta($user_id, $meta_keys, $meta_values);	
 				
 				//save first and last name fields
@@ -866,6 +866,7 @@
 		$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
 		$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
 		$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
+		$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
 		$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
 		$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
 		$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);

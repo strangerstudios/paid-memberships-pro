@@ -82,6 +82,7 @@
 					$morder->billing->city = $_POST['address_city '];
 					$morder->billing->state = $_POST['address_state'];
 					$morder->billing->zip = $_POST['address_zip'];
+					$morder->billing->country = $_POST['address_country_code'];
 					$morder->billing->phone = get_user_meta($user_id, "pmpro_bphone", true);
 					
 					//get CC info that is on file
@@ -131,6 +132,7 @@
 						$morder->billing->city = get_user_meta($user_id, "pmpro_bcity", true);
 						$morder->billing->state = get_user_meta($user_id, "pmpro_bstate", true);
 						$morder->billing->zip = get_user_meta($user_id, "pmpro_bzip", true);
+						$morder->billing->country = get_user_meta($user_id, "pmpro_bcountry", true);
 						$morder->billing->phone = get_user_meta($user_id, "pmpro_bphone", true);
 						
 						//get CC info that is on file

@@ -66,6 +66,7 @@
 				$morder->billing->city = $fields['x_city'];
 				$morder->billing->state = $fields['x_state'];
 				$morder->billing->zip = $fields['x_zip'];
+				$morder->billing->country = $fields['x_country'];
 				$morder->billing->phone = $fields['x_phone'];
 				
 				//get CC info that is on file
@@ -98,6 +99,7 @@
 			$morder->billing->city = $fields['x_city'];
 			$morder->billing->state = $fields['x_state'];
 			$morder->billing->zip = $fields['x_zip'];
+			$morder->billing->country = $fields['x_country'];
 			$morder->billing->phone = $fields['x_phone'];
 			
 			//get CC info that is on file

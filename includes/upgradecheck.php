@@ -31,6 +31,29 @@ function pmpro_checkForUpgrades()
 		
 	if($pmpro_db_version < 1.42)
 		$pmpro_db_version = pmpro_upgrade_1_4_2();
+		
+	if($pmpro_db_version < 1.48)
+		$pmpro_db_version = pmpro_upgrade_1_4_8();
+}
+
+function pmpro_upgrade_1_4_8()
+{
+	/*
+		Adding a billing_country field to the orders table.		
+	*/
+	
+	global $wpdb;
+	$wpdb->hide_errors();
+	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
+	
+	//billing_country
+	$sqlQuery = "
+		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `billing_country` VARCHAR( 128 ) NOT NULL AFTER  `billing_zip`
+	";
+	$wpdb->query($sqlQuery);
+	
+	pmpro_setOption("db_version", "1.48");
+	return 1.48;
 }
 
 function pmpro_upgrade_1_4_2()
@@ -474,4 +497,3 @@ function pmpro_upgrade_1()
 	pmpro_setOption("db_version", "1.115");
 	return 1.115;
 }
-?>

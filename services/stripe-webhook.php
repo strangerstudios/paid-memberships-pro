@@ -83,6 +83,7 @@
 				$morder->billing->city = $old_order->billing->city;
 				$morder->billing->state = $old_order->billing->state;
 				$morder->billing->zip = $old_order->billing->zip;
+				$morder->billing->country = $old_order->billing->country;
 				$morder->billing->phone = $old_order->billing->phone;
 				
 				//get CC info that is on file
@@ -123,6 +124,7 @@
 				$morder->billing->city = $old_order->billing->city;
 				$morder->billing->state = $old_order->billing->state;
 				$morder->billing->zip = $old_order->billing->zip;
+				$morder->billing->country = $old_order->billing->country;
 				$morder->billing->phone = $old_order->billing->phone;
 				
 				//get CC info that is on file

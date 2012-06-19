@@ -42,6 +42,7 @@
 				$this->billing->city = $dbobj->billing_city;
 				$this->billing->state = $dbobj->billing_state;
 				$this->billing->zip = $dbobj->billing_zip;
+				$this->billing->country = $dbobj->billing_country;
 				$this->billing->phone = $dbobj->billing_phone;
 				
 				//split up some values
@@ -310,6 +311,7 @@
 									`billing_city` = '" . $this->billing->city . "',
 									`billing_state` = '" . $this->billing->state . "',
 									`billing_zip` = '" . $this->billing->zip . "',
+									`billing_country` = '" . $this->billing->country . "',
 									`billing_phone` = '" . $this->billing->phone . "',
 									`subtotal` = '" . $this->subtotal . "',
 									`tax` = '" . $this->tax . "',
@@ -336,7 +338,7 @@
 			{
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders  
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`) 
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`) 
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
 									   '" . $this->user_id . "',
@@ -347,6 +349,7 @@
 									   '" . $wpdb->escape($this->billing->city) . "',
 									   '" . $wpdb->escape($this->billing->state) . "',
 									   '" . $wpdb->escape($this->billing->zip) . "',
+									   '" . $wpdb->escape($this->billing->country) . "',
 									   '" . cleanPhone($this->billing->phone) . "',
 									   '" . $amount . "',
 									   '" . $tax . "',
@@ -433,4 +436,3 @@
 			return $this->Gateway->update($this);						
 		}									
 	}
-?>

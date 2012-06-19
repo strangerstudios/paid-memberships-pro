@@ -1570,5 +1570,3 @@ function pmpro_replaceURLsInBuffer($buffer)
 	
 	return $buffer;
 }
-
-?>

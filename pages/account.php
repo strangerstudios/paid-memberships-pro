@@ -76,6 +76,7 @@
 					$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
 					$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
 					$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
+					$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
 					$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
 					$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
 					$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
@@ -93,7 +94,7 @@
 						<?php echo $baddress1?><br />
 						<?php if($baddress2) echo $baddress2 . "<br />";?>
 						<?php if($bcity && $bstate) { ?>
-							<?php echo $bcity?>, <?php echo $bstate?> <?php echo $bzipcode?>
+							<?php echo $bcity?>, <?php echo $bstate?> <?php echo $bzipcode?> <?php echo $bcountry?>
 						<?php } ?>                         
 						<br />
 						<?php echo formatPhone($bphone)?>
@@ -150,4 +151,3 @@
 		
 <?php
 	}
-?>
