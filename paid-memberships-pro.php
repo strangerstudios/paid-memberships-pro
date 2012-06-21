@@ -287,6 +287,16 @@ function pmpro_init()
 
 	wp_enqueue_script('ssmemberships_js', '/wp-content/plugins/paid-memberships-pro/js/paid-memberships-pro.js', array('jquery'));
 
+	if(is_admin())
+	{
+		wp_enqueue_style('pmpro_admin', plugins_url('css/admin.css',__FILE__ ), array(), PMPRO_VERSION, "screen");
+	}
+	else
+	{
+		wp_enqueue_style('pmpro_frontend', plugins_url('css/frontend.css',__FILE__ ), array(), PMPRO_VERSION, "screen");
+		wp_enqueue_style('pmpro_print', plugins_url('css/print.css',__FILE__ ), array(), PMPRO_VERSION, "print");
+	}
+	
 	global $pmpro_pages, $pmpro_ready, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -1055,30 +1065,6 @@ function pmpro_admin_bar_menu() {
 }
 add_action('admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
-//css
-function pmpro_addFrontendHeaderCode()
-{
-	global $besecure;
-	$besecure = apply_filters('pmpro_besecure', $besecure);
-	$url = get_bloginfo('wpurl');
-	if($besecure)
-		$url = str_replace("http:", "https:", $url);
-	else
-		$url = str_replace("https:", "http:", $url);
-
-	echo '<link type="text/css" rel="stylesheet" href="' . $url . '/wp-content/plugins/paid-memberships-pro/css/frontend.css" media="screen" />' . "\n";
-	echo '<link type="text/css" rel="stylesheet" href="' . $url . '/wp-content/plugins/paid-memberships-pro/css/print.css" media="print" />' . "\n";
-}
-add_action('wp_head', 'pmpro_addFrontendHeaderCode');
-
-//css
-function pmpro_addAdminHeaderCode()
-{
-	$url = get_bloginfo('wpurl');
-	echo '<link type="text/css" rel="stylesheet" href="' . $url . '/wp-content/plugins/paid-memberships-pro/css/admin.css" media="screen" />' . "\n";
-}
-add_action('admin_head', 'pmpro_addAdminHeaderCode');
-
 //redirect control
 function pmpro_login_redirect($redirect_to, $request, $user)
 {
@@ -1316,6 +1302,23 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	return "";	//just hide it
 }
 add_shortcode("membership", "pmpro_shortcode");
+
+function pmpro_checkout_button_shortcode($atts, $content=null, $code="")
+{
+	// $atts    ::= array of attributes
+	// $content ::= text within enclosing form of shortcode element
+	// $code    ::= the shortcode found, when == callback name
+	// examples: [checkout_button level="3"]
+
+	extract(shortcode_atts(array(
+		'level' => NULL,
+		'text' => NULL,
+		'class' => NULL
+	), $atts));
+	
+	return pmpro_getCheckoutButton($level, $text, $class);
+}
+add_shortcode("pmpro_button", "pmpro_checkout_button_shortcode");
 
 function pmpro_wp_signup_location($location)
 {

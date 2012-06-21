@@ -67,6 +67,16 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 
 a.pmpro_radio {text-decoration: none; color: #000;}
 
+/* button styles from member lite */
+.btn, .btn:link {display: inline-block; margin: 0; background-position: top left; background-repeat: repeat-x; cursor: pointer; border-radius: 4px; -moz-border-radius: 4px; padding: 5px 10px; text-decoration: none; text-shadow: 1px 1px 3px #000; border: none; font-family: Arial, Helvetica, sans-serif; }
+.btn:hover {background-position: bottom left; }
+.btn-grey, .btn-grey:link {background: #EEE url(images/bg_grad-grey.gif) 0px -5px repeat-x; border: 1px solid #CCC; text-shadow: none; }
+.btn-inactive {color: #AAA; text-shadow: none; border: 1px solid #CCC; cursor: not-allowed; }
+.pmpro_btn {font-size: 14px; }
+.btn-primary, .btn-primary:link {background-color: #666; background-image: url(../images/bg_grad-chrome.gif); color: #FFF; }
+.btn-primary:hover {background: #444; color: #FFF; }
+.btn-inactive, .btn-inactive:hover {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; }
+
 /*---------------------------------------
 	Membership Invoice
 ---------------------------------------*/

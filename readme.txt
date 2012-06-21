@@ -56,6 +56,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Adjusted display of "processing" message next to checkout button when clicked.
 * Added billing_country to orders table in DB and the memberorder class. Handling countries better through the code.
 * Removing closing ?> at the bottom of various files while working through. This can avoid errors on some setups.
+* Using wp_enqueue_style to load plugin stylesheets now.
+* Added the pmpro_getCheckoutButton($level_id, $button_text, $classes) function and [pmpro_button level="1"] shortcode to add buttons with links to more easily level checkout pages into your pages and themes. Copied over btn and btn-primary styles from Member Lite theme.
 * Planned: Support for Affiliate plugin.
 * Planned: Load services via a parameter on the home url. (Helps when the plugins folder is not where PMPro expects it to be.)
 * Planned: Add IPN instructions to payment settings page.

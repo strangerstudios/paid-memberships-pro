@@ -1119,4 +1119,56 @@
 															WHERE mu.user_id = $user_id
 															LIMIT 1");
 	}
+	
+	function pmpro_getLevel($level_id)
+	{
+		global $pmpro_levels;
+		if(isset($pmpro_levels[$level_id]))
+			return $pmpro_levels[$level_id];
+		else
+		{
+			global $wpdb;
+			$pmpro_levels[$level_id] = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1");
+			return $pmpro_levels[$level_id];
+		}
+	}
+	
+	function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)
+	{
+		if(empty($button_text))
+			$button_text = "Sign Up for !!name!! Now";
+			
+		if(empty($classes))
+			$classes = "btn btn-primary";
+			
+		if(empty($level_id))
+			$r = "Please specify a level id.";
+		else
+		{
+			//get level
+			$level = pmpro_getLevel($level_id);
+			
+			//replace vars
+			$replacements = array(
+				"!!id!!" => $level->id,
+				"!!name!!" => $level->name,
+				"!!description!!" => $level->description,
+				"!!confirmation!!" => $level->confirmation,
+				"!!initial_payment!!" => $level->initial_payment,
+				"!!billing_amount!!" => $level->billing_amount,
+				"!!cycle_number!!" => $level->cycle_number,
+				"!!cycle_period!!" => $level->cycle_period,
+				"!!billing_limit!!" => $level->billing_limit,
+				"!!trial_amount!!" => $level->trial_amount,
+				"!!trial_limit!!" => $level->trial_limit,
+				"!!expiration_number!!" => $level->expiration_number,
+				"!!expiration_period!!" => $level->expiration_period
+			);
+			$button_text = str_replace(array_keys($replacements), $replacements, $button_text);			
+			
+			//button text
+			$r = "<a href=\"" . pmpro_url("checkout", "?level=" . $level_id) . "\" class=\"" . $classes . "\">" . $button_text . "</a>";
+		}
+		return $r;
+	}
 ?>
