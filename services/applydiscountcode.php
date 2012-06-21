@@ -4,7 +4,7 @@
 		
 	//wp includes	
 	define('WP_USE_THEMES', false);
-	require('../../../../wp-load.php');	
+	require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	
 	//vars
 	$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['code']);

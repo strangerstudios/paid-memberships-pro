@@ -7,7 +7,7 @@
 		
 	//wp includes	
 	define('WP_USE_THEMES', false);
-	require('../../../../wp-load.php');
+	require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	
 	global $gateway_environment;
 	

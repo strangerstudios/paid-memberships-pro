@@ -4,8 +4,8 @@
 		
 	//wp includes	
 	define('WP_USE_THEMES', false);
-	require('../../../../wp-load.php');	
-	require_once('../classes/class.mimetype.php');
+	require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
 	
 	$uri = $_SERVER['REQUEST_URI'];
 	if($uri[0] == "/")
