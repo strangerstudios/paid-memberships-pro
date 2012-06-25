@@ -24,13 +24,14 @@ else
 }
 
 //require_once(ABSPATH . '/wp-admin/upgrade-functions.php');
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/includes/lib/name-parser.php");
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/includes/functions.php");
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/includes/upgradecheck.php");
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/scheduled/crons.php");
-//require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/classes/class.pmprogateway.php");
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/classes/class.memberorder.php");
-require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/classes/class.pmproemail.php");
+define("PMPRO_DIR", dirname(__FILE__));
+require_once(PMPRO_DIR . "/includes/lib/name-parser.php");
+require_once(PMPRO_DIR . "/includes/functions.php");
+require_once(PMPRO_DIR . "/includes/upgradecheck.php");
+require_once(PMPRO_DIR . "/scheduled/crons.php");
+//require_once(PMPRO_DIR . "/classes/class.pmprogateway.php");
+require_once(PMPRO_DIR . "/classes/class.memberorder.php");
+require_once(PMPRO_DIR . "/classes/class.pmproemail.php");
 require_once(ABSPATH . "wp-includes/class-phpmailer.php");
 
 //setup the DB

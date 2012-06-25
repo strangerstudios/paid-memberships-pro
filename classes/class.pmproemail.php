@@ -43,7 +43,7 @@
 			if(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
 				$this->body = file_get_contents(TEMPLATEPATH . "/membership-email-" . $this->template . ".html");
 			else
-				$this->body = file_get_contents(ABSPATH . "/wp-content/plugins/paid-memberships-pro/email/" . $this->template . ".html");			
+				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");			
 						
 			//header and footer
 			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
