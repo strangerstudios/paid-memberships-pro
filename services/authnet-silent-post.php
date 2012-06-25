@@ -8,7 +8,9 @@
 	//wp includes	
 	define('WP_USE_THEMES', false);
 	require_once(dirname(__FILE__) . '/../../../../wp-load.php');
-		
+	
+	global $wpdb;
+	
 	//some code taken from http://www.merchant-account-services.org/blog/handling-authorizenet-arb-subscription-failures/	
 	// Flag if this is an ARB transaction. Set to false by default.
 	$arb = false;

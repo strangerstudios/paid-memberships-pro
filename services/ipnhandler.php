@@ -9,7 +9,7 @@
 	define('WP_USE_THEMES', false);
 	require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	
-	global $gateway_environment;
+	global $wpdb, $gateway_environment;
 	
 	// read the post from PayPal system and add 'cmd'
 	$req = 'cmd=_notify-validate';

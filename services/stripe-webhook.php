@@ -37,6 +37,8 @@
 		die("Could not find an event with ID #" . $event_id . ". " . $e->getMessage());
 	}
 	
+	global $wpdb;
+	
 	//real event?
 	if(!empty($event->id))
 	{	

@@ -59,9 +59,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Using wp_enqueue_style to load plugin stylesheets now.
 * Added the pmpro_getCheckoutButton($level_id, $button_text, $classes) function and [pmpro_button level="1"] shortcode to add buttons with links to more easily level checkout pages into your pages and themes. Copied over btn and btn-primary styles from Member Lite theme.
 * Updated include/require statements to work if the wp-content folder has been renamed or moved.
-* Planned: Support for Affiliate plugin.
-* Planned: Load services via a parameter on the home url. (Helps when the plugins folder is not where PMPro expects it to be.)
-* Planned: Add IPN instructions to payment settings page.
+* Added code to load scripts in the services folder via admin-ajax.php. (Helps when the plugins folder is not where PMPro expects it to be.)
+* The discount code AJAX call is using the new service URL (/wp-admin/admin-ajax.php?action=applydiscountcode).
+* Added IPN/Silent Post/Webhook instructions to payment settings page.
 
 = 1.4.7 =
 * Fixed some notices in the PayPal gateway code.

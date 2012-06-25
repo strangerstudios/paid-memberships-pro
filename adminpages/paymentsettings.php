@@ -302,15 +302,39 @@
 				<td>
 					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
 				</td>
-		   </tr>
+		   </tr>		   
 		   <tr>
 				<th scope="row" valign="top">
-					<label for="nuclear_HTTPS">SSL Seal Code:</label>
+					<label for="nuclear_HTTPS">HTTPS Nuclear Option:</label>
 				</th>
 				<td>
 					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
 				</td>
 		   </tr>
+		   <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypal_express") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label>IPN Handler URL:</label>
+				</th>
+				<td>
+					<p>To fully integrate with PayPal, be sure to set your IPN Handler URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre>.</p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label>Silent Post URL:</label>
+				</th>
+				<td>
+					<p>To fully integrate with Authorize.net, be sure to set your Silent Post URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet-silent-post";?></pre>.</p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label>Web Hook URL:</label>
+				</th>
+				<td>
+					<p>To fully integrate with Stripe, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe-webhook";?></pre>.</p>
+				</td>
+			</tr>
 		</tbody>
 		</table>            
 		<p class="submit">            

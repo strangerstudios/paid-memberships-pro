@@ -81,7 +81,7 @@
 			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&AMT=1.00&CURRENCYCODE=" . pmpro_getOption("currency");			
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
 			$nvpStr .= "&PAYMENTACTION=Authorization&IPADDRESS=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;
@@ -188,7 +188,7 @@
 			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&AMT=" . $amount . "&ITEMAMT=" . $order->InitialPayment . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency;			
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
 			$nvpStr .= "&PAYMENTACTION=Sale&IPADDRESS=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;			
@@ -252,7 +252,7 @@
 			$nvpStr .="&AMT=" . $order->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
 			//if billing cycles are defined						

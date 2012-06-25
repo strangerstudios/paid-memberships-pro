@@ -49,7 +49,7 @@
 			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
 					
 			//if billing cycles are defined						
@@ -169,7 +169,7 @@
 			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&NOSHIPPING=1";
 			
 			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";								
@@ -219,7 +219,7 @@
 				$nvpStr .= "&TOKEN=" . $order->Token;		
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $order->PaymentAmount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";			
-			$nvpStr .= "&NOTIFYURL=" . urlencode(PMPRO_URL . "/services/ipnhandler.php");
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
 			
 			//if billing cycles are defined						
