@@ -316,11 +316,11 @@ function pmpro_is_ready()
 //init code
 function pmpro_init()
 {
-	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/countries.php");
-	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/states.php");
-	require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/includes/currencies.php");
+	require_once(PMPRO_DIR . "/includes/countries.php");
+	require_once(PMPRO_DIR . "/includes/states.php");
+	require_once(PMPRO_DIR . "/includes/currencies.php");
 
-	wp_enqueue_script('ssmemberships_js', '/wp-content/plugins/paid-memberships-pro/js/paid-memberships-pro.js', array('jquery'));
+	wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',__FILE__ ), array('jquery'));
 
 	if(is_admin())
 	{
@@ -383,7 +383,7 @@ function pmpro_wp()
 				
 			if(!empty($post->ID) && $pmpro_page_id == $post->ID)
 			{
-				require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/" . $pmpro_page_name . ".php");
+				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
@@ -402,7 +402,7 @@ function pmpro_wp()
 		//make sure you load the preheader for the checkout page. the shortcode for checkout is loaded below		
 		if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_checkout]") !== false)
 		{
-			require_once(ABSPATH . "/wp-content/plugins/paid-memberships-pro/preheaders/checkout.php");	
+			require_once(PMPRO_DIR . "/preheaders/checkout.php");	
 		}
 	}
 }
@@ -1028,7 +1028,7 @@ if (is_admin())
 	add_action('admin_menu', 'pmpro_page_meta_wrapper');
 	add_action('save_post', 'pmpro_page_save');
 
-	require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/adminpages/dashboard.php");
+	require_once(PMPRO_DIR . "/adminpages/dashboard.php");
 }
 
 function pmpro_add_pages()
