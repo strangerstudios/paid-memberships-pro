@@ -45,7 +45,7 @@ define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
 define("PMPRO_VERSION", "1.4.7");
 $domainparts = parse_url(site_url());
 $domainparts = explode(".", $domainparts['host']);
-define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1]);
+define("PMPRO_DOMAIN", ((count($domainparts)>1)?($domainparts[count($domainparts)-2] . "."):"") . $domainparts[count($domainparts)-1]);
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
