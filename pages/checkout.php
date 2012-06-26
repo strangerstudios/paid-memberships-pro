@@ -623,11 +623,13 @@
 	<div class="pmpro_submit">
 		<?php if($pmpro_review) { ?>
 			
-			<input type="hidden" name="confirm" value="1" />
-			<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token)?>" />
-			<input type="hidden" name="gateway" value="<?echo $gateway; ?>" />
-			<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
-			
+			<span id="pmpro_submit_span">
+				<input type="hidden" name="confirm" value="1" />
+				<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token)?>" />
+				<input type="hidden" name="gateway" value="<?echo $gateway; ?>" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="Complete Payment &raquo;" />
+			</span>
+				
 		<?php } else { ?>
 					
 			<?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
