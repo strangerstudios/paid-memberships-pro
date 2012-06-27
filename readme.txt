@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 1.4.8
+Stable tag: 1.4.9
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.9 =
+* Added stripslashes() to membership description output on the checkout page.
+
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.
 * Adjusted display of "processing" message next to checkout button when clicked.
