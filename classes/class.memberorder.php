@@ -295,10 +295,13 @@
 				$this->affiliate_id = "";
 			if(empty($this->affiliate_subid))
 				$this->affiliate_subid = "";
-			
+
 			//build query			
 			if(!empty($this->id))
 			{
+				//set up actions
+				$before_action = "pmpro_update_order";
+				$after_action = "pmpro_updated_order";
 				//update
 				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
 									SET `code` = '" . $this->code . "',
@@ -336,6 +339,9 @@
 			}
 			else
 			{
+				//set up actions
+				$before_action = "pmpro_add_order";
+				$after_action = "pmpro_added_order";
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders  
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`) 
@@ -370,13 +376,20 @@
 									   now(),
 									   '" . $this->affiliate_id . "',
 									   '" . $this->affiliate_subid . "'
-									   )";		
+									   )";
 			}
-									   
+			
+			do_action($before_action, $this);
 			if($wpdb->query($this->sqlQuery) !== false)
-				return $this->getMemberOrderByID($wpdb->insert_id);
+			{
+				$this->id = $wpdb->insert_id;
+				do_action($after_action, $this);
+				return $this->getMemberOrderByID($this->id);
+			}
 			else
+			{
 				return false;
+			}
 		}
 				
 		function getRandomCode()
