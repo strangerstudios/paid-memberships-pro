@@ -1133,6 +1133,32 @@
 		}
 	}
 	
+	/*
+		Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest. 
+		This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
+	*/
+	function pmpro_getAllLevels($include_hidden = false)
+	{
+		global $pmpro_levels, $wpdb;
+		
+		//build query
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
+		if(!$include_hidden)
+			$sqlQuery .= " WHERE allow_signups = 1";
+			
+		//get levels from the DB
+		$raw_levels = $wpdb->get_results($sqlQuery);
+		
+		//lets put them into an array where the key is the id of the level
+		$pmpro_levels = array();
+		foreach($raw_levels as $raw_level)
+		{
+			$pmpro_levels[$raw_level->id] = $raw_level;
+		}
+				
+		return $pmpro_levels;
+	}
+	
 	function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)
 	{
 		if(empty($button_text))

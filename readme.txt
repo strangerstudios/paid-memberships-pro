@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.4.9 =
 * Added stripslashes() to membership description output on the checkout page.
+* The pmpro_getLevel() function may return the wrong level on the levels, checkout, or account page where another $pmpro_levels array was setup. (The array pmpro_getLevel uses used the level id as the array keys. The older $pmpro_levels used 0-n.) To fix this, I added a pmpro_getAllLevels($include_hidden = false) function and now use that function on the levels, checkout, and account pages. The function queries the database for all levels and then puts them into an array where the level ids are the keys.
 
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.

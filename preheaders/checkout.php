@@ -172,7 +172,7 @@
 		
 	//get all levels in case we need them
 	global $pmpro_levels;
-	$pmpro_levels = $wpdb->get_results( "SELECT * FROM " . $wpdb->pmpro_membership_levels . " WHERE allow_signups = 1", OBJECT );	
+	$pmpro_levels = pmpro_getAllLevels();	
 	
 	//should we show the discount code field?
 	if($wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1"))
