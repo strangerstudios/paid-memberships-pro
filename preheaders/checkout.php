@@ -36,6 +36,7 @@
 				$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int)$_REQUEST['level'] . "' LIMIT 1");
 
 			//filter adjustments to the level
+			$pmpro_level->code_id = $discount_code_id;
 			$pmpro_level = apply_filters("pmpro_discount_code_level", $pmpro_level, $discount_code_id);
 			
 			$use_discount_code = true;
