@@ -44,9 +44,14 @@ define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
 define("PMPRO_VERSION", "1.4.8");
+
+//figure out the domain name (should add code to handle IPs as well)
 $domainparts = parse_url(site_url());
 $domainparts = explode(".", $domainparts['host']);
-define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1]);
+if(count($domainparts) > 1)
+	define("PMPRO_DOMAIN", $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1]);	//www.something.com
+else
+	define("PMPRO_DOMAIN", $domainparts[0]);	//localhost or something
 
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
