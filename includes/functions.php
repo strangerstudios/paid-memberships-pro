@@ -1197,4 +1197,41 @@
 		}
 		return $r;
 	}
+	
+	function pmpro_getDomainFromURL($url = NULL)
+	{
+		$domainparts = parse_url($url);
+		$domainparts = explode(".", $domainparts['host']);
+		if(count($domainparts) > 1)
+		{
+			//check for ips
+			$isip = true;
+			foreach($domainparts as $part)
+			{
+				if(!is_numeric($part))
+				{
+					$isip = false;
+					break;
+				}
+			}
+			
+			if($isip)
+			{
+				//ip, e.g. 127.1.1.1
+				$domain = implode(".", $domainparts);
+			}
+			else
+			{			
+				//www.something.com, etc.
+				$domain = $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1];
+			}
+		}
+		else
+		{
+			//localhost or another single word domain
+			$domain = $domainparts[0];	
+		}
+		
+		return $domain;
+	}
 ?>
