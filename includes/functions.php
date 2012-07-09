@@ -1198,6 +1198,12 @@
 		return $r;
 	}
 	
+	/**
+	 * Get the "domain" from a URL. By domain, we mean the host name, minus any subdomains. So just the domain and TLD.	 
+	 *
+	 * @param string $url The URL to parse. (generally pass site_url() in WP)
+	 * @return string The domain.
+	 */
 	function pmpro_getDomainFromURL($url = NULL)
 	{
 		$domainparts = parse_url($url);

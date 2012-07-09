@@ -57,6 +57,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fix for !!billing_country!! in emails. (Somehow a previous fix for this got overwritten. My bad.)
 * Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is 
 useful for determining if/what discount code was applied to the level when processing it in hooks.
+* Added pmpro_getDomainFromURL() and using that to set PMPRO_URL.
 
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.
