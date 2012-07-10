@@ -40,5 +40,5 @@
 	}	
 	
 	global $pmpro_levels;
-	$pmpro_levels = $wpdb->get_results( "SELECT * FROM " . $wpdb->pmpro_membership_levels . " WHERE allow_signups = 1", OBJECT );		
+	$pmpro_levels = pmpro_getAllLevels();		
 ?>

@@ -8,10 +8,26 @@
 	
 	//vars
 	global $wpdb;
-	$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['code']);
-	$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
-	$level_id = (int)$_REQUEST['level'];
-	$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", $_REQUEST['msgfield']);
+	if(!empty($_REQUEST['code']))
+	{
+		$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['code']);
+		$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+	}
+	else
+	{
+		$discount_code = "";
+		$discount_code_id = "";
+	}
+	
+	if(!empty($_REQUEST['level']))
+		$level_id = (int)$_REQUEST['level'];
+	else
+		$level_id = NULL;
+		
+	if(!empty($_REQUEST['msgfield']))
+		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", $_REQUEST['msgfield']);
+	else
+		$msgfield = NULL;	
 	
 	//check that the code is valid
 	$codecheck = pmpro_checkDiscountCode($discount_code, $level_id, true);

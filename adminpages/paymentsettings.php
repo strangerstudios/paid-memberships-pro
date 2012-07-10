@@ -324,7 +324,7 @@
 					<label>Silent Post URL:</label>
 				</th>
 				<td>
-					<p>To fully integrate with Authorize.net, be sure to set your Silent Post URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet-silent-post";?></pre>.</p>
+					<p>To fully integrate with Authorize.net, be sure to set your Silent Post URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre>.</p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
@@ -332,7 +332,7 @@
 					<label>Web Hook URL:</label>
 				</th>
 				<td>
-					<p>To fully integrate with Stripe, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe-webhook";?></pre>.</p>
+					<p>To fully integrate with Stripe, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre>.</p>
 				</td>
 			</tr>
 		</tbody>

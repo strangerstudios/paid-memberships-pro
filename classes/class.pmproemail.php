@@ -166,6 +166,7 @@
 				$this->data["billing_city"] = $invoice->billing->city;
 				$this->data["billing_state"] = $invoice->billing->state;
 				$this->data["billing_zip"] = $invoice->billing->zip;
+				$this->data["billing_country"] = $invoice->billing->country;
 				$this->data["billing_phone"] = $invoice->billing->phone;
 				$this->data["cardtype"] = $invoice->cardtype;
 				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
@@ -242,6 +243,7 @@
 				$this->data["billing_city"] = $invoice->billing->city;
 				$this->data["billing_state"] = $invoice->billing->state;
 				$this->data["billing_zip"] = $invoice->billing->zip;
+				$this->data["billing_country"] = $invoice->billing->country;
 				$this->data["billing_phone"] = $invoice->billing->phone;
 				$this->data["cardtype"] = $invoice->cardtype;
 				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
@@ -299,6 +301,7 @@
 								"billing_city" => $invoice->billing->city,
 								"billing_state" => $invoice->billing->state,
 								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
 								"billing_phone" => $invoice->billing->phone,
 								"cardtype" => $invoice->cardtype,
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
@@ -341,6 +344,7 @@
 								"billing_city" => $invoice->billing->city,
 								"billing_state" => $invoice->billing->state,
 								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
 								"billing_phone" => $invoice->billing->phone,
 								"cardtype" => $invoice->cardtype,
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
@@ -378,6 +382,7 @@
 								"billing_city" => $invoice->billing->city,
 								"billing_state" => $invoice->billing->state,
 								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
 								"billing_phone" => $invoice->billing->phone,
 								"cardtype" => $invoice->cardtype,
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
@@ -413,6 +418,7 @@
 								"billing_city" => $invoice->billing->city,
 								"billing_state" => $invoice->billing->state,
 								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
 								"billing_phone" => $invoice->billing->phone,
 								"cardtype" => $invoice->cardtype,
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
@@ -453,6 +459,7 @@
 								"billing_city" => $invoice->billing->city,
 								"billing_state" => $invoice->billing->state,
 								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
 								"billing_phone" => $invoice->billing->phone,
 								"cardtype" => $invoice->cardtype,
 								"accountnumber" => hideCardNumber($invoice->accountnumber),

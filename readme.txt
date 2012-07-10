@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 1.4.8
+Stable tag: 1.4.9
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,15 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.4.9 =
+* Important: Fixed handling of services sent through admin-ajax.php. Your silent post/ipnhandler URLs, etc, may have been updated.
+* Added stripslashes() to membership description output on the checkout page.
+* The pmpro_getLevel() function may return the wrong level on the levels, checkout, or account page where another $pmpro_levels array was setup. (The array pmpro_getLevel uses used the level id as the array keys. The older $pmpro_levels used 0-n.) To fix this, I added a pmpro_getAllLevels($include_hidden = false) function and now use that function on the levels, checkout, and account pages. The function queries the database for all levels and then puts them into an array where the level ids are the keys.
+* Fix for !!billing_country!! in emails. (Somehow a previous fix for this got overwritten. My bad.)
+* Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is 
+useful for determining if/what discount code was applied to the level when processing it in hooks.
+* Added pmpro_getDomainFromURL() and using that to set PMPRO_URL.
+
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.
 * Adjusted display of "processing" message next to checkout button when clicked.
