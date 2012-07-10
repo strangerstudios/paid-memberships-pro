@@ -100,31 +100,31 @@ function pmpro_wp_ajax_applydiscountcode()
 	require_once(dirname(__FILE__) . "/services/applydiscountcode.php");	
 	exit;
 }
-add_action('wp_ajax_applydiscountcode', 'pmpro_wp_ajax_applydiscountcode');
+add_action('wp_ajax_nopriv_applydiscountcode', 'pmpro_wp_ajax_applydiscountcode');
 function pmpro_wp_ajax_authnet_silent_post()
-{
+{		
 	require_once(dirname(__FILE__) . "/services/authnet-silent-post.php");	
 	exit;
 }
-add_action('wp_ajax_authnet_silent_post', 'pmpro_wp_ajax_authnet_silent_post');
+add_action('wp_ajax_nopriv_authnet_silent_post', 'pmpro_wp_ajax_authnet_silent_post');
 function pmpro_wp_ajax_getfile()
 {
 	require_once(dirname(__FILE__) . "/services/getfile.php");	
 	exit;
 }
-add_action('wp_ajax_getfile', 'pmpro_wp_ajax_getfile');
+add_action('wp_ajax_nopriv_getfile', 'pmpro_wp_ajax_getfile');
 function pmpro_wp_ajax_ipnhandler()
 {
 	require_once(dirname(__FILE__) . "/services/ipnhandler.php");	
 	exit;
 }
-add_action('wp_ajax_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
-function pmpro_wp_stripe_webhook()
+add_action('wp_ajax_nopriv_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
+function pmpro_wp_ajax_stripe_webhook()
 {
 	require_once(dirname(__FILE__) . "/services/stripe-webhook.php");	
 	exit;
 }
-add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
+add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 	
 function pmpro_set_current_user()
 {
