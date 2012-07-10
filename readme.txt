@@ -59,6 +59,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is 
 useful for determining if/what discount code was applied to the level when processing it in hooks.
 * Added pmpro_getDomainFromURL() and using that to set PMPRO_URL.
+* New hooks when orders are added/updated: pmpro_update_order (before update), pmpro_updated_order (after update), pmpro_add_order (before add), pmpro_added_order (after add). (Thanks, zookatron!)
 
 = 1.4.8 =
 * Fixed !!siteemail!! values for email templates.
