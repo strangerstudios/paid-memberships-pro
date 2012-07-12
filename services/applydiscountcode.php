@@ -2,6 +2,13 @@
 	global $isapage;
 	$isapage = true;		
 	
+	//in case the file is loaded directly
+	if(!function_exists("get_userdata"))
+	{
+		define('WP_USE_THEMES', false);
+		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	}
+	
 	//vars
 	global $wpdb;
 	if(!empty($_REQUEST['code']))
