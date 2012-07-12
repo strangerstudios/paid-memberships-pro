@@ -1,4 +1,10 @@
 <?php
+	//only admins can get this
+	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
+	{
+		die("You do not have permissions to perform this action.");
+	}	
+	
 	global $wpdb, $msg, $msgt;
 			
 	//get/set settings

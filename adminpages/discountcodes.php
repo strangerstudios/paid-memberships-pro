@@ -1,4 +1,10 @@
 <?php
+	//only admins can get this
+	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
+	{
+		die("You do not have permissions to perform this action.");
+	}	
+	
 	//vars
 	global $wpdb, $pmpro_currency_symbol;
 	

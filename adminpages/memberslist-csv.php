@@ -1,10 +1,13 @@
-<?php
-	//this file is launched via AJAX to get various data from the DB for the stranger_products plugin
-
-	//wp includes
-	define('WP_USE_THEMES', false);
-	require('../../../../wp-load.php');
-
+<?php	
+	//only admins can get this
+	if(!current_user_can("manage_options"))
+	{
+		wp_redirect(site_url());
+		exit;
+	}
+	
+	global $wpdb;	
+	
 	//get users	
 	if(isset($_REQUEST['s']))
 		$s = $_REQUEST['s'];

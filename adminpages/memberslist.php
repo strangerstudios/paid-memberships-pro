@@ -1,4 +1,10 @@
 <?php
+	//only admins can get this
+	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
+	{
+		die("You do not have permissions to perform this action.");
+	}	
+	
 	//vars
 	global $wpdb;
 	if(isset($_REQUEST['s']))
@@ -23,7 +29,7 @@
 	<form id="posts-filter" method="get" action="">	
 	<h2>
 		Members Report
-		<small>(<a target="_blank" href="<?php echo PMPRO_URL?>/adminpages/memberslist-csv.php?s=<?php echo $s?>&l=<?php echo $l?>">Export to CSV</a>)</small>
+		<small>(<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=memberslist_csv&s=<?php echo $s?>&l=<?php echo $l?>">Export to CSV</a>)</small>
 	</h2>		
 	<ul class="subsubsub">
 		<li>			

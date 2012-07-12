@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.4.9
+Version: 1.5
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -43,7 +43,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.4.9");
+define("PMPRO_VERSION", "1.5");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 global $gateway_environment;
@@ -125,6 +125,12 @@ function pmpro_wp_ajax_stripe_webhook()
 	exit;
 }
 add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
+function pmpro_wp_ajax_memberlist_csv()
+{
+	require_once(dirname(__FILE__) . "/adminpages/memberslist-csv.php");	
+	exit;
+}
+add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
 	
 function pmpro_set_current_user()
 {
