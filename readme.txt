@@ -54,6 +54,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.5 =
 * Very important security fix. Please upgrade to 1.5.
 * The Members List CSV export is now executed through admin-ajax.php and will only work if you are logged in as an admin (can manage options).
+* Fixed service scripts to work if logged in or logged out.
+* Changed the applydiscountcode service to going through the site_url() instead of admin-ajax.php to avoid HTTP/HTTPS issues.
 
 = 1.4.9 =
 * Important: Fixed handling of services sent through admin-ajax.php. Your silent post/ipnhandler URLs, etc, may have been updated.
