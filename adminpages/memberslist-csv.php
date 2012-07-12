@@ -1,10 +1,9 @@
 <?php	
 	//only admins can get this
-	if(!current_user_can("manage_options"))
+	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
 	{
-		wp_redirect(site_url());
-		exit;
-	}
+		die("You do not have permissions to perform this action.");
+	}	
 	
 	global $wpdb;	
 	
