@@ -9,7 +9,7 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 	
-	require_once(ABSPATH . '/classes/class.mimetype.php');
+	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
 	
 	global $wpdb;
 	
