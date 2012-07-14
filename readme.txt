@@ -54,6 +54,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.
 * Now checking if(!defined("WP_USE_THEMES")) instead of if(function_exists("get_userdata")) to see if WP is already loaded.
+* Added initial payment to the fee column of the members list.
+* Added initial payment as a column in the members list CSV export.
+* Added the pmpro_members_list_csv_extra_columns filter to add columns to the Members List CSV export. Sample usage here: https://gist.github.com/3111715
 
 = 1.5 =
 * Very important security fix. Please upgrade to 1.5.

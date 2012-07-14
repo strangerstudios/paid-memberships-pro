@@ -6,7 +6,7 @@
 	}	
 	
 	//vars
-	global $wpdb;
+	global $wpdb, $pmpro_currency_symbol;
 	if(isset($_REQUEST['s']))
 		$s = $_REQUEST['s'];
 	else
@@ -141,10 +141,15 @@
 								<?php echo formatPhone($metavalues->pmpro_bphone)?>
 							</td>
 							<td><?php echo $theuser->membership?></td>	
-							<td>
-								<?php if($theuser->billing_amount > 0) { ?>
-									$<?php echo $theuser->billing_amount?>/<?php echo $theuser->cycle_period?>
-								<?php } else { ?>
+							<td>										
+								<?php if((float)$theuser->initial_payment > 0) { ?>
+									<?php echo $pmpro_currency_symbol; ?><?php echo $theuser->initial_payment?>
+								<?php } ?>
+								<?php if((float)$theuser->initial_payment > 0 && (float)$theuser->billing_amount > 0) { ?>+<br /><?php } ?>
+								<?php if((float)$theuser->billing_amount > 0) { ?>
+									<?php echo $pmpro_currency_symbol; ?><?php echo $theuser->billing_amount?>/<?php echo $theuser->cycle_period?>
+								<?php } ?>
+								<?php if((float)$theuser->initial_payment <= 0 && (float)$theuser->billing_amount <= 0) { ?>
 									-
 								<?php } ?>
 							</td>						
