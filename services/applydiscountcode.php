@@ -3,7 +3,7 @@
 	$isapage = true;		
 	
 	//in case the file is loaded directly
-	if(!function_exists("get_userdata"))
+	if(!defined("WP_USE_THEMES"))
 	{
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');

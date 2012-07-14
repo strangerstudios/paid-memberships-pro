@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.
+* Now checking if(!defined("WP_USE_THEMES")) instead of if(function_exists("get_userdata")) to see if WP is already loaded.
 
 = 1.5 =
 * Very important security fix. Please upgrade to 1.5.
