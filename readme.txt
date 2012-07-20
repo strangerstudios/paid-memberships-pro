@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog ==
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.
+* Fixed bug in the saveOrder method of the Member Order class. When "updating" vs. "inserting" the $id property of the class was being wiped out. This sometimes caused problems if the id was needed later, e.g. with PayPal Express updating orders.
 * Now checking if(!defined("WP_USE_THEMES")) instead of if(function_exists("get_userdata")) to see if WP is already loaded.
 * Added initial payment to the fee column of the members list.
 * Added initial payment as a column in the members list CSV export.

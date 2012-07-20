@@ -29,7 +29,7 @@
 			$dbobj = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) + " . ($gmt_offset * 3600) . "  as timestamp FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
 			
 			if($dbobj)
-			{
+			{				
 				$this->id = $dbobj->id;
 				$this->code = $dbobj->code;
 				$this->session_id = $dbobj->session_id;
@@ -156,7 +156,7 @@
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = '" . $token . "' LIMIT 1");
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = '" . $token . "' LIMIT 1");			
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -263,7 +263,7 @@
 		}
 		
 		function saveOrder()
-		{
+		{			
 			global $current_user, $wpdb;
 			
 			//get a random code to use for the public ID
@@ -295,7 +295,7 @@
 				$this->affiliate_id = "";
 			if(empty($this->affiliate_subid))
 				$this->affiliate_subid = "";
-
+			
 			//build query			
 			if(!empty($this->id))
 			{
@@ -382,12 +382,13 @@
 			do_action($before_action, $this);
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
-				$this->id = $wpdb->insert_id;
+				if(empty($this->id))
+					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
 				return $this->getMemberOrderByID($this->id);
 			}
 			else
-			{
+			{				
 				return false;
 			}
 		}

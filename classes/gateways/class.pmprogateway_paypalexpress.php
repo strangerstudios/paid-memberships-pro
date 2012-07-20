@@ -9,7 +9,7 @@
 		}										
 		
 		function process(&$order)
-		{
+		{			
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
@@ -196,7 +196,7 @@
 		}
 		
 		function subscribe(&$order)
-		{
+		{			
 			global $pmpro_currency;
 			
 			if(empty($order->code))
@@ -227,7 +227,7 @@
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 			
 			//if a trial period is defined
-			if($order->TrialBillingPeriod)
+			if(!empty($order->TrialBillingPeriod))
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
@@ -235,7 +235,7 @@
 				
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
 			}
-			if($order->TrialBillingCycles)
+			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 			
 			$this->nvpStr = $nvpStr;						
