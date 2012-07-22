@@ -767,7 +767,7 @@ function pmpro_search_filter($query)
 	{
 		//get pages that are in levels, but not in mine
 		$sqlQuery = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
-		if($current_user->membership_level->ID)
+		if(!empty($current_user->membership_level->ID))
 			$sqlQuery .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
 		$hidden_page_ids = $wpdb->get_col($sqlQuery);
 		if($hidden_page_ids)
@@ -775,7 +775,7 @@ function pmpro_search_filter($query)
 
 		//get categories that are filtered by level, but not my level
 		$sqlQuery = "SELECT category_id FROM $wpdb->pmpro_memberships_categories ";
-		if($current_user->membership_level->ID)
+		if(!empty($current_user->membership_level->ID))
 			$sqlQuery .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
 		$hidden_post_cats = $wpdb->get_col($sqlQuery);
 
