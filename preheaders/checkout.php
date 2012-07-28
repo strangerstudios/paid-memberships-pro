@@ -723,55 +723,43 @@
 				$discount_code_id = "";
 			
 			//set the start date to NOW() but allow filters
-			$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $user_id, $pmpro_level);			
+			$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $user_id, $pmpro_level);
 			
-			$sqlQuery = "REPLACE INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
-				VALUES('" . $user_id . "',
-				'" . $pmpro_level->id . "',
-				'" . $discount_code_id . "',
-				'" . $pmpro_level->initial_payment . "',
-				'" . $pmpro_level->billing_amount . "',
-				'" . $pmpro_level->cycle_number . "',
-				'" . $pmpro_level->cycle_period . "',
-				'" . $pmpro_level->billing_limit . "',
-				'" . $pmpro_level->trial_amount . "',
-				'" . $pmpro_level->trial_limit . "',
-				" . $startdate . ",
-				" . $enddate . ")";
-					
-			if($wpdb->query($sqlQuery) !== false)
+			$custom_level = array(
+				'user_id' => $user_id,
+				'membership_id' => $pmpro_level->id,
+				'code_id' => $discount_code_id,
+				'initial_payment' => $pmpro_level->initial_payment,
+				'billing_amount' => $pmpro_level->billing_amount,
+				'cycle_number' => $pmpro_level->cycle_number,
+				'cycle_period' => $pmpro_level->cycle_period,
+				'billing_limit' => $pmpro_level->billing_limit,
+				'trial_amount' => $pmpro_level->trial_amount,
+				'trial_limit' => $pmpro_level->trial_limit,
+				'startdate' => $startdate,
+				'enddate' => $enddate);
+
+			if(pmpro_changeMembershipLevel($custom_level))
 			{
 				//we're good
-				//add an item to the history table, cancel old subscriptions						
+				//add an item to the history table, cancel old subscriptions
 				if(!empty($morder))
 				{
 					$morder->user_id = $user_id;
 					$morder->membership_id = $pmpro_level->id;
-												
-					$morder->saveOrder();																
-										
-					//cancel any other subscriptions they have
-					$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
-					if($pmpro_cancel_previous_subscriptions)
-					{
-						$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND id <> '" . $morder->id . "' AND status = 'success' ORDER BY id DESC");
-						foreach($other_order_ids as $order_id)
-						{
-							$c_order = new MemberOrder($order_id);
-							$c_order->cancel();		
-						}						
-					}
+					
+					$morder->saveOrder();
 				}
 			
 				//update the current user
 				global $current_user;
 				if(!$current_user->ID && $user->ID)
-					$current_user = $user;		//in case the user just signed up
+					$current_user = $user; //in case the user just signed up
 				pmpro_set_current_user();
 			
 				//add discount code use
 				if($discount_code && $use_discount_code)
-				{					
+				{
 					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");					
 				}
 			
@@ -805,26 +793,25 @@
 						update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 					}
 				}
-									
+				
 				//hook
-				do_action("pmpro_after_checkout", $user_id);						
-				do_action("pmpro_after_change_membership_level", $pmpro_level->id, $user_id);								
+				do_action("pmpro_after_checkout", $user_id);
 				
 				//setup some values for the emails
 				if(!empty($morder))
-					$invoice = new MemberOrder($morder->id);						
+					$invoice = new MemberOrder($morder->id);
 				else
 					$invoice = NULL;
 				$user->membership_level = $pmpro_level;		//make sure they have the right level info
 				
 				//send email to member
-				$pmproemail = new PMProEmail();				
+				$pmproemail = new PMProEmail();
 				$pmproemail->sendCheckoutEmail($current_user, $invoice);
-												
+				
 				//send email to admin
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCheckoutAdminEmail($current_user, $invoice);
-												
+				
 				//redirect to confirmation		
 				$rurl = pmpro_url("confirmation");
 				$rurl = apply_filters("pmpro_confirmation_url", $rurl, $user_id, $pmpro_level);
