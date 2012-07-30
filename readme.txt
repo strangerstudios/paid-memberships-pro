@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.5.2 =
+* Fixed bug where the "Use SSL" option reverted to "No" for Testing, Stripe, and PayPal Express gateways whenever the payments settings page was loaded.
+
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.
 * Fixed bug in the saveOrder method of the Member Order class. When "updating" vs. "inserting" the $id property of the class was being wiped out. This sometimes caused problems if the id was needed later, e.g. with PayPal Express updating orders.
