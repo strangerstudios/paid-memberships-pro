@@ -739,7 +739,7 @@
 				'startdate' => $startdate,
 				'enddate' => $enddate);
 
-			if(pmpro_changeMembershipLevel($custom_level))
+			if(pmpro_changeMembershipLevel($custom_level, $user_id))
 			{
 				//we're good
 				//add an item to the history table, cancel old subscriptions
@@ -827,9 +827,10 @@
 					$morder = NULL;
 				}
 				else
+				{
 					$pmpro_msg = "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.";
-				$pmpro_error;
-			}												
+				}
+			}
 		}
 	}	
 	

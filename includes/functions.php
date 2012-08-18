@@ -475,7 +475,7 @@
 		{
 			$level = 0;
 		}
-		if(is_array($level))
+		else if(is_array($level))
 		{
 			//custom level
 		}
@@ -553,37 +553,40 @@
 		}
 		
 		//insert current membership
-		if(is_array($level))
+		if(!empty($level)) //are we getting a new one or just cancelling the old ones
 		{
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
-					VALUES('" . $level['user_id'] . "',
-					'" . $level['membership_id'] . "',
-					'" . $level['code_id'] . "',
-					'" . $level['initial_payment'] . "',
-					'" . $level['billing_amount'] . "',
-					'" . $level['cycle_number'] . "',
-					'" . $level['cycle_period'] . "',
-					'" . $level['billing_limit'] . "',
-					'" . $level['trial_amount]'] . "',
-					'" . $level['trial_limit'] . "',
-					" . $level['startdate'] . ",
-					" . $level['enddate'] . ")";
-			if(!$wpdb->query($sql))
+			if(is_array($level))
 			{
-				$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
-				return false;
+				$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate) 
+						VALUES('" . $level['user_id'] . "',
+						'" . $level['membership_id'] . "',
+						'" . $level['code_id'] . "',
+						'" . $level['initial_payment'] . "',
+						'" . $level['billing_amount'] . "',
+						'" . $level['cycle_number'] . "',
+						'" . $level['cycle_period'] . "',
+						'" . $level['billing_limit'] . "',
+						'" . $level['trial_amount]'] . "',
+						'" . $level['trial_limit'] . "',
+						" . $level['startdate'] . ",
+						" . $level['enddate'] . ")";
+				if(!$wpdb->query($sql))
+				{
+					$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
+					return false;
+				}
+			}
+			else
+			{
+				$sql = "INSERT INTO $wpdb->pmpro_memberships_users (`membership_id`,`user_id`) VALUES ('" . $level . "','" . $user_id . "')";
+				if(!$wpdb->query($sql))
+				{
+					$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
+					return false;
+				}
 			}
 		}
-		else
-		{
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (`membership_id`,`user_id`) VALUES ('" . $level . "','" . $user_id . "')";
-			if(!$wpdb->query($sql))
-			{
-				$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
-				return false;
-			}
-		}
-		
+			
 		//update user data and call action
 		pmpro_set_current_user();
 		do_action("pmpro_after_change_membership_level", $level, $user_id);	//$level is the $level_id here
