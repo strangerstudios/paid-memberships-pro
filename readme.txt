@@ -55,6 +55,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug where the "Use SSL" option reverted to "No" for Testing, Stripe, and PayPal Express gateways whenever the payments settings page was loaded.
 * Fixed bug where the IPN Handler URL was not showing up when PayPal Express was selected.
 * Appending ?level=# to the confirmation page URL after checkout to aid in analytics tracking.
+* Added uninstall.php script. (Thanks, badfun)
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.

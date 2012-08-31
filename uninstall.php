@@ -32,3 +32,8 @@ foreach($tables as $table){
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 dbDelta($sql);
+
+//delete options
+global $wpdb;
+$sqlQuery = "DELETE FROM $wpdb->options WHERE option_name LIKE 'pmpro_%'";
+$wpdb->query($sqlQuery);
