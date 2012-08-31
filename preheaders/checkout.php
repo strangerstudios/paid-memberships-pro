@@ -1,6 +1,6 @@
 <?php
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code;
-		
+	
 	//was a gateway passed?
 	if(!empty($_REQUEST['gateway']))
 		$gateway = $_REQUEST['gateway'];
@@ -535,8 +535,8 @@
 							{
 								$pmpro_processed = $morder->process();
 							}
-							
-							if($pmpro_processed)
+														
+							if(!empty($pmpro_processed))
 							{
 								$pmpro_msg = "Payment accepted.";
 								$pmpro_msgt = "pmpro_success";	
@@ -545,7 +545,7 @@
 							else
 							{																								
 								$pmpro_msg = $morder->error;
-								if(!$pmpro_msg)
+								if(empty($pmpro_msg))
 									$pmpro_msg = "Unknown error generating account. Please contact us to setup your membership.";
 								$pmpro_msgt = "pmpro_error";								
 							}	
@@ -826,7 +826,7 @@
 				$pmproemail->sendCheckoutAdminEmail($current_user, $invoice);
 												
 				//redirect to confirmation		
-				$rurl = pmpro_url("confirmation");
+				$rurl = pmpro_url("confirmation", "?level=" . $pmpro_level->id);
 				$rurl = apply_filters("pmpro_confirmation_url", $rurl, $user_id, $pmpro_level);
 				wp_redirect($rurl);
 				exit;
