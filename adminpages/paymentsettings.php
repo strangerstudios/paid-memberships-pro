@@ -50,6 +50,12 @@
 		if(!empty($_REQUEST['creditcards_jcb']))
 			$pmpro_accepted_credit_cards[] = "JCB";
 		
+		//use_ssl is based on gateway
+		if($_REQUEST['gateway'] == "paypal" || $_REQUEST['gateway'] == "authorizenet")
+			pmpro_setOption("use_ssl", 1);			
+		else
+			pmpro_setOption("use_ssl");				
+		
 		//tax
 		pmpro_setOption("tax_state");
 		pmpro_setOption("tax_rate");
@@ -73,26 +79,14 @@
 	$loginname = pmpro_getOption("loginname");
 	$transactionkey = pmpro_getOption("transactionkey");
 	$stripe_secretkey = pmpro_getOption("stripe_secretkey");
-	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");
-	
-	//use_ssl is based on gateway
-	if($gateway == "paypal" || $gateway == "authorizenet")
-	{
-		pmpro_setOption("use_ssl", 1);
-		$use_ssl = 1;
-	}
-	else
-	{
-		pmpro_setOption("use_ssl");
-		$use_ssl = pmpro_getOption("use_ssl");
-	}		
-	
+	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");		
+		
 	$currency = pmpro_getOption("currency");
 	
 	$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 	
 	$tax_state = pmpro_getOption("tax_state");
-	$tax_rate = pmpro_getOption("tax_rate");
+	$tax_rate = pmpro_getOption("tax_rate");		
 	
 	//make sure the tax rate is not > 1
 	if((double)$tax_rate > 1)
@@ -101,6 +95,8 @@
 		$tax_rate = $tax_rate / 100;
 		pmpro_setOption("tax_rate", $tax_rate);
 	}
+	
+	$use_ssl = pmpro_getOption("use_ssl");	
 	
 	//default settings			
 	if(empty($gateway_environment))
@@ -317,7 +313,7 @@
 					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
 				</td>
 		   </tr>
-		   <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypal_express") { ?>style="display: none;"<?php } ?>>
+		   <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label>IPN Handler URL:</label>
 				</th>

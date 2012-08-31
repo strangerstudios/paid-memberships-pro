@@ -378,7 +378,7 @@
 									   '" . $this->affiliate_subid . "'
 									   )";
 			}
-			
+						
 			do_action($before_action, $this);
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
