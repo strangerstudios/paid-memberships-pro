@@ -56,6 +56,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug where the IPN Handler URL was not showing up when PayPal Express was selected.
 * Appending ?level=# to the confirmation page URL after checkout to aid in analytics tracking.
 * Added uninstall.php script. (Thanks, badfun)
+* No longer filtering pages/posts from search results if "show excerpts" is set to YES.
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.

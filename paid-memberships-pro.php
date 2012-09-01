@@ -786,7 +786,9 @@ function pmpro_search_filter($query)
 
 	return $query;
 }
-add_filter( 'pre_get_posts', 'pmpro_search_filter' );
+$showexcerpts = pmpro_getOption("showexcerpts");
+if(empty($showexcerpts))
+	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 
 function pmpro_membership_content_filter($content, $skipcheck = false)
 {
