@@ -57,6 +57,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Appending ?level=# to the confirmation page URL after checkout to aid in analytics tracking.
 * Added uninstall.php script. (Thanks, badfun)
 * No longer filtering pages/posts from search results if "show excerpts" is set to YES.
+* Showing tax on invoices if applicable.
+* Sending tax amount to PayPal Express again.
+* Added code to force HTTPS if the siteurl option starts with https:. (Thanks, 
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.

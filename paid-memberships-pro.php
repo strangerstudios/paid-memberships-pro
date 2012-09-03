@@ -1220,6 +1220,21 @@ function pmpro_besecure()
 add_action('wp', 'pmpro_besecure', 2);
 add_action('login_head', 'pmpro_besecure', 2);
 
+//If the site URL starts with https:, then force SSL/besecure to true. (Added 1.5.2)
+function pmpro_check_site_url_for_https($besecure)
+{
+	//need to get this from the database because we filter get_option
+	global $wpdb;
+	$siteurl = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl' LIMIT 1");		
+	
+	//entire site is over https?
+	if(strpos($siteurl, "https:") !== false)
+		$besecure = true;
+	
+	return $besecure;
+}
+add_filter("pmpro_besecure", "pmpro_check_site_url_for_https");
+
 //capturing case where a user links to https admin without admin over https
 function pmpro_admin_https_handler()
 {
