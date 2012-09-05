@@ -27,6 +27,12 @@
 			<li><strong>Discount Code:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 		<?php } ?>
 	</ul>
+	
+	<?php
+		//check instructions		
+		if($pmpro_invoice->gateway == "check")
+			echo wpautop(pmpro_getOption("instructions"));
+	?>
 		
 	<table id="pmpro_invoice_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<thead>

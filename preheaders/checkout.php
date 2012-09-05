@@ -8,7 +8,7 @@
 		$gateway = "paypalexpress";
 	else
 		$gateway = pmpro_getOption("gateway");		
-	
+		
 	//what level are they purchasing? (discount code passed)
 	if(!empty($_REQUEST['level']) && !empty($_REQUEST['discount_code']))
 	{
@@ -68,7 +68,7 @@
 	}		
 		
 	global $wpdb, $current_user, $pmpro_requirebilling;	
-	if(!pmpro_isLevelFree($pmpro_level))
+	if(!pmpro_isLevelFree($pmpro_level) && $gateway != "check")
 	{
 		//require billing and ssl
 		$pagetitle = "Checkout: Payment Information";
@@ -80,7 +80,7 @@
 		else
 			$besecure = false;				
 		*/
-	}		
+	}
 	else
 	{
 		//no payment so we don't need ssl
@@ -457,7 +457,8 @@
 							do_action("pmpro_paypalexpress_session_vars");
 						}
 						
-						if($pmpro_requirebilling)
+						//special check here now for the "check" gateway
+						if($pmpro_requirebilling || ($gateway == "check" && !pmpro_isLevelFree($pmpro_level)))
 						{
 							$morder = new MemberOrder();			
 							$morder->membership_id = $pmpro_level->id;
@@ -515,7 +516,7 @@
 							//$gateway = pmpro_getOption("gateway");										
 							$morder->gateway = $gateway;
 							$morder->setGateway();
-							
+														
 							//setup level var
 							$morder->getMembershipLevel();
 							
@@ -553,7 +554,7 @@
 						}		
 						else // !$pmpro_requirebilling
 						{
-							//must have been a free membership, continue
+							//must have been a free membership, continue							
 							$pmpro_confirmed = true;
 						}
 					}													
@@ -561,7 +562,7 @@
 			}	//endif($pmpro_continue_registration)
 		}
 	}				
-	
+		
 	//PayPal Express Call Backs
 	if(!empty($_REQUEST['review']))
 	{	

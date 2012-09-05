@@ -23,7 +23,12 @@
 		$pmpro_invoice->getMembershipLevel();			
 		
 		$confirmation_message .= "<p>Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to <strong>" . $pmpro_invoice->user->user_email . "</strong>.</p>";
-		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);
+		
+		//check instructions		
+		if($pmpro_invoice->gateway == "check")
+			$confirmation_message .= wpautop(pmpro_getOption("instructions"));
+		
+		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);				
 		
 		echo apply_filters("the_content", $confirmation_message);		
 	?>

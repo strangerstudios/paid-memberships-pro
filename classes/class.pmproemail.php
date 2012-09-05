@@ -154,6 +154,11 @@
 			{									
 				if($invoice->gateway == "paypalexpress")
 					$this->template = "checkout_express";
+				elseif($invoice->gateway == "check")
+				{
+					$this->template = "checkout_check";
+					$this->data["instructions"] = wpautop(pmpro_getOption("instructions"));
+				}
 				elseif(pmpro_isLevelTrial($user->membership_level))
 					$this->template = "checkout_trial";
 				else
@@ -230,7 +235,9 @@
 			if($invoice)
 			{									
 				if($invoice->gateway == "paypalexpress")
-					$this->template = "checkout_express";
+					$this->template = "checkout_express_admin";
+				elseif($invoice->gateway == "check")
+					$this->template = "checkout_check_admin";					
 				elseif(pmpro_isLevelTrial($user->membership_level))
 					$this->template = "checkout_trial_admin";
 				else

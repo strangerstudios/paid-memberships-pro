@@ -27,7 +27,7 @@
 						$order->TrialAmount = 0;
 						
 						//add a billing cycle to make up for the trial, if applicable
-						if($order->TotalBillingCycles)
+						if(!empty($order->TotalBillingCycles))
 							$order->TotalBillingCycles++;
 					}
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
@@ -37,7 +37,7 @@
 						$order->TrialBillingCycles++;
 						
 						//add a billing cycle to make up for the trial, if applicable
-						if($order->TotalBillingCycles)
+						if(!empty($order->TotalBillingCycles))
 							$order->TotalBillingCycles++;
 					}
 					else
@@ -84,7 +84,7 @@
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
-							if($order->TotalBillingCycles)
+							if(!empty($order->TotalBillingCycles))
 								$order->TotalBillingCycles++;
 						}
 						else
@@ -155,7 +155,7 @@
 			
 			//combine address			
 			$address = $order->Address1;
-			if($order->Address2)
+			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
 				
 			//customer stuff
@@ -337,7 +337,7 @@
 			
 			//combine address			
 			$address = $order->Address1;
-			if($order->Address2)
+			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
 			
 			//customer stuff
@@ -504,7 +504,7 @@
 
 			//do address stuff then?
 			$address = $order->Address1;
-			if($order->Address2)
+			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
 			$city = $order->billing->city;
 			$state = $order->billing->state;
@@ -541,13 +541,13 @@
 					"</interval>".
 					"<startDate>" . $startDate . "</startDate>".
 					"<totalOccurrences>". $totalOccurrences . "</totalOccurrences>";
-			if($trialOccurrences)
+			if(!empty($trialOccurrences))
 				$this->content .= 
 					"<trialOccurrences>". $trialOccurrences . "</trialOccurrences>";
 			$this->content .= 
 					"</paymentSchedule>".
 					"<amount>". $amount ."</amount>";
-			if($trialOccurrences)
+			if(!empty($trialOccurrences))
 				$this->content .=
 					"<trialAmount>" . $trialAmount . "</trialAmount>";
 			$this->content .=
@@ -584,7 +584,7 @@
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
 						
-			if($this->response) {				
+			if(!empty($this->response)) {				
 				list ($refId, $resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);
 				if($resultCode == "Ok")
 				{
@@ -637,7 +637,7 @@
 
 			//do address stuff then?
 			$address = $order->Address1;
-			if($order->Address2)
+			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
 			$city = $order->billing->city;
 			$state = $order->billing->state;
@@ -694,7 +694,7 @@
 			*/
 			
 			
-			if($this->response) {				
+			if(!empty($this->response)) {				
 				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);		
 				
 				if($resultCode == "Ok" || $code == "Ok")

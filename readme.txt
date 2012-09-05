@@ -52,14 +52,15 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog ==
 = 1.5.2 =
+* Added "Pay by Check" as a gateway option. Users gain immediate access. You can show instructions for who to write the check out to, where to mail it, etc.
+* Added uninstall.php script. (Thanks, badfun)
 * Fixed bug where the "Use SSL" option reverted to "No" for Testing, Stripe, and PayPal Express gateways whenever the payments settings page was loaded.
 * Fixed bug where the IPN Handler URL was not showing up when PayPal Express was selected.
 * Appending ?level=# to the confirmation page URL after checkout to aid in analytics tracking.
-* Added uninstall.php script. (Thanks, badfun)
 * No longer filtering pages/posts from search results if "show excerpts" is set to YES.
 * Showing tax on invoices if applicable.
 * Sending tax amount to PayPal Express again.
-* Added code to force HTTPS if the siteurl option starts with https:. (Thanks, 
+* Added code to force HTTPS if the siteurl option starts with https:
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.

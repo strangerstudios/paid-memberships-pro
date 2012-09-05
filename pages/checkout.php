@@ -618,8 +618,16 @@
 		});
 	</script>
 	
-	<?php do_action("pmpro_checkout_before_submit_button"); ?>			
+	<?php
+		if($gateway == "check")
+		{
+			$instructions = pmpro_getOption("instructions");			
+			echo '<div class="pmpro_check_instructions">' . wpautop($instructions) . '</div>';
+		}
+	?>
 	
+	<?php do_action("pmpro_checkout_before_submit_button"); ?>			
+		
 	<div class="pmpro_submit">
 		<?php if($pmpro_review) { ?>
 			
