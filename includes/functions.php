@@ -501,34 +501,7 @@
 			}
 		}
 
-		$old_levels = pmpro_getMembershipLevelsForUser();
-
-		//cancelling payment
-		/*$paying = false;
-		foreach ($old_levels as $old_level) {
-			//are they paying? may need to cancel their old membership
-			if(!pmpro_isLevelFree($old_level))
-				$paying = true;
-			else
-				$paying = false;
-		}
-		if($paying)
-		{
-			//get last order
-			$order = new MemberOrder();
-			$order->getLastMemberOrder($user_id);
-						
-			if($order->cancel())
-			{
-				//we're good
-			}
-			else
-			{
-				//uh oh
-				$pmpro_error = "There was an error canceling your membership: " . $order->error;
-				return false;
-			}
-		}*/
+		$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 
 		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
 		if($pmpro_cancel_previous_subscriptions)
@@ -544,7 +517,7 @@
 			}
 
 			//cancel any other subscriptions they have
-			$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND id <> '" . $morder->id . "' AND status = 'success' ORDER BY id DESC");
+			$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
 			foreach($other_order_ids as $order_id)
 			{
 				$c_order = new MemberOrder($order_id);
