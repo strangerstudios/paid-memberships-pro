@@ -487,7 +487,7 @@
 				$pmpro_error = "Invalid level.";
 				return false;
 			}
-			$level = $level_obj->ID;
+			$level = $level_obj->id;
 		}
 		
 
