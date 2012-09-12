@@ -218,7 +218,7 @@
 			}
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $nvpStr);
-								
+						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->payment_transaction_id = $this->httpParsedResponseAr['TRANSACTIONID'];
 				$order->updateStatus("firstpayment");				
@@ -262,11 +262,11 @@
 			//if a trial period is defined
 			if(!empty($order->TrialBillingPeriod))
 			{
-				$trial_amount = $order->TrialAmount;
+				$trial_amount = $order->TrialAmount;				
 				$trial_tax = $order->getTaxForPrice($trial_amount);
 				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
 				
-				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMNT=" . $trial_amount;
+				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
@@ -297,9 +297,9 @@
 
 			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
-			
+						
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
-									
+						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "success";				
 				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);

@@ -56,6 +56,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added uninstall.php script. (Thanks, badfun)
 * Fixed bug where the "Use SSL" option reverted to "No" for Testing, Stripe, and PayPal Express gateways whenever the payments settings page was loaded.
 * Fixed bug where the IPN Handler URL was not showing up when PayPal Express was selected.
+* Fixed bug where PMPro was not sending the proper trial amount to PayPal when using Website Payments Pro or PayPal Express.
 * Appending ?level=# to the confirmation page URL after checkout to aid in analytics tracking.
 * No longer filtering pages/posts from search results if "show excerpts" is set to YES.
 * Showing tax on invoices if applicable.
