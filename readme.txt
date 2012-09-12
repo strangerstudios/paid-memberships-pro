@@ -61,6 +61,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Showing tax on invoices if applicable.
 * Sending tax amount to PayPal Express again.
 * Added code to force HTTPS if the siteurl option starts with https:
+* Hiding billing information box on Membership Account page if the last invoice was by check or paypal express.
+* Added pmpro_email_days_til_expiration and pmpro_email_days_til_trial_end to change how many days before expiration/etc to send an email. The default is 7.
+* Fixed typo/bug in preheader/checkout.php RE the pmpro_stripe_verify_address hook. (Thanks, Oniiru!)
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.

@@ -439,7 +439,7 @@
 		
 		function sendInvoiceEmail($user = NULL, $invoice = NULL)
 		{
-			global $current_user, $pmpro_currency_symbol;
+			global $wpdb, $current_user, $pmpro_currency_symbol;
 			if(!$user)
 				$user = $current_user;
 			
@@ -486,7 +486,7 @@
 				$this->data["membership_expiration"] = "<p>This membership will expire on " . date("n/j/Y", $enddate) . ".</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
-		
+				
 			return $this->sendEmail();
 		}
 		

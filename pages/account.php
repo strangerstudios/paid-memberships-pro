@@ -66,7 +66,7 @@
 				$ssorder = new MemberOrder();
 				$ssorder->getLastMemberOrder();
 				$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC");
-				if(!empty($ssorder->id))
+				if(!empty($ssorder->id) && $ssorder->gateway != "check" && $ssorder->gateway != "paypalexpress")
 				{
 					//default values from DB (should be last order or last update)
 					$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);

@@ -7,8 +7,10 @@
 		//make sure we only run once a day
 		$today = date("Y-m-d 00:00:00");
 		
+		$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
+		
 		//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
-		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_expiration_notice' WHERE mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE_SUB(enddate, INTERVAL 7 Day) <= '" . $today . "' AND (um.meta_value IS NULL OR DATE_ADD(meta_value, INTERVAL 7 Day) <= '" . $today . "') ORDER BY mu.enddate";
+		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_expiration_notice' WHERE mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE_SUB(enddate, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "' AND (um.meta_value IS NULL OR DATE_ADD(meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "') ORDER BY mu.enddate";
 				
 		$expiring_soon = $wpdb->get_results($sqlQuery);
 				
@@ -69,6 +71,8 @@
 		//make sure we only run once a day
 		$today = date("Y-m-d 00:00:00");
 		
+		$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);
+		
 		//look for memberships with trials ending soon (but we haven't emailed them within a week)
 		$sqlQuery = "
 		SELECT 
@@ -76,13 +80,13 @@
 		WHERE 
 			mu.trial_limit IS NOT NULL AND mu.trial_limit > 0 AND
 			(
-				(cycle_period = 'Day' AND DATE_ADD(startdate, INTERVAL trial_limit Day) <= DATE_ADD('" . $today . "', INTERVAL 7 Day)) OR
-				(cycle_period = 'Week' AND DATE_ADD(startdate, INTERVAL trial_limit Week) <= DATE_ADD('" . $today . "', INTERVAL 7 Day)) OR
-				(cycle_period = 'Month' AND DATE_ADD(startdate, INTERVAL trial_limit Month) <= DATE_ADD('" . $today . "', INTERVAL 7 Day)) OR
-				(cycle_period = 'Year' AND DATE_ADD(startdate, INTERVAL trial_limit Year) <= DATE_ADD('" . $today . "', INTERVAL 7 Day)) 
+				(cycle_period = 'Day' AND DATE_ADD(startdate, INTERVAL trial_limit Day) <= DATE_ADD('" . $today . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
+				(cycle_period = 'Week' AND DATE_ADD(startdate, INTERVAL trial_limit Week) <= DATE_ADD('" . $today . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
+				(cycle_period = 'Month' AND DATE_ADD(startdate, INTERVAL trial_limit Month) <= DATE_ADD('" . $today . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
+				(cycle_period = 'Year' AND DATE_ADD(startdate, INTERVAL trial_limit Year) <= DATE_ADD('" . $today . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) 
 			)			
 						
-			AND (um.meta_value IS NULL OR um.meta_value = '' OR DATE_ADD(meta_value, INTERVAL 7 Day) <= '" . $today . "') 
+			AND (um.meta_value IS NULL OR um.meta_value = '' OR DATE_ADD(meta_value, INTERVAL " . $pmpro_email_days_before_trial_end . " Day) <= '" . $today . "') 
 		ORDER BY mu.startdate";
 				
 		$trial_ending_soon = $wpdb->get_results($sqlQuery);
