@@ -3,12 +3,69 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost:3306
--- Generation Time: Mar 23, 2011 at 09:58 AM
--- Server version: 5.0.77
+-- Generation Time: Sep 14, 2012 at 12:16 PM
+-- Server version: 5.1.57
 -- PHP Version: 5.2.6
 -- 
--- Database: `host_pmpro_main`
+-- PMPro Version: 1.5.2
 -- 
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wp_pmpro_discount_codes`
+-- 
+
+CREATE TABLE `wp_pmpro_discount_codes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(32) NOT NULL,
+  `starts` date NOT NULL,
+  `expires` date NOT NULL,
+  `uses` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `starts` (`starts`),
+  KEY `expires` (`expires`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wp_pmpro_discount_codes_levels`
+-- 
+
+CREATE TABLE `wp_pmpro_discount_codes_levels` (
+  `code_id` int(11) unsigned NOT NULL,
+  `level_id` int(11) unsigned NOT NULL,
+  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `cycle_number` int(11) NOT NULL DEFAULT '0',
+  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
+  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
+  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `trial_limit` int(11) NOT NULL DEFAULT '0',
+  `expiration_number` int(10) unsigned NOT NULL,
+  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  PRIMARY KEY (`code_id`,`level_id`),
+  KEY `initial_payment` (`initial_payment`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wp_pmpro_discount_codes_uses`
+-- 
+
+CREATE TABLE `wp_pmpro_discount_codes_uses` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `order_id` int(10) unsigned NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `timestamp` (`timestamp`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -17,18 +74,21 @@
 -- 
 
 CREATE TABLE `wp_pmpro_membership_levels` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` longtext NOT NULL,
-  `initial_payment` decimal(10,2) NOT NULL default '0.00',
-  `billing_amount` decimal(10,2) NOT NULL default '0.00',
-  `cycle_number` int(11) NOT NULL default '0',
-  `cycle_period` enum('Day','Week','Month','Year') default 'Month',
+  `confirmation` longtext NOT NULL,
+  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `cycle_number` int(11) NOT NULL DEFAULT '0',
+  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
   `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-  `trial_amount` decimal(10,2) NOT NULL default '0.00',
-  `trial_limit` int(11) NOT NULL default '0',  
-  `allow_signups` tinyint(4) NOT NULL default '1',
-  PRIMARY KEY  (`id`),
+  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `trial_limit` int(11) NOT NULL DEFAULT '0',
+  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
+  `expiration_number` int(10) unsigned NOT NULL,
+  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `allow_signups` (`allow_signups`),
   KEY `initial_payment` (`initial_payment`),
   KEY `name` (`name`)
@@ -41,38 +101,39 @@ CREATE TABLE `wp_pmpro_membership_levels` (
 -- 
 
 CREATE TABLE `wp_pmpro_membership_orders` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL,
-  `session_id` varchar(64) NOT NULL default '',
-  `user_id` int(11) NOT NULL default '0',
-  `membership_id` int(11) NOT NULL default '0',
-  `paypal_token` varchar(64) NOT NULL default '',
-  `billing_name` varchar(128) NOT NULL default '',
-  `billing_street` varchar(128) NOT NULL default '',
-  `billing_city` varchar(128) NOT NULL default '',
-  `billing_state` varchar(32) NOT NULL default '',
-  `billing_zip` varchar(16) NOT NULL default '',
+  `session_id` varchar(64) NOT NULL DEFAULT '',
+  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `paypal_token` varchar(64) NOT NULL DEFAULT '',
+  `billing_name` varchar(128) NOT NULL DEFAULT '',
+  `billing_street` varchar(128) NOT NULL DEFAULT '',
+  `billing_city` varchar(128) NOT NULL DEFAULT '',
+  `billing_state` varchar(32) NOT NULL DEFAULT '',
+  `billing_zip` varchar(16) NOT NULL DEFAULT '',
+  `billing_country` varchar(128) NOT NULL,
   `billing_phone` varchar(32) NOT NULL,
-  `subtotal` varchar(16) NOT NULL default '',
-  `tax` varchar(16) NOT NULL default '',
-  `couponamount` varchar(16) NOT NULL default '',
-  `certificate_id` int(11) NOT NULL default '0',
-  `certificateamount` varchar(16) NOT NULL default '',
-  `total` varchar(16) NOT NULL default '',
-  `payment_type` varchar(64) NOT NULL default '',
-  `cardtype` varchar(32) NOT NULL default '',
-  `accountnumber` varchar(32) NOT NULL default '',
-  `expirationmonth` char(2) NOT NULL default '',
-  `expirationyear` varchar(4) NOT NULL default '',
-  `status` varchar(32) NOT NULL default '',
+  `subtotal` varchar(16) NOT NULL DEFAULT '',
+  `tax` varchar(16) NOT NULL DEFAULT '',
+  `couponamount` varchar(16) NOT NULL DEFAULT '',
+  `certificate_id` int(11) NOT NULL DEFAULT '0',
+  `certificateamount` varchar(16) NOT NULL DEFAULT '',
+  `total` varchar(16) NOT NULL DEFAULT '',
+  `payment_type` varchar(64) NOT NULL DEFAULT '',
+  `cardtype` varchar(32) NOT NULL DEFAULT '',
+  `accountnumber` varchar(32) NOT NULL DEFAULT '',
+  `expirationmonth` char(2) NOT NULL DEFAULT '',
+  `expirationyear` varchar(4) NOT NULL DEFAULT '',
+  `status` varchar(32) NOT NULL DEFAULT '',
   `gateway` varchar(64) NOT NULL,
   `gateway_environment` varchar(64) NOT NULL,
   `payment_transaction_id` varchar(64) NOT NULL,
   `subscription_transaction_id` varchar(32) NOT NULL,
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `affiliate_id` varchar(32) NOT NULL,
   `affiliate_subid` varchar(32) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   KEY `session_id` (`session_id`),
   KEY `user_id` (`user_id`),
@@ -89,9 +150,9 @@ CREATE TABLE `wp_pmpro_membership_orders` (
 -- 
 
 CREATE TABLE `wp_pmpro_memberships_categories` (
-  `membership_id` int(11) NOT NULL,
-  `category_id` int(11) NOT NULL,
-  `modified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `membership_id` int(11) unsigned NOT NULL,
+  `category_id` int(11) unsigned NOT NULL,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
   UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -103,9 +164,9 @@ CREATE TABLE `wp_pmpro_memberships_categories` (
 -- 
 
 CREATE TABLE `wp_pmpro_memberships_pages` (
-  `membership_id` int(11) NOT NULL,
-  `page_id` int(11) NOT NULL,
-  `modified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `membership_id` int(11) unsigned NOT NULL,
+  `page_id` int(11) unsigned NOT NULL,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
   UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -117,18 +178,22 @@ CREATE TABLE `wp_pmpro_memberships_pages` (
 -- 
 
 CREATE TABLE `wp_pmpro_memberships_users` (
-  `user_id` int(11) NOT NULL,
-  `membership_id` int(11) NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `membership_id` int(11) unsigned NOT NULL,
+  `code_id` int(11) unsigned NOT NULL,
   `initial_payment` decimal(10,2) NOT NULL,
   `billing_amount` decimal(10,2) NOT NULL,
   `cycle_number` int(11) NOT NULL,
-  `cycle_period` enum('Day','Week','Month','Year') NOT NULL default 'Month',
+  `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
   `billing_limit` int(11) NOT NULL,
   `trial_amount` decimal(10,2) NOT NULL,
-  `trial_limit` int(11) NOT NULL,  
+  `trial_limit` int(11) NOT NULL,
   `startdate` datetime NOT NULL,
-  `modified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`user_id`),
+  `enddate` datetime DEFAULT NULL,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
   KEY `membership_id` (`membership_id`),
-  KEY `modified` (`modified`)
+  KEY `modified` (`modified`),
+  KEY `code_id` (`code_id`),
+  KEY `enddate` (`enddate`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
