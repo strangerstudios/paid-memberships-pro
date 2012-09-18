@@ -51,6 +51,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.5.2.1 =
+* Fixed bugs with pmpro_hasMembershipLevel.
+* Added ability to use the 0 level (non-member) in arrays passed to pmpro_hasMembershipLevel. e.g. pmpro_hasMembershipLevel(0,1,2) = has no membership, level 1, or level 2.
+* Fixed bug with the pmpro_after_change_membership_level hook, where a level object was passed instead of the id. The object would be nice to have, but we've been passing the id in the past. I changed it back for reverse compatibility. (You can always look up the level by level_id and user_id.
+
 = 1.5.2 =
 * Added "Pay by Check" as a gateway option. Users gain immediate access. You can show instructions for who to write the check out to, where to mail it, etc.
 * Added uninstall.php script. (Thanks, badfun)

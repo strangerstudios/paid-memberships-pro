@@ -570,9 +570,15 @@
 			}
 		}
 
+		//get level id
+		if(is_array($level))
+			$level_id = $level['membership_id'];	//custom level
+		else
+			$level_id = $level;	//just id
+		
 		//update user data and call action
 		pmpro_set_current_user();
-		do_action("pmpro_after_change_membership_level", $level, $user_id);	//$level is the $level_id here
+		do_action("pmpro_after_change_membership_level", $level_id, $user_id);	//$level is the $level_id here
 		return true;
 	}
 
