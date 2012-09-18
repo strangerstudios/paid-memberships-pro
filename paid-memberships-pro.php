@@ -771,7 +771,7 @@ if(empty($showexcerpts))
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 
 function pmpro_membership_content_filter($content, $skipcheck = false)
-{
+{	
 	global $post, $current_user;
 
 	if(!$skipcheck)
@@ -795,19 +795,24 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 	{
 		//if show excerpts is set, return just the excerpt
 		if(pmpro_getOption("showexcerpts"))
-		{
+		{			
 			//show excerpt
 			global $post;
 			if($post->post_excerpt)
-			{
+			{								
 				//defined exerpt
 				$content = wpautop($post->post_excerpt);
 			}
 			elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false)
-			{
+			{				
 				//more tag
 				$pos = strpos($content, "<span id=\"more-" . $post->ID . "\"></span>");
 				$content = wpautop(substr($content, 0, $pos));
+			}
+			elseif(strpos($content, 'class="more-link">') !== false)
+			{
+				//more link
+				$content = preg_replace("/\<a.*class\=\"more\-link\".*\>.*\<\/a\>/", "", $content);
 			}
 			else
 			{
@@ -870,8 +875,32 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 }
 add_filter('the_content', 'pmpro_membership_content_filter', 5);
 add_filter('the_content_rss', 'pmpro_membership_content_filter', 5);
-add_filter('the_excerpt', 'pmpro_membership_content_filter', 5);
 add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
+
+/*
+	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the ecerpt.
+*/
+function pmpro_membership_excerpt_filter($content, $skipcheck = false)
+{		
+	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
+	$content = pmpro_membership_content_filter($content, $skipcheck);
+	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+	
+	return $content;
+}
+function pmpro_membership_get_excerpt_filter_start($content, $skipcheck = false)
+{	
+	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
+	return $content;
+}
+function pmpro_membership_get_excerpt_filter_end($content, $skipcheck = false)
+{	
+	add_filter('the_content', 'pmpro_membership_content_filter', 5);		
+	return $content;
+}
+add_filter('the_excerpt', 'pmpro_membership_excerpt_filter', 15);
+add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_start', 1);
+add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100);
 
 function pmpro_comments_filter($comments, $post_id = NULL)
 {

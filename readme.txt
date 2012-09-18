@@ -66,6 +66,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Hiding billing information box on Membership Account page if the last invoice was by check or paypal express.
 * Added pmpro_email_days_til_expiration and pmpro_email_days_til_trial_end to change how many days before expiration/etc to send an email. The default is 7.
 * Fixed typo/bug in preheader/checkout.php RE the pmpro_stripe_verify_address hook. (Thanks, Oniiru!)
+* Updated the_excerpt filters to prevent PMPro messages from being added to an excerpt twice in some setups.
+* the_content filter removes any class="more-link" class from the content if showing an excerpt.
 
 = 1.5.1 =
 * Fixed bug in getfile.php introduced in 1.5.
