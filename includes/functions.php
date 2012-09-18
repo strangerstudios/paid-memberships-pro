@@ -403,7 +403,7 @@
 		{
 			$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
 		}
-
+		
 		if($levels === "0" || $levels === 0) //if 0 was passed, return true if they have no level and false if they have any
 		{
 			$return = empty($membership_levels);
@@ -430,14 +430,14 @@
 						$found_level = true;
 					}
 				}
-
+				
 				if(is_numeric($level) and intval($level) < 0 and !$found_level) //checking for the absence of this level
 				{
-					$returns = true;
+					$return = true;
 				}
 				else if($found_level) //checking for the presence of this level
 				{
-					$returns = true;
+					$return = true;
 				}
 			}
 		}
