@@ -403,12 +403,12 @@
 		{
 			$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
 		}
-		
+				
 		if($levels === "0" || $levels === 0) //if 0 was passed, return true if they have no level and false if they have any
 		{
 			$return = empty($membership_levels);
 		}
-		else if(empty($levels)) //if no level var was passed, we're just checking if they have any level
+		elseif(empty($levels)) //if no level var was passed, we're just checking if they have any level
 		{
 			$return = !empty($membership_levels);
 		}
@@ -424,8 +424,8 @@
 				if(empty($level_obj)){continue;} //invalid level
 				$found_level = false;
 				foreach($membership_levels as $membership_level)
-				{
-					if($membership_levels->ID == $level_obj->ID) //found a match
+				{					
+					if($membership_level->id == $level_obj->id) //found a match
 					{
 						$found_level = true;
 					}
