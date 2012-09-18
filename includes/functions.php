@@ -418,26 +418,36 @@
 			{
 				$levels = array($levels);
 			}
-			foreach($levels as $level)
+			
+			if(empty($membership_levels))
 			{
-				$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
-				if(empty($level_obj)){continue;} //invalid level
-				$found_level = false;
-				foreach($membership_levels as $membership_level)
-				{					
-					if($membership_level->id == $level_obj->id) //found a match
-					{
-						$found_level = true;
+				//user has no levels just check if 0 was sent in one of the levels
+				if(in_array(0, $levels) || in_array("0", $levels))
+					$return = true;					
+			}
+			else
+			{
+				foreach($levels as $level)
+				{				
+					$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
+					if(empty($level_obj)){continue;} //invalid level
+					$found_level = false;
+					foreach($membership_levels as $membership_level)
+					{					
+						if($membership_level->id == $level_obj->id) //found a match
+						{
+							$found_level = true;
+						}
 					}
-				}
-				
-				if(is_numeric($level) and intval($level) < 0 and !$found_level) //checking for the absence of this level
-				{
-					$return = true;
-				}
-				else if($found_level) //checking for the presence of this level
-				{
-					$return = true;
+					
+					if(is_numeric($level) and intval($level) < 0 and !$found_level) //checking for the absence of this level
+					{
+						$return = true;
+					}
+					else if($found_level) //checking for the presence of this level
+					{
+						$return = true;
+					}
 				}
 			}
 		}
