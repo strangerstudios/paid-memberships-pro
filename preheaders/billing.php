@@ -80,7 +80,7 @@
 			function stripeResponseHandler(status, response) {
 				if (response.error) {
 					// re-enable the submit button
-                    jQuery('.pmpro_btn-submit-checkout').removeAttr("disabled");
+                    jQuery('.pmpro_btn-submit').removeAttr("disabled");
 					
 					// show the errors on the form
 					alert(response.error.message);
@@ -219,6 +219,26 @@
 			"ExpirationYear" => $ExpirationYear,
 			"CVV" => $CVV
 		);
+		
+		//if using stripe lite, remove some fields from the required array
+		$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
+		if($pmpro_stripe_lite && $gateway == "stripe")
+		{
+			//some fields to remove
+			$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
+			
+			//if a user is logged in, don't require bemail either				
+			if(!empty($current_user->user_email))
+			{
+				$remove[] = 'bemail';
+				$bemail = $current_user->user_email;
+				$bconfirmemail = $bemail;
+			}
+			
+			//remove the fields
+			foreach($remove as $field)
+				unset($pmpro_required_billing_fields[$field]);
+		}
 		
 		//filter
 		$pmpro_required_billing_fields = apply_filters("pmpro_required_billing_fields", $pmpro_required_billing_fields);		

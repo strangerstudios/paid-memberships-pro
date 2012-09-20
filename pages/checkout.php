@@ -1,6 +1,9 @@
 <?php		
 	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code;
-	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;		
+	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;	
+
+	//set to true via filter to have Stripe use the minimal billing fields
+	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
 ?>
 
 <form class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
@@ -116,8 +119,8 @@
 				jQuery('.pmpro_discount_code_msg').hide();
 				
 				//disable the apply button
-				jQuery('#other_discount_code_button').attr('disabled', 'disabled');
-								
+				jQuery('#other_discount_code_button').attr('disabled', 'disabled');				
+				
 				jQuery.ajax({
 					url: '<?php echo site_url()?>',type:'GET',timeout:2000,
 					dataType: 'html',
@@ -300,6 +303,7 @@
 		</table>
 	<?php } ?>
 	
+	<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
 	<table id="pmpro_billing_address_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>
@@ -469,6 +473,7 @@
 		</tr>											
 	</tbody>
 	</table>                   
+	<?php } ?>
 	
 	<?php do_action("pmpro_checkout_after_billing_fields"); ?>		
 	
@@ -509,6 +514,7 @@
 					<?php
 					}
 				?>
+				<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
 				<div>
 					<label for="CardType">Card Type</label>
 					<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
@@ -517,6 +523,7 @@
 						<?php } ?>												
 					</select> 
 				</div>
+				<?php } ?>
 			
 				<div>
 					<label for="AccountNumber">Card Number</label>

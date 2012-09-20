@@ -87,6 +87,7 @@
 				?>		
 				<div class="pmpro_box">				
 					<h3><?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "")?>">Edit</a><?php } ?>Billing Information</h3>
+					<?php if(!empty($baddress1)) { ?>
 					<p>
 						<strong>Billing Address</strong><br />
 						<?php echo $bfirstname . " " . $blastname?>
@@ -99,6 +100,7 @@
 						<br />
 						<?php echo formatPhone($bphone)?>
 					</p>
+					<?php } ?>
 					<p>
 						<strong>Payment Method</strong><br />
 						<?php echo $CardType?>: <?php echo last4($AccountNumber)?> (<?php echo $ExpirationMonth?>/<?php echo $ExpirationYear?>)

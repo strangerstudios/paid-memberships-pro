@@ -4,6 +4,9 @@
 	
 	$gateway = pmpro_getOption("gateway");
 	
+	//set to true via filter to have Stripe use the minimal billing fields
+	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
+	
 	$level = $current_user->membership_level;
 	if($level) 
 	{ 
@@ -61,6 +64,7 @@
 				}
 			?>                        	                       	                       														          
 										
+			<?php if(empty($pmpro_stripe_lite) && $gateway == "stripe") { ?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -212,6 +216,7 @@
 				</tr>											
 			</tbody>
 			</table>                   
+			<?php } ?>
 			
 			<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -231,6 +236,7 @@
 							<?php
 							}
 						?>
+						<?php if(empty($pmpro_stripe_lite) && $gateway == "stripe") { ?>
 						<div>				
 							<label for="CardType">Card Type</label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
@@ -240,6 +246,7 @@
 								<option value="Discover" <?php if($CardType == "Discover") { ?>selected="selected"<?php } ?>>Discover</option>
 							</select> 
 						</div>
+						<?php } ?>
 					
 						<div>
 							<label for="AccountNumber">Card Number</label>

@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.5.2.1
+Stable tag: 1.5.3
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.5.3 =
+* Added code to support using Stripe with the minimal billing fields. Use add_filter("pmpro_stripe_lite", "__return_true"); to enable this
+* Fixed bug: Now re-hiding the "Processing..." message if there is a Stripe javascript error at checkout.
+
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.
 * Added ability to use the 0 level (non-member) in arrays passed to pmpro_hasMembershipLevel. e.g. pmpro_hasMembershipLevel(0,1,2) = has no membership, level 1, or level 2.

@@ -37,7 +37,9 @@
 	<table id="pmpro_invoice_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<thead>
 			<tr>
-				<th>Billing Address</th>
+				<?php if(!empty($pmpro_invoice->billing->name)) { ?>
+					<th>Billing Address</th>
+				<?php } ?>
 				<th>Payment Method</th>
 				<th>Membership Level</th>
 				<th align="center">Total Billed</th>
@@ -45,6 +47,7 @@
 		</thead>
 		<tbody>
 			<tr>
+				<?php if(!empty($pmpro_invoice->billing->name)) { ?>
 				<td>
 					<?php echo $pmpro_invoice->billing->name?><br />
 					<?php echo $pmpro_invoice->billing->street?><br />						
@@ -53,6 +56,7 @@
 					<?php } ?>
 					<?php echo formatPhone($pmpro_invoice->billing->phone)?>
 				</td>
+				<?php } ?>
 				<td>
 					<?php if($pmpro_invoice->accountnumber) { ?>
 						<?php echo $pmpro_invoice->cardtype?> ending in <?php echo last4($pmpro_invoice->accountnumber)?><br />
