@@ -72,7 +72,8 @@
 	<script>
 		jQuery(document).ready(function() {
 			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications"); ?>', function(data) {
-			  jQuery('#pmpro_notifications').html(data);		 
+				if(data && data != 'NULL')
+					jQuery('#pmpro_notifications').html(data);		 
 			});
 		});
 	</script>
