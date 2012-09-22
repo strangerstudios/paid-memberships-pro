@@ -54,6 +54,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.5.3 =
 * Added code to support using Stripe with the minimal billing fields. Use add_filter("pmpro_stripe_lite", "__return_true"); to enable this
 * Fixed bug: Now re-hiding the "Processing..." message if there is a Stripe javascript error at checkout.
+* Updated MemberOrder method saveOrder to check for gateway and gateway_environment properties when inserting. If none are found, it will use what is set in your payment settings. This allows you to set the gateway on a MemberOrder object and save the order with that gateway instead of the default.
+* Now only showing the check instructions if the gateway is "check" AND the level is not free.
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.

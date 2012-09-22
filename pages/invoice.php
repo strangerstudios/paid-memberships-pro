@@ -30,7 +30,7 @@
 	
 	<?php
 		//check instructions		
-		if($pmpro_invoice->gateway == "check")
+		if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
 			echo wpautop(pmpro_getOption("instructions"));
 	?>
 		

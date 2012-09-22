@@ -296,6 +296,11 @@
 			if(empty($this->affiliate_subid))
 				$this->affiliate_subid = "";
 			
+			if(empty($this->gateway))
+				$this->gateway = pmpro_getOption("gateway");				
+			if(empty($this->gateway_environment))
+				$this->gateway_environment = pmpro_getOption("gateway_environment");
+			
 			//build query			
 			if(!empty($this->id))
 			{
@@ -369,8 +374,8 @@
 									   '" . substr($this->ExpirationDate, 0, 2) . "',
 									   '" . substr($this->ExpirationDate, 2, 4) . "',
 									   '" . $this->status . "',
-									   '" . pmpro_getOption("gateway") . "', 
-									   '" . pmpro_getOption("gateway_environment") . "', 
+									   '" . $this->gateway . "', 
+									   '" . $this->gateway_environment . "', 
 									   '" . $this->payment_transaction_id . "',
 									   '" . $this->subscription_transaction_id . "',
 									   now(),
