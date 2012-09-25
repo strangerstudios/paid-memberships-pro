@@ -57,6 +57,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Updated MemberOrder method saveOrder to check for gateway and gateway_environment properties when inserting. If none are found, it will use what is set in your payment settings. This allows you to set the gateway on a MemberOrder object and save the order with that gateway instead of the default.
 * Now only showing the check instructions if the gateway is "check" AND the level is not free.
 * Added a check to the notification code in the settings header so it wouldn't display NULL in the notification space if WP passes that back.
+* Some warning fixes.
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.

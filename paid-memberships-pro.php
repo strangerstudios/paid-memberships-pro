@@ -1446,7 +1446,7 @@ function pmpro_login_head()
 
 			//make sure users are only getting to the profile when logged in
 			global $current_user;
-			if($_REQUEST['action'] == "profile" && !$current_user->ID)
+			if(!empty($_REQUEST['action']) && $_REQUEST['action'] == "profile" && !$current_user->ID)
 			{
 				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);
 				wp_redirect($link);

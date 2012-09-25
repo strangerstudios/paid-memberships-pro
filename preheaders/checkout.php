@@ -526,6 +526,21 @@
 							$morder->Address1 = $baddress1;
 							$morder->Address2 = $baddress2;						
 							
+							//stripe lite code to get name from other sources if available
+							if(!empty($pmpro_stripe_lite) && empty($morder->FirstName) && empty($morder->LastName))
+							{
+								if(!empty($current_user->ID))
+								{									
+									$morder->FirstName = get_user_meta($current_user->ID, "first_name");
+									$morder->LastName = get_user_meta($current_user->ID, "last_name");
+								}
+								elseif(!empty($_REQUEST['first_name']) && !empty($_REQUEST['last_name']))
+								{
+									$morder->FirstName = $_REQUEST['first_name'];
+									$morder->LastName = $_REQUEST['last_name'];
+								}
+							}
+							
 							//other values
 							$morder->billing = new stdClass();
 							$morder->billing->name = $bfirstname . " " . $blastname;
