@@ -531,8 +531,8 @@
 							{
 								if(!empty($current_user->ID))
 								{									
-									$morder->FirstName = get_user_meta($current_user->ID, "first_name");
-									$morder->LastName = get_user_meta($current_user->ID, "last_name");
+									$morder->FirstName = get_user_meta($current_user->ID, "first_name", true);
+									$morder->LastName = get_user_meta($current_user->ID, "last_name", true);
 								}
 								elseif(!empty($_REQUEST['first_name']) && !empty($_REQUEST['last_name']))
 								{
