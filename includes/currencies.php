@@ -30,4 +30,11 @@
 			);
 	
 	$pmpro_currencies = apply_filters("pmpro_currencies", $pmpro_currencies);
+	
+	//stripe only supports a few
+	global $pmpro_stripe_currencies;
+	$pmpro_stripe_currencies = array(
+			'USD' => __('US Dollars (&#36;)', 'pmpro'),			
+			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro')
+	);
 ?>

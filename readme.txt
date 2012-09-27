@@ -58,6 +58,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Now only showing the check instructions if the gateway is "check" AND the level is not free.
 * Added a check to the notification code in the settings header so it wouldn't display NULL in the notification space if WP passes that back.
 * Some warning fixes.
+//* Fixed a bug in the PayPal Express gateway class where the pre-tax amount was being passed to PayPal instead of the tax-computed amount.
+* Added Canadian Dollars as a currency option for Stripe.
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.

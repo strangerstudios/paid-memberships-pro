@@ -27,9 +27,13 @@
 
 		//currency
 		$currency_paypal = $_POST['currency_paypal'];
+		$currency_stripe = $_POST['currency_stripe'];
 		$currency_fixed = $_POST['currency_fixed'];
-		if($_POST['gateway'] == "authorizenet" || $_POST['gateway'] == "stripe")
+
+		if($_POST['gateway'] == "authorizenet")
 			pmpro_setOption("currency", $currency_fixed);
+		elseif($_POST['gateway'] == "stripe")
+			pmpro_setOption("currency", $currency_stripe);
 		else
 			pmpro_setOption("currency", $currency_paypal);
 			
@@ -229,13 +233,32 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_stripe gateway_authorizenet" <?php if($gateway != "authorizenet" && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
 				<td>
 					<input type="hidden" name="currency_fixed" size="60" value="USD" />
 					USD
+				</td>
+			</tr>
+			
+			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="transactionkey">Currency:</label>
+				</th>
+				<td>
+					<select name="currency_stripe">
+					<?php 
+						global $pmpro_stripe_currencies;
+						foreach($pmpro_stripe_currencies as $ccode => $cdescription)
+						{
+						?>
+						<option value="<?php echo $ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
+						<?php
+						}
+					?>
+					</select>
 				</td>
 			</tr>
 			
