@@ -549,7 +549,7 @@
 						'" . $level['cycle_number'] . "',
 						'" . $level['cycle_period'] . "',
 						'" . $level['billing_limit'] . "',
-						'" . $level['trial_amount]'] . "',
+						'" . $level['trial_amount'] . "',
 						'" . $level['trial_limit'] . "',
 						" . $level['startdate'] . ",
 						" . $level['enddate'] . ")";
