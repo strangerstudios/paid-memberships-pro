@@ -103,6 +103,34 @@
 					$paypal_args['p2'] = $order->TrialBillingFrequency;
 					$paypal_args['t2'] = $period;
 				}
+				else
+				{
+					//we can try to work in any change in ProfileStartDate
+					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+					$adjusted_psd = apply_filters("pmpro_profile_start_date", $psd, $order);
+					if($psd != $adjusted_psd)
+					{
+						//someone is trying to push the start date back
+						$adjusted_psd_time = strtotime($adjusted_psd);
+						$seconds_til_psd = $adjusted_psd_time - time();
+						$days_til_psd = floor($seconds_til_psd/(60*60*24));
+						
+						//push back trial one by days_til_psd
+						if($days_til_psd > 90)
+						{
+							//we need to convert to weeks, because PayPal limits t1 to 90 days
+							$weeks_til_psd = round($days_til_psd / 7);
+							$paypal_args['p1'] = $weeks_til_psd;
+							$paypal_args['t1'] = "W";
+						}
+						elseif($days_til_psd > 0)
+						{							
+							//use days
+							$paypal_args['p1'] = $days_til_psd;
+							$paypal_args['t1'] = "D";
+						}																
+					}
+				}
 				
 				//billing limit?
 				if(!empty($order->TotalBillingCycles))
