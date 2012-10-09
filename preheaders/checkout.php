@@ -288,7 +288,7 @@
 			$password2 = $password;
 		}	
 		
-		if($pmpro_requirebilling && $gateway != "paypalexpress")
+		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard")
 		{			
 			//avoid warnings for these fields
 			if(!isset($bfirstname))
@@ -467,7 +467,7 @@
 					if($pmpro_msgt != "pmpro_error")
 					{				
 						//save user fields for PayPal Express
-						if($gateway == "paypalexpress")
+						if($gateway == "paypalexpress" || $gateway == "paypalstandard")
 						{
 							if(!$current_user->ID)
 							{
@@ -477,7 +477,7 @@
 							}
 							
 							//can use this hook to save some other variables to the session
-							do_action("pmpro_paypalexpress_session_vars");
+							do_action("pmpro_paypalexpress_session_vars");							
 						}
 						
 						//special check here now for the "check" gateway
@@ -745,8 +745,16 @@
 		
 		if($user_id)
 		{				
+			//save user id and send PayPal standard customers to PayPal now
+			if($gateway == "paypalstandard")
+			{
+				$morder->user_id = $user_id;
+				$morder->saveOrder();
+				$morder->Gateway->sendToPayPal($morder);
+			}
+			
 			//calculate the end date
-			if($pmpro_level->expiration_number)
+			if(!empty($pmpro_level->expiration_number))
 			{
 				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period)) . "'";
 			}

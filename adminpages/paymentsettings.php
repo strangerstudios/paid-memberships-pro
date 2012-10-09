@@ -140,6 +140,7 @@
 						<option value="">Testing Only</option>
 						<option value="check" <?php if($gateway == "check") { ?>selected="selected"<?php } ?>>Pay by Check</option>
 						<option value="stripe" <?php if($gateway == "stripe") { ?>selected="selected"<?php } ?>>Stripe</option>
+						<option value="paypalstandard" <?php if($gateway == "paypalstandard") { ?>selected="selected"<?php } ?>>PayPal Standard</option>
 						<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
 						<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
@@ -166,7 +167,7 @@
 					</script>
 				</td>
 		   </tr>
-		   <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">	
 					<label for="gateway_email">Gateway Account Email:</label>
 				</th>
@@ -262,7 +263,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
@@ -304,7 +305,7 @@
 					<p><small>Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>
@@ -316,7 +317,7 @@
 					<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="use_ssl">Use SSL:</label>
 				</th>
@@ -351,7 +352,7 @@
 					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
 				</td>
 		   </tr>
-		   <tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label>IPN Handler URL:</label>
 				</th>
@@ -380,7 +381,7 @@
 		<p class="submit">            
 			<input name="savesettings" type="submit" class="button-primary" value="Save Settings" /> 		                			
 		</p>             
-	</form> 
+	</form>
 		
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");	
