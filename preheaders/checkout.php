@@ -849,7 +849,7 @@
 					$invoice = new MemberOrder($morder->id);						
 				else
 					$invoice = NULL;
-				$user->membership_level = $pmpro_level;		//make sure they have the right level info
+				$current_user->membership_level = $pmpro_level;		//make sure they have the right level info
 				
 				//send email to member
 				$pmproemail = new PMProEmail();				

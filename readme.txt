@@ -62,6 +62,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 //* Fixed a bug in the PayPal Express gateway class where the pre-tax amount was being passed to PayPal instead of the tax-computed amount.
 * Added Canadian Dollars as a currency option for Stripe.
 * Fixed typo/bug with saving trial amounts in the memberships_users table after checkout. (Thanks, Badfun)
+* Fixed bug in initial and recurring revenue calculation on members list page.
+* Fixed bug when setting membership_level of current user after checkout that could cause various issues. (Thanks, drrobotnik)
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.
