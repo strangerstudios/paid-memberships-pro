@@ -64,6 +64,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed typo/bug with saving trial amounts in the memberships_users table after checkout. (Thanks, Badfun)
 * Fixed bug in initial and recurring revenue calculation on members list page.
 * Fixed bug when setting membership_level of current user after checkout that could cause various issues. (Thanks, drrobotnik)
+* Fixed bug in Stripe webhook that resulting in cancelation emails being sent to the 1st user in the DB vs. the user who cancelled. (Thanks, Kunjan of QuarkStudios.com)
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.

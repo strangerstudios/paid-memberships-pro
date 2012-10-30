@@ -194,7 +194,7 @@
 	{
 		global $wpdb;
 		
-		$customer_id = $event->data->object->id;
+		$customer_id = $event->data->object->customer;
 		
 		//look up the order
 		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' LIMIT 1");
