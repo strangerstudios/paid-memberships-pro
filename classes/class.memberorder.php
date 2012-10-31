@@ -119,7 +119,7 @@
 			return $this->Gateway;
 		}
 		
-		function getLastMemberOrder($user_id = NULL)
+		function getLastMemberOrder($user_id = NULL, $status = 'success')
 		{
 			global $current_user, $wpdb;
 			if(!$user_id)
@@ -128,7 +128,14 @@
 			if(!$user_id)
 				return false;
 				
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ORDER BY timestamp DESC LIMIT 1");
+			//build query
+			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ";
+			if(!empty($status))
+				$this->sqlQuery .= "AND status = '" . $wpdb->escape($status) . "' ";
+			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
+				
+			//get id
+			$id = $wpdb->get_var($this->sqlQuery);
 			
 			return $this->getMemberOrderByID($id);
 		}

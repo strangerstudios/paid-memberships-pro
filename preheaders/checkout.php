@@ -746,9 +746,9 @@
 		if($user_id)
 		{				
 			//save user id and send PayPal standard customers to PayPal now
-			if($gateway == "paypalstandard")
+			if($gateway == "paypalstandard" && !empty($morder))
 			{
-				$morder->user_id = $user_id;
+				$morder->user_id = $user_id;				
 				$morder->saveOrder();
 				$morder->Gateway->sendToPayPal($morder);
 			}
@@ -793,8 +793,7 @@
 				if(!empty($morder))
 				{
 					$morder->user_id = $user_id;
-					$morder->membership_id = $pmpro_level->id;
-
+					$morder->membership_id = $pmpro_level->id;					
 					$morder->saveOrder();
 				}
 			
@@ -840,7 +839,7 @@
 						update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 					}
 				}
-									
+								
 				//hook
 				do_action("pmpro_after_checkout", $user_id);						
 				

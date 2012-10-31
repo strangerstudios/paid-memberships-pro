@@ -20,6 +20,8 @@
 		pmpro_setOption("email_admin_cancels");
 		pmpro_setOption("email_admin_billing");
 		
+		pmpro_setOption("email_member_notification");
+		
 		//assume success
 		$msg = true;
 		$msgt = "Your email settings have been updated.";		
@@ -32,6 +34,8 @@
 	$email_admin_changes = pmpro_getOption("email_admin_changes");
 	$email_admin_cancels = pmpro_getOption("email_admin_cancels");
 	$email_admin_billing = pmpro_getOption("email_admin_billing");	
+	
+	$email_member_notification = pmpro_getOption("email_member_notification");
 	
 	if(empty($from_email))
 	{
@@ -117,6 +121,22 @@
 				<td>
 					<input type="checkbox" id="email_admin_billing" name="email_admin_billing" value="1" <?php if(!empty($email_admin_billing)) { ?>checked="checked"<?php } ?> />
 					when a user updates his or her billing information.
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		
+		<h3>Send members emails:</h3>
+		
+		<table class="form-table">
+		<tbody>                
+			<tr>
+				<th scope="row" valign="top">
+					<label for="email_admin_checkout">New Users:</label>
+				</th>
+				<td>
+					<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
+					Default WP notification email. (Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.)
 				</td>
 			</tr>
 		</tbody>

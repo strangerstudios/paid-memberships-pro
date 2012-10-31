@@ -270,6 +270,13 @@ function pmpro_is_ready()
 			else
 				$pmpro_gateway_ready = false;
 		}
+		elseif($gateway == "paypalstandard")
+		{
+			if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email"))
+				$pmpro_gateway_ready = true;
+			else
+				$pmpro_gateway_ready = false;
+		}
 		elseif($gateway == "stripe")
 		{
 			if(pmpro_getOption("gateway_environment") && pmpro_getOption("stripe_secretkey") && pmpro_getOption("stripe_publishablekey"))
@@ -1644,3 +1651,10 @@ function pmpro_replaceURLsInBuffer($buffer)
 	
 	return $buffer;
 }
+
+/*
+	If the $email_member_notification option is empty, disable the wp_new_user_notification email at checkout.
+*/
+$email_member_notification = pmpro_getOption("email_member_notification");
+if(empty($email_member_notification))
+	add_filter("pmpro_wp_new_user_notification", "__return_false", 0);
