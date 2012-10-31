@@ -31,7 +31,10 @@
 			$arb = true;
 		}
 	}
-		
+	
+	$fields = apply_filters("pmpro_authnet_silent_post_fields", $fields);
+	do_action("pmpro_before_authnet_silent_post", $fields);
+	
 	// If it is an ARB transaction, do something with it
 	if($arb == true)
 	{
@@ -128,5 +131,6 @@
 			$pmproemail->data = array("body"=>"<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net:<br />" . nl2br(var_export($fields, true)));
 			$pmproemail->sendEmail(get_bloginfo("admin_email"));			
 		}
-	}		
-?>
+	}	
+
+	do_action("pmpro_after_authnet_silent_post", $fields);
