@@ -10,7 +10,9 @@
 		$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
 		
 		//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
-		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_expiration_notice' WHERE mu.status = 'active' mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE_SUB(enddate, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "' AND (um.meta_value IS NULL OR DATE_ADD(meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "') ORDER BY mu.enddate";
+		$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_expiration_notice' WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE_SUB(enddate, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "' AND (um.meta_value IS NULL OR DATE_ADD(meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "') ORDER BY mu.enddate";
+		
+		echo $sqlQuery . "<hr />";
 				
 		$expiring_soon = $wpdb->get_results($sqlQuery);
 				
