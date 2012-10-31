@@ -128,5 +128,7 @@
 			$pmproemail->data = array("body"=>"<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net:<br />" . nl2br(var_export($fields, true)));
 			$pmproemail->sendEmail(get_bloginfo("admin_email"));			
 		}
-	}		
+	}
+
+	do_action("pmpro_authnet_silent_post");
 ?>
