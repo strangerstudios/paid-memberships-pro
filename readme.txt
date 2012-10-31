@@ -67,6 +67,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug when setting membership_level of current user after checkout that could cause various issues. (Thanks, drrobotnik)
 * Fixed bug in Stripe webhook that resulting in cancelation emails being sent to the 1st user in the DB vs. the user who cancelled. (Thanks, Kunjan of QuarkStudios.com)
 * The getLastMemberOrder() method of the MemberOrder class now returns the last order with status = 'success' by deafult. You can override this via the second parameter of the function. So getLastMemberOrder($user_id, "cancelled") to get the last cancelled order or getLastMemberOrder($user_id, false) to get the last order no matter the status.
+* Added pmpro_authnet_silent_post_fields filter and pmpro_before_authnet_silent_post and pmpro_after_authnet_silent_post hooks to the Authorize.net silent post handler. All hooks are passed the $fields variable built at the top of the script that mirrors the $_REQUEST array.
 
 = 1.5.2.1 =
 * Fixed bugs with pmpro_hasMembershipLevel.
