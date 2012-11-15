@@ -260,7 +260,7 @@
 			}	
 
 			//defaults for new levels
-			if($edit == -1)
+			if(empty($copy) && $edit == -1)
 			{			
 				$level->cycle_number = 1;
 				$level->cycle_period = "Month";
