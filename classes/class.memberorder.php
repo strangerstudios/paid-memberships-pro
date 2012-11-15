@@ -274,7 +274,7 @@
 			global $current_user, $wpdb;
 			
 			//get a random code to use for the public ID
-			if(!$this->code)
+			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 			
 			//figure out how much we charged
@@ -290,6 +290,10 @@
 			$this->certificateamount = "";
 			
 			//these fix some warnings/notices
+			if(empty($this->billing))
+			{
+				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
+			}
 			if(empty($this->paypal_token))
 				$this->paypal_token = "";
 			if(empty($this->couponamount))

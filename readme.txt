@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.5.3
+Stable tag: 1.5.3.0.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,17 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog ==
+= 1.5.4 =
+* Added a gateway check to preheaders/checkout.php. Mischivous users used to be able to bypass payment by passing &gateway=check or something similar to the checkout page. PMPro would then use the check gateway to checkout. Now only the active gateway option in the payments settings or gateways added via the new pmpro_valid_gateways filter (1 parameter is the array of gateways, add/edit the gateways and return the array). It is important that all PMPro users upgrade to keep mischivious users from accessing your site for free. Any site currently enabling multiple gateway options will need to add code to set the valid gateways. More info here: http://www.paidmembershipspro.com/2012/06/offering-multiple-gateway-options-at-checkout/
+* Fixed bug where level restrictions would be deleted if a page were updated via quick edit.
+* Added if(!class_exists("Stripe")) to the Stripe class definition. This should help with some conflicts if other plugins have their own Stripe library. (Going to udate the Stripe library in the next version and work on supporting new Stripe functionality.)
+* Fixed a bug where copying a level didn't properly set recurring billing settings. (Thanks, AtheistsUnited)
+* Fixed some typos. (Thanks, AtheistsUnited)
+* Fixed some warnings.
+
+= 1.5.3.1 =
+* Fixed bug in expiration warning cron query. (Backported to 1.5.3)
+
 = 1.5.3 =
 * Added PayPal Standard Gateway
 * Added code to support using Stripe with the minimal billing fields. Use add_filter("pmpro_stripe_lite", "__return_true"); to enable this

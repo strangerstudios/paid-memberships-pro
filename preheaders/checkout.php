@@ -7,8 +7,18 @@
 	elseif(!empty($_REQUEST['review']))
 		$gateway = "paypalexpress";
 	else
-		$gateway = pmpro_getOption("gateway");		
+		$gateway = pmpro_getOption("gateway");			
+	
+	//set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
+	$valid_gateways = apply_filters("pmpro_valid_gateways", array(pmpro_getOption("gateway", true)));
 		
+	//let's add an error now, if an invalid gateway is set
+	if(!in_array($gateway, $valid_gateways))
+	{	
+		$pmpro_msg = "Invalid gateway.";
+		$pmpro_msgt = "pmpro_error";
+	}	
+	
 	//what level are they purchasing? (discount code passed)
 	if(!empty($_REQUEST['level']) && !empty($_REQUEST['discount_code']))
 	{
@@ -42,7 +52,7 @@
 			$use_discount_code = true;
 		}	
 	}
-	
+		
 	//what level are they purchasing? (no discount code)
 	if(empty($pmpro_level) && !empty($_REQUEST['level']))
 	{
@@ -399,6 +409,11 @@
 		elseif(!empty($tospage) && empty($tos))
 		{
 			$pmpro_msg = "Please check the box to agree to the " . $tospage->post_title . ".";	
+			$pmpro_msgt = "pmpro_error";
+		}
+		elseif(!in_array($gateway, $valid_gateways))
+		{
+			$pmpro_msg = "Invalid gateway.";
 			$pmpro_msgt = "pmpro_error";
 		}
 		elseif(!empty($fullname))
@@ -804,7 +819,7 @@
 				pmpro_set_current_user();
 			
 				//add discount code use
-				if($discount_code && $use_discount_code)
+				if(!empty($morder) && $discount_code && $use_discount_code)
 				{
 					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");					
 				}
@@ -884,7 +899,7 @@
 	if(empty($submit))
 	{
 		//show message if the payment gateway is not setup yet
-		if($pmpro_requirebilling && !pmpro_getOption("gateway"))
+		if($pmpro_requirebilling && !pmpro_getOption("gateway", true))
 		{
 			if(pmpro_isAdmin())			
 				$pmpro_msg = "You must <a href=\"" . get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels&view=payment') . "\">setup a Payment Gateway</a> before any payments will be processed.";
@@ -909,5 +924,5 @@
 		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
 		$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
 		$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
-	}	
+	}			
 ?>
