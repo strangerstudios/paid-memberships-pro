@@ -1028,22 +1028,24 @@ function pmpro_page_save($post_id)
 	}
 
 	// OK, we're authenticated: we need to find and save the data	
-	if(!empty($_POST['page_levels']))
-		$mydata = $_POST['page_levels'];
-	else
-		$mydata = array();	
-
-	//remove all memberships for this page
-	$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
-
-	//add new memberships for this page
-	if(is_array($mydata))
+	if(isset($_POST['page_levels']))
 	{
-		foreach($mydata as $level)
-			$wpdb->query("INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . $wpdb->escape($level) . "', '" . $post_id . "')");
-	}
+		$mydata = $_POST['page_levels'];
+	
+		//remove all memberships for this page
+		$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
 
-	return $mydata;
+		//add new memberships for this page
+		if(is_array($mydata))
+		{
+			foreach($mydata as $level)
+				$wpdb->query("INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . $wpdb->escape($level) . "', '" . $post_id . "')");
+		}
+	
+		return $mydata;
+	}
+	else
+		return $post_id;
 }
 
 function pmpro_page_meta_wrapper()
