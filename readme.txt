@@ -57,6 +57,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added if(!class_exists("Stripe")) to the Stripe class definition. This should help with some conflicts if other plugins have their own Stripe library. (Going to udate the Stripe library in the next version and work on supporting new Stripe functionality.)
 * Fixed a bug where copying a level didn't properly set recurring billing settings. (Thanks, AtheistsUnited)
 * Fixed some typos. (Thanks, AtheistsUnited)
+* Fixed some warnings.
 
 = 1.5.3.1 =
 * Fixed bug in expiration warning cron query. (Backported to 1.5.3)
