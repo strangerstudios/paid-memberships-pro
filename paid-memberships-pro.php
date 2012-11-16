@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.5.4
+Version: 1.5.4.0.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -43,7 +43,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.5.4");
+define("PMPRO_VERSION", "1.5.4.0.1");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 global $gateway_environment;
@@ -1240,13 +1240,15 @@ add_action('login_head', 'pmpro_besecure', 2);
 
 //If the site URL starts with https:, then force SSL/besecure to true. (Added 1.5.2)
 function pmpro_check_site_url_for_https($besecure)
-{
+{	
+	global $wpdb, $pmpro_siteurl;
+
 	//need to get this from the database because we filter get_option
-	global $wpdb;
-	$siteurl = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl' LIMIT 1");		
+	if(empty($pmpro_siteurl))
+		$pmpro_siteurl = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl' LIMIT 1");		
 	
 	//entire site is over https?
-	if(strpos($siteurl, "https:") !== false)
+	if(strpos($pmpro_siteurl, "https:") !== false)
 		$besecure = true;
 	
 	return $besecure;
