@@ -1228,6 +1228,9 @@
 	{
 		global $pmpro_levels;
 
+		if(is_object($level) && !empty($level->id))
+			$level = $level->id;
+		
 		//was a name passed? (Todo: make sure level names have at least one non-numeric character.
 		if(is_numeric($level))
 		{

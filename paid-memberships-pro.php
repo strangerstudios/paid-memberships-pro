@@ -32,6 +32,7 @@ require_once(PMPRO_DIR . "/scheduled/crons.php");
 //require_once(PMPRO_DIR . "/classes/class.pmprogateway.php");
 require_once(PMPRO_DIR . "/classes/class.memberorder.php");
 require_once(PMPRO_DIR . "/classes/class.pmproemail.php");
+require_once(PMPRO_DIR . "/includes/filters.php");
 require_once(ABSPATH . "wp-includes/class-phpmailer.php");
 
 //setup the DB
@@ -1349,12 +1350,17 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	// examples: [membership level="3"]...[/membership]
 
 	extract(shortcode_atts(array(
-		'level' => NULL
+		'level' => NULL,
+		'delay' => NULL
 	), $atts));
 
-	global $current_user;
+	global $wpdb, $current_user;
 
-	if($level || $level === "0")
+	//guilty until proven innocent :)
+	$hasaccess = false;
+	
+	//does the user have the level specified?
+	if(!empty($level) || $level === "0")
 	{
 	   //they specified a level(s)
 	   if(strpos($level, ","))
@@ -1369,19 +1375,50 @@ function pmpro_shortcode($atts, $content=null, $code="")
 	   }
 
 	   if(pmpro_hasMembershipLevel($levels))
-	   {
-		   return apply_filters("the_content", $content);
-	   }
+		   $hasaccess = true;
 	}
 	else
 	{
 		//didn't specify a membership level, so check for any
 		if(!empty($current_user->membership_level->ID))
-			return apply_filters("the_content", $content);
+			$hasaccess = true;
 	}
 
-	//must not be a member
-	return "";	//just hide it
+	//is there a delay?
+	if($hasaccess && !empty($delay))
+	{
+		//okay, this post requires membership. start by getting the user's startdate
+		if(!empty($levels))
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
+		else
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
+		
+		$startdate = $wpdb->get_var($sqlQuery);
+		
+		//adjust start date to 12AM
+		$startdate = strtotime(date("Y-m-d", $startdate));
+		
+		if(empty($startdate))
+		{
+			//user doesn't have an active membership level
+			$hasaccess = false;
+		}
+		else
+		{
+			//how many days has this user been a member?
+			$now = time();
+			$days = ($now - $startdate)/3600/24;
+						
+			if($days < intval($delay))				
+				$hasaccess = false;	//they haven't been around long enough yet
+		}
+	}
+	
+	//to show or not to show
+	if($hasaccess)	
+		return do_shortcode($content);	//show content
+	else	
+		return "";	//just hide it
 }
 add_shortcode("membership", "pmpro_shortcode");
 
