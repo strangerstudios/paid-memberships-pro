@@ -1003,7 +1003,7 @@ function pmpro_page_meta()
 function pmpro_page_save($post_id)
 {
 	global $wpdb;
-
+	
 	if(empty($post_id))
 		return false;
 	
@@ -1016,6 +1016,8 @@ function pmpro_page_save($post_id)
 	if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
 		return $post_id;
 
+	echo "A";
+		
 	// Check permissions
 	if(!empty($_POST['post_type']) && 'page' == $_POST['post_type'] )
 	{
@@ -1028,10 +1030,13 @@ function pmpro_page_save($post_id)
 			return $post_id;
 	}
 
-	// OK, we're authenticated: we need to find and save the data	
-	if(isset($_POST['page_levels']))
+	// OK, we're authenticated: we need to find and save the data		
+	if(isset($_POST['pmpro_noncename']))
 	{
-		$mydata = $_POST['page_levels'];
+		if(!empty($_POST['page_levels']))
+			$mydata = $_POST['page_levels'];
+		else
+			$mydata = NULL;
 	
 		//remove all memberships for this page
 		$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
