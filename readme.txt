@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.5.5
+Stable tag: 1.5.5.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -50,7 +50,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 2. On-site checkout via Authorize.net or PayPal Website Payments Pro. (Off-site checkout coming soon.)
 3. Use Discount Codes to offer access at lower prices for special customers.
 
-== Changelog ==
+== Changelog == 
+= 1.5.5.1 =
+* Fixes in the new pmpro_getMemberStartdate and pmpro_getMemberDays functions.
+
 = 1.5.5 =
 * Updated pmpro_check_site_url_for_https function to cache the siteurl to limit DB queries.
 * Added includes/filters.php to store hacks/filters/actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to impement via hooks and filters.

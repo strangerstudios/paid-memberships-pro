@@ -1381,10 +1381,10 @@
 			global $wpdb;
 			
 			if(!empty($level_id))
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level_id) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
 			else
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
-					
+						
 			$startdate = $wpdb->get_var($sqlQuery);
 			
 			$pmpro_startdates[$user_id][$level_id] = $startdate;
@@ -1411,7 +1411,7 @@
 				
 			$now = time();
 			$days = ($now - $startdate)/3600/24;
-		
+					
 			$pmpro_member_days[$user_id][$level_id] = $days;
 		}
 		
