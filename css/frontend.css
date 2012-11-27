@@ -68,14 +68,14 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 a.pmpro_radio {text-decoration: none; color: #000;}
 
 /* button styles from member lite */
-.btn, .btn:link {display: inline-block; margin: 0; background-position: top left; background-repeat: repeat-x; cursor: pointer; border-radius: 4px; -moz-border-radius: 4px; padding: 5px 10px; text-decoration: none; text-shadow: 1px 1px 3px #000; border: none; font-family: Arial, Helvetica, sans-serif; }
-.btn:hover {background-position: bottom left; }
-.btn-grey, .btn-grey:link {background: #EEE url(images/bg_grad-grey.gif) 0px -5px repeat-x; border: 1px solid #CCC; text-shadow: none; }
-.btn-inactive {color: #AAA; text-shadow: none; border: 1px solid #CCC; cursor: not-allowed; }
+.pmpro_btn, .pmpro_btn:link, #pmpro_levels_table tbody a, #pmpro_levels_table tbody a:link, .pmpro_btn-submit-checkout, .pmpro_yeslink, .pmpro_nolink, .pmpro_yeslink:link, .pmpro_nolink:link {display: inline-block; margin: 0; background-position: top left; background-repeat: repeat-x; cursor: pointer; border-radius: 4px; -moz-border-radius: 4px; padding: 5px 10px; text-decoration: none; text-shadow: 1px 1px 3px #000; border: none; font-family: Arial, Helvetica, sans-serif; }
+.pmpro_btn:hover {background-position: bottom left; }
+.pmpro_btn-grey, .pmpro_btn-grey:link, .pmpro_nolink, .pmpro_nolink:link {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; border: 1px solid #CCC; text-shadow: none; }
+.pmpro_btn-inactive {color: #AAA; text-shadow: none; border: 1px solid #CCC; cursor: not-allowed; }
 .pmpro_btn {font-size: 14px; }
-.btn-primary, .btn-primary:link {background-color: #666; background-image: url(../images/bg_grad-chrome.gif); color: #FFF; }
-.btn-primary:hover {background: #444; color: #FFF; }
-.btn-inactive, .btn-inactive:hover {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; }
+.pmpro_btn-primary, .pmpro_btn-primary:link, #pmpro_levels_table tbody a, #pmpro_levels_table tbody a:link, .pmpro_btn-submit-checkout, .pmpro_yeslink, .pmpro_yeslink:link {background-color: #666; background-image: url(../images/bg_grad-chrome.gif); color: #FFF; }
+.pmpro_btn-primary:hover, #pmpro_levels_table tbody a:hover, .pmpro_btn-submit-checkout:hover, .pmpro_yeslink:hover  {background: #444; color: #FFF; }
+.pmpro_btn-inactive, .pmpro_btn-inactive:hover {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; }
 
 /*---------------------------------------
 	Membership Invoice
