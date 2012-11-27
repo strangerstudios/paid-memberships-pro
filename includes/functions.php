@@ -1363,4 +1363,58 @@
 		
 		return $domain;
 	}
+	
+	/*
+		Get a member's start date... either in general or for a specific level_id.
+	*/
+	function pmpro_getMemberStartdate($user_id = NULL, $level_id = 0)
+	{		
+		if(empty($user_id))
+		{
+			global $current_user;
+			$user_id = $current_user->ID;
+		}
+
+		global $pmpro_startdates;	//for cache
+		if(empty($pmpro_startdates[$user_id][$level_id]))
+		{			
+			global $wpdb;
+			
+			if(!empty($level_id))
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
+			else
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
+					
+			$startdate = $wpdb->get_var($sqlQuery);
+			
+			$pmpro_startdates[$user_id][$level_id] = $startdate;
+		}
+		
+		return $pmpro_startdates[$user_id][$level_id];
+	}
+	
+	/*
+		How long has this member been a member
+	*/
+	function pmpro_getMemberDays($user_id = NULL, $level_id = 0)
+	{
+		if(empty($user_id))
+		{
+			global $current_user;
+			$user_id = $current_user->ID;
+		}
+		
+		global $pmpro_member_days;
+		if(empty($pmpro_member_days[$user_id][$level_id]))
+		{		
+			$startdate = pmpro_getMemberStartdate($user_id, $level_id);
+				
+			$now = time();
+			$days = ($now - $startdate)/3600/24;
+		
+			$pmpro_member_days[$user_id][$level_id] = $days;
+		}
+		
+		return $pmpro_member_days[$user_id][$level_id];
+	}
 ?>
