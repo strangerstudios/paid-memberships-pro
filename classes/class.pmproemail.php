@@ -38,6 +38,8 @@
 				
 			if(!$this->template)
 				$this->template = "default";
+						
+			$this->headers = array("Content-Type: text/html");
 			
 			//load the template
 			if(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
@@ -75,8 +77,9 @@
 			$this->subject = apply_filters("pmpro_email_subject", $this->subject, $this);
 			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $this->body, $this);
-						
-			if(wp_mail($this->email,$this->subject,$this->body,array("Content-Type: text/html")))
+			$this->headers = apply_filters("pmpro_email_headers", $this->headers, $this);
+			
+			if(wp_mail($this->email,$this->subject,$this->body,$this->headers))
 			{
 				return true;
 			}
@@ -643,4 +646,3 @@
 			return $this->sendEmail();
 		}
 	}
-?>

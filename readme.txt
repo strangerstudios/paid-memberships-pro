@@ -58,6 +58,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added a function pmpro_getClassForField($field) that will return a string including "pmpro_error" or "pmpro_required" if applicable. You can filter the classes added to the fields via the pmpro_field_classes filter.
 * Showing * on required fields via javascript on the checkout page.
 * Updated checkout page to highlight in red fields that are related to the error message shown.
+* Added headers property to the PMProEmail object. You can add headers (e.g. to add a cc or bcc) to PMPro emails using the pmpro_email_headers filter.
 
 = 1.5.5 =
 * Updated pmpro_check_site_url_for_https function to cache the siteurl to limit DB queries.
