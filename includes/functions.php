@@ -1417,4 +1417,45 @@
 		
 		return $pmpro_member_days[$user_id][$level_id];
 	}
+	
+	//the start of a message handling script
+	function pmpro_setMessage($message, $type, $force = false)
+	{
+		global $pmpro_msg, $pmpro_msgt;
+		
+		//for now, we only show the first message generated
+		if($force || empty($pmpro_msg))
+		{
+			$pmpro_msg = $message;
+			$pmpro_msgt = $type;
+		}
+	}
+	
+	//used in class definitions for input fields to see if there was an error
+	function pmpro_getClassForField($field)
+	{
+		global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
+		$classes = array();
+
+		//error on this field?
+		if(in_array($field, $pmpro_error_fields))
+		{
+			$classes[] = "pmpro_error";
+		}		
+		
+		$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
+		
+		//required?
+		if(in_array($field, $required_fields))
+		{
+			$classes[] = "pmpro_required";
+		}	
+					
+		$classes = apply_filters("pmpro_field_classes", $classes, $field);
+		
+		if(!empty($classes))
+			return implode(" ", $classes);
+		else
+			return "";
+	}
 ?>

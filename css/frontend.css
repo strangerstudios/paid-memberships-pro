@@ -37,6 +37,8 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 .pmpro_error a {color: #E36154; }
 .pmpro_alert a {color: #CF8516; }
 
+input.pmpro_error {background-image: none;}
+
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
