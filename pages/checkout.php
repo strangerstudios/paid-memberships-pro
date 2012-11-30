@@ -708,4 +708,9 @@
 	
 	//add required to required fields
 	jQuery('.pmpro_required').after('<span> *</span>');
+	
+	//unhighlight error fields when the user edits them
+	jQuery('.pmpro_error').bind("change keyup input", function() {
+		jQuery(this).removeClass('pmpro_error');
+	});
 </script>
