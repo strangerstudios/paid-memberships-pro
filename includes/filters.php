@@ -54,7 +54,7 @@ add_filter("pmpro_checkout_level", "pmpro_checkout_level_extend_memberships");
 */
 function pmpro_checkout_start_date_keep_startdate($startdate, $user_id, $level)
 {			
-	if(pmpro_hasMembershipLevel($level_id, $user_id))
+	if(pmpro_hasMembershipLevel($level->id, $user_id))
 	{
 		global $wpdb;
 		$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $wpdb->escape($user_id) . "' AND membership_id = '" . $wpdb->escape($level->id) . "' AND status = 'active' ORDER BY id DESC LIMIT 1";		
