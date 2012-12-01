@@ -294,18 +294,22 @@
 			{
 				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
 			}
+			if(empty($this->user_id))
+				$this->user_id = "";
 			if(empty($this->paypal_token))
 				$this->paypal_token = "";
 			if(empty($this->couponamount))
 				$this->couponamount = "";
 			if(empty($this->payment_type))
 				$this->payment_type = "";
+			if(empty($this->payment_transaction_id))
+				$this->payment_transaction_id = "";
 			if(empty($this->subscription_transaction_id))
 				$this->subscription_transaction_id = "";
 			if(empty($this->affiliate_id))
 				$this->affiliate_id = "";
 			if(empty($this->affiliate_subid))
-				$this->affiliate_subid = "";
+				$this->affiliate_subid = "";			
 			
 			if(empty($this->gateway))
 				$this->gateway = pmpro_getOption("gateway");				
