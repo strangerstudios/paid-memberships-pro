@@ -95,13 +95,21 @@
 				*/
 				if(!empty($order->TrialBillingPeriod))
 				{					
-					$trial_amount = $order->TrialAmount;
-					$trial_tax = $order->getTaxForPrice($trial_amount);
-					$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
-					
-					$paypal_args['a2'] = $trial_amount;
-					$paypal_args['p2'] = $order->TrialBillingFrequency;
-					$paypal_args['t2'] = $period;
+					//if a1 and a2 are 0, let's just combine them. PayPal doesn't like a2 = 0.
+					if($paypal_args['a1'] == 0 && $order->TrialAmount == 0)
+					{
+						$paypal_args['p1'] = $paypal_args['p1'] + $order->TrialBillingFrequency;
+					}
+					else
+					{
+						$trial_amount = $order->TrialAmount;
+						$trial_tax = $order->getTaxForPrice($trial_amount);
+						$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+						
+						$paypal_args['a2'] = $trial_amount;
+						$paypal_args['p2'] = $order->TrialBillingFrequency;
+						$paypal_args['t2'] = $period;
+					}
 				}
 				else
 				{
@@ -163,6 +171,7 @@
 				 );	
 			}						
 			
+			$nvpStr = "";
 			foreach($paypal_args as $key => $value)
 			{
 				$nvpStr .= "&" . $key . "=" . urlencode($value);
@@ -178,7 +187,7 @@
 
 			//redirect to paypal			
 			$paypal_url .= $nvpStr;			
-			
+						
 			wp_redirect($paypal_url);
 			exit;
 		}
