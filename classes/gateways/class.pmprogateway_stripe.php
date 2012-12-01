@@ -234,6 +234,7 @@
 			{						
 				$plan = Stripe_Plan::create(array(
 				  "amount" => $amount * 100,
+				  "interval_count" => $order->BillingFrequency,
 				  "interval" => strtolower($order->BillingPeriod),
 				  "trial_period_days" => $trial_period_days,
 				  "name" => $order->membership_name . " for order " . $order->code,

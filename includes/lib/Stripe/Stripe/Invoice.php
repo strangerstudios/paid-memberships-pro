@@ -8,6 +8,12 @@ class Stripe_Invoice extends Stripe_ApiResource
     return self::scopedConstructFrom($class, $values, $apiKey);
   }
 
+  public static function create($params=null, $apiKey=null)
+  {
+    $class = get_class();
+    return self::_scopedCreate($class, $params, $apiKey);
+  }
+
   public static function retrieve($id, $apiKey=null)
   {
     $class = get_class();
@@ -26,5 +32,20 @@ class Stripe_Invoice extends Stripe_ApiResource
     $url = self::classUrl(get_class()) . '/upcoming';
     list($response, $apiKey) = $requestor->request('get', $url, $params);
     return Stripe_Util::convertToStripeObject($response, $apiKey);
+  }
+
+  public function save()
+  {
+    $class = get_class();
+    return self::_scopedSave($class);
+  }
+
+  public function pay()
+  {
+    $requestor = new Stripe_ApiRequestor($this->_apiKey);
+    $url = $this->instanceUrl() . '/pay';
+    list($response, $apiKey) = $requestor->request('post', $url);
+    $this->refreshFrom($response, $apiKey);
+    return $this;
   }
 }

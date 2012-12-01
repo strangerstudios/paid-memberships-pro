@@ -359,7 +359,7 @@
 						<br /><small>
 							The amount to be billed one cycle after the initial payment.
 							<?php if($gateway == "stripe") { ?>
-								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently only supports billing periods of "1 Month" or "1 Year".
+								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently only supports billing periods of "Month" or "Year".
 							<?php } ?>
 						</small>							
 					</td>

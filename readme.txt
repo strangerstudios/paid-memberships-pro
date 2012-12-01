@@ -60,6 +60,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Showing * on required fields via javascript on the checkout page.
 * Updated checkout page to highlight in red fields that are related to the error message shown.
 * Added headers property to the PMProEmail object. You can add headers (e.g. to add a cc or bcc) to PMPro emails using the pmpro_email_headers filter.
+* Updated Stripe library to version 1.7.10. Updated PMPro to take advantage of new "interval_count" parameter in subscriptions, so you can now have subscriptions setup for "every 2 months", etc.
 
 = 1.5.5 =
 * Updated pmpro_check_site_url_for_https function to cache the siteurl to limit DB queries.

@@ -25,7 +25,7 @@ class Stripe_ApiRequestor
 
   private static function _encodeObjects($d)
   {
-    if ($d instanceof Stripe_ApiRequestor) {
+    if ($d instanceof Stripe_ApiResource) {
       return $d->id;
     } else if ($d === true) {
       return 'true';
@@ -96,8 +96,9 @@ class Stripe_ApiRequestor
 		'publisher' => 'stripe',
 		'uname' => $uname);
     $headers = array('X-Stripe-Client-User-Agent: ' . json_encode($ua),
-		     'User-Agent: Stripe/v1 PhpBindings/' . Stripe::VERSION);
-    list($rbody, $rcode) = $this->_curlRequest($meth, $absUrl, $headers, $params, $myApiKey);
+		     'User-Agent: Stripe/v1 PhpBindings/' . Stripe::VERSION,
+                     'Authorization: Bearer ' . $myApiKey);
+    list($rbody, $rcode) = $this->_curlRequest($meth, $absUrl, $headers, $params);
     return array($rbody, $rcode, $myApiKey);
   }
 
@@ -115,7 +116,7 @@ class Stripe_ApiRequestor
     return $resp;
   }
 
-  private function _curlRequest($meth, $absUrl, $headers, $params, $myApiKey)
+  private function _curlRequest($meth, $absUrl, $headers, $params)
   {
     $curl = curl_init();
     $meth = strtolower($meth);
@@ -146,7 +147,6 @@ class Stripe_ApiRequestor
     $opts[CURLOPT_TIMEOUT] = 80;
     $opts[CURLOPT_RETURNTRANSFER] = true;
     $opts[CURLOPT_HTTPHEADER] = $headers;
-    $opts[CURLOPT_USERPWD] = $myApiKey . ':';
     if (!Stripe::$verifySslCerts)
       $opts[CURLOPT_SSL_VERIFYPEER] = false;
 
@@ -154,7 +154,10 @@ class Stripe_ApiRequestor
     $rbody = curl_exec($curl);
 
     $errno = curl_errno($curl);
-    if ($errno == CURLE_SSL_CACERT || $errno == CURLE_SSL_PEER_CERTIFICATE) {
+    if ($errno == CURLE_SSL_CACERT ||
+	$errno == CURLE_SSL_PEER_CERTIFICATE ||
+	$errno == 77 // CURLE_SSL_CACERT_BADFILE (constant not defined in PHP though)
+	) {
       array_push($headers, 'X-Stripe-Client-Info: {"ca":"using Stripe-supplied CA bundle"}');
       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($curl, CURLOPT_CAINFO,
@@ -191,7 +194,7 @@ class Stripe_ApiRequestor
       $msg = "Unexpected error communicating with Stripe.  If this problem persists, let us know at support@stripe.com.";
     }
 
-    $msg .= "\n\n(Network error: $message)";
+    $msg .= "\n\n(Network error [errno $errno]: $message)";
     throw new Stripe_ApiConnectionError($msg);
   }
 }

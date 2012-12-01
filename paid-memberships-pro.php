@@ -206,13 +206,12 @@ function pmpro_checkLevelForStripeCompatibilty($level = NULL)
 					/*
 						Stripe currently does not support:
 						* Trial Amounts > 0.
-						* Daily or Weekly billing periods.
-						* Cycle numbers > 1
+						* Daily or Weekly billing periods.						
 						* Billing Limits.										
 					*/
 					if($level->trial_amount > 0 ||
 					   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
-					   $level->cycle_number > 1 || $level->billing_limit > 0)
+					   $level->billing_limit > 0)
 					{
 						return false;
 					}
@@ -228,7 +227,7 @@ function pmpro_checkLevelForStripeCompatibilty($level = NULL)
 			//check this level
 			if($level->trial_amount > 0 ||
 			   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
-			   $level->cycle_number > 1 || $level->billing_limit > 0)
+			   $level->billing_limit > 0)
 			{
 				return false;
 			}

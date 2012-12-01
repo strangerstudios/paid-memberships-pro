@@ -13,12 +13,13 @@ abstract class Stripe_ApiResource extends Stripe_Object
   {
     $requestor = new Stripe_ApiRequestor($this->_apiKey);
     $url = $this->instanceUrl();
+
     list($response, $apiKey) = $requestor->request('get', $url);
     $this->refreshFrom($response, $apiKey);
     return $this;
    }
 
-  public static function classUrl($class)
+  public static function className($class)
   {
     // Useful for namespaces: Foo\Stripe_Charge
     if ($postfix = strrchr($class, '\\'))
@@ -28,7 +29,13 @@ abstract class Stripe_ApiResource extends Stripe_Object
     $class = str_replace('_', '', $class);
     $name = urlencode($class);
     $name = strtolower($name);
-    return "/${name}s";
+    return $name;
+  }
+
+  public static function classUrl($class)
+  {
+    $base = self::className($class);
+    return "/v1/${base}s";
   }
 
   public function instanceUrl()
@@ -36,7 +43,7 @@ abstract class Stripe_ApiResource extends Stripe_Object
     $id = $this['id'];
     $class = get_class($this);
     if (!$id) {
-      throw new Stripe_InvalidRequestError("Could not determine which URL to request: $class instance has invalid ID: $id");
+      throw new Stripe_InvalidRequestError("Could not determine which URL to request: $class instance has invalid ID: $id", null);
     }
     $id = Stripe_ApiRequestor::utf8($id);
     $base = self::classUrl($class);
@@ -77,7 +84,7 @@ abstract class Stripe_ApiResource extends Stripe_Object
       $requestor = new Stripe_ApiRequestor($this->_apiKey);
       $params = array();
       foreach ($this->_unsavedValues->toArray() as $k)
-	$params[$k] = $this->$k;
+        $params[$k] = $this->$k;
       $url = $this->instanceUrl();
       list($response, $apiKey) = $requestor->request('post', $url, $params);
       $this->refreshFrom($response, $apiKey);
