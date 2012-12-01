@@ -53,7 +53,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog == 
 = 1.5.6 =
 * Fixes in the new pmpro_getMemberStartdate and pmpro_getMemberDays functions.
-* Added a pmpro_required_user_fields filter similar to the pmpro_reuired_billing_fields filter.
+* Fixes to SQL queries for the expiration and trial ending crons.
+* Added a pmpro_required_user_fields filter similar to the pmpro_required_billing_fields filter.
 * Added a function pmpro_setMessage($message, $type) that sets $pmpro_msg and $pmpro_msgt globals if they aren't set already.
 * Added a function pmpro_getClassForField($field) that will return a string including "pmpro_error" or "pmpro_required" if applicable. You can filter the classes added to the fields via the pmpro_field_classes filter.
 * Showing * on required fields via javascript on the checkout page.
