@@ -84,9 +84,9 @@ if($pmpro_msg)
 		</td>
 		<td>
 		<?php if(empty($current_user->membership_level->ID)) { ?>
-			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">I&nbsp;want&nbsp;<?php echo $level->name?>!</a>               
+			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">Select</a>               
 		<?php } elseif ( !$current_level ) { ?>                	
-			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">I&nbsp;want&nbsp;<?php echo $level->name?>!</a>       			
+			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">Select</a>       			
 		<?php } elseif($current_level) { ?>      
 			<a href="<?php echo pmpro_url("account")?>">Your Level</a>
 		<?php } ?>
