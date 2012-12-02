@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.5.5.1
+Version: 1.5.6
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -44,7 +44,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.5.5.1");
+define("PMPRO_VERSION", "1.5.6");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 global $gateway_environment;
@@ -320,12 +320,25 @@ function pmpro_init()
 
 	if(is_admin())
 	{
-		wp_enqueue_style('pmpro_admin', plugins_url('css/admin.css',__FILE__ ), array(), PMPRO_VERSION, "screen");
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/admin.css"))
+			$admin_css = get_stylesheet_uri() . "/paid-memberships-pro/admin.css";
+		else
+			$admin_css = plugins_url('css/admin.css',__FILE__ );		
+		wp_enqueue_style('pmpro_admin', $admin_css, array(), PMPRO_VERSION, "screen");
 	}
 	else
-	{
-		wp_enqueue_style('pmpro_frontend', plugins_url('css/frontend.css',__FILE__ ), array(), PMPRO_VERSION, "screen");
-		wp_enqueue_style('pmpro_print', plugins_url('css/print.css',__FILE__ ), array(), PMPRO_VERSION, "print");
+	{		
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/frontend.css"))
+			$frontend_css = get_stylesheet_uri() . "/paid-memberships-pro/frontend.css";
+		else
+			$frontend_css = plugins_url('css/frontend.css',__FILE__ );	
+		wp_enqueue_style('pmpro_frontend', $frontend_css, array(), PMPRO_VERSION, "screen");
+		
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/print.css"))
+			$print_css = get_stylesheet_uri() . "/paid-memberships-pro/print.css";
+		else
+			$print_css = plugins_url('css/print.css',__FILE__ );
+		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
 	}
 	
 	global $pmpro_pages, $pmpro_ready, $pmpro_currency, $pmpro_currency_symbol;

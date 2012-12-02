@@ -88,7 +88,7 @@ if($pmpro_msg)
 		<?php } elseif ( !$current_level ) { ?>                	
 			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>">Select</a>       			
 		<?php } elseif($current_level) { ?>      
-			<a href="<?php echo pmpro_url("account")?>">Your Level</a>
+			<a href="<?php echo pmpro_url("account")?>">Your&nbsp;Level</a>
 		<?php } ?>
 		</td>
 	</tr>

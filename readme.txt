@@ -63,6 +63,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Updated Stripe library to version 1.7.10. Updated PMPro to take advantage of new "interval_count" parameter in subscriptions, so you can now have subscriptions setup for "every 2 months", etc.
 * Fix to pmpro_checkout_start_date_keep_startdate filter added in 1.5.5
 * Added "Start Date" and "End Date" to emails sent to admins when a membership is cancelled.
+* Now checks for CSS files in a paid-memberships-pro subfolder of your active theme and uses those admin.css, frontend.css, and print.css files instead if they exist. (Going to move email and page template checks to that subfolder in the future as well.)
 
 = 1.5.5 =
 * Updated pmpro_check_site_url_for_https function to cache the siteurl to limit DB queries.
