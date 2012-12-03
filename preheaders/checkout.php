@@ -347,7 +347,7 @@
 		"bphone" => $bphone,
 		"bemail" => $bemail,
 		"bcountry" => $bcountry,
-		"CardyType" => $CardType,
+		"CardType" => $CardType,
 		"AccountNumber" => $AccountNumber,
 		"ExpirationMonth" => $ExpirationMonth,
 		"ExpirationYear" => $ExpirationYear,
