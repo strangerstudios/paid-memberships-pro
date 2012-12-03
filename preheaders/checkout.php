@@ -308,7 +308,7 @@
 	if(isset($_REQUEST['password']))
 		$password = $_REQUEST['password'];
 	else
-		$username = "";
+		$password = "";
 	if(isset($_REQUEST['password2_copy']))
 		$password2 = $password;	
 	elseif(isset($_REQUEST['password2']))
