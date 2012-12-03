@@ -74,6 +74,7 @@
 		$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);
 		
 		//look for memberships with trials ending soon (but we haven't emailed them within a week)
+		// Should this email send when mu.trial_amount==0? Email shows a scheduled payment of $0
 		$sqlQuery = "
 		SELECT 
 			mu.user_id, mu.membership_id, mu.startdate, mu.cycle_period, mu.trial_limit FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_trial_ending_notice' 
