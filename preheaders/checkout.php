@@ -767,7 +767,8 @@
 		if(!$current_user->ID)
 		{
 			// create user
-			require_once( ABSPATH . WPINC . '/registration.php');
+			if(version_compare($wp_version, "3.1") < 0)
+				require_once( ABSPATH . WPINC . '/registration.php');	//need this for WP versions before 3.1
 			$user_id = wp_insert_user(array(
 							"user_login" => $username,							
 							"user_pass" => $password,
