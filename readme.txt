@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.5.6
+Stable tag: 1.5.6.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.5.6.1 =
+* Fixed "invalid gateway" bug when using PayPal Express option with the PayPal/PayPalExpress gateway.
+* Fixed some warnings.
+
 = 1.5.6 =
 * Fixes in the new pmpro_getMemberStartdate and pmpro_getMemberDays functions.
 * Fixes to SQL queries for the expiration and trial ending crons.

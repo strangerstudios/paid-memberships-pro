@@ -12,7 +12,7 @@ function pmpro_checkout_level_extend_memberships($level)
 	global $pmpro_msg, $pmpro_msgt;
 
 	//does this level expire? are they an existing user of this level?
-	if($level->expiration_number && pmpro_hasMembershipLevel($level->id))
+	if(!empty($level) && !empty($level->expiration_number) && pmpro_hasMembershipLevel($level->id))
 	{
 		//get the current enddate of their membership
 		global $current_user;

@@ -92,15 +92,15 @@
 			else
 				$cardtype = $order->cardtype;
 			
-			if($cardtype)			
+			if(!empty($cardtype))
 				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
 
 			//Maestro/Solo card fields. (Who uses these?) :)
-			if($order->StartDate)
+			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 			
 			//billing address, etc
-			if($order->Address1)
+			if(!empty($order->Address1))
 			{
 				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
 				
