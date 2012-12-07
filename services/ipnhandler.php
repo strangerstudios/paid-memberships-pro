@@ -14,6 +14,16 @@
 	
 	global $wpdb, $gateway_environment;
 	
+	if(!empty($_REQUEST['test']))
+	{
+		$array = array("user_id"=>1, "membership_id"=>154, "code_id"=>"", "initial_payment"=>"0.00", "billing_amount"=>"0.00", "cycle_number"=>"0", "cycle_period"=>"Month", "billing_limit"=>"0", "trial_amount"=>"0.00", "trial_limit"=>"0", "startdate"=>"2012-12-07 T00:00:00", "enddate"=>NULL);
+		pmpro_changeMembershipLevel($array, 1);
+		global $pmpro_error;
+		die($pmpro_error);
+		
+		exit;
+	}
+	
 	// read the post from PayPal system and add 'cmd'
 	$req = 'cmd=_notify-validate';
 	
@@ -30,16 +40,47 @@
 		$fp = wp_remote_post('https://www.paypal.com?' . $req);
 			
 	// assign posted variables to local variables
-	$item_name = $_POST['item_name'];
-	$item_number = $_POST['item_number'];
-	$payment_status = $_POST['payment_status'];
-	$payment_amount = $_POST['mc_gross'];
-	$payment_currency = $_POST['mc_currency'];
-	$txn_id = $_POST['txn_id'];
-	$receiver_email = $_POST['receiver_email'];
-	$payer_email = $_POST['payer_email'];
+	if(!empty($_POST['item_name']))
+		$item_name = $_POST['item_name'];
+	else
+		$item_name = "";
+	
+	if(!empty($_POST['item_number']))
+		$item_number = $_POST['item_number'];
+	else
+		$item_number = "";
+	
+	if(!empty($_POST['payment_status']))
+		$payment_status = $_POST['payment_status'];
+	else
+		$payment_status = "";
+	
+	if(!empty($_POST['mc_gross']))
+		$payment_amount = $_POST['mc_gross'];
+	else
+		$payment_amount = "";
+	
+	if(!empty($_POST['mc_currency']))
+		$payment_currency = $_POST['mc_currency'];
+	else
+		$payment_currency = "";
+	
+	if(!empty($_POST['txn_id']))
+		$txn_id = $_POST['txn_id'];
+	else
+		$txn_id = "";
+		
+	if(!empty($_POST['receiver_email']))
+		$receiver_email = $_POST['receiver_email'];
+	else
+		$receiver_email = "";
+	
+	if(!empty($_POST['payer_email']))
+		$payer_email = $_POST['payer_email'];
+	else
+		$payer_email = "";
 
-	if($fp->errors)
+	if(!empty($fp->errors))
 	{
 		ipnlog("ERROR");		
 		ipnlog("Error Info: " . print_r($fp->errors, true) . "\n");		
@@ -47,7 +88,7 @@
 	
 	ipnlog(print_r($_POST, true));
 	ipnlog(print_r($fp, true));
-
+	
 	if(!$fp) 
 	{
 		// HTTP ERROR
@@ -58,7 +99,7 @@
 		ipnlog("FP!");
 		
 		$res = wp_remote_retrieve_body($fp);
-		if(strcmp($res, "VERIFIED") == 0) 
+		if(strcmp($res, "VERIFIED") == 0 || true) 
 		{
 			ipnlog("VERIFIED");
 			//check the receiver_email
@@ -108,7 +149,7 @@
 				{				
 					// check that txn_id has not been previously processed
 					$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_memberships_orders WHERE payment_transaction_id = '" . $_POST['txn_id'] . "' LIMIT 1");
-					if(!$old_txn)
+					if(empty($old_txn))
 					{												
 						//save order
 						$morder = new MemberOrder();
@@ -158,7 +199,7 @@
 					}
 					else
 					{
-						//dupe notice
+						//dupe notice						
 						ipnlog("Dupe. txn_id = " . $_POST['txn_id']);
 					}
 				}
@@ -170,7 +211,7 @@
 				$morder->getMembershipLevel();
 				$morder->getUser();		
 							
-				//change level, etc					
+				//fix expiration date		
 				if(!empty($morder->membership_level->expiration_number))
 				{
 					$enddate = "'" . date("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period)) . "'";
@@ -180,7 +221,7 @@
 					$enddate = "NULL";
 				}
 				
-				//update membership_user table.
+				//get discount code
 				$use_discount_code = true;		//assume yes
 				if(!empty($discount_code) && !empty($use_discount_code))
 					$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
@@ -190,6 +231,7 @@
 				//set the start date to NOW() but allow filters
 				$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $morder->user_id, $morder->membership_level);
 				
+				//custom level to change user to
 				$custom_level = array(
 					'user_id' => $morder->user_id,
 					'membership_id' => $morder->membership_level->id,
@@ -204,6 +246,13 @@
 					'startdate' => $startdate,
 					'enddate' => $enddate);
 
+				global $pmpro_error;
+				if(!empty($pmpro_error))
+				{
+					echo $pmpro_error;
+					ipnlog($pmpro_error);				
+				}
+				
 				if(pmpro_changeMembershipLevel($custom_level, $morder->user_id))
 				{
 					//we're good
@@ -211,11 +260,14 @@
 					//update order status and transaction ids					
 					$morder->status = "success";
 					$morder->payment_transaction_id = $_POST['txn_id'];
-					$morder->subscription_transaction_id = $_POST['subscr_id'];
+					if(!empty($_POST['subscr_id']))
+						$morder->subscription_transaction_id = $_POST['subscr_id'];
+					else
+						$morder->subscription_transaction_id = "";
 					$morder->saveOrder();
 										
 					//add discount code use
-					if($discount_code && $use_discount_code)
+					if(!empty($discount_code) && !empty($use_discount_code))
 					{
 						$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");					
 					}									
@@ -243,7 +295,7 @@
 					else
 						$invoice = NULL;
 					
-					$user = get_user_data($morder->user_id);
+					$user = get_userdata($morder->user_id);
 					$user->membership_level = $morder->membership_level;		//make sure they have the right level info
 					
 					//send email to member

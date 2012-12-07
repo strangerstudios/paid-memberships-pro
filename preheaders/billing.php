@@ -253,8 +253,7 @@
 		}
 		
 		if(!empty($missing_billing_field))
-		{
-			//krumo(array($bname, $baddress1, $bcity, $bstate, $bzipcode, $bemail, $name, $address1, $city, $state, $zipcode));
+		{			
 			$pmpro_msg = "Please complete all required fields.";
 			$pmpro_msgt = "pmpro_error";
 		}		

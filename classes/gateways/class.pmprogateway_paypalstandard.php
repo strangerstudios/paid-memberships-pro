@@ -187,7 +187,9 @@
 
 			//redirect to paypal			
 			$paypal_url .= $nvpStr;			
-						
+			
+			//die($paypal_url);
+			
 			wp_redirect($paypal_url);
 			exit;
 		}

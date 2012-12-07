@@ -132,13 +132,21 @@
 							<td><?php echo $metavalues->last_name?></td>
 							<td><a href="mailto:<?php echo $theuser->user_email?>"><?php echo $theuser->user_email?></a></td>
 							<td>
-								<?php echo trim($metavalues->pmpro_bfirstname . " " . $metavalues->pmpro_blastname);?><br />
-								<?php echo $metavalues->pmpro_baddress1; ?><br />
-								<?php if(!empty($metavalues->pmpro_baddress2)) echo $metavalues->pmpro_baddress2 . "<br />"; ?>										
-								<?php if($metavalues->pmpro_bcity && $metavalues->pmpro_bstate) { ?>
-									<?php echo $metavalues->pmpro_bcity?>, <?php echo $metavalues->pmpro_bstate?> <?php echo $metavalues->pmpro_bzipcode?>  <?php if(!empty($metavalues->pmpro_bcountry)) echo $metavalues->pmpro_bcountry?><br />												
+								<?php 
+									if(empty($metavalues->pmpro_bfirstname))
+										$metavalues->pmpro_bfirstname = "";
+									if(empty($metavalues->pmpro_blastname))
+										$metavalues->pmpro_blastname = "";
+									echo trim($metavalues->pmpro_bfirstname . " " . $metavalues->pmpro_blastname);
+								?><br />
+								<?php if(!empty($metavalues->pmpro_baddress1)) { ?>
+									<?php echo $metavalues->pmpro_baddress1; ?><br />
+									<?php if(!empty($metavalues->pmpro_baddress2)) echo $metavalues->pmpro_baddress2 . "<br />"; ?>										
+									<?php if($metavalues->pmpro_bcity && $metavalues->pmpro_bstate) { ?>
+										<?php echo $metavalues->pmpro_bcity?>, <?php echo $metavalues->pmpro_bstate?> <?php echo $metavalues->pmpro_bzipcode?>  <?php if(!empty($metavalues->pmpro_bcountry)) echo $metavalues->pmpro_bcountry?><br />												
+									<?php } ?>
 								<?php } ?>
-								<?php echo formatPhone($metavalues->pmpro_bphone)?>
+								<?php if(!empty($metavalues->pmpro_bphone)) echo formatPhone($metavalues->pmpro_bphone);?>
 							</td>
 							<td><?php echo $theuser->membership?></td>	
 							<td>										

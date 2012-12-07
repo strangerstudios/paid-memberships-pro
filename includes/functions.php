@@ -543,6 +543,12 @@
 		{
 			if(is_array($level))
 			{
+				//make sure the dates are in good formats
+				if($level['startdate'] != "NOW()" && substr($level['startdate'], 0, 1) != "'")
+					$level['startdate'] = "'" . $level['startdate'] . "'";
+				if($level['enddate'] != "NOW()" && substr($level['enddate'], 0, 1) != "'")
+					$level['enddate'] = "'" . $level['enddate'] . "'";
+				
 				$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
 						VALUES('" . $level['user_id'] . "',
 						'" . $level['membership_id'] . "',
