@@ -14,16 +14,6 @@
 	
 	global $wpdb, $gateway_environment;
 	
-	if(!empty($_REQUEST['test']))
-	{
-		$array = array("user_id"=>1, "membership_id"=>154, "code_id"=>"", "initial_payment"=>"0.00", "billing_amount"=>"0.00", "cycle_number"=>"0", "cycle_period"=>"Month", "billing_limit"=>"0", "trial_amount"=>"0.00", "trial_limit"=>"0", "startdate"=>"2012-12-07 T00:00:00", "enddate"=>NULL);
-		pmpro_changeMembershipLevel($array, 1);
-		global $pmpro_error;
-		die($pmpro_error);
-		
-		exit;
-	}
-	
 	// read the post from PayPal system and add 'cmd'
 	$req = 'cmd=_notify-validate';
 	
@@ -210,6 +200,9 @@
 				$morder = new MemberOrder($_POST['item_number']);												
 				$morder->getMembershipLevel();
 				$morder->getUser();		
+				
+				//filter for level
+				$morder->membership_level = apply_filters("pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id);
 							
 				//fix expiration date		
 				if(!empty($morder->membership_level->expiration_number))

@@ -1150,6 +1150,8 @@
 			return false;
 		}
 
+		global $all_membership_levels;
+
 		if(isset($all_membership_levels[$user_id]))
 		{
 			return $all_membership_levels[$user_id];
@@ -1163,6 +1165,8 @@
 																mu.id as subscription_id,
 																l.name AS name,
 																l.description,
+																l.expiration_number,
+																l.expiration_period,
 																mu.initial_payment,
 																mu.billing_amount,
 																mu.cycle_number,
@@ -1210,6 +1214,8 @@
 									mu.id as subscription_id,
 									l.name,
 									l.description,
+									l.expiration_number,
+									l.expiration_period,
 									mu.initial_payment,
 									mu.billing_amount,
 									mu.cycle_number,

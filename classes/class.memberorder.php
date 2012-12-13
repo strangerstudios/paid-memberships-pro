@@ -203,7 +203,7 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
 				
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
