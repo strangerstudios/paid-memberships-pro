@@ -808,6 +808,9 @@
 			{
 				$morder->user_id = $user_id;				
 				$morder->saveOrder();
+				
+				do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
+				
 				$morder->Gateway->sendToPayPal($morder);
 			}
 			
