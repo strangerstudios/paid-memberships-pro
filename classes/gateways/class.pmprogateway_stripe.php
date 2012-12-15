@@ -1,6 +1,7 @@
 <?php	
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+	if(!class_exists("Stripe"))
+		require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
 	class PMProGateway_stripe
 	{
 		function PMProGateway_stripe($gateway = NULL)
