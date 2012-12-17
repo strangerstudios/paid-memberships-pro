@@ -35,7 +35,10 @@
 			
 			if(!$this->subject)
 				$this->subject = "An Email From " . get_option("blogname");
-				
+			
+			//decode the subject line in case there are apostrophes/etc in it
+			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
+	
 			if(!$this->template)
 				$this->template = "default";
 						

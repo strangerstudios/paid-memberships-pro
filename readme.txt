@@ -56,6 +56,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * The getMembershipLevelForUser function and getMembershipLevel method of the MemberOrders class will now include expiration_number and expiration_period properties on the returned level. These are needed to properly extend membership levels when checking out for the same level.
 * Added pmpro_before_send_to_paypal_standard hook. This is executed at checkout before calling the sendToPayPal method on the order. The register helper plugin has been updated to update user meta fields during this hook in addition to the pmpro_after_checkout hook. (Because for PayPal Standard, when pmpro_after_checkout is called, the $_SESSION vars are unavailable to it. So other plugins relying on the pmpro_after_checkout hook may have issues with PayPal Standard.)
 * Added !class_exists("Stripe") check before loading Stripe library. This assumes that other plugins using the Stripe lib are loading compatible versions and/or also checking first before loading the Stripe lib. The alternative is to namespace the Stripe library for PMPro which would take some more effort.
+* Now running email subject lines through html_entity_decode to avoid special characters for apostrophes/etc.
 
 = 1.5.7 =
 * Ready for WordPress 3.5
