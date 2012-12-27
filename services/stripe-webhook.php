@@ -12,7 +12,8 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 	
-	require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
+	if(!class_exists("Stripe"))
+		require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
 			
 	Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
 			

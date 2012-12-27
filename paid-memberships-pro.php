@@ -169,6 +169,14 @@ function pmpro_set_current_user()
 			$ezCount = 100;
 			$urCount = 100;
 		}
+		
+		//disable ads in Easy Adsense (newer versions)
+		if(class_exists("EzAdSense"))
+		{
+			global $ezAdSense;
+			$ezAdSense->ezCount = 100;
+			$ezAdSense->urCount = 100;
+		}
 
 		//set a global variable to hide ads
 		global $pmpro_display_ads;
