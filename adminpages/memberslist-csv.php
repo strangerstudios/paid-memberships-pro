@@ -58,6 +58,30 @@
 	$theusers = $wpdb->get_results($sqlQuery);	
 	$csvoutput = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,joined,expires";
 	
+	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
+	$default_columns = array(
+		array("theuser", "ID"),
+		array("theuser", "user_login"),
+		array("metavalues", "first_name"),
+		array("metavalues", "last_name"),
+		array("theuser", "user_email"),
+		array("metavalues", "pmpro_bfirstname"),
+		array("metavalues", "pmpro_blastname"),
+		array("metavalues", "pmpro_baddress1"),
+		array("metavalues", "pmpro_baddress2"),
+		array("metavalues", "pmpro_bcity"),
+		array("metavalues", "pmpro_bzipcode"),
+		array("metavalues", "pmpro_bzipcode"),
+		array("metavalues", "pmpro_bcountry"),
+		array("metavalues", "pmpro_bphone"),
+		array("theuser", "membership"),
+		array("theuser", "initial_payment"),
+		array("theuser", "initial_payment"),
+		array("theuser", "billing_amount"),
+		array("theuser", "cycle_period")
+		//joindate and enddate are handled specifically below
+	);
+	
 	//any extra columns
 	$extra_columns = apply_filters("pmpro_members_list_csv_extra_columns", array());
 	if(!empty($extra_columns))
@@ -78,32 +102,26 @@
 			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";					
 			$metavalues = pmpro_getMetavalues($sqlQuery);	
 			$theuser->metavalues = $metavalues;
-			
-			/*
-				Fixing notice with bcountry. Should probably check other values just in case.				
-			*/
-			if(empty($metavalues->pmpro_bcountry))
-				$metavalues->pmpro_bcountry = "";
-			
-			$csvoutput .= enclose($theuser->ID) . "," .
-						  enclose($theuser->user_login) . "," .						  
-						  enclose($metavalues->first_name) . "," .
-						  enclose($metavalues->last_name) . "," .
-						  enclose($theuser->user_email) . "," .
-						  enclose($metavalues->pmpro_bfirstname) . "," .
-						  enclose($metavalues->pmpro_blastname) . "," .
-						  enclose($metavalues->pmpro_baddress1) . "," .
-						  enclose($metavalues->pmpro_baddress2) . "," .
-						  enclose($metavalues->pmpro_bcity) . "," .
-						  enclose($metavalues->pmpro_bstate) . "," .
-						  enclose($metavalues->pmpro_bzipcode) . "," .
-						  enclose($metavalues->pmpro_bcountry) . "," .
-						  enclose($metavalues->pmpro_bphone) . "," .
-						  enclose($theuser->membership) . "," .
-						  enclose($theuser->initial_payment) . "," .
-						  enclose($theuser->billing_amount) . "," .
-						  enclose($theuser->cycle_period) . "," .					  
-						  enclose(date("m/d/Y", $theuser->joindate)) . ",";
+						
+			//default columns			
+			if(!empty($default_columns))
+			{
+				$count = 0;
+				foreach($default_columns as $col)
+				{
+					//add comma after the first item
+					$count++;
+					if($count > 1)
+						$csvoutput .= ",";
+						
+					//checking $object->property. note the double $$
+					if(!empty($$col[0]->$col[1]))
+						$csvoutput .= enclose($$col[0]->$col[1]);	//output the value				
+				}
+			}
+									
+			//joindate and enddate
+			$csvoutput .= enclose(date("m/d/Y", $theuser->joindate)) . ",";
 			if($theuser->enddate)
 				$csvoutput .= enclose(date("m/d/Y", $theuser->enddate));
 			else
@@ -122,7 +140,7 @@
 											
 		}
 	}
-	
+		
 	$size_in_bytes = strlen($csvoutput);
 	header("Content-type: text/csv");
 	//header("Content-type: application/vnd.ms-excel");
