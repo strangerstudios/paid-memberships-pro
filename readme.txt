@@ -58,7 +58,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Re-Added !class_exists("Stripe") check before loading Stripe library. This assumes that other plugins using the Stripe lib are loading compatible versions and/or also checking first before loading the Stripe lib. The alternative is to namespace the Stripe library for PMPro which would take some more effort.
 * Now running email subject lines through html_entity_decode to avoid special characters for apostrophes/etc.
 * Updated code to support auto-hiding ads with newer versions of Easy AdSense.
-* Updated how the members list CSV is generated to avoid PHP notices when meta values are not found/etc.
+* Updated how the members list CSV is generated to avoid PHP notices when meta values are not found/etc. Also added a prefix to the enclose function in memberslist-csv.php (enclose => pmpro_enclose).
 
 = 1.5.7 =
 * Ready for WordPress 3.5

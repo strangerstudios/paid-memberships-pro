@@ -116,23 +116,23 @@
 						
 					//checking $object->property. note the double $$
 					if(!empty($$col[0]->$col[1]))
-						$csvoutput .= enclose($$col[0]->$col[1]);	//output the value				
+						$csvoutput .= pmpro_enclose($$col[0]->$col[1]);	//output the value				
 				}
 			}
 									
 			//joindate and enddate
-			$csvoutput .= enclose(date("m/d/Y", $theuser->joindate)) . ",";
+			$csvoutput .= pmpro_enclose(date("m/d/Y", $theuser->joindate)) . ",";
 			if($theuser->enddate)
-				$csvoutput .= enclose(date("m/d/Y", $theuser->enddate));
+				$csvoutput .= pmpro_enclose(date("m/d/Y", $theuser->enddate));
 			else
-				$csvoutput .= enclose("Never");
+				$csvoutput .= pmpro_enclose("Never");
 				
 			//any extra columns			
 			if(!empty($extra_columns))
 			{
 				foreach($extra_columns as $heading => $callback)
 				{
-					$csvoutput .= "," . enclose(call_user_func($callback, $theuser));
+					$csvoutput .= "," . pmpro_enclose(call_user_func($callback, $theuser));
 				}
 			}
 				
@@ -155,7 +155,7 @@
 	
 	print $csvoutput;
 	
-	function enclose($s)
+	function pmpro_enclose($s)
 	{
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
