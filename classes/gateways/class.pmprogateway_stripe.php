@@ -215,11 +215,22 @@
 			$order->subtotal = $amount;
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
+			/*
+				There are two parts to the trial. Part 1 is simply the delay until the first payment
+				since we are doing the first payment as a separate transaction.
+				The second part is the actual "trial" set by the admin.
+				
+				Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
+			*/
 			//figure out the trial length (first payment handled by initial charge)			
 			if($order->BillingPeriod == "Year")
-				$trial_period_days = 365;	//annual
+				$trial_period_days = $order->BillingFrequency * 365;	//annual
+			elseif($order->BillingPeriod == "Day")
+				$trial_period_days = $order->BillingFrequency * 1;		//daily
+			elseif($order->BillingPeriod == "Week")
+				$trial_period_days = $order->BillingFrequency * 7;		//weekly
 			else
-				$trial_period_days = 30;	//assume monthly
+				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 				
 			//convert to a profile start date
 			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";			
@@ -230,6 +241,20 @@
 			//convert back to days
 			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
 
+			//now add the actual trial set by the site
+			if(!empty($order->TrialBillingCycles))						
+			{
+				$trialOccurrences = (int)$order->TrialBillingCycles;
+				if($order->BillingPeriod == "Year")
+					$trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
+				elseif($order->BillingPeriod == "Day")
+					$trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
+				elseif($order->BillingPeriod == "Week")
+					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+				else
+					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
+			}					
+			
 			//create a plan
 			try
 			{						
