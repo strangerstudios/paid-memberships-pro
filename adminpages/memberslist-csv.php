@@ -76,7 +76,6 @@
 		array("metavalues", "pmpro_bphone"),
 		array("theuser", "membership"),
 		array("theuser", "initial_payment"),
-		array("theuser", "initial_payment"),
 		array("theuser", "billing_amount"),
 		array("theuser", "cycle_period")
 		//joindate and enddate are handled specifically below
@@ -121,9 +120,9 @@
 			}
 									
 			//joindate and enddate
-			$csvoutput .= pmpro_enclose(date("m/d/Y", $theuser->joindate)) . ",";
+			$csvoutput .= "," . pmpro_enclose(date("Y-m-d", $theuser->joindate)) . ",";
 			if($theuser->enddate)
-				$csvoutput .= pmpro_enclose(date("m/d/Y", $theuser->enddate));
+				$csvoutput .= pmpro_enclose(date("Y-m-d", $theuser->enddate));
 			else
 				$csvoutput .= pmpro_enclose("Never");
 				

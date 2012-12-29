@@ -97,7 +97,7 @@
 			foreach ( $rss_items as $item ) {
 				echo '<li class="pmpro_news">';
 				echo '<a class="rsswidget" href="'.esc_url( $item->get_permalink(), $protocolls=null, 'display' ).'">'. esc_html( $item->get_title() ) .'</a>';
-				echo ' <span class="rss-date">'. $item->get_date('F j, Y') .'</span>';
+				echo ' <span class="rss-date">'. $item->get_date(get_option('date_format')) .'</span>';
 				echo '<div class="rssSummary">'. esc_html( pmpro_text_limit( strip_tags( $item->get_description() ), 150 ) ).'</div>';
 				echo '</li>';
 			}

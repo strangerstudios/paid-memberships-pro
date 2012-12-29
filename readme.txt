@@ -59,6 +59,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Now running email subject lines through html_entity_decode to avoid special characters for apostrophes/etc.
 * Updated code to support auto-hiding ads with newer versions of Easy AdSense.
 * Updated how the members list CSV is generated to avoid PHP notices when meta values are not found/etc. Also added a prefix to the enclose function in memberslist-csv.php (enclose => pmpro_enclose).
+* Now using get_option("date_format") when outputing a date in the admin, frontend, or in an email.
 
 = 1.5.7 =
 * Ready for WordPress 3.5

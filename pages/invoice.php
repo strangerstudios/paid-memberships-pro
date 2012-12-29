@@ -15,13 +15,13 @@
 		$pmpro_invoice->getMembershipLevel();
 	?>
 	
-	<h3>Invoice #<?php echo $pmpro_invoice->code?> on <?php echo date("F j, Y", $pmpro_invoice->timestamp)?></h3>
+	<h3>Invoice #<?php echo $pmpro_invoice->code?> on <?php echo date(get_option('date_format'), $pmpro_invoice->timestamp)?></h3>
 	<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
 	<ul>
 		<li><strong>Account:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 		<li><strong>Membership Level:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
 		<?php if($pmpro_invoice->membership_level->enddate) { ?>
-			<li><strong>Membership Expires:</strong> <?php echo date("n/j/Y", $pmpro_invoice->membership_level->enddate)?></li>
+			<li><strong>Membership Expires:</strong> <?php echo date(get_option('date_format'), $pmpro_invoice->membership_level->enddate)?></li>
 		<?php } ?>
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
 			<li><strong>Discount Code:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>

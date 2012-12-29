@@ -597,10 +597,10 @@
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>
 						</td>
 						<td>
-							<?php echo date("m/d/Y", $code->starts)?>
+							<?php echo date(get_option('date_format'), $code->starts)?>
 						</td>
 						<td>
-							<?php echo date("m/d/Y", $code->expires)?>
+							<?php echo date(get_option('date_format'), $code->expires)?>
 						</td>				
 						<td>
 							<?php

@@ -1047,7 +1047,7 @@
 		if(!empty($dbcode->starts) && $dbcode->starts > $today)
 		{
 			if($return_errors)
-				return array(false, "This discount code goes into effect on " . date("m/d/Y", $dbcode->starts) . ".");
+				return array(false, "This discount code goes into effect on " . date(get_option('date_format'), $dbcode->starts) . ".");
 			else
 				return false;
 		}
@@ -1056,7 +1056,7 @@
 		if(!empty($dbcode->expires) && $dbcode->expires < $today)
 		{
 			if($return_errors)
-				return array(false, "This discount code expired on " . date("m/d/Y", $dbcode->expires) . ".");
+				return array(false, "This discount code expired on " . date(get_option('date_format'), $dbcode->expires) . ".");
 			else
 				return false;
 		}

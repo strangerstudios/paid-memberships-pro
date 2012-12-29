@@ -24,7 +24,7 @@
 		<?php } ?>
 		
 		<?php if($current_user->membership_level->enddate) { ?>
-			<li><strong>Membership Expires:</strong> <?php echo date("n/j/Y", $current_user->membership_level->enddate)?></li>
+			<li><strong>Membership Expires:</strong> <?php echo date(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		
 		<?php if($current_user->membership_level->trial_limit) { ?>

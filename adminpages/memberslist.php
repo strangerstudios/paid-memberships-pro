@@ -161,11 +161,11 @@
 									-
 								<?php } ?>
 							</td>						
-							<td><?php echo date("m/d/Y", $theuser->joindate)?></td>
+							<td><?php echo date(get_option('date_format'), $theuser->joindate)?></td>
 							<td>
 								<?php 
 									if($theuser->enddate) 
-										echo date("m/d/Y", $theuser->enddate);
+										echo date(get_option('date_format'), $theuser->enddate);
 									else
 										echo "Never";
 								?>

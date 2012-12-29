@@ -36,7 +36,7 @@
 			if($nextpayment)
 			{
 			?>
-				<li><strong>Next Invoice:</strong> <?php echo date("F j, Y", $nextpayment)?></li>
+				<li><strong>Next Invoice:</strong> <?php echo date(get_option('date_format'), $nextpayment)?></li>
 			<?php
 			}
 			*/
