@@ -123,32 +123,40 @@
 			// this identifies your website in the createToken call below			
 			Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 			
+			var pmpro_require_billing = true;
+												
 			jQuery(document).ready(function() {
 				jQuery(".pmpro_form").submit(function(event) {
-				
-				Stripe.createToken({
-					number: jQuery('#AccountNumber').val(),
-					cvc: jQuery('#CVV').val(),
-					exp_month: jQuery('#ExpirationMonth').val(),
-					exp_year: jQuery('#ExpirationYear').val(),
-					name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
-					<?php
-						$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
-						if(!empty($pmpro_stripe_verify_address))
-						{
-						?>
-						,address_line1: jQuery('#baddress1').val(),
-						address_line2: jQuery('#baddress2').val(),
-						address_zip: jQuery('#bzipcode').val(),
-						address_state: jQuery('#bstate').val(),					
-						address_country: jQuery('#bcountry').val()
-					<?php
-						}
-					?>					
-				}, stripeResponseHandler);
+								
+				//double check in case a discount code made the level free				
+				if(pmpro_require_billing)
+				{
+					Stripe.createToken({
+						number: jQuery('#AccountNumber').val(),
+						cvc: jQuery('#CVV').val(),
+						exp_month: jQuery('#ExpirationMonth').val(),
+						exp_year: jQuery('#ExpirationYear').val(),
+						name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
+						<?php
+							$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
+							if(!empty($pmpro_stripe_verify_address))
+							{
+							?>
+							,address_line1: jQuery('#baddress1').val(),
+							address_line2: jQuery('#baddress2').val(),
+							address_zip: jQuery('#bzipcode').val(),
+							address_state: jQuery('#bstate').val(),					
+							address_country: jQuery('#bcountry').val()
+						<?php
+							}
+						?>					
+					}, stripeResponseHandler);
 
-				// prevent the form from submitting with the default action
-				return false;
+					// prevent the form from submitting with the default action
+					return false;
+				}
+				else
+					return true;	//not using Stripe anymore
 				});
 			});
 

@@ -82,6 +82,20 @@
 		jQuery('#pmpro_level_cost').html('The <strong><?php echo $discount_code?></strong> code has been applied to your order. <?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
 		
 		<?php
+			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
+			if(pmpro_isLevelFree($code_level))
+			{
+			?>
+				pmpro_require_billing = false;
+			<?php
+			}			
+			else
+			{
+			?>
+				pmpro_require_billing = true;
+			<?php
+			}
+			
 			//hide/show billing
 			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress")
 			{				
@@ -103,14 +117,14 @@
 			{
 				if(pmpro_isLevelFree($code_level))
 				{
-					?>
+					?>					
 					jQuery('#pmpro_paypalexpress_checkout').hide();
 					jQuery('#pmpro_submit_span').show();
 					<?php
 				}
 				else
 				{
-					?>
+					?>					
 					jQuery('#pmpro_submit_span').hide();
 					jQuery('#pmpro_paypalexpress_checkout').show();				
 					<?php
