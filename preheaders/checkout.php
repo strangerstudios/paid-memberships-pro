@@ -319,7 +319,7 @@
 	if(isset($_REQUEST['password']))
 		$password = $_REQUEST['password'];
 	else
-		$username = "";
+		$password = "";
 	if(isset($_REQUEST['password2_copy']))
 		$password2 = $password;	
 	elseif(isset($_REQUEST['password2']))
@@ -358,7 +358,7 @@
 		"bphone" => $bphone,
 		"bemail" => $bemail,
 		"bcountry" => $bcountry,
-		"CardyType" => $CardType,
+		"CardType" => $CardType,
 		"AccountNumber" => $AccountNumber,
 		"ExpirationMonth" => $ExpirationMonth,
 		"ExpirationYear" => $ExpirationYear,
