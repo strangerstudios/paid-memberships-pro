@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 1.5.8
+Stable tag: 1.5.8.0.9
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.5.9 =
+* Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
+
 = 1.5.8 =
 * Fixed bugs with the Membership Billing page. (Thanks, adambware)
 * The getMembershipLevelForUser function and getMembershipLevel method of the MemberOrders class will now include expiration_number and expiration_period properties on the returned level. These are needed to properly extend membership levels when checking out for the same level.
