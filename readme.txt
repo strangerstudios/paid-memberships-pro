@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog == 
 = 1.5.9 =
 * Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
+* Added pmpro_email_filter hook to filter entire email object at once.
 
 = 1.5.8 =
 * Fixed bugs with the Membership Billing page. (Thanks, adambware)

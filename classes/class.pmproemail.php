@@ -74,13 +74,14 @@
 			}
 			
 			//filters
-			$this->email = apply_filters("pmpro_email_recipient", $this->email, $this);
-			$this->from = apply_filters("pmpro_email_sender", $this->from, $this);
-			$this->fromname = apply_filters("pmpro_email_sender_name", $this->fromname, $this);
-			$this->subject = apply_filters("pmpro_email_subject", $this->subject, $this);
-			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
-			$this->body = apply_filters("pmpro_email_body", $this->body, $this);
-			$this->headers = apply_filters("pmpro_email_headers", $this->headers, $this);
+			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
+			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
+			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
+			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
+			$this->subject = apply_filters("pmpro_email_subject", $temail->subject, $this);
+			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
+			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
+			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			
 			if(wp_mail($this->email,$this->subject,$this->body,$this->headers))
 			{
