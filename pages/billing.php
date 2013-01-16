@@ -236,7 +236,7 @@
 							<?php
 							}
 						?>
-						<?php if(empty($pmpro_stripe_lite) && $gateway == "stripe") { ?>
+						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
 						<div>				
 							<label for="CardType">Card Type</label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
