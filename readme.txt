@@ -52,8 +52,10 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog == 
 = 1.5.9 =
+* Fixed bug on Membership Billing page that was hiding the billing address fields.
 * Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
 * Added pmpro_email_filter hook to filter entire email object at once.
+* Warning fix: Updated email class to check if the template file exists before trying to load the template into the body. (Useful if you are using the PMProEmail class for your own emails.)
 
 = 1.5.8 =
 * Fixed bugs with the Membership Billing page. (Thanks, adambware)

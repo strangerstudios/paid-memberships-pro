@@ -47,7 +47,7 @@
 			//load the template
 			if(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
 				$this->body = file_get_contents(TEMPLATEPATH . "/membership-email-" . $this->template . ".html");
-			else
+			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");			
 						
 			//header and footer
