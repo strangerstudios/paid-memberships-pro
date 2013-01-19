@@ -165,7 +165,7 @@
 			
 			//simulate a successful charge
 			$order->payment_transaction_id = "CHECK" . $order->code;
-			$order->updateStatus("firstpayment");					
+			$order->updateStatus("success");					
 			return true;						
 		}
 		

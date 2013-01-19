@@ -409,7 +409,7 @@
 			if($response_array[0] == 1)
 			{
 				$order->payment_transaction_id = $response_array[6];
-				$order->updateStatus("firstpayment");					
+				$order->updateStatus("success");					
 				return true;
 			}
 			else

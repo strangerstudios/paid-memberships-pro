@@ -181,7 +181,7 @@
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {			
 				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);								
-				$order->status = "firstpayment";				
+				$order->status = "success";				
 				
 				//update order
 				$order->saveOrder();	

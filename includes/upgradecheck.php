@@ -37,6 +37,22 @@ function pmpro_checkForUpgrades()
 
 	if($pmpro_db_version < 1.5)
 		$pmpro_db_version = pmpro_upgrade_1_5();
+		
+	if($pmpro_db_version < 1.59)
+		$pmpro_db_version = pmpro_upgrade_1_5_9();
+}
+
+function pmpro_upgrade_1_5_9()
+{
+	global $wpdb;
+	$wpdb->hide_errors();
+	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
+
+	//fix firstpayment statuses
+	$sqlQuery = "UPDATE " . $wpdb->pmpro_membership_orders . " SET status = 'success' WHERE status = 'firstpayment'";
+	$wpdb->query($sqlQuery);
+	
+	return 1.59;
 }
 
 function pmpro_upgrade_1_5()

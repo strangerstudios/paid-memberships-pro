@@ -221,7 +221,7 @@
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->payment_transaction_id = $this->httpParsedResponseAr['TRANSACTIONID'];
-				$order->updateStatus("firstpayment");				
+				$order->updateStatus("success");				
 				return true;				
 			} else  {				
 				$order->status = "error";
