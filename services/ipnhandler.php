@@ -98,10 +98,16 @@
 				//not yours					
 				ipnlog("ERROR: receiver_email (" . $_POST['receiver_email'] . ") did not match (" . pmpro_getOption('gateway_email') . ")");
 			}													
-			elseif(!empty($_POST['recurring_payment_id']))
+			elseif(!empty($_POST['recurring_payment_id']) || !empty($_POST['subscr_id']))
 			{								
+				//assuming recurring_payment_id = subscr_id
+				if(!empty($_POST['recurring_payment_id']))
+					$recurring_payment_id = $_POST['recurring_payment_id'];
+				else
+					$recurring_payment_id = $_POST['subscr_id'];
+			
 				// okay, add an invoice (maybe). first lookup the user_id from the subscription id passed
-				$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($_POST['recurring_payment_id']) . "' AND gateway = 'paypal' ORDER BY timestamp DESC LIMIT 1");
+				$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($recurring_payment_id) . "' AND gateway = 'paypal' ORDER BY timestamp DESC LIMIT 1");
 				$old_order = new MemberOrder($old_order_id);
 				$user_id = $old_order->user_id;	
 				$user = get_userdata($user_id);		
@@ -148,7 +154,7 @@
 						$morder->InitialPayment = $_POST['amount'];	//not the initial payment, but the class is expecting that
 						$morder->PaymentAmount = $_POST['amount'];
 						$morder->payment_transaction_id = $_POST['txn_id'];
-						$morder->subscription_transaction_id = $_POST['recurring_payment_id'];
+						$morder->subscription_transaction_id = $recurring_payment_id;
 						
 						$morder->FirstName = $_POST['first_name'];
 						$morder->LastName = $_POST['last_name'];

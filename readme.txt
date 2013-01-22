@@ -55,6 +55,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug on Membership Billing page that was hiding the billing address fields.
 * Changed all of the instances of "firstpayment" order statuses to "success". Also running query to fix statues in the DB. This caused issues for levels with only a one-time payment, where the invoice wouldn't show up in their account page.
 * Fixed the PayPal Express gateway to correctly set the order transaction id to TRANSACTIONID instead of the PROFILEID.
+* Updated the IPN handlers to accept recurring_payment_id or subscr_id when checking for recurring payment orders.
 * Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
 * Added pmpro_email_filter hook to filter entire email object at once.
 * Warning fix: Updated email class to check if the template file exists before trying to load the template into the body. (Useful if you are using the PMProEmail class for your own emails.)
