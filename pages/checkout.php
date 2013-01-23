@@ -122,7 +122,7 @@
 				jQuery('#other_discount_code_button').attr('disabled', 'disabled');				
 				
 				jQuery.ajax({
-					url: '<?php echo site_url()?>',type:'GET',timeout:2000,
+					url: '<?php echo home_url()?>',type:'GET',timeout:2000,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
 					error: function(xml){
@@ -598,7 +598,7 @@
 				jQuery('#discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
-					url: '<?php echo site_url()?>',type:'GET',timeout:2000,
+					url: '<?php echo home_url()?>',type:'GET',timeout:2000,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 					error: function(xml){
