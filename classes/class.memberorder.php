@@ -186,7 +186,7 @@
 			global $wpdb;
 			
 			if(!empty($this->user))
-				return $this->invoice->user;
+				return $this->user;
 				
 			$gmt_offset = get_option('gmt_offset');
 			$this->user = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(user_registered) + " . ($gmt_offset * 3600) . "  as user_registered FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");				
