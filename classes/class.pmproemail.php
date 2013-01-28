@@ -44,8 +44,12 @@
 						
 			$this->headers = array("Content-Type: text/html");
 			
-			//load the template
-			if(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
+			//load the template			
+			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
+				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");			
+			elseif(file_exists(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html"))
+				$this->body = file_get_contents(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html");
+			elseif(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
 				$this->body = file_get_contents(TEMPLATEPATH . "/membership-email-" . $this->template . ".html");
 			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");			

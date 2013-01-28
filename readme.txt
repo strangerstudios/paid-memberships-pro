@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
-Tested up to: 3.5
+Tested up to: 3.5.1
 Stable tag: 1.5.8.0.9
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
@@ -57,6 +57,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed the PayPal Express gateway to correctly set the order transaction id to TRANSACTIONID instead of the PROFILEID.
 * Updated the IPN handlers to accept recurring_payment_id or subscr_id when checking for recurring payment orders.
 * Changed the site_url() in the javascript for discount codes on the checkout page to home_url(). home_url() is better to use in case users have their WP core files in a different directory.
+* You can now place email templates in a paid-memberships-pro/email folder in your theme and PMPro will use these before using the built in email templates. Just copy the file out of the wp-plugins/paid-memberships-pro/email folder, use the same filenames, and edit the file.
+* You can now place page templates in a paid-memberships-pro/pages folder in your theme and PMPro will use these before using the built in page templates. Just copy the file out of the wp-plugins/paid-memberships-pro/pages folder, use the same filename, and edit the file.
+* You can now place css templates in a paid-memberships-pro/css folder in your theme and PMPro will use these before using the built in page templates. Just copy the file out of the wp-plugins/paid-memberships-pro/css folder, use the same filename, and edit the file.
 * Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
 * Added pmpro_email_filter hook to filter entire email object at once.
 * Warning fix: Updated email class to check if the template file exists before trying to load the template into the body. (Useful if you are using the PMProEmail class for your own emails.)

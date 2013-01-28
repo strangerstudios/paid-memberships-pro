@@ -328,22 +328,28 @@ function pmpro_init()
 
 	if(is_admin())
 	{
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/admin.css"))
-			$admin_css = get_stylesheet_uri() . "/paid-memberships-pro/admin.css";
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css"))
+			$admin_css = get_template_directory_uri() . "/paid-memberships-pro/css/admin.css";
+		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/admin.css"))
+			$admin_css = get_template_directory_uri() . "/paid-memberships-pro/admin.css";
 		else
 			$admin_css = plugins_url('css/admin.css',__FILE__ );		
 		wp_enqueue_style('pmpro_admin', $admin_css, array(), PMPRO_VERSION, "screen");
 	}
 	else
 	{		
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/frontend.css"))
-			$frontend_css = get_stylesheet_uri() . "/paid-memberships-pro/frontend.css";
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css"))
+			$frontend_css = get_template_directory_uri() . "/paid-memberships-pro/css/frontend.css";
+		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/frontend.css"))
+			$frontend_css = get_template_directory_uri() . "/paid-memberships-pro/frontend.css";
 		else
 			$frontend_css = plugins_url('css/frontend.css',__FILE__ );	
 		wp_enqueue_style('pmpro_frontend', $frontend_css, array(), PMPRO_VERSION, "screen");
 		
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/print.css"))
-			$print_css = get_stylesheet_uri() . "/paid-memberships-pro/print.css";
+		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/print.css"))
+			$print_css = get_template_directory_uri() . "/paid-memberships-pro/css/print.css";
+		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/print.css"))
+			$print_css = get_template_directory_uri() . "/paid-memberships-pro/print.css";
 		else
 			$print_css = plugins_url('css/print.css',__FILE__ );
 		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
@@ -406,7 +412,11 @@ function pmpro_wp()
 				{
 					global $pmpro_page_name;
 					ob_start();
-					include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
+					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
+						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
+					else
+						include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
+					
 					$temp_content = ob_get_contents();
 					ob_end_clean();
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
@@ -429,7 +439,10 @@ add_action("wp", "pmpro_wp", 1);
 function pmpro_checkout_shortcode($atts, $content=null, $code="")
 {	
 	ob_start();
-	include(plugin_dir_path(__FILE__) . "/pages/checkout.php");
+	if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/checkout.php"))
+		include(get_stylesheet_directory() . "/paid-memberships-pro/pages/checkout.php");
+	else
+		include(plugin_dir_path(__FILE__) . "/pages/checkout.php");
 	$temp_content = ob_get_contents();
 	ob_end_clean();
 	return apply_filters("pmpro_pages_shortcode_checkout", $temp_content);			
