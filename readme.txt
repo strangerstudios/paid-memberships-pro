@@ -60,6 +60,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * You can now place email templates in a paid-memberships-pro/email folder in your theme and PMPro will use these before using the built in email templates. Just copy the file out of the wp-plugins/paid-memberships-pro/email folder, use the same filenames, and edit the file.
 * You can now place page templates in a paid-memberships-pro/pages folder in your theme and PMPro will use these before using the built in page templates. Just copy the file out of the wp-plugins/paid-memberships-pro/pages folder, use the same filename, and edit the file.
 * You can now place css templates in a paid-memberships-pro/css folder in your theme and PMPro will use these before using the built in page templates. Just copy the file out of the wp-plugins/paid-memberships-pro/css folder, use the same filename, and edit the file.
+* Fixed a bug where discount codes that reduced a level price to $0 were not being counted as "uses".
 * Added $wp_version to globals set in preheaders/checkout.php to properly compare versions later in the script and avoid a notice.
 * Added pmpro_email_filter hook to filter entire email object at once.
 * Warning fix: Updated email class to check if the template file exists before trying to load the template into the body. (Useful if you are using the PMProEmail class for your own emails.)
