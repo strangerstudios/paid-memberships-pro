@@ -52,9 +52,9 @@
 		{
 			if(!pmpro_has_membership_access($file_post_parent))
 			{
-				//nope
-				echo "HTTP/1.1 503 Service Unavailable";
+				//nope				
 				header('HTTP/1.1 503 Service Unavailable', true, 503);
+				echo "HTTP/1.1 503 Service Unavailable";
 				exit;
 			}
 		}		
