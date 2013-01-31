@@ -543,16 +543,17 @@
 		{
 			if(is_array($level))
 			{
-				//make sure the dates are in good formats
-				if($level['startdate'] != "NOW()" && substr($level['startdate'], 0, 1) != "'")
+				//make sure the dates are in good formats				
+				if($level['startdate'] != "NOW()" && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
 					$level['startdate'] = "'" . $level['startdate'] . "'";
-				if($level['enddate'] != "NOW()" && substr($level['enddate'], 0, 1) != "'")
+								
+				if($level['enddate'] != "NOW()" && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
 					$level['enddate'] = "'" . $level['enddate'] . "'";
-				
+											
 				$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
 						VALUES('" . $level['user_id'] . "',
 						'" . $level['membership_id'] . "',
-						'" . $level['code_id'] . "',
+						'" . intval($level['code_id']) . "',
 						'" . $level['initial_payment'] . "',
 						'" . $level['billing_amount'] . "',
 						'" . $level['cycle_number'] . "',
@@ -562,6 +563,7 @@
 						'" . $level['trial_limit'] . "',
 						" . $level['startdate'] . ",
 						" . $level['enddate'] . ")";
+								
 				if(!$wpdb->query($sql))
 				{
 					$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
@@ -1382,57 +1384,63 @@
 	/*
 		Get a member's start date... either in general or for a specific level_id.
 	*/
-	function pmpro_getMemberStartdate($user_id = NULL, $level_id = 0)
-	{		
-		if(empty($user_id))
-		{
-			global $current_user;
-			$user_id = $current_user->ID;
-		}
+	if(!function_exists("pmpro_getMemberStartdate"))
+	{
+		function pmpro_getMemberStartdate($user_id = NULL, $level_id = 0)
+		{		
+			if(empty($user_id))
+			{
+				global $current_user;
+				$user_id = $current_user->ID;
+			}
 
-		global $pmpro_startdates;	//for cache
-		if(empty($pmpro_startdates[$user_id][$level_id]))
-		{			
-			global $wpdb;
+			global $pmpro_startdates;	//for cache
+			if(empty($pmpro_startdates[$user_id][$level_id]))
+			{			
+				global $wpdb;
+				
+				if(!empty($level_id))
+					$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
+				else
+					$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
+							
+				$startdate = $wpdb->get_var($sqlQuery);
+				
+				$pmpro_startdates[$user_id][$level_id] = $startdate;
+			}
 			
-			if(!empty($level_id))
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
-			else
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
-						
-			$startdate = $wpdb->get_var($sqlQuery);
-			
-			$pmpro_startdates[$user_id][$level_id] = $startdate;
+			return $pmpro_startdates[$user_id][$level_id];
 		}
-		
-		return $pmpro_startdates[$user_id][$level_id];
 	}
-	
+		
 	/*
 		How long has this member been a member
 	*/
-	function pmpro_getMemberDays($user_id = NULL, $level_id = 0)
+	if(!function_exists("pmpro_getMemberDays"))
 	{
-		if(empty($user_id))
+		function pmpro_getMemberDays($user_id = NULL, $level_id = 0)
 		{
-			global $current_user;
-			$user_id = $current_user->ID;
-		}
-		
-		global $pmpro_member_days;
-		if(empty($pmpro_member_days[$user_id][$level_id]))
-		{		
-			$startdate = pmpro_getMemberStartdate($user_id, $level_id);
-				
-			$now = time();
-			$days = ($now - $startdate)/3600/24;
+			if(empty($user_id))
+			{
+				global $current_user;
+				$user_id = $current_user->ID;
+			}
+			
+			global $pmpro_member_days;
+			if(empty($pmpro_member_days[$user_id][$level_id]))
+			{		
+				$startdate = pmpro_getMemberStartdate($user_id, $level_id);
 					
-			$pmpro_member_days[$user_id][$level_id] = $days;
+				$now = time();
+				$days = ($now - $startdate)/3600/24;
+						
+				$pmpro_member_days[$user_id][$level_id] = $days;
+			}
+			
+			return $pmpro_member_days[$user_id][$level_id];
 		}
-		
-		return $pmpro_member_days[$user_id][$level_id];
 	}
-	
+		
 	//the start of a message handling script
 	function pmpro_setMessage($message, $type, $force = false)
 	{
