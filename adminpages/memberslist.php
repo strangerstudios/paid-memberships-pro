@@ -83,7 +83,7 @@
 			$sqlQuery .= " WHERE mu.membership_id > 0  AND mu.status = 'active' ";
 			if($l)
 				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";
-			$sqlQuery .= "ORDER BY user_registered DESC LIMIT $start, $limit";
+			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
 						
 		$theusers = $wpdb->get_results($sqlQuery);
