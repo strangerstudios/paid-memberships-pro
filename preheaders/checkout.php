@@ -880,7 +880,7 @@
 					else
 						$code_order_id = "";
 						
-					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $code_order_id . "', now())");										
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . intval($code_order_id) . "', now())");										
 				}
 			
 				//save billing info ect, as user meta																		

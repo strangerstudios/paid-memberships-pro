@@ -384,7 +384,7 @@
 									   '" . $amount . "',
 									   '" . $tax . "',
 									   '" . $this->couponamount. "',
-									   '" . $this->certificate_id . "',
+									   '" . intval($this->certificate_id) . "',
 									   '" . $this->certificateamount . "',
 									   '" . ((float)$amount + (float)$tax) . "',
 									   '" . $this->payment_type . "',
