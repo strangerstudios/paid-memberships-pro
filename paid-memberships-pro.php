@@ -1503,8 +1503,15 @@ function pmpro_login_head()
 		//redirect registration page to levels page
 		if(isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled")
 		{
-			wp_redirect(pmpro_url("levels"));
-			exit;
+			//redirect to levels page unless filter is set.
+			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));
+			if(!empty($link))
+			{
+				wp_redirect($link);
+				exit;
+			}
+			else
+				break;	//don't redirect if pmpro_register_redirect filter returns false or a blank URL
 		}
 
 		//if theme my login is installed, redirect all logins to the login page

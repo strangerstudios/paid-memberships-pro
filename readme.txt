@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.6 =
+* Added the pmpro_register_redirect filter to allow you to change the URL PMPro redirects wp-login.php?action=register to. Returning false or an empty string will result in no redirect from the register page.
+
 = 1.5.9 =
 * Fixed bug on Membership Billing page that was hiding the billing address fields.
 * Changed all of the instances of "firstpayment" order statuses to "success". Also running query to fix statues in the DB. This caused issues for levels with only a one-time payment, where the invoice wouldn't show up in their account page.
