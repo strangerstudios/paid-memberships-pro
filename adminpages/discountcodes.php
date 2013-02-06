@@ -42,7 +42,7 @@
 		//updating or new?
 		if($saveid > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_discount_codes SET code = '" . $wpdb->escape($code) . "', starts = '" . $starts . "', expires = '" . $expires . "', uses = '" . $uses . "' WHERE id = '" . $saveid . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_discount_codes SET code = '" . $wpdb->escape($code) . "', starts = '" . $starts . "', expires = '" . $expires . "', uses = '" . intval($uses) . "' WHERE id = '" . $saveid . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				$pmpro_msg = "Discount code updated successfully.";
@@ -58,7 +58,7 @@
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes (id, code, starts, expires, uses) VALUES('', '" . $wpdb->escape($code) . "', '" . $starts . "', '" . $expires . "', '" . $uses . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses) VALUES('" . $wpdb->escape($code) . "', '" . $starts . "', '" . $expires . "', '" . intval($uses) . "')";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				$pmpro_msg = "Discount code added successfully.";
@@ -67,8 +67,8 @@
 				$edit = $wpdb->insert_id;
 			}
 			else
-			{
-				$pmpro_msg = "Error adding discount code. That code may already be in use.";				
+			{				
+				$pmpro_msg = "Error adding discount code. That code may already be in use." . $wpdb->last_error;				
 				$pmpro_msgt = "error";
 			}
 		}
@@ -155,7 +155,7 @@
 					{
 						$billing_amount = '';
 						$cycle_number = '';
-						$cycle_period = '';
+						$cycle_period = 'Month';
 						$billing_limit = '';
 						$custom_trial = 0;
 						$trial_amount = '';
@@ -180,19 +180,19 @@
 					else
 					{
 						$expiration_number = '';
-						$expiration_period = '';
+						$expiration_period = 'Month';
 					}
 					
 					//okay, do the insert
-					$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . $wpdb->escape($initial_payment) . "', '" . $wpdb->escape($billing_amount) . "', '" . $wpdb->escape($cycle_number) . "', '" . $wpdb->escape($cycle_period) . "', '" . $wpdb->escape($billing_limit) . "', '" . $wpdb->escape($trial_amount) . "', '" . $wpdb->escape($trial_limit) . "', '" . $wpdb->escape($expiration_number) . "', '" . $wpdb->escape($expiration_period) . "')";
-									
+					$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . (double)$wpdb->escape($initial_payment) . "', '" . (double)$wpdb->escape($billing_amount) . "', '" . intval($wpdb->escape($cycle_number)) . "', '" . $wpdb->escape($cycle_period) . "', '" . intval($wpdb->escape($billing_limit)) . "', '" . (double)$wpdb->escape($trial_amount) . "', '" . intval($wpdb->escape($trial_limit)) . "', '" . intval($wpdb->escape($expiration_number)) . "', '" . $wpdb->escape($expiration_period) . "')";
+										
 					if($wpdb->query($sqlQuery) !== false)
 					{
 						//okay												
 						do_action("pmpro_save_discount_code_level", $saveid, $level_id);						
 					}
 					else
-					{
+					{					
 						$level_errors[] = "Error saving values for the " . $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1") . " level.";
 					}
 				}
@@ -200,8 +200,8 @@
 			
 			//errors?
 			if(!empty($level_errors))
-			{
-				$pmpro_msg = "There were errors updating the level values: " . explode(" ", $level_errors);
+			{				
+				$pmpro_msg = "There were errors updating the level values: " . implode(" ", $level_errors);
 				$pmpro_msgt = "error";				
 			}
 			else
@@ -311,7 +311,7 @@
 				//defaults for new codes
 				if($edit == -1)
 				{
-					$code = NULL;
+					$code = new stdClass();
 					$code->code = pmpro_getDiscountCode();
 				}								
 			?>
