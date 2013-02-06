@@ -97,7 +97,7 @@
 			}
 			
 			//hide/show billing
-			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress")
+			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress" || pmpro_getOption("gateway") == "paypalstandard")
 			{				
 				?>
 				jQuery('#pmpro_billing_address_fields').hide();
@@ -113,7 +113,7 @@
 			}
 			
 			//hide/show paypal button
-			if(pmpro_getOption("gateway") == "paypalexpress")			
+			if(pmpro_getOption("gateway") == "paypalexpress" || pmpro_getOption("gateway") == "paypalstandard")			
 			{
 				if(pmpro_isLevelFree($code_level))
 				{
