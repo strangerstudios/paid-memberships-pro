@@ -160,6 +160,19 @@
 				return false;
 		}
 		
+		/*
+			Returns the last order using the given subscription_transaction_id.
+		*/
+		function getLastMemberOrderBySubscriptionTransactionID($subscription_transaction_id)
+		{
+			global $wpdb;
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1");
+			if($id)
+				return $this->getMemberOrderByID($id);
+			else
+				return false;
+		}
+		
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;

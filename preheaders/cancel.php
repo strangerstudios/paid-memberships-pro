@@ -18,7 +18,7 @@
 	if($pmpro_confirm)
 	{		
 		$old_level_id = $current_user->membership_level->id;
-		$worked = pmpro_changeMembershipLevel(false, $current_user->ID);		
+		$worked = pmpro_changeMembershipLevel(false, $current_user->ID);						
 		if($worked === true)
 		{			
 			$pmpro_msg = "Your membership has been cancelled.";

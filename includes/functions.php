@@ -512,7 +512,7 @@
 		}
 
 		$old_levels = pmpro_getMembershipLevelsForUser($user_id);
-
+					
 		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
 		if($pmpro_cancel_previous_subscriptions)
 		{
@@ -520,12 +520,12 @@
 			if(!empty($old_levels))
 			{
 				foreach($old_levels as $old_level) {
-					$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;
+					$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
 					if(!$wpdb->query($sql))
 					{
 						$pmpro_error = "Error interacting with database: ".(mysql_errno()?mysql_error():'unavailable');
 						return false;
-					}
+					}										
 				}
 			}
 
@@ -1481,4 +1481,25 @@
 		else
 			return "";
 	}
-?>
+	
+	//get a var from $_GET or $_POST
+	function pmpro_getParam($index, $method = "REQUEST", $default = "")
+	{
+		if($method == "REQUEST")
+		{
+			if(!empty($_REQUEST[$index]))
+				return $_REQUEST[$index];
+		}
+		elseif($method == "POST")
+		{
+			if(!empty($_POST[$index]))
+				return $_POST[$index];
+		}
+		elseif($method == "GET")
+		{
+			if(!empty($_GET[$index]))
+				return $_GET[$index];
+		}
+		
+		return $default;
+	}
