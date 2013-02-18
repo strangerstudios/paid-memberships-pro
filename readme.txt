@@ -52,6 +52,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog == 
 = 1.6 =
+* Revamped the ipnhandler code. It's much cleaner now and should be easier to support with all 3 PayPal APIs (Standard, Website Payments Pro, Express) working through the one handler.
 * Added the pmpro_register_redirect filter to allow you to change the URL PMPro redirects wp-login.php?action=register to. Returning false or an empty string will result in no redirect from the register page.
 
 = 1.5.9 =
