@@ -29,7 +29,14 @@
 				}
 			}
 			else
-			{
+			{				
+				//let's return an error for recurring levels for now
+				if(pmpro_isLevelRecurring($order->membership_level))
+				{
+					$order->error = "Recurring payments with Payflow is not supported by Paid Memberships Pro at this time.";
+					return false;
+				}
+				
 				//charge first payment
 				if($this->charge($order))
 				{																							
@@ -44,7 +51,7 @@
 						}
 						else
 						{							
-							if($this->refund($order, $order->payment_transaction_id))
+							if($this->void($order, $order->payment_transaction_id))
 							{
 								if(empty($order->error))
 									$order->error = "Unknown error: Payment failed.";							
@@ -109,9 +116,9 @@
 			$this->nvpStr = $nvpStr;
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('A', $nvpStr);
-
+			
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
-				$order->authorization_id = $this->httpParsedResponseAr['TRANSACTIONID'];
+				$order->authorization_id = $this->httpParsedResponseAr['PNREF'];
 				$order->updateStatus("authorized");				
 				return $order->authorization_id;				
 			} else  {				
@@ -181,9 +188,9 @@
 
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('S', $nvpStr);
-									
+												
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
-				$order->payment_transaction_id = $this->httpParsedResponseAr['TRANSACTIONID'];
+				$order->payment_transaction_id = $this->httpParsedResponseAr['PNREF'];
 				$order->updateStatus("success");				
 				return true;				
 			} else  {				
@@ -197,13 +204,13 @@
 		
 		function subscribe(&$order)
 		{
-			$this->error = "Recurring subscriptions are not currently supported by Paid Memberships Pro";
+			$order->error = "Recurring subscriptions with Payflow are not currently supported by Paid Memberships Pro";
 			return false;
 		}	
 		
 		function update(&$order)
 		{
-			$this->error = "Updated billing is not currently supported by Paid Memberships Pro";
+			$order->error = "Updated billing with Payflow is not currently supported by Paid Memberships Pro";
 			return false;
 		}
 		
