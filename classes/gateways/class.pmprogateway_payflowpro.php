@@ -109,18 +109,16 @@
 			$this->nvpStr = $nvpStr;
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('A', $nvpStr);
-			
-			krumo($this);
-						
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
 				$order->authorization_id = $this->httpParsedResponseAr['TRANSACTIONID'];
 				$order->updateStatus("authorized");				
 				return $order->authorization_id;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
-				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
-				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);
 				return false;				
 			}					
 		}
@@ -135,13 +133,13 @@
 		
 			$this->httpParsedResponseAr = $this->PPHttpPost('C', $nvpStr);							
 									
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {				
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {			
 				return true;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
-				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
-				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);
 				return false;				
 			}	
 		}					
@@ -181,31 +179,32 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
+			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('S', $nvpStr);
-			
-			krumo($this);
-						
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
+									
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
 				$order->payment_transaction_id = $this->httpParsedResponseAr['TRANSACTIONID'];
 				$order->updateStatus("success");				
 				return true;				
 			} else  {				
 				$order->status = "error";
-				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
-				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
-				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);				
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);				
 				return false;				
 			}								
 		}
 		
 		function subscribe(&$order)
 		{
-			die("Recurring subscriptions are not currently supported by Paid Memberships Pro");
+			$this->error = "Recurring subscriptions are not currently supported by Paid Memberships Pro";
+			return false;
 		}	
 		
 		function update(&$order)
 		{
-			die("Updated billing is not currently supported by Paid Memberships Pro");
+			$this->error = "Updated billing is not currently supported by Paid Memberships Pro";
+			return false;
 		}
 		
 		function cancel(&$order)
@@ -255,8 +254,8 @@
 			curl_setopt($ch, CURLOPT_POST, 1);
 		
 			// NVPRequest for submitting to server
-			$nvpreq = "TRXTYPE=" . $methodName_ . "&TENDOR=C&PARTNER=" . $PARTNER . "&VENDOR=" . $VENDOR . "&USER=" . $USER . "&PWD=" . $PWD . $nvpStr_;
-					
+			$nvpreq = "TRXTYPE=" . $methodName_ . "&TENDER=C&PARTNER=" . $PARTNER . "&VENDOR=" . $VENDOR . "&USER=" . $USER . "&PWD=" . $PWD . "&VERBOSITY=medium" . $nvpStr_;
+										
 			// setting the nvpreq as POST FIELD to curl
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);
 		
@@ -278,7 +277,7 @@
 				}
 			}
 		
-			if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
+			if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
 				exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
 			}
 		

@@ -17,6 +17,10 @@
 		pmpro_setOption("gateway");					
 		pmpro_setOption("gateway_environment");
 		pmpro_setOption("gateway_email");
+		pmpro_setOption("payflow_partner");
+		pmpro_setOption("payflow_vendor");
+		pmpro_setOption("payflow_user");
+		pmpro_setOption("payflow_pwd");
 		pmpro_setOption("apiusername");
 		pmpro_setOption("apipassword");
 		pmpro_setOption("apisignature");
@@ -30,7 +34,7 @@
 		$currency_stripe = $_POST['currency_stripe'];
 		$currency_fixed = $_POST['currency_fixed'];
 
-		if($_POST['gateway'] == "authorizenet")
+		if($_POST['gateway'] == "authorizenet" || $_POST['gateway'] == "payflowpro")
 			pmpro_setOption("currency", $currency_fixed);
 		elseif($_POST['gateway'] == "stripe")
 			pmpro_setOption("currency", $currency_stripe);
@@ -58,7 +62,7 @@
 		pmpro_setOption("instructions");
 		
 		//use_ssl is based on gateway
-		if($_REQUEST['gateway'] == "paypal" || $_REQUEST['gateway'] == "authorizenet")
+		if($_REQUEST['gateway'] == "paypal" || $_REQUEST['gateway'] == "authorizenet" || $_REQUEST['gateway'] == "payflowpro")
 			pmpro_setOption("use_ssl", 1);			
 		else
 			pmpro_setOption("use_ssl");				
@@ -80,6 +84,10 @@
 	$gateway = pmpro_getOption("gateway");
 	$gateway_environment = pmpro_getOption("gateway_environment");
 	$gateway_email = pmpro_getOption("gateway_email");
+	$payflow_partner = pmpro_getOption("payflow_partner");
+	$payflow_vendor = pmpro_getOption("payflow_vendor");
+	$payflow_user = pmpro_getOption("payflow_user");
+	$payflow_pwd = pmpro_getOption("payflow_pwd");
 	$apiusername = pmpro_getOption("apiusername");
 	$apipassword = pmpro_getOption("apipassword");
 	$apisignature = pmpro_getOption("apisignature");
@@ -143,6 +151,7 @@
 						<option value="paypalstandard" <?php if($gateway == "paypalstandard") { ?>selected="selected"<?php } ?>>PayPal Standard</option>
 						<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
 						<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
+						<option value="payflowpro" <?php if($gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro</option>
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
 					</select>                        
 				</td>
@@ -165,6 +174,38 @@
 						}
 						pmpro_changeGateway(jQuery().val('#gateway'));
 					</script>
+				</td>
+		   </tr>
+		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			   <th scope="row" valign="top">	
+					<label for="payflow_partner">Partner:</label>
+				</th>
+				<td>
+					<input type="text" name="payflow_partner" size="60" value="<?php echo $payflow_partner?>" />
+				</td>
+		   </tr>
+		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			   <th scope="row" valign="top">	
+					<label for="payflow_vendor">Vendor:</label>
+				</th>
+				<td>
+					<input type="text" name="payflow_vendor" size="60" value="<?php echo $payflow_vendor?>" />
+				</td>
+		   </tr>
+		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			   <th scope="row" valign="top">	
+					<label for="payflow_user">User:</label>
+				</th>
+				<td>
+					<input type="text" name="payflow_user" size="60" value="<?php echo $payflow_user?>" />
+				</td>
+		   </tr>
+		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			   <th scope="row" valign="top">	
+					<label for="payflow_pwd">Password:</label>
+				</th>
+				<td>
+					<input type="text" name="payflow_pwd" size="60" value="<?php echo $payflow_pwd?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -234,7 +275,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_authorizenet gateway_payflowpro" <?php if($gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
@@ -282,7 +323,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards">Accepted Credit Card Types</label>
 				</th>
@@ -305,7 +346,7 @@
 					<p><small>Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>
@@ -328,7 +369,7 @@
 					</select>
 				</td>
 			</tr>
-			<tr class="gateway gateway_paypal gateway_authorizenet" <?php if($gateway != "paypal" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_paypal gateway_authorizenet gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="use_ssl">Use SSL:</label>
 				</th>
@@ -352,7 +393,7 @@
 					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
 				</td>
 		   </tr>
-		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label>IPN Handler URL:</label>
 				</th>
