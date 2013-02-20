@@ -99,6 +99,8 @@
 			// Suspend the user's account
 				//But we can't suspend the account, maybe a future feature
 
+			do_action("pmpro_subscription_payment_failed", $old_order);	
+
 			//prep this order for the failure emails
 			$morder = new MemberOrder();
 			$morder->user_id = $user_id;

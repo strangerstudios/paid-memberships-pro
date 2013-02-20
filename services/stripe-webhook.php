@@ -122,6 +122,8 @@
 			
 			if(!empty($old_order->id))
 			{			
+				do_action("pmpro_subscription_payment_failed", $old_order);	
+				
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;

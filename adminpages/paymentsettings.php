@@ -139,7 +139,7 @@
 		
 		<table class="form-table">
 		<tbody>                		   
-		   <tr>
+			<tr>
 				<th scope="row" valign="top">	
 					<label for="gateway">Payment Gateway:</label>
 				</th>
@@ -155,7 +155,12 @@
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
 					</select>                        
 				</td>
-			</tr> 
+			</tr> 			
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>				
+				<td colspan="2">
+					<strong>Note:</strong> Payflow Pro currently only supports one-time payments. Users will not be able to checkout for levels with recurring payments.
+				</td>
+			</tr>
 			<tr>
 				<th scope="row" valign="top">
 					<label for="gateway_environment">Gateway Environment:</label>
@@ -167,12 +172,12 @@
 					</select>
 					<script>
 						function pmpro_changeGateway(gateway)
-						{
+						{							
 							//hide all gateway options
 							jQuery('tr.gateway').hide();
 							jQuery('tr.gateway_'+gateway).show();
 						}
-						pmpro_changeGateway(jQuery().val('#gateway'));
+						pmpro_changeGateway(jQuery('#gateway').val());
 					</script>
 				</td>
 		   </tr>

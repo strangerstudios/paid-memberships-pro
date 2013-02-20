@@ -506,6 +506,9 @@
 			return true;
 		}
 		else
+		{
+			ipnlog("Duplicate Transaction ID: " . $txn_id);
 			return false;
+		}
 	}
 	

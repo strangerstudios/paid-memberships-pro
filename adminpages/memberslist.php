@@ -118,9 +118,8 @@
 				$count = 0;							
 				foreach($theusers as $theuser)
 				{
-					//get meta
-					$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";					
-					$metavalues = pmpro_getMetavalues($sqlQuery);																		
+					//get meta																					
+					$theuser = get_userdata($theuser->ID);	
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><?php echo $theuser->ID?></td>
@@ -128,25 +127,25 @@
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong><a href="user-edit.php?user_id=<?php echo $theuser->ID?>"><?php echo $theuser->user_login?></a></strong>
 							</td>
-							<td><?php echo $metavalues->first_name?></td>
-							<td><?php echo $metavalues->last_name?></td>
+							<td><?php echo $theuser->first_name?></td>
+							<td><?php echo $theuser->last_name?></td>
 							<td><a href="mailto:<?php echo $theuser->user_email?>"><?php echo $theuser->user_email?></a></td>
 							<td>
 								<?php 
-									if(empty($metavalues->pmpro_bfirstname))
-										$metavalues->pmpro_bfirstname = "";
-									if(empty($metavalues->pmpro_blastname))
-										$metavalues->pmpro_blastname = "";
-									echo trim($metavalues->pmpro_bfirstname . " " . $metavalues->pmpro_blastname);
+									if(empty($theuser->pmpro_bfirstname))
+										$theuser->pmpro_bfirstname = "";
+									if(empty($theuser->pmpro_blastname))
+										$theuser->pmpro_blastname = "";
+									echo trim($theuser->pmpro_bfirstname . " " . $theuser->pmpro_blastname);
 								?><br />
-								<?php if(!empty($metavalues->pmpro_baddress1)) { ?>
-									<?php echo $metavalues->pmpro_baddress1; ?><br />
-									<?php if(!empty($metavalues->pmpro_baddress2)) echo $metavalues->pmpro_baddress2 . "<br />"; ?>										
-									<?php if($metavalues->pmpro_bcity && $metavalues->pmpro_bstate) { ?>
-										<?php echo $metavalues->pmpro_bcity?>, <?php echo $metavalues->pmpro_bstate?> <?php echo $metavalues->pmpro_bzipcode?>  <?php if(!empty($metavalues->pmpro_bcountry)) echo $metavalues->pmpro_bcountry?><br />												
+								<?php if(!empty($theuser->pmpro_baddress1)) { ?>
+									<?php echo $theuser->pmpro_baddress1; ?><br />
+									<?php if(!empty($theuser->pmpro_baddress2)) echo $theuser->pmpro_baddress2 . "<br />"; ?>										
+									<?php if($theuser->pmpro_bcity && $theuser->pmpro_bstate) { ?>
+										<?php echo $theuser->pmpro_bcity?>, <?php echo $theuser->pmpro_bstate?> <?php echo $theuser->pmpro_bzipcode?>  <?php if(!empty($theuser->pmpro_bcountry)) echo $theuser->pmpro_bcountry?><br />												
 									<?php } ?>
 								<?php } ?>
-								<?php if(!empty($metavalues->pmpro_bphone)) echo formatPhone($metavalues->pmpro_bphone);?>
+								<?php if(!empty($theuser->pmpro_bphone)) echo formatPhone($theuser->pmpro_bphone);?>
 							</td>
 							<td><?php echo $theuser->membership?></td>	
 							<td>										
@@ -161,7 +160,7 @@
 									-
 								<?php } ?>
 							</td>						
-							<td><?php echo date(get_option('date_format'), $theuser->joindate)?></td>
+							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
 							<td>
 								<?php 
 									if($theuser->enddate) 
