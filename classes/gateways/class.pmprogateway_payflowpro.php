@@ -99,7 +99,7 @@
 				$cardtype = $order->cardtype;
 			
 			if(!empty($accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
 			
 			//billing address, etc
 			if(!empty($order->Address1))
@@ -173,7 +173,7 @@
 			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;			
 			
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
 			
 			//billing address, etc
 			if($order->Address1)

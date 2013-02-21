@@ -210,7 +210,7 @@
 					<label for="payflow_pwd">Password:</label>
 				</th>
 				<td>
-					<input type="text" name="payflow_pwd" size="60" value="<?php echo $payflow_pwd?>" />
+					<input type="password" name="payflow_pwd" size="60" value="<?php echo $payflow_pwd?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
