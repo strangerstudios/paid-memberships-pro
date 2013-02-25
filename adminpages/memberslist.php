@@ -116,10 +116,10 @@
 		<tbody id="users" class="list:user user-list">	
 			<?php	
 				$count = 0;							
-				foreach($theusers as $theuser)
+				foreach($theusers as $auser)
 				{
 					//get meta																					
-					$theuser = get_userdata($theuser->ID);	
+					$theuser = get_userdata($auser->ID);	
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><?php echo $theuser->ID?></td>
@@ -147,24 +147,24 @@
 								<?php } ?>
 								<?php if(!empty($theuser->pmpro_bphone)) echo formatPhone($theuser->pmpro_bphone);?>
 							</td>
-							<td><?php echo $theuser->membership?></td>	
+							<td><?php echo $auser->membership?></td>	
 							<td>										
-								<?php if((float)$theuser->initial_payment > 0) { ?>
-									<?php echo $pmpro_currency_symbol; ?><?php echo $theuser->initial_payment?>
+								<?php if((float)$auser->initial_payment > 0) { ?>
+									<?php echo $pmpro_currency_symbol; ?><?php echo $auser->initial_payment?>
 								<?php } ?>
-								<?php if((float)$theuser->initial_payment > 0 && (float)$theuser->billing_amount > 0) { ?>+<br /><?php } ?>
-								<?php if((float)$theuser->billing_amount > 0) { ?>
-									<?php echo $pmpro_currency_symbol; ?><?php echo $theuser->billing_amount?>/<?php echo $theuser->cycle_period?>
+								<?php if((float)$auser->initial_payment > 0 && (float)$auser->billing_amount > 0) { ?>+<br /><?php } ?>
+								<?php if((float)$auser->billing_amount > 0) { ?>
+									<?php echo $pmpro_currency_symbol; ?><?php echo $auser->billing_amount?>/<?php echo $auser->cycle_period?>
 								<?php } ?>
-								<?php if((float)$theuser->initial_payment <= 0 && (float)$theuser->billing_amount <= 0) { ?>
+								<?php if((float)$auser->initial_payment <= 0 && (float)$auser->billing_amount <= 0) { ?>
 									-
 								<?php } ?>
 							</td>						
 							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
 							<td>
 								<?php 
-									if($theuser->enddate) 
-										echo date(get_option('date_format'), $theuser->enddate);
+									if($auser->enddate) 
+										echo date(get_option('date_format'), $auser->enddate);
 									else
 										echo "Never";
 								?>
