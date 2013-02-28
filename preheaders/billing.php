@@ -273,7 +273,7 @@
 			$pmpro_msg = "All good!";
 						
 			//change this
-			$order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' LIMIT 1");			
+			$order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY id DESC LIMIT 1");			
 			if($order_id)
 			{
 				$morder = new MemberOrder($order_id);											
@@ -311,7 +311,7 @@
 				//$gateway = pmpro_getOption("gateway");										
 				$morder->gateway = $gateway;
 				$morder->setGateway();					
-				
+								
 				$worked = $morder->updateBilling();		
 
 				if($worked)

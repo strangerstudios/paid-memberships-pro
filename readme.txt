@@ -53,6 +53,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog == 
 = 1.6 =
 * Not showing payment settings warning now when Payflow is setup with all values filled in.
+* Updated preheaders/billing.php to get the most recent successful order from the DB to use when updating. (ORDER BY id DESC in the query)
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
