@@ -51,6 +51,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.6 =
+* Not showing payment settings warning now when Payflow is setup with all values filled in.
+
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
 
