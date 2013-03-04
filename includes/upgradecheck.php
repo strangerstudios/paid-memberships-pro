@@ -350,7 +350,7 @@ function pmpro_upgrade_1()
 	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);		
 	
 	$parsed = parse_url(home_url()); 
-	$hostname = $parsed[host];
+	$ame = $parsed['host'];
 	$hostparts = split("\.", $hostname);				
 	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];		
 	$from_email = "wordpress@" . $email_domain;
