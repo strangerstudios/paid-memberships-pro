@@ -163,6 +163,8 @@
 			$user = getUserFromCustomerEvent($event);
 			if(!empty($user->ID))
 			{			
+				do_action("pmpro_stripe_subscription_deleted", $user->ID);	
+				
 				$pmproemail = new PMProEmail();	
 				$pmproemail->data = array("body"=>"<p>" . $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ") has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be.</p>");
 				$pmproemail->sendEmail(get_bloginfo("admin_email"));	
