@@ -458,7 +458,7 @@ add_shortcode("pmpro_checkout", "pmpro_checkout_shortcode");
 
 function pmpro_membership_level_profile_fields($user)
 {
-	global $current_user;
+	global $current_user, $pmpro_currency_symbol;
 	if(!current_user_can("administrator"))
 		return false;
 
@@ -515,7 +515,7 @@ function pmpro_membership_level_profile_fields($user)
 					{
 					?>
 						<?php if($membership_values->billing_amount > 0) { ?>
-							at $<?php echo $membership_values->billing_amount?>
+							at <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->billing_amount?>
 							<?php if($membership_values->cycle_number > 1) { ?>
 								per <?php echo $membership_values->cycle_number?> <?php echo sornot($membership_values->cycle_period,$membership_values->cycle_number)?>
 							<?php } elseif($membership_values->cycle_number == 1) { ?>
@@ -526,7 +526,7 @@ function pmpro_membership_level_profile_fields($user)
 						<?php if($membership_values->billing_limit) { ?> for <?php echo $membership_values->billing_limit.' '.sornot($membership_values->cycle_period,$membership_values->billing_limit)?><?php } ?>.
 
 						<?php if($membership_values->trial_limit) { ?>
-							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost $<?php echo $membership_values->trial_amount?>.
+							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->trial_amount?>.
 						<?php } ?>
 					<?php
 					}
@@ -681,7 +681,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		return false;
 
 	//if no post or current_user object, set them up
-	if($post_id == $post->ID)
+	if(!empty($post->ID) && $post_id == $post->ID)
 		$mypost = $post;
 	else
 		$mypost = get_post($post_id);
