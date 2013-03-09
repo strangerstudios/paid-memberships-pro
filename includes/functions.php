@@ -1284,7 +1284,7 @@
 		//build query
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if(!$include_hidden)
-			$sqlQuery .= " WHERE allow_signups = 1";
+			$sqlQuery .= " WHERE allow_signups = 1 ORDER BY id";
 			
 		//get levels from the DB
 		$raw_levels = $wpdb->get_results($sqlQuery);

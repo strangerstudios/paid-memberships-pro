@@ -56,6 +56,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Updated preheaders/billing.php to get the most recent successful order from the DB to use when updating. (ORDER BY id DESC in the query)
 * Added pmpro_stripe_subscription_deleted hook in stripe-webhook.php for when subscriptions are cancelled on the Stripe side. Use this code to cancel on your site as well: https://gist.github.com/strangerstudios/5093710
 * Now using $pmpro_currency_symbol when membership price is shown on the edit profile page in the dashboard/etc.
+* Added pmpro_authorizenet_post_url filter to use Authorize.net gateway class with a different post url, e.g. if you have a gateway that offers an Authorize.net compatibility mode.
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.

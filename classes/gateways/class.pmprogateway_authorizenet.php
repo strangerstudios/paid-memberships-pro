@@ -150,6 +150,8 @@
 			$path = "/gateway/transact.dll";												
 			$post_url = "https://" . $host . $path;
 
+			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
+			
 			//what amount to authorize? just $1 to test
 			$amount = "1.00";		
 			
@@ -256,7 +258,9 @@
 			
 			$path = "/gateway/transact.dll";												
 			$post_url = "https://" . $host . $path;
-												
+			
+			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
+			
 			$post_values = array(
 				
 				// the API Login ID and Transaction Key must be replaced with valid values
@@ -327,6 +331,8 @@
 			$path = "/gateway/transact.dll";												
 			$post_url = "https://" . $host . $path;
 
+			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
+			
 			//what amount to charge?			
 			$amount = $order->InitialPayment;
 						
@@ -403,7 +409,7 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
-			
+						
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
@@ -820,6 +826,7 @@
 		function send_request_via_curl($host,$path,$content)
 		{
 			$posturl = "https://" . $host . $path;
+			$posturl = apply_filters("pmpro_authorizenet_post_url", $posturl, pmpro_getOption("gateway_environment"));
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $posturl);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
