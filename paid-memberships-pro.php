@@ -93,6 +93,11 @@ function pmpro_advancedsettings()
 	require_once(dirname(__FILE__) . "/adminpages/advancedsettings.php");
 }
 
+function pmpro_orders()
+{
+	require_once(dirname(__FILE__) . "/adminpages/orders.php");
+}
+
 /*
 	Loading a service?
 */
@@ -138,6 +143,12 @@ function pmpro_wp_ajax_memberlist_csv()
 	exit;
 }
 add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
+function pmpro_wp_ajax_orders_csv()
+{
+	require_once(dirname(__FILE__) . "/adminpages/orders-csv.php");	
+	exit;
+}
+add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 	
 function pmpro_set_current_user()
 {
@@ -1115,8 +1126,9 @@ function pmpro_add_pages()
 	add_submenu_page('pmpro-membershiplevels', 'Email Settings', 'Email Settings', 'manage_options', 'pmpro-emailsettings', 'pmpro_emailsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Advanced Settings', 'Advanced Settings', 'manage_options', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Members List', 'Members List', 'manage_options', 'pmpro-memberslist', 'pmpro_memberslist');
+	add_submenu_page('pmpro-membershiplevels', 'Orders', 'Orders', 'manage_options', 'pmpro-orders', 'pmpro_orders');
 	add_submenu_page('pmpro-membershiplevels', 'Discount Codes', 'Discount Codes', 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');
-
+	
 	//rename the automatically added Memberships submenu item
 	global $submenu;
 	if(!empty($submenu['pmpro-membershiplevels']))
@@ -1166,11 +1178,15 @@ function pmpro_admin_bar_menu() {
 	'title' => __( 'Members List'),
 	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-memberslist') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-orders',
+	'parent' => 'paid-memberships-pro',
+	'title' => __( 'Orders'),
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-orders') ) );
+	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-discount-codes',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Discount Codes'),
-	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes') ) );
-
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes') ) );	
 }
 add_action('admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 

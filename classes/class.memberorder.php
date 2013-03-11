@@ -88,7 +88,8 @@
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 				
 				//reset the gateway
-				$this->setGateway();
+				if(empty($this->nogateway))
+					$this->setGateway();
 				
 				return $this->id;
 			}
