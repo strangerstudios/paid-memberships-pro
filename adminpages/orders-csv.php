@@ -136,7 +136,7 @@
 			}
 									
 			//timestamp
-			$csvoutput .= "," . pmpro_enclose(date(get_option("date_format"), $order->timestamp)) . ",";
+			$csvoutput .= "," . pmpro_enclose(date(get_option("date_format"), $order->timestamp));
 							
 			//any extra columns			
 			if(!empty($extra_columns))
