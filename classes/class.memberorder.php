@@ -111,11 +111,14 @@
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
 							
 			//try to load it
-			require_once(dirname(__FILE__) . "/gateways/class." . strtolower($classname) . ".php");
+			include_once(dirname(__FILE__) . "/gateways/class." . strtolower($classname) . ".php");
 			if(class_exists($classname))
 				$this->Gateway = new $classname($this->gateway);
 			else
-				die("Could not locate the gateway class file with class name = " . $classname . ".");
+			{
+				$error = new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
+				//die("Could not locate the gateway class file with class name = " . $classname . ".");
+			}
 			
 			return $this->Gateway;
 		}
@@ -287,6 +290,25 @@
 			return $this->tax;
 		}
 		
+		function updateTimestamp($year, $month, $day, $time = NULL)
+		{
+			if(empty($this->id))
+				return false;		//need a saved order
+			
+			if(empty($time))
+				$time = "00:00:00";
+			
+			$date = $year . "-" . $month . "-" . $day . " " . $time;
+			
+			global $wpdb;
+			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			
+			if($wpdb->query($this->sqlQuery) !== "false")			
+				return $this->getMemberOrderByID($this->id);
+			else
+				return false;
+		}
+		
 		function saveOrder()
 		{			
 			global $current_user, $wpdb;
@@ -303,7 +325,10 @@
 						
 			//Todo: Tax?!, Coupons, Certificates, affiliates
 			$this->subtotal = $amount;
-			$tax = $this->getTax(true);
+			if(isset($this->tax))
+				$tax = $this->tax;
+			else
+				$tax = $this->getTax(true);
 			$this->certificate_id = "";
 			$this->certificateamount = "";
 			
@@ -487,4 +512,20 @@
 		{
 			return $this->Gateway->update($this);						
 		}									
+		
+		function deleteMe()
+		{
+			if(empty($this->id))
+				return false;
+			
+			global $wpdb;
+			$this->sqlQuery = "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = '" . $this->id . "' LIMIT 1";
+			if($wpdb->query($this->sqlQuery) !== false)
+			{
+				do_action("pmpro_delete_order", $this->id, $this);
+				return true;
+			}
+			else
+				return false;
+		}
 	}

@@ -91,11 +91,21 @@
 		
 		if($theusers)
 		{
-			$initial_payments = pmpro_calculateInitialPaymentRevenue($s, $l);
-			$recurring_payments = pmpro_calculateRecurringRevenue($s, $l);
-		?>
-		<p class="clear"><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
-		<?php
+			$calculate_revenue = apply_filters("pmpro_memberslist_calculate_revenue", false);
+			if($calculate_revenue)
+			{
+				$initial_payments = pmpro_calculateInitialPaymentRevenue($s, $l);
+				$recurring_payments = pmpro_calculateRecurringRevenue($s, $l);			
+				?>
+				<p class="clear"><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
+				<?php
+			}
+			else
+			{
+			?>
+			<p class="clear"><?php echo strval($totalrows)?> members found.	
+			<?php
+			}
 		}		
 	?>
 	<table class="widefat">
