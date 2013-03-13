@@ -42,8 +42,21 @@
 		
 	if($s)
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE (1=2 ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
+		
+		$join_with_usermeta = apply_filters("pmpro_orders_search_usermeta", false);
+		if($join_with_usermeta)
+			$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+		
+		$sqlQuery .= "WHERE (1=2 ";
+						
 		$fields = array("o.id", "o.code", "o.billing_name", "o.billing_street", "o.billing_city", "o.billing_state", "o.billing_zip", "o.billing_phone", "o.payment_type", "o.cardtype", "o.accountnumber", "o.status", "o.gateway", "o.gateway_environment", "o.payment_transaction_id", "o.subscription_transaction_id", "u.user_login", "u.user_email", "u.display_name", "l.name");
+		
+		if($join_with_usermeta)
+			$fields[] = "um.meta_value";
+				
+		$fields = apply_filters("pmpro_orders_search_fields", $fields);
+		
 		foreach($fields as $field)
 			$sqlQuery .= " OR " . $field . " LIKE '%" . $wpdb->escape($s) . "%' ";
 		$sqlQuery .= ") ";
