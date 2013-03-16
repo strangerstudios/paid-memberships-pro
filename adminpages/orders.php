@@ -372,7 +372,7 @@
 							$statuses = array();
 							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded");
 							$used_statuses = $wpdb->get_col("SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders");
-							$statuses = array_unique(array_merge($statuses, $used_statuses));
+							$statuses = array_unique(array_merge($default_statuses, $used_statuses));
 							asort($statuses);
 							$statuses = apply_filters("pmpro_order_statuses", $statuses);													
 						?>
