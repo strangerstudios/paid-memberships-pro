@@ -70,7 +70,7 @@
 		$order->subscription_transaction_id = $_POST['subscription_transaction_id'];
 		
 		//affiliate stuff
-		$affiliates = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE affiliate_id <> '' LIMIT 1");
+		$affiliates = apply_filters("pmpro_orders_show_affiliate_ids", false);
 		if(!empty($affiliates))
 		{
 			$order->affiliate_id = $_POST['affiliate_id'];
@@ -361,7 +361,7 @@
 				</tr>
 				
 				<?php 
-					$affiliates = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE affiliate_id <> '' LIMIT 1");
+					$affiliates = apply_filters("pmpro_orders_show_affiliate_ids", false);
 					if(!empty($affiliates)) {					
 				?>
 				<tr>
