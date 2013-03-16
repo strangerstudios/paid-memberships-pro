@@ -70,7 +70,8 @@
 		$order->subscription_transaction_id = $_POST['subscription_transaction_id'];
 		
 		//affiliate stuff
-		if(function_exists("pmpro_affiliates_dependencies"))
+		$affiliates = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE affiliate_id <> '' LIMIT 1");
+		if(!empty($affiliates))
 		{
 			$order->affiliate_id = $_POST['affiliate_id'];
 			$order->affiliate_subid = $_POST['affiliate_subid'];
@@ -359,7 +360,10 @@
 					</td>
 				</tr>
 				
-				<?php if(function_exists("pmpro_affiliates_dependencies")) { ?>
+				<?php 
+					$affiliates = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE affiliate_id <> '' LIMIT 1");
+					if(!empty($affiliates)) {					
+				?>
 				<tr>
 					<th scope="row" valign="top"><label for="affiliate_id">Affiliate ID:</label></th>
 					<td><input id="affiliate_id" name="affiliate_id" type="text" size="50" value="<?php echo esc_attr($order->affiliate_id);?>" /></td>
