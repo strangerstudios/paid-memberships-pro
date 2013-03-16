@@ -10,6 +10,11 @@
 		
 		function process(&$order)
 		{
+			//clean up a couple values
+			$order->payment_type = "Check";
+			$order->CardType = "";
+			$order->cardtype = "";
+			
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{
@@ -119,7 +124,7 @@
 					else
 					{
 						//only a one time charge
-						$order->status = "success";	//saved on checkout page											
+						$order->status = apply_filters("pmpro_check_status_after_checkout", "success");	//saved on checkout page											
 						return true;
 					}
 				}

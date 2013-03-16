@@ -33,6 +33,9 @@
 		}
 	}
 	
+	//this array stores fields that should be read only
+	$read_only_fields = apply_filters("pmpro_orders_read_only_fields", array("code", "payment_transaction_id", "subscription_transaction_id"));
+	
 	//saving?
 	if(!empty($_REQUEST['save']))
 	{
@@ -44,37 +47,65 @@
 			$order = new MemberOrder();
 		
 		//update values
-		$order->code = $_POST['code'];
-		$order->user_id = intval($_POST['user_id']);
-		$order->membership_id = intval($_POST['membership_id']);
-		$order->billing->name = $_POST['billing_name'];
-		$order->billing->street = $_POST['billing_street'];
-		$order->billing->city = $_POST['billing_city'];
-		$order->billing->state = $_POST['billing_state'];
-		$order->billing->zip = $_POST['billing_zip'];
-		$order->billing->country = $_POST['billing_country'];
-		$order->billing->phone = $_POST['billing_phone'];
-		$order->tax = $_POST['tax'];
-		$order->couponamount = $_POST['couponamount'];
-		$order->total = $_POST['total'];
-		$order->payment_type = $_POST['payment_type'];
-		$order->cardtype = $_POST['cardtype'];
-		$order->accountnumber = $_POST['accountnumber'];
-		$order->expirationmonth = $_POST['expirationmonth'];		
-		$order->expirationyear = $_POST['expirationyear'];
-		$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
-		$order->status = $_POST['status'];
-		$order->gateway = $_POST['gateway'];
-		$order->gateway_environment = $_POST['gateway_environment'];
-		$order->payment_transaction_id = $_POST['payment_transaction_id'];
-		$order->subscription_transaction_id = $_POST['subscription_transaction_id'];
+		if(!in_array("code", $read_only_fields))
+			$order->code = $_POST['code'];
+		if(!in_array("user_id", $read_only_fields))
+			$order->user_id = intval($_POST['user_id']);
+		if(!in_array("membership_id", $read_only_fields))
+			$order->membership_id = intval($_POST['membership_id']);
+		if(!in_array("billing_name", $read_only_fields))
+			$order->billing->name = stripslashes($_POST['billing_name']);
+		if(!in_array("billing_street", $read_only_fields))		
+			$order->billing->street = stripslashes($_POST['billing_street']);
+		if(!in_array("billing_city", $read_only_fields))
+			$order->billing->city = stripslashes($_POST['billing_city']);
+		if(!in_array("billing_state", $read_only_fields))
+			$order->billing->state = stripslashes($_POST['billing_state']);
+		if(!in_array("billing_zip", $read_only_fields))
+			$order->billing->zip = $_POST['billing_zip'];
+		if(!in_array("billing_country", $read_only_fields))
+			$order->billing->country = stripslashes($_POST['billing_country']);
+		if(!in_array("billing_phone", $read_only_fields))
+			$order->billing->phone = $_POST['billing_phone'];
+		if(!in_array("tax", $read_only_fields))
+			$order->tax = $_POST['tax'];
+		if(!in_array("couponamount", $read_only_fields))
+			$order->couponamount = $_POST['couponamount'];
+		if(!in_array("total", $read_only_fields))
+			$order->total = $_POST['total'];
+		if(!in_array("payment_type", $read_only_fields))
+			$order->payment_type = $_POST['payment_type'];
+		if(!in_array("cardtype", $read_only_fields))
+			$order->cardtype = $_POST['cardtype'];
+		if(!in_array("accountnumber", $read_only_fields))
+			$order->accountnumber = $_POST['accountnumber'];
+		if(!in_array("expirationmonth", $read_only_fields))
+			$order->expirationmonth = $_POST['expirationmonth'];		
+		if(!in_array("expirationyear", $read_only_fields))
+			$order->expirationyear = $_POST['expirationyear'];
+		if(!in_array("ExpirationDate", $read_only_fields))
+			$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
+		if(!in_array("status", $read_only_fields))
+			$order->status = stripslashes($_POST['status']);
+		if(!in_array("gateway", $read_only_fields))
+			$order->gateway = $_POST['gateway'];
+		if(!in_array("gateway_environment", $read_only_fields))
+			$order->gateway_environment = $_POST['gateway_environment'];
+		if(!in_array("payment_transaction_id", $read_only_fields))
+			$order->payment_transaction_id = $_POST['payment_transaction_id'];
+		if(!in_array("subscription_transaction_id", $read_only_fields))
+			$order->subscription_transaction_id = $_POST['subscription_transaction_id'];
+		if(!in_array("notes", $read_only_fields))
+			$order->notes = stripslashes($_POST['notes']);
 		
 		//affiliate stuff
 		$affiliates = apply_filters("pmpro_orders_show_affiliate_ids", false);
 		if(!empty($affiliates))
 		{
-			$order->affiliate_id = $_POST['affiliate_id'];
-			$order->affiliate_subid = $_POST['affiliate_subid'];
+			if(!in_array("affiliate_id", $read_only_fields))
+				$order->affiliate_id = $_POST['affiliate_id'];
+			if(!in_array("affiliate_subid", $read_only_fields))
+				$order->affiliate_subid = $_POST['affiliate_subid'];
 		}
 		
 		//save
@@ -144,6 +175,9 @@
 				$order->gateway_environment = pmpro_getOption("gateway_environment");
 				$order->payment_transaction_id = "";
 				$order->subscription_transaction_id = "";
+				$order->affiliate_id = "";
+				$order->affiliate_subid = "";
+				$order->notes = "";
 			}
 		}
 	}
@@ -184,90 +218,137 @@
 				<tr>
 					<th scope="row" valign="top"><label for="code">Code:</label></th>
 					<td>
-						<input id="code" name="code" type="text" size="50" value="<?php echo esc_attr($order->code);?>" />
+						<?php if(in_array("code", $read_only_fields)) { echo $order->code; } else { ?>
+							<input id="code" name="code" type="text" size="50" value="<?php echo esc_attr($order->code);?>" />
+						<?php } ?>
 						<?php if($order_id < 0) { ?><small class="pmpro_lite">Randomly generated for you.</small><?php } ?>
 					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="user_id">User ID:</label></th>
-					<td><input id="user_id" name="user_id" type="text" size="50" value="<?php echo esc_attr($order->user_id);?>" /></td>
+					<td>
+						<?php if(in_array("user_id", $read_only_fields) && $order_id > 0) { echo $order->user_id; } else { ?>
+							<input id="user_id" name="user_id" type="text" size="50" value="<?php echo esc_attr($order->user_id);?>" />
+						<?php } ?>
+					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="membership_id">Membership Level ID:</label></th>
-					<td><input id="membership_id" name="membership_id" type="text" size="50" value="<?php echo esc_attr($order->membership_id);?>" /></td>
+					<td>
+						<?php if(in_array("membership_id", $read_only_fields) && $order_id > 0) { echo $order->membership_id; } else { ?>
+							<input id="membership_id" name="membership_id" type="text" size="50" value="<?php echo esc_attr($order->membership_id);?>" />
+						<?php } ?>
+					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="billing_name">Billing Name:</label></th>
-					<td><input id="billing_name" name="billing_name" type="text" size="50" value="<?php echo esc_attr($order->billing->name);?>" /></td>
+					<td>
+						<?php if(in_array("billing_name", $read_only_fields) && $order_id > 0) { echo $order->billing_name; } else { ?>
+							<input id="billing_name" name="billing_name" type="text" size="50" value="<?php echo esc_attr($order->billing->name);?>" />
+						<?php } ?>
+					</td>
 				</tr>				
 				<tr>
 					<th scope="row" valign="top"><label for="billing_street">Billing Street:</label></th>
-					<td><input id="billing_street" name="billing_street" type="text" size="50" value="<?php echo esc_attr($order->billing->street);?>" /></td>
+					<td>
+						<?php if(in_array("billing_street", $read_only_fields) && $order_id > 0) { echo $order->billing_street; } else { ?>
+							<input id="billing_street" name="billing_street" type="text" size="50" value="<?php echo esc_attr($order->billing->street);?>" /></td>
+						<?php } ?>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="billing_city">Billing City:</label></th>
-					<td><input id="billing_city" name="billing_city" type="text" size="50" value="<?php echo esc_attr($order->billing->city);?>" /></td>
+					<td>
+						<?php if(in_array("billing_city", $read_only_fields) && $order_id > 0) { echo $order->billing_city; } else { ?>
+							<input id="billing_city" name="billing_city" type="text" size="50" value="<?php echo esc_attr($order->billing->city);?>" /></td>
+						<?php } ?>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="billing_state">Billing State:</label></th>
-					<td><input id="billing_state" name="billing_state" type="text" size="50" value="<?php echo esc_attr($order->billing->state);?>" /></td>
+					<td>
+						<?php if(in_array("billing_state", $read_only_fields) && $order_id > 0) { echo $order->billing_state; } else { ?>
+							<input id="billing_state" name="billing_state" type="text" size="50" value="<?php echo esc_attr($order->billing->state);?>" /></td>
+						<?php } ?>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="billing_zip">Billing Postal Code:</label></th>
-					<td><input id="billing_zip" name="billing_zip" type="text" size="50" value="<?php echo esc_attr($order->billing->zip);?>" /></td>
+					<td>
+						<?php if(in_array("billing_zip", $read_only_fields) && $order_id > 0) { echo $order->billing_zip; } else { ?>
+							<input id="billing_zip" name="billing_zip" type="text" size="50" value="<?php echo esc_attr($order->billing->zip);?>" /></td>
+						<?php } ?>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="billing_country">Billing Country:</label></th>
-					<td><input id="billing_country" name="billing_country" type="text" size="50" value="<?php echo esc_attr($order->billing->country);?>" /></td>
+					<td>
+						<?php if(in_array("billing_country", $read_only_fields) && $order_id > 0) { echo $order->billing_country; } else { ?>
+							<input id="billing_country" name="billing_country" type="text" size="50" value="<?php echo esc_attr($order->billing->country);?>" />
+						<?php } ?>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="billing_phone">Billing Phone:</label></th>
-					<td><input id="billing_phone" name="billing_phone" type="text" size="50" value="<?php echo esc_attr($order->billing->phone);?>" /></td>
+					<td>
+						<?php if(in_array("billing_phone", $read_only_fields) && $order_id > 0) { echo $order->billing_phone; } else { ?>
+							<input id="billing_phone" name="billing_phone" type="text" size="50" value="<?php echo esc_attr($order->billing->phone);?>" />
+						<?php } ?>
+					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="tax">Tax:</label></th>
 					<td>
-						<input id="tax" name="tax" type="text" size="10" value="<?php echo esc_attr($order->tax);?>" />						
+						<?php if(in_array("tax", $read_only_fields) && $order_id > 0) { echo $order->tax; } else { ?>
+							<input id="tax" name="tax" type="text" size="10" value="<?php echo esc_attr($order->tax);?>" />						
+						<?php } ?>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="couponamount">Coupon Amount:</label></th>
 					<td>
-						<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr($order->couponamount);?>" />
+						<?php if(in_array("couponamount", $read_only_fields) && $order_id > 0) { echo $order->couponamount; } else { ?>
+							<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr($order->couponamount);?>" />
+						<?php } ?>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="total">Total:</label></th>
 					<td>
-						<input id="total" name="total" type="text" size="10" value="<?php echo esc_attr($order->total);?>" />
+						<?php if(in_array("total", $read_only_fields) && $order_id > 0) { echo $order->total; } else { ?>							
+							<input id="total" name="total" type="text" size="10" value="<?php echo esc_attr($order->total);?>" />
+						<?php } ?>
 					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="payment_type">Payment Type:</label></th>
 					<td>
-						<input id="payment_type" name="payment_type" type="text" size="50" value="<?php echo esc_attr($order->payment_type);?>" />
-						<small class="pmpro_lite">e.g. PayPal Express, PayPal Standard, Credit Card.</small>
+						<?php if(in_array("payment_type", $read_only_fields) && $order_id > 0) { echo $order->payment_type; } else { ?>
+							<input id="payment_type" name="payment_type" type="text" size="50" value="<?php echo esc_attr($order->payment_type);?>" />
+						<?php } ?>
+						<small class="pmpro_lite">e.g. PayPal Express, PayPal Standard, Credit Card.</small>						
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="cardtype">Card Type:</label></th>
 					<td>
-						<input id="cardtype" name="cardtype" type="text" size="50" value="<?php echo esc_attr($order->cardtype);?>" />
+						<?php if(in_array("cardtype", $read_only_fields) && $order_id > 0) { echo $order->cardtype; } else { ?>
+							<input id="cardtype" name="cardtype" type="text" size="50" value="<?php echo esc_attr($order->cardtype);?>" />
+						<?php } ?>
 						<small class="pmpro_lite">e.g. Visa, MasterCard, AMEX, etc</small>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="accountnumber">Account Number:</label></th>
 					<td>
-						<input id="accountnumber" name="accountnumber" type="text" size="50" value="<?php echo esc_attr($order->accountnumber);?>" />
+						<?php if(in_array("accountnumber", $read_only_fields) && $order_id > 0) { echo $order->accountnumber; } else { ?>
+							<input id="accountnumber" name="accountnumber" type="text" size="50" value="<?php echo esc_attr($order->accountnumber);?>" />
+						<?php } ?>
 						<small class="pmpro_lite">Obscure all but last 4 digits.</small>
 					</td>
 				</tr>
+				<?php if(in_array("ExpirationDate", $read_only_fields) && $order_id > 0) { echo $order->ExpirationDate; } else { ?>
 				<tr>
 					<th scope="row" valign="top"><label for="expirationmonth">Expiration Month:</label></th>
 					<td>
@@ -282,18 +363,32 @@
 						<small class="pmpro_lite">YYYY</small>
 					</td>
 				</tr>
-				
+				<?php } ?>				
 				<tr>
 					<th scope="row" valign="top"><label for="status">Status:</label></th>
 					<td>
-						<input id="status" name="status" type="text" size="20" value="<?php echo esc_attr($order->status);?>" />
-						<small class="pmpro_lite">e.g. success, cancelled, review, token</small>
+						<?php if(in_array("status", $read_only_fields) && $order_id > 0) { echo $order->status; } else { ?>
+						<?php
+							$statuses = array();
+							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded");
+							$used_statuses = $wpdb->get_col("SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders");
+							$statuses = array_unique(array_merge($statuses, $used_statuses));
+							asort($statuses);
+							$statuses = apply_filters("pmpro_order_statuses", $statuses);													
+						?>
+						<select id="status" name="status">
+							<?php foreach($statuses as $status) { ?>
+								<option value="<?php echo esc_attr($status);?>" <?php selected($order->status, $status);?>><?php echo $status;?></option>
+							<?php } ?>
+						</select>	
+						<?php } ?>
 					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="gateway">Gateway:</label></th>
 					<td>
+						<?php if(in_array("gateway", $read_only_fields) && $order_id > 0) { echo $order->gateway; } else { ?>
 						<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
 							<option value="" <?php if(empty($order->gateway)) { ?>selected="selected"<?php } ?>>Testing Only</option>
 							<option value="check" <?php if($order->gateway == "check") { ?>selected="selected"<?php } ?>>Pay by Check</option>
@@ -304,29 +399,36 @@
 							<option value="payflowpro" <?php if($order->gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro</option>
 							<option value="authorizenet" <?php if($order->gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
 						</select>  
+						<?php } ?>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="gateway_environment">Gateway Environment:</label></th>
 					<td>
+						<?php if(in_array("gateway_environment", $read_only_fields) && $order_id > 0) { echo $order->gateway_environment; } else { ?>
 						<select name="gateway_environment">
 							<option value="sandbox" <?php if($order->gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>>Sandbox/Testing</option>
 							<option value="live" <?php if($order->gateway_environment == "live") { ?>selected="selected"<?php } ?>>Live/Production</option>
 						</select>
+						<?php } ?>
 					</td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label for="payment_transaction_id">Payment Transaction ID:</label></th>
 					<td>
-						<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50" value="<?php echo esc_attr($order->payment_transaction_id);?>" />
+						<?php if(in_array("payment_transaction_id", $read_only_fields) && $order_id > 0) { echo $order->payment_transaction_id; } else { ?>
+							<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50" value="<?php echo esc_attr($order->payment_transaction_id);?>" />
+						<?php } ?>
 						<small class="pmpro_lite">Generated by the gateway. Useful to cross reference orders.</small>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="subscription_transaction_id">Subscription Transaction ID:</label></th>
 					<td>
-						<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr($order->subscription_transaction_id);?>" />
+						<?php if(in_array("code", $read_only_fields) && $order_id > 0) { echo $order->code; } else { ?>
+							<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr($order->subscription_transaction_id);?>" />
+						<?php } ?>
 						<small class="pmpro_lite">Generated by the gateway. Useful to cross reference subscriptions.</small>
 					</td>
 				</tr>
@@ -334,6 +436,7 @@
 				<tr>
 					<th scope="row" valign="top"><label for="ts_month">Date:</label></th>
 					<td>
+						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(option("date_format"), $order->timestamp); } else { ?>
 						<?php
 							//setup date vars
 							if(!empty($order->timestamp))
@@ -357,6 +460,7 @@
 						</select>
 						<input name="ts_day" type="text" size="2" value="<?php echo $day?>" />
 						<input name="ts_year" type="text" size="4" value="<?php echo $year?>" />
+						<?php } ?>
 					</td>
 				</tr>
 				
@@ -366,13 +470,30 @@
 				?>
 				<tr>
 					<th scope="row" valign="top"><label for="affiliate_id">Affiliate ID:</label></th>
-					<td><input id="affiliate_id" name="affiliate_id" type="text" size="50" value="<?php echo esc_attr($order->affiliate_id);?>" /></td>
+					<td>
+						<?php if(in_array("affiliate_id", $read_only_fields) && $order_id > 0) { echo $order->affiliate_id; } else { ?>
+							<input id="affiliate_id" name="affiliate_id" type="text" size="50" value="<?php echo esc_attr($order->affiliate_id);?>" />
+						<?php } ?>
+					</td>						
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="affiliate_subid">Affiliate SubID:</label></th>
-					<td><input id="affiliate_subid" name="affiliate_subid" type="text" size="50" value="<?php echo esc_attr($order->affiliate_subid);?>" /></td>
+					<td>
+						<?php if(in_array("affiliate_subid", $read_only_fields) && $order_id > 0) { echo $order->affiliate_subid; } else { ?>
+							<input id="affiliate_subid" name="affiliate_subid" type="text" size="50" value="<?php echo esc_attr($order->affiliate_subid);?>" />
+						<?php } ?>
+					</td>
 				</tr>
 				<?php } ?>
+				
+				<tr>
+					<th scope="row" valign="top"><label for="notes">Notes:</label></th>
+					<td>
+						<?php if(in_array("notes", $read_only_fields) && $order_id > 0) { echo $order->notes; } else { ?>
+							<textarea id="notes" name="notes" rows="5" cols="80"><?php echo esc_textarea($order->notes);?></textarea>
+						<?php } ?>
+					</td>
+				</tr>
 				
 				<?php do_action("pmpro_after_order_settings", $order); ?>								
 				
@@ -509,7 +630,7 @@
 							<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
 							<td>
 								<?php if(!empty($order->payment_type)) echo $order->payment_type . "<br />";?>
-								<?php if(!empty($order->cardtype)) { ?>
+								<?php if(!empty($order->accountnumber)) { ?>
 									<?php echo $order->cardtype;?>: x<?php echo last4($order->accountnumber);?><br />
 								<?php } ?>
 								<?php if(!empty($order->billing->street)) { ?>

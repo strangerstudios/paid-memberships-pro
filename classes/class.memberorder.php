@@ -87,6 +87,8 @@
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 				
+				$this->notes = $dbobj->notes;
+				
 				//reset the gateway
 				if(empty($this->nogateway))
 					$this->setGateway();
@@ -359,6 +361,9 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
+			if(empty($this->notes))
+				$this->notes = "";
+			
 			//build query			
 			if(!empty($this->id))
 			{
@@ -396,7 +401,8 @@
 									`payment_transaction_id` = '" . $this->payment_transaction_id . "',
 									`subscription_transaction_id` = '" . $this->subscription_transaction_id . "',									
 									`affiliate_id` = '" . $this->affiliate_id . "',
-									`affiliate_subid` = '" . $this->affiliate_subid . "'
+									`affiliate_subid` = '" . $this->affiliate_subid . "',
+									`notes` = '" . $wpdb->escape($this->notes) . "'
 									WHERE id = '" . $this->id . "'
 									LIMIT 1";
 			}
@@ -407,7 +413,7 @@
 				$after_action = "pmpro_added_order";
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders  
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`) 
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`) 
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
 									   '" . $this->user_id . "',
@@ -438,7 +444,8 @@
 									   '" . $this->subscription_transaction_id . "',
 									   now(),
 									   '" . $this->affiliate_id . "',
-									   '" . $this->affiliate_subid . "'
+									   '" . $this->affiliate_subid . "',
+									    '" . $wpdb->escape($this->notes) . "'
 									   )";
 			}
 						

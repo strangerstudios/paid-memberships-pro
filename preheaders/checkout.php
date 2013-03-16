@@ -287,7 +287,7 @@
 	else
 		$bconfirmemail = "";
 		
-	if(isset($_REQUEST['CardType']))
+	if(isset($_REQUEST['CardType']) && !empty($_REQUEST['AccountNumber']))
 		$CardType = $_REQUEST['CardType'];
 	else
 		$CardType = "";

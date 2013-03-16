@@ -9,6 +9,6 @@
 	if(!pmpro_isLevelFree($current_user->membership_level))
 	{
 		$pmpro_invoice = new MemberOrder();
-		$pmpro_invoice->getLastMemberOrder($current_user->ID);
+		$pmpro_invoice->getLastMemberOrder($current_user->ID, apply_filters("pmpro_check_status_after_checkout", "success"));
 	}
 ?>

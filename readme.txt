@@ -59,6 +59,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added pmpro_stripe_subscription_deleted hook in stripe-webhook.php for when subscriptions are cancelled on the Stripe side. Use this code to cancel on your site as well: https://gist.github.com/strangerstudios/5093710
 * Now using $pmpro_currency_symbol when membership price is shown on the edit profile page in the dashboard/etc.
 * Added pmpro_authorizenet_post_url filter to use Authorize.net gateway class with a different post url, e.g. if you have a gateway that offers an Authorize.net compatibility mode.
+* Added pmpro_check_status_after_checkout filter so you can e.g. set the status to "pending" instead of "success" when a user checks out with the check gateway. They will still have access to the membership level, but you can update the status via the orders dashboard later.
+* Orders made via the check gateway now have PaymentType = "Check" and CardType = "".
+* Added a notes column to orders.
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
