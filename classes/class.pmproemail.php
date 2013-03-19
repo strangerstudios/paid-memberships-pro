@@ -215,7 +215,11 @@
 			elseif(pmpro_isLevelFree($user->membership_level))
 			{
 				$this->template = "checkout_free";		
-				$this->data["discount_code"] = "";		
+				global $discount_code;
+				if(!empty($discount_code))
+					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";;		
+				else
+					$this->data["discount_code"] = "";		
 			}						
 			else
 			{
@@ -295,7 +299,11 @@
 			elseif(pmpro_isLevelFree($user->membership_level))
 			{
 				$this->template = "checkout_free_admin";		
-				$this->data["discount_code"] = "";		
+				global $discount_code;
+				if(!empty($discount_code))
+					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";;		
+				else
+					$this->data["discount_code"] = "";	
 			}						
 			else
 			{

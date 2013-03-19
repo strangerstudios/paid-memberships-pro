@@ -62,6 +62,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added pmpro_check_status_after_checkout filter so you can e.g. set the status to "pending" instead of "success" when a user checks out with the check gateway. They will still have access to the membership level, but you can update the status via the orders dashboard later.
 * Orders made via the check gateway now have PaymentType = "Check" and CardType = "".
 * Added a notes column to orders.
+* Fixed bug where discount codes were not showing up in checkout emails if the level was free.
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
