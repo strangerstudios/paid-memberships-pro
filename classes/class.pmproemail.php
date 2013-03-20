@@ -217,7 +217,7 @@
 				$this->template = "checkout_free";		
 				global $discount_code;
 				if(!empty($discount_code))
-					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";;		
+					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";		
 				else
 					$this->data["discount_code"] = "";		
 			}						
@@ -301,7 +301,7 @@
 				$this->template = "checkout_free_admin";		
 				global $discount_code;
 				if(!empty($discount_code))
-					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";;		
+					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";		
 				else
 					$this->data["discount_code"] = "";	
 			}						

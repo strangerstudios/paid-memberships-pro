@@ -136,10 +136,12 @@
 				
 			//build query
 			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ";
-			if(!empty($status))
+			if(!empty($status) && is_array($status))
+				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
+			elseif(!empty($status))
 				$this->sqlQuery .= "AND status = '" . $wpdb->escape($status) . "' ";
 			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
-				
+						
 			//get id
 			$id = $wpdb->get_var($this->sqlQuery);
 			

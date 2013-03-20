@@ -60,6 +60,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Now using $pmpro_currency_symbol when membership price is shown on the edit profile page in the dashboard/etc.
 * Added pmpro_authorizenet_post_url filter to use Authorize.net gateway class with a different post url, e.g. if you have a gateway that offers an Authorize.net compatibility mode.
 * Added pmpro_check_status_after_checkout filter so you can e.g. set the status to "pending" instead of "success" when a user checks out with the check gateway. They will still have access to the membership level, but you can update the status via the orders dashboard later.
+* Added pmpro_confirmation_order_status filter so you change which status the confirmation page looks for. Can return an array as well since the getLastMemberOrder method call on MemberOrder has been updated to support $status as an array.
 * Orders made via the check gateway now have PaymentType = "Check" and CardType = "".
 * Added a notes column to orders.
 * Fixed bug where discount codes were not showing up in checkout emails if the level was free.
