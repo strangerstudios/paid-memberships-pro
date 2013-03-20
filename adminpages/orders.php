@@ -567,7 +567,7 @@
 			foreach($fields as $field)
 				$sqlQuery .= " OR " . $field . " LIKE '%" . $wpdb->escape($s) . "%' ";
 			$sqlQuery .= ") ";
-			$sqlQuery .= "ORDER BY o.id DESC, o.timestamp DESC ";
+			$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 		}
 		else
 		{
