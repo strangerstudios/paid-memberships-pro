@@ -64,6 +64,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Orders made via the check gateway now have PaymentType = "Check" and CardType = "".
 * Added a notes column to orders.
 * Fixed bug where discount codes were not showing up in checkout emails if the level was free.
+* Added some wpdb->escape() wrappers to the saveOrder method of MemberOrder which will fix some bugs with orders with fields with apostrophe's in them, etc.
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
