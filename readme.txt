@@ -65,6 +65,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added a notes column to orders.
 * Fixed bug where discount codes were not showing up in checkout emails if the level was free.
 * Added some wpdb->escape() wrappers to the saveOrder method of MemberOrder which will fix some bugs with orders with fields with apostrophe's in them, etc.
+* Added checks for custom capabilities to the PMPro admin pages in case you want to give non-admins access. Caps are: pmpro_discountcodes, pmpro_emailsettings, pmpro_membershiplevels, pmpro_memberslist, pmpro_memberslist_csv, pmpro_orders, pmpro_orders_csv, pmpro_pagesettings, pmpro_paymentsettings
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
