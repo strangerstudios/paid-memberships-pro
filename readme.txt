@@ -67,6 +67,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added some wpdb->escape() wrappers to the saveOrder method of MemberOrder which will fix some bugs with orders with fields with apostrophe's in them, etc.
 * Added checks for custom capabilities to the PMPro admin pages in case you want to give non-admins access. Caps are: pmpro_discountcodes, pmpro_emailsettings, pmpro_membershiplevels, pmpro_memberslist, pmpro_memberslist_csv, pmpro_orders, pmpro_orders_csv, pmpro_pagesettings, pmpro_paymentsettings
 * Added pmpro_memberslist_extra_cols_header and pmpro_memberslist_extra_cols_body hooks to add extra columns to the members list page.
+* Fixed pmpro_paypal_express_return_url_parameters filter to properly encode & and = so the params are properly added to the ReturnURL instead of being seen as extra params to the full PayPal Express URL. The PMPro Addon Packages plugin has been updated to take advantage of this to make that plugin more compatible with PayPal Express.
 
 = 1.5.9.2 =
 * Fixed Members List bugs introduced in version 1.5.9.1.
