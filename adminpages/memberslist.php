@@ -116,6 +116,7 @@
 				<th>First&nbsp;Name</th>
 				<th>Last&nbsp;Name</th>
 				<th>Email</th>
+				<?php do_action("pmpro_memberslist_extra_cols_header", $order_ids);?>
 				<th>Billing Address</th>
 				<th>Membership</th>	
 				<th>Fee</th>
@@ -140,6 +141,7 @@
 							<td><?php echo $theuser->first_name?></td>
 							<td><?php echo $theuser->last_name?></td>
 							<td><a href="mailto:<?php echo $theuser->user_email?>"><?php echo $theuser->user_email?></a></td>
+							<?php do_action("pmpro_memberslist_extra_cols_body", $order);?>
 							<td>
 								<?php 
 									if(empty($theuser->pmpro_bfirstname))
