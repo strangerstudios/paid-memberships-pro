@@ -81,7 +81,7 @@
 			if(!empty($additional_parameters))
 			{
 				foreach($additional_parameters as $key => $value)				
-					$nvpStr .= "&" . $key . "=" . urlencode($value);
+					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}						
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
