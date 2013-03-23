@@ -26,6 +26,14 @@ http://www.paidmembershipspro.com/support/initial-plugin-setup/
 
 == Frequently Asked Questions ==
 
+= My site is broken or blank or not letting me log in after activating Paid Memberships Pro =
+
+This is typically caused by a conflict with another plugin that is trying to redirect around the login/register pages or trying to redirect from HTTP to HTTPS, etc.
+
+To regain access to your site, FTP to your site and rename the wp-content/plugins/paid-memberships-pro folder to wp-content/plugins/paid-memberhsips-pro-d (or anything different). Now WP will not be able to find PMPro, and you can gain access to /wp-admin/ again. From there, visit the plugins page to fully deactivate Paid Memberships Pro. (You'll want to rename the folder back to paid-memberhsips-pro again.)
+
+Long term, you will need to find and fix the conflict. We can usually do this for you very quickly if you sign up for support at http://www.paidmembershipspro.com/pricing/ and send us your WP admin and FTP credentials.
+
 = I found a bug in the plugin. =
 
 Please post it in the WordPress support forum and we'll fix it right away. Thanks for helping. http://wordpress.org/tags/paid-memberships-pro?forum_id=10
