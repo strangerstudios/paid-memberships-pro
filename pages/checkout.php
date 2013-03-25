@@ -270,7 +270,7 @@
 					<div id="pmpro_license">
 <?php echo wpautop($tospage->post_content)?>
 					</div>								
-					<input type="checkbox" name="tos" value="1" /> I agree to the <?php echo $tospage->post_title?>
+					<input type="checkbox" name="tos" value="1" id="tos" /> <label for="tos">I agree to the <?php echo $tospage->post_title?></label>
 				</td>
 			</tr>
 		</tbody>
