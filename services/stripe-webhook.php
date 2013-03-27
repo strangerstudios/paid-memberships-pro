@@ -38,8 +38,8 @@
 	}
 	catch(Exception $e)
 	{
-		//die("Could not find an event with ID #" . $event_id . ". " . $e->getMessage());
-		$event = $post_event;
+		die("Could not find an event with ID #" . $event_id . ". " . $e->getMessage());
+		//$event = $post_event;			//for testing you may want to assume that the passed in event is legit
 	}
 		
 	global $wpdb;
