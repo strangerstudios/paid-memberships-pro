@@ -67,6 +67,8 @@
 			$order->billing->country = stripslashes($_POST['billing_country']);
 		if(!in_array("billing_phone", $read_only_fields))
 			$order->billing->phone = $_POST['billing_phone'];
+		if(!in_array("subtotal", $read_only_fields))
+			$order->subtotal = $_POST['subtotal'];
 		if(!in_array("tax", $read_only_fields))
 			$order->tax = $_POST['tax'];
 		if(!in_array("couponamount", $read_only_fields))
@@ -162,6 +164,7 @@
 				$order->billing->zip = "";
 				$order->billing->country = "";
 				$order->billing->phone = "";
+				$order->subtotal = "";
 				$order->tax = "";
 				$order->couponamount = "";
 				$order->total = "";
@@ -297,6 +300,14 @@
 				</tr>
 				
 				<tr>
+					<th scope="row" valign="top"><label for="subtotal">Sub Total:</label></th>
+					<td>
+						<?php if(in_array("subtotal", $read_only_fields) && $order_id > 0) { echo $order->subtotal; } else { ?>
+							<input id="subtotal" name="subtotal" type="text" size="10" value="<?php echo esc_attr($order->subtotal);?>" />						
+						<?php } ?>
+					</td>
+				</tr>
+				<tr>
 					<th scope="row" valign="top"><label for="tax">Tax:</label></th>
 					<td>
 						<?php if(in_array("tax", $read_only_fields) && $order_id > 0) { echo $order->tax; } else { ?>
@@ -318,6 +329,7 @@
 						<?php if(in_array("total", $read_only_fields) && $order_id > 0) { echo $order->total; } else { ?>							
 							<input id="total" name="total" type="text" size="10" value="<?php echo esc_attr($order->total);?>" />
 						<?php } ?>
+						<small class="pmpro_lite">Should be subtotal + tax - couponamount.</small>	
 					</td>
 				</tr>
 				
