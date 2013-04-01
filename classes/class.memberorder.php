@@ -324,17 +324,26 @@
 			//figure out how much we charged
 			if(!empty($this->InitialPayment))
 				$amount = $this->InitialPayment;
+			elseif(!empty($this->subtotal))
+				$amount = $this->subtotal;
 			else
-				$amount = 0;
+				$amount = 0;							
 						
 			//Todo: Tax?!, Coupons, Certificates, affiliates
-			$this->subtotal = $amount;
+			if(empty($this->subtotal))
+				$this->subtotal = $amount;
 			if(isset($this->tax))
 				$tax = $this->tax;
 			else
 				$tax = $this->getTax(true);
 			$this->certificate_id = "";
 			$this->certificateamount = "";
+			
+			//calculate total
+			if(!empty($this->total))
+				$total = $this->total;
+			else
+				$total = (float)$amount + (float)$tax;
 			
 			//these fix some warnings/notices
 			if(empty($this->billing))
@@ -433,7 +442,7 @@
 									   '" . $this->couponamount. "',
 									   '" . intval($this->certificate_id) . "',
 									   '" . $this->certificateamount . "',
-									   '" . ((float)$amount + (float)$tax) . "',
+									   '" . $total . "',
 									   '" . $this->payment_type . "',
 									   '" . $this->cardtype . "',
 									   '" . hideCardNumber($this->accountnumber, false) . "',
@@ -451,7 +460,7 @@
 									   )";
 			}
 						
-			do_action($before_action, $this);
+			do_action($before_action, $this);						
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
 				if(empty($this->id))
