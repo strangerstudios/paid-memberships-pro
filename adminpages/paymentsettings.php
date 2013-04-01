@@ -28,7 +28,11 @@
 		pmpro_setOption("transactionkey");
 		pmpro_setOption("stripe_secretkey");
 		pmpro_setOption("stripe_publishablekey");
-
+		pmpro_setOption("braintree_merchantid");
+		pmpro_setOption("braintree_publickey");
+		pmpro_setOption("braintree_privatekey");
+		pmpro_setOption("braintree_encryptionkey");
+		
 		//currency
 		$currency_paypal = $_POST['currency_paypal'];
 		$currency_stripe = $_POST['currency_stripe'];
@@ -95,7 +99,11 @@
 	$transactionkey = pmpro_getOption("transactionkey");
 	$stripe_secretkey = pmpro_getOption("stripe_secretkey");
 	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");		
-		
+	$braintree_merchantid = pmpro_getOption("braintree_merchantid");
+	$braintree_publickey = pmpro_getOption("braintree_publickey");
+	$braintree_privatekey = pmpro_getOption("braintree_privatekey");
+	$braintree_encryptionkey = pmpro_getOption("braintree_encryptionkey");
+	
 	$currency = pmpro_getOption("currency");
 	
 	$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
@@ -153,6 +161,7 @@
 						<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
 						<option value="payflowpro" <?php if($gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro</option>
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
+						<option value="braintree" <?php if($gateway == "braintree") { ?>selected="selected"<?php } ?>>Braintree Payments</option>
 					</select>                        
 				</td>
 			</tr> 			
@@ -280,6 +289,39 @@
 				</td>
 			</tr>
 			
+			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="braintree_merchantid">Merchant ID:</label>
+				</th>
+				<td>
+					<input type="text" name="braintree_merchantid" size="60" value="<?php echo $braintree_merchantid?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="braintree_publickey">Public Key:</label>
+				</th>
+				<td>
+					<input type="text" name="braintree_publickey" size="60" value="<?php echo $braintree_publickey?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="braintree_privatekey">Private Key:</label>
+				</th>
+				<td>
+					<input type="text" name="braintree_privatekey" size="60" value="<?php echo $braintree_privatekey?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="braintree_encryptionkey">Client-Side Encryption Key:</label>
+				</th>
+				<td>
+					<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($braintree_encryptionkey)?></textarea>					
+				</td>
+			</tr>
+			
 			<tr class="gateway gateway_authorizenet gateway_payflowpro" <?php if($gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
@@ -288,9 +330,9 @@
 					<input type="hidden" name="currency_fixed" size="60" value="USD" />
 					USD
 				</td>
-			</tr>
-			
-			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			</tr>						
+						
+			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
@@ -309,7 +351,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey">Currency:</label>
 				</th>
@@ -328,7 +370,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards">Accepted Credit Card Types</label>
 				</th>
@@ -351,7 +393,7 @@
 					<p><small>Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>
@@ -363,7 +405,7 @@
 					<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="use_ssl">Use SSL:</label>
 				</th>
@@ -420,6 +462,14 @@
 				</th>
 				<td>
 					<p>To fully integrate with Stripe, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre>.</p>
+				</td>
+			</tr>
+			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label>Web Hook URL:</label>
+				</th>
+				<td>
+					<p>To fully integrate with Braintree, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=braintree_webhook";?></pre>.</p>
 				</td>
 			</tr>
 		</tbody>

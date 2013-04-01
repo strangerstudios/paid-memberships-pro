@@ -1,15 +1,18 @@
 <?php	
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	if(!class_exists("Stripe"))
-		require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
-	class PMProGateway_stripe
+	if(!class_exists("Braintree"))
+		require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
+	class PMProGateway_braintree
 	{
-		function PMProGateway_stripe($gateway = NULL)
+		function PMProGateway_braintree($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+			Braintree_Configuration::environment($this->gateway_environment);
+			Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
+			Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
+			Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
 			
 			return $this->gateway;
 		}										
@@ -48,7 +51,7 @@
 					}
 				}
 				else
-				{
+				{					
 					if(empty($order->error))
 						$order->error = "Unknown error: Initial payment failed.";
 					return false;
@@ -81,13 +84,10 @@
 			//charge
 			try
 			{ 
-				$response = Stripe_Charge::create(array(
-				  "amount" => $amount * 100, # amount in cents, again
-				  "currency" => strtolower(pmpro_getOption("currency")),
-				  "customer" => $this->customer->id,
-				  "description" => "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")"
-				  )
-				);
+				$response = Braintree_Transaction::sale(array(
+				  'amount' => $amount,
+				  'customerId' => $this->customer->id				  
+				));								
 			}
 			catch (Exception $e)
 			{
@@ -97,32 +97,44 @@
 				$order->shorterror = $order->error;
 				return false;
 			}
-			
-			if(empty($response["failure_message"]))
+						
+			if($response->success)
 			{
-				//successful charge
-				$order->payment_transaction_id = $response["id"];
-				$order->updateStatus("success");					
-				return true;		
+				//successful charge			
+				$transaction_id = $response->transaction->id;
+				$response = Braintree_Transaction::submitForSettlement($transaction_id);
+				if($response->success)
+				{
+					$order->payment_transaction_id = $transaction_id;				
+					$order->updateStatus("success");					
+					return true;		
+				}
+				else
+				{					
+					$order->errorcode = true;
+					$order->error = "Error during settlement: " . $response->message;
+					$order->shorterror = $response->message;
+					return false;
+				}								
 			}
 			else
 			{
 				//$order->status = "error";
 				$order->errorcode = true;
-				$order->error = $response['failure_message'];
-				$order->shorterror = $response['failure_message'];
+				$order->error = "Error during charge: " . $response->message;
+				$order->shorterror = $response->message;
 				return false;
 			}									
 		}
 		
 		/*
-			This function will return a Stripe customer object.			
+			This function will return a Braintree customer object.			
 			If $this->customer is set, it returns it.
 			It first checks if the order has a subscription_transaction_id. If so, that's the customer id.
 			If not, it checks for a user_id on the order and searches for a customer id in the user meta.
-			If a customer id is found, it checks for a customer through the Stripe API.
-			If a customer is found and there is a stripeToken on the order passed, it will update the customer.
-			If no customer is found and there is a stripeToken on the order passed, it will create a customer.
+			If a customer id is found, it checks for a customer through the Braintree API.
+			If a customer is found and there is an AccountNumber on the order passed, it will update the customer.
+			If no customer is found and there is an AccountNumber on the order passed, it will create a customer.
 		*/
 		function getCustomer(&$order, $force = false)
 		{
@@ -131,69 +143,114 @@
 			//already have it?
 			if(!empty($this->customer) && !$force)
 				return $this->customer;
-			
-			//transaction id?
-			if(!empty($order->subscription_transaction_id))
-				$customer_id = $order->subscription_transaction_id;
-			else
-			{
-				//try based on user id	
-				if(!empty($order->user_id))
-					$user_id = $order->user_id;
-			
-				//if no id passed, check the current user
-				if(empty($user_id) && !empty($current_user->ID))
-					$user_id = $current_user->ID;
-			
-				//check for a stripe customer id
-				if(!empty($user_id))
-				{			
-					$customer_id = get_user_meta($user_id, "pmpro_stripe_customerid", true);	
-				}
+						
+			//try based on user id	
+			if(!empty($order->user_id))
+				$user_id = $order->user_id;
+		
+			//if no id passed, check the current user
+			if(empty($user_id) && !empty($current_user->ID))
+				$user_id = $current_user->ID;
+		
+			//check for a braintree customer id
+			if(!empty($user_id))
+			{			
+				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);	
 			}
-			
+					
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
 				try 
 				{
-					$this->customer = Stripe_Customer::retrieve($customer_id);
-					
+					$this->customer = Braintree_Customer::find($customer_id);
+										
 					//update the customer description and card
-					if(!empty($order->stripeToken))
+					if(!empty($order->accountnumber))
 					{
-						$this->customer->description = trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")";
-						$this->customer->card = $order->stripeToken;
-						$this->customer->save();
+						$response = Braintree_Customer::update(
+						  $customer_id,
+						  array(
+							'firstName' => $order->FirstName,
+							'lastName' => $order->LastName,
+							'creditCard' => array(
+								'number' => $order->braintree->number,
+								'expirationDate' => $order->braintree->expiration_date,
+								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
+								'options' => array(
+									'updateExistingToken' => $customer_id
+								)
+							 )
+						  )
+						);
+
+						if($response->success)
+						{
+							$this->customer = $result->customer;
+						}
+						else
+						{
+							$order->error = "Failed to update customer.";
+							$order->shorterror = $order->error;
+							return false;
+						}
 					}
 					
 					return $this->customer;
 				} 
 				catch (Exception $e) 
 				{
-					//assume no customer found					
+					//assume no customer found							
 				}
 			}
 			
 			//no customer id, create one
-			if(!empty($order->stripeToken))
+			if(!empty($order->accountnumber))
 			{
 				try
-				{
-					$this->customer = Stripe_Customer::create(array(
-							  "description" => trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")",
-							  "card" => $order->stripeToken
-							));
+				{					
+					$result = Braintree_Customer::create(array(
+						'firstName' => $order->FirstName,
+						'lastName' => $order->LastName,
+						'email' => $order->Email,
+						'phone' => $order->billing->phone,
+						'creditCard' => array(
+							'number' => $order->braintree->number,
+							'expirationDate' => $order->braintree->expiration_date,
+							'cvv' => $order->braintree->cvv,
+							'cardholderName' =>  trim($order->FirstName . " " . $order->LastName),
+							'billingAddress' => array(
+								'firstName' => $order->FirstName,
+								'lastName' => $order->LastName,
+								'streetAddress' => $order->Address1,
+								'extendedAddress' => $order->Address2,
+								'locality' => $order->billing->city,
+								'region' => $order->billing->state,
+								'postalCode' => $order->billing->zip,
+								'countryCodeAlpha2' => $order->billing->country
+							)
+						)
+					));
+					
+					if($result->success)
+					{
+						$this->customer = $result->customer;
+					}
+					else
+					{
+						$order->error = "Failed to create customer.";
+						$order->shorterror = $order->error;
+						return false;
+					}										
 				}
 				catch (Exception $e)
-				{
-					$order->error = "Error creating customer record with Stripe: " . $e->getMessage();
+				{					
+					$order->error = "Error creating customer record with Braintree: " . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
 				
-				update_user_meta($user_id, "pmpro_stripe_customerid", $customer->id);	
-				
+				update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);					
 				return $this->customer;
 			}
 			
@@ -210,7 +267,7 @@
 			$this->getCustomer($order);
 			if(empty($this->customer))
 				return false;	//error retrieving customer
-			
+						
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
@@ -256,51 +313,49 @@
 				else
 					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
 			}					
-			
-			//create a plan
-			try
-			{						
-				$plan = Stripe_Plan::create(array(
-				  "amount" => $amount * 100,
-				  "interval_count" => $order->BillingFrequency,
-				  "interval" => strtolower($order->BillingPeriod),
-				  "trial_period_days" => $trial_period_days,
-				  "name" => $order->membership_name . " for order " . $order->code,
-				  "currency" => strtolower(pmpro_getOption("currency")),
-				  "id" => $order->code)
-				);
-			}
-			catch (Exception $e)
-			{
-				$order->error = "Error creating plan with Stripe:" . $e->getMessage();
-				$order->shorterror = $order->error;
-				return false;
-			}
-			
+									
 			//subscribe to the plan
 			try
 			{				
-				$this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));
+				$details = array(
+				  'paymentMethodToken' => $this->customer->creditCards[0]->token,
+				  'planId' => 'pmpro_' . $order->membership_id,
+				  'price' => $amount				  
+				);
+				
+				if(!empty($trial_period_days))
+				{
+					$details['trialPeriod'] = true;
+					$details['trialDuration'] = $trial_period_days;
+					$details['trialDurationUnit'] = "day";
+				}
+				
+				if(!empty($order->TotalBillingCycles))
+					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
+				
+				$result = Braintree_Subscription::create($details);								
 			}
 			catch (Exception $e)
-			{
-				//try to delete the plan
-				$plan->delete();
-				
+			{				
+				$order->error = "Error subscribing customer to plan with B:" . $e->getMessage();
 				//return error
-				$order->error = "Error subscribing customer to plan with Stripe:" . $e->getMessage();
 				$order->shorterror = $order->error;
 				return false;
 			}
 			
-			//delete the plan
-			$plan = Stripe_Plan::retrieve($plan['id']);
-			$plan->delete();		
-
-			//if we got this far, we're all good						
-			$order->status = "success";		
-			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too			
-			return true;
+			if($result->success)
+			{			
+				//if we got this far, we're all good						
+				$order->status = "success";		
+				$order->subscription_transaction_id = $result->subscription->id;
+				return true;
+			}
+			else
+			{
+				$order->error = "Failed to subscribe with Braintree: " . $result->message;
+				$order->shorterror = $result->message;
+				return false;
+			}	
 		}	
 		
 		function update(&$order)
@@ -324,15 +379,13 @@
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
-			//find the customer
-			$this->getCustomer($order);
-			
-			if(!empty($this->customer))
+			//find the customer			
+			if(!empty($order->subscription_transaction_id))
 			{
 				//cancel
 				try 
 				{ 
-					$this->customer->cancelSubscription();								
+					$result = Braintree_Subscription::cancel($order->subscription_transaction_id);
 				}
 				catch(Exception $e)
 				{
@@ -342,8 +395,18 @@
 					return false;	//no subscription found	
 				}
 				
-				$order->updateStatus("cancelled");					
-				return true;
+				if($result->success)
+				{
+					$order->updateStatus("cancelled");					
+					return true;
+				}
+				else
+				{
+					$order->updateStatus("cancelled");	//assume it's been cancelled already
+					$order->error = "Could not find the subscription.";
+					$order->shorterror = $order->error;
+					return false;	//no subscription found	
+				}
 			}
 			else
 			{

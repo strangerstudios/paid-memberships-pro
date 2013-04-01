@@ -9,7 +9,7 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
-	global $pmpro_stripe_error, $wp_version;
+	global $pmpro_stripe_error, $pmpro_braintree_error, $wp_version;
 	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
@@ -282,7 +282,9 @@
 			<tbody>
 				<tr>
 					<th scope="row" valign="top"><label>ID:</label></th>
-					<td><?php echo $level->id?></td>
+					<td>
+						<?php echo $level->id?>						
+					</td>
 				</tr>								                
 				
 				<tr>
@@ -360,8 +362,15 @@
 							The amount to be billed one cycle after the initial payment.
 							<?php if($gateway == "stripe") { ?>
 								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently only supports billing periods of "Month" or "Year".
+							<?php } elseif($gateway == "braintree") { ?>
+								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>>Braintree integration currently only supports billing periods of "Month" or "Year".
 							<?php } ?>
-						</small>							
+						</small>	
+						<?php if($gateway == "braintree" && $edit < 0) { ?>
+							<p class="pmpro_message"><strong>Note:</strong> After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.</p>
+						<?php } elseif($gateway == "braintree") { ?>
+							<p class="pmpro_message"><strong>Note:</strong> You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_<?php echo $level->id;?></em>.</p>
+						<?php } ?>						
 					</td>
 				</tr>                                        
 				
@@ -372,7 +381,7 @@
 						<br /><small>
 							The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.
 							<?php if($gateway == "stripe") { ?>
-								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently does not support billing limits. You can still set an expiration date below.</strong>
+								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently does not support billing limits. You can still set an expiration date below.</strong>							
 							<?php } ?>
 						</small>
 					</td>
@@ -393,8 +402,12 @@
 						<?php if($gateway == "stripe") { ?>
 							<br /><small>
 							<strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently does not support trial amounts greater than $0.</strong>
+							</small>							
+						<?php } elseif($gateway == "braintree") { ?>
+							<br /><small>
+							<strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>>Braintree integration currently does not support trial amounts greater than $0.</strong>
 							</small>
-						<?php } ?>						
+						<?php } ?>		
 					</td>
 				</tr>
 									 
@@ -454,7 +467,7 @@
 					</td>
 				</tr>
 			</tbody>
-		</table>			
+		</table>				
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button-primary" value="Save Level" /> 					
 			<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
@@ -503,11 +516,11 @@
 			$sqlQuery .= "ORDER BY id ASC";
 			
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
-			
+						
 			foreach($levels as $level)
-			{
+			{			
 		?>
-		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibilty($level)) { ?>pmpro_error<?php } ?>">
+		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
 			<td><?php echo $level->name?></td>
 			<td>

@@ -137,6 +137,13 @@ function pmpro_wp_ajax_stripe_webhook()
 }
 add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
+function pmpro_wp_ajax_braintree_webhook()
+{
+	require_once(dirname(__FILE__) . "/services/braintree-webhook.php");	
+	exit;
+}
+add_action('wp_ajax_nopriv_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook');
+add_action('wp_ajax_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook');
 function pmpro_wp_ajax_memberlist_csv()
 {
 	require_once(dirname(__FILE__) . "/adminpages/memberslist-csv.php");	
@@ -206,7 +213,7 @@ add_action('set_current_user', 'pmpro_set_current_user');
 /*
 	Checks if PMPro settings are complete or if there are any errors.
 */
-function pmpro_checkLevelForStripeCompatibilty($level = NULL)
+function pmpro_checkLevelForStripeCompatibility($level = NULL)
 {
 	$gateway = pmpro_getOption("gateway");
 	if($gateway == "stripe")
@@ -247,6 +254,56 @@ function pmpro_checkLevelForStripeCompatibilty($level = NULL)
 			if($level->trial_amount > 0 ||
 			   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
 			   $level->billing_limit > 0)
+			{
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
+/*
+	Checks if PMPro settings are complete or if there are any errors.
+*/
+function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
+{
+	$gateway = pmpro_getOption("gateway");
+	if($gateway == "braintree")
+	{
+		global $wpdb;
+		
+		//check ALL the levels
+		if(empty($level))
+		{
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";		
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{
+					/*
+						Braintree currently does not support:
+						* Trial Amounts > 0.
+						* Daily or Weekly billing periods.												
+					*/
+					if($level->trial_amount > 0 ||
+					   $level->cycle_period == "Day" || $level->cycle_period == "Week")
+					{
+						return false;
+					}
+				}
+			}
+		}
+		else
+		{
+			//need to look it up?
+			if(is_numeric($level))
+				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($level) . "' LIMIT 1");
+			
+			//check this level
+			if($level->trial_amount > 0 ||
+			   $level->cycle_period == "Day" || $level->cycle_period == "Week")
 			{
 				return false;
 			}
@@ -306,6 +363,13 @@ function pmpro_is_ready()
 		elseif($gateway == "stripe")
 		{
 			if(pmpro_getOption("gateway_environment") && pmpro_getOption("stripe_secretkey") && pmpro_getOption("stripe_publishablekey"))
+				$pmpro_gateway_ready = true;
+			else
+				$pmpro_gateway_ready = false;
+		}
+		elseif($gateway == "braintree")
+		{
+			if(pmpro_getOption("gateway_environment") && pmpro_getOption("braintree_merchantid") && pmpro_getOption("braintree_publickey") && pmpro_getOption("braintree_privatekey"))
 				$pmpro_gateway_ready = true;
 			else
 				$pmpro_gateway_ready = false;

@@ -30,18 +30,38 @@
 			$msg = false;
 	}
 	
-	if(!pmpro_checkLevelForStripeCompatibilty())
+	if(!pmpro_checkLevelForStripeCompatibility())
 	{		
 		$msg = -1;
 		$msgt = "The billing details for some of your membership levels is not supported by Stripe.";
-		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']))
+		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
 		{
-			if(!pmpro_checkLevelForStripeCompatibilty($_REQUEST['edit']))
+			if(!pmpro_checkLevelForStripeCompatibility($_REQUEST['edit']))
 			{
 				global $pmpro_stripe_error;
 				$pmpro_stripe_error = true;
 				$msg = -1;
 				$msgt = "The billing details for this level are not supported by Stripe. Please review the notes in the Billing Details section below.";				
+			}			
+		}
+		elseif($view == "pmpro-membershiplevels")
+			$msgt .= " The levels with issues are highlighted below.";
+		else
+			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">Please edit your levels</a>.";			
+	}
+	
+	if(!pmpro_checkLevelForBraintreeCompatibility())
+	{		
+		$msg = -1;
+		$msgt = "The billing details for some of your membership levels is not supported by Braintree.";
+		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		{
+			if(!pmpro_checkLevelForBraintreeCompatibility($_REQUEST['edit']))
+			{
+				global $pmpro_braintree_error;
+				$pmpro_braintree_error = true;
+				$msg = -1;
+				$msgt = "The billing details for this level are not supported by Braintree. Please review the notes in the Billing Details section below.";				
 			}			
 		}
 		elseif($view == "pmpro-membershiplevels")
