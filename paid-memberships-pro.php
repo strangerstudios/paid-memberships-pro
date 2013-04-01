@@ -716,10 +716,17 @@ function pmpro_membership_level_profile_fields_update()
 	}
 	elseif(isset($_REQUEST['expires']))
 	{
-		//null out the expiration
-		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
-		if($wpdb->query($sqlQuery))
-			$expiration_changed = true;
+		//already blank? have to check for null or '0000-00-00 00:00:00' or '' here.
+		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE (enddate IS NULL OR enddate = '' OR enddate = '0000-00-00 00:00:00') AND status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
+		$blank = $wpdb->get_var($sqlQuery);
+		
+		if(empty($blank))
+		{		
+			//null out the expiration
+			$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
+			if($wpdb->query($sqlQuery))
+				$expiration_changed = true;
+		}
 	}
 	
 	//send email

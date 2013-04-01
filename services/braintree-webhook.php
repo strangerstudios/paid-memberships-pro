@@ -1,13 +1,9 @@
 <?php			
+	global $ipage;
+	$ispage = true;
+	
 	global $logstr;
 	$logstr = "";		
-	
-	function pmpro_remove_headers($headers)
-	{
-		var_dump($headers);
-		return array();
-	}
-	add_filter('wp_headers', 'pmpro_remove_headers');
 	
 	//in case the file is loaded directly
 	if(!defined("WP_USE_THEMES"))
@@ -27,10 +23,7 @@
 	
 	//verify		
 	if(!empty($_REQUEST['bt_challenge']))
-		echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);
-		
-	exit;
-	
+		echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);		
 		
 	//get notification
 	$webhookNotification = Braintree_WebhookNotification::parse(
@@ -60,7 +53,8 @@
 	}
 	elseif($webhookNotification->kind == "subscription_canceled")
 	{
-		//for one of our users? if they still have a membership, notify the admin			
+		//for one of our users? if they still have a membership, notify the admin	
+				
 		//get user by subscription
 		if(!empty($user->ID))
 		{			

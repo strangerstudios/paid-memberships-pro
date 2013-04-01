@@ -420,7 +420,6 @@
 			}
 			else
 			{
-				krumo($response_array);
 				//$order->status = "error";
 				$order->errorcode = $response_array[2];
 				$order->error = $response_array[3];

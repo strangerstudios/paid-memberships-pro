@@ -60,7 +60,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog == 
 = 1.6 =
+* Added Braintree payments as a gateway option. This should be considered in "beta". Please get in touch if you are using Braintree payments with PMPro. Everything should function except that we're still working out an issue with the webhook handler.
 * Added a new dashboard page Orders to view all orders processed by PMPro with an option to export to CSV.
+* Fixed bug where "Your membership level has changed" emails were being sent out the first time a user's profile was edited, even if the level wasn't changing.
 * Removed the revenue estimate from the members list page. This causes performance issues on sites with many members. A new reports dashboard page is coming soon.
 * Not showing payment settings warning now when Payflow is setup with all values filled in.
 * Updated preheaders/billing.php to get the most recent successful order from the DB to use when updating. (ORDER BY id DESC in the query)
