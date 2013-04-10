@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.6
+Stable tag: 1.6.0.1
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -59,6 +59,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.6.0.1 =
+* Fixed Braintree integration for production environments. Braintree needed to be told "production" instead of "live".
+* Removed !!field!! lines from a couple of admin emails.
+* Added login_link as data for the cancel_admin email template.
+
 = 1.6 =
 * Added Braintree payments as a gateway option. This should be considered in "beta". Please get in touch if you are using Braintree payments with PMPro. Everything should function except that we're still working out an issue with the webhook handler.
 * Added a new dashboard page Orders to view all orders processed by PMPro with an option to export to CSV.

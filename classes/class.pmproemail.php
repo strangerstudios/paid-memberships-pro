@@ -136,7 +136,7 @@
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = "Membership for " . $user->user_login . " at " . get_option("blogname") . " has been CANCELED";
 			$this->template = "cancel_admin";
-			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
+			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
 			
 			//start and end date
