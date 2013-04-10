@@ -365,7 +365,9 @@
 			if(empty($this->affiliate_id))
 				$this->affiliate_id = "";
 			if(empty($this->affiliate_subid))
-				$this->affiliate_subid = "";			
+				$this->affiliate_subid = "";	
+			if(empty($this->session_id))
+				$this->session_id = "";		
 			
 			if(empty($this->gateway))
 				$this->gateway = pmpro_getOption("gateway");				

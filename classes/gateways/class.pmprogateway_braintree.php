@@ -9,7 +9,12 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			Braintree_Configuration::environment($this->gateway_environment);
+			//convert to braintree nomenclature
+			$environment = $this->gateway_environment;
+			if($environment == "live")
+				$environment = "production";
+			
+			Braintree_Configuration::environment($environment);
 			Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
 			Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
 			Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
