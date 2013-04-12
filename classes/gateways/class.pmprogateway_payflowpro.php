@@ -16,7 +16,7 @@
 				$authorization_id = $this->authorize($order);					
 				if($authorization_id)
 				{
-					$this->void($order, $authorization_id);						
+					$this->void($order, $authorization_id);											
 					$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
@@ -29,14 +29,7 @@
 				}
 			}
 			else
-			{				
-				//let's return an error for recurring levels for now
-				if(pmpro_isLevelRecurring($order->membership_level))
-				{
-					$order->error = "Recurring payments with Payflow is not supported by Paid Memberships Pro at this time.";
-					return false;
-				}
-				
+			{								
 				//charge first payment
 				if($this->charge($order))
 				{																							
@@ -98,7 +91,7 @@
 			else
 				$cardtype = $order->cardtype;
 			
-			if(!empty($accountnumber))
+			if(!empty($order->accountnumber))
 				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
 			
 			//billing address, etc
@@ -116,7 +109,7 @@
 			$this->nvpStr = $nvpStr;
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('A', $nvpStr);
-			
+						
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
 				$order->authorization_id = $this->httpParsedResponseAr['PNREF'];
 				$order->updateStatus("authorized");				
@@ -138,8 +131,8 @@
 			//paypal profile stuff
 			$nvpStr="&ORIGID=" . $authorization_id;
 		
-			$this->httpParsedResponseAr = $this->PPHttpPost('C', $nvpStr);							
-									
+			$this->httpParsedResponseAr = $this->PPHttpPost('V', $nvpStr);							
+						
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {			
 				return true;				
 			} else  {				
@@ -204,14 +197,161 @@
 		
 		function subscribe(&$order)
 		{
-			$order->error = "Recurring subscriptions with Payflow are not currently supported by Paid Memberships Pro";
-			return false;
+			global $pmpro_currency;
+						
+			if(empty($order->code))
+				$order->code = $order->getRandomCode();			
+			
+			//taxes on the amount
+			$amount = $order->PaymentAmount;
+			$amount_tax = $order->getTaxForPrice($amount);						
+			$order->subtotal = $amount;
+			$amount = round((float)$amount + (float)$amount_tax, 2);
+			
+			if($order->BillingPeriod == "Week")
+				$payperiod = "WEEK";
+			elseif($order->BillingPeriod == "Month")
+				$payperiod = "MONT";
+			elseif($order->BillingPeriod == "Year")
+				$payperiod = "YEAR";
+			
+			//paypal profile stuff
+			$nvpStr = "&ACTION=A";			
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax;			
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
+			
+			$nvpStr .= "&PROFILENAME=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
+			
+			$nvpStr .= "&PAYPERIOD=" . $payperiod;
+			
+			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;	
+
+			//if billing cycles are defined						
+			if(!empty($order->TotalBillingCycles))
+				$nvpStr .= "&TERM=" . $order->TotalBillingCycles;
+			else
+				$nvpStr .= "&TERM=0";
+			
+			if(!empty($order->accountnumber))
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+			
+			/*
+				Let's figure out the start date. There are two parts.
+				1. We need to add the billing period to the start date to account for the initial payment.
+				2. We can allow for free trials by further delaying the start date of the subscription.				
+			*/
+			if($order->BillingPeriod == "Year")
+				$trial_period_days = $order->BillingFrequency * 365;	//annual
+			elseif($order->BillingPeriod == "Day")
+				$trial_period_days = $order->BillingFrequency * 1;		//daily
+			elseif($order->BillingPeriod == "Week")
+				$trial_period_days = $order->BillingFrequency * 7;		//weekly
+			else
+				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
+				
+			//convert to a profile start date
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";			
+			
+			//filter the start date
+			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
+
+			//convert back to days
+			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
+
+			//now add the actual trial set by the site
+			if(!empty($order->TrialBillingCycles))						
+			{
+				$trialOccurrences = (int)$order->TrialBillingCycles;
+				if($order->BillingPeriod == "Year")
+					$trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
+				elseif($order->BillingPeriod == "Day")
+					$trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
+				elseif($order->BillingPeriod == "Week")
+					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+				else
+					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
+			}			
+			
+			//convert back into a date
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";
+			
+			//start date
+			$nvpStr .= "&START=" . date("mdY", strtotime($order->ProfileStartDate));
+			
+			if(!empty($order->accountnumber))
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+			
+			//billing address, etc
+			if($order->Address1)
+			{
+				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				
+				if($order->Address2)
+					$nvpStr .= " " . $order->Address2;
+				
+				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
+			}
+
+			$this->nvpStr = $nvpStr;
+			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
+						
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
+				$order->subscription_transaction_id = $this->httpParsedResponseAr['PROFILEID'];
+				$order->status = "success";				
+				return true;				
+			} else  {				
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);				
+				return false;				
+			}	
+		
+			//$order->error = "Recurring subscriptions with Payflow are not currently supported by Paid Memberships Pro";
+			//return false;
 		}	
 		
 		function update(&$order)
 		{
-			$order->error = "Updated billing with Payflow is not currently supported by Paid Memberships Pro";
-			return false;
+			$order->getMembershipLevel();
+					
+			//paypal profile stuff
+			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=M";						
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+					
+			$nvpStr .= "&PROFILENAME=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
+						
+			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;	
+			
+			if(!empty($order->accountnumber))
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+			
+			//billing address, etc
+			if($order->Address1)
+			{
+				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				
+				if($order->Address2)
+					$nvpStr .= " " . $order->Address2;
+				
+				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
+			}
+
+			$this->nvpStr = $nvpStr;
+			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
+						
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
+				$order->subscription_transaction_id = $this->httpParsedResponseAr['PROFILEID'];
+				$order->updateStatus("success");				
+				return true;				
+			} else  {				
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);				
+				return false;				
+			}	
 		}
 		
 		function cancel(&$order)
@@ -220,9 +360,22 @@
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
-			//simulate a successful cancel			
-			$order->updateStatus("cancelled");					
-			return true;
+			//paypal profile stuff
+			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=C";							
+			
+			$this->nvpStr = $nvpStr;
+			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
+												
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {			
+				$order->updateStatus("cancelled");					
+				return true;				
+			} else  {				
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
+				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['RESPMSG']);				
+				return false;
+			}
 		}	
 		
 		/**

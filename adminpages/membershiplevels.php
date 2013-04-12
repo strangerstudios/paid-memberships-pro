@@ -9,7 +9,7 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
-	global $pmpro_stripe_error, $pmpro_braintree_error, $wp_version;
+	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $wp_version;
 	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
@@ -363,7 +363,9 @@
 							<?php if($gateway == "stripe") { ?>
 								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>>Stripe integration currently only supports billing periods of "Month" or "Year".
 							<?php } elseif($gateway == "braintree") { ?>
-								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>>Braintree integration currently only supports billing periods of "Month" or "Year".
+								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>>Braintree integration currently only supports billing periods of "Month" or "Year".						
+							<?php } elseif($gateway == "payflowpro") { ?>
+								<br /><strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>>Payflow integration currently only supports billing frequencies of 1 and billing periods of "Week", "Month" or "Year".
 							<?php } ?>
 						</small>	
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
@@ -407,7 +409,11 @@
 							<br /><small>
 							<strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>>Braintree integration currently does not support trial amounts greater than $0.</strong>
 							</small>
-						<?php } ?>		
+						<?php } elseif($gateway == "payflowpro") { ?>
+							<br /><small>
+							<strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>>Payflow integration currently does not support trial amounts greater than $0.</strong>
+							</small>
+						<?php } ?>	
 					</td>
 				</tr>
 									 
@@ -520,7 +526,7 @@
 			foreach($levels as $level)
 			{			
 		?>
-		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level)) { ?>pmpro_error<?php } ?>">			
+		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
 			<td><?php echo $level->name?></td>
 			<td>

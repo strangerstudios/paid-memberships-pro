@@ -59,6 +59,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.6.1 =
+* Added recurring billing support to Payflow integration.
+* Fixed bug where an order's code was shown instead of the subscription ID on the edit order page.
+* Fixed some logic with determining if level settings are not compatible with the current gateway.
+
 = 1.6.0.1 =
 * Fixed Braintree integration for production environments. Braintree needed to be told "production" instead of "live".
 * Removed !!field!! lines from a couple of admin emails.
