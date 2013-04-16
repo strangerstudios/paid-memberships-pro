@@ -2,11 +2,14 @@
 	global $current_user, $pmpro_invoice;
 	
 	//get invoice from DB
-	$invoice_code = $_REQUEST['invoice'];
+	if(!empty($_REQUEST['invoice']))
+		$invoice_code = $_REQUEST['invoice'];
+	else
+		$invoice_code = NULL;
 		
-	if(!$invoice_code)
+	if(empty($invoice_code))
 	{
-		if(PMPRO_FLAG_NO_INVOICE_REDIRECT == false)
+		if(!defined('PMPRO_FLAG_NO_INVOICE_REDIRECT') || PMPRO_FLAG_NO_INVOICE_REDIRECT == false)
 			wp_redirect(pmpro_url("account"));	//no code
 	}
 	else

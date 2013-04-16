@@ -121,7 +121,7 @@
 		
 	function pmpro_isLevelFree(&$level)
 	{
-		if($level->initial_payment <= 0 && $level->billing_amount <= 0 && $level->trial_amount <= 0)
+		if(!empty($level) && $level->initial_payment <= 0 && $level->billing_amount <= 0 && $level->trial_amount <= 0)
 			return true;
 		else
 			return false;
@@ -129,7 +129,7 @@
 	
 	function pmpro_isLevelRecurring(&$level)
 	{
-		if($level->billing_amount > 0 || $level->trial_amount > 0)
+		if(!empty($level) && ($level->billing_amount > 0 || $level->trial_amount > 0))
 			return true;
 		else
 			return false;
