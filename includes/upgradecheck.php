@@ -198,7 +198,7 @@ ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	$wpdb->query($sqlQuery);
 	
 	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD INDEX (  `enddate` )
+		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `enddate` )
 	";
 	$wpdb->query($sqlQuery);
 	
