@@ -192,7 +192,7 @@
 					return false;
 				}
 				
-				update_user_meta($user_id, "pmpro_stripe_customerid", $customer->id);	
+				update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);	
 				
 				return $this->customer;
 			}

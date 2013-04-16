@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.6.0.1
+Version: 1.6.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -44,7 +44,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.6.0.1");
+define("PMPRO_VERSION", "1.6.1");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 global $gateway_environment;
@@ -236,7 +236,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 						* Billing Limits.										
 					*/
 					if($level->trial_amount > 0 ||
-					   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
+					   ($level->cycle_number > 0 && ($level->cycle_period == "Day" || $level->cycle_period == "Week")) ||
 					   $level->billing_limit > 0)
 					{
 						return false;
@@ -252,8 +252,61 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			
 			//check this level
 			if($level->trial_amount > 0 ||
-			   $level->cycle_period == "Day" || $level->cycle_period == "Week" ||
+			   ($level->cycle_number > 0 && ($level->cycle_period == "Day" || $level->cycle_period == "Week")) ||
 			   $level->billing_limit > 0)
+			{
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
+/*
+	Checks if PMPro settings are complete or if there are any errors.
+*/
+function pmpro_checkLevelForPayflowCompatibility($level = NULL)
+{
+	$gateway = pmpro_getOption("gateway");
+	if($gateway == "payflowpro")
+	{
+		global $wpdb;
+		
+		//check ALL the levels
+		if(empty($level))
+		{
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";		
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{
+					/*
+						Payflow currently does not support:
+						* Trial Amounts > 0.
+						* Daily billing periods.												
+					*/
+										
+					if($level->trial_amount > 0 ||
+					    $level->cycle_number > 1 ||
+						($level->cycle_number == 1 && $level->cycle_period == "Day"))
+					{
+						return false;
+					}
+				}
+			}
+		}
+		else
+		{			
+			//need to look it up?
+			if(is_numeric($level))
+				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($level) . "' LIMIT 1");
+						
+			//check this level
+			if($level->trial_amount > 0 ||
+			   $level->cycle_number > 1 ||
+			   ($level->cycle_number == 1 && $level->cycle_period == "Day"))
 			{
 				return false;
 			}
@@ -288,7 +341,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 						* Daily or Weekly billing periods.												
 					*/
 					if($level->trial_amount > 0 ||
-					   $level->cycle_period == "Day" || $level->cycle_period == "Week")
+					   ($level->cycle_number > 0 && ($level->cycle_period == "Day" || $level->cycle_period == "Week")))
 					{
 						return false;
 					}
@@ -303,7 +356,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 			
 			//check this level
 			if($level->trial_amount > 0 ||
-			   $level->cycle_period == "Day" || $level->cycle_period == "Week")
+			   ($level->cycle_number > 0 && ($level->cycle_period == "Day" || $level->cycle_period == "Week")))
 			{
 				return false;
 			}

@@ -5,7 +5,7 @@
 	global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm; 
 	
 	//if they don't have a membership, send them back to the subscription page
-	if(!$current_user->membership_level->ID)
+	if(empty($current_user->membership_level->ID))
 	{
 		wp_redirect(pmpro_url("levels"));
 	}		

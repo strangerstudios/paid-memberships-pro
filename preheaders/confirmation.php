@@ -2,7 +2,7 @@
 	global $current_user, $pmpro_invoice;
 	
 	//must be logged in
-	if(!$current_user->ID || !$current_user->membership_level->ID)
+	if(empty($current_user->ID) || empty($current_user->membership_level->ID))
 		wp_redirect(home_url());
 	
 	//if membership is a paying one, get invoice from DB

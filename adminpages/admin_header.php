@@ -50,6 +50,26 @@
 			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">Please edit your levels</a>.";			
 	}
 	
+	if(!pmpro_checkLevelForPayflowCompatibility())
+	{				
+		$msg = -1;
+		$msgt = "The billing details for some of your membership levels is not supported by Payflow.";
+		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		{
+			if(!pmpro_checkLevelForPayflowCompatibility($_REQUEST['edit']))
+			{
+				global $pmpro_payflow_error;
+				$pmpro_payflow_error = true;
+				$msg = -1;
+				$msgt = "The billing details for this level are not supported by Payflow. Please review the notes in the Billing Details section below.";				
+			}			
+		}
+		elseif($view == "pmpro-membershiplevels")
+			$msgt .= " The levels with issues are highlighted below.";
+		else
+			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">Please edit your levels</a>.";			
+	}
+	
 	if(!pmpro_checkLevelForBraintreeCompatibility())
 	{		
 		$msg = -1;
