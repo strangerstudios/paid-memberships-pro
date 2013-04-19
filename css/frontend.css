@@ -45,7 +45,7 @@ input.pmpro_error {background-image: none;}
 ---------------------------------------*/
 .pmpro_checkout thead th {font-weight: bold; color: #444; padding: 10px; }
 .pmpro_checkout tbody td {padding: 10px; }
-.pmpro_checkout tr.odd td {background: #FAFAFA; }
+.pmpro_checkout tr.odd td {background: rgba(125,125,125,.1); }
 .pmpro_checkout tr.selected td {background: #FFC; }
 .pmpro_checkout tr.active td {background: #FFC; }
 .pmpro_checkout .name {font-weight: bold; }

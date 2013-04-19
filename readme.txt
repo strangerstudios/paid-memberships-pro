@@ -59,6 +59,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.6.2 =
+* Updated the .pmpro_checkout tr.odd td line in frontend.css to use rgba with alpha transparency to work a bit better on dark background themes.
+
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
 * Fixed bug where an order's code was shown instead of the subscription ID on the edit order page.
