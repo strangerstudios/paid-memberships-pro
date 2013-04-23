@@ -75,7 +75,7 @@
 		array("metavalues", "pmpro_baddress1"),
 		array("metavalues", "pmpro_baddress2"),
 		array("metavalues", "pmpro_bcity"),
-		array("metavalues", "pmpro_bzipcode"),
+		array("metavalues", "pmpro_bstate"),
 		array("metavalues", "pmpro_bzipcode"),
 		array("metavalues", "pmpro_bcountry"),
 		array("metavalues", "pmpro_bphone"),
