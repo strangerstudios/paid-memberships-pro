@@ -922,13 +922,13 @@
 				if(!empty($bfirstname))
 				{
 					$old_firstname = get_user_meta($user_id, "first_name", true);
-					if(!empty($old_firstname))
+					if(empty($old_firstname))
 						update_user_meta($user_id, "first_name", $bfirstname);
 				}
 				if(!empty($blastname))
 				{
 					$old_lastname = get_user_meta($user_id, "last_name", true);
-					if(!empty($old_lastname))
+					if(empty($old_lastname))
 						update_user_meta($user_id, "last_name", $blastname);
 				}
 						
