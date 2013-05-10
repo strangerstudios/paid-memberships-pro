@@ -88,6 +88,8 @@
 	}		
 		
 	global $wpdb, $current_user, $pmpro_requirebilling;	
+	//unless we're submitting a form, let's try to figure out if https should be used
+	
 	if(!pmpro_isLevelFree($pmpro_level) && $gateway != "check")
 	{
 		//require billing and ssl
@@ -108,7 +110,11 @@
 		$pmpro_requirebilling = false;
 		$besecure = false;		
 	}
-		
+	
+	//in case a discount code was used or something else made the level free, but we're already over ssl
+	if(!$besecure && !empty($_REQUEST['submit-checkout']) && is_ssl())
+		$besecure = true;	//be secure anyway since we're already checking out
+	
 	//code for stripe (unless the level is free)
 	if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
 	{
@@ -1013,5 +1019,4 @@
 		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
 		$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
 		$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
-	}			
-?>
+	}	

@@ -224,7 +224,11 @@
 			else
 			{
 				$this->template = "checkout_freetrial";
-				$this->data["discount_code"] = "";
+				global $discount_code;
+				if(!empty($discount_code))
+					$this->data["discount_code"] = "<p>Discount Code: " . $discount_code . "</p>\n";		
+				else
+					$this->data["discount_code"] = "";	
 			}
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");

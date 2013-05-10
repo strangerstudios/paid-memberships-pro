@@ -63,6 +63,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Updated the .pmpro_checkout tr.odd td line in frontend.css to use rgba with alpha transparency to work a bit better on dark background themes.
 * Fixed bug where a user's first_name and last_name meta fields might be overwritten by the billing name fields at checkout. It will still set them if the user's first and last name fields are blank. (Thanks, John Hamlin.)
 * Fixed bug where zipcode was shown instead of state in the members list CSV export. (Thanks, John Hamlin.)
+* Fix to show discount codes on free trial confirmation emails if one was used.
+* Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
