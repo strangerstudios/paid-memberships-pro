@@ -484,6 +484,7 @@
 			{
 				$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
 				$code = substr($scramble, 0, 10);
+				$code = apply_filters("pmpro_random_code", $code, $this);	//filter				
 				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");				
 				if($check || is_numeric($code))
 					$code = NULL;
