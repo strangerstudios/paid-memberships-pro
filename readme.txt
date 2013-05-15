@@ -65,6 +65,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug where zipcode was shown instead of state in the members list CSV export. (Thanks, John Hamlin.)
 * Fix to show discount codes on free trial confirmation emails if one was used.
 * Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
+* Added the pmpro_random_code filter so you can hook in and change invoice code/etc generation.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
