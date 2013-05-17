@@ -187,7 +187,7 @@
 					//insert fields for other card fields
 					form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
 					form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-					form$.append("<input type='hidden' name='ExpirationMonth' value='" + response['card']['exp_month'] + "'/>");
+					form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
 					form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");							
 					
 					// and submit
@@ -373,7 +373,7 @@
 		$submit = true;	
 	elseif(!isset($submit))
 		$submit = false;
-		
+	
 	//require fields
 	$pmpro_required_billing_fields = array(
 		"bfirstname" => $bfirstname,
