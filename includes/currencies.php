@@ -36,6 +36,7 @@
 	$pmpro_stripe_currencies = array(
 			'USD' => __('US Dollars (&#36;)', 'pmpro'),			
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),
-			'GBP' => __('Pounds Sterling (&pound;)', 'pmpro')
+			'GBP' => __('Pounds Sterling (&pound;)', 'pmpro'),
+			'EUR' => __('Euros (&euro;)', 'pmpro')
 	);
 ?>
