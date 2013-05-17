@@ -66,6 +66,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fix to show discount codes on free trial confirmation emails if one was used.
 * Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
 * Added the pmpro_random_code filter so you can hook in and change invoice code/etc generation.
+* Correctly padding zeroes on credit card expiration dates like 09/2013 when using Stripe. This SQL statement should fix broken entries in your orders table: NOTE (1) Backup your database first. NOTE (2) Make sure you change the table name to match your WP prefix,etc. >>> UPDATE wp_pmpro_membership_orders SET expirationyear = CONCAT(SUBSTRING(expirationmonth,2,1), expirationyear), expirationmonth= CONCAT('0', SUBSTRING(expirationmonth,1,1)) WHERE expirationmonth > 12;
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
