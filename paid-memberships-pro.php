@@ -1180,7 +1180,7 @@ function pmpro_page_meta()
     ?>
     </ul>
 	<?php if('post' == get_post_type($post)) { ?>
-		<p class="pmpro_meta_notice">This post may also require membership if it is within a category that requires membership.</p>
+		<p class="pmpro_meta_notice">^ This post is already protected for this level because it is within a category that requires membership.</p>
 	<?php } ?>
 <?php
 }
