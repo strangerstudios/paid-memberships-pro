@@ -1162,8 +1162,18 @@ function pmpro_page_meta()
 	?>
     	<li id="membership-level-<?php echo $level->id?>">
         	<label class="selectit">
-            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" /> <?php echo $level->name?>
-            </label>
+            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" /> 
+	<?php
+		echo $level->name;
+		/* Check which categories are protected for this level */
+		$protectedcategories = $wpdb->get_col("SELECT category_id FROM {$wpdb->pmpro_memberships_categories} WHERE membership_id = $level->id");	
+		/* See if this post is in any of the level's protected categories  */
+		foreach($protectedcategories as $protectedcategory)
+		{
+			if(in_category($protectedcategory, $post->id)) 
+			echo ' ^';	
+		}
+	?>
         </li>
     <?php
 		}
