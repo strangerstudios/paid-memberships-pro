@@ -132,7 +132,7 @@
 			var pmpro_require_billing = true;
 												
 			jQuery(document).ready(function() {
-				jQuery(".pmpro_form").submit(function(event) {
+				jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
 								
 				//double check in case a discount code made the level free				
 				if(pmpro_require_billing)
@@ -150,8 +150,9 @@
 							?>
 							,address_line1: jQuery('#baddress1').val(),
 							address_line2: jQuery('#baddress2').val(),
-							address_zip: jQuery('#bzipcode').val(),
+							address_city: jQuery('#bcity').val(),					
 							address_state: jQuery('#bstate').val(),					
+							address_zip: jQuery('#bzipcode').val(),							
 							address_country: jQuery('#bcountry').val()
 						<?php
 							}
@@ -178,7 +179,7 @@
 					alert(response.error.message);
 					jQuery(".payment-errors").text(response.error.message);
 				} else {
-					var form$ = jQuery(".pmpro_form");					
+					var form$ = jQuery("#pmpro_form, .pmpro_form");					
 					// token contains id, last4, and card type
 					var token = response['id'];					
 					// insert the token into the form so it gets submitted to the server
