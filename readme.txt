@@ -73,6 +73,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added 'pmpro_members_list_csv_heading' and 'pmpro_members_list_csv_default_columns' hooks to filter the default columns in the members list CSV. (e.g. to check role and remove columns)
 * Added 'pmpro_members_list_user_link' hook to filter the link and username displayed on the members list page. (e.g. to check role and remove link to edit user)
 * Checking that "status='active'" when finding subscriptions to cancel when deleting a level. This will keep PMPro from trying to cancel someone more than once... or trying to cancel inactive subscriptions.
+* Fixed bug where Sales Tax fields were hidden on the payment settings page if Stripe was chosen as the gateway.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.

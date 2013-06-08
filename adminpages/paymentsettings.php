@@ -393,7 +393,7 @@
 					<p><small>Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.</small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax">Sales Tax <small>(optional)</small></label>
 				</th>
