@@ -18,12 +18,12 @@
 		$l = false;
 ?>
 <div class="wrap pmpro_admin">	
-	<div class="pmpro_banner">		
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/PaidMembershipsPro.gif" width="350" height="45" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
-		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
+	<div class="pmpro_banner">
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>	
+		<div class="pmpro_meta"><span class="pmpro_tag-grey">v<?php echo PMPRO_VERSION?></span><a class="pmpro_tag-blue" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a><a class="pmpro_tag-blue" href="http://www.paidmembershipspro.com/forums/">User Forum</a></div>
 		
-		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
-	</div>
+		<br style="clear:both;" />
+	</div>	
 	<br style="clear:both;" />		
 
 	<form id="posts-filter" method="get" action="">	
@@ -85,7 +85,9 @@
 				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";
 			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
-						
+
+		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
+		
 		$theusers = $wpdb->get_results($sqlQuery);
 		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 		
@@ -136,7 +138,13 @@
 							<td><?php echo $theuser->ID?></td>
 							<td>
 								<?php echo get_avatar($theuser->ID, 32)?>
-								<strong><a href="user-edit.php?user_id=<?php echo $theuser->ID?>"><?php echo $theuser->user_login?></a></strong>
+								<strong>
+									<?php
+										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->user_login . '</a>';
+										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
+										echo $userlink;
+									?>									
+								</strong>
 							</td>
 							<td><?php echo $theuser->first_name?></td>
 							<td><?php echo $theuser->last_name?></td>

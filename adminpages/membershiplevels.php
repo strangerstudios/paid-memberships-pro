@@ -163,7 +163,7 @@
 							
 			//cancel any subscriptions to the ml
 			$r2 = true;
-			$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = '$ml_id'");			
+			$user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = '$ml_id' AND status = 'active'");			
 			foreach($user_ids as $user_id)
 			{
 				//change there membership level to none. that will handle the cancel

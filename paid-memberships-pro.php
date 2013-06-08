@@ -25,6 +25,7 @@ else
 
 //require_once(ABSPATH . '/wp-admin/upgrade-functions.php');
 define("PMPRO_DIR", dirname(__FILE__));
+require_once(PMPRO_DIR . "/includes/localization.php");
 require_once(PMPRO_DIR . "/includes/lib/name-parser.php");
 require_once(PMPRO_DIR . "/includes/functions.php");
 require_once(PMPRO_DIR . "/includes/upgradecheck.php");
@@ -98,6 +99,35 @@ function pmpro_orders()
 	require_once(dirname(__FILE__) . "/adminpages/orders.php");
 }
 
+add_action( 'admin_head', 'pmpro_admin_icon' );
+function pmpro_admin_icon() {
+    ?>
+    <style>
+        /* Admin Menu - 16px */
+        #toplevel_page_pmpro-membershiplevels .wp-menu-image {
+            background: url(<?php echo plugins_url('images/icon-pmproadmin16-sprite.png', __FILE__); ?>) no-repeat 6px 6px !important;
+        }
+        #toplevel_page_pmpro-membershiplevels:hover .wp-menu-image, #toplevel_page_pmpro-membershiplevels.wp-has-current-submenu .wp-menu-image {
+            background-position: 6px -26px !important;
+        }
+        @media
+        only screen and (-webkit-min-device-pixel-ratio: 1.5),
+        only screen and (   min--moz-device-pixel-ratio: 1.5),
+        only screen and (     -o-min-device-pixel-ratio: 3/2),
+        only screen and (        min-device-pixel-ratio: 1.5),
+        only screen and (                min-resolution: 1.5dppx) {
+             
+            /* Admin Menu - 16px @2x */
+            #toplevel_page_pmpro-membershiplevels .wp-menu-image {
+                background-image: url(<?php echo plugins_url('images/icon-pmproadmin16-sprite_2x.png', __FILE__); ?>) !important;
+                -webkit-background-size: 16px 48px;
+                -moz-background-size: 16px 48px;
+                background-size: 16px 48px;
+            }            
+        }
+    </style>
+<?php } 
+
 /*
 	Loading a service?
 */
@@ -106,54 +136,86 @@ function pmpro_orders()
 */
 if(isset($_REQUEST['action']) && $_REQUEST['action'] == "applydiscountcode")
 {		
-	require_once(dirname(__FILE__) . "/services/applydiscountcode.php");	
-	exit;
+	function pmpro_applydiscountcode_init()
+	{
+		require_once(dirname(__FILE__) . "/services/applydiscountcode.php");	
+		exit;
+	}
+	add_action("init", "pmpro_applydiscountcode_init");
 }
 function pmpro_wp_ajax_authnet_silent_post()
 {		
-	require_once(dirname(__FILE__) . "/services/authnet-silent-post.php");	
-	exit;
+	function pmpro_authnet_silent_post_init()
+	{
+		require_once(dirname(__FILE__) . "/services/authnet-silent-post.php");	
+		exit;
+	}
+	add_action("init", "pmpro_authnet_silent_post_init");
 }
 add_action('wp_ajax_nopriv_authnet_silent_post', 'pmpro_wp_ajax_authnet_silent_post');
 add_action('wp_ajax_authnet_silent_post', 'pmpro_wp_ajax_authnet_silent_post');
 function pmpro_wp_ajax_getfile()
 {
-	require_once(dirname(__FILE__) . "/services/getfile.php");	
-	exit;
+	function pmpro_getfile_init()
+	{
+		require_once(dirname(__FILE__) . "/services/getfile.php");	
+		exit;
+	}
+	add_action("init", "pmpro_getfile_init");
 }
 add_action('wp_ajax_nopriv_getfile', 'pmpro_wp_ajax_getfile');
 add_action('wp_ajax_getfile', 'pmpro_wp_ajax_getfile');
 function pmpro_wp_ajax_ipnhandler()
 {
-	require_once(dirname(__FILE__) . "/services/ipnhandler.php");	
-	exit;
+	function pmpro_ipnhandler_init()
+	{
+		require_once(dirname(__FILE__) . "/services/ipnhandler.php");	
+		exit;
+	}
+	add_action("init", "pmpro_ipnhandler_init");
 }
 add_action('wp_ajax_nopriv_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 add_action('wp_ajax_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 function pmpro_wp_ajax_stripe_webhook()
 {
-	require_once(dirname(__FILE__) . "/services/stripe-webhook.php");	
-	exit;
+	function pmpro_stripe_webhook_init()
+	{
+		require_once(dirname(__FILE__) . "/services/stripe-webhook.php");	
+		exit;
+	}
+	add_action("init", "pmpro_stripe_webhook_init");
 }
 add_action('wp_ajax_nopriv_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 add_action('wp_ajax_stripe_webhook', 'pmpro_wp_ajax_stripe_webhook');
 function pmpro_wp_ajax_braintree_webhook()
 {
-	require_once(dirname(__FILE__) . "/services/braintree-webhook.php");	
-	exit;
+	function pmpro_braintree_webhook_init()
+	{
+		require_once(dirname(__FILE__) . "/services/braintree-webhook.php");	
+		exit;
+	}
+	add_action("init", "pmpro_braintree_webhook_init");
 }
 add_action('wp_ajax_nopriv_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook');
 add_action('wp_ajax_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook');
 function pmpro_wp_ajax_memberlist_csv()
 {
-	require_once(dirname(__FILE__) . "/adminpages/memberslist-csv.php");	
-	exit;
+	function pmpro_memberslist_csv_init()
+	{
+		require_once(dirname(__FILE__) . "/adminpages/memberslist-csv.php");	
+		exit;
+	}
+	add_action("init", "pmpro_memberslist_csv_init");
 }
 add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
 function pmpro_wp_ajax_orders_csv()
 {
-	require_once(dirname(__FILE__) . "/adminpages/orders-csv.php");	
-	exit;
+	function pmpro_orders_csv_init()
+	{
+		require_once(dirname(__FILE__) . "/adminpages/orders-csv.php");	
+		exit;
+	}
+	add_action("init", "pmpro_orders_csv_init");
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 	
@@ -1244,7 +1306,7 @@ function pmpro_add_pages()
 {
 	global $wpdb;
 
-	add_menu_page('Memberships', 'Memberships', 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels', PMPRO_URL . '/images/menu_users.png');
+	add_menu_page('Memberships', 'Memberships', 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels');
 	add_submenu_page('pmpro-membershiplevels', 'Page Settings', 'Page Settings', 'manage_options', 'pmpro-pagesettings', 'pmpro_pagesettings');
 	add_submenu_page('pmpro-membershiplevels', 'Payment Settings', 'Payment Settings', 'manage_options', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Email Settings', 'Email Settings', 'manage_options', 'pmpro-emailsettings', 'pmpro_emailsettings');

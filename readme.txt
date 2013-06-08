@@ -67,6 +67,12 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
 * Added the pmpro_random_code filter so you can hook in and change invoice code/etc generation.
 * Correctly padding zeroes on credit card expiration dates like 09/2013 when using Stripe. This SQL statement should fix broken entries in your orders table: NOTE (1) Backup your database first. NOTE (2) Make sure you change the table name to match your WP prefix,etc. >>> UPDATE wp_pmpro_membership_orders SET expirationyear = CONCAT(SUBSTRING(expirationmonth,2,1), expirationyear), expirationmonth= CONCAT('0', SUBSTRING(expirationmonth,1,1)) WHERE expirationmonth > 12;
+* Wrapped AJAX and service calls code in init() functions so they will more consistently work with hooks/filters. (Before if PMPro loaded before a plugin or bit of code that added filters/etc, the filters wouldn't get applied.)
+* Fixed Stripe JS to also send city to Stripe. (This is important because Stripe doesn't seem to show the address at all if the city is missing.)
+* Added 'pmpro_members_list_sql' hook to filter the SQL used on the members list page and CSV export.
+* Added 'pmpro_members_list_csv_heading' and 'pmpro_members_list_csv_default_columns' hooks to filter the default columns in the members list CSV. (e.g. to check role and remove columns)
+* Added 'pmpro_members_list_user_link' hook to filter the link and username displayed on the members list page. (e.g. to check role and remove link to edit user)
+* Checking that "status='active'" when finding subscriptions to cancel when deleting a level. This will keep PMPro from trying to cancel someone more than once... or trying to cancel inactive subscriptions.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.

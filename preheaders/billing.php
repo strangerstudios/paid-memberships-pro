@@ -63,8 +63,9 @@
 						?>
 						,address_line1: jQuery('#baddress1').val(),
 						address_line2: jQuery('#baddress2').val(),
-						address_zip: jQuery('#bzipcode').val(),
+						address_city: jQuery('#bcity').val(),					
 						address_state: jQuery('#bstate').val(),					
+						address_zip: jQuery('#bzipcode').val(),						
 						address_country: jQuery('#bcountry').val()
 					<?php
 						}
