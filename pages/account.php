@@ -58,7 +58,7 @@
 					<strong>Email:</strong> <?php echo $current_user->user_email?><br />
 					<strong>Password:</strong> ****** <small><a href="<?php echo admin_url('profile.php')?>">change</a></small>				
 				</small>
-				</a>
+				</p>
 			</div>
 			<?php
 				//last invoice for current info

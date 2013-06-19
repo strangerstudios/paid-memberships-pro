@@ -94,39 +94,15 @@ function pmpro_advancedsettings()
 	require_once(dirname(__FILE__) . "/adminpages/advancedsettings.php");
 }
 
+function pmpro_addons()
+{
+	require_once(dirname(__FILE__) . "/adminpages/addons.php");
+}
+
 function pmpro_orders()
 {
 	require_once(dirname(__FILE__) . "/adminpages/orders.php");
 }
-
-add_action( 'admin_head', 'pmpro_admin_icon' );
-function pmpro_admin_icon() {
-    ?>
-    <style>
-        /* Admin Menu - 16px */
-        #toplevel_page_pmpro-membershiplevels .wp-menu-image {
-            background: url(<?php echo plugins_url('images/icon-pmproadmin16-sprite.png', __FILE__); ?>) no-repeat 6px 6px !important;
-        }
-        #toplevel_page_pmpro-membershiplevels:hover .wp-menu-image, #toplevel_page_pmpro-membershiplevels.wp-has-current-submenu .wp-menu-image {
-            background-position: 6px -26px !important;
-        }
-        @media
-        only screen and (-webkit-min-device-pixel-ratio: 1.5),
-        only screen and (   min--moz-device-pixel-ratio: 1.5),
-        only screen and (     -o-min-device-pixel-ratio: 3/2),
-        only screen and (        min-device-pixel-ratio: 1.5),
-        only screen and (                min-resolution: 1.5dppx) {
-             
-            /* Admin Menu - 16px @2x */
-            #toplevel_page_pmpro-membershiplevels .wp-menu-image {
-                background-image: url(<?php echo plugins_url('images/icon-pmproadmin16-sprite_2x.png', __FILE__); ?>) !important;
-                -webkit-background-size: 16px 48px;
-                -moz-background-size: 16px 48px;
-                background-size: 16px 48px;
-            }            
-        }
-    </style>
-<?php } 
 
 /*
 	Loading a service?
@@ -1306,14 +1282,15 @@ function pmpro_add_pages()
 {
 	global $wpdb;
 
-	add_menu_page('Memberships', 'Memberships', 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels');
+	add_menu_page('Memberships', 'Memberships', 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels', PMPRO_URL . '/images/menu_users.png');
 	add_submenu_page('pmpro-membershiplevels', 'Page Settings', 'Page Settings', 'manage_options', 'pmpro-pagesettings', 'pmpro_pagesettings');
 	add_submenu_page('pmpro-membershiplevels', 'Payment Settings', 'Payment Settings', 'manage_options', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Email Settings', 'Email Settings', 'manage_options', 'pmpro-emailsettings', 'pmpro_emailsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Advanced Settings', 'Advanced Settings', 'manage_options', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
+	add_submenu_page('pmpro-membershiplevels', 'Add Ons', 'Add Ons', 'manage_options', 'pmpro-addons', 'pmpro_addons');
 	add_submenu_page('pmpro-membershiplevels', 'Members List', 'Members List', 'manage_options', 'pmpro-memberslist', 'pmpro_memberslist');
 	add_submenu_page('pmpro-membershiplevels', 'Orders', 'Orders', 'manage_options', 'pmpro-orders', 'pmpro_orders');
-	add_submenu_page('pmpro-membershiplevels', 'Discount Codes', 'Discount Codes', 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');
+	add_submenu_page('pmpro-membershiplevels', 'Discount Codes', 'Discount Codes', 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');	
 	
 	//rename the automatically added Memberships submenu item
 	global $submenu;
@@ -1358,6 +1335,11 @@ function pmpro_admin_bar_menu() {
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Advanced Settings'),
 	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-advancedsettings') ) );
+	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-addons',
+	'parent' => 'paid-memberships-pro',
+	'title' => __( 'Add Ons'),
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-addons') ) );	
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-members-list',
 	'parent' => 'paid-memberships-pro',

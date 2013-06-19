@@ -252,26 +252,9 @@
 			$pmpro_msgt = "error";
 		}
 	}
-?>
-<div class="wrap pmpro_admin">	
-	<div class="pmpro_banner">
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>	
-		<div class="pmpro_meta"><span class="pmpro_tag-grey">v<?php echo PMPRO_VERSION?></span><a class="pmpro_tag-blue" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a><a class="pmpro_tag-blue" href="http://www.paidmembershipspro.com/forums/">User Forum</a></div>
-		
-		<br style="clear:both;" />
-	</div>	
-	<br style="clear:both;" />
 	
-	<?php
-		//include(pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
-	?>
-	<div id="pmpro_notifications">
-	</div>
-	<script>
-		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
-		  jQuery('#pmpro_notifications').html(data);		 
-		});
-	</script>
+	require_once(dirname(__FILE__) . "/admin_header.php");	
+?>
 	
 	<?php if($edit) { ?>
 		
