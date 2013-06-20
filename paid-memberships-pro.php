@@ -34,6 +34,7 @@ require_once(PMPRO_DIR . "/scheduled/crons.php");
 require_once(PMPRO_DIR . "/classes/class.memberorder.php");
 require_once(PMPRO_DIR . "/classes/class.pmproemail.php");
 require_once(PMPRO_DIR . "/includes/filters.php");
+require_once(PMPRO_DIR . "/includes/reports.php");
 require_once(ABSPATH . "wp-includes/class-phpmailer.php");
 
 //setup the DB
@@ -58,6 +59,11 @@ global $all_membership_levels;
 global $membership_levels;
 $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
+function pmpro_reports()
+{
+	require_once(dirname(__FILE__) . "/adminpages/reports.php");
+}
+
 function pmpro_memberslist()
 {
 	require_once(dirname(__FILE__) . "/adminpages/memberslist.php");
@@ -67,7 +73,6 @@ function pmpro_discountcodes()
 {
 	require_once(dirname(__FILE__) . "/adminpages/discountcodes.php");
 }
-
 
 function pmpro_membershiplevels()
 {
@@ -1289,8 +1294,9 @@ function pmpro_add_pages()
 	add_submenu_page('pmpro-membershiplevels', 'Advanced Settings', 'Advanced Settings', 'manage_options', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
 	add_submenu_page('pmpro-membershiplevels', 'Add Ons', 'Add Ons', 'manage_options', 'pmpro-addons', 'pmpro_addons');
 	add_submenu_page('pmpro-membershiplevels', 'Members List', 'Members List', 'manage_options', 'pmpro-memberslist', 'pmpro_memberslist');
+	add_submenu_page('pmpro-membershiplevels', 'Reports', 'Reports', 'manage_options', 'pmpro-reports', 'pmpro_reports');	
 	add_submenu_page('pmpro-membershiplevels', 'Orders', 'Orders', 'manage_options', 'pmpro-orders', 'pmpro_orders');
-	add_submenu_page('pmpro-membershiplevels', 'Discount Codes', 'Discount Codes', 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');	
+	add_submenu_page('pmpro-membershiplevels', 'Discount Codes', 'Discount Codes', 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');		
 	
 	//rename the automatically added Memberships submenu item
 	global $submenu;

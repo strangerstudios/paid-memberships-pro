@@ -686,4 +686,6 @@
 
 <?php } ?>
 	
-</div>
+<?php
+	require_once(dirname(__FILE__) . "/admin_footer.php");	
+?>

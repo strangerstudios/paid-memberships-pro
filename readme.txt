@@ -59,7 +59,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
-= 1.6.2 =
+= 1.7 =
+* Addons tab in PMPro Settings
+* Reports page with login report. More on reports here: {link}
 * Updated the .pmpro_checkout tr.odd td line in frontend.css to use rgba with alpha transparency to work a bit better on dark background themes.
 * Fixed bug where a user's first_name and last_name meta fields might be overwritten by the billing name fields at checkout. It will still set them if the user's first and last name fields are blank. (Thanks, John Hamlin.)
 * Fixed bug where zipcode was shown instead of state in the members list CSV export. (Thanks, John Hamlin.)

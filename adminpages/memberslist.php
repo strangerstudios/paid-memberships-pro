@@ -204,4 +204,6 @@
 	echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, get_admin_url(NULL, "/admin.php?page=pmpro-memberslist&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
 	?>
 	
-</div>
+<?php
+	require_once(dirname(__FILE__) . "/admin_footer.php");	
+?>

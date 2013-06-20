@@ -80,3 +80,7 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 .pmpro_pad20 {padding: 20px !important;}
 .pmpro_red {color: #CC0000;}
 .pmpro_green {color: #00AA00;}
+
+/* reports */
+.pmpro_clickable {cursor: pointer;}
+.js .postbox.pmpro_clickable h3 {cursor: pointer;}
