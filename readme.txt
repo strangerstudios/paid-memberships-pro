@@ -76,6 +76,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added 'pmpro_members_list_user_link' hook to filter the link and username displayed on the members list page. (e.g. to check role and remove link to edit user)
 * Checking that "status='active'" when finding subscriptions to cancel when deleting a level. This will keep PMPro from trying to cancel someone more than once... or trying to cancel inactive subscriptions.
 * Fixed bug where Sales Tax fields were hidden on the payment settings page if Stripe was chosen as the gateway.
+* No longer logging IPN activity to logs/ipn.txt by default. (Uncomment the lines at the bottom of services/ipnhandler.php to use the log to debug.)
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.

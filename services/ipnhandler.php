@@ -190,9 +190,10 @@
 		if($logstr)
 		{
 			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
-			$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
-			fwrite($loghandle, $logstr);
-			fclose($loghandle);
+			//uncomment these lines and make sure logs/ipn.txt is writable to log IPN activity
+			//$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
+			//fwrite($loghandle, $logstr);
+			//fclose($loghandle);
 		}
 		
 		exit;
