@@ -63,8 +63,7 @@ p.pmpro_meta_notice {font-size: .6em; padding-top: 5px; border-top: 1px solid #C
 .pmpro_admin .widgets-holder-wrap h3 {margin: 2em 0 0 0; }
 .pmpro_admin .widgets-holder-wrap .widget {float: left; width: 32%; margin: 0 1.65% 15px 0; border: 1px solid #DFDFDF; position: relative; }
 .pmpro_admin .widgets-holder-wrap .widget-top {height: auto; cursor: default; }
-.pmpro_admin .widgets-holder-wrap .widget-inside {height: 190px; overflow: hidden; }
-.pmpro_admin .widgets-holder-wrap .widget-inside .widget-description {display: block; }
+.pmpro_admin .widgets-holder-wrap .widget-inside {display: block; height: 190px; overflow: hidden; }
 .pmpro_admin .widgets-holder-wrap .widget-title { }
 .pmpro_admin .widgets-holder-wrap .widget-title h4 { }
 .pmpro_admin .widgets-holder-wrap .widget-title .status-label {display: block; float: left; margin: 0 5px 0 0; width: 10px;

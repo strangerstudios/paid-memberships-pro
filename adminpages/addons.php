@@ -5,79 +5,123 @@
 		die("You do not have permissions to perform this action.");
 	}	
 	
-	global $wpdb, $msg, $msgt;
+	global $wpdb, $msg, $msgt, $pmpro_addons;
+	
+	/*
+		Addon lists
+	*/
+	$pmpro_addon_lists = array(
+		'github' => array('Plugins on GitHub', 'These official PMPro plugins must be downloaded from GitHub and installed through Plugins --> Add New --> Upload, then activated. These plugins cannot be automatically updated and may require more developer input.'),
+		'repo' => array('Plugins in the WordPress Repository', 'These official PMPro plugins are available in the WordPress repository and can be installed through Plugins --> Add New.'),
+		'thirdparty' => array('Third-party Plugins', 'These plugins are not developed by the PMPro team, but are recommended for sites running PMPro.'),
+		'gists' => array('Code Gists', 'These are bits of code that generally must be added to your active theme\'s functions.php file or included in a custom plugin. Recommended for developers only.')
+	);
+	
+	/*
+		Function to add an addon
+	*/
+	function pmpro_add_addon($list, $addon)
+	{
+		global $pmpro_addons;
 		
+		//make sure we have the base array
+		if(empty($pmpro_addons))
+			$pmpro_addons = array();
+			
+		//make sure we have an array for the list
+		if(empty($pmpro_addons[$list]))
+			$pmpro_addons[$list] = array();
+		
+		//add addon to list
+		$pmpro_addons[$list][] = $addon;
+	}
+	
+	/*
+		Load All Addons
+	*/	
+	$pmpro_addons_dir = dirname(__FILE__) . "/../adminpages/addons/";
+	$cwd = getcwd();
+	chdir($pmpro_addons_dir);
+	$count = 0;
+	foreach (glob("*.php") as $filename) 
+	{
+		$count++;
+		require_once($filename);
+	}
+	chdir($cwd);		
+	
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>
 
 	<h2>Add Ons</h2>
-	<ul class="subsubsub">
-		<li><a href="#all" class="current all tab">All</a> <span>(X)</span> | </li>
-		<li><a href="#pmpro-bundled" class="tab">Bundled Features</a> <span>(X)</span> | </li>
-		<li><a href="#pmpro-download" class="tab">Downloadable Features</a> <span>(X)</span> | </li>
-		<li><a href="#pmpro-thirdparty" class="tab">Third-party Integrations</a> <span>(X)</span></li>
+	<ul id="addon-filters" class="subsubsub">
+		<li id="addon-filters-all"><a href="javascript:void(0);" class="current all tab">All</a> <span>(<?php echo $count;?>)</span></li>
+		<?php foreach($pmpro_addon_lists as $list => $list_info) { ?>
+			<li id="addon-filters-<?php echo $list;?>"> | <a href="javascript:void(0);>" class="tab"><?php echo $list_info[0];?></a> <span>(<?php echo count($pmpro_addons[$list]);?>)</span></li>
+		<?php } ?>		
 	</ul>
-	
-	<div id="pmpro-bundled" class="widgets-holder-wrap">
-	
-		<h3 class="section-title">Bundled Features</h3>
-		<p class="description">These features are prepackaged with the default Paid Memberships Pro plugin and can be optionally activated here.</p>
-		<br class="clear" />
-	
-		<div id="addons-list">
-	
-			<div id="addon-reghelper" class="widget disabled">
-				<div class="widget-top">
-					<div class="widget-title">
-						<h4>
-							<span class="status-label">Disabled</span>
-							<span class="title">PMPro Register Helper</span>
-							<span class="version pmpro_tag-grey">0.5.0</span>
-							<span class="in-widget-title"></span>
-						</h4>
-					</div> <!-- end widget-title -->
-				</div> <!-- end widget-top -->					
-				<div class="widget-inside">					
-					<img class="addon-thumb" src="<?php echo PMPRO_URL?>/images/pmpro_register-helper.gif" />
-					<div class="info">						
-						<p>Add additional meta fields to your PMPro checkout page and/or "Your Profile" pages. Support for various input types including text, select, multi-select, textarea, hidden, and custom HTML. Loop into existing checkout/profile field sections or add new ones.</p>
-						<div class="actions">							
-							<form method="post" name="component-actions" action="">
-								<input type="submit" value="Activate" class="button-primary">
-							</form>
-						</div>						
-					</div> <!-- end info -->
-				</div> <!-- end addon-inside -->
-			</div> <!-- end widget -->		
-			
-			<div id="addon-series" class="widget enabled">
-				<div class="widget-top">
-					<div class="widget-title">
-						<h4>
-							<span class="status-label">Enabled</span>
-							<span class="title">PMPro Series</span>
-							<span class="version pmpro_tag-grey">0.5.0</span>
-							<span class="in-widget-title"></span>
-						</h4>
-					</div> <!-- end widget-title -->
-				</div> <!-- end widget-top -->					
-				<div class="widget-inside">					
-					<img class="addon-thumb" src="<?php echo PMPRO_URL?>/images/pmpro_register-helper.gif" />
-					<div class="info">						
-						<p>Add series to "drip feed" content to your members over the course of their membership.</p>
-						<div class="actions">							
-							<form method="post" name="component-actions" action="">
-								<input type="submit" value="Enabled" class="button">
-							</form>
-						</div>						
-					</div> <!-- end info -->
-				</div> <!-- end addon-inside -->
-			</div> <!-- end widget -->		
-					
-			<br class="clear" />		
-		</div> <!-- end addon-list -->
 		
-	</div> <!-- end pmpro-bundled -->
+	<?php foreach($pmpro_addon_lists as $list => $list_info) { ?>
+		<div id="pmpro-<?php echo $list;?>" class="pmpro-addon-list widgets-holder-wrap">
+
+			<h3 class="section-title"><?php echo $list_info[0];?></h3>
+			<p class="description"><?php echo $list_info[1];?></p>
+			<br class="clear" />
+		
+			<div id="addons-list-<?php echo $list;?>" class="addon-list">
+		
+				<?php if(empty($pmpro_addons[$list])) continue; //in case it's empty?>
+		
+				<?php foreach($pmpro_addons[$list] as $slug => $addon) { ?>
+					<div id="addon-<?php echo $slug;?>" class="widget <?php if($addon['enabled']) echo "enabled"; else echo "disabled";?>">
+					<div class="widget-top">
+						<div class="widget-title">
+							<h4>
+								<span class="status-label"><?php if($addon['enabled']) echo "Enabled"; else echo "Disabled";?></span>
+								<span class="title"><?php echo $addon['title'];?></span>
+								<span class="version pmpro_tag-grey"><?php echo $addon['version'];?></span>
+								<span class="in-widget-title"></span>
+							</h4>
+						</div> <!-- end widget-title -->
+					</div> <!-- end widget-top -->					
+					<div class="widget-inside">					
+						<?php call_user_func($addon['widget'], $addon);?>
+					</div> <!-- end addon-inside -->
+				</div> <!-- end widget -->	
+				<?php } ?>						
+						
+				<br class="clear" />		
+			</div> <!-- end addon-list -->
+			
+		</div> <!-- end pmpro-<?php echo $list;?> -->
+	<?php } ?>
+
+	<script>
+		jQuery(document).ready(function() {
+			jQuery('#addon-filters a.tab').click(function() {
+				//which tab?
+				var tab = jQuery(this).parent().attr('id').replace('addon-filters-', '');
+				
+				//un select tabs
+				jQuery('#addon-filters a.tab').removeClass('current');
+				
+				//select this tab
+				jQuery('#addon-filters-'+tab+' a').addClass('current');
+				
+				//show all?
+				if(tab == 'all')
+					jQuery('div.pmpro-addon-list').show();
+				else
+				{
+					//hide all
+					jQuery('div.pmpro-addon-list').hide();
+					
+					//show this one
+					jQuery('#pmpro-'+tab).show();
+				}
+			});
+		});
+	</script>
 	
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");	
