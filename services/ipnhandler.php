@@ -8,7 +8,7 @@
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
-	
+		
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to ipnlog.txt

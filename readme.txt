@@ -78,6 +78,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed bug where Sales Tax fields were hidden on the payment settings page if Stripe was chosen as the gateway.
 * No longer logging IPN activity to logs/ipn.txt by default. (Uncomment the lines at the bottom of services/ipnhandler.php to use the log to debug.)
 * If PayPal Standard is the active gateway, users without membership levels will be able to see the confirmation page with a message that PayPal is processing payment.
+* Fixed bug where PayPal recurring orders were being attributed to the wrong user (if no subscriber id was attached to the IPN message).
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
