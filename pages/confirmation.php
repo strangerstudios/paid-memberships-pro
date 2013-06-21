@@ -8,7 +8,10 @@
 	<?php
 	}
 	
-	$confirmation_message = "<p>Thank you for your membership to " . get_bloginfo('name') . ". Your " . $current_user->membership_level->name . " membership is now active.</p>";		
+	if(empty($current_user->membership_level))
+		$confirmation_message = "<p>Your payment has been submitted to PayPal. Your membership will be activated shortly.</p>";
+	else
+		$confirmation_message = "<p>Thank you for your membership to " . get_bloginfo('name') . ". Your " . $current_user->membership_level->name . " membership is now active.</p>";		
 	
 	//confirmation message for this level
 	$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND mu.user_id = '" . $current_user->ID . "' LIMIT 1");
@@ -95,10 +98,14 @@
 	?>	
 	<ul>
 		<li><strong>Account:</strong> <?php echo $current_user->display_name?> (<?php echo $current_user->user_email?>)</li>
-		<li><strong>Membership Level:</strong> <?php echo $current_user->membership_level->name?></li>
+		<li><strong>Membership Level:</strong> <?php if(!empty($current_user->membership_level)) echo $current_user->membership_level->name; else echo "Pending";?></li>
 	</ul>	
 <?php 
 	} 
 ?>  
 
-<p align="center"><a href="<?php echo pmpro_url("account")?>">View Your Membership Account &raquo;</a></p>           
+<?php if(!empty($current_user->membership_level)) { ?>
+	<p align="center"><a href="<?php echo pmpro_url("account")?>">View Your Membership Account &raquo;</a></p>           
+<?php } else { ?>
+	<p>If your account is not activated within a few minutes, please contact the site owner.</p>
+<?php } ?>

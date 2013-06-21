@@ -77,6 +77,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Checking that "status='active'" when finding subscriptions to cancel when deleting a level. This will keep PMPro from trying to cancel someone more than once... or trying to cancel inactive subscriptions.
 * Fixed bug where Sales Tax fields were hidden on the payment settings page if Stripe was chosen as the gateway.
 * No longer logging IPN activity to logs/ipn.txt by default. (Uncomment the lines at the bottom of services/ipnhandler.php to use the log to debug.)
+* If PayPal Standard is the active gateway, users without membership levels will be able to see the confirmation page with a message that PayPal is processing payment.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.

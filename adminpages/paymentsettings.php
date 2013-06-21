@@ -159,7 +159,7 @@
 						<option value="paypalstandard" <?php if($gateway == "paypalstandard") { ?>selected="selected"<?php } ?>>PayPal Standard</option>
 						<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
 						<option value="paypal" <?php if($gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
-						<option value="payflowpro" <?php if($gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro</option>
+						<option value="payflowpro" <?php if($gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro/PayPal Advanced</option>
 						<option value="authorizenet" <?php if($gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
 						<option value="braintree" <?php if($gateway == "braintree") { ?>selected="selected"<?php } ?>>Braintree Payments</option>
 					</select>                        
