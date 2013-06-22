@@ -14,9 +14,9 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_register_helper_widget($addon)
 {
 ?>
-<img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro_register_helper.gif" />
+<img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-register-helper.gif" />
 <div class="info">							
-	<p>Add additional meta fields to your PMPro checkout page and/or "Your Profile" pages. Support for various input types including text, select, multi-select, textarea, hidden, and custom HTML. Loop into existing checkout/profile field sections or add new ones.</p>
+	<p>Add additional meta fields to your PMPro checkout page and/or "Your Profile" pages. Support for text, select, multi-select, textarea, hidden, and custom HTML. Loop into existing checkout/profile field sections or add new ones.</p>
 	<div class="actions">							
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-register-helper/blob/master/readme.txt" class="button">Enabled</a>

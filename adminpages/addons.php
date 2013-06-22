@@ -13,8 +13,9 @@
 	$pmpro_addon_lists = array(
 		'github' => array('Plugins on GitHub', 'These official PMPro plugins must be downloaded from GitHub and installed through Plugins --> Add New --> Upload, then activated. These plugins cannot be automatically updated and may require more developer input.'),
 		'repo' => array('Plugins in the WordPress Repository', 'These official PMPro plugins are available in the WordPress repository and can be installed through Plugins --> Add New.'),
-		'thirdparty' => array('Third-party Plugins', 'These plugins are not developed by the PMPro team, but are recommended for sites running PMPro.'),
-		'gists' => array('Code Gists', 'These are bits of code that generally must be added to your active theme\'s functions.php file or included in a custom plugin. Recommended for developers only.')
+		'thirdparty' => array('Third-party Integration', 'These official PMPro plugins integrate with specific third-party tools and software.'),
+		'recommended' => array('Recommended Plugins', 'These plugins are not developed by the PMPro team, but are recommended for sites running PMPro.'),
+		'gists' => array('Code Gists', 'These are bits of code that generally must be added to your active theme\'s functions.php file or included in a custom plugin. Most gists require customization and are recommended for developers only.')
 	);
 	
 	/*
@@ -69,9 +70,7 @@
 			<br class="clear" />
 		
 			<div id="addons-list-<?php echo $list;?>" class="addon-list">
-		
-				<?php if(empty($pmpro_addons[$list])) continue; //in case it's empty?>
-		
+				
 				<?php foreach($pmpro_addons[$list] as $slug => $addon) { ?>
 					<div id="addon-<?php echo $slug;?>" class="widget <?php if($addon['enabled']) echo "enabled"; else echo "disabled";?>">
 					<div class="widget-top">

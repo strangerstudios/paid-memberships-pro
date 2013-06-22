@@ -14,8 +14,9 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_series_widget($addon)
 {
 ?>
+<img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-series.gif" />
 <div class="info">						
-	<p>Add series to "drip feed" content to your members over the course of their membership.</p>
+	<p>"Drip feed" content to your members over the course of their membership. Serializes content by # of days post-registration.</p>
 	<div class="actions">									
 		<?php if($addon['enabled']) { ?>
 			<a href="<?php echo admin_url("edit.php?post_type=pmpro_series");?>" class="button">Enabled</a>
