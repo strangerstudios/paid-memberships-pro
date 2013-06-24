@@ -1,4 +1,6 @@
 <?php
+	require_once(dirname(__FILE__) . "/functions.php");
+	
 	if(isset($_REQUEST['page']))
 		$view = $_REQUEST['page'];
 	else

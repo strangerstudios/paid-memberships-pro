@@ -1503,3 +1503,92 @@
 		
 		return $default;
 	}
+	
+	/*
+		Checks if all required settings are set.
+	*/
+	function pmpro_is_ready()
+	{
+		global $wpdb, $pmpro_pages, $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
+
+		//check if there is at least one level
+		$pmpro_level_ready = (bool)$wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels LIMIT 1");
+
+		//check if the gateway settings are good. first check if it's needed (is there paid membership level)
+		$paid_membership_level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE allow_signups = 1 AND (initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0) LIMIT 1");
+		$paid_user_subscription = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1");
+
+		if(empty($paid_membership_level) && empty($paid_user_subscription))
+		{
+			//no paid membership level now or attached to a user. we don't need the gateway setup
+			$pmpro_gateway_ready = true;
+		}
+		else
+		{
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "authorizenet")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("loginname") && pmpro_getOption("transactionkey"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "paypal" || $gateway == "paypalexpress")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email") && pmpro_getOption("apiusername") && pmpro_getOption("apipassword") && pmpro_getOption("apisignature"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "paypalstandard")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "payflowpro")
+			{
+				if(pmpro_getOption("payflow_partner") && pmpro_getOption("payflow_vendor") && pmpro_getOption("payflow_user") && pmpro_getOption("payflow_pwd"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "stripe")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("stripe_secretkey") && pmpro_getOption("stripe_publishablekey"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "braintree")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("braintree_merchantid") && pmpro_getOption("braintree_publickey") && pmpro_getOption("braintree_privatekey"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			else
+			{
+				$pmpro_gateway_ready = false;
+			}
+		}
+
+		//check if we have all pages
+		if($pmpro_pages["account"] &&
+		   $pmpro_pages["billing"] &&
+		   $pmpro_pages["cancel"] &&
+		   $pmpro_pages["checkout"] &&
+		   $pmpro_pages["confirmation"] &&
+		   $pmpro_pages["invoice"] &&
+		   $pmpro_pages["levels"])
+			$pmpro_pages_ready = true;
+		else
+			$pmpro_pages_ready = false;
+
+		//now check both
+		if($pmpro_gateway_ready && $pmpro_pages_ready)
+			return true;
+		else
+			return false;
+	}
