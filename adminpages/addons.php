@@ -11,10 +11,10 @@
 		Addon lists
 	*/
 	$pmpro_addon_lists = array(
-		'github' => array('Plugins on GitHub', 'These official PMPro plugins must be downloaded from GitHub and installed through Plugins --> Add New --> Upload, then activated. These plugins cannot be automatically updated and may require more developer input.'),
 		'repo' => array('Plugins in the WordPress Repository', 'These official PMPro plugins are available in the WordPress repository and can be installed through Plugins --> Add New.'),
 		'thirdparty' => array('Third-party Integration', 'These official PMPro plugins integrate with specific third-party tools and software.'),
 		'recommended' => array('Recommended Plugins', 'These plugins are not developed by the PMPro team, but are recommended for sites running PMPro.'),
+		'github' => array('Plugins on GitHub', 'These official PMPro plugins must be downloaded from GitHub and installed through Plugins --> Add New --> Upload, then activated. These plugins cannot be automatically updated and may require more developer input.'),						
 		'gists' => array('Code Gists', 'These are bits of code that generally must be added to your active theme\'s functions.php file or included in a custom plugin. Most gists require customization and are recommended for developers only.')
 	);
 	
@@ -96,6 +96,7 @@
 	<?php } ?>
 
 	<script>
+		//tabs
 		jQuery(document).ready(function() {
 			jQuery('#addon-filters a.tab').click(function() {
 				//which tab?
@@ -118,6 +119,20 @@
 					//show this one
 					jQuery('#pmpro-'+tab).show();
 				}
+			});
+		});
+		
+		//resize addon boxes
+		jQuery(document).ready(function() {
+			jQuery('.addon-list').each(function() {
+				//what's the tallest p in the list?
+				var tallest = 32;
+				jQuery(this).find('div.info p').each(function() {
+					tallest = Math.max(tallest, jQuery(this).height());
+				});
+				
+				//set all p's to match
+				jQuery(this).find('div.info p').css('height', tallest);
 			});
 		});
 	</script>

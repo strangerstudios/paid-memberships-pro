@@ -23,7 +23,7 @@ function pmpro_addon_wp_bouncer_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../wp-bouncer/wp-bouncer.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=wp-bouncer/wp-bouncer.php'), 'activate-plugin_wp-bouncer/wp-bouncer.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="/wp-content/uploads/plugins/wp-bouncer.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/wp-bouncer.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->
