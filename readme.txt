@@ -63,6 +63,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Ready for localization efforts.
 * Addons tab in PMPro Settings in the dashboard.
 * Reports page in dashboard with login report.
+* Webhook code for Braintree Payments gateway.
 * If PayPal Standard is the active gateway, users without membership levels will be able to see the confirmation page with a message that PayPal is processing payment.
 * Fixed bug where PayPal recurring orders were being attributed to the wrong user (if no subscriber id was attached to the IPN message).
 * Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
