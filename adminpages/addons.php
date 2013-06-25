@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
 	{
-		die("You do not have permissions to perform this action.");
+		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
 	
 	global $wpdb, $msg, $msgt, $pmpro_addons;
@@ -76,7 +76,7 @@
 					<div class="widget-top">
 						<div class="widget-title">
 							<h4>
-								<span class="status-label"><?php if($addon['enabled']) echo "Enabled"; else echo "Disabled";?></span>
+								<span class="status-label"><?php if($addon['enabled']) echo __("Enabled", "pmpro"); else echo __("Disabled", "pmpro");?></span>
 								<span class="title"><?php echo $addon['title'];?></span>
 								<span class="version pmpro_tag-grey"><?php echo $addon['version'];?></span>
 								<span class="in-widget-title"></span>

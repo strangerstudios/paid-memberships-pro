@@ -23,4 +23,3 @@
 		if(!current_user_can("administrator") && $current_user->ID != $pmpro_invoice->user_id)
 			wp_redirect(pmpro_url("account")); //no permission				
 	}
-?>

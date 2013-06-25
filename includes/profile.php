@@ -22,7 +22,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!$levels)
 		return "";
 ?>
-<h3><?php _e("Membership Level", "blank"); ?></h3>
+<h3><?php _e("Membership Level", "pmpro"); ?></h3>
 <table class="form-table">
     <?php
 		$show_membership_level = true;
@@ -31,10 +31,10 @@ function pmpro_membership_level_profile_fields($user)
 		{
 		?>
 		<tr>
-			<th><label for="membership_level"><?php _e("Current Level"); ?></label></th>
+			<th><label for="membership_level"><?php _e("Current Level", "pmpro"); ?></label></th>
 			<td>
 				<select name="membership_level" onchange="pmpro_mchange_warning();">
-					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- None --</option>
+					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- <?php _e("None", "pmpro");?> --</option>
 				<?php
 					foreach($levels as $level)
 					{
@@ -79,9 +79,7 @@ function pmpro_membership_level_profile_fields($user)
 					}
 					else
 					{
-					?>
-						User is not paying.
-					<?php
+						_e("User is not paying.", "pmpro");
 					}
 				?>
 			</td>
@@ -117,11 +115,11 @@ function pmpro_membership_level_profile_fields($user)
 				$selected_expires_year = (int)$current_year + 1;
 		?>
 		<tr>
-			<th><label for="expiration"><?php _e("Expires"); ?></label></th>
+			<th><label for="expiration"><?php _e("Expires", "pmpro"); ?></label></th>
 			<td>
 				<select id="expires" name="expires">
-					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>>No</option>
-					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>>Yes</option>
+					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", "pmpro");?></option>
+					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", "pmpro");?></option>
 				</select>
 				<span id="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
 					on

@@ -15,16 +15,18 @@
 		$pmpro_invoice->getMembershipLevel();
 	?>
 	
-	<h3>Invoice #<?php echo $pmpro_invoice->code?> on <?php echo date(get_option('date_format'), $pmpro_invoice->timestamp)?></h3>
+	<h3>
+		<?php printf(_x('Invoice #%s on %s', 'Invoice # header. E.g. Invoice #ABCDEF on 2013-01-01.', 'pmpro'), $pmpro_invoice->code, date(get_option('date_format'), $pmpro_invoice->timestamp));?>	
+	</h3>
 	<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
 	<ul>
-		<li><strong>Account:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
-		<li><strong>Membership Level:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
-		<?php if($pmpro_invoice->membership_level->enddate) { ?>
-			<li><strong>Membership Expires:</strong> <?php echo date(get_option('date_format'), $pmpro_invoice->membership_level->enddate)?></li>
+		<li><strong><?php _e('Account', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
+		<li><strong><?php _e('Membership Level', 'pmpro');?>:</strong> <?php echo $current_user->membership_level->name?></li>
+		<?php if($current_user->membership_level->enddate) { ?>
+			<li><strong><?php _e('Membership Expires', 'pmpro');?>:</strong> <?php echo date(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
-			<li><strong>Discount Code:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
+			<li><strong><?php _e('Discount Code', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 		<?php } ?>
 	</ul>
 	
@@ -38,11 +40,11 @@
 		<thead>
 			<tr>
 				<?php if(!empty($pmpro_invoice->billing->name)) { ?>
-					<th>Billing Address</th>
+					<th><?php _e('Billing Address', 'pmpro');?></th>
 				<?php } ?>
-				<th>Payment Method</th>
-				<th>Membership Level</th>
-				<th align="center">Total Billed</th>
+				<th><?php _e('Payment Method', 'pmpro');?></th>
+				<th><?php _e('Membership Level', 'pmpro');?></th>
+				<th align="center"><?php _e('Total Billed', 'pmpro');?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -59,8 +61,8 @@
 				<?php } ?>
 				<td>
 					<?php if($pmpro_invoice->accountnumber) { ?>
-						<?php echo $pmpro_invoice->cardtype?> ending in <?php echo last4($pmpro_invoice->accountnumber)?><br />
-						<small>Expiration: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
+						<?php echo $pmpro_invoice->cardtype?> <?php _e('ending in', 'credit card type {ending in} xxxx', 'pmpro');?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
+						<small><?php _e('Expiration', 'pmpro');?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
 					<?php } elseif($pmpro_invoice->payment_type) { ?>
 						<?php echo $pmpro_invoice->payment_type?>
 					<?php } ?>
@@ -69,12 +71,12 @@
 				<td align="center">
 					<?php if($pmpro_invoice->total != '0.00') { ?>
 						<?php if(!empty($pmpro_invoice->tax)) { ?>
-							Subtotal: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->subtotal, 2);?><br />
-							Tax: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->tax, 2);?><br />
+							<?php _e('Subtotal', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->subtotal, 2);?><br />
+							<?php _e('Tax', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->tax, 2);?><br />
 							<?php if(!empty($pmpro_invoice->couponamount)) { ?>
-								Coupon: (<?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->couponamount, 2);?>)<br />
+								<?php _e('Coupon', 'pmpro');?>: (<?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->couponamount, 2);?>)<br />
 							<?php } ?>
-							<strong>Total: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->total, 2)?></strong>
+							<strong><?php _e('Total', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->total, 2)?></strong>
 						<?php } else { ?>
 							<?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->total, 2)?>
 						<?php } ?>						
@@ -86,7 +88,7 @@
 		</tbody>
 	</table>
 <?php } else { ?>
-	<p>The invoice could not be found.</p>
+	<p><?php _e('The invoice could not be found.', 'pmpro');?></p>
 <?php } ?>
 	
-<p align="center"><a href="<?php echo pmpro_url("account")?>">View Your Membership Account &raquo;</a></p>           
+<p align="center"><a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account', 'pmpro');?> &raquo;</a></p>           

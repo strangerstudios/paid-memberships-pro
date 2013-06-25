@@ -281,4 +281,3 @@
 			return $httpParsedResponseAr;
 		}
 	}
-?>

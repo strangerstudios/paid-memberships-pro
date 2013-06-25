@@ -58,7 +58,7 @@
 				else
 				{					
 					if(empty($order->error))
-						$order->error = "Unknown error: Initial payment failed.";
+						$order->error = __("Unknown error: Initial payment failed.", "pmpro");
 					return false;
 				}
 			}				
@@ -117,7 +117,7 @@
 				else
 				{					
 					$order->errorcode = true;
-					$order->error = "Error during settlement: " . $response->message;
+					$order->error = __("Error during settlement:", "pmpro") . " " . $response->message;
 					$order->shorterror = $response->message;
 					return false;
 				}								
@@ -126,7 +126,7 @@
 			{
 				//$order->status = "error";
 				$order->errorcode = true;
-				$order->error = "Error during charge: " . $response->message;
+				$order->error = __("Error during charge:", "pmpro") . " " . $response->message;
 				$order->shorterror = $response->message;
 				return false;
 			}									
@@ -195,7 +195,7 @@
 						}
 						else
 						{
-							$order->error = "Failed to update customer.";
+							$order->error = __("Failed to update customer.", "pmpro");
 							$order->shorterror = $order->error;
 							return false;
 						}
@@ -243,14 +243,14 @@
 					}
 					else
 					{
-						$order->error = "Failed to create customer.";
+						$order->error = __("Failed to create customer.", "pmpro");
 						$order->shorterror = $order->error;
 						return false;
 					}										
 				}
 				catch (Exception $e)
 				{					
-					$order->error = "Error creating customer record with Braintree: " . $e->getMessage();
+					$order->error = __("Error creating customer record with Braintree:", "pmpro") . " " . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -342,7 +342,7 @@
 			}
 			catch (Exception $e)
 			{				
-				$order->error = "Error subscribing customer to plan with B:" . $e->getMessage();
+				$order->error = __("Error subscribing customer to plan with Braintree:", "pmpro") . " " . $e->getMessage();
 				//return error
 				$order->shorterror = $order->error;
 				return false;
@@ -357,7 +357,7 @@
 			}
 			else
 			{
-				$order->error = "Failed to subscribe with Braintree: " . $result->message;
+				$order->error = __("Failed to subscribe with Braintree:", "pmpro") . " " . $result->message;
 				$order->shorterror = $result->message;
 				return false;
 			}	
@@ -395,7 +395,7 @@
 				catch(Exception $e)
 				{
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = "Could not find the subscription.";
+					$order->error = __("Could not find the subscription.", "pmpro");
 					$order->shorterror = $order->error;
 					return false;	//no subscription found	
 				}
@@ -408,17 +408,16 @@
 				else
 				{
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = "Could not find the subscription.";
+					$order->error = __("Could not find the subscription.", "pmpro");
 					$order->shorterror = $order->error;
 					return false;	//no subscription found	
 				}
 			}
 			else
 			{
-				$order->error = "Could not find the subscription.";
+				$order->error = __("Could not find the subscription.", "pmpro");
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}						
 		}	
 	}
-?>

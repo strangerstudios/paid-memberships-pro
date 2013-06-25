@@ -352,4 +352,3 @@
 			return $httpParsedResponseAr;
 		}
 	}
-?>

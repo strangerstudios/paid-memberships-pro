@@ -52,7 +52,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = "Unknown error: Authorization failed.";
+						$order->error = __("Unknown error: Authorization failed.", "pmpro");
 					return false;
 				}
 			}
@@ -103,14 +103,14 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = "Unknown error: Payment failed.";							
+									$order->error = __("Unknown error: Payment failed.", "pmpro");
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = "Unknown error: Payment failed.";
+									$order->error = __("Unknown error: Payment failed.", "pmpro");
 								
-								$order->error .= " A partial payment was made that we could not void. Please contact the site owner immediately to correct this.";
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
 							}
 							
 							return false;								
@@ -126,7 +126,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = "Unknown error: Payment failed.";
+						$order->error = __("Unknown error: Payment failed.", "pmpro");
 					
 					return false;
 				}	

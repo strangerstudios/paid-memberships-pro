@@ -52,7 +52,7 @@
 				else
 				{					
 					if(empty($order->error))
-						$order->error = "Unknown error: Authorization failed.";
+						$order->error = __("Unknown error: Authorization failed.", "pmpro");
 					return false;
 				}
 			}
@@ -103,14 +103,13 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = "Unknown error: Payment failed.";							
+									$order->error = __("Unknown error: Payment failed.", "pmpro");
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = "Unknown error: Payment failed.";
-								
-								$order->error .= " A partial payment was made that we could not void. Please contact the site owner immediately to correct this.";
+									$order->error = __("Unknown error: Payment failed.", "pmpro");								
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
 							}
 														
 							return false;								
@@ -126,7 +125,7 @@
 				else
 				{					
 					if(empty($order->error))
-						$order->error = "Unknown error: Payment failed.";
+						$order->error = __("Unknown error: Payment failed.", "pmpro");
 					
 					return false;
 				}	
@@ -185,7 +184,7 @@
 				"x_exp_date"		=> $order->ExpirationDate,
 				
 				"x_amount"			=> $amount,
-				"x_description"		=> $order->membership_level->name . " Membership",
+				"x_description"		=> $order->membership_level->name . " " . __("Membership", "pmpro"),
 
 				"x_first_name"		=> $order->FirstName,
 				"x_last_name"		=> $order->LastName,
@@ -783,8 +782,8 @@
 			else  
 			{								
 				$order->status = "error";
-				$order->error = "Could not connect to Authorize.net";
-				$order->shorterror = "Could not connect to Authorize.net";
+				$order->error = __("Could not connect to Authorize.net", "pmpro");
+				$order->shorterror = __("Could not connect to Authorize.net", "pmpro");
 				return false;				
 			}
 		}	

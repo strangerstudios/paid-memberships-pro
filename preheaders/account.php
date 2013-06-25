@@ -4,11 +4,11 @@
 	{
 		if ($_REQUEST['msg']==1)
 		{
-			$pmpro_msg = 'Your membership status has been updated - Thank you!';
+			$pmpro_msg = __('Your membership status has been updated - Thank you!', 'pmpro');
 		}
 		else
 		{
-			$pmpro_msg = 'Sorry, your request could not be completed - please try again in a few moments.';
+			$pmpro_msg = __('Sorry, your request could not be completed - please try again in a few moments.', 'pmpro');
 			$pmpro_msgt = "pmpro_error";
 		}
 	}
@@ -40,5 +40,4 @@
 	}	
 	
 	global $pmpro_levels;
-	$pmpro_levels = pmpro_getAllLevels();		
-?>
+	$pmpro_levels = pmpro_getAllLevels();

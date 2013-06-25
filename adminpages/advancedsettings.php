@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
 	{
-		die("You do not have permissions to perform this action.");
+		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
 	
 	global $wpdb, $msg, $msgt;
@@ -32,7 +32,7 @@
 		
 		//assume success
 		$msg = true;
-		$msgt = "Your advanced settings have been updated.";	
+		$msgt = __("Your advanced settings have been updated.", "pmpro");	
 	}
 
 	$nonmembertext = pmpro_getOption("nonmembertext");
@@ -76,46 +76,46 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data"> 
-		<h2>Advanced Settings</h2>
+		<h2><?php _e('Advanced Settings', 'pmpro');?></h2>
 						
 		<table class="form-table">
 		<tbody>                
 			<tr>
 				<th scope="row" valign="top">
-					<label for="nonmembertext">Message for Logged-in Non-members:</label>
+					<label for="nonmembertext"><?php _e('Message for Logged-in Non-members', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea><br />
-					<small class="litegray">This message replaces the post content for non-members. Available variables: !!levels!!, !!referrer!!</small>
+					<small class="litegray"><?php _e('This message replaces the post content for non-members. Available variables', 'pmpro');?>: !!levels!!, !!referrer!!</small>
 				</td>
 			</tr> 
 			<tr>
 				<th scope="row" valign="top">
-					<label for="notloggedintext">Message for Logged-out Users:</label>
+					<label for="notloggedintext"><?php _e('Message for Logged-out Users', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea><br />
-					<small class="litegray">This message replaces the post content for logged-out visitors.</small>
+					<small class="litegray"><?php _e('This message replaces the post content for logged-out visitors.', 'pmpro');?></small>
 				</td>
 			</tr> 
 			<tr>
 				<th scope="row" valign="top">
-					<label for="rsstext">Message for RSS Feed:</label>
+					<label for="rsstext"><?php _e('Message for RSS Feed', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea><br />
-					<small class="litegray">This message replaces the post content in RSS feeds.</small>
+					<small class="litegray"><?php _e('This message replaces the post content in RSS feeds.', 'pmpro');?></small>
 				</td>
 			</tr> 
 			
 			<tr>
 				<th scope="row" valign="top">
-					<label for="showexcerpts">Show Excerpts to Non-Members?</label>
+					<label for="showexcerpts"><?php _e('Show Excerpts to Non-Members?', 'pmpro');?></label>
 				</th>
 				<td>
 					<select id="showexcerpts" name="showexcerpts">
-						<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>>No - Hide excerpts.</option>
-						<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>>Yes - Show excerpts.</option>  
+						<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php _e('No - Hide excerpts.', 'pmpro');?></option>
+						<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Show excerpts.', 'pmpro');?></option>  
 					</select>                        
 				</td>
 			</tr> 
@@ -125,17 +125,17 @@
 				</th>
 				<td>
 					<select id="hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
-						<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>>No</option>
-						<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>>Hide Ads From All Members</option>
-						<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>>Hide Ads From Certain Members</option>
+						<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+						<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From All Members', 'pmpro');?></option>
+						<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From Certain Members', 'pmpro');?></option>
 					</select>                        
 				</td>
 			</tr> 				
 			<tr id="hideads_explanation" <?php if($hideads < 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
-					<p class="top0em">Ads from the following plugins will be automatically turned off: <em>Easy Adsense</em>, ...</p>
-					<p>To hide ads in your template code, use code like the following:</p>
+					<p class="top0em"><?php _e('Ads from the following plugins will be automatically turned off', 'pmpro');?>: <em>Easy Adsense</em>, ...</p>
+					<p><?php _e('To hide ads in your template code, use code like the following', 'pmpro');?>:</p>
 				<pre lang="PHP">
 if(pmpro_displayAds())
 {
@@ -146,7 +146,7 @@ if(pmpro_displayAds())
 			</tr>                           
 			<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="hideadslevels">Choose Levels to Hide Ads From:</label>
+					<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<div class="checkbox_box" <?php if(count($levels) > 5) { ?>style="height: 100px; overflow: auto;"<?php } ?>>
@@ -180,49 +180,49 @@ if(pmpro_displayAds())
 			<?php if(is_multisite()) { ?>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="redirecttosubscription">Redirect all traffic from registration page to /susbcription/?: <em>(multisite only)</em></label>
+					<label for="redirecttosubscription"><?php _e('Redirect all traffic from registration page to /susbcription/?', 'pmpro');?>: <em>(<?php _e('multisite only', 'pmpro');?>)</em></label>
 				</th>
 				<td>
 					<select id="redirecttosubscription" name="redirecttosubscription">
-						<option value="0" <?php if(!$redirecttosubscription) { ?>selected="selected"<?php } ?>>No</option>
-						<option value="1" <?php if($redirecttosubscription == 1) { ?>selected="selected"<?php } ?>>Yes</option>                           
+						<option value="0" <?php if(!$redirecttosubscription) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+						<option value="1" <?php if($redirecttosubscription == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>                           
 					</select>                        
 				</td>
 			</tr> 
 			<?php } ?>				
 			<tr>
 				<th scope="row" valign="top">
-					<label for="recaptcha">Use reCAPTCHA?:</label>
+					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
-						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>>No</option>
-						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>>Yes - Free memberships only.</option>    
-						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>>Yes - All memberships.</option>
+						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'pmpro');?></option>    
+						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'pmpro');?></option>
 					</select><br />
-					<small>A free reCAPTCHA key is required. <a href="https://www.google.com/recaptcha/admin/create">Click here to signup for reCAPTCHA</a>.</small>						
+					<small><?php _e('A free reCAPTCHA key is required.', 'pmpro');?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'pmpro');?></a>.</small>						
 				</td>
 			</tr> 
 			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>                        
-					<label for="recaptcha_publickey">reCAPTCHA Public Key:</label>
+					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'pmpro');?>:</label>
 					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo $recaptcha_publickey?>" />
 					<br /><br />
-					<label for="recaptcha_privatekey">reCAPTCHA Private Key:</label>
+					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'pmpro');?>:</label>
 					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo $recaptcha_privatekey?>" />						
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="tospage">Require Terms of Service on signups?</label>
+					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'pmpro');?></label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
 					?>
 					<br />
-					<small>If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.</small>
+					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'pmpro');?></small>
 				</td>
 			</tr> 
 			
@@ -281,7 +281,7 @@ if(pmpro_displayAds())
 		</script>
 		
 		<p class="submit">            
-			<input name="savesettings" type="submit" class="button-primary" value="Save Settings" /> 		                			
+			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'pmpro');?>" /> 		                			
 		</p> 
 	</form>
 

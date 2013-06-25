@@ -71,7 +71,7 @@
 		jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
 		
 		jQuery('#other_discount_code_tr').hide();
-		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);">Click here to change your discount code</a>.');
+		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);"><?php _e('Click here to change your discount code', 'pmpro');?></a>.');
 		jQuery('#other_discount_code_p').show();
 		
 		jQuery('#other_discount_code_a').click(function() {
@@ -79,7 +79,7 @@
 			jQuery('#other_discount_code_p').hide();			
 		});
 		
-		jQuery('#pmpro_level_cost').html('The <strong><?php echo $discount_code?></strong> code has been applied to your order. <?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
+		jQuery('#pmpro_level_cost').html('<?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'pmpro'), $discount_code);?><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
 		
 		<?php
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
@@ -132,6 +132,3 @@
 			}
 		?>
 	</script>
-	<?php
-	
-?>

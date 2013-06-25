@@ -10,20 +10,32 @@ function pmpro_page_meta()
     <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
     <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
 	<?php
+		$in_member_cat = false;
 		foreach($membership_levels as $level)
 		{
 	?>
     	<li id="membership-level-<?php echo $level->id?>">
         	<label class="selectit">
-            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" /> <?php echo $level->name?>
+            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" />
+				<?php
+					echo $level->name;
+					//Check which categories are protected for this level
+					$protectedcategories = $wpdb->get_col("SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id");	
+					//See if this post is in any of the level's protected categories
+					if(in_category($protectedcategories, $post->id))
+					{
+						$in_member_cat = true;
+						echo ' *';
+					}
+				?>
             </label>
         </li>
     <?php
 		}
     ?>
     </ul>
-	<?php if('post' == get_post_type($post)) { ?>
-		<p class="pmpro_meta_notice">This post may also require membership if it is within a category that requires membership.</p>
+	<?php if('post' == get_post_type($post) && $in_member_cat) { ?>
+		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", "pmpro");?></p>
 	<?php } ?>
 <?php
 }
@@ -84,8 +96,8 @@ function pmpro_page_save($post_id)
 //wrapper to add meta boxes
 function pmpro_page_meta_wrapper()
 {
-	add_meta_box('pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'page', 'side');
-	add_meta_box('pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'post', 'side');
+	add_meta_box('pmpro_page_meta', _x('Require Membership', 'metabox heading', 'pmpro'), 'pmpro_page_meta', 'page', 'side');
+	add_meta_box('pmpro_page_meta', _x('Require Membership', 'metabox heading', 'pmpro'), 'pmpro_page_meta', 'post', 'side');
 }
 if (is_admin())
 {

@@ -11,4 +11,3 @@
 		$pmpro_invoice = new MemberOrder();
 		$pmpro_invoice->getLastMemberOrder($current_user->ID, apply_filters("pmpro_confirmation_order_status", array("success", "pending")));
 	}
-?>

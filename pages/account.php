@@ -5,11 +5,11 @@
 	if($current_user->membership_level->ID)
 	{
 	?>			
-		<p>Your membership is <strong>active</strong>.</p>
+		<p><?php _e("Your membership is <strong>active</strong>.", "pmpro");?></p>
 		<ul>
-			<li><strong>Level:</strong> <?php echo $current_user->membership_level->name?></li>
+			<li><strong><?php _e("Level", "pmpro");?>:</strong> <?php echo $current_user->membership_level->name?></li>
 		<?php if($current_user->membership_level->billing_amount > 0) { ?>
-			<li><strong>Membership Fee:</strong>
+			<li><strong><?php _e("Membership Fee", "pmpro");?>:</strong>
 			<?php echo $pmpro_currency_symbol?><?php echo $current_user->membership_level->billing_amount?>
 			<?php if($current_user->membership_level->cycle_number > 1) { ?>
 				per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
@@ -20,43 +20,36 @@
 		<?php } ?>						
 		
 		<?php if($current_user->membership_level->billing_limit) { ?>
-			<li><strong>Duration:</strong> <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></li>
+			<li><strong><?php _e("Duration", "pmpro");?>:</strong> <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></li>
 		<?php } ?>
 		
 		<?php if($current_user->membership_level->enddate) { ?>
-			<li><strong>Membership Expires:</strong> <?php echo date(get_option('date_format'), $current_user->membership_level->enddate)?></li>
+			<li><strong><?php _e("Membership Expires", "pmpro");?>:</strong> <?php echo date(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		
-		<?php if($current_user->membership_level->trial_limit) { ?>
-			Your first <?php echo $current_user->membership_level->trial_limit?> <?php echo sornot("payment",$current_user->membership_level->trial_limit)?> will cost $<?php echo $current_user->membership_level->trial_amount?>.
-		<?php } ?>   
-
-		<?php
-			//the nextpayment code is not tight yet
-			/*
-			$nextpayment = pmpro_next_payment();
-			if($nextpayment)
-			{
-			?>
-				<li><strong>Next Invoice:</strong> <?php echo date("F j, Y", $nextpayment)?></li>
-			<?php
-			}
-			*/
+		<?php if($current_user->membership_level->trial_limit == 1) 
+		{ 
+			printf(__("Your first payment will cost %s.", "pmpro"), $pmpro_currency_symbol . $current_user->membership_level->trial_amount);
+		}
+		elseif(!empty($current_user->membership_level->trial_limit)) 
+		{
+			printf(__("Your first %d payments will cost %s.", "pmpro"), $current_user->membership_level->trial_limit, $pmpro_currency_symbol . $current_user->membership_level->trial_amount);
+		}
 		?>
 		</ul>
 		
 		<div class="pmpro_left">
 			<div class="pmpro_box">
 				<?php get_currentuserinfo(); ?> 
-				<h3><a class="pmpro_a-right" href="<?php echo admin_url('profile.php')?>">Edit</a>My Account</h3>
+				<h3><a class="pmpro_a-right" href="<?php echo admin_url('profile.php')?>"><?php _e("Edit", "pmpro");?></a><?php _e("My Account", "pmpro");?></h3>
 				<p>
 				<?php if($current_user->user_firstname) { ?>
 					<?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?><br />
 				<?php } ?>
 				<small>
-					<strong>Username:</strong> <?php echo $current_user->user_login?><br />
-					<strong>Email:</strong> <?php echo $current_user->user_email?><br />
-					<strong>Password:</strong> ****** <small><a href="<?php echo admin_url('profile.php')?>">change</a></small>				
+					<strong><?php _e("Username", "pmpro");?>:</strong> <?php echo $current_user->user_login?><br />
+					<strong><?php _e("Email", "pmpro");?>:</strong> <?php echo $current_user->user_email?><br />
+					<strong><?php _e("Password", "pmpro");?>:</strong> ****** <small><a href="<?php echo admin_url('profile.php')?>"><?php _ex("change", "As in 'change password'.", "pmpro");?></a></small>				
 				</small>
 				</p>
 			</div>
@@ -89,7 +82,7 @@
 					<h3><?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?><a class="pmpro_a-right" href="<?php echo pmpro_url("billing", "")?>">Edit</a><?php } ?>Billing Information</h3>
 					<?php if(!empty($baddress1)) { ?>
 					<p>
-						<strong>Billing Address</strong><br />
+						<strong><?php _e("Billing Address", "pmpro");?></strong><br />
 						<?php echo $bfirstname . " " . $blastname?>
 						<br />		
 						<?php echo $baddress1?><br />
@@ -101,27 +94,30 @@
 						<?php echo formatPhone($bphone)?>
 					</p>
 					<?php } ?>
+					
+					<?php if(!empty($AccountNumber)) { ?>
 					<p>
-						<strong>Payment Method</strong><br />
+						<strong><?php _e("Payment Method", "pmpro");?></strong><br />
 						<?php echo $CardType?>: <?php echo last4($AccountNumber)?> (<?php echo $ExpirationMonth?>/<?php echo $ExpirationYear?>)
 					</p>
+					<?php } ?>
 				</div>					
 			<?php
 			}
 			?>
 			<div class="pmpro_box">
-				<h3>Member Links</h3>
+				<h3><?php _e("Member Links", "pmpro");?></h3>
 				<ul>
 					<?php 
 						do_action("pmpro_member_links_top");
 					?>
 					<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?>
-						<li><a href="<?php echo pmpro_url("billing", "", "https")?>">Update Billing Information</a></li>
+						<li><a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Information", "pmpro");?></a></li>
 					<?php } ?>
 					<?php if(count($pmpro_levels) > 1) { ?>
-						<li><a href="<?php echo pmpro_url("levels")?>">Change Membership Level</a></li>
+						<li><a href="<?php echo pmpro_url("levels")?>"><?php _e("Change Membership Level", "pmpro");?></a></li>
 					<?php } ?>
-					<li><a href="<?php echo pmpro_url("cancel")?>">Cancel Membership</a></li>
+					<li><a href="<?php echo pmpro_url("cancel")?>"><?php _e("Cancel Membership", "pmpro");?></a></li>
 					<?php 
 						do_action("pmpro_member_links_bottom");
 					?>
@@ -132,7 +128,7 @@
 		<div class="pmpro_right">
 			<?php if(!empty($invoices)) { ?>
 			<div class="pmpro_box">
-				<h3>Past Invoices</h3>
+				<h3><?php _e("Past Invoices", "pmpro");?></h3>
 				<ul>
 					<?php 
 						$count = 0;
@@ -142,7 +138,7 @@
 					<li <?php if($count++ > 10) { ?>class="pmpro_hidden pmpro_invoice"<?php } ?>><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date("F j, Y", $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
 					<?php } ?>
 					<?php if($count > 10) { ?>
-						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);">show <?php echo (count($invoices) - 10)?> more</a></li>
+						<li class="pmpro_more pmpro_invoice"><a href="javascript: jQuery('.pmpro_more.pmpro_invoice').hide(); jQuery('.pmpro_hidden.pmpro_invoice').show(); void(0);"><?php printf(__("show %d more", "pmpro"), count($invoices) - 10);?></a></li>
 					<?php 
 						} 
 					?>

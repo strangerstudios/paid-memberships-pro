@@ -100,7 +100,7 @@ function pmpro_wp()
 					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
 						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
 					else
-						include(plugin_dir_path(__FILE__) . "/pages/" . $pmpro_page_name . ".php");
+						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
 					
 					$temp_content = ob_get_contents();
 					ob_end_clean();

@@ -24,7 +24,7 @@
 				$euser = get_userdata($e->user_id);		
 				$pmproemail->sendMembershipExpiringEmail($euser);
 				
-				echo "Membership expiring email sent to " . $euser->user_email . ". ";
+				printf(__("Membership expiring email sent to %s. ", "pmpro"), $euser->user_email);
 			}
 				
 			//update user meta so we don't email them again
@@ -58,7 +58,7 @@
 				$euser = get_userdata($e->user_id);		
 				$pmproemail->sendMembershipExpiredEmail($euser);
 				
-				echo "Membership expired email sent to " . $euser->user_email . ". ";
+				printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);				
 			}
 		}
 	}
@@ -101,11 +101,10 @@
 				$euser = get_userdata($e->user_id);		
 				$pmproemail->sendTrialEndingEmail($euser);
 				
-				echo "Trial ending email sent to " . $euser->user_email . ". ";
+				printf(__("Trial ending email sent to %s. ", "pmpro"), $euser->user_email);				
 			}
 				
 			//update user meta so we don't email them again
 			update_user_meta($euser->ID, "pmpro_trial_ending_notice", $today);
 		}
-	}		
-?>
+	}

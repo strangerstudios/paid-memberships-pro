@@ -23,7 +23,7 @@
 			<div class="inside">
 				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
 				<div style="margin-top:10px;border-top: 1px solid #ddd; padding-top: 10px; text-align:center;">
-					<a href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>">Details</a>
+					<a href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
 				</div>
 			</div>
 		</div>

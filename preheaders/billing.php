@@ -255,23 +255,23 @@
 		
 		if(!empty($missing_billing_field))
 		{			
-			$pmpro_msg = "Please complete all required fields.";
+			$pmpro_msg = __("Please complete all required fields.", 'pmpro');
 			$pmpro_msgt = "pmpro_error";
 		}		
 		elseif($bemail != $bconfirmemail)
 		{
-			$pmpro_msg = "Your email addresses do not match. Please try again.";
+			$pmpro_msg = __("Your email addresses do not match. Please try again.", 'pmpro');
 			$pmpro_msgt = "pmpro_error";
 		}		
 		elseif(!is_email($bemail))
 		{
-			$pmpro_msg = "The email address entered is in an invalid format. Please try again.";	
+			$pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'pmpro');	
 			$pmpro_msgt = "pmpro_error";
 		}			
 		else
 		{					
 			//all good. update billing info.
-			$pmpro_msg = "All good!";
+			$pmpro_msg = __("All good!", 'pmpro');
 						
 			//change this
 			$order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY id DESC LIMIT 1");			
@@ -337,14 +337,14 @@
 				pmpro_replaceUserMeta($current_user->ID, $meta_keys, $meta_values);
 				
 				//message
-				$pmpro_msg = "Information updated. <a href=\"" . pmpro_url("account") . "\">&laquo; back to my account</a>";			
+				$pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'pmpro'), pmpro_url("account"));
 				$pmpro_msgt = "pmpro_success";								
 			}			
 			else
 			{
 				$pmpro_msg = $morder->error;
 				if(!$pmpro_msg)
-					$pmpro_msg = "Error updating billing information.";
+					$pmpro_msg = __("Error updating billing information.", 'pmpro');
 				$pmpro_msgt = "pmpro_error";
 			}				
 		}
@@ -368,4 +368,3 @@
 		$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
 		$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);			
 	}
-?>

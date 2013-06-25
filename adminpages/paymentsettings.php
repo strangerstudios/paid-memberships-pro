@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_paymentsettings")))
 	{
-		die("You do not have permissions to perform this action.");
+		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
 	
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
@@ -79,7 +79,7 @@
 
 		//assume success
 		$msg = true;
-		$msgt = "Your payment settings have been updated.";			
+		$msgt = __("Your payment settings have been updated.", "pmpro");			
 	}
 	
 	$sslseal = pmpro_getOption("sslseal");
@@ -141,7 +141,7 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">         
-		<h2>Payment Gateway &amp; SSL Settings</h2>
+		<h2><?php _e('Payment Gateway', 'pmpro');?> &amp; <?php _e('SSL Settings', 'pmpro');?></h2>
 		
 		<p>Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.</p>
 		
@@ -149,12 +149,12 @@
 		<tbody>                		   
 			<tr>
 				<th scope="row" valign="top">	
-					<label for="gateway">Payment Gateway:</label>
+					<label for="gateway"><?php _e('Payment Gateway', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
 						<option value="">Testing Only</option>
-						<option value="check" <?php if($gateway == "check") { ?>selected="selected"<?php } ?>>Pay by Check</option>
+						<option value="check" <?php if($gateway == "check") { ?>selected="selected"<?php } ?>><?php _e('Pay by Check', 'pmpro');?></option>
 						<option value="stripe" <?php if($gateway == "stripe") { ?>selected="selected"<?php } ?>>Stripe</option>
 						<option value="paypalstandard" <?php if($gateway == "paypalstandard") { ?>selected="selected"<?php } ?>>PayPal Standard</option>
 						<option value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
@@ -167,17 +167,17 @@
 			</tr> 			
 			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>				
 				<td colspan="2">
-					<strong>Note:</strong> Payflow Pro currently only supports one-time payments. Users will not be able to checkout for levels with recurring payments.
+					<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('Payflow Pro currently only supports one-time payments. Users will not be able to checkout for levels with recurring payments.', 'pmpro');?>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="gateway_environment">Gateway Environment:</label>
+					<label for="gateway_environment"><?php _e('Gateway Environment', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select name="gateway_environment">
-						<option value="sandbox" <?php if($gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>>Sandbox/Testing</option>
-						<option value="live" <?php if($gateway_environment == "live") { ?>selected="selected"<?php } ?>>Live/Production</option>
+						<option value="sandbox" <?php if($gateway_environment == "sandbox") { ?>selected="selected"<?php } ?>><?php _e('Sandbox/Testing', 'pmpro');?></option>
+						<option value="live" <?php if($gateway_environment == "live") { ?>selected="selected"<?php } ?>><?php _e('Live/Production', 'pmpro');?></option>
 					</select>
 					<script>
 						function pmpro_changeGateway(gateway)
@@ -192,7 +192,7 @@
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			   <th scope="row" valign="top">	
-					<label for="payflow_partner">Partner:</label>
+					<label for="payflow_partner"><?php _e('Partner', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="payflow_partner" size="60" value="<?php echo $payflow_partner?>" />
@@ -200,7 +200,7 @@
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			   <th scope="row" valign="top">	
-					<label for="payflow_vendor">Vendor:</label>
+					<label for="payflow_vendor"><?php _e('Vendor', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="payflow_vendor" size="60" value="<?php echo $payflow_vendor?>" />
@@ -208,7 +208,7 @@
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			   <th scope="row" valign="top">	
-					<label for="payflow_user">User:</label>
+					<label for="payflow_user"><?php _e('User', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="payflow_user" size="60" value="<?php echo $payflow_user?>" />
@@ -216,7 +216,7 @@
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			   <th scope="row" valign="top">	
-					<label for="payflow_pwd">Password:</label>
+					<label for="payflow_pwd"><?php _e('Password', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="password" name="payflow_pwd" size="60" value="<?php echo $payflow_pwd?>" />
@@ -224,7 +224,7 @@
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">	
-					<label for="gateway_email">Gateway Account Email:</label>
+					<label for="gateway_email"><?php _e('Gateway Account Email', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="gateway_email" size="60" value="<?php echo $gateway_email?>" />
@@ -232,7 +232,7 @@
 			</tr>                
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="apiusername">API Username:</label>
+					<label for="apiusername"><?php _e('API Username', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="apiusername" size="60" value="<?php echo $apiusername?>" />
@@ -240,7 +240,7 @@
 			</tr>
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="apipassword">API Password:</label>
+					<label for="apipassword"><?php _e('API Password', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="apipassword" size="60" value="<?php echo $apipassword?>" />
@@ -248,7 +248,7 @@
 			</tr> 
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="apisignature">API Signature:</label>
+					<label for="apisignature"><?php _e('API Signature', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="apisignature" size="60" value="<?php echo $apisignature?>" />
@@ -257,7 +257,7 @@
 			
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="loginname">Login Name:</label>
+					<label for="loginname"><?php _e('Login Name', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="loginname" size="60" value="<?php echo $loginname?>" />
@@ -265,7 +265,7 @@
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="transactionkey">Transaction Key:</label>
+					<label for="transactionkey"><?php _e('Transaction Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="transactionkey" size="60" value="<?php echo $transactionkey?>" />
@@ -274,7 +274,7 @@
 			
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="stripe_secretkey">Secret Key:</label>
+					<label for="stripe_secretkey"><?php _e('Secret Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="stripe_secretkey" size="60" value="<?php echo $stripe_secretkey?>" />
@@ -282,7 +282,7 @@
 			</tr>
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="stripe_publishablekey">Publishable Key:</label>
+					<label for="stripe_publishablekey"><?php _e('Publishable Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="stripe_publishablekey" size="60" value="<?php echo $stripe_publishablekey?>" />
@@ -291,7 +291,7 @@
 			
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="braintree_merchantid">Merchant ID:</label>
+					<label for="braintree_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="braintree_merchantid" size="60" value="<?php echo $braintree_merchantid?>" />
@@ -299,7 +299,7 @@
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="braintree_publickey">Public Key:</label>
+					<label for="braintree_publickey"><?php _e('Public Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="braintree_publickey" size="60" value="<?php echo $braintree_publickey?>" />
@@ -307,7 +307,7 @@
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="braintree_privatekey">Private Key:</label>
+					<label for="braintree_privatekey"><?php _e('Private Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="text" name="braintree_privatekey" size="60" value="<?php echo $braintree_privatekey?>" />
@@ -315,7 +315,7 @@
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="braintree_encryptionkey">Client-Side Encryption Key:</label>
+					<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($braintree_encryptionkey)?></textarea>					
@@ -324,7 +324,7 @@
 			
 			<tr class="gateway gateway_authorizenet gateway_payflowpro" <?php if($gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="transactionkey">Currency:</label>
+					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="hidden" name="currency_fixed" size="60" value="USD" />
@@ -334,7 +334,7 @@
 						
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="transactionkey">Currency:</label>
+					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select name="currency_stripe">
@@ -353,7 +353,7 @@
 			
 			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="transactionkey">Currency:</label>
+					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select name="currency_paypal">
@@ -372,7 +372,7 @@
 			
 			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="creditcards">Accepted Credit Card Types</label>
+					<label for="creditcards"><?php _e('Accepted Credit Card Types', 'pmpro');?></label>
 				</th>
 				<td>
 					<input type="checkbox" name="creditcards_visa" value="1" <?php if(in_array("Visa", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> Visa<br />
@@ -386,47 +386,48 @@
 			</tr>	
 			<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="instructions">Instructions</label>					
+					<label for="instructions"><?php _e('Instructions', 'pmpro');?></label>					
 				</th>
 				<td>
 					<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo esc_textarea($instructions)?></textarea>
-					<p><small>Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.</small></p>
+					<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'pmpro');?></small></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="tax">Sales Tax <small>(optional)</small></label>
+					<label for="tax"><?php _e('Sales Tax', 'pmpro');?> <small>(<?php _e('optional', 'pmpro');?>)</small></label>
 				</th>
 				<td>
-					Tax State:
-					<input type="text" name="tax_state" size="4" value="<?php echo $tax_state?>" /> <small>(abbreviation, e.g. "PA")</small>
+					<?php _e('Tax State', 'pmpro');?>:
+					<input type="text" name="tax_state" size="4" value="<?php echo $tax_state?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'pmpro');?>)</small>
 					&nbsp; Tax Rate:
-					<input type="text" name="tax_rate" size="10" value="<?php echo $tax_rate?>" /> <small>(decimal, e.g. "0.06")</small>
-					<p><small>If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.</small></p>
+					<input type="text" name="tax_rate" size="10" value="<?php echo $tax_rate?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'pmpro');?>)</small>
+					<p><small><?php _e('If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.', 'pmpro');?></small></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="use_ssl">Use SSL:</label>
+					<label for="use_ssl"><?php _e('Use SSL', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select id="use_ssl" name="use_ssl">
-						<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>>No</option>
-						<option value="1" <?php if(!empty($use_ssl)) { ?>selected="selected"<?php } ?>>Yes</option>						
+						<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+						<option value="1" <?php if(!empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>						
 					</select>
 				</td>
 			</tr>
 			<tr class="gateway gateway_paypal gateway_authorizenet gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="use_ssl">Use SSL:</label>
+					<label for="use_ssl"><?php _e('Use SSL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					Yes. (Required by this Gateway Option)
+					<?php _e('Yes', 'pmpro');?>.
+					(<?php _e('Required by this Gateway Option', 'pmpro');?>)
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="sslseal">SSL Seal Code:</label>
+					<label for="sslseal"><?php _e('SSL Seal Code', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
@@ -434,48 +435,48 @@
 		   </tr>		   
 		   <tr>
 				<th scope="row" valign="top">
-					<label for="nuclear_HTTPS">HTTPS Nuclear Option:</label>
+					<label for="nuclear_HTTPS"><?php _e('HTTPS Nuclear Option', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.
+					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <?php _e('Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'pmpro');?>
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label>IPN Handler URL:</label>
+					<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p>To fully integrate with PayPal, be sure to set your IPN Handler URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre>.</p>
+					<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre>.</p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label>Silent Post URL:</label>
+					<label><?php _e('Silent Post URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p>To fully integrate with Authorize.net, be sure to set your Silent Post URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre>.</p>
+					<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre>.</p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label>Web Hook URL:</label>
+					<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p>To fully integrate with Stripe, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre>.</p>
+					<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre>.</p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label>Web Hook URL:</label>
+					<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p>To fully integrate with Braintree, be sure to set your Web Hook URL to <pre><?php echo admin_url("admin-ajax.php") . "?action=braintree_webhook";?></pre>.</p>
+					<p><?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=braintree_webhook";?></pre>.</p>
 				</td>
 			</tr>
 		</tbody>
 		</table>            
 		<p class="submit">            
-			<input name="savesettings" type="submit" class="button-primary" value="Save Settings" /> 		                			
+			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'pmpro');?>" /> 		                			
 		</p>             
 	</form>
 		

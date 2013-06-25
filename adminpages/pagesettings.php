@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_pagesettings")))
 	{
-		die("You do not have permissions to perform this action.");
+		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
 	
 	global $wpdb, $msg, $msgt;
@@ -48,7 +48,7 @@
 			{
 				//no id set. create an array to store the page info
 				$insert = array(
-					'post_title' => 'Membership ' . ucwords($pmpro_page_name),
+					'post_title' => __('Membership', 'pmpro') . ' ' . ucwords($pmpro_page_name),
 					'post_status' => 'publish',
 					'post_type' => 'page',
 					'post_content' => '[pmpro_' . $pmpro_page_name . ']',
@@ -80,7 +80,7 @@
 		if(!empty($pages_created))
 		{
 			$msg = true;
-			$msgt = "The following pages have been created for you: " . implode(", ", $pages_created) . ".";
+			$msgt = __("The following pages have been created for you", "pmpro") . ": " . implode(", ", $pages_created) . ".";
 		}
 	}		
 	
@@ -89,19 +89,19 @@
 	
 
 	<form action="" method="post" enctype="multipart/form-data">        	        			
-		<h2>Pages</h2> 
+		<h2><?php _e('Pages', 'pmpro');?></h2> 
 		<?php
 			global $pmpro_pages_ready;
 			if($pmpro_pages_ready)
 			{
 			?>
-				<p>Manage the WordPress pages assigned to each required Paid Memberships Pro page.</p>
+				<p><?php _e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'pmpro');?></p>
 			<?php
 			} 
 			else 
 			{ 
 			?>
-				<p>Assign the WordPress pages for each required Paid Memberships Pro page or <a href="?page=pmpro-pagesettings&createpages=1">click here to let us generate them for you</a>.</p>
+				<p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'pmpro');?> <a href="?page=pmpro-pagesettings&createpages=1"><?php _e('click here to let us generate them for you', 'pmpro');?></a>.</p>
 			<?php
 			}
 		?>       			        
@@ -109,104 +109,104 @@
 		<tbody>                
 			<tr>
 				<th scope="row" valign="top">                        
-					<label for="account_page_id">Account Page:</label>
+					<label for="account_page_id"><?php _e('Account Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['account']));
 					?>	
 					<?php if(!empty($pmpro_pages['account'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_account].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_account].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="billing_page_id">Billing Information Page:</label>
+					<label for="billing_page_id"><?php _e('Billing Information Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['billing']));
 					?>
 					<?php if(!empty($pmpro_pages['billing'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_billing].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_billing].</small>
 				</td>
 			<tr>
 				<th scope="row" valign="top">	
-					<label for="cancel_page_id">Cancel Page:</label>
+					<label for="cancel_page_id"><?php _e('Cancel Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['cancel']));
 					?>	
 					<?php if(!empty($pmpro_pages['cancel'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_cancel].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_cancel].</small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">	
-					<label for="checkout_page_id">Checkout Page:</label>
+					<label for="checkout_page_id"><?php _e('Checkout Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['checkout']));
 					?>
 					<?php if(!empty($pmpro_pages['checkout'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_checkout].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_checkout].</small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">		
-					<label for="confirmation_page_id">Confirmation Page:</label>
+					<label for="confirmation_page_id"><?php _e('Confirmation Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['confirmation']));
 					?>	
 					<?php if(!empty($pmpro_pages['confirmation'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_confirmation].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_confirmation].</small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">	
-					<label for="invoice_page_id">Invoice Page:</label>
+					<label for="invoice_page_id"><?php _e('Invoice Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['invoice']));
 					?>
 					<?php if(!empty($pmpro_pages['invoice'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_invoice].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_invoice].</small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">	
-					<label for="levels_page_id">Levels Page:</label>
+					<label for="levels_page_id"><?php _e('Levels Page', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['levels']));
 					?>
 					<?php if(!empty($pmpro_pages['levels'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="pmpro_page_edit">edit page</a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
 					<?php } ?>
-					<br /><small class="pmpro_lite">Include the shortcode [pmpro_levels].</small>
+					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_levels].</small>
 				</td>
 			</tr>				
 		</tbody>
 		</table>
 		<p class="submit">            
-			<input name="savesettings" type="submit" class="button-primary" value="Save Settings" /> 		                			
+			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'pmpro');?>" /> 		                			
 		</p> 			
 	</form>
 	
