@@ -51,7 +51,7 @@ function pmpro_membership_level_profile_fields($user)
 					{
 						if(pmpro_mchange_once == 0)
 						{
-							alert('Warning: The existing membership will be canceled, and the new membership will be free.');
+							alert('Warning: The existing membership will be cancelled, and the new membership will be free.');
 							pmpro_mchange_once = 1;
 						}
 					}

@@ -446,7 +446,7 @@
 							}
 						  ?>
 						</select>
-						<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be canceled when the membership expires.', 'pmpro');?></small>							
+						<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be cancelled when the membership expires.', 'pmpro');?></small>							
 					</td>
 				</tr> 								
 			</tbody>
@@ -563,7 +563,7 @@
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
 			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
 			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
-			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be canceled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
+			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
 		</tr>
 		<?php
 			}

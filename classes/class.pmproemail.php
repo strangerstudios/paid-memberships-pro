@@ -117,7 +117,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has been CANCELED", "pmpro"), get_option("blogname"));			
+			$this->subject = sprintf(__("Your membership at %s has been CANCELLED", "pmpro"), get_option("blogname"));			
 			$this->template = "cancel";
 			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
 			
@@ -139,7 +139,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Membership for %s at %s has been CANCELED", "pmpro"), $user->user_login, get_option("blogname"));			
+			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", "pmpro"), $user->user_login, get_option("blogname"));			
 			$this->template = "cancel_admin";
 			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
@@ -644,7 +644,7 @@
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s. This membership is free", "pmpro"), $user->membership_level->name);
 			else
-				$this->data["membership_change"] = __("membership has been canceled", "pmpro");
+				$this->data["membership_change"] = __("membership has been cancelled", "pmpro");
 			
 			if(!empty($user->membership_level->enddate))
 			{
@@ -682,7 +682,7 @@
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s. This membership is free", "pmpro"), $user->membership_level->name);
 			else
-				$this->data["membership_change"] = __("membership has been canceled", "pmpro");
+				$this->data["membership_change"] = __("membership has been cancelled", "pmpro");
 			
 			if(!empty($user->membership_level->enddate))
 			{

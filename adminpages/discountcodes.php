@@ -494,7 +494,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be canceled when the membership expires.', 'pmpro');?></small>							
+									<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be cancelled when the membership expires.', 'pmpro');?></small>							
 								</td>
 							</tr> 
 						</tbody>
