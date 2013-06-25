@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, ecommerce, authorize.net, paypal, stripe
 Requires at least: 3.0
 Tested up to: 3.5.2
-Stable tag: 1.6.1
+Stable tag: 1.7
 
 A customizable Membership Plugin for WordPress integrated with Authorize.net or PayPal(r) for recurring payments, flexible content control, themed registration, checkout, and more ...
 
@@ -60,16 +60,20 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog == 
 = 1.7 =
-* Addons tab in PMPro Settings
-* Reports page with login report. More on reports here: {link}
+* Ready for localization efforts.
+* Addons tab in PMPro Settings in the dashboard.
+* Reports page in dashboard with login report.
+* If PayPal Standard is the active gateway, users without membership levels will be able to see the confirmation page with a message that PayPal is processing payment.
+* Fixed bug where PayPal recurring orders were being attributed to the wrong user (if no subscriber id was attached to the IPN message).
+* Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
+* Cleaned up code in base paid-memberships-pro.php file.
 * Updated the .pmpro_checkout tr.odd td line in frontend.css to use rgba with alpha transparency to work a bit better on dark background themes.
 * Fixed bug where a user's first_name and last_name meta fields might be overwritten by the billing name fields at checkout. It will still set them if the user's first and last name fields are blank. (Thanks, John Hamlin.)
 * Fixed bug where zipcode was shown instead of state in the members list CSV export. (Thanks, John Hamlin.)
 * Fix to show discount codes on free trial confirmation emails if one was used.
-* Fixed bug where users sometimes couldn't checkout with a discount code that made a level free.
 * Added the pmpro_random_code filter so you can hook in and change invoice code/etc generation.
 * Correctly padding zeroes on credit card expiration dates like 09/2013 when using Stripe. This SQL statement should fix broken entries in your orders table: NOTE (1) Backup your database first. NOTE (2) Make sure you change the table name to match your WP prefix,etc. >>> UPDATE wp_pmpro_membership_orders SET expirationyear = CONCAT(SUBSTRING(expirationmonth,2,1), expirationyear), expirationmonth= CONCAT('0', SUBSTRING(expirationmonth,1,1)) WHERE expirationmonth > 12;
-* Wrapped AJAX and service calls code in init() functions so they will more consistently work with hooks/filters. (Before if PMPro loaded before a plugin or bit of code that added filters/etc, the filters wouldn't get applied.)
+* Wrapped some AJAX and service calls code in init() functions so they will more consistently work with hooks/filters. (Before if PMPro loaded before a plugin or bit of code that added filters/etc, the filters wouldn't get applied.)
 * Fixed Stripe JS to also send city to Stripe. (This is important because Stripe doesn't seem to show the address at all if the city is missing.)
 * Added 'pmpro_members_list_sql' hook to filter the SQL used on the members list page and CSV export.
 * Added 'pmpro_members_list_csv_heading' and 'pmpro_members_list_csv_default_columns' hooks to filter the default columns in the members list CSV. (e.g. to check role and remove columns)
@@ -77,9 +81,6 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Checking that "status='active'" when finding subscriptions to cancel when deleting a level. This will keep PMPro from trying to cancel someone more than once... or trying to cancel inactive subscriptions.
 * Fixed bug where Sales Tax fields were hidden on the payment settings page if Stripe was chosen as the gateway.
 * No longer logging IPN activity to logs/ipn.txt by default. (Uncomment the lines at the bottom of services/ipnhandler.php to use the log to debug.)
-* If PayPal Standard is the active gateway, users without membership levels will be able to see the confirmation page with a message that PayPal is processing payment.
-* Fixed bug where PayPal recurring orders were being attributed to the wrong user (if no subscriber id was attached to the IPN message).
-* Cleaned up code in base paid-memberships-pro.php file.
 
 = 1.6.1 =
 * Added recurring billing support to Payflow integration.
