@@ -13,16 +13,31 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 global $pmpro_reports;
-$pmpro_reports['login'] = 'Logins';
+$pmpro_reports['login'] = 'Visits, Views, and Logins';
 
 function pmpro_report_login_widget()
 {
 	global $wpdb;
+	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
+	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
 	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
 ?>
-<p>Logins Today: <?php echo $logins['today'];?></p>
-<p>Logins This Month: <?php echo $logins['month'];?></p>
-<p>Logins All Time: <?php echo $logins['alltime'];?></p>
+<div style="width: 33%; float: left;">
+	<p>Visits Today: <?php echo $visits['today'];?></p>
+	<p>Visits This Month: <?php echo $visits['month'];?></p>
+	<p>Visits All Time: <?php echo $visits['alltime'];?></p>
+</div>
+<div style="width: 33%; float: left;">
+	<p>Views Today: <?php echo $views['today'];?></p>
+	<p>Views This Month: <?php echo $views['month'];?></p>
+	<p>Views All Time: <?php echo $views['alltime'];?></p>
+</div>
+<div style="width: 33%; float: left;">
+	<p>Logins Today: <?php echo $logins['today'];?></p>
+	<p>Logins This Month: <?php echo $logins['month'];?></p>
+	<p>Logins All Time: <?php echo $logins['alltime'];?></p>
+</div>
+<div class="clear"></div>
 <?php
 }
 
@@ -43,7 +58,7 @@ function pmpro_report_login_page()
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h2>
-		Logins Report		
+		Visits, Views, and Logins Report	
 	</h2>		
 	<ul class="subsubsub">
 		<li>			
@@ -128,6 +143,11 @@ function pmpro_report_login_page()
 				<th>Membership</th>	
 				<th>Joined</th>
 				<th>Expires</th>
+				<th>Last Visit</th>
+				<th>Visits This Month</th>
+				<th>Total Visits</th>
+				<th>Views This Month</th>
+				<th>Total Views</th>
 				<th>Last Login</th>
 				<th>Logins This Month</th>
 				<th>Total Logins</th>				
@@ -140,6 +160,8 @@ function pmpro_report_login_page()
 				{
 					//get meta																					
 					$theuser = get_userdata($auser->ID);
+					$visits = get_user_meta($auser->ID, "pmpro_visits", true);
+					$views = get_user_meta($auser->ID, "pmpro_views", true);
 					$logins = get_user_meta($auser->ID, "pmpro_logins", true);
 					if(empty($logins))
 						$logins = array("last"=>"N/A", "month"=>"N/A", "alltime"=>"N/A");
@@ -169,6 +191,11 @@ function pmpro_report_login_page()
 										echo "Never";
 								?>
 							</td>
+							<td><?php echo $visits['last'];?></td>
+							<td><?php echo $visits['month'];?></td>
+							<td><?php echo $visits['alltime'];?></td>							
+							<td><?php echo $views['month'];?></td>
+							<td><?php echo $views['alltime'];?></td>
 							<td><?php echo $logins['last'];?></td>
 							<td><?php echo $logins['month'];?></td>
 							<td><?php echo $logins['alltime'];?></td>
@@ -199,6 +226,140 @@ function pmpro_report_login_page()
 	Other code required for your reports. This file is loaded every time WP loads with PMPro enabled.
 */
 
+//track visits
+function pmpro_report_login_wp_visits()
+{
+	//don't track admin
+	if(is_admin())
+		return;
+	
+	//only track logged in users
+	if(!is_user_logged_in())
+		return;
+	
+	//check for cookie
+	if(!empty($_COOKIE['pmpro_visit']))
+		return;
+	
+	//set cookie, then track
+	setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false);	
+	
+	global $current_user;
+	//track for user
+	if(!empty($current_user->ID))
+	{		
+		$visits = $current_user->pmpro_visits;		
+		if(empty($visits))
+			$visits = array("last"=>"N/A", "month"=>0, "alltime"=>0);
+			
+		//track logins for user
+		$visits['last'] = date(get_option("date_format"));
+		$visits['alltime']++;
+		$thismonth = date("n");
+		if($thismonth == $visits['thismonth'])
+			$visits['month']++;
+		else
+		{
+			$visits['month'] = 1;
+			$visits['thismonth'] = $thismonth;
+		}
+		
+		//update user data
+		update_user_meta($current_user->ID, "pmpro_visits", $visits);
+	}
+		
+	//track for all
+	$visits = get_option("pmpro_visits");	
+	if(empty($visits))
+		$visits = array("today"=>0, "month"=>0, "alltime"=>0);
+	
+	$visits['alltime']++;
+	$thisdate = date("Y-d-m");
+	if($thisdate == $visits['thisdate'])
+		$visits['today']++;
+	else
+	{
+		$visits['today'] = 1;
+		$visits['thisdate'] = $thisdate;
+	}
+	if($thismonth == $visits['thismonth'])
+		$visits['month']++;
+	else
+	{
+		$visits['month'] = 1;
+		$visits['thismonth'] = $thismonth;
+	}
+		
+	update_option("pmpro_visits", $visits);		
+}
+add_action("wp", "pmpro_report_login_wp_visits");
+
+//we want to clear the pmpro_visit cookie on login/logout
+function pmpro_report_login_clear_visit_cookie()
+{
+	if(isset($_COOKIE['pmpro_visit']))
+		unset($_COOKIE['pmpro_visit']);
+}
+add_action("wp_login", "pmpro_report_login_clear_visit_cookie");
+add_action("wp_logout", "pmpro_report_login_clear_visit_cookie");
+
+//track views
+function pmpro_report_login_wp_views()
+{
+	//don't track admin
+	if(is_admin())
+		return;
+	
+	global $current_user;
+	//track for user
+	if(!empty($current_user->ID))
+	{		
+		$views = $current_user->pmpro_views;		
+		if(empty($views))
+			$views = array("last"=>"N/A", "month"=>0, "alltime"=>0);
+				
+		//track logins for user
+		$views['last'] = date(get_option("date_format"));
+		$views['alltime']++;
+		$thismonth = date("n");
+		if($thismonth == $views['thismonth'])
+			$views['month']++;
+		else
+		{
+			$views['month'] = 1;
+			$views['thismonth'] = $thismonth;
+		}
+		
+		//update user data
+		update_user_meta($current_user->ID, "pmpro_views", $views);
+	}
+		
+	//track for all
+	$views = get_option("pmpro_views");	
+	if(empty($views))
+		$views = array("today"=>0, "month"=>0, "alltime"=>0);
+	
+	$views['alltime']++;
+	$thisdate = date("Y-d-m");
+	if($thisdate == $views['thisdate'])
+		$views['today']++;
+	else
+	{
+		$views['today'] = 1;
+		$views['thisdate'] = $thisdate;
+	}
+	if($thismonth == $views['thismonth'])
+		$views['month']++;
+	else
+	{
+		$views['month'] = 1;
+		$views['thismonth'] = $thismonth;
+	}
+	
+	update_option("pmpro_views", $views);		
+}
+add_action("wp", "pmpro_report_login_wp_views");
+
 //track logins
 function pmpro_report_login_wp_login($user_login)
 {
@@ -215,7 +376,10 @@ function pmpro_report_login_wp_login($user_login)
 	if($thismonth == $logins['thismonth'])
 		$logins['month']++;
 	else
+	{		
 		$logins['month'] = 1;
+		$logins['thismonth'] = $thismonth;
+	}
 	
 	//update user data
 	update_user_meta($user->ID, "pmpro_logins", $logins);
@@ -223,18 +387,24 @@ function pmpro_report_login_wp_login($user_login)
 	//track logins overall
 	$logins = get_option("pmpro_logins");
 	if(empty($logins))
-		$logins = array("last"=>"N/A", "month"=>0, "alltime"=>0);
+		$logins = array("today"=>0, "month"=>0, "alltime"=>0);
 	
 	$logins['alltime']++;
 	$thisdate = date("Y-d-m");
 	if($thisdate == $logins['thisdate'])
 		$logins['today']++;
 	else
+	{
 		$logins['today'] = 1;
+		$logins['thisdate'] = $thisdate;
+	}
 	if($thismonth == $logins['thismonth'])
 		$logins['month']++;
 	else
+	{
 		$logins['month'] = 1;
+		$logins['thismonth'] = $thismonth;
+	}
 	
 	update_option("pmpro_logins", $logins);		
 }
