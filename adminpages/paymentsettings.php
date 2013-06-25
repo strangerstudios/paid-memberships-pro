@@ -470,7 +470,13 @@
 					<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=braintree_webhook";?></pre>.</p>
+					<p>
+						<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'pmpro');?> 
+						<pre><?php 
+							//echo admin_url("admin-ajax.php") . "?action=braintree_webhook";
+							echo PMPRO_URL . "/services/braintree-webhook.php";
+						?></pre>.
+					</p>
 				</td>
 			</tr>
 		</tbody>
