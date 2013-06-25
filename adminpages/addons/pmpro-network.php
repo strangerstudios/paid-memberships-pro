@@ -23,7 +23,7 @@ function pmpro_addon_pmpro_network_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-network/pmpro-network.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-network/pmpro-network.php'), 'activate-plugin_pmpro-network/pmpro-network.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-network/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-network.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->

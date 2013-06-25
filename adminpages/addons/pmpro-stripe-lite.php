@@ -22,7 +22,7 @@ function pmpro_addon_pmpro_stripe_lite_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-stripe-lite/pmpro-stripe-lite.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-stripe-lite/pmpro-stripe-lite.php'), 'activate-plugin_pmpro-stripe-lite/pmpro-stripe-lite.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-stripe-lite/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-stripe-lite.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->

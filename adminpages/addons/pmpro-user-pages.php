@@ -22,7 +22,7 @@ function pmpro_addon_pmpro_user_pages_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-user-pages/pmpro-user-pages.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-user-pages/pmpro-user-pages.php'), 'activate-plugin_pmpro-user-pages/pmpro-user-pages.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-user-pages/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-user-pages.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->

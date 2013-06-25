@@ -23,7 +23,7 @@ function pmpro_addon_pmpro_post_affiliate_pro_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-post-affiliate-pro/pmpro-post-affiliate-pro.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-post-affiliate-pro/pmpro-post-affiliate-pro.php'), 'activate-plugin_pmpro-post-affiliate-pro/pmpro-post-affiliate-pro.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-post-affiliate-pro/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-post-affiliate-pro.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>							
 </div> <!-- end info -->

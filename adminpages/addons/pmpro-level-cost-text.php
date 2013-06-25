@@ -22,7 +22,7 @@ function pmpro_addon_pmpro_level_cost_text_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-level-cost-text/pmpro-level-cost-text.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-level-cost-text/pmpro-level-cost-text.php'), 'activate-plugin_pmpro-level-cost-text/pmpro-level-cost-text.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-level-cost-text/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-level-cost-text.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->

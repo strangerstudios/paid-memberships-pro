@@ -23,7 +23,7 @@ function pmpro_addon_pmpro_register_helper_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-register-helper/pmpro-register-helper.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-register-helper/pmpro-register-helper.php'), 'activate-plugin_pmpro-register-helper/pmpro-register-helper.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-register-helper/archive/master.zip" class="button button-primary">Download</a>
+			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-register-helper.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->
