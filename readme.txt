@@ -63,6 +63,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed some warnings.
 * Fixed generation of cost text when using built in tax.
 * Added "pmpro_subscribe_order" filter.
+* Added an index to the user_id column of pmpro_memberships_users table which will help with performance of the new logins report and other user search functions.:
 
 = 1.7 =
 * Ready for localization efforts.
