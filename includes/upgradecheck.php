@@ -388,6 +388,12 @@ function pmpro_upgrade_1()
 	$from_name = "WordPress";
 	pmpro_setOption("from_name", $from_name);		
 	
+	//setting new email settings defaults
+	pmpro_setOption("email_admin_checkout", "1");
+	pmpro_setOption("email_admin_changes", "1");
+	pmpro_setOption("email_admin_cancels", "1");
+	pmpro_setOption("email_admin_billing", "1");
+	
 	pmpro_setOption("tospage", "");			
 	
 	//db update
