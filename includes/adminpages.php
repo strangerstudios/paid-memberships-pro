@@ -74,6 +74,11 @@ function pmpro_admin_bar_menu() {
 	'title' => __( 'Members List', 'pmpro'),
 	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-memberslist') ) );
 	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-reports',
+	'parent' => 'paid-memberships-pro',
+	'title' => __( 'Reports', 'pmpro'),
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-reports') ) );
+	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-orders',
 	'parent' => 'paid-memberships-pro',
 	'title' => __( 'Orders', 'pmpro'),

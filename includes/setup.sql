@@ -26,7 +26,7 @@ CREATE TABLE `wp_pmpro_discount_codes` (
   UNIQUE KEY `code` (`code`),
   KEY `starts` (`starts`),
   KEY `expires` (`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -48,7 +48,7 @@ CREATE TABLE `wp_pmpro_discount_codes_levels` (
   `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`code_id`,`level_id`),
   KEY `initial_payment` (`initial_payment`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -65,7 +65,7 @@ CREATE TABLE `wp_pmpro_discount_codes_uses` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `timestamp` (`timestamp`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -92,7 +92,7 @@ CREATE TABLE `wp_pmpro_membership_levels` (
   KEY `allow_signups` (`allow_signups`),
   KEY `initial_payment` (`initial_payment`),
   KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -141,7 +141,7 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   KEY `timestamp` (`timestamp`),
   KEY `gateway` (`gateway`),
   KEY `gateway_environment` (`gateway_environment`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -155,7 +155,7 @@ CREATE TABLE `wp_pmpro_memberships_categories` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
   UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -169,7 +169,7 @@ CREATE TABLE `wp_pmpro_memberships_pages` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
   UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 -- --------------------------------------------------------
 
@@ -195,5 +195,6 @@ CREATE TABLE `wp_pmpro_memberships_users` (
   KEY `membership_id` (`membership_id`),
   KEY `modified` (`modified`),
   KEY `code_id` (`code_id`),
-  KEY `enddate` (`enddate`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  KEY `enddate` (`enddate`),
+  KEY `user_id` (`user_id`)
+);
