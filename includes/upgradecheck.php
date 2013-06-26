@@ -434,6 +434,7 @@ function pmpro_db_delta()
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
 		  KEY `name` (`name`)
+		);
 	";
 	dbDelta($sqlQuery);
 	
