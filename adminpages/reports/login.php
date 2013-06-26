@@ -348,6 +348,7 @@ function pmpro_report_login_wp_views()
 		$views['today'] = 1;
 		$views['thisdate'] = $thisdate;
 	}
+	$thismonth = date("n");
 	if($thismonth == $views['thismonth'])
 		$views['month']++;
 	else

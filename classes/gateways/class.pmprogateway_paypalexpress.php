@@ -203,7 +203,10 @@
 			
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();						
-			
+
+			//filter order before subscription. use with care.
+			$order = apply_filters("pmpro_subscribe_order", $order, $this);
+				
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);

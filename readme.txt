@@ -59,6 +59,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.7.0.1 =
+* Fixed some warnings.
+* Fixed generation of cost text when using built in tax.
+* Added "pmpro_subscribe_order" filter.
+
 = 1.7 =
 * Ready for localization efforts.
 * Addons tab in PMPro Settings in the dashboard.

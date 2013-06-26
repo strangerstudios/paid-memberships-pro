@@ -23,7 +23,7 @@
 		}										
 		
 		function process(&$order)
-		{
+		{			
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{

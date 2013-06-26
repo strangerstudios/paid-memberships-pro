@@ -206,6 +206,9 @@
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 			
+			//filter order before subscription. use with care.
+			$order = apply_filters("pmpro_subscribe_order", $order, $this);
+			
 			//setup customer
 			$this->getCustomer($order);
 			if(empty($this->customer))

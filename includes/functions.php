@@ -225,7 +225,7 @@
 		
 		if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
 		{
-			$r .= sprintf(_x('Customers in %s will be charged %f% tax.', 'Tax part in cost text generation', 'pmpro'), $tax_state, round($tax_rate * 100, 2));			
+			$r .= sprintf(_x('Customers in %s will be charged %s%% tax.', 'Tax part in cost text generation', 'pmpro'), $tax_state, round($tax_rate * 100, 2));			
 		}
 		
 		if(!$tags)
