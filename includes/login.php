@@ -77,8 +77,10 @@ function pmpro_login_head()
 		{
 			//check for the login page id and redirect there if we're not there already
 			global $post;
+						
 			if(is_array($GLOBALS['theme_my_login']->options))
 			{
+				//an older version of TML stores it this way
 				if($GLOBALS['theme_my_login']->options['page_id'] !== $post->ID)
 				{
 					//redirect to the real login page
@@ -91,6 +93,7 @@ function pmpro_login_head()
 			}
 			elseif(!empty($GLOBALS['theme_my_login']->options))
 			{
+				//another older version of TML stores it this way
 				if($GLOBALS['theme_my_login']->options->options['page_id'] !== $post->ID)
 				{
 					//redirect to the real login page
@@ -101,13 +104,28 @@ function pmpro_login_head()
 					exit;
 				}
 			}
+			elseif(class_exists("Theme_My_Login") && version_compare(Theme_My_Login::version, "6.3") >= 0)
+			{
+				//TML > 6.3
+				$link = Theme_My_Login::get_page_link("login");
+				if(!empty($link))
+				{
+					//redirect if !is_page(), i.e. we're on wp-login.php
+					if(!Theme_My_Login::is_tml_page())
+					{
+						wp_redirect($link);
+						exit;
+					}
+				}				
+			}
 
 			//make sure users are only getting to the profile when logged in
 			global $current_user;
 			if(!empty($_REQUEST['action']) && $_REQUEST['action'] == "profile" && !$current_user->ID)
 			{
-				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);
+				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);								
 				wp_redirect($link);
+				exit;
 			}
 		}
 	}

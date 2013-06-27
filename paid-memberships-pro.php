@@ -51,6 +51,7 @@ require_once(PMPRO_DIR . "/includes/content.php");				//code to check for memebr
 require_once(PMPRO_DIR . "/includes/email.php");				//code related to email
 require_once(PMPRO_DIR . "/includes/recaptcha.php");			//load recaptcha files if needed
 require_once(PMPRO_DIR . "/includes/cleanup.php");				//clean things up when deletes happen, etc.
+require_once(PMPRO_DIR . "/includes/login.php");				//code to redirect away from login/register page
 
 require_once(PMPRO_DIR . "/shortcodes/checkout.php");			//[pmpro_checkout] shortcode for checkout pages
 require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[checkout_button] shortcode to show link to checkout for a level
