@@ -51,21 +51,13 @@ add_action('wp_ajax_nopriv_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook'
 add_action('wp_ajax_braintree_webhook', 'pmpro_wp_ajax_braintree_webhook');
 function pmpro_wp_ajax_memberlist_csv()
 {
-	function pmpro_memberslist_csv_init()
-	{
-		require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	
-		exit;
-	}
-	add_action("init", "pmpro_memberslist_csv_init");
+	require_once(dirname(__FILE__) . "/../adminpages/memberslist-csv.php");	
+	exit;	
 }
 add_action('wp_ajax_memberslist_csv', 'pmpro_wp_ajax_memberlist_csv');
 function pmpro_wp_ajax_orders_csv()
 {
-	function pmpro_orders_csv_init()
-	{
-		require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
-		exit;
-	}
-	add_action("init", "pmpro_orders_csv_init");
+	require_once(dirname(__FILE__) . "/../adminpages/orders-csv.php");	
+	exit;	
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
