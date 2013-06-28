@@ -217,7 +217,7 @@ function pmpro_report_login_page()
 	</form>
 
 	<?php
-	echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, get_admin_url(NULL, "/admin.php?page=pmpro-reports&report=logins&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
+	echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, get_admin_url(NULL, "/admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
 	?>
 <?php
 }
