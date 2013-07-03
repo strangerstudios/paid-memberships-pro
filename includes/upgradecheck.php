@@ -43,9 +43,34 @@ function pmpro_checkForUpgrades()
 		
 	if($pmpro_db_version < 1.6)
 		$pmpro_db_version = pmpro_upgrade_1_6();
-
-	if($pmpro_db_version < 1.7)
-		$pmpro_db_version = pmpro_upgrade_1_7();	
+	
+	//fix for fresh 1.7 installs
+	if($pmpro_db_version == 1.7)
+	{
+		//check if we have an id column in the memberships_users table
+		$wpdb->pmpro_memberships_users = $table_prefix . 'pmpro_memberships_users';
+		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");		
+		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
+		{			
+			//redo 1.5 fix
+			pmpro_upgrade_1_5();
+		}
+		
+		pmpro_db_delta();
+		
+		pmpro_setOption("db_version", "1.702");
+		$pmpro_db_version = 1.702;
+	}
+	
+	$pmpro_db_version = 1.701;
+	
+	//updates from this point on should be like this if DB only
+	if($pmpro_db_version < 1.702)
+	{
+		pmpro_db_delta();
+		pmpro_setOption("db_version", "1.702");
+		$pmpro_db_version = 1.702;
+	}
 }
 
 function pmpro_upgrade_1_7()
@@ -400,8 +425,8 @@ function pmpro_upgrade_1()
 	pmpro_db_delta();	
 	
 	//update version and return
-	pmpro_setOption("db_version", "1.7");		//no need to run other updates
-	return 1.7;
+	pmpro_setOption("db_version", "1.702");		//no need to run other updates
+	return 1.702;
 }
 
 function pmpro_db_delta()
@@ -479,6 +504,7 @@ function pmpro_db_delta()
 		  `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
+		  `notes` TEXT NOT NULL,
 		  PRIMARY KEY (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `session_id` (`session_id`),
@@ -518,25 +544,28 @@ function pmpro_db_delta()
 	//wp_pmpro_memberships_users
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_users . "` (
-		  `user_id` int(11) unsigned NOT NULL,
-		  `membership_id` int(11) unsigned NOT NULL,
-		  `code_id` int(11) unsigned NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL,
-		  `billing_amount` decimal(10,2) NOT NULL,
-		  `cycle_number` int(11) NOT NULL,
-		  `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
-		  `billing_limit` int(11) NOT NULL,
-		  `trial_amount` decimal(10,2) NOT NULL,
-		  `trial_limit` int(11) NOT NULL,
-		  `startdate` datetime NOT NULL,
-		  `enddate` datetime DEFAULT NULL,
-		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY (`user_id`),
-		  KEY `membership_id` (`membership_id`),
-		  KEY `modified` (`modified`),
-		  KEY `code_id` (`code_id`),
-		  KEY `enddate` (`enddate`),
-		  KEY `user_id` (`user_id`)
+		   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		   `user_id` int(11) unsigned NOT NULL,
+		   `membership_id` int(11) unsigned NOT NULL,
+		   `code_id` int(11) unsigned NOT NULL,
+		   `initial_payment` decimal(10,2) NOT NULL,
+		   `billing_amount` decimal(10,2) NOT NULL,
+		   `cycle_number` int(11) NOT NULL,
+		   `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
+		   `billing_limit` int(11) NOT NULL,
+		   `trial_amount` decimal(10,2) NOT NULL,
+		   `trial_limit` int(11) NOT NULL,
+		   `status` varchar(20) NOT NULL DEFAULT 'active',
+		   `startdate` datetime NOT NULL,
+		   `enddate` datetime DEFAULT NULL,
+		   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		   PRIMARY KEY (`id`),
+		   KEY `membership_id` (`membership_id`),
+		   KEY `modified` (`modified`),
+		   KEY `code_id` (`code_id`),
+		   KEY `enddate` (`enddate`),
+		   KEY `user_id` (`user_id`),
+		   KEY `user_id` (`status`)
 		);
 	";
 	dbDelta($sqlQuery);		
