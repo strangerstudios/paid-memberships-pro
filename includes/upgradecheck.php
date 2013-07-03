@@ -61,9 +61,7 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.702");
 		$pmpro_db_version = 1.702;
 	}
-	
-	$pmpro_db_version = 1.701;
-	
+		
 	//updates from this point on should be like this if DB only
 	if($pmpro_db_version < 1.702)
 	{
