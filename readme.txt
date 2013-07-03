@@ -62,6 +62,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 = 1.7.0.2 =
 * Fixed HUGE issue with the DB setup on fresh 1.7+ installs. If you installed version 1.7 or 1.7.0.1 fresh (not upgraded from earlier version) then PMPro will not work until you upgrade to version 1.7.0.2.
 * Removed from old PHP short tag use
+* Fixed generation of members only and non-logged in text on new installs.
 
 = 1.7.0.1 =
 * Added the redirect away from wp-login.php page (was accidentally removed in version 1.7).
