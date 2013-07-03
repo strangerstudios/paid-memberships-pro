@@ -115,7 +115,7 @@
 												foreach($pmpro_states as $ab => $st) 
 												{ 
 											?>
-												<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$st?></option>
+												<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $st;?></option>
 											<?php } ?>
 										</select>
 										<?php
@@ -130,7 +130,7 @@
 													foreach($pmpro_states_abbreviations as $ab) 
 													{ 
 												?>
-													<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$ab?></option>
+													<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $ab;?></option>
 												<?php } ?>
 											</select>
 										<?php

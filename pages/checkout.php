@@ -371,7 +371,7 @@
 									foreach($pmpro_states as $ab => $st) 
 									{ 
 								?>
-									<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$st?></option>
+									<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $st;?></option>
 								<?php } ?>
 							</select>
 							<?php
@@ -386,7 +386,7 @@
 										foreach($pmpro_states_abbreviations as $ab) 
 										{ 
 									?>
-										<option value="<?=$ab?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?=$ab?></option>
+										<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $ab;?></option>
 									<?php } ?>
 								</select>
 							<?php
@@ -663,7 +663,7 @@
 			<span id="pmpro_submit_span">
 				<input type="hidden" name="confirm" value="1" />
 				<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token)?>" />
-				<input type="hidden" name="gateway" value="<?echo $gateway; ?>" />
+				<input type="hidden" name="gateway" value="<?php echo esc_attr($gateway); ?>" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php _e('Complete Payment', 'pmpro');?> &raquo;" />
 			</span>
 				
