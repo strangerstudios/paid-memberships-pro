@@ -58,16 +58,16 @@ function pmpro_checkForUpgrades()
 		
 		pmpro_db_delta();
 		
-		pmpro_setOption("db_version", "1.702");
-		$pmpro_db_version = 1.702;
+		pmpro_setOption("db_version", "1.703");
+		$pmpro_db_version = 1.703;
 	}
 		
 	//updates from this point on should be like this if DB only
-	if($pmpro_db_version < 1.702)
+	if($pmpro_db_version < 1.703)
 	{
 		pmpro_db_delta();
-		pmpro_setOption("db_version", "1.702");
-		$pmpro_db_version = 1.702;
+		pmpro_setOption("db_version", "1.703");
+		$pmpro_db_version = 1.703;
 	}
 }
 
@@ -564,7 +564,7 @@ function pmpro_db_delta()
 		   KEY `code_id` (`code_id`),
 		   KEY `enddate` (`enddate`),
 		   KEY `user_id` (`user_id`),
-		   KEY `user_id` (`status`)
+		   KEY `status` (`status`)
 		);
 	";
 	dbDelta($sqlQuery);		
