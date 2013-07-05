@@ -71,7 +71,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.7.0.4");
+define("PMPRO_VERSION", "1.7.1b");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 /*

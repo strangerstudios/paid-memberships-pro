@@ -59,6 +59,9 @@ If you would like more help using PMPro on a network install, sign up for suppor
 3. Use Discount Codes to offer access at lower prices for special customers.
 
 == Changelog == 
+= 1.7.1 =
+* Fix to Braintree webhook that should help get it verified by Braintree more easily.
+
 = 1.7.0.4 =
 * Another database fix for new installs.
 

@@ -24,6 +24,10 @@
 	//verify
 	echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);
 	
+	//only verifying?
+	if(empty($_REQUEST['bt_payload']))
+		exit;
+	
 	//get notification
 	$webhookNotification = Braintree_WebhookNotification::parse(
 	  $_REQUEST['bt_signature'], $_REQUEST['bt_payload']
