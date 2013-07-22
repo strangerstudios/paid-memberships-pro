@@ -1,15 +1,108 @@
 /*---------------------------------------
 	Buttons
 ---------------------------------------*/
-.pmpro_btn {display: inline-block; margin: 0; cursor: pointer; }
-.pmpro_btn:hover { }
+.pmpro_btn, .pmpro_content_message a, .pmpro_content_message a:link {
+  display: inline-block;
+  *display: inline;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pmpro_btn:hover,
+.pmpro_btn:focus,
+.pmpro_btn:active,
+.pmpro_btn.active,
+.pmpro_btn.disabled,
+.pmpro_btn[disabled],
+.pmpro_content_message a:hover {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+}
+
+.pmpro_btn:active,
+.pmpro_btn.active {
+  background-color: #cccccc \9;
+}
+
+.pmpro_btn:first-child {
+  *margin-left: 0;
+}
+
+.pmpro_btn:hover,
+.pmpro_btn:focus,
+.pmpro_content_message a:hover {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+
+.pmpro_btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.pmpro_btn.active,
+.pmpro_btn:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pmpro_btn.disabled,
+.pmpro_btn[disabled] {
+  cursor: default;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
 
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
 form.pmpro_form div {clear: left; margin: .5em 0 1em 0;  }
 form.pmpro_form label {float: left; margin: 3px 10px 0 0; width: 120px; font-weight: bold; text-align: right; }
-/*form.pmpro_form div div {width: 380px; margin-left: 130px; clear: none;}*/
 form.pmpro_form .likelabel {font-weight: bold; }
 form.pmpro_form .input, form.pmpro_form textarea, .input, form.pmpro_form select {padding: 3px; border: 1px solid #AAA; margin: 0 3px 0 0; }
 form.pmpro_form textarea {font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
@@ -19,19 +112,20 @@ form.pmpro_form .leftmar {margin: 8px 0 0 130px; }
 
 form.pmpro_form .pmpro_captcha {margin: 0 0 0 130px !important; }
 form.pmpro_form .pmpro_captcha div {clear: none; margin: 0; }
-form.pmpro_form .pmpro_submit {margin-left: 140px; }
+form.pmpro_form .pmpro_submit {margin-left: 130px; }
 form.pmpro_form .pmpro_submit span {float: left; }
 form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: italic; color: #999; }
 
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
-.pmpro_message, .pmpro_content_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
+.pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
 
 .pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); color: #208A1B; }
 .pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); color: #E36154; }
-.pmpro_alert, .pmpro_content_message {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
-.pmpro_content_message {background-position: 5px 10px; }
+.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
+
+.pmpro_content_message a {margin: 5px 5px 0 0; }
 
 .pmpro_message a {color: #345395; }
 .pmpro_success a {color: #208A1B; }
@@ -70,19 +164,6 @@ input.pmpro_error {background-image: none;}
 
 a.pmpro_radio {text-decoration: none; color: #000;}
 
-/* button styles from member lite */
-.pmpro_btn, .pmpro_btn:link, #pmpro_levels_table tbody a, #pmpro_levels_table tbody a:link, .pmpro_btn-submit, .pmpro_btn-submit-checkout, .pmpro_yeslink, .pmpro_nolink, .pmpro_yeslink:link, .pmpro_nolink:link, .pmpro_content_message a {display: inline-block; margin: 0; background-position: top left; background-repeat: repeat-x; cursor: pointer; border-radius: 4px; -moz-border-radius: 4px; padding: 5px 10px; text-decoration: none; text-shadow: 1px 1px 3px #000; border: none; font-family: Arial, Helvetica, sans-serif; }
-.pmpro_btn:hover {background-position: bottom left; }
-.pmpro_btn-grey, .pmpro_btn-grey:link, .pmpro_nolink, .pmpro_nolink:link {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; border: 1px solid #CCC; text-shadow: none; }
-.pmpro_btn-inactive {color: #AAA; text-shadow: none; border: 1px solid #CCC; cursor: not-allowed; }
-.pmpro_btn {font-size: 14px; }
-.pmpro_btn-primary, .pmpro_btn-primary:link, #pmpro_levels_table tbody a, #pmpro_levels_table tbody a:link, .pmpro_btn-submit, .pmpro_btn-submit-checkout, .pmpro_yeslink, .pmpro_yeslink:link {background-color: #666; background-image: url(../images/bg_grad-chrome.gif); color: #FFF; }
-.pmpro_btn-primary:hover, #pmpro_levels_table tbody a:hover, .pmpro_btn-submit:hover, .pmpro_btn-submit-checkout:hover, .pmpro_yeslink:hover  {background: #444; color: #FFF; }
-.pmpro_btn-inactive, .pmpro_btn-inactive:hover {background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; }
-
-.pmpro_content_message a, .pmpro_content_message a:link {text-shadow: none; background: #EEE url(../images/bg_grad-grey.gif) 0px -5px repeat-x; border: 1px solid #CCC; color: #666; text-decoration: none; margin: 0 0 0 5px; }
-.pmpro_content_message a:hover {background: #FFF; }
-
 /*---------------------------------------
 	Membership Invoice
 ---------------------------------------*/
@@ -92,15 +173,26 @@ a.pmpro_radio {text-decoration: none; color: #000;}
 /*---------------------------------------
 	Membership Account
 ---------------------------------------*/
-.pmpro_left {float: left; width: 49%; }
-.pmpro_right {float: right; width: 49%; }
+#pmpro_account .pmpro_box {border-top: 1px solid #CCC; padding: 1em 0; margin: 1em 0; }
+#pmpro_account .pmpro_box h3 {margin: 0; padding: 0; border: none; background: none; }
+#pmpro_account .pmpro_box p {margin: .5em 0 0 0; padding: 0; }
+#pmpro_account .pmpro_box ul {margin-bottom: 0; }
 
-.pmpro_box {border: 1px solid #CCC; padding: 1em; margin: 0 0 1em 0; }
-.pmpro_box h3 {border:none; background: none; border-bottom: 1px solid #CCC; padding: 0 0 .5em 0; margin: 0 0 .5em 0;  }
+#pmpro_account #pmpro_account-membership { }
+#pmpro_account #pmpro_account-profile { }
+#pmpro_account #pmpro_account-billing { }
+#pmpro_account #pmpro_account-invoices { }
+#pmpro_account #pmpro_account-links { }
+
 
 .pmpro_hidden {display: none;}
 li.pmpro_more {list-style-type: none; text-align: center; margin-left: -20px; padding-left: 0;}
 
+/*---------------------------------------
+	Membership Levels
+---------------------------------------*/
+#pmpro_levels_table {background: #FFF; }
+#pmpro_levels_table .pmpro_btn {display: block; }
 
 /*---------------------------------------
 	Misc
