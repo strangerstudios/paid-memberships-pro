@@ -383,11 +383,11 @@ function pmpro_upgrade_1()
 	/*
 		default options
 	*/
-	$nonmembertext = 'This content is for !!levels!! members only. <a href="' . wp_login_url() . '?action=register">Register here</a>.';
+	$nonmembertext = 'This content is for !!levels!! members only.<br /><a href="' . wp_login_url() . '?action=register">Register</a>';
 	pmpro_setOption("nonmembertext", $nonmembertext);
 	
-	$notloggedintext = 'This content is for !!levels!! members only. Please <a href="' . wp_login_url() . '">login</a> to view this content. (<a href="' . wp_login_url() . 
-	'?action=register">Register here</a>.)';
+	$notloggedintext = 'This content is for !!levels!! members only.<br /><a href="' . wp_login_url() . '">Log In</a> <a href="' . wp_login_url() . 
+	'?action=register">Register</a>';
 	pmpro_setOption("notloggedintext", $notloggedintext);
 	
 	$rsstext = "This content is for !!levels!! members only. Visit the site and log in/register to read.";
