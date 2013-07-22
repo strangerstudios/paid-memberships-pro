@@ -344,7 +344,7 @@
 				</tr>
 				
 				<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
-					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Ammount', 'pmpro');?>:</label></th>
+					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Amount', 'pmpro');?>:</label></th>
 					<td>
 						<?php echo $pmpro_currency_symbol?><input name="billing_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small><?php _e('per', 'pmpro');?></small>
 						<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
@@ -429,7 +429,7 @@
 				
 				<tr>
 					<th scope="row" valign="top"><label><?php _e('Membership Expiration', 'pmpro');?>:</label></th>
-					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <?php _e('Check this to set an expiration date for new sign ups.', 'pmpro');?></td>
+					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <?php _e('Check this to set when membership access expires.', 'pmpro');?></td>
 				</tr>
 				
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
@@ -446,7 +446,7 @@
 							}
 						  ?>
 						</select>
-						<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be cancelled when the membership expires.', 'pmpro');?></small>							
+						<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'pmpro');?></small>							
 					</td>
 				</tr> 								
 			</tbody>
