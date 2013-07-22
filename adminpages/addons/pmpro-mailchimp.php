@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro MailChimp Integration',
-		'version' => '.2.1',
+		'version' => '.3',
 		'widget' => 'pmpro_addon_pmpro_mailchimp_widget',
 		'enabled' => function_exists('pmpromc_init')
 	)
