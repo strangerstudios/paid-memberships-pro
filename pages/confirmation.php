@@ -24,7 +24,7 @@
 	<?php
 		$pmpro_invoice->getUser();
 		$pmpro_invoice->getMembershipLevel();			
-		
+				
 		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro'), $pmpro_invoice->user->user_email) . "</p>";
 		
 		//check instructions		
@@ -92,7 +92,7 @@
 	} 
 	else 
 	{
-		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro'), $pmpro_invoice->user->user_email) . "</p>";
+		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account. A welcome email with has been sent to %s.', 'pmpro'), $current_user->user_email) . "</p>";
 		
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, false);
 		
@@ -105,9 +105,12 @@
 <?php 
 	} 
 ?>  
-
-<?php if(!empty($current_user->membership_level)) { ?>
-	<p align="center"><a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account', 'pmpro');?> &raquo;</a></p>           
-<?php } else { ?>
-	<p><?php _e('If your account is not activated within a few minutes, please contact the site owner.', 'pmpro');?></p>
-<?php } ?>
+<nav id="nav-below" class="navigation" role="navigation">
+	<div class="nav-next alignright">
+		<?php if(!empty($current_user->membership_level)) { ?>
+			<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro');?></a>
+		<?php } else { ?>
+			<?php _e('If your account is not activated within a few minutes, please contact the site owner.', 'pmpro');?>
+		<?php } ?>
+	</div>
+</nav>

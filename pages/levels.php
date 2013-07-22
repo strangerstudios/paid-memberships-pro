@@ -7,8 +7,7 @@ if($pmpro_msg)
 <?php
 }
 ?>
-
-<table id="pmpro_levels_table" class="pmpro_checkout top1em">
+<table id="pmpro_levels_table" class="pmpro_checkout">
 <thead>
   <tr>
 	<th><?php _e('Level', 'pmpro');?></th>
@@ -25,13 +24,13 @@ if($pmpro_msg)
 	  if(isset($current_user->membership_level->ID))
 		  $current_level = ($current_user->membership_level->ID == $level->id);
 	  else
-	  	  $current_level = false;
+		  $current_level = false;
 	?>
 	<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
 		<td><?php echo $current_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
 		<td>
-			<?php if(pmpro_isLevelFree($level)) { ?>
-				<strong><?php _e('Free', 'pmpro');?></strong>
+			<?php if(pmpro_isLevelFree($level) || $level->initial_payment === "0.00") { ?>
+				<strong><?php _e('--', 'pmpro');?></strong>
 			<?php } else { ?>
 				<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
 			<?php } ?>
@@ -104,18 +103,18 @@ if($pmpro_msg)
 			if($expiration_text)
 			{
 			?>
-				<p><?php echo $expiration_text?></p>
+				<br /><span class="pmpro_level-expiration"><?php echo $expiration_text?></span>
 			<?php
 			}
 		?>
 		</td>
 		<td>
 		<?php if(empty($current_user->membership_level->ID)) { ?>
-			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>               
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>               
 		<?php } elseif ( !$current_level ) { ?>                	
-			<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>       			
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>       			
 		<?php } elseif($current_level) { ?>      
-			<a href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
+			<a class="pmpro_btn disabled" href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
 		<?php } ?>
 		</td>
 	</tr>
@@ -123,17 +122,13 @@ if($pmpro_msg)
 	}
 	?>
 </tbody>
-<tfoot>
-  <tr>
-  	<td colspan="5">
-		<small>-- 
-		<?php if(!empty($current_user->membership_level->ID)) { ?>
-			<a href="<?php echo pmpro_url("account")?>"><?php _e('return to your membership account', 'pmpro');?></a>
-		<?php } else { ?>
-			<a href="<?php echo home_url()?>"><?php _e('return to the home page', 'pmpro');?></a>
-		<?php } ?>
-		--</small>
-	</td>
-  </tr>
-</tfoot>
 </table>
+<nav id="nav-below" class="navigation" role="navigation">
+	<div class="nav-previous alignleft">
+		<?php if(!empty($current_user->membership_level->ID)) { ?>
+			<a href="<?php echo pmpro_url("account")?>"><?php _e('&larr; Return to Your Account', 'pmpro');?></a>
+		<?php } else { ?>
+			<a href="<?php echo home_url()?>"><?php _e('&larr; Return to Home', 'pmpro');?></a>
+		<?php } ?>
+	</div>
+</nav>

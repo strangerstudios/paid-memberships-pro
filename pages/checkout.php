@@ -47,13 +47,13 @@
 						echo apply_filters("the_content", stripslashes($pmpro_level->description));
 				?>
 				
-				<p id="pmpro_level_cost">
+				<div id="pmpro_level_cost">
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
-						<?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'pmpro'), $discount_code);?>
+						<?php printf(__('<p>The <strong>%s</strong> code has been applied to your order.</p>', 'pmpro'), $discount_code);?>
 					<?php } ?>
-					<?php echo pmpro_getLevelCost($pmpro_level)?>
-					<?php echo pmpro_getLevelExpiration($pmpro_level)?>
-				</p>
+					<?php echo wpautop(pmpro_getLevelCost($pmpro_level)); ?>
+					<?php echo wpautop(pmpro_getLevelExpiration($pmpro_level)); ?>
+				</div>
 				
 				<?php do_action("pmpro_checkout_after_level_cost"); ?>				
 				
@@ -124,7 +124,7 @@
 				jQuery('#other_discount_code_button').attr('disabled', 'disabled');				
 				
 				jQuery.ajax({
-					url: '<?php echo admin_url()?>',type:'GET',timeout:2000,
+					url: '<?php echo admin_url()?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 2000, "applydiscountcode");?>,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
 					error: function(xml){
@@ -299,7 +299,7 @@
 						<input type="radio" name="gateway" value="paypal" <?php if(!$gateway || $gateway == "paypal") { ?>checked="checked"<?php } ?> />
 							<a href="javascript:void(0);" class="pmpro_radio"><?php _e('Check Out with a Credit Card Here', 'pmpro');?></a> &nbsp;
 						<input type="radio" name="gateway" value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>checked="checked"<?php } ?> />
-							<a href="javascript:void(0);" class="pmpro_radio"><?php _e('Check Out with payPal', 'pmpro');?></a> &nbsp;					
+							<a href="javascript:void(0);" class="pmpro_radio"><?php _e('Check Out with PayPal', 'pmpro');?></a> &nbsp;					
 					</div>
 				</td>
 			</tr>
@@ -589,7 +589,7 @@
 				jQuery('#discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
-					url: '<?php echo admin_url()?>',type:'GET',timeout:2000,
+					url: '<?php echo admin_url()?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 2000, "applydiscountcode");?>,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 					error: function(xml){
