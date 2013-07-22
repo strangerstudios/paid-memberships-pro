@@ -69,7 +69,7 @@ function pmpro_login_head()
 				exit;
 			}
 			else
-				break;	//don't redirect if pmpro_register_redirect filter returns false or a blank URL
+				return;	//don't redirect if pmpro_register_redirect filter returns false or a blank URL
 		}
 
 		//if theme my login is installed, redirect all logins to the login page
