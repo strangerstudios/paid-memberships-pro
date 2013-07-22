@@ -293,7 +293,7 @@
 				</tr>
 				
 				<tr>
-					<th scope="row" valign="top"><label for="subtotal"><?php _e('Sub Total', 'pmpro');?>Sub Total:</label></th>
+					<th scope="row" valign="top"><label for="subtotal"><?php _e('Sub Total', 'pmpro');?>:</label></th>
 					<td>
 						<?php if(in_array("subtotal", $read_only_fields) && $order_id > 0) { echo $order->subtotal; } else { ?>
 							<input id="subtotal" name="subtotal" type="text" size="10" value="<?php echo esc_attr($order->subtotal);?>" />						
@@ -492,7 +492,7 @@
 				<?php } ?>
 				
 				<tr>
-					<th scope="row" valign="top"><label for="notes"><?php _e('Notes', 'pmpro');?>Notes:</label></th>
+					<th scope="row" valign="top"><label for="notes"><?php _e('Notes', 'pmpro');?>:</label></th>
 					<td>
 						<?php if(in_array("notes", $read_only_fields) && $order_id > 0) { echo $order->notes; } else { ?>
 							<textarea id="notes" name="notes" rows="5" cols="80"><?php echo esc_textarea($order->notes);?></textarea>
@@ -507,7 +507,7 @@
 		
 		<p class="submit topborder">
 			<input name="order" type="hidden" value="<?php if(!empty($order->id)) echo $order->id; else echo $order_id;?>" />
-			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Order', 'pmpro');?>Save Order" /> 					
+			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Order', 'pmpro');?>" /> 					
 			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro');?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-orders')?>';" />			
 		</p>
 		
