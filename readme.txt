@@ -60,7 +60,11 @@ If you would like more help using PMPro on a network install, sign up for suppor
 
 == Changelog == 
 = 1.7.1 =
+* Design updates to frontend and backend pages.
 * Fix to Braintree webhook that should help get it verified by Braintree more easily.
+* Added pmpro_ajax_timeout hook to change the timeout limit from 2000 (2 seconds) to something else.
+* Fixed bug that occurred when the pmpro_register_redirect filter returned false or a blank link. Thanks, Vladimir Garagulya.
+* Added pmpro_paypal_standard_nvpstr and pmpro_set_express_checkout_nvpstr filters to change or add parameters to an name-value-pair string sent to PayPal in a couple cases.
 
 = 1.7.0.4 =
 * Another database fix for new installs.
