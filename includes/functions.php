@@ -561,7 +561,10 @@
 				if($level['enddate'] != "NOW()" && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
 					$level['enddate'] = "'" . $level['enddate'] . "'";
 											
-				$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
+                //Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
+                if ($level['cycle_period'] == '') $level['cycle_period'] = 0;
+                
+                $sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
 						VALUES('" . $level['user_id'] . "',
 						'" . $level['membership_id'] . "',
 						'" . intval($level['code_id']) . "',
