@@ -85,7 +85,9 @@
 			}						
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
-						
+			
+			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);					
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {

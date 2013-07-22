@@ -185,6 +185,8 @@
 					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}
 
+			$nvpStr = apply_filters("pmpro_paypal_standard_nvpstr", $nvpStr, $order);
+			
 			//redirect to paypal			
 			$paypal_url .= $nvpStr;			
 			
