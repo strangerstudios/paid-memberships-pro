@@ -61,7 +61,10 @@ require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortco
 	Setup the DB and check for upgrades
 */
 global $wpdb;
-pmpro_checkForUpgrades();
+
+//check if the DB needs to be upgraded
+if(!is_admin())
+	pmpro_checkForUpgrades();
 
 /*
 	Definitions

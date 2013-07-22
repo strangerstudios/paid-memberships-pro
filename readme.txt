@@ -65,6 +65,8 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Added pmpro_ajax_timeout hook to change the timeout limit from 2000 (2 seconds) to something else.
 * Fixed bug that occurred when the pmpro_register_redirect filter returned false or a blank link. Thanks, Vladimir Garagulya.
 * Added pmpro_paypal_standard_nvpstr and pmpro_set_express_checkout_nvpstr filters to change or add parameters to an name-value-pair string sent to PayPal in a couple cases.
+* Fixed checkout failure on Free level when in mySQL Strict Mode. (Thanks, inator on GitHub)
+* Only checking pmpro_checkForUpgrades in admin/dashboard now. (Thanks, topdown on GitHub)
 
 = 1.7.0.4 =
 * Another database fix for new installs.
