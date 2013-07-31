@@ -30,11 +30,12 @@
 	$payment_amount = pmpro_getParam("payment_amount", "POST");
 	$payment_currency = pmpro_getParam("payment_currency", "POST");
 	$txn_id = pmpro_getParam("txn_id", "POST");
-	$receiver_email = pmpro_getParam("receiver_email", "POST");
+	$receiver_email = pmpro_getParam("receiver_email", "POST");	
+	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");			
 	
 	//check the receiver_email
-	if(!pmpro_ipnCheckReceiverEmail($receiver_email))
+	if(!pmpro_ipnCheckReceiverEmail(array($receiver_email, $business_email)))
 	{
 		//not our request
 		pmpro_ipnExit();
@@ -262,10 +263,14 @@
 	*/
 	function pmpro_ipnCheckReceiverEmail($email)
 	{
-		if($email != pmpro_getOption('gateway_email'))
-		{
+		if(!is_array($email))
+			$email = array($email);
+		
+		if(!in_array(pmpro_getOption('gateway_email'), $email))
+		{			
 			//not yours					
-			ipnlog("ERROR: receiver_email (" . $_POST['receiver_email'] . ") did not match (" . pmpro_getOption('gateway_email') . ")");
+			ipnlog("ERROR: receiver_email (" . $_POST['receiver_email'] . ") did not match (" . pmpro_getOption('gateway_email') . ")");			
+			//email them			
 			return false;
 		}		
 		else
