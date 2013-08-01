@@ -833,7 +833,7 @@
 				$wpuser = new WP_User(0, $username);
 		
 				//make the user a subscriber
-				$wpuser->set_role("subscriber");
+				$wpuser->set_role(get_option('default_role', 'subscriber'));
 									
 				//okay, log them in to WP							
 				$creds = array();
