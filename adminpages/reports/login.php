@@ -13,7 +13,7 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 global $pmpro_reports;
-$pmpro_reports['login'] = 'Visits, Views, and Logins';
+$pmpro_reports['login'] = __('Visits, Views, and Logins', 'pmpro');
 
 function pmpro_report_login_widget()
 {
@@ -23,19 +23,19 @@ function pmpro_report_login_widget()
 	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
 ?>
 <div style="width: 33%; float: left;">
-	<p>Visits Today: <?php echo $visits['today'];?></p>
-	<p>Visits This Month: <?php echo $visits['month'];?></p>
-	<p>Visits All Time: <?php echo $visits['alltime'];?></p>
+	<p><?php _e('Visits Today', 'pmpro')?>: <?php echo $visits['today'];?></p>
+	<p><?php _e('Visits This Month', 'pmpro')?>: <?php echo $visits['month'];?></p>
+	<p><?php _e('Visits All Time', 'pmpro')?>: <?php echo $visits['alltime'];?></p>
 </div>
 <div style="width: 33%; float: left;">
-	<p>Views Today: <?php echo $views['today'];?></p>
-	<p>Views This Month: <?php echo $views['month'];?></p>
-	<p>Views All Time: <?php echo $views['alltime'];?></p>
+	<p><?php _e('Views Today', 'pmpro')?>: <?php echo $views['today'];?></p>
+	<p><?php _e('Views This Month', 'pmpro')?>: <?php echo $views['month'];?></p>
+	<p><?php _e('Views All Time', 'pmpro')?>: <?php echo $views['alltime'];?></p>
 </div>
 <div style="width: 33%; float: left;">
-	<p>Logins Today: <?php echo $logins['today'];?></p>
-	<p>Logins This Month: <?php echo $logins['month'];?></p>
-	<p>Logins All Time: <?php echo $logins['alltime'];?></p>
+	<p><?php _e('Logins Today', 'pmpro')?>: <?php echo $logins['today'];?></p>
+	<p><?php _e('Logins This Month', 'pmpro')?>: <?php echo $logins['month'];?></p>
+	<p><?php _e('Logins All Time', 'pmpro')?>: <?php echo $logins['alltime'];?></p>
 </div>
 <div class="clear"></div>
 <?php
@@ -58,13 +58,13 @@ function pmpro_report_login_page()
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h2>
-		Visits, Views, and Logins Report	
+		<?php _e('Visits, Views, and Logins Report', 'pmpro');?>
 	</h2>		
 	<ul class="subsubsub">
 		<li>			
-			Show <select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>>All Users</option>
-				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>>All Levels</option>
+			<?php _ex('Show', 'Dropdown label, e.g. Show All Users', 'pmpro')?> <select name="l" onchange="jQuery('#posts-filter').submit();">
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Users', 'pmpro')?></option>
+				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro')?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -78,7 +78,7 @@ function pmpro_report_login_page()
 		</li>
 	</ul>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input">Search <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
+		<label class="hidden" for="post-search-input"><?php _ex('Search', 'Search form label', 'pmpro')?> <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
 		<input id="post-search-input" type="text" value="<?php echo $s?>" name="s"/>
@@ -137,20 +137,20 @@ function pmpro_report_login_page()
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
-				<th>ID</th>
-				<th>User</th>	
-				<th>Name</th>
-				<th>Membership</th>	
-				<th>Joined</th>
-				<th>Expires</th>
-				<th>Last Visit</th>
-				<th>Visits This Month</th>
-				<th>Total Visits</th>
-				<th>Views This Month</th>
-				<th>Total Views</th>
-				<th>Last Login</th>
-				<th>Logins This Month</th>
-				<th>Total Logins</th>				
+				<th><?php _e('ID', 'pmpro')?></th>
+				<th><?php _e('User', 'pmpro')?></th>	
+				<th><?php _e('Name', 'pmpro')?></th>
+				<th><?php _e('Membership', 'pmpro')?></th>	
+				<th><?php _e('Joined', 'pmpro')?></th>
+				<th><?php _e('Expires', 'pmpro')?></th>
+				<th><?php _e('Last Visit', 'pmpro')?></th>
+				<th><?php _e('Visits This Month', 'pmpro')?></th>
+				<th><?php _e('Total Visits', 'pmpro')?></th>
+				<th><?php _e('Views This Month', 'pmpro')?></th>
+				<th><?php _e('Total Views', 'pmpro')?></th>
+				<th><?php _e('Last Login', 'pmpro')?></th>
+				<th><?php _e('Logins This Month', 'pmpro')?></th>
+				<th><?php _e('Total Logins', 'pmpro')?></th>				
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -207,7 +207,7 @@ function pmpro_report_login_page()
 				{
 				?>
 				<tr>
-					<td colspan="9"><p>No members found. <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo $s?>">Search all levels</a>.<?php } ?></p></td>
+					<td colspan="9"><p><?php _e('No members found.', 'pmpro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo $s?>"><?php _e('Search all levels', 'pmpro')?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}
