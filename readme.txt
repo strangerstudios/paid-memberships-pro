@@ -61,6 +61,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 == Changelog == 
 = 1.7.1 =
 * Design updates to frontend and backend pages.
+* Added Sales and Revenue Report.
 * Fix to Braintree webhook that should help get it verified by Braintree more easily.
 * Fix to PayPal IPNHandler to check both that either the primary or the business email address sent from PayPal matches the one stored in the payment settings.
 * Added pmpro_ajax_timeout hook to change the timeout limit from 2000 (2 seconds) to something else.
@@ -71,6 +72,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * No longer loading recaptcha library in the admin. Also wrapped the recaptchalib require in an init function to delay it a bit so we can check if other plugins have already loaded it.
 * PMPro-Mailchimp and WP-Bouncer have been moved into the WP repository. Other Add-on updates.
 * New users will now be set to the "default role" set in the General settings instead of spefically "subscriber". (Subscriber is the default default role though.) Thanks, Nabil Kadimi.
+* Wrapped strings in login report for translation.
 
 = 1.7.0.4 =
 * Another database fix for new installs.
