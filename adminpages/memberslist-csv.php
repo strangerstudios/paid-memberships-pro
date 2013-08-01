@@ -64,7 +64,7 @@
 	
 	$theusers = $wpdb->get_results($sqlQuery);	
 
-	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,joined,expires";
+	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined,expires";
 	$heading = apply_filters("pmpro_members_list_csv_heading", $heading);
 	$csvoutput = $heading;
 	
@@ -87,7 +87,9 @@
 		array("theuser", "membership"),
 		array("theuser", "initial_payment"),
 		array("theuser", "billing_amount"),
-		array("theuser", "cycle_period")
+		array("theuser", "cycle_period"),
+		array("discount_code", "id"),
+		array("discount_code", "code")
 		//joindate and enddate are handled specifically below
 	);
 
@@ -114,7 +116,12 @@
 			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";					
 			$metavalues = pmpro_getMetavalues($sqlQuery);	
 			$theuser->metavalues = $metavalues;
-						
+			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY id DESC LIMIT 1";
+			$discount_code = $wpdb->get_row($sqlQuery);
+			
+			krumo($sqlQuery);
+			exit;
+			
 			//default columns			
 			if(!empty($default_columns))
 			{

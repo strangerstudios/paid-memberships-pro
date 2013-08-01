@@ -122,6 +122,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.2 =
+* Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
+
 = 1.7.1 =
 * Design updates to frontend and backend pages.
 * Added Sales and Revenue Report.

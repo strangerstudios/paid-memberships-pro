@@ -9,31 +9,29 @@
 		//wrapper
 		?>
 		<div id="dashboard-widgets-wrap">
-			<div id="dashboard-widgets" class="metabox-holder columns-2">
-				<div id="postbox-container-1" class="postbox-container">
-					<div id="normal-sortables" class="meta-box-sortables">
+			<div id="dashboard-widgets" class="metabox-holder pmpro_reports-holder columns-2">	
 		<?php
 		
 		//report widgets
 		foreach($pmpro_reports as $report => $title)
 		{
 		?>
-		<div id="pmpro_report_<?php echo $report; ?>" class="postbox pmpro_clickable" onclick="location.href='<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>';">			
-			<h3 class="hndle"><span><?php echo $title; ?></span></h3>
-			<div class="inside">
-				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
-				<div style="margin-top:10px;border-top: 1px solid #ddd; padding-top: 10px; text-align:center;">
-					<a href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
-				</div>
-			</div>
+		<div class="postbox-container">
+               <div id="pmpro_report_<?php echo $report; ?>" class="postbox pmpro_clickable" onclick="location.href='<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>';">			
+                    <h3 class="hndle"><span><?php echo $title; ?></span></h3>
+                    <div class="inside">
+                         <?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
+                         <div style="margin-top:10px;border-top: 1px solid #ddd; padding-top: 10px; text-align:center;">
+                              <a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
+                         </div>
+                    </div>
+               </div>
 		</div>
 		<?php
 		}
 		
 		//end wrapper
 		?>
-					</div>
-				</div>
 			</div>
 		</div>
 		<?php

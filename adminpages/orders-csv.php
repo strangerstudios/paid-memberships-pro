@@ -72,7 +72,7 @@
 		
 	$order_ids = $wpdb->get_col($sqlQuery);	
 		
-	$csvoutput = "id,user_id,user_login,first_name,last_name,user_email,billing_name,billing_street,billing_city,billing_state,billing_zip,billing_country,billing_phone,membership_id,level_name,subtotal,tax,couponamount,total,payment_type,cardtype,accountnumber,expirationmonth,expirationyear,status,gateway,gateway_environment,payment_transaction_id,subscription_transaction_id,timestamp";
+	$csvoutput = "id,user_id,user_login,first_name,last_name,user_email,billing_name,billing_street,billing_city,billing_state,billing_zip,billing_country,billing_phone,membership_id,level_name,subtotal,tax,couponamount,total,payment_type,cardtype,accountnumber,expirationmonth,expirationyear,status,gateway,gateway_environment,payment_transaction_id,subscription_transaction_id,discount_code_id,discount_code,timestamp";
 	
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 	$default_columns = array(
@@ -92,7 +92,7 @@
 		array("order", "membership_id"),
 		array("level", "name"),
 		array("order", "subtotal"),
-		array("order", "tax"),
+		array("order", "tax"),		
 		array("order", "couponamount"),
 		array("order", "total"),
 		array("order", "payment_type"),
@@ -104,7 +104,9 @@
 		array("order", "gateway"),
 		array("order", "gateway_environment"),
 		array("order", "payment_transaction_id"),
-		array("order", "subscription_transactiond_id")
+		array("order", "subscription_transactiond_id"),
+		array("discount_code", "id"),
+		array("discount_code", "code")
 	);
 	
 	//any extra columns
@@ -128,6 +130,8 @@
 			$order->getMemberOrderByID($order_id);
 			$user = get_userdata($order->user_id);
 			$level = $order->getMembershipLevel();
+			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.order_id = '" . $order_id . "' LIMIT 1";
+			$discount_code = $wpdb->get_row($sqlQuery);
 			
 			//default columns			
 			if(!empty($default_columns))
