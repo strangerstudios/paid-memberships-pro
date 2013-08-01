@@ -63,11 +63,11 @@ function pmpro_checkForUpgrades()
 	}
 		
 	//updates from this point on should be like this if DB only
-	if($pmpro_db_version < 1.703)
+	if($pmpro_db_version < 1.71)
 	{
 		pmpro_db_delta();
-		pmpro_setOption("db_version", "1.703");
-		$pmpro_db_version = 1.703;
+		pmpro_setOption("db_version", "1.71");
+		$pmpro_db_version = 1.71;
 	}
 }
 
@@ -509,9 +509,14 @@ function pmpro_db_delta()
 		  KEY `session_id` (`session_id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `membership_id` (`membership_id`),
+		  KEY `status` (`status`),
 		  KEY `timestamp` (`timestamp`),
 		  KEY `gateway` (`gateway`),
-		  KEY `gateway_environment` (`gateway_environment`)
+		  KEY `gateway_environment` (`gateway_environment`),
+		  KEY `payment_transaction_id` (`payment_transaction_id`),
+		  KEY `subscription_transaction_id` (`subscription_transaction_id`),
+		  KEY `affiliate_id` (`affiliate_id`),
+		  KEY `affiliate_subid` (`affiliate_subid`)
 		);
 	";
 	dbDelta($sqlQuery);

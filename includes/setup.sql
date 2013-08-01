@@ -136,12 +136,17 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `notes` TEXT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
-  KEY `session_id` (`session_id`),
-  KEY `user_id` (`user_id`),
-  KEY `membership_id` (`membership_id`),
-  KEY `timestamp` (`timestamp`),
-  KEY `gateway` (`gateway`),
-  KEY `gateway_environment` (`gateway_environment`)
+   KEY `session_id` (`session_id`),
+	KEY `user_id` (`user_id`),
+	KEY `membership_id` (`membership_id`),
+	KEY `status` (`status`),
+	KEY `timestamp` (`timestamp`),
+	KEY `gateway` (`gateway`),
+	KEY `gateway_environment` (`gateway_environment`),
+	KEY `payment_transaction_id` (`payment_transaction_id`),
+	KEY `subscription_transaction_id` (`subscription_transaction_id`),
+	KEY `affiliate_id` (`affiliate_id`),
+	KEY `affiliate_subid` (`affiliate_subid`)
 );
 
 -- --------------------------------------------------------
