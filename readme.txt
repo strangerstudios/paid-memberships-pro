@@ -69,6 +69,7 @@ If you would like more help using PMPro on a network install, sign up for suppor
 * Fixed checkout failure on Free level when in mySQL Strict Mode. (Thanks, inator on GitHub)
 * Only checking pmpro_checkForUpgrades in admin/dashboard now. (Thanks, topdown on GitHub)
 * No longer loading recaptcha library in the admin. Also wrapped the recaptchalib require in an init function to delay it a bit so we can check if other plugins have already loaded it.
+* PMPro-Mailchimp and WP-Bouncer have been moved into the WP repository. Other Add-on updates.
 
 = 1.7.0.4 =
 * Another database fix for new installs.

@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro User Pages',
-		'version' => '.2',
+		'version' => '.3',
 		'widget' => 'pmpro_addon_pmpro_user_pages_widget',
 		'enabled' => function_exists('pmproup_pmpro_after_checkout')
 	)

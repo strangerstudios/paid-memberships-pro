@@ -23,7 +23,7 @@ function pmpro_addon_pmpro_mailchimp_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-mailchimp/pmpro-mailchimp.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-mailchimp/pmpro-mailchimp.php'), 'activate-plugin_pmpro-mailchimp/pmpro-mailchimp.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-mailchimp.zip" class="button button-primary">Download</a>
+			<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=pmpro-mailchimp'), 'install-plugin_pmpro-mailchimp'); ?>" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->
