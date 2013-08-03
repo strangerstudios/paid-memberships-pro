@@ -19,7 +19,7 @@ function pmpro_https_filter($s)
 	global $besecure;
 	$besecure = apply_filters('pmpro_besecure', $besecure);
 		
-	if($besecure)
+	if($besecure || is_ssl())
 		return str_replace("http:", "https:", $s);
 	else
 		return str_replace("https:", "http:", $s);
