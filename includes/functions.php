@@ -1300,8 +1300,11 @@
 		if(!$include_hidden)
 			$sqlQuery .= " WHERE allow_signups = 1";
             
+        $orderby_column = pmpro_getOption("levelsortby"); 
+        $orderby_direction = pmpro_getOption("levelsortby_direction"); 
+           
         //put the sort  outside of the if
-        $sqlQuery .= " ORDER BY id";
+        $sqlQuery .= " ORDER BY ".$orderby_column. " ".$orderby_direction;
 			
 		//get levels from the DB
 		$raw_levels = $wpdb->get_results($sqlQuery);

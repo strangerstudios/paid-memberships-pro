@@ -27,6 +27,10 @@
 		//tos
 		pmpro_setOption("tospage");		
 		
+        //level list sort by
+        pmpro_setOption("levelsortby");
+        pmpro_setOption("levelsortby_direction");
+        
 		//footer link
 		pmpro_setOption("hide_footer_link");
 		
@@ -52,7 +56,10 @@
 	$tospage = pmpro_getOption("tospage");
 	
 	$hide_footer_link = pmpro_getOption("hide_footer_link");
-		
+	
+    $levelsortby = pmpro_getOption("levelsortby");
+    $levelsortby_direction = pmpro_getOption("levelsortby_direction");
+    	
 	//default settings
 	if(!$nonmembertext)
 	{
@@ -69,8 +76,18 @@
 		$rsstext = "This content is for members only. Visit the site and log in/register to read.";
 		pmpro_setOption("rsstext", $rsstext);
 	}   				
-		
-	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
+    
+    //add the sortby fields
+	if($levelsortby == null || strlen($levelsortby) == 0)
+    {
+        $levelsortby = 'id';
+    }   
+    if($levelsortby_direction == null || strlen($levelsortby_direction) == 0)
+    {
+        $levelsortby_direction = 'ASC';
+    }   
+    	
+	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels} order by {$levelsortby}", OBJECT );
 	
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>
@@ -225,6 +242,39 @@ if(pmpro_displayAds())
 					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'pmpro');?></small>
 				</td>
 			</tr> 
+            <tr>
+                <th scope="row" valign="top">
+                    <label for="levelsortby">Sort Level By: <?php //_e('Require Terms of Service on signups?', 'pmpro');?></label>
+                </th>
+                <td>                     
+                    <select name="levelsortby" >
+                    <?php                
+                        $table_column_level = array("id", "name","initial_payment", "billing_amount", "sort_order");                    
+                        
+                        foreach($table_column_level as $tc_level)
+                        {
+                            ?>
+                            <option value="<?php echo $tc_level;?>" <?php if($tc_level == $levelsortby) echo "selected";  ?> ><?php echo ucwords(strtolower(str_replace("_", " ", $tc_level))); ?></option>
+                            <?php   
+                        }
+                    ?>
+                    </select>                    
+                    <select name="levelsortby_direction" >
+                    <?php                
+                        $column_direction = array("ASC", "DESC",);                    
+                        
+                        foreach($column_direction as $tc_direction)
+                        {
+                            ?>
+                            <option value="<?php echo $tc_direction;?>" <?php if($tc_direction == $levelsortby_direction) echo "selected";  ?> ><?php echo $tc_direction; ?></option>
+                            <?php   
+                        }
+                    ?>
+                    </select>                    
+                    
+                    
+                </td>
+            </tr> 
 			
 			<?php /*
 			<tr>
