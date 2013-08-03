@@ -62,13 +62,16 @@
 		$ml_expiration_number = addslashes($_REQUEST['expiration_number']);
 		$ml_expiration_period = addslashes($_REQUEST['expiration_period']);
 		$ml_categories = array();
-		
+        
 		//reversing disable to allow here
 		if(empty($_REQUEST['disable_signups']))
 			$ml_allow_signups = 1;
 		else
 			$ml_allow_signups = 0;
 
+        $ml_sort_order = addslashes($_REQUEST['sort_order']);
+        
+            
 		foreach ( $_REQUEST as $key => $value )
 		{
 			if ( $value == 'yes' && preg_match( '/^membershipcategory_(\d+)$/i', $key, $matches ) )
@@ -106,7 +109,8 @@
 						  trial_limit = '" . $wpdb->escape($ml_trial_limit) . "',                    
 						  expiration_number = '" . $wpdb->escape($ml_expiration_number) . "',
 						  expiration_period = '" . $wpdb->escape($ml_expiration_period) . "',
-						  allow_signups = '" . $wpdb->escape($ml_allow_signups) . "'
+						  allow_signups = '" . $wpdb->escape($ml_allow_signups) . "',
+                          sort_order = '".$wpdb->escape($ml_sort_order)."'
 						WHERE id = '$saveid' LIMIT 1;";	 
 			$wpdb->query($sqlQuery);
 			
@@ -256,6 +260,7 @@
 				$level->trial_limit = NULL;
 				$level->expiration_number = NULL;
 				$level->expiration_period = NULL;
+                $level->sort_order = 0;
 				$edit = -1;
 			}	
 
@@ -472,6 +477,11 @@
 						?>
 					</td>
 				</tr>
+                <tr><th scope="row" valign="top"><label>Sort Order:</label></th>
+                <td>
+                    <input name="sort_order" type="text" size="3" value="<?php echo $level->sort_order?>" />
+                </td>
+                </tr>
 			</tbody>
 		</table>				
 		<p class="submit topborder">
@@ -503,12 +513,12 @@
 	<thead>
 		<tr>
 			<th><?php _e('ID', 'pmpro');?></th>
-			<th><?php _e('Name', 'pmpro');?></th>
-			<th><?php _e('Initial Payment', 'pmpro');?></th>
+			<th><?php _e('Name', 'pmpro');?></th>			
 			<th><?php _e('Billing Cycle', 'pmpro');?></th>        
 			<th><?php _e('Trial Cycle', 'pmpro');?></th>
 			<th><?php _e('Expiration', 'pmpro');?></th>
 			<th><?php _e('Allow Signups', 'pmpro');?></th>
+            <th>Sort Order</th>
 			<th></th>
 			<th></th>
 			<th></th>
@@ -519,7 +529,7 @@
 			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 			if($s)
 				$sqlQuery .= "WHERE name LIKE '%$s%' ";
-			$sqlQuery .= "ORDER BY id ASC";
+			$sqlQuery .= "ORDER BY sort_order ASC";
 			
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
 						
@@ -528,14 +538,7 @@
 		?>
 		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
-			<td><?php echo $level->name?></td>
-			<td>
-				<?php if(pmpro_isLevelFree($level)) { ?>
-					<?php _e('FREE', 'pmpro');?>
-				<?php } else { ?>
-					<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
-				<?php } ?>
-			</td>
+			<td><?php echo $level->name?></td>			
 			<td>
 				<?php if(!pmpro_isLevelRecurring($level)) { ?>
 					--
@@ -561,6 +564,7 @@
 				<?php } ?>
 			</td>
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
+            <td><?php echo $level->sort_order; ?></td>
 			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
 			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
 			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
