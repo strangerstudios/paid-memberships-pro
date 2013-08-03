@@ -271,8 +271,6 @@ if(pmpro_displayAds())
                         }
                     ?>
                     </select>                    
-                    
-                    
                 </td>
             </tr> 
 			

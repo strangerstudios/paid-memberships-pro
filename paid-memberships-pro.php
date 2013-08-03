@@ -88,8 +88,10 @@ global $all_membership_levels;
 
 //we sometimes refer to this array of levels
 global $membership_levels;
-$membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
-
+//updated to single source the list generation and the code for sorting.
+//$membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
+$membership_levels = pmpro_getAllLevels();
+  
 /*
 	Activation/Deactivation
 */
