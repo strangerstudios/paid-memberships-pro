@@ -245,6 +245,12 @@
 				
 				<?php
 					do_action('pmpro_checkout_after_captcha');
+                    
+                    //this widget is for the openAuth login so that we can also use that to simplify the logins
+                    if (class_exists('oa_social_login_widget')) {
+                    $widget_oa = new oa_social_login_widget();
+                    $widget_oa->widget($args);
+                    }
 				?>
 				
 			</td>
