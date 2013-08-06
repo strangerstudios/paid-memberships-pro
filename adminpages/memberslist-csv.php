@@ -119,9 +119,6 @@
 			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY id DESC LIMIT 1";
 			$discount_code = $wpdb->get_row($sqlQuery);
 			
-			krumo($sqlQuery);
-			exit;
-			
 			//default columns			
 			if(!empty($default_columns))
 			{
