@@ -124,7 +124,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.2 =
 * Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
-* Addd is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at WPCurve.
+* Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at WPCurve.
 
 = 1.7.1 =
 * Design updates to frontend and backend pages.
