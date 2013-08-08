@@ -7,7 +7,7 @@ function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user, $pmpro_currency_symbol;
 
-	$membership_level_capability = apply_filters("pmpro_profile_membership_level_capibility", "manage_options");
+	$membership_level_capability = apply_filters("pmpro_profile_membership_level_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
 
@@ -165,7 +165,7 @@ function pmpro_membership_level_profile_fields_update()
 	if(!empty($_REQUEST['user_id'])) 
 		$user_ID = $_REQUEST['user_id'];
 
-	$membership_level_capability = apply_filters("pmpro_profile_membership_level_capibility", "manage_options");
+	$membership_level_capability = apply_filters("pmpro_profile_membership_level_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
 		
