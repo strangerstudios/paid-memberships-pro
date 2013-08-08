@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro AWeber Integration',
-		'version' => '.3.1',
+		'version' => '.2',
 		'widget' => 'pmpro_addon_pmpro_aweber_widget',
 		'enabled' => function_exists('pmproaw_init')
 	)
