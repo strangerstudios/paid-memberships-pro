@@ -69,7 +69,7 @@
 	function pmpro_getOption($s, $force = false)
 	{
 		if(isset($_REQUEST[$s]) && !$force)
-			return $_REQUEST[$s];
+			return trim($_REQUEST[$s]);
 		elseif(get_option("pmpro_" . $s))
 			return get_option("pmpro_" . $s);
 		else
@@ -80,7 +80,7 @@
 	{
 		//no value is given, set v to the request var
 		if($v === NULL && isset($_REQUEST[$s]))
-			$v = $_REQUEST[$s];
+			$v = trim($_REQUEST[$s]);
 				
 		if(is_array($v))
 			$v = implode(",", $v);
