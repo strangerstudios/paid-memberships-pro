@@ -96,7 +96,7 @@ $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership
 function pmpro_activation()
 {
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');
+	//wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
 }
 function pmpro_deactivation()
