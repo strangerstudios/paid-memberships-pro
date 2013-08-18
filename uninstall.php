@@ -8,6 +8,27 @@
 if (!defined('ABSPATH') && !defined('WP_UNINSTALL_PLUGIN'))
     exit();
 
+// otherwise remove pages
+$pmpro_pages = array(
+	'account' => get_option( 'pmpro_account_page_id' ),
+	'billing' => get_option( 'pmpro_billing_page_id' ),
+	'cancel' =>get_option( 'pmpro_cancel_page_id' ),
+	'checkout' => get_option( 'pmpro_checkout_page_id' ),
+	'confirmation' => get_option( 'pmpro_confirmation_page_id' ),
+	'invoice' => get_option( 'pmpro_invoice_page_id' ),
+	'levels' => get_option( 'pmpro_levels_page_id' )
+);
+
+foreach ( $pmpro_pages as $pmpro_page_id => $pmpro_page ) {
+	$shortcode_prefix = 'pmpro_';
+	$shortcode = '[' . $shortcode_prefix . $pmpro_page_id . ']';
+	$post = get_post( $pmpro_page );
+
+	// If shortcode is found at the beginning of the page content and it is the only content that exists, remove the page
+	if ( strpos( $post->post_content, $shortcode ) === 0 && strcmp( $post->post_content, $shortcode ) === 0 )
+		wp_delete_post( $post->ID, true ); // Force delete (no trash)
+}
+
 // otherwise remove db tables
 global $wpdb;
 

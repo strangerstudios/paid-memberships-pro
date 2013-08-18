@@ -6,7 +6,9 @@
 function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user, $pmpro_currency_symbol;
-	if(!current_user_can("administrator"))
+
+	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
+	if(!current_user_can($membership_level_capability))
 		return false;
 
 	global $wpdb;
@@ -163,7 +165,8 @@ function pmpro_membership_level_profile_fields_update()
 	if(!empty($_REQUEST['user_id'])) 
 		$user_ID = $_REQUEST['user_id'];
 
-	if(!current_user_can( 'edit_user', $user_ID))
+	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
+	if(!current_user_can($membership_level_capability))
 		return false;
 		
 	//level change
