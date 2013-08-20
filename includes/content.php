@@ -11,7 +11,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	if(!$user_id)
 		$user_id = $current_user->ID;
 
-	//no post, return false
+	//no post, return true
 	if(!$post_id)
 		return true;
 
