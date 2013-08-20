@@ -13,7 +13,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 
 	//no post, return false
 	if(!$post_id)
-		return false;
+		return 0;
 
 	//if no post or current_user object, set them up
 	if(!empty($post->ID) && $post_id == $post->ID)
@@ -167,6 +167,10 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 		}
+
+		// No post id
+		if ($hasaccess === 0)
+			$hasaccess = true;
 	}
 
 	if($hasaccess)
