@@ -69,6 +69,15 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.71");
 		$pmpro_db_version = 1.71;
 	}
+	
+	if($pmpro_db_version < 1.72)
+	{		
+		//schedule the credit card expiring cron
+		wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');		
+		
+		pmpro_setOption("db_version", "1.72");
+		$pmpro_db_version = 1.72;
+	}
 }
 
 function pmpro_upgrade_1_7()

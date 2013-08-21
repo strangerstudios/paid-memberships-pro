@@ -127,6 +127,7 @@ Not sure? You can find out by doing a bit a research.
 * Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
 * Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at WPCurve.
 * Removed the pmpro_cron_trial_ending_warnings daily cron so trial ending emails will no longer go out. The function pmpro_cron_trial_ending_warnings() is still there if you want to call it yourself. There were issues on some sites where these emails were going out erroneously and also many ways of doing "custom trials" including setting the subscription start date back a certain number of days was not picked up as a trial by this script anyway.
+* Added the pmpro_cron_credit_card_expiring daily cron to send out warnings a month or so before credit cards on record are set to expire.
 
 = 1.7.1 =
 * Design updates to frontend and backend pages.
