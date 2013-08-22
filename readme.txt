@@ -123,11 +123,16 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.2 =
+* Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
 * Added pmpro_invoice_bullets_top and pmpro_invoice_bullets_bottom hooks to confirmation and invoice pages. Passes $pmpro_invoice.
 * Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
-* Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at WPCurve.
+* Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at wpcurve.com.
 * Removed the pmpro_cron_trial_ending_warnings daily cron so trial ending emails will no longer go out. The function pmpro_cron_trial_ending_warnings() is still there if you want to call it yourself. There were issues on some sites where these emails were going out erroneously and also many ways of doing "custom trials" including setting the subscription start date back a certain number of days was not picked up as a trial by this script anyway.
 * Added the pmpro_cron_credit_card_expiring daily cron to send out warnings a month or so before credit cards on record are set to expire.
+* Updated pmpro_has_membership_access to return true if the $post_id is empty or cannot be found. This fixes issues where member warnings were being added to non-pages, e.g. the bbPress forums archive. To lock down "pages" like this, you'll need to use custom coding, URL detection, etc. Thanks, Scott Sousa (scottsousa on GitHub and WP.org) from Slocum Studio.
+* Now trimming whitespace on any text field updated through the PMPro settings pages. This prevents issues like those that come up if you have whitespace in your Stripe API key, etc.  Thanks, Scott Sousa.
+* Changed default capability check to 'manage_options' (administrator), and added a filter named 'pmpro_edit_member_capability' to allow dev's to change this capability. Thanks, Scott Sousa.
+* Now removing empty (only includes the PMPro shortcode) PMPro pages when uninstalling PMPro. Thanks, Scott Sousa.
 
 = 1.7.1 =
 * Design updates to frontend and backend pages.

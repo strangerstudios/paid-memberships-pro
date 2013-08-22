@@ -108,6 +108,7 @@ function pmpro_report_sales_page()
 	elseif($period == "monthly")
 	{
 		$startdate = $year . '-01-01';
+		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
 	}
 	else
@@ -120,10 +121,16 @@ function pmpro_report_sales_page()
 	$gateway_environment = pmpro_getOption("gateway_environment");
 	
 	//get data
-	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE timestamp >= '" . $startdate . "' AND status = 'success' AND gateway_environment = '" . $wpdb->escape($gateway_environment) . "' ";
+	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE timestamp >= '" . $startdate . "' AND status NOT IN('refunded', 'review', 'token') AND gateway_environment = '" . $wpdb->escape($gateway_environment) . "' ";
+	
+	if(!empty($enddate))
+		$sqlQuery .= "AND timestamp < '" . $enddate . "' ";
+	
 	if(!empty($l))
 		$sqlQuery .= "AND membership_id IN(" . $l . ") ";
+	
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
+	
 	$dates = $wpdb->get_results($sqlQuery);		
 	
 	//fill in blanks in dates
