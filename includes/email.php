@@ -36,7 +36,7 @@ function pmpro_send_html( $phpmailer ) {
 	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = wpautop ( make_clickable ($phpmailer->Body) );
-	
+
 	// Add template to message
 	if(file_exists(TEMPLATEPATH . "/email_header.html"))
 	{
@@ -46,7 +46,7 @@ function pmpro_send_html( $phpmailer ) {
 	{
 		$phpmailer->Body = $phpmailer->Body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
 	}
-	
+
 	// Replace variables in email
 	global $current_user;
 	$data = array(
@@ -66,18 +66,13 @@ function pmpro_send_html( $phpmailer ) {
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }
 
-function pmpro_wp_mail_content_type( $content_type ) {	
-	
-	//check for template
-	if(file_exists(TEMPLATEPATH . "/email_header.html") || file_exists(TEMPLATEPATH . "/email_footer.html"))
-	{
-		add_action('phpmailer_init', 'pmpro_send_html');
-		
-		//change to html if not already
-		if( $content_type == 'text/plain')
-		{			
-			$content_type = 'text/html';
-		}
+function pmpro_wp_mail_content_type( $content_type ) {
+	add_action('phpmailer_init', 'pmpro_send_html');
+
+	//change to html if not already
+	if( $content_type == 'text/plain')
+	{			
+		$content_type = 'text/html';
 	}
 	return $content_type;
 }
