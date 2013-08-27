@@ -124,6 +124,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.2 =
 * Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
+* Now adding classes to the body tag (if the theme supports it through the body_class() function) to aid in design. Classes are pmpro-account, pmpro-billing, pmpro-cancel, pmpro-checkout, pmpro-confirmation, pmpro-invoice.
 * Added pmpro_invoice_bullets_top and pmpro_invoice_bullets_bottom hooks to confirmation and invoice pages. Passes $pmpro_invoice.
 * Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
 * Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at wpcurve.com.
