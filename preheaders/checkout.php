@@ -529,7 +529,7 @@
 			//only continue if there are no other errors yet
 			if($pmpro_msgt != "pmpro_error")
 			{								
-				//check recaptch first
+				//check recaptcha first
 				global $recaptcha;
 				if(!$skip_account_fields && ($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level))))
 				{
@@ -895,6 +895,15 @@
 			if(pmpro_changeMembershipLevel($custom_level, $user_id))
 			{
 				//we're good
+				//blank order for free levels
+				if(empty($morder))
+				{					
+					$morder = new MemberOrder();						
+					$morder->InitialPayment = 0;	
+					$morder->Email = $bemail;
+					$morder->gateway = "free";					
+				}
+				
 				//add an item to the history table, cancel old subscriptions
 				if(!empty($morder))
 				{

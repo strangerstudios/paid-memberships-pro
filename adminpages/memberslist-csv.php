@@ -47,7 +47,10 @@
 		if($l)
 			$sqlQuery .= " AND mu.membership_id = '" . $wpdb->escape($l) . "' ";					
 			
-		$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+		$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC ";
+		
+		if($limit)
+			$sqlQuery .= "LIMIT $start, $limit";
 	}
 	else
 	{
@@ -113,10 +116,10 @@
 		foreach($theusers as $theuser)
 		{
 			//get meta
-			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";					
+			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";								
 			$metavalues = pmpro_getMetavalues($sqlQuery);	
 			$theuser->metavalues = $metavalues;
-			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY id DESC LIMIT 1";
+			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY c.id DESC LIMIT 1";			
 			$discount_code = $wpdb->get_row($sqlQuery);
 			
 			//default columns			
@@ -175,4 +178,3 @@
 	{
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
-?>
