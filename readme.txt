@@ -48,7 +48,7 @@ Extensions, sister plugins, and other bits of code to customize your implementat
 4. Activate the plugin through the 'Plugins' menu in WordPress.
 
 = Complete the Initial Plugin Setup =
-The plugin will walk you through initial setup - basic steps are outlined below. You can [watch a video tutorial here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
+The plugin will walk you through initial setup - basic steps are outlined below.
 
 1. Add one or more Membership Levels
 2. Set up the PMPro Pages
@@ -56,8 +56,9 @@ The plugin will walk you through initial setup - basic steps are outlined below.
 4. Customize Email Settings
 5. Review Advanced Settings (best left untouched).
 
+[A tutorial video of the initial plugin setup is available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
+
 [Written instructions on initial plugin setup are available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
-[Tutorial video of the initial plugin setup is available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
 
 == Frequently Asked Questions ==
 
@@ -84,15 +85,11 @@ I've written a plugin [PMPro-Network](http://www.paidmembershipspro.com/add-ons/
 If you would like more help using PMPro on a network install, sign up for support at http://www.paidmembershipspro.com.
 
 = Does PMPro Support X? =
-
 Not sure? You can find out by doing a bit a research.
 
 1. [Check our compatibility page](http://www.paidmembershipspro.com/compatibility/).
-
 2. [Check our add ons](http://www.paidmembershipspro.com/add-ons/).
-
 3. [Do a search on our site](http://www.paidmembershipspro.com/).
-
 4. [Ask in the forums here](http://wordpress.org/tags/paid-memberships-pro?forum_id=10).
 
 == Screenshots ==
