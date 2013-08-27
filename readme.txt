@@ -125,13 +125,14 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.2 =
 * Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
 * Now trimming whitespace on any text field updated through the PMPro settings pages. This prevents issues like those that come up if you have whitespace in your Stripe API key, etc.  Thanks, Scott Sousa.
+* Added discount code use tracking for PayPal Standard. Saving the use before the user goes to PayPal to pay.
+* Added discount code id and code columns to orders and members list CSV exports.
 * Changed default capability check to 'manage_options' (administrator), and added a filter named 'pmpro_edit_member_capability' to allow dev's to change this capability. Thanks, Scott Sousa.
 * Now removing empty (only includes the PMPro shortcode) PMPro pages when uninstalling PMPro. Thanks, Scott Sousa.
 * Now adding classes to the body tag (if the theme supports it through the body_class() function) to aid in design. Classes are pmpro-account, pmpro-billing, pmpro-cancel, pmpro-checkout, pmpro-confirmation, pmpro-invoice.
 * Adding $0 orders for free level checkouts (will help reporting).
 * Added pmpro_invoice_bullets_top and pmpro_invoice_bullets_bottom hooks to confirmation and invoice pages. Passes $pmpro_invoice.
 * Fixed members list CSV export for lists with search queries.
-* Added discount code id and code columns to orders and members list CSV exports.
 * Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at wpcurve.com.
 * Removed the pmpro_cron_trial_ending_warnings daily cron so trial ending emails will no longer go out. The function pmpro_cron_trial_ending_warnings() is still there if you want to call it yourself. There were issues on some sites where these emails were going out erroneously and also many ways of doing "custom trials" including setting the subscription start date back a certain number of days was not picked up as a trial by this script anyway.
 * Added the pmpro_cron_credit_card_expiring daily cron to send out warnings a month or so before credit cards on record are set to expire.

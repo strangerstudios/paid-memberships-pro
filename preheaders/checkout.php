@@ -567,7 +567,7 @@
 						{
 							$_SESSION['pmpro_signup_username'] = $username;
 							$_SESSION['pmpro_signup_password'] = $password;
-							$_SESSION['pmpro_signup_email'] = $bemail;														
+							$_SESSION['pmpro_signup_email'] = $bemail;							
 						}
 						
 						//can use this hook to save some other variables to the session
@@ -853,6 +853,10 @@
 			{
 				$morder->user_id = $user_id;				
 				$morder->saveOrder();
+				
+				//save discount code use
+				if(!empty($discount_code_id))
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
 				
 				do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
 				
