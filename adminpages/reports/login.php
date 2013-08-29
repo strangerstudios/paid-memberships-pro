@@ -322,7 +322,7 @@ function pmpro_report_login_wp_views()
 		$views['last'] = date(get_option("date_format"));
 		$views['alltime']++;
 		$thismonth = date("n");
-		if($thismonth == $views['thismonth'])
+		if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 			$views['month']++;
 		else
 		{
@@ -349,7 +349,7 @@ function pmpro_report_login_wp_views()
 		$views['thisdate'] = $thisdate;
 	}
 	$thismonth = date("n");
-	if($thismonth == $views['thismonth'])
+	if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 		$views['month']++;
 	else
 	{
