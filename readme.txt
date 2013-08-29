@@ -102,6 +102,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
+* Changed all $wpdb->escape() calls to esc_sql() to fix notice.
 
 = 1.7.2 =
 * Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.

@@ -570,7 +570,7 @@
 			$fields = apply_filters("pmpro_orders_search_fields", $fields);
 			
 			foreach($fields as $field)
-				$sqlQuery .= " OR " . $field . " LIKE '%" . $wpdb->escape($s) . "%' ";
+				$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql($s) . "%' ";
 			$sqlQuery .= ") ";
 			$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 		}

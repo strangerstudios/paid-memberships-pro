@@ -66,7 +66,7 @@
 	//what level are they purchasing? (no discount code)
 	if(empty($pmpro_level) && !empty($_REQUEST['level']))
 	{
-		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
+		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
 	}
 	elseif(empty($pmpro_level))
 	{
@@ -74,7 +74,7 @@
 		$default_level = get_post_meta($post->ID, "pmpro_default_level", true);
 		if(!empty($default_level))
 		{
-			$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($default_level) . "' AND allow_signups = 1 LIMIT 1");	
+			$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($default_level) . "' AND allow_signups = 1 LIMIT 1");	
 		}
 	}
 	
@@ -506,8 +506,8 @@
 			//if creating a new user, check that the email and username are available
 			if(empty($current_user->ID))
 			{
-				$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . $wpdb->escape($username) . "' LIMIT 1");
-				$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . $wpdb->escape($bemail) . "' LIMIT 1");
+				$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
+				$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . esc_sql($bemail) . "' LIMIT 1");
 				
 				//this hook can be used to allow multiple accounts with the same email address
 				$oldemail = apply_filters("pmpro_checkout_oldemail", $oldemail);
