@@ -102,8 +102,11 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
+* Fixed warning coming from login report tracking.
 * Changed all $wpdb->escape() calls to esc_sql() to fix notice.
 * Fixed another bug in revenue/sales report for daily charts. (backported to 1.7.2, but a few people who upgraded missed it)
+* Fixed bug on add/edit level page that was causing issues in some versions of IE.
+* Fixed bug where links in the email_header.html and email_footer.html templates were not being converted to true links.
 
 = 1.7.2 =
 * Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
