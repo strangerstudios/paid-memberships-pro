@@ -109,7 +109,7 @@
 			
 			//which one to load?
 			$classname = "PMProGateway";	//default test gateway
-			if(!empty($this->gateway))
+			if(!empty($this->gateway) && $this->gateway != "free")
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
 							
 			//try to load it
