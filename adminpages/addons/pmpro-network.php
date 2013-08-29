@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Network',
-		'version' => '.2',
+		'version' => '.3.1',
 		'widget' => 'pmpro_addon_pmpro_network_widget',
 		'enabled' => function_exists('pmpron_new_blogs_settings')
 	)

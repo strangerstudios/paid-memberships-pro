@@ -66,7 +66,7 @@
 	//what level are they purchasing? (no discount code)
 	if(empty($pmpro_level) && !empty($_REQUEST['level']))
 	{
-		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
+		$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($_REQUEST['level']) . "' AND allow_signups = 1 LIMIT 1");	
 	}
 	elseif(empty($pmpro_level))
 	{
@@ -74,7 +74,7 @@
 		$default_level = get_post_meta($post->ID, "pmpro_default_level", true);
 		if(!empty($default_level))
 		{
-			$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $wpdb->escape($default_level) . "' AND allow_signups = 1 LIMIT 1");	
+			$pmpro_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($default_level) . "' AND allow_signups = 1 LIMIT 1");	
 		}
 	}
 	
@@ -506,8 +506,8 @@
 			//if creating a new user, check that the email and username are available
 			if(empty($current_user->ID))
 			{
-				$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . $wpdb->escape($username) . "' LIMIT 1");
-				$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . $wpdb->escape($bemail) . "' LIMIT 1");
+				$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
+				$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . esc_sql($bemail) . "' LIMIT 1");
 				
 				//this hook can be used to allow multiple accounts with the same email address
 				$oldemail = apply_filters("pmpro_checkout_oldemail", $oldemail);
@@ -529,7 +529,7 @@
 			//only continue if there are no other errors yet
 			if($pmpro_msgt != "pmpro_error")
 			{								
-				//check recaptch first
+				//check recaptcha first
 				global $recaptcha;
 				if(!$skip_account_fields && ($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level))))
 				{
@@ -567,7 +567,7 @@
 						{
 							$_SESSION['pmpro_signup_username'] = $username;
 							$_SESSION['pmpro_signup_password'] = $password;
-							$_SESSION['pmpro_signup_email'] = $bemail;														
+							$_SESSION['pmpro_signup_email'] = $bemail;							
 						}
 						
 						//can use this hook to save some other variables to the session
@@ -854,6 +854,10 @@
 				$morder->user_id = $user_id;				
 				$morder->saveOrder();
 				
+				//save discount code use
+				if(!empty($discount_code_id))
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
+				
 				do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
 				
 				$morder->Gateway->sendToPayPal($morder);
@@ -895,6 +899,15 @@
 			if(pmpro_changeMembershipLevel($custom_level, $user_id))
 			{
 				//we're good
+				//blank order for free levels
+				if(empty($morder))
+				{					
+					$morder = new MemberOrder();						
+					$morder->InitialPayment = 0;	
+					$morder->Email = $bemail;
+					$morder->gateway = "free";					
+				}
+				
 				//add an item to the history table, cancel old subscriptions
 				if(!empty($morder))
 				{

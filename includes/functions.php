@@ -662,7 +662,7 @@
 		
 		if(!is_numeric($level))
 		{
-			$level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . $wpdb->escape($level) . "' LIMIT 1");
+			$level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");
 			if(empty($level))
 			{
 				return __("Membership level not found.", "pmpro");
@@ -670,7 +670,7 @@
 		}		
 
 		// remove all existing links...
-		$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . $wpdb->escape($level) . "'";
+		$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql($level) . "'";
 		$wpdb->query($sqlQuery);		
 		if(mysql_errno()) return mysql_error();
 
@@ -1414,7 +1414,7 @@
 				global $wpdb;
 				
 				if(!empty($level_id))
-					$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . $wpdb->escape($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
+					$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
 				else
 					$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
 							

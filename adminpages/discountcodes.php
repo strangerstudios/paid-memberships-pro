@@ -42,7 +42,7 @@
 		//updating or new?
 		if($saveid > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_discount_codes SET code = '" . $wpdb->escape($code) . "', starts = '" . $starts . "', expires = '" . $expires . "', uses = '" . intval($uses) . "' WHERE id = '" . $saveid . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_discount_codes SET code = '" . esc_sql($code) . "', starts = '" . $starts . "', expires = '" . $expires . "', uses = '" . intval($uses) . "' WHERE id = '" . $saveid . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				$pmpro_msg = __("Discount code updated successfully.", "pmpro");
@@ -58,7 +58,7 @@
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses) VALUES('" . $wpdb->escape($code) . "', '" . $starts . "', '" . $expires . "', '" . intval($uses) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses) VALUES('" . esc_sql($code) . "', '" . $starts . "', '" . $expires . "', '" . intval($uses) . "')";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				$pmpro_msg = __("Discount code added successfully.", "pmpro");
@@ -184,7 +184,7 @@
 					}
 					
 					//okay, do the insert
-					$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . $wpdb->escape($edit) . "', '" . $wpdb->escape($level_id) . "', '" . (double)$wpdb->escape($initial_payment) . "', '" . (double)$wpdb->escape($billing_amount) . "', '" . intval($wpdb->escape($cycle_number)) . "', '" . $wpdb->escape($cycle_period) . "', '" . intval($wpdb->escape($billing_limit)) . "', '" . (double)$wpdb->escape($trial_amount) . "', '" . intval($wpdb->escape($trial_limit)) . "', '" . intval($wpdb->escape($expiration_number)) . "', '" . $wpdb->escape($expiration_period) . "')";
+					$sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period) VALUES('" . esc_sql($edit) . "', '" . esc_sql($level_id) . "', '" . (double)esc_sql($initial_payment) . "', '" . (double)esc_sql($billing_amount) . "', '" . intval(esc_sql($cycle_number)) . "', '" . esc_sql($cycle_period) . "', '" . intval(esc_sql($billing_limit)) . "', '" . (double)esc_sql($trial_amount) . "', '" . intval(esc_sql($trial_limit)) . "', '" . intval(esc_sql($expiration_number)) . "', '" . esc_sql($expiration_period) . "')";
 										
 					if($wpdb->query($sqlQuery) !== false)
 					{

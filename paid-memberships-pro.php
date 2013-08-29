@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.7.1.0.1
+Version: 1.7.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -74,7 +74,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.7.2b");
+define("PMPRO_VERSION", "1.7.2");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 /*
@@ -96,14 +96,16 @@ $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership
 function pmpro_activation()
 {
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');
+	//wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
+	wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 }
 function pmpro_deactivation()
 {
 	wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
+	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
 }
 register_activation_hook(__FILE__, 'pmpro_activation');
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');

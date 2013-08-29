@@ -44,7 +44,7 @@
 		$filename_small = substr($filename, strlen($upload_dir[basedir]) + 1, strlen($filename) - strlen($upload_dir[basedir]) - 1);  //just the part wp saves							
 		
 		//look the file up in the db				
-		$sqlQuery = "SELECT post_parent FROM $wpdb->posts WHERE ID = (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wp_attached_file' AND meta_value = '" . $wpdb->escape($filename_small) . "' LIMIT 1) LIMIT 1";		
+		$sqlQuery = "SELECT post_parent FROM $wpdb->posts WHERE ID = (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wp_attached_file' AND meta_value = '" . esc_sql($filename_small) . "' LIMIT 1) LIMIT 1";		
 		$file_post_parent = $wpdb->get_var($sqlQuery);
 		
 		//has access?

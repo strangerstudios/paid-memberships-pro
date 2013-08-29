@@ -449,7 +449,7 @@
 							);
 		
 			return $this->sendEmail();
-		}
+		}				
 		
 		function sendBillingFailureAdminEmail($email, $invoice = NULL)
 		{		
@@ -465,6 +465,45 @@
 			$this->data = array(
 								"subject" => $this->subject, 
 								"name" => "Admin", 
+								"user_login" => $user->user_login,
+								"sitename" => get_option("blogname"),
+								"siteemail" => pmpro_getOption("from_email"),
+								"membership_level_name" => $user->membership_level->name,
+								"display_name" => $user->display_name,
+								"user_email" => $user->user_email,									
+								"billing_name" => $invoice->billing->name,
+								"billing_street" => $invoice->billing->street,
+								"billing_city" => $invoice->billing->city,
+								"billing_state" => $invoice->billing->state,
+								"billing_zip" => $invoice->billing->zip,
+								"billing_country" => $invoice->billing->country,
+								"billing_phone" => $invoice->billing->phone,
+								"cardtype" => $invoice->cardtype,
+								"accountnumber" => hideCardNumber($invoice->accountnumber),
+								"expirationmonth" => $invoice->expirationmonth,
+								"expirationyear" => $invoice->expirationyear,
+								"login_link" => pmpro_url("billing")
+							);
+		
+			return $this->sendEmail();
+		}
+		
+		function sendCreditCardExpiringEmail($user = NULL, $invoice = NULL)
+		{
+			global $current_user;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user || !$invoice)
+				return false;
+			
+			$this->email = $user->user_email;
+			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", "pmpro"), get_option("blogname"));	
+			$this->template = "credit_card_expiring";
+			
+			$this->data = array(
+								"subject" => $this->subject, 
+								"name" => $user->display_name, 
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),

@@ -39,7 +39,7 @@
 	if($arb == true)
 	{
 		// okay, add an invoice. first lookup the user_id from the subscription id passed
-		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($fields['x_subscription_id']) . "' AND gateway = 'authorizenet' ORDER BY timestamp DESC LIMIT 1");
+		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($fields['x_subscription_id']) . "' AND gateway = 'authorizenet' ORDER BY timestamp DESC LIMIT 1");
 		$old_order = new MemberOrder($old_order_id);
 		$user_id = $old_order->user_id;	
 		$user = get_userdata($user_id);

@@ -42,6 +42,7 @@
 	</h3>
 	<a class="pmpro_a-print" href="javascript:window.print()"><?php _e('Print', 'pmpro');?></a>
 	<ul>
+		<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 		<li><strong><?php _e('Account', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 		<li><strong><?php _e('Membership Level', 'pmpro');?>:</strong> <?php echo $current_user->membership_level->name?></li>
 		<?php if($current_user->membership_level->enddate) { ?>
@@ -50,6 +51,7 @@
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
 			<li><strong><?php _e('Discount Code', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 		<?php } ?>
+		<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 	</ul>
 	
 	<table id="pmpro_confirmation_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">

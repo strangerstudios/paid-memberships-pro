@@ -222,10 +222,10 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 			$content = "";
 		}
 
-		if(!$post_membership_levels_ids)
+		if(empty($post_membership_levels_ids))
 			$post_membership_levels_ids = array();
 
-		if(!$post_membership_levels_names)
+		if(empty($post_membership_levels_names))
 			$post_membership_levels_names = array();
 
 		$pmpro_content_message_pre = '<div class="pmpro_content_message">';

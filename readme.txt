@@ -3,80 +3,62 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.0
 Tested up to: 3.6
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 
-The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts integrated with Stripe, Authorize.net, PayPal(r) or Braintree for recurring payments.
+The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
 == Description ==
 Set up unlimited membership levels and provide restricted access to pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more. Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
 
 Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
-**Integrate with The Most Popular Payment Gateways.**
-
+= Integrate with The Most Popular Payment Gateways. =
 Stripe, Authorize.net, Braintree Payments, and PayPal (Standard, Express, Website Payments Pro, Payflow, & Advanced)
 
-**Works with Any Theme You Want.**
-
+= Works with Any Theme You Want. =
 Your Existing Theme or a Popular Free or Premium Third-Party Theme.
 
+= Infinitely Configurable, Unlimited Membership Levels. =
+Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
 
-**Infinitely Configurable, Unlimited Membership Levels.**
-Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
-
-**Easy-to-Use Admin Pages and Settings.**
-
+= Easy-to-Use Admin Pages and Settings. =
 1. Membership Access by Page/Post/Category.
-
 2. Members List with CSV Export
-
 3. Easy Payment Gateway Setup with testing mode.
-
 4. Ever expanding list of Membership Reports
-
 5. Membership Discounts with customizable price rules. 
 
-**Control the User-Experience from Start to Finish.**
-
+= Control the User-Experience from Start to Finish. =
 Your members can update their billing information or cancel their account directly on your site. Any active subscription will be cancelled at the payment gateway for you.
 
-**Integrate with Top Third Party Tools.**
-
+= Integrate with Top Third Party Tools. =
 PMPro integrates with Mailchimp, Infusionsoft, Post Affiliate Pro, and many more popular third party tools.
 
-**Free Add-ons to Customize and Extend PMPro.**
-
+= Free Add-ons to Customize and Extend PMPro. =
 Extensions, sister plugins, and other bits of code to customize your implementation and help you integrate with 3rd party services or other plugins. All open source and available for free under the GPL v2 license.
 
 [View the PMPro Add-Ons](http://www.paidmembershipspro.com/add-ons/)
 
 == Installation ==
 
-**Download, Install and Activate!**
-
+= Download, Install and Activate! =
 1. Download the latest version of the plugin.
-
 2. Unzip the downloaded file to your computer.
-
 3. Upload the /paid-memberships-pro/ directory to the /wp-content/plugins/ directory of your site.
-
 4. Activate the plugin through the 'Plugins' menu in WordPress.
 
-**Complete the Initial Plugin Setup**
-
-The plugin will walk you through initial setup - basic steps are outlined below. You can [watch a video tutorial here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
+= Complete the Initial Plugin Setup =
+The plugin will walk you through initial setup - basic steps are outlined below.
 
 1. Add one or more Membership Levels
-
 2. Set up the PMPro Pages
-
 3. Configure your Payment Gateway and SSL
-
 4. Customize Email Settings
-
 5. Review Advanced Settings (best left untouched).
 
-[Written instructions on initial plugin setup are available here](http://www.paidmembershipspro.com/support/initial-plugin-setup/).
+[A tutorial video of the initial plugin setup is available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
+
+[Written instructions on initial plugin setup are available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
 
 == Frequently Asked Questions ==
 
@@ -103,15 +85,11 @@ I've written a plugin [PMPro-Network](http://www.paidmembershipspro.com/add-ons/
 If you would like more help using PMPro on a network install, sign up for support at http://www.paidmembershipspro.com.
 
 = Does PMPro Support X? =
-
 Not sure? You can find out by doing a bit a research.
 
 1. [Check our compatibility page](http://www.paidmembershipspro.com/compatibility/).
-
 2. [Check our add ons](http://www.paidmembershipspro.com/add-ons/).
-
 3. [Do a search on our site](http://www.paidmembershipspro.com/).
-
 4. [Ask in the forums here](http://wordpress.org/tags/paid-memberships-pro?forum_id=10).
 
 == Screenshots ==
@@ -122,9 +100,26 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.2.1 =
+* Fixed warning when trying to load the "free" gateway on free level checkouts.
+* Changed all $wpdb->escape() calls to esc_sql() to fix notice.
+* Fixed another bug in revenue/sales report for daily charts. (backported to 1.7.2, but a few people who upgraded missed it)
+
 = 1.7.2 =
-* Added discount code id and code columns to orders and members list CSV exports. (Fixing bug with this yet.)
-* Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at WPCurve.
+* Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
+* Now trimming whitespace on any text field updated through the PMPro settings pages. This prevents issues like those that come up if you have whitespace in your Stripe API key, etc.  Thanks, Scott Sousa.
+* Added discount code use tracking for PayPal Standard. Saving the use before the user goes to PayPal to pay.
+* Added discount code id and code columns to orders and members list CSV exports.
+* Changed default capability check to 'manage_options' (administrator), and added a filter named 'pmpro_edit_member_capability' to allow dev's to change this capability. Thanks, Scott Sousa.
+* Now removing empty (only includes the PMPro shortcode) PMPro pages when uninstalling PMPro. Thanks, Scott Sousa.
+* Now adding classes to the body tag (if the theme supports it through the body_class() function) to aid in design. Classes are pmpro-account, pmpro-billing, pmpro-cancel, pmpro-checkout, pmpro-confirmation, pmpro-invoice.
+* Adding $0 orders for free level checkouts (will help reporting).
+* Added pmpro_invoice_bullets_top and pmpro_invoice_bullets_bottom hooks to confirmation and invoice pages. Passes $pmpro_invoice.
+* Fixed members list CSV export for lists with search queries.
+* Added is_ssl() check to pmpro_https_filter so PMPro will add HTTPS to URLs even if the $besecure global hasn't been set yet. Thanks, Andrew Calaio at wpcurve.com.
+* Removed the pmpro_cron_trial_ending_warnings daily cron so trial ending emails will no longer go out. The function pmpro_cron_trial_ending_warnings() is still there if you want to call it yourself. There were issues on some sites where these emails were going out erroneously and also many ways of doing "custom trials" including setting the subscription start date back a certain number of days was not picked up as a trial by this script anyway.
+* Added the pmpro_cron_credit_card_expiring daily cron to send out warnings a month or so before credit cards on record are set to expire.
+* Updated pmpro_has_membership_access to return true if the $post_id is empty or cannot be found. This fixes issues where member warnings were being added to non-pages, e.g. the bbPress forums archive. To lock down "pages" like this, you'll need to use custom coding, URL detection, etc. Thanks, Scott Sousa (scottsousa on GitHub and WP.org) from Slocum Studio.
 
 = 1.7.1 =
 * Design updates to frontend and backend pages.

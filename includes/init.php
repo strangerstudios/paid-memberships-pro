@@ -14,8 +14,8 @@ function pmpro_init()
 	if(is_admin())
 	{
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css"))
-			$admin_css = get_template_directory_uri() . "/paid-memberships-pro/css/admin.css";
-		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/admin.css"))
+			$admin_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin.css";
+		elseif(file_exists(get_template_directory() . "/paid-memberships-pro/admin.css"))
 			$admin_css = get_template_directory_uri() . "/paid-memberships-pro/admin.css";
 		else
 			$admin_css = plugins_url('css/admin.css',dirname(__FILE__) );		
@@ -24,16 +24,16 @@ function pmpro_init()
 	else
 	{		
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css"))
-			$frontend_css = get_template_directory_uri() . "/paid-memberships-pro/css/frontend.css";
-		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/frontend.css"))
+			$frontend_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/frontend.css";
+		elseif(file_exists(get_template_directory() . "/paid-memberships-pro/frontend.css"))
 			$frontend_css = get_template_directory_uri() . "/paid-memberships-pro/frontend.css";
 		else
 			$frontend_css = plugins_url('css/frontend.css',dirname(__FILE__) );	
 		wp_enqueue_style('pmpro_frontend', $frontend_css, array(), PMPRO_VERSION, "screen");
 		
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/print.css"))
-			$print_css = get_template_directory_uri() . "/paid-memberships-pro/css/print.css";
-		elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/print.css"))
+			$print_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/print.css";
+		elseif(file_exists(get_template_directory() . "/paid-memberships-pro/print.css"))
 			$print_css = get_template_directory_uri() . "/paid-memberships-pro/print.css";
 		else
 			$print_css = plugins_url('css/print.css',dirname(__FILE__) );
@@ -79,11 +79,11 @@ function pmpro_wp()
 {
 	if(!is_admin())
 	{
-		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id;		
+		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
 		
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
-		{
+		{			
 			if($pmpro_page_name == "checkout")
 			{								
 				continue;		//we do the checkout shortcode every time now
@@ -91,8 +91,13 @@ function pmpro_wp()
 				
 			if(!empty($post->ID) && $pmpro_page_id == $post->ID)
 			{
+				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
-
+				
+				//add class to body
+				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
+				
+				//shortcode
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
@@ -114,11 +119,26 @@ function pmpro_wp()
 		//make sure you load the preheader for the checkout page. the shortcode for checkout is loaded below		
 		if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_checkout]") !== false)
 		{
+			$pmpro_body_classes[] = "pmpro-checkout";
 			require_once(PMPRO_DIR . "/preheaders/checkout.php");	
 		}
 	}
 }
 add_action("wp", "pmpro_wp", 1);
+
+/*
+	Add PMPro page names to the BODY class.
+*/
+function pmpro_body_class($classes)
+{
+	global $pmpro_body_classes;
+	
+	if(is_array($pmpro_body_classes))
+		$classes = array_merge($pmpro_body_classes, $classes);
+
+	return $classes;
+}
+add_filter("body_class", "pmpro_body_class");
 
 //add membership level to current user object
 function pmpro_set_current_user()

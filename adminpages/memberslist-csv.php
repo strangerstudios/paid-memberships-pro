@@ -42,12 +42,15 @@
 	
 	if($s)
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.status = 'active' AND mu.membership_id > 0 AND (u.user_login LIKE '%" . $wpdb->escape($s) . "%' OR u.user_email LIKE '%" . $wpdb->escape($s) . "%' OR um.meta_value LIKE '%" . $wpdb->escape($s) . "%') ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.status = 'active' AND mu.membership_id > 0 AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 	
 		if($l)
-			$sqlQuery .= " AND mu.membership_id = '" . $wpdb->escape($l) . "' ";					
+			$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";					
 			
-		$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+		$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC ";
+		
+		if($limit)
+			$sqlQuery .= "LIMIT $start, $limit";
 	}
 	else
 	{
@@ -113,10 +116,10 @@
 		foreach($theusers as $theuser)
 		{
 			//get meta
-			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";					
+			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";								
 			$metavalues = pmpro_getMetavalues($sqlQuery);	
 			$theuser->metavalues = $metavalues;
-			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY id DESC LIMIT 1";
+			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY c.id DESC LIMIT 1";			
 			$discount_code = $wpdb->get_row($sqlQuery);
 			
 			//default columns			
@@ -175,4 +178,3 @@
 	{
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
-?>

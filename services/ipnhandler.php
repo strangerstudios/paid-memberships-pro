@@ -191,6 +191,7 @@
 		if($logstr)
 		{
 			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
+			
 			//uncomment these lines and make sure logs/ipn.txt is writable to log IPN activity
 			//$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
 			//fwrite($loghandle, $logstr);
@@ -341,7 +342,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $current_user->ID . "', '" . $morder->id . "', now())");					
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', now())");
 			}									
 		
 			//save first and last name fields
@@ -391,11 +392,11 @@
 	function pmpro_ipnFailedPayment($last_order)
 	{		
 		//hook to do other stuff when payments fail		
-		do_action("pmpro_subscription_payment_failed", $last_order);				
+		do_action("pmpro_subscription_payment_failed", $last_order);							
 	
 		//create a blank order for the email			
 		$morder = new MemberOrder();
-		$morder->user_id = $user_id;
+		$morder->user_id = $last_order->user_id;
 		
 		//add billing information if appropriate
 		if($last_order->gateway == "paypal")		//website payments pro
@@ -406,13 +407,13 @@
 			$morder->billing->state = $_POST['address_state'];
 			$morder->billing->zip = $_POST['address_zip'];
 			$morder->billing->country = $_POST['address_country_code'];
-			$morder->billing->phone = get_user_meta($user_id, "pmpro_bphone", true);
+			$morder->billing->phone = get_user_meta($morder->user_id, "pmpro_bphone", true);
 	
 			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);										
+			$morder->cardtype = get_user_meta($morder->user_id, "pmpro_CardType", true);
+			$morder->accountnumber = hideCardNumber(get_user_meta($morder->user_id, "pmpro_AccountNumber", true), false);
+			$morder->expirationmonth = get_user_meta($morder->user_id, "pmpro_ExpirationMonth", true);
+			$morder->expirationyear = get_user_meta($morder->user_id, "pmpro_ExpirationYear", true);										
 		}
 				
 		// Email the user and ask them to update their credit card information			

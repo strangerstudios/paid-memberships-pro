@@ -103,11 +103,13 @@ function pmpro_report_sales_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';		
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';		
 		$date_function = 'DAY';
 	}
 	elseif($period == "monthly")
 	{
 		$startdate = $year . '-01-01';
+		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
 	}
 	else
@@ -120,12 +122,18 @@ function pmpro_report_sales_page()
 	$gateway_environment = pmpro_getOption("gateway_environment");
 	
 	//get data
-	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE timestamp >= '" . $startdate . "' AND status = 'success' AND gateway_environment = '" . $wpdb->escape($gateway_environment) . "' ";
+	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE timestamp >= '" . $startdate . "' AND status NOT IN('refunded', 'review', 'token') AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
+	
+	if(!empty($enddate))
+		$sqlQuery .= "AND timestamp < '" . $enddate . "' ";
+	
 	if(!empty($l))
 		$sqlQuery .= "AND membership_id IN(" . $l . ") ";
-	$sqlQuery .= " GROUP BY date ORDER BY date ";
-	$dates = $wpdb->get_results($sqlQuery);		
 	
+	$sqlQuery .= " GROUP BY date ORDER BY date ";
+		
+	$dates = $wpdb->get_results($sqlQuery);		
+		
 	//fill in blanks in dates
 	$cols = array();				
 	if($period == "daily")
@@ -300,7 +308,7 @@ function pmpro_getSales($period, $levels = NULL)
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
 		return $cache[$period][$levels];
 		
-	//a sale is an order with status = success
+	//a sale is an order with status NOT IN('refunded', 'review', 'token')
 	if($period == "today")
 		$startdate = date("Y-m-d");
 	elseif($period == "this month")
@@ -314,7 +322,7 @@ function pmpro_getSales($period, $levels = NULL)
 	
 	//build query
 	global $wpdb;
-	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE status = 'success' AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . $wpdb->escape($gateway_environment) . "' ";
+	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
 	
 	//restrict by level
 	if(!empty($levels))
@@ -343,7 +351,7 @@ function pmpro_getRevenue($period, $levels = NULL)
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
 		return $cache[$period][$levels];	
 		
-	//a sale is an order with status = success
+	//a sale is an order with status NOT IN('refunded', 'review', 'token')
 	if($period == "today")
 		$startdate = date("Y-m-d");
 	elseif($period == "this month")
@@ -357,7 +365,7 @@ function pmpro_getRevenue($period, $levels = NULL)
 	
 	//build query
 	global $wpdb;
-	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status = 'success' AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . $wpdb->escape($gateway_environment) . "' ";
+	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
 	
 	//restrict by level
 	if(!empty($levels))

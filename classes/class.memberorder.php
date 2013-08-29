@@ -109,7 +109,7 @@
 			
 			//which one to load?
 			$classname = "PMProGateway";	//default test gateway
-			if(!empty($this->gateway))
+			if(!empty($this->gateway) && $this->gateway != "free")
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
 							
 			//try to load it
@@ -139,7 +139,7 @@
 			if(!empty($status) && is_array($status))
 				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
 			elseif(!empty($status))
-				$this->sqlQuery .= "AND status = '" . $wpdb->escape($status) . "' ";
+				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
 			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
 						
 			//get id
@@ -161,7 +161,7 @@
 		function getMemberOrderByPaymentTransactionID($payment_transaction_id)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $wpdb->escape($payment_transaction_id) . "' LIMIT 1");
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql($payment_transaction_id) . "' LIMIT 1");
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -178,7 +178,7 @@
 				return false;
 			
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1");
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1");
 			
 			if($id)
 				return $this->getMemberOrderByID($id);
@@ -395,13 +395,13 @@
 									`user_id` = '" . $this->user_id . "',
 									`membership_id` = '" . $this->membership_id . "',
 									`paypal_token` = '" . $this->paypal_token . "',
-									`billing_name` = '" . $wpdb->escape($this->billing->name) . "',
-									`billing_street` = '" . $wpdb->escape($this->billing->street) . "',
-									`billing_city` = '" . $wpdb->escape($this->billing->city) . "',
-									`billing_state` = '" . $wpdb->escape($this->billing->state) . "',
-									`billing_zip` = '" . $wpdb->escape($this->billing->zip) . "',
-									`billing_country` = '" . $wpdb->escape($this->billing->country) . "',
-									`billing_phone` = '" . $wpdb->escape($this->billing->phone) . "',
+									`billing_name` = '" . esc_sql($this->billing->name) . "',
+									`billing_street` = '" . esc_sql($this->billing->street) . "',
+									`billing_city` = '" . esc_sql($this->billing->city) . "',
+									`billing_state` = '" . esc_sql($this->billing->state) . "',
+									`billing_zip` = '" . esc_sql($this->billing->zip) . "',
+									`billing_country` = '" . esc_sql($this->billing->country) . "',
+									`billing_phone` = '" . esc_sql($this->billing->phone) . "',
 									`subtotal` = '" . $this->subtotal . "',
 									`tax` = '" . $this->tax . "',
 									`couponamount` = '" . $this->couponamount . "',
@@ -413,14 +413,14 @@
 									`accountnumber` = '" . $this->accountnumber . "',
 									`expirationmonth` = '" . $this->expirationmonth . "',
 									`expirationyear` = '" . $this->expirationyear . "',
-									`status` = '" . $wpdb->escape($this->status) . "',
+									`status` = '" . esc_sql($this->status) . "',
 									`gateway` = '" . $this->gateway . "',
 									`gateway_environment` = '" . $this->gateway_environment . "',
-									`payment_transaction_id` = '" . $wpdb->escape($this->payment_transaction_id) . "',
-									`subscription_transaction_id` = '" . $wpdb->escape($this->subscription_transaction_id) . "',									
-									`affiliate_id` = '" . $wpdb->escape($this->affiliate_id) . "',
-									`affiliate_subid` = '" . $wpdb->escape($this->affiliate_subid) . "',
-									`notes` = '" . $wpdb->escape($this->notes) . "'
+									`payment_transaction_id` = '" . esc_sql($this->payment_transaction_id) . "',
+									`subscription_transaction_id` = '" . esc_sql($this->subscription_transaction_id) . "',									
+									`affiliate_id` = '" . esc_sql($this->affiliate_id) . "',
+									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
+									`notes` = '" . esc_sql($this->notes) . "'
 									WHERE id = '" . $this->id . "'
 									LIMIT 1";
 			}
@@ -437,12 +437,12 @@
 									   '" . $this->user_id . "',
 									   '" . $this->membership_id . "',
 									   '" . $this->paypal_token . "',
-									   '" . $wpdb->escape(trim($this->billing->name)) . "',
-									   '" . $wpdb->escape(trim($this->billing->street)) . "',
-									   '" . $wpdb->escape($this->billing->city) . "',
-									   '" . $wpdb->escape($this->billing->state) . "',
-									   '" . $wpdb->escape($this->billing->zip) . "',
-									   '" . $wpdb->escape($this->billing->country) . "',
+									   '" . esc_sql(trim($this->billing->name)) . "',
+									   '" . esc_sql(trim($this->billing->street)) . "',
+									   '" . esc_sql($this->billing->city) . "',
+									   '" . esc_sql($this->billing->state) . "',
+									   '" . esc_sql($this->billing->zip) . "',
+									   '" . esc_sql($this->billing->country) . "',
 									   '" . cleanPhone($this->billing->phone) . "',
 									   '" . $amount . "',
 									   '" . $tax . "',
@@ -455,15 +455,15 @@
 									   '" . hideCardNumber($this->accountnumber, false) . "',
 									   '" . substr($this->ExpirationDate, 0, 2) . "',
 									   '" . substr($this->ExpirationDate, 2, 4) . "',
-									   '" . $wpdb->escape($this->status) . "',
+									   '" . esc_sql($this->status) . "',
 									   '" . $this->gateway . "', 
 									   '" . $this->gateway_environment . "', 
-									   '" . $wpdb->escape($this->payment_transaction_id) . "',
-									   '" . $wpdb->escape($this->subscription_transaction_id) . "',
+									   '" . esc_sql($this->payment_transaction_id) . "',
+									   '" . esc_sql($this->subscription_transaction_id) . "',
 									   now(),
-									   '" . $wpdb->escape($this->affiliate_id) . "',
-									   '" . $wpdb->escape($this->affiliate_subid) . "',
-									    '" . $wpdb->escape($this->notes) . "'
+									   '" . esc_sql($this->affiliate_id) . "',
+									   '" . esc_sql($this->affiliate_subid) . "',
+									    '" . esc_sql($this->notes) . "'
 									   )";
 			}
 						
@@ -506,7 +506,7 @@
 				return false;
 		
 			$this->status = $newstatus;
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . $wpdb->escape($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
 			if($wpdb->query($this->sqlQuery) !== false)
 				return true;
 			else
