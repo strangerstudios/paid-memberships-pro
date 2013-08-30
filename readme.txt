@@ -108,6 +108,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed bug on add/edit level page that was causing issues in some versions of IE.
 * Fixed bug where links in the email_header.html and email_footer.html templates were not being converted to true links.
 * Removed an extra $ from the PayPal Express confirmation emails.
+* Fixed loading of local (in the paid-memberships-pro/languages directory) translation files. (Should have some bundled with the plugin soon.)
 
 = 1.7.2 =
 * Fixed the revenue/sales report to accurately track recurring sales and reports from earlier years.
