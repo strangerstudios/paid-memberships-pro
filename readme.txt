@@ -100,6 +100,11 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.3 =
+* Fixed notice in getfile.php
+* Fixed sales report to not show $ when hovering over bars for "sales" vs. "revenue".
+* 
+
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
 * Fixed warning coming from login report tracking.
