@@ -101,7 +101,7 @@ function pmpro_report_login_page()
 					
 		if($s)
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
 		
 			if($l == "all")
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
@@ -112,7 +112,7 @@ function pmpro_report_login_page()
 		}
 		else
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 			$sqlQuery .= " WHERE 1=1 ";
 			
 			if($l == "all")
@@ -184,21 +184,21 @@ function pmpro_report_login_page()
 							<td><?php echo $auser->membership?></td>												
 							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
 							<td>
-								<?php 
+								<?php 									
 									if($auser->enddate) 
 										echo date(get_option('date_format'), $auser->enddate);
 									else
 										echo "Never";
 								?>
 							</td>
-							<td><?php echo $visits['last'];?></td>
-							<td><?php echo $visits['month'];?></td>
-							<td><?php echo $visits['alltime'];?></td>							
-							<td><?php echo $views['month'];?></td>
-							<td><?php echo $views['alltime'];?></td>
-							<td><?php echo $logins['last'];?></td>
-							<td><?php echo $logins['month'];?></td>
-							<td><?php echo $logins['alltime'];?></td>
+							<td><?php if(!empty($visits['last'])) echo $visits['last'];?></td>
+							<td><?php if(!empty($visits['month'])) echo $visits['month'];?></td>
+							<td><?php if(!empty($visits['alltime'])) echo $visits['alltime'];?></td>							
+							<td><?php if(!empty($visits['month'])) echo $views['month'];?></td>
+							<td><?php if(!empty($visits['alltime'])) echo $views['alltime'];?></td>
+							<td><?php if(!empty($visits['last'])) echo $logins['last'];?></td>
+							<td><?php if(!empty($visits['month'])) echo $logins['month'];?></td>
+							<td><?php if(!empty($visits['alltime'])) echo $logins['alltime'];?></td>
 						</tr>
 					<?php
 				}
