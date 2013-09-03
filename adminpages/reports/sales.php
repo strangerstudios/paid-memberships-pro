@@ -284,8 +284,10 @@ function pmpro_report_sales_page()
 			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},			  
 			};
 			
+			<?php if($type != "sales") { ?>
 			var formatter = new google.visualization.NumberFormat({prefix: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 			formatter.format(data, 1);
+			<?php } ?>
 
 			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
 			chart.draw(data, options);
