@@ -9,13 +9,19 @@ function pmpro_notifications()
 		delete_transient("pmpro_notification_" . PMPRO_VERSION);
 		
 		$pmpro_notification = get_transient("pmpro_notification_" . PMPRO_VERSION);
-		if(empty($pmpro_notification))
+		if(true || empty($pmpro_notification))
 		{
 			if(is_ssl())
-				$pmpro_notification = wp_remote_retrieve_body(wp_remote_get("https://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
+			{
+				$remote_notification = wp_remote_get("https://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION);
+			}
 			else
-				$pmpro_notification = wp_remote_retrieve_body(wp_remote_get("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
-				
+			{
+				$remote_notification = wp_remote_get("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION);
+			}						
+			
+			$pmpro_notification = wp_remote_retrieve_body($remote_notification);
+						
 			set_transient("pmpro_notification_" . PMPRO_VERSION, $pmpro_notification, 86400);
 		}
 		
