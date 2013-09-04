@@ -9,7 +9,7 @@ function pmpro_notifications()
 		delete_transient("pmpro_notification_" . PMPRO_VERSION);
 		
 		$pmpro_notification = get_transient("pmpro_notification_" . PMPRO_VERSION);
-		if(true || empty($pmpro_notification))
+		if(empty($pmpro_notification))
 		{
 			if(is_ssl())
 			{
