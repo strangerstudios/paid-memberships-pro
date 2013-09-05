@@ -9,7 +9,7 @@
 	}
 	
 	if(empty($current_user->membership_level))
-		$confirmation_message = "<p>" . __('Your payment has been submitted to PayPal. Your membership will be activated shortly.', 'pmpro') . "</p>";
+		$confirmation_message = "<p>" . __('Your payment has been submitted. Your membership will be activated shortly.', 'pmpro') . "</p>";
 	else
 		$confirmation_message = "<p>" . sprintf(__('Thank you for your membership to %s. Your %s membership is now active.', 'pmpro'), get_bloginfo("name"), $current_user->membership_level->name) . "</p>";		
 	
