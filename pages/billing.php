@@ -5,7 +5,7 @@
 	$gateway = pmpro_getOption("gateway");
 	
 	//set to true via filter to have Stripe use the minimal billing fields
-	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
+	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress")); //default is oposite of the stripe_billingaddress setting
 	
 	$level = $current_user->membership_level;
 	if($level) 

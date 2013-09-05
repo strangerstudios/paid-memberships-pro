@@ -101,6 +101,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.3 =
+* Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
 * Fixed notice in getfile.php
 * Fixed sales report to not show $ when hovering over bars for "sales" vs. "revenue".
 * Fixed notices and expiration dates in login report.

@@ -110,3 +110,41 @@ function pmpro_checkout_start_date_keep_startdate($startdate, $user_id, $level)
 	return $startdate;
 }
 add_filter("pmpro_checkout_start_date", "pmpro_checkout_start_date_keep_startdate", 10, 3);
+
+/*
+	Stripe Lite Pulled into Core Plugin
+*/
+//Stripe Lite, Set the Globals/etc
+$stripe_billingaddress = pmpro_getOption("stripe_billingaddress");
+if(empty($stripe_billingaddress))
+{
+	global $pmpro_stripe_lite;
+	$pmpro_stripe_lite = true;
+	add_filter("pmpro_stripe_lite", "__return_true");
+	add_filter("pmpro_required_billing_fields", "pmpro_required_billing_fields_stripe_lite");
+}
+
+//Stripe Lite, Don't Require Billing Fields
+function pmpro_required_billing_fields_stripe_lite($fields)
+{
+	global $gateway;
+	
+	//ignore if not using stripe
+	if($gateway != "stripe")
+		return $fields;
+	
+	//some fields to remove
+	$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
+	
+	//if a user is logged in, don't require bemail either
+	global $current_user;
+	if(!empty($current_user->user_email))
+		$remove[] = 'bemail';
+	
+	//remove the fields
+	foreach($remove as $field)
+		unset($fields[$field]);
+			
+	//ship it!
+	return $fields;
+}

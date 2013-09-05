@@ -28,6 +28,7 @@
 		pmpro_setOption("transactionkey");
 		pmpro_setOption("stripe_secretkey");
 		pmpro_setOption("stripe_publishablekey");
+		pmpro_setOption("stripe_billingaddress");
 		pmpro_setOption("braintree_merchantid");
 		pmpro_setOption("braintree_publickey");
 		pmpro_setOption("braintree_privatekey");
@@ -103,6 +104,7 @@
 	$transactionkey = pmpro_getOption("transactionkey");
 	$stripe_secretkey = pmpro_getOption("stripe_secretkey");
 	$stripe_publishablekey = pmpro_getOption("stripe_publishablekey");		
+	$stripe_billingaddress = pmpro_getOption("stripe_billingaddress");
 	$braintree_merchantid = pmpro_getOption("braintree_merchantid");
 	$braintree_publickey = pmpro_getOption("braintree_publickey");
 	$braintree_privatekey = pmpro_getOption("braintree_privatekey");
@@ -297,7 +299,7 @@
 				<td>
 					<input type="text" name="stripe_publishablekey" size="60" value="<?php echo $stripe_publishablekey?>" />
 				</td>
-			</tr>
+			</tr>						
 			
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
@@ -437,6 +439,20 @@
 					<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'pmpro');?></small></p>
 				</td>
 			</tr>
+			
+			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'pmpro');?>:</label>
+				</th>
+				<td>
+					<select id="stripe_billingaddress" name="stripe_billingaddress">
+						<option value="0" <?php if(empty($stripe_billingaddress)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+						<option value="1" <?php if(!empty($stripe_billingaddress)) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>						
+					</select>
+					<small><?php _e("Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.", 'pmpro');?></small>
+				</td>
+			</tr>
+			
 			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax"><?php _e('Sales Tax', 'pmpro');?> <small>(<?php _e('optional', 'pmpro');?>)</small></label>

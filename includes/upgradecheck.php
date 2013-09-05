@@ -78,6 +78,12 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.72");
 		$pmpro_db_version = 1.72;
 	}
+	
+	/*
+		1.7.3
+		- default Stripe Billing Fields to true
+		- unless Stripe Lite is activated, then deactivate Stripe Lite and set Stripe Billing Fields to false
+	*/
 }
 
 function pmpro_upgrade_1_7()
