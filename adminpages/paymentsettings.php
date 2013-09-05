@@ -332,7 +332,7 @@
 				</td>
 			</tr>
 
-			<tr class="gateway gateway_twocheckout" <?php if($gateway != "gateway_twocheckout") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="twocheckout_apiusername"><?php _e('API Username', 'pmpro');?>:</label>
 				</th>
@@ -340,7 +340,7 @@
 					<input type="text" name="twocheckout_apiusername" size="60" value="<?php echo $twocheckout_apiusername?>" />
 				</td>
 			</tr>
-			<tr class="gateway gateway_twocheckout" <?php if($gateway != "gateway_twocheckout") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="twocheckout_apipassword"><?php _e('API Password', 'pmpro');?>:</label>
 				</th>
@@ -349,7 +349,7 @@
 				</td>
 			</tr>
 
-			<tr class="gateway gateway_cybersource" <?php if($gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="cybersource_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
 				</th>
@@ -357,7 +357,7 @@
 					<input type="text" name="cybersource_merchantid" size="60" value="<?php echo $cybersource_merchantid?>" />
 				</td>
 			</tr>
-			<tr class="gateway gateway_cybersource" <?php if($gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="cybersource_securitykey"><?php _e('Live Transaction Security Key', 'pmpro');?>:</label>
 				</th>
@@ -395,7 +395,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "gateway_twocheckout" && $gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="currency_paypal"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
@@ -414,7 +414,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "gateway_twocheckout" && $gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_payflowpro gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards"><?php _e('Accepted Credit Card Types', 'pmpro');?></label>
 				</th>
@@ -437,7 +437,7 @@
 					<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'pmpro');?></small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "gateway_twocheckout" && $gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_authorizenet gateway_paypal gateway_paypalexpress gateway_check gateway_paypalstandard gateway_payflowpro gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="tax"><?php _e('Sales Tax', 'pmpro');?> <small>(<?php _e('optional', 'pmpro');?>)</small></label>
 				</th>
@@ -449,7 +449,7 @@
 					<p><small><?php _e('If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.', 'pmpro');?></small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "gateway_twocheckout" && $gateway != "gateway_cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="use_ssl"><?php _e('Use SSL', 'pmpro');?>:</label>
 				</th>
