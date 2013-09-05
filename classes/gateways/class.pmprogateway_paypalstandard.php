@@ -69,7 +69,7 @@
 				$paypal_args = array( 
 					'cmd'           => '_xclick-subscriptions', 
 					'a1'			=> number_format($initial_payment, 2),
-					'p1'			=> '1',
+					'p1'			=> $order->BillingFrequency,
 					't1'			=> $period,
 					'a3'			=> number_format($amount, 2),
 					'p3'			=> $order->BillingFrequency,

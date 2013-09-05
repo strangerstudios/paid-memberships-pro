@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed sales report to not show $ when hovering over bars for "sales" vs. "revenue".
 * Fixed notices and expiration dates in login report.
 * Fixed notices in includes/notifications.php (Thanks, Nilesh)
+* Fixed issue where PayPal Standard levels using a billing frequency > 1 (e.g. every 3 months) would have an extra payment charged after one period.
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
