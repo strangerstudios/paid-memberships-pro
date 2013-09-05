@@ -1582,6 +1582,20 @@
 				else
 					$pmpro_gateway_ready = false;
 			}
+			elseif($gateway == "twocheckout")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("twocheckout_apiusername") && pmpro_getOption("twocheckout_apipassword"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
+			elseif($gateway == "cybersource")
+			{
+				if(pmpro_getOption("gateway_environment") && pmpro_getOption("cybersource_merchantid") && pmpro_getOption("cybersource_securitykey"))
+					$pmpro_gateway_ready = true;
+				else
+					$pmpro_gateway_ready = false;
+			}
 			else
 			{
 				$pmpro_gateway_ready = false;
