@@ -561,7 +561,7 @@
 				if($pmpro_msgt != "pmpro_error")
 				{				
 					//save user fields for PayPal Express
-					if($gateway == "paypalexpress" || $gateway == "paypalstandard")
+					if($gateway == "paypalexpress")
 					{
 						if(!$current_user->ID)
 						{
