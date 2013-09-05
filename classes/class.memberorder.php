@@ -353,6 +353,7 @@
 			//these fix some warnings/notices
 			if(empty($this->billing))
 			{
+				$this->billing = new stdClass();
 				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
 			}
 			if(empty($this->user_id))
