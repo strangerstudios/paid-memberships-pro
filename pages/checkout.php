@@ -334,7 +334,7 @@
 				</div>
 				
 				<?php
-					$longform_address = apply_filters("pmpro_longform_address", false);
+					$longform_address = apply_filters("pmpro_longform_address", true);
 					if($longform_address)
 					{
 				?>
@@ -404,7 +404,7 @@
 				?>
 				
 				<?php
-					$show_country = apply_filters("pmpro_international_addresses", false);
+					$show_country = apply_filters("pmpro_international_addresses", true);
 					if($show_country)
 					{
 				?>
