@@ -101,6 +101,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.3 =
+* pmpro_longform_address and pmpro_international_addresses now default to true. See this gist to go back to US-specific address format: https://gist.github.com/strangerstudios/6478242
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
 * Fixed notice in getfile.php
@@ -110,7 +111,6 @@ Not sure? You can find out by doing a bit a research.
 * Fixed issue where PayPal Standard levels using a billing frequency > 1 (e.g. every 3 months) would have an extra payment charged after one period.
 
 = 1.7.2.1 =
-* pmpro_longform_address and pmpro_international_addresses now default to true. See this gist to go back to US-specific address format: https://gist.github.com/strangerstudios/6478242
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
 * Fixed warning coming from login report tracking.
 * Changed all $wpdb->escape() calls to esc_sql() to fix notice.
