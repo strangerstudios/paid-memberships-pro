@@ -207,7 +207,7 @@
 					<label for="payflow_partner"><?php _e('Partner', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="payflow_partner" size="60" value="<?php echo $payflow_partner?>" />
+					<input type="text" id="payflow_partner" name="payflow_partner" size="60" value="<?php echo esc_attr($payflow_partner)?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -215,7 +215,7 @@
 					<label for="payflow_vendor"><?php _e('Vendor', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="payflow_vendor" size="60" value="<?php echo $payflow_vendor?>" />
+					<input type="text" id="payflow_vendor" name="payflow_vendor" size="60" value="<?php echo esc_attr($payflow_vendor)?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -223,7 +223,7 @@
 					<label for="payflow_user"><?php _e('User', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="payflow_user" size="60" value="<?php echo $payflow_user?>" />
+					<input type="text" id="payflow_user" name="payflow_user" size="60" value="<?php echo esc_attr($payflow_user)?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -231,7 +231,7 @@
 					<label for="payflow_pwd"><?php _e('Password', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="password" name="payflow_pwd" size="60" value="<?php echo $payflow_pwd?>" />
+					<input type="password" id="payflow_pwd" name="payflow_pwd" size="60" value="<?php echo esc_attr($payflow_pwd)?>" />
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -239,7 +239,7 @@
 					<label for="gateway_email"><?php _e('Gateway Account Email', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="gateway_email" size="60" value="<?php echo $gateway_email?>" />
+					<input type="text" id="gateway_email" name="gateway_email" size="60" value="<?php echo esc_attr($gateway_email)?>" />
 				</td>
 			</tr>                
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -247,7 +247,7 @@
 					<label for="apiusername"><?php _e('API Username', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="apiusername" size="60" value="<?php echo $apiusername?>" />
+					<input type="text" id="apiusername" name="apiusername" size="60" value="<?php echo esc_attr($apiusername)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -255,7 +255,7 @@
 					<label for="apipassword"><?php _e('API Password', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="apipassword" size="60" value="<?php echo $apipassword?>" />
+					<input type="text" id="apipassword" name="apipassword" size="60" value="<?php echo esc_attr($apipassword)?>" />
 				</td>
 			</tr> 
 			<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -263,7 +263,7 @@
 					<label for="apisignature"><?php _e('API Signature', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="apisignature" size="60" value="<?php echo $apisignature?>" />
+					<input type="text" id="apisignature" name="apisignature" size="60" value="<?php echo esc_attr($apisignature)?>" />
 				</td>
 			</tr> 
 			
@@ -272,7 +272,7 @@
 					<label for="loginname"><?php _e('Login Name', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="loginname" size="60" value="<?php echo $loginname?>" />
+					<input type="text" id="loginname" name="loginname" size="60" value="<?php echo esc_attr($loginname)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -280,7 +280,7 @@
 					<label for="transactionkey"><?php _e('Transaction Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="transactionkey" size="60" value="<?php echo $transactionkey?>" />
+					<input type="text" id="transactionkey" name="transactionkey" size="60" value="<?php echo esc_attr($transactionkey)?>" />
 				</td>
 			</tr>
 			
@@ -289,7 +289,7 @@
 					<label for="stripe_secretkey"><?php _e('Secret Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="stripe_secretkey" size="60" value="<?php echo $stripe_secretkey?>" />
+					<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($stripe_secretkey)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
@@ -297,7 +297,7 @@
 					<label for="stripe_publishablekey"><?php _e('Publishable Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="stripe_publishablekey" size="60" value="<?php echo $stripe_publishablekey?>" />
+					<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60" value="<?php echo esc_attr($stripe_publishablekey)?>" />
 				</td>
 			</tr>						
 			
@@ -306,7 +306,7 @@
 					<label for="braintree_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="braintree_merchantid" size="60" value="<?php echo $braintree_merchantid?>" />
+					<input type="text" id="braintree_merchantid" name="braintree_merchantid" size="60" value="<?php echo esc_attr($braintree_merchantid)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -314,7 +314,7 @@
 					<label for="braintree_publickey"><?php _e('Public Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="braintree_publickey" size="60" value="<?php echo $braintree_publickey?>" />
+					<input type="text" id="braintree_publickey" name="braintree_publickey" size="60" value="<?php echo esc_attr($braintree_publickey)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -322,7 +322,7 @@
 					<label for="braintree_privatekey"><?php _e('Private Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="braintree_privatekey" size="60" value="<?php echo $braintree_privatekey?>" />
+					<input type="text" id="braintree_privatekey" name="braintree_privatekey" size="60" value="<?php echo esc_attr($braintree_privatekey)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -339,7 +339,7 @@
 					<label for="twocheckout_apiusername"><?php _e('API Username', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="twocheckout_apiusername" size="60" value="<?php echo $twocheckout_apiusername?>" />
+					<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($twocheckout_apiusername)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -347,7 +347,7 @@
 					<label for="twocheckout_apipassword"><?php _e('API Password', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="twocheckout_apipassword" size="60" value="<?php echo $twocheckout_apipassword?>" />
+					<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($twocheckout_apipassword)?>" />
 				</td>
 			</tr>
 
@@ -356,15 +356,15 @@
 					<label for="cybersource_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="cybersource_merchantid" size="60" value="<?php echo $cybersource_merchantid?>" />
+					<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" size="60" value="<?php echo esc_attr($cybersource_merchantid)?>" />
 				</td>
 			</tr>
 			<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="cybersource_securitykey"><?php _e('Live Transaction Security Key', 'pmpro');?>:</label>
+					<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="cybersource_securitykey" size="60" value="<?php echo $cybersource_securitykey?>" />
+					<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($cybersource_securitykey);?></textarea>					
 				</td>
 			</tr>
 			
@@ -459,9 +459,9 @@
 				</th>
 				<td>
 					<?php _e('Tax State', 'pmpro');?>:
-					<input type="text" name="tax_state" size="4" value="<?php echo $tax_state?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'pmpro');?>)</small>
+					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'pmpro');?>)</small>
 					&nbsp; Tax Rate:
-					<input type="text" name="tax_rate" size="10" value="<?php echo $tax_rate?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'pmpro');?>)</small>
+					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'pmpro');?>)</small>
 					<p><small><?php _e('If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.', 'pmpro');?></small></p>
 				</td>
 			</tr>
@@ -490,7 +490,7 @@
 					<label for="sslseal"><?php _e('SSL Seal Code', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes($sslseal)?></textarea>
+					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo esc_textarea($sslseal)?></textarea>
 				</td>
 		   </tr>		   
 		   <tr>
