@@ -413,10 +413,10 @@
 					<select name="bcountry" class=" <?php echo pmpro_getClassForField("bcountry");?>">
 						<?php
 							global $pmpro_countries, $pmpro_default_country;
+							if(!$bcountry)
+								$bcountry = $pmpro_default_country;
 							foreach($pmpro_countries as $abbr => $country)
-							{
-								if(!$bcountry)
-									$bcountry = $pmpro_default_country;
+							{								
 							?>
 							<option value="<?php echo $abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
 							<?php
@@ -671,7 +671,7 @@
 			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />		
-				<input type="image" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
+				<input type="image" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
 			<?php } ?>
 			
