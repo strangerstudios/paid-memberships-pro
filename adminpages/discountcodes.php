@@ -278,7 +278,7 @@
 				{
 					$code = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE id = '" . $edit . "' LIMIT 1", OBJECT);
 					$uses = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $code->id . "'");
-					$levels = $wpdb->get_results("SELECT l.id, l.name, cl.initial_payment, cl.billing_amount, cl.cycle_number, cl.period, cl.billing_limit, cl.trial_amount, cl.trial_limit FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_discount_codes_levels cl ON l.id = cl.level_id WHERE cl.code_id = '" . $code->code . "'");
+					$levels = $wpdb->get_results("SELECT l.id, l.name, cl.initial_payment, cl.billing_amount, cl.cycle_number, cl.cycle_period, cl.billing_limit, cl.trial_amount, cl.trial_limit FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_discount_codes_levels cl ON l.id = cl.level_id WHERE cl.code_id = '" . $code->code . "'");
 					$temp_id = $code->id;
 				}
 				elseif(!empty($copy) && $copy > 0)		
