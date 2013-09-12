@@ -92,7 +92,10 @@ function pmpro_wp()
 			if(!empty($post->ID) && $pmpro_page_id == $post->ID)
 			{
 				//preheader
-				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
+				if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/preheaders/" . $pmpro_page_name . ".php"))
+					require_once(get_stylesheet_directory() . "/paid-memberships-pro/preheaders/" . $pmpro_page_name . ".php");
+				else	
+					require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 				
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
@@ -120,7 +123,10 @@ function pmpro_wp()
 		if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_checkout]") !== false)
 		{
 			$pmpro_body_classes[] = "pmpro-checkout";
-			require_once(PMPRO_DIR . "/preheaders/checkout.php");	
+			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/preheaders/checkout.php"))
+				require_once(get_stylesheet_directory() . "/paid-memberships-pro/preheaders/checkout.php");
+			else
+				require_once(PMPRO_DIR . "/preheaders/checkout.php");	
 		}
 	}
 }
