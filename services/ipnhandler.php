@@ -35,7 +35,7 @@
 	$payer_email = pmpro_getParam("payer_email", "POST");			
 	
 	//check the receiver_email
-	if(!pmpro_ipnCheckReceiverEmail(array($receiver_email, $business_email)))
+	if(!pmpro_ipnCheckReceiverEmail(array(strtolower($receiver_email), strtolower($business_email))))
 	{
 		//not our request
 		pmpro_ipnExit();
@@ -219,9 +219,9 @@
 		//post back to PayPal system to validate
 		$gateway_environment = pmpro_getOption("gateway_environment");
 		if($gateway_environment == "sandbox")
-			$fp = wp_remote_post('https://www.' . $gateway_environment . '.paypal.com?' . $req);
+			$fp = wp_remote_post('https://www.' . $gateway_environment . '.paypal.com?' . $req, array("Host"=>"www.paypal.com"));
 		else
-			$fp = wp_remote_post('https://www.paypal.com?' . $req);
+			$fp = wp_remote_post('https://www.paypal.com?' . $req, array("Host"=>"www.paypal.com"));
 			
 		//error from PayPal
 		if(!empty($fp->errors))
@@ -267,7 +267,7 @@
 		if(!is_array($email))
 			$email = array($email);
 		
-		if(!in_array(pmpro_getOption('gateway_email'), $email))
+		if(!in_array(strtolower(pmpro_getOption('gateway_email')), $email))
 		{			
 			//not yours					
 			ipnlog("ERROR: receiver_email (" . $_POST['receiver_email'] . ") did not match (" . pmpro_getOption('gateway_email') . ")");			
