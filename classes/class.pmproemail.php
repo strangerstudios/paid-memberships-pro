@@ -142,6 +142,7 @@
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", "pmpro"), $user->user_login, get_option("blogname"));			
 			$this->template = "cancel_admin";
 			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
+			$this->data['membership_id'] = $old_level_id;
 			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
 			
 			//start and end date
@@ -177,6 +178,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => pmpro_url("account"),
@@ -268,6 +270,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => pmpro_url("account"),
@@ -348,6 +351,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,																	
@@ -392,6 +396,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,																	
@@ -431,6 +436,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,									
@@ -468,6 +474,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,									
@@ -507,6 +514,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,									
@@ -546,6 +554,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,	
@@ -606,6 +615,7 @@
 				"name" => $user->display_name, 
 				"user_login" => $user->user_login,
 				"sitename" => get_option("blogname"), 				
+				"membership_id" => $user->membership_level->id,
 				"membership_level_name" => $user->membership_level->name, 
 				"siteemail" => get_bloginfo("admin_email"), 
 				"login_link" => wp_login_url(), 
