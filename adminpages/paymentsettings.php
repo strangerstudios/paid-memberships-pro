@@ -176,12 +176,7 @@
 						<option value="cybersource" <?php selected( $gateway, "cybersource" ); ?>>CyberSource</option>
 					</select>                        
 				</td>
-			</tr> 			
-			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>				
-				<td colspan="2">
-					<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('Payflow Pro currently only supports one-time payments. Users will not be able to checkout for levels with recurring payments.', 'pmpro');?>
-				</td>
-			</tr>
+			</tr> 						
 			<tr>
 				<th scope="row" valign="top">
 					<label for="gateway_environment"><?php _e('Gateway Environment', 'pmpro');?>:</label>

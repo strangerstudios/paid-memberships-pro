@@ -10,6 +10,8 @@ The easiest way to GET PAID with your WordPress site. Flexible content control b
 == Description ==
 Set up unlimited membership levels and provide restricted access to pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more. Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
 
+[youtube http://www.youtube.com/watch?v=YBYM7rDL2as]
+
 Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
 = Integrate with The Most Popular Payment Gateways. =
@@ -26,7 +28,7 @@ Set up the membership levels that best fit your business, whether they are Free,
 2. Members List with CSV Export
 3. Easy Payment Gateway Setup with testing mode.
 4. Ever expanding list of Membership Reports
-5. Membership Discounts with customizable price rules. 
+5. Membership Discounts with customizable price rules.
 
 = Control the User-Experience from Start to Finish. =
 Your members can update their billing information or cancel their account directly on your site. Any active subscription will be cancelled at the payment gateway for you.
@@ -110,6 +112,8 @@ Not sure? You can find out by doing a bit a research.
 * Fixed notices in includes/notifications.php (Thanks, Nilesh)
 * Fixed issue where PayPal Standard levels using a billing frequency > 1 (e.g. every 3 months) would have an extra payment charged after one period.
 * Fixed SQL error in discount code admin page that could result in cycle_periods of code levels saving incorrectly. (Thanks, Sam D'Amico)
+* Removed note that Payflow gateway doesn't support recurring payments. It does.
+* Now passing the membership level id in the $data var for checkout and cancellation emails. The key is "membership_id" so use $data['membership_id'] to check/access it.
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
