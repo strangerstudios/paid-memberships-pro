@@ -63,7 +63,7 @@
 			$ssorder = new MemberOrder();
 			$ssorder->getLastMemberOrder();
 			$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");				
-			if(!empty($ssorder->id) && $ssorder->gateway != "check" && $ssorder->gateway != "paypalexpress")
+			if(!empty($ssorder->id) && $ssorder->gateway != "check" && $ssorder->gateway != "paypalexpress" && $ssorder->gateway != "paypalstandard" && $ssorder->gateway != "twocheckout")
 			{
 				//default values from DB (should be last order or last update)
 				$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
@@ -108,7 +108,7 @@
 					<?php } ?>
 					
 					<?php 
-						if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) 
+						if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) 
 						{ 
 							?>
 							<p><a href="<?php echo pmpro_url("billing", "")?>"><?php _e("Edit Billing Information", "pmpro"); ?></a></p>
@@ -148,7 +148,7 @@
 				<?php 
 					do_action("pmpro_member_links_top");
 				?>
-				<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe")))) { ?>
+				<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
 					<li><a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Information", "pmpro");?></a></li>
 				<?php } ?>
 				<?php if(count($pmpro_levels) > 1) { ?>
