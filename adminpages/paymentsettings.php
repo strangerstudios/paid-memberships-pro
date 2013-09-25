@@ -35,6 +35,8 @@
 		pmpro_setOption("braintree_encryptionkey");
 		pmpro_setOption("twocheckout_apiusername");
 		pmpro_setOption("twocheckout_apipassword");
+		pmpro_setOption("twocheckout_accountnumber");
+		pmpro_setOption("twocheckout_secretword");
 		pmpro_setOption("cybersource_merchantid");
 		pmpro_setOption("cybersource_securitykey");
 		
@@ -111,6 +113,8 @@
 	$braintree_encryptionkey = pmpro_getOption("braintree_encryptionkey");
 	$twocheckout_apiusername = pmpro_getOption("twocheckout_apiusername");
 	$twocheckout_apipassword = pmpro_getOption("twocheckout_apipassword");
+	$twocheckout_accountnumber = pmpro_getOption("twocheckout_accountnumber");
+	$twocheckout_secretword = pmpro_getOption("twocheckout_secretword");
 	$cybersource_merchantid = pmpro_getOption("cybersource_merchantid");
 	$cybersource_securitykey = pmpro_getOption("cybersource_securitykey");
 	
@@ -345,6 +349,22 @@
 					<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($twocheckout_apipassword)?>" />
 				</td>
 			</tr>
+			<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="twocheckout_accountnumber"><?php _e('Account Number', 'pmpro');?>:</label>
+				</th>
+				<td>
+					<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $twocheckout_accountnumber?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="twocheckout_secretword"><?php _e('Secret Word', 'pmpro');?>:</label>
+				</th>
+				<td>
+					<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $twocheckout_secretword?>" />
+				</td>
+			</tr>
 
 			<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
@@ -502,6 +522,14 @@
 				</th>
 				<td>
 					<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre>.</p>
+				</td>
+			</tr>
+		   <tr class="gateway gateway_paypal gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
+				</th>
+				<td>
+					<p><?php _e('To fully integrate with TwoCheckout, be sure to set your TwoCheckout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre>.</p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
