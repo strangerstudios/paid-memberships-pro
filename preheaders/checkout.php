@@ -415,7 +415,7 @@
 			$password2 = $password;
 		}	
 				
-		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard")
+		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "twocheckout")
 		{									
 			//if using stripe lite, remove some fields from the required array
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
@@ -847,7 +847,7 @@
 			$user_id = $current_user->ID;	
 		
 		if($user_id)
-		{				
+		{
 			//save user id and send PayPal standard customers to PayPal now
 			if($gateway == "paypalstandard" && !empty($morder))
 			{
@@ -861,6 +861,21 @@
 				do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
 				
 				$morder->Gateway->sendToPayPal($morder);
+			}
+
+			//save user id and send Twocheckout customers to Twocheckout now
+			if($gateway == "twocheckout" && !empty($morder))
+			{
+				$morder->user_id = $user_id;				
+				$morder->saveOrder();
+				
+				//save discount code use
+				if(!empty($discount_code_id))
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
+				
+				do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
+				
+				$morder->Gateway->sendToTwocheckout($morder);
 			}
 			
 			//calculate the end date
