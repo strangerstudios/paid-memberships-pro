@@ -734,4 +734,20 @@
 	jQuery('.pmpro_error').bind("change keyup input", function() {
 		jQuery(this).removeClass('pmpro_error');
 	});
+	
+	//click apply button on enter in discount code box
+	jQuery('#discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   jQuery('#discount_code_button').click();
+	    }
+	});
+	
+	//click apply button on enter in *other* discount code box
+	jQuery('#other_discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   jQuery('#other_discount_code_button').click();
+	    }
+	});
 </script>

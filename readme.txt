@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 * Now passing the membership level id in the $data var for checkout and cancellation emails. The key is "membership_id" so use $data['membership_id'] to check/access it.
 * No longer setting the subtotal property of orders when the "subscribe" method of the gateways is called. This will fix cases where an initial order or a subscription with a free trial showed a charge amount > $0.
 * Allowing dashes (-) in discount codes now.
+* Clicking enter in discount code box at checkout will no longer submit form and will click the "apply" button.
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
