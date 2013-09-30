@@ -743,6 +743,14 @@
 	    }
 	});
 	
+	//hide apply button if a discount code was passed in
+	<?php if(!empty($_REQUEST['discount_code'])) {?>
+		jQuery('#discount_code_button').hide();
+		jQuery('#discount_code').bind('change keyup', function() { 
+			jQuery('#discount_code_button').show(); 
+		});
+	<?php } ?>
+	
 	//click apply button on enter in *other* discount code box
 	jQuery('#other_discount_code').keydown(function (e){
 	    if(e.keyCode == 13){
