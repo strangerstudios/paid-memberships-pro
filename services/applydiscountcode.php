@@ -13,7 +13,7 @@
 	global $wpdb;
 	if(!empty($_REQUEST['code']))
 	{
-		$discount_code = preg_replace("/[^A-Za-z0-9]/", "", $_REQUEST['code']);
+		$discount_code = preg_replace("/[^A-Za-z0-9\-]/", "", $_REQUEST['code']);
 		$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
 	}
 	else

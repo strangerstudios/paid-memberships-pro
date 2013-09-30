@@ -114,6 +114,8 @@ Not sure? You can find out by doing a bit a research.
 * Fixed SQL error in discount code admin page that could result in cycle_periods of code levels saving incorrectly. (Thanks, Sam D'Amico)
 * Removed note that Payflow gateway doesn't support recurring payments. It does.
 * Now passing the membership level id in the $data var for checkout and cancellation emails. The key is "membership_id" so use $data['membership_id'] to check/access it.
+* No longer setting the subtotal property of orders when the "subscribe" method of the gateways is called. This will fix cases where an initial order or a subscription with a free trial showed a charge amount > $0.
+* Allowing dashes (-) in discount codes now.
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.

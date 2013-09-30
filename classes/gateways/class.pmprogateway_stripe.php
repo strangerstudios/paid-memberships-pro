@@ -216,8 +216,7 @@
 			
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);
-			$order->subtotal = $amount;
+			$amount_tax = $order->getTaxForPrice($amount);			
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
 			/*

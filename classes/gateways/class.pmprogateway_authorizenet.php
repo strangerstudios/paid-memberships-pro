@@ -490,8 +490,7 @@
 			//taxes
 			$amount_tax = $order->getTaxForPrice($amount);
 			$trial_tax = $order->getTaxForPrice($trialAmount);
-			
-			$order->subtotal = $amount;
+						
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 			$trialAmount = round((float)$trialAmount + (float)$trial_tax, 2);
 			
