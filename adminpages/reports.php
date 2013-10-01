@@ -16,7 +16,7 @@
 		foreach($pmpro_reports as $report => $title)
 		{
 		?>
-		<div class="postbox-container">
+		<div class="postbox-container <?php if($count++ % 2) { echo "even"; } ?>">
                <div id="pmpro_report_<?php echo $report; ?>" class="postbox pmpro_clickable" onclick="location.href='<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>';">			
                     <h3 class="hndle"><span><?php echo $title; ?></span></h3>
                     <div class="inside">

@@ -33,9 +33,6 @@ add_action("init", "pmpro_report_sales_init");
 function pmpro_report_sales_widget()
 {
 	global $wpdb, $pmpro_currency_symbol;
-	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
-	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
-	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
 ?>
 <style>
 	#pmpro_report_sales div {text-align: center;}
@@ -43,18 +40,22 @@ function pmpro_report_sales_widget()
 </style>
 <span id="#pmpro_report_sales">
 	<div style="width: 25%; float: left;">	
+		<em><?php echo pmpro_getSales("all time");?></em>	
 		<label>All Time</label>
 		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("all time"), 2);?></em>		
 	</div>
 	<div style="width: 25%; float: left;">	
+		<em><?php echo pmpro_getSales("this year");?></em>
 		<label>This Year</label>
 		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("this year"), 2);?></em>		
 	</div>
 	<div style="width: 25%; float: left;">	
+		<em><?php echo pmpro_getSales("this month");?></em>
 		<label>This Month</label>
 		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("this month"), 2);?></em>		
 	</div>
 	<div style="width: 25%; float: left;">
+		<em><?php echo pmpro_getSales("today");?></em>
 		<label>Today</label>
 		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("today"), 2);?></em>		
 	</div>	
