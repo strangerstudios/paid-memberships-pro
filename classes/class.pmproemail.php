@@ -186,7 +186,7 @@
 								"user_email" => $user->user_email,0								
 							);						
 			
-			if($invoice)
+			if($invoice->code)
 			{									
 				if($invoice->gateway == "paypalexpress")
 					$this->template = "checkout_express";
@@ -219,7 +219,7 @@
 				else
 					$this->data["discount_code"] = "";
 			}
-			elseif(pmpro_isLevelFree($user->membership_level))
+			elseif(pmpro_isLevelFree($user->membership_level) || $invoice && !$invoice->code)
 			{
 				$this->template = "checkout_free";		
 				global $discount_code;
@@ -278,7 +278,7 @@
 								"user_email" => $user->user_email,0								
 							);						
 			
-			if($invoice)
+			if($invoice->code)
 			{									
 				if($invoice->gateway == "paypalexpress")
 					$this->template = "checkout_express_admin";
@@ -308,7 +308,7 @@
 				else
 					$this->data["discount_code"] = "";
 			}
-			elseif(pmpro_isLevelFree($user->membership_level))
+			elseif(pmpro_isLevelFree($user->membership_level) || $invoice && !$invoice->code)
 			{
 				$this->template = "checkout_free_admin";		
 				global $discount_code;
