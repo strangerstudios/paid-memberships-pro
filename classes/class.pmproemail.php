@@ -96,7 +96,7 @@
 			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
-			
+						
 			if(wp_mail($this->email,$this->subject,$this->body,$this->headers))
 			{
 				return true;
@@ -185,8 +185,8 @@
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,0								
 							);						
-			
-			if($invoice)
+						
+			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))
 			{									
 				if($invoice->gateway == "paypalexpress")
 					$this->template = "checkout_express";

@@ -106,19 +106,21 @@ Not sure? You can find out by doing a bit a research.
 * pmpro_longform_address and pmpro_international_addresses now default to true. See this gist to go back to US-specific address format: https://gist.github.com/strangerstudios/6478242
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
-* Fixed notice in getfile.php
+* Added a new report showing signups vs. cancellations, monthly recurring revenue, and lifetime value.
+* Fixed issue where the checkout_paid template was always being used for emails. It now checks if the level at checkout is free and sends either the checkout_free, checkout_paid, or checkout_trial templates accordingly. (Thanks, inator on GitHub)
 * Fixed sales report to not show $ when hovering over bars for "sales" vs. "revenue".
-* Fixed notices and expiration dates in login report.
-* Fixed notices in includes/notifications.php (Thanks, Nilesh)
 * Fixed issue where PayPal Standard levels using a billing frequency > 1 (e.g. every 3 months) would have an extra payment charged after one period.
 * Fixed SQL error in discount code admin page that could result in cycle_periods of code levels saving incorrectly. (Thanks, Sam D'Amico)
 * Removed note that Payflow gateway doesn't support recurring payments. It does.
 * Now passing the membership level id in the $data var for checkout and cancellation emails. The key is "membership_id" so use $data['membership_id'] to check/access it.
 * No longer setting the subtotal property of orders when the "subscribe" method of the gateways is called. This will fix cases where an initial order or a subscription with a free trial showed a charge amount > $0.
-* Allowing dashes (-) in discount codes now.
 * Clicking enter in discount code box at checkout will no longer submit form and will click the "apply" button.
 * Hiding the "Apply" button on the checkout page if a discount code was passed in. Showing it if the text field is changed.
 * Authorize.net now supports CAD, GBP, and EUR currencies (for US merchants only) http://community.developer.authorize.net/t5/The-Authorize-Net-Developer-Blog/Authorize-Net-Expansion-into-Canada-the-United-Kingdom-and/ba-p/33690
+* Fixed notice in getfile.php
+* Fixed notices and expiration dates in login report.
+* Fixed notices in includes/notifications.php (Thanks, Nilesh)
+* Allowing dashes (-) in discount codes now.
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
