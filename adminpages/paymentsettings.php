@@ -45,9 +45,9 @@
 		$currency_stripe = $_POST['currency_stripe'];
 		$currency_fixed = $_POST['currency_fixed'];
 
-		if($_POST['gateway'] == "authorizenet" || $_POST['gateway'] == "payflowpro")
+		if($_POST['gateway'] == "payflowpro")
 			pmpro_setOption("currency", $currency_fixed);
-		elseif($_POST['gateway'] == "stripe")
+		elseif($_POST['gateway'] == "stripe" || $_POST['gateway'] == "authorizenet")
 			pmpro_setOption("currency", $currency_stripe);
 		else
 			pmpro_setOption("currency", $currency_paypal);
@@ -383,7 +383,7 @@
 				</td>
 			</tr>
 			
-			<tr class="gateway gateway_authorizenet gateway_payflowpro" <?php if($gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
@@ -393,7 +393,7 @@
 				</td>
 			</tr>						
 						
-			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_stripe gateway_authorizenet" <?php if($gateway != "stripe" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>

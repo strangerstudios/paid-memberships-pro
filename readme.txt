@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 * Allowing dashes (-) in discount codes now.
 * Clicking enter in discount code box at checkout will no longer submit form and will click the "apply" button.
 * Hiding the "Apply" button on the checkout page if a discount code was passed in. Showing it if the text field is changed.
+* Authorize.net now supports CAD, GBP, and EUR currencies (for US merchants only) http://community.developer.authorize.net/t5/The-Authorize-Net-Developer-Blog/Authorize-Net-Expansion-into-Canada-the-United-Kingdom-and/ba-p/33690
 
 = 1.7.2.1 =
 * Fixed warning when trying to load the "free" gateway on free level checkouts.
