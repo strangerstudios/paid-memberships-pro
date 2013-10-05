@@ -105,6 +105,9 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.3 =
 * pmpro_longform_address and pmpro_international_addresses now default to true. See this gist to go back to US-specific address format: https://gist.github.com/strangerstudios/6478242
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
+* Added language files for es_ES, es_CL, and es_PE. Thanks, Javier Monorové (zillionsk8 on GitHub).
+* Added language files for fr_FR. Thanks, Jérémy De la casa.
+* NOTE: Language files may not be complete. The get involved, join us on GitHub. 
 * Added Cybersource and 2Checkout gateways in beta.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
 * Added a new report showing signups vs. cancellations, monthly recurring revenue, and lifetime value.
