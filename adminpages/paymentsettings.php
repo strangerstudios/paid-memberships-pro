@@ -180,6 +180,11 @@
 						<option value="cybersource" <?php selected( $gateway, "cybersource" ); ?>>CyberSource</option>
 					</select>                        
 				</td>
+			</tr>
+			<tr class="gateway gateway_cybersource gateway_twocheckout" <?php if($gateway != "cybersource" && $gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+				<td colspan="2">
+					<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'pmpro');?>
+				</td>	
 			</tr> 						
 			<tr>
 				<th scope="row" valign="top">
