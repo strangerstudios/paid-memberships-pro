@@ -297,7 +297,9 @@ function pmpro_report_memberships_page()
 			</select>
 			<select id="type" name="type">
 				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php _e('Signups vs. Cancellations', 'pmpro');?></option>
+				<?php /*
 				<option value="mrr_ltv" <?php selected($type, "mrr_ltv");?>><?php _e('MRR & LTV', 'pmpro');?></option>
+				*/ ?>
 			</select>
 			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
 			<select id="month" name="month">
@@ -589,7 +591,7 @@ function pmpro_getCancellationRate($period, $levels = 'all')
 		return false;
 	
 	$rate = number_format(($cancellations / $signups)*100, 2);
-		
+	
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]))
 		$cache[$period][$levels] = $rate;
@@ -604,14 +606,21 @@ function pmpro_getCancellationRate($period, $levels = 'all')
 }
 
 //get LTV
-function pmpro_getLTV($period, $levels = 'all', $mrr = NULL, $cancellation_rate = NULL)
+function pmpro_getLTV($period, $levels = 'all', $mrr = NULL, $signups = NULL, $cancellation_rate = NULL)
 {	
 	if(empty($mrr))
 		$mrr = pmpro_getMRR($period, $levels);
+	if(empty($signups))
+		$signups = pmpro_getSignups($period, $levels);
 	if(empty($cancellation_rate))
 		$cancellation_rate = pmpro_getCancellationRate($period, $levels);
 	
-	$ltv = $mrr * (1/$cancellation_rate);
+	//average monthly spend
+	if(empty($signups))
+		return false;
+	$ams = $mrr / $signups;
+	
+	$ltv = $ams * (1/$cancellation_rate);
 
 	return $ltv;
 }

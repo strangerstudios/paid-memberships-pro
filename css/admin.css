@@ -93,6 +93,5 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 
 /* reports */
 .pmpro_reports-holder { }
-.pmpro_reports-holder .postbox-container {margin-right: 5px; }
 .pmpro_clickable {cursor: pointer;}
 .js .postbox.pmpro_clickable h3 {cursor: pointer;}
