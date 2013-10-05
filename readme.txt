@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 1.7.2.1
+Tested up to: 3.6.1
+Stable tag: 1.7.3
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.3 =
 * pmpro_longform_address and pmpro_international_addresses now default to true. See this gist to go back to US-specific address format: https://gist.github.com/strangerstudios/6478242
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
+* Added Cybersource and 2Checkout gateways in beta.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
 * Added a new report showing signups vs. cancellations, monthly recurring revenue, and lifetime value.
 * Fixed issue where the checkout_paid template was always being used for emails. It now checks if the level at checkout is free and sends either the checkout_free, checkout_paid, or checkout_trial templates accordingly. (Thanks, inator on GitHub)
