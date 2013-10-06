@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.7.3
+Version: 1.7.3.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -74,7 +74,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.7.3");
+define("PMPRO_VERSION", "1.7.3.1");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 /*

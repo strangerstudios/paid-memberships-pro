@@ -521,7 +521,7 @@ AND mu1.startdate >= '" . $startdate . "' ";
 function pmpro_getMRR($period, $levels = 'all')
 {
 	//check for a transient
-	$cache = get_transient("pmpro_report_mrr");
+	//$cache = get_transient("pmpro_report_mrr");
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
 		return $cache[$period][$levels];	
 		
@@ -555,11 +555,15 @@ function pmpro_getMRR($period, $levels = 'all')
 		return false;
 		
 	//how many months ago was the first order
+	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . date("Ym") . "', '" . date("Ym", $first_order_timestamp) . "')");
+	
+	/* this works in PHP 5.3+ without using MySQL to get the diff
 	$date1 = new DateTime(date("Y-m-d", $first_order_timestamp));
 	$date2 = new DateTime(date("Y-m-d"));	
 	$interval = $date1->diff($date2);
 	$years = intval($interval->format('%y'));
 	$months = $years*12 + intval($interval->format('%m'));
+	*/
 		
 	$mrr = $revenue / $months;
 		
