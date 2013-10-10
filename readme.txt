@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.0
 Tested up to: 3.6.1
-Stable tag: 1.7.3.1
+Stable tag: 1.7.3.2
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.3.2 =
+* Updated PayPal IPN to use HTTP 1.1 and "Connection: Close" per recent PayPal IPN updates.
+
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
 

@@ -219,9 +219,9 @@
 		//post back to PayPal system to validate
 		$gateway_environment = pmpro_getOption("gateway_environment");
 		if($gateway_environment == "sandbox")
-			$fp = wp_remote_post('https://www.' . $gateway_environment . '.paypal.com?' . $req, array("Host"=>"www.paypal.com"));
+			$fp = wp_remote_post('https://www.' . $gateway_environment . '.paypal.com?' . $req, array("httpversion"=>"1.1", "Host"=>"www.paypal.com", "Connection"=>"Close"));
 		else
-			$fp = wp_remote_post('https://www.paypal.com?' . $req, array("Host"=>"www.paypal.com"));
+			$fp = wp_remote_post('https://www.paypal.com?' . $req, array("httpversion"=>"1.1", "Host"=>"www.paypal.com", "Connection"=>"Close"));
 			
 		//error from PayPal
 		if(!empty($fp->errors))
