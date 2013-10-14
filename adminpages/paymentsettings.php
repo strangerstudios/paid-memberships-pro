@@ -510,7 +510,7 @@
 					<label for="sslseal"><?php _e('SSL Seal Code', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo esc_textarea($sslseal)?></textarea>
+					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
 				</td>
 		   </tr>		   
 		   <tr>

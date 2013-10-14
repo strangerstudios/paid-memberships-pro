@@ -81,6 +81,12 @@
 
 			// Trial?
 			//li_#_startup_fee	Any start up fees for the product or service. Can be negative to provide discounted first installment pricing, but cannot equal or surpass the product price.
+			if(!empty($order->TrialBillingPeriod)) {
+				$trial_amount = $order->TrialAmount;
+				$trial_tax = $order->getTaxForPrice($trial_amount);
+				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
+			}
 
 			// Coupon?
 			//coupon	Specify a 2Checkout created coupon code. If applicable, the coupon will be automatically applied to the sale.
@@ -90,7 +96,6 @@
 			$amount_tax = $order->getTaxForPrice($amount);						
 			$order->subtotal = $amount;
 			$amount = round((float)$amount + (float)$amount_tax, 2);			
-			
 			
 
 			$ptpStr = '';
@@ -118,6 +123,27 @@
 		}
 
 		function cancel(&$order) {
+			// If recurring, stop the recurring payment
+			if(pmpro_isLevelRecurring($order->membership_level)) {
+				$params['sale_id'] = $order->payment_transaction_id;
+				$result = Twocheckout_Sale::stop( $params ); // Stop the recurring billing
+
+				// Successfully cancelled
+				if (isset($result['response_code']) && $result['response_code'] === 'OK') {
+					$order->updateStatus("cancelled");	
+					return true;
+				}
+				// Failed
+				else {
+					$order->status = "error";
+					$order->errorcode = $result->getCode();
+					$order->error = $result->getMessage();
+									
+					return false;
+				}
+			}
+
+			return $order;
 		}
 	}
 ?>

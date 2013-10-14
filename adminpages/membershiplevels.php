@@ -9,7 +9,7 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
-	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $wp_version;
+	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $wp_version;
 	
 	if(isset($_REQUEST['edit']))
 		$edit = $_REQUEST['edit'];	
@@ -413,7 +413,9 @@
 							<br /><small>
 							<strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Payflow integration currently does not support trial amounts greater than $0.', 'pmpro');?></strong>
 							</small>
-						<?php } ?>	
+						<?php } elseif($gateway == "twocheckout") { ?>
+								<br /><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('TwoCheckout integration only supports trial amounts less than the absolute Billing Amount (e.g. if Billing Amount is $10, Trial Amount can fall between $10 and -$10 but cannot equal those).', 'pmpro');?>
+						<?php } ?>
 					</td>
 				</tr>
 									 
@@ -526,7 +528,7 @@
 			foreach($levels as $level)
 			{			
 		?>
-		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level)) { ?>pmpro_error<?php } ?>">			
+		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
 			<td><?php echo $level->name?></td>
 			<td>
