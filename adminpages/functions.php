@@ -155,3 +155,49 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 	return true;
 }
 
+/*
+	Checks if PMPro settings are complete or if there are any errors.
+*/
+function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
+{
+	$gateway = pmpro_getOption("gateway");
+	if($gateway == "twocheckout")
+	{
+		global $wpdb;
+		
+		//check ALL the levels
+		if(empty($level))
+		{
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";		
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{
+					/*
+						Twocheckout currently does not support:
+						* Trial amounts less than or greater than the absolute value of amonthly recurring amount.										
+					*/
+					if( abs($level->trial_amount) >= $level->billing_amount )
+					{
+						return false;
+					}
+				}
+			}
+		}
+		else
+		{
+			//need to look it up?
+			if(is_numeric($level))
+				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
+			
+			//check this level
+			if( abs($level->trial_amount) >= $level->billing_amount )
+			{
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
