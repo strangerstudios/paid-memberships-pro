@@ -92,6 +92,26 @@
 			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
 	}
 	
+	if(!pmpro_checkLevelForTwoCheckoutCompatibility())
+	{		
+		$msg = -1;
+		$msgt = __("The billing details for some of your membership levels is not supported by TwoCheckout.", "pmpro");
+		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		{
+			if(!pmpro_checkLevelForTwoCheckoutCompatibility($_REQUEST['edit']))
+			{
+				global $pmpro_twocheckout_error;
+				$pmpro_twocheckout_error = true;
+				$msg = -1;
+				$msgt = __("The billing details for this level are not supported by TwoCheckout. Please review the notes in the Billing Details section below.", "pmpro");				
+			}			
+		}
+		elseif($view == "pmpro-membershiplevels")
+			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
+		else
+			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+	}
+	
 	if(!empty($msg))
 	{
 	?>
