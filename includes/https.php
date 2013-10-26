@@ -50,36 +50,73 @@ add_action('init', 'pmpro_besecure_set', 2);
 function pmpro_besecure()
 {
 	global $besecure, $post;
-
+	
 	//check the post option
-	if(!empty($post->ID) && !$besecure)
+	if(!is_admin() && !empty($post->ID) && !$besecure)
 		$besecure = get_post_meta($post->ID, "besecure", true);
-		
+	
 	//if forcing ssl on admin, be secure in admin and login page
 	if(!$besecure && force_ssl_admin() && (is_admin() || pmpro_is_login_page()))
 		$besecure = true;		
-		
+
 	//if forcing ssl on login, be secure on the login page
 	if(!$besecure && force_ssl_login() && pmpro_is_login_page())
 		$besecure = true;			
-		
+
 	$besecure = apply_filters("pmpro_besecure", $besecure);
-						
-	if($besecure && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off" || $_SERVER['HTTPS'] == "false"))
-	{
-		//need to be secure		
-		wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-		exit;
+
+	$use_ssl = pmpro_getOption("use_ssl");
+	if($use_ssl == 1)
+	{	
+		if($besecure && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off" || $_SERVER['HTTPS'] == "false"))
+		{
+			//need to be secure		
+			die("A");
+			
+			wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			exit;
+		}
+		elseif(!$besecure && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false")
+		{
+			//don't need to be secure		
+			wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			exit;
+		}	
 	}
-	elseif(!$besecure && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false")
-	{
-		//don't need to be secure		
-		wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-		exit;
-	}	
 }
 add_action('wp', 'pmpro_besecure', 2);
 add_action('login_init', 'pmpro_besecure', 2);
+
+//JavaScript SSL redirect
+function pmpro_ssl_javascript_redirect()
+{
+	global $besecure;
+	$use_ssl = pmpro_getOption("use_ssl");
+	if(!is_admin() && $use_ssl == 2)
+	{
+		if($besecure)
+		{
+		?>
+			<script lang="JavaScript">
+				//needs to be secure
+				if (window.location.protocol != "https:")
+					window.location.href = "https:" + window.location.href.substring(window.location.protocol.length);
+			</script>
+		<?php
+		}
+		else
+		{
+		?>
+			<script lang="JavaScript">
+				//should be over http
+				if (window.location.protocol != "http:")
+					window.location.href = "http:" + window.location.href.substring(window.location.protocol.length);
+			</script>
+		<?php
+		}
+	}
+}
+add_action('wp_print_scripts', 'pmpro_ssl_javascript_redirect');
 
 //If the site URL starts with https:, then force SSL/besecure to true. (Added 1.5.2)
 function pmpro_check_site_url_for_https($besecure)

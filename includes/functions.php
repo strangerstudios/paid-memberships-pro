@@ -485,7 +485,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 	{
 		$user_id = $current_user->ID;
 	}
-
+	
 	if(empty($user_id))
 	{
 		$pmpro_error = __("User ID not found.", "pmpro");
@@ -510,8 +510,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		}
 		$level = $level_obj->id;
 	}
-	
-
+		
 	//if it's a custom level, they're changing
 	if(!is_array($level))
 	{

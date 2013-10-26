@@ -72,11 +72,8 @@
 		//check instructions
 		pmpro_setOption("instructions");
 		
-		//use_ssl is based on gateway
-		if($_REQUEST['gateway'] == "paypal" || $_REQUEST['gateway'] == "authorizenet" || $_REQUEST['gateway'] == "payflowpro")
-			pmpro_setOption("use_ssl", 1);			
-		else
-			pmpro_setOption("use_ssl");				
+		//use_ssl
+		pmpro_setOption("use_ssl");				
 		
 		//tax
 		pmpro_setOption("tax_state");
@@ -485,26 +482,19 @@
 					<p><small><?php _e('If values are given, tax will be applied for any members ordering from the selected state. For more complex tax rules, use the "pmpro_tax" filter.', 'pmpro');?></small></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_stripe gateway_paypalexpress gateway_check gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource gateway_payflowpro gateway_authorizenet gateway_paypal">
 				<th scope="row" valign="top">
-					<label for="use_ssl"><?php _e('Use SSL', 'pmpro');?>:</label>
+					<label for="use_ssl"><?php _e('Force SSL', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<select id="use_ssl" name="use_ssl">
 						<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-						<option value="1" <?php if(!empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>						
+						<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>	
+						<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'pmpro');?></option>							
 					</select>
+					<small>Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.</small>
 				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_authorizenet gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "authorizenet" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="use_ssl"><?php _e('Use SSL', 'pmpro');?>:</label>
-				</th>
-				<td>
-					<?php _e('Yes', 'pmpro');?>.
-					(<?php _e('Required by this Gateway Option', 'pmpro');?>)
-				</td>
-			</tr>
+			</tr>				
 			<tr>
 				<th scope="row" valign="top">
 					<label for="sslseal"><?php _e('SSL Seal Code', 'pmpro');?>:</label>

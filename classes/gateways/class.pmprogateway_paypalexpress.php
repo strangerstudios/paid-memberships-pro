@@ -9,7 +9,7 @@
 		}										
 		
 		function process(&$order)
-		{			
+		{				
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";

@@ -102,8 +102,11 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.3.2 =
+= 1.7.4 =
 * Updated PayPal IPN to use HTTP 1.1 and "Connection: Close" per recent PayPal IPN updates.
+* Fixed bug with slashes being added to the SSL Seal text when Payment Settings are saved.
+* Now applying the pmpro_checkout_level filter when a membership level is loaded from an order during the review step with PayPal Express checkouts. This will fix many customizations that might have not worked with PayPal Express.
+* Change the use_ssl payment setting. You can choose "No" now for gateways that require SSL. Just make sure you set it to Yes when going live or use another method to force SSL on your checkout page. You can also set it to Yes (use JavaScript redirect) to fix some issues that come up with infinite redirects on shared hosting with specific caching/proxy techniques.
 
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
