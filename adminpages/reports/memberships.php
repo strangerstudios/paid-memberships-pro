@@ -564,8 +564,11 @@ function pmpro_getMRR($period, $levels = 'all')
 	$years = intval($interval->format('%y'));
 	$months = $years*12 + intval($interval->format('%m'));
 	*/
-		
-	$mrr = $revenue / $months;
+	
+	if($months > 0)
+		$mrr = $revenue / $months;
+	else
+		$mrr = 0;
 		
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]))
@@ -622,9 +625,16 @@ function pmpro_getLTV($period, $levels = 'all', $mrr = NULL, $signups = NULL, $c
 	//average monthly spend
 	if(empty($signups))
 		return false;
-	$ams = $mrr / $signups;
 	
-	$ltv = $ams * (1/$cancellation_rate);
+	if($signups > 0)
+		$ams = $mrr / $signups;
+	else
+		$ams = 0;
+		
+	if($cancellation_rate > 0)
+		$ltv = $ams * (1/$cancellation_rate);
+	else
+		$ltv = $ams;
 
 	return $ltv;
 }
