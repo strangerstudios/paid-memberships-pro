@@ -278,7 +278,7 @@
 								"user_email" => $user->user_email,0								
 							);						
 			
-			if($invoice)
+			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))
 			{									
 				if($invoice->gateway == "paypalexpress")
 					$this->template = "checkout_express_admin";
@@ -321,7 +321,7 @@
 			{
 				$this->template = "checkout_freetrial_admin";
 				$this->data["discount_code"] = "";
-			}
+			}			
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
