@@ -56,13 +56,20 @@ add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 function pmpro_login_head()
 {
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
-	if((pmpro_is_login_page() || is_page("login")) && $login_redirect)
-	{
+	if((pmpro_is_login_page() || is_page("login") ||
+		class_exists("Theme_My_Login") && version_compare(Theme_My_Login::version, "6.3") >= 0 && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login"))
+		)
+		&& $login_redirect
+	)
+	{		
 		//redirect registration page to levels page
-		if(isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled")
+		if( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || 
+			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	||
+			class_exists("Theme_My_Login") && version_compare(Theme_My_Login::version, "6.3") >= 0 && Theme_My_Login::is_tml_page("register")		
+		)
 		{
 			//redirect to levels page unless filter is set.
-			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));
+			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));						
 			if(!empty($link))
 			{
 				wp_redirect($link);

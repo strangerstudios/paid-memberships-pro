@@ -107,6 +107,10 @@ Not sure? You can find out by doing a bit a research.
 * Fixed bug with slashes being added to the SSL Seal text when Payment Settings are saved.
 * Now applying the pmpro_checkout_level filter when a membership level is loaded from an order during the review step with PayPal Express checkouts. This will fix many customizations that might have not worked with PayPal Express.
 * Change the use_ssl payment setting. You can choose "No" now for gateways that require SSL. Just make sure you set it to Yes when going live or use another method to force SSL on your checkout page. You can also set it to Yes (use JavaScript redirect) to fix some issues that come up with infinite redirects on shared hosting with specific caching/proxy techniques.
+* Including Italian, French, Spanish/Peru, and Spanish/Chile language files contributed from the community. Thanks Mirco Babini (mirkolofio on GitHub) and Javier Monorové (zillionsk8 on GitHub)
+* Fixed the email template issue for admin emails as well. The email sent to admins for free checkouts won't include the empty billing address info anymore. (Thanks, inator on GitHub)
+* Now redirecting from /register/ to PMPro levels page when latest versions of Theme My Login are activated. Can still disable by returning false with the pmpro_register_redirect or pmpro_login_redirect filter.
+* Fix in crons.php where in rare cases the pmpro_expiration_notice meta was not being set correctly for users, which might lead to multiple expiration warning emails.
 
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
