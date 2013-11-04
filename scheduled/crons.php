@@ -65,7 +65,7 @@
 			}
 				
 			//update user meta so we don't email them again
-			update_user_meta($euser->ID, "pmpro_expiration_notice", $today);
+			update_user_meta($e->user_id, "pmpro_expiration_notice", $today);
 		}
 	}
 	
@@ -187,7 +187,7 @@
 			}
 				
 			//update user meta so we don't email them again
-			update_user_meta($euser->ID, "pmpro_trial_ending_notice", $today);
+			update_user_meta($e->user_id, "pmpro_trial_ending_notice", $today);
 		}
 	}
 	
