@@ -54,7 +54,7 @@
 	}
 	else
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 		$sqlQuery .= " WHERE mu.membership_id > 0 AND mu.status = 'active' ";
 		if($l)
 			$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";										
@@ -63,10 +63,23 @@
 			$sqlQuery .= "LIMIT $start, $limit";
 	}
 	
+	//filter
 	$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);	
 	
-	$theusers = $wpdb->get_results($sqlQuery);	
-
+	//get users
+	$theusers = $wpdb->get_col($sqlQuery);	
+	
+	//begin output
+	header("Content-type: text/csv");	
+	if($s && $l)
+		header("Content-Disposition: attachment; filename=members_list_" . intval($l) . "_level" . sanitize_file_name($s) . ".csv");
+	elseif($s)
+		header("Content-Disposition: attachment; filename=members_list_" . sanitize_file_name($s) . ".csv");
+	elseif($l)
+		header("Content-Disposition: attachment; filename=members_list_level" . intval($l) . ".csv");
+	else
+		header("Content-Disposition: attachment; filename=members_list.csv");
+	
 	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined,expires";
 	$heading = apply_filters("pmpro_members_list_csv_heading", $heading);
 	$csvoutput = $heading;
@@ -111,12 +124,17 @@
 	
 	$csvoutput .= "\n";	
 	
+	//output
+	echo $csvoutput;
+	$csvoutput = "";
+	
 	if($theusers)
 	{
-		foreach($theusers as $theuser)
+		foreach($theusers as $user_id)
 		{
 			//get meta
-			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $theuser->ID . "'";								
+			$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' LIMIT 1");
+			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $user_id . "'";								
 			$metavalues = pmpro_getMetavalues($sqlQuery);	
 			$theuser->metavalues = $metavalues;
 			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY c.id DESC LIMIT 1";			
@@ -156,22 +174,13 @@
 			}
 				
 			$csvoutput .= "\n";
-											
+			
+			//output
+			echo $csvoutput;
+			$csvoutput = "";			
 		}
 	}
-		
-	$size_in_bytes = strlen($csvoutput);
-	header("Content-type: text/csv");
-	//header("Content-type: application/vnd.ms-excel");
-	if($s && $l)
-		header("Content-Disposition: attachment; filename=members_list_" . intval($l) . "_level" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($s)
-		header("Content-Disposition: attachment; filename=members_list_" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($l)
-		header("Content-Disposition: attachment; filename=members_list_level" . intval($l) . ".csv; size=$size_in_bytes");
-	else
-		header("Content-Disposition: attachment; filename=members_list.csv; size=$size_in_bytes");
-	
+					
 	print $csvoutput;
 	
 	function pmpro_enclose($s)

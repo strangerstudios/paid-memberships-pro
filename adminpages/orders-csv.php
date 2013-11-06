@@ -71,7 +71,18 @@
 		$sqlQuery .= "LIMIT $start, $limit";
 		
 	$order_ids = $wpdb->get_col($sqlQuery);	
-		
+	
+	//begin output
+	header("Content-type: text/csv");	
+	if($s && $l)
+		header("Content-Disposition: attachment; filename=orders" . intval($l) . "_level" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
+	elseif($s)
+		header("Content-Disposition: attachment; filename=orders_" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
+	elseif($l)
+		header("Content-Disposition: attachment; filename=orders_level" . intval($l) . ".csv; size=$size_in_bytes");
+	else
+		header("Content-Disposition: attachment; filename=orders.csv; size=$size_in_bytes");
+	
 	$csvoutput = "id,user_id,user_login,first_name,last_name,user_email,billing_name,billing_street,billing_city,billing_state,billing_zip,billing_country,billing_phone,membership_id,level_name,subtotal,tax,couponamount,total,payment_type,cardtype,accountnumber,expirationmonth,expirationyear,status,gateway,gateway_environment,payment_transaction_id,subscription_transaction_id,discount_code_id,discount_code,timestamp";
 	
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
@@ -121,6 +132,10 @@
 	
 	$csvoutput .= "\n";	
 	
+	//output
+	echo $csvoutput;
+	$csvoutput = "";
+	
 	if($order_ids)
 	{
 		foreach($order_ids as $order_id)
@@ -165,21 +180,12 @@
 			}
 				
 			$csvoutput .= "\n";
-											
+			
+			//output
+			echo $csvoutput;
+			$csvoutput = "";			
 		}
-	}
-		
-	$size_in_bytes = strlen($csvoutput);
-	header("Content-type: text/csv");
-	//header("Content-type: application/vnd.ms-excel");
-	if($s && $l)
-		header("Content-Disposition: attachment; filename=orders" . intval($l) . "_level" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($s)
-		header("Content-Disposition: attachment; filename=orders_" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($l)
-		header("Content-Disposition: attachment; filename=orders_level" . intval($l) . ".csv; size=$size_in_bytes");
-	else
-		header("Content-Disposition: attachment; filename=orders.csv; size=$size_in_bytes");
+	}				
 	
 	print $csvoutput;
 	
