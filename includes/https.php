@@ -71,8 +71,6 @@ function pmpro_besecure()
 		if($besecure && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off" || $_SERVER['HTTPS'] == "false"))
 		{
 			//need to be secure		
-			die("A");
-			
 			wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 			exit;
 		}
