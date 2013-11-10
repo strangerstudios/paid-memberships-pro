@@ -286,42 +286,29 @@ function pmpro_next_payment($user_id = NULL)
 		
 	if(!$user_id)
 		return false;
-		
-	//when were they last billed
-	$lastdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ORDER BY timestamp DESC LIMIT 1");
-			
-	if($lastdate)
-	{
-		//next payment will be same day, following month
-		$lastmonth = date("n", $lastdate);
-		$lastday = date("j", $lastdate);
-		$lastyear = date("Y", $lastdate);
-					
-		$nextmonth = ((int)$lastmonth) + 1;
-		if($nextmonth == 13)
-		{
-			$nextmonth = 1;
-			$nextyear = ((int)$lastyear) + 1;
-		}
-		else
-			$nextyear = $lastyear;
-		
-		$daysinnextmonth = date("t", strtotime($nextyear . "-" . $nextmonth . "-1"));
-		
-		if($daysinnextmonth < $lastday)
-		{
-			$nextday = $daysinnextmonth;
-		}
-		else
-			$nextday = $lastday;
-			
-		return strtotime($nextyear . "-" . $nextmonth . "-" . $nextday);
+	
+	//get last order
+	$order = new MemberOrder();
+	$order->getLastMemberOrder($user_id);
+	
+	//get current membership level
+	$level = pmpro_getMembershipLevelForUser($user_id);
+	
+	if(!empty($order) && !empty($level) && !empty($level->cycle_number))
+	{					
+		//last payment date
+		$lastdate = date("Y-m-d", $order->timestamp);
+				
+		//next payment date
+		$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
+				
+		return $nextdate;
 	}
 	else
-	{
-		return false;
+	{	
+		//no order or level found, or level was not recurring
+		return false;	
 	}
-	
 }
 
 if(!function_exists("last4"))

@@ -112,6 +112,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed the email template issue for admin emails as well. The email sent to admins for free checkouts won't include the empty billing address info anymore. (Thanks, inator on GitHub)
 * Now redirecting from /register/ to PMPro levels page when latest versions of Theme My Login are activated. Can still disable by returning false with the pmpro_register_redirect or pmpro_login_redirect filter.
 * Fix in crons.php where in rare cases the pmpro_expiration_notice meta was not being set correctly for users, which might lead to multiple expiration warning emails.
+* Updated pmpro_next_payment to work for any cycle number or period. (Thanks, antonv and others.)
 
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
