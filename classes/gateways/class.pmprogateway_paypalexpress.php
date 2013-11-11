@@ -40,17 +40,20 @@
 			
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);						
+			$amount_tax = $order->getTaxForPrice($amount);				
 			$order->subtotal = $amount;
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 						
 			//paypal profile stuff
 			$nvpStr = "";
-			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;			
-			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency;
+			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate) > 0)
+				$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;			
+			if(!empty($order->BillingFrequency))
+				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
-			$nvpStr .= "&NOSHIPPING=1&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
+			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");			
+			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
 					
 			//if billing cycles are defined						
 			if(!empty($order->TotalBillingCycles))
@@ -86,8 +89,8 @@
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
 			
-			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
-			
+			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);						
+						
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);					
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -168,10 +171,13 @@
 			$nvpStr = "";
 			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
+			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency;
+			/*
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
-			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			*/
+			if(!empty($order->BillingFrequency))
+				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";				
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&NOSHIPPING=1";
@@ -180,7 +186,7 @@
 			$order->nvpStr = $nvpStr;
 						
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
-						
+					
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {			
 				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['TRANSACTIONID']);								
 				$order->status = "success";				

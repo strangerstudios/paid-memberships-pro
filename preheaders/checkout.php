@@ -1034,19 +1034,22 @@
 		}
 		
 		//default values from DB
-		$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
-		$blastname = get_user_meta($current_user->ID, "pmpro_blastname", true);
-		$baddress1 = get_user_meta($current_user->ID, "pmpro_baddress1", true);
-		$baddress2 = get_user_meta($current_user->ID, "pmpro_baddress2", true);
-		$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
-		$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
-		$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
-		$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
-		$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
-		$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-		$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
-		$CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
-		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-		$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
-		$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
-	}	
+		if(!empty($current_user->ID))
+		{
+			$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
+			$blastname = get_user_meta($current_user->ID, "pmpro_blastname", true);
+			$baddress1 = get_user_meta($current_user->ID, "pmpro_baddress1", true);
+			$baddress2 = get_user_meta($current_user->ID, "pmpro_baddress2", true);
+			$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
+			$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
+			$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
+			$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
+			$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
+			$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
+			$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
+			$CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
+			//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
+			$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
+			$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
+		}	
+	}

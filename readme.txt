@@ -106,6 +106,7 @@ Not sure? You can find out by doing a bit a research.
 * Updated PayPal IPN to use HTTP 1.1 and "Connection: Close" per recent PayPal IPN updates.
 * Fixed bug with slashes being added to the SSL Seal text when Payment Settings are saved.
 * Now applying the pmpro_checkout_level filter when a membership level is loaded from an order during the review step with PayPal Express checkouts. This will fix many customizations that might have not worked with PayPal Express.
+* Cleaned up PayPal Express API integration a bit. Fixes some bugs on sites with one-time payments and taxes calculated in.
 * Change the use_ssl payment setting. You can choose "No" now for gateways that require SSL. Just make sure you set it to Yes when going live or use another method to force SSL on your checkout page. You can also set it to Yes (use JavaScript redirect) to fix some issues that come up with infinite redirects on shared hosting with specific caching/proxy techniques.
 * Optimized the members list and orders CSV exports to run with less memory. Especially important for large sites.
 * Including Italian, French, Spanish/Peru, and Spanish/Chile language files contributed from the community. Thanks Mirco Babini (mirkolofio on GitHub) and Javier Monorové (zillionsk8 on GitHub)
@@ -113,6 +114,7 @@ Not sure? You can find out by doing a bit a research.
 * Now redirecting from /register/ to PMPro levels page when latest versions of Theme My Login are activated. Can still disable by returning false with the pmpro_register_redirect or pmpro_login_redirect filter.
 * Fix in crons.php where in rare cases the pmpro_expiration_notice meta was not being set correctly for users, which might lead to multiple expiration warning emails.
 * Updated pmpro_next_payment to work for any cycle number or period. (Thanks, antonv and others.)
+* Now checking for a logged in user before trying to get a billing address to prepopulate at checkout.
 
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
