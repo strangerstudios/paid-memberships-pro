@@ -114,7 +114,23 @@ if($pmpro_msg)
 		<?php } elseif ( !$current_level ) { ?>                	
 			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>       			
 		<?php } elseif($current_level) { ?>      
-			<a class="pmpro_btn disabled" href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
+			
+			<?php
+				//if it's a one-time-payment level, offer a link to renew				
+				if(!pmpro_isLevelRecurring($current_user->membership_level))
+				{
+				?>
+					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'Clickign to renew from levels page', 'pmpro');?></a>
+				<?php
+				}
+				else
+				{
+				?>
+					<a class="pmpro_btn disabled" href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
+				<?php
+				}
+			?>
+			
 		<?php } ?>
 		</td>
 	</tr>
