@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * Updated frontend.css to make sure that background gifs in error messages aren't repeated or applied to dropdowns.
 * Added some currencies: CNY, INR, IDR, KRW, TRY, VND, ZAR
 * All currencies now available to all gateways. You still need to make sure that your gateway supports the chosen currency.
+* Now sending all emails from the PMProEmail class from the pmpro_getOption("from_email") setting. Some were sent from the get_option("admin_email") setting before.
 
 = 1.7.3.1 =
 * Using MySQL to calculate months since first order instead of date_diff, which is only available in PHP 5.3+
