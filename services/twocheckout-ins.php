@@ -18,7 +18,7 @@
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
 	//validate?
-	if( ! pmpro_twocheckoutValidate() ) {
+	if( false || ! pmpro_twocheckoutValidate() ) {
 		//validation failed
 		pmpro_twocheckoutExit();
 	}
@@ -154,7 +154,7 @@
 		{
 			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
 			
-			//uncomment these lines and make sure logs/ipn.txt is writable to log IPN activity
+			//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
 			//$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
 			//fwrite($loghandle, $logstr);
 			//fclose($loghandle);
@@ -201,7 +201,7 @@
 			$enddate = "NULL";
 		}
 		
-		//get discount code		(NOTE: but discount_code isn't set here. How to handle discount codes for PayPal Standard?)
+		//get discount code		(NOTE: but discount_code isn't set here. How to handle discount codes for 2checkout?)
 		$use_discount_code = true;		//assume yes
 		if(!empty($discount_code) && !empty($use_discount_code))
 			$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");

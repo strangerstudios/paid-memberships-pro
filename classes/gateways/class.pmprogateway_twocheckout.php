@@ -20,7 +20,7 @@
 			$order->CardType = "";
 			$order->cardtype = "";
 			
-			//just save, the user will go to PayPal to pay
+			//just save, the user will go to 2checkout to pay
 			$order->status = "review";														
 			$order->saveOrder();
 
@@ -75,10 +75,7 @@
 			$environment = pmpro_getOption("gateway_environment");
 			if("sandbox" === $environment || "beta-sandbox" === $environment)
 				$tco_args['demo'] = 'Y';
-
-			//print_r( $tco_args );
-			//print_r( $order );
-
+			
 			// Trial?
 			//li_#_startup_fee	Any start up fees for the product or service. Can be negative to provide discounted first installment pricing, but cannot equal or surpass the product price.
 			if(!empty($order->TrialBillingPeriod)) {
@@ -88,16 +85,12 @@
 				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
 			}
 
-			// Coupon?
-			//coupon	Specify a 2Checkout created coupon code. If applicable, the coupon will be automatically applied to the sale.
-
 			//taxes on the amount (NOT CURRENTLY USED)
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);						
 			$order->subtotal = $amount;
 			$amount = round((float)$amount + (float)$amount_tax, 2);			
 			
-
 			$ptpStr = '';
 			foreach( $tco_args as $key => $value ) {
 				reset( $tco_args ); // Used to verify whether or not we're on the first argument
@@ -111,9 +104,8 @@
 					$ptpStr .= urlencode( "&" . $key . "=" . $value );
 
 			$ptpStr = apply_filters( 'pmpro_twocheckout_ptpstr', $ptpStr, $order );
-			//echo "<br /><br />".$ptpStr. "<br /><br />";
-			
-			//redirect to paypal			
+						
+			//redirect to 2checkout			
 			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 			
 			//echo $tco_url;
