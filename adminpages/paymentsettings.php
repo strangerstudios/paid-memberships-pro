@@ -41,16 +41,7 @@
 		pmpro_setOption("cybersource_securitykey");
 		
 		//currency
-		$currency_paypal = $_POST['currency_paypal'];
-		$currency_stripe = $_POST['currency_stripe'];
-		$currency_fixed = $_POST['currency_fixed'];
-
-		if($_POST['gateway'] == "payflowpro")
-			pmpro_setOption("currency", $currency_fixed);
-		elseif($_POST['gateway'] == "stripe" || $_POST['gateway'] == "authorizenet")
-			pmpro_setOption("currency", $currency_stripe);
-		else
-			pmpro_setOption("currency", $currency_paypal);
+		pmpro_setOption("currency");
 			
 		//credit cards
 		$pmpro_accepted_credit_cards = array();
@@ -383,43 +374,14 @@
 				<td>
 					<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($cybersource_securitykey);?></textarea>					
 				</td>
-			</tr>
+			</tr>																	
 			
-			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource gateway_stripe gateway_authorizenet gateway_payflowpro gateway_check" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource" && $gateway != "payflowpro" && $gateway != "stripe" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
+					<label for="currency"><?php _e('Currency', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="hidden" name="currency_fixed" size="60" value="USD" />
-					USD
-				</td>
-			</tr>						
-						
-			<tr class="gateway gateway_stripe gateway_authorizenet" <?php if($gateway != "stripe" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="transactionkey"><?php _e('Currency', 'pmpro');?>:</label>
-				</th>
-				<td>
-					<select name="currency_stripe">
-					<?php 
-						global $pmpro_stripe_currencies;
-						foreach($pmpro_stripe_currencies as $ccode => $cdescription)
-						{
-						?>
-						<option value="<?php echo $ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
-						<?php
-						}
-					?>
-					</select>
-				</td>
-			</tr>
-			
-			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="currency_paypal"><?php _e('Currency', 'pmpro');?>:</label>
-				</th>
-				<td>
-					<select name="currency_paypal">
+					<select name="currency">
 					<?php 
 						global $pmpro_currencies;
 						foreach($pmpro_currencies as $ccode => $cdescription)
@@ -430,6 +392,7 @@
 						}
 					?>
 					</select>
+					<small>Not all currencies will be supported by every gateway. Please check with your gateway.</small>
 				</td>
 			</tr>
 			
@@ -516,7 +479,7 @@
 					<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre>.</p>
+					<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
 				</td>
 			</tr>
 		   <tr class="gateway gateway_paypal gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -524,7 +487,7 @@
 					<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with TwoCheckout, be sure to set your TwoCheckout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre>.</p>
+					<p><?php _e('To fully integrate with TwoCheckout, be sure to set your TwoCheckout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -532,7 +495,7 @@
 					<label><?php _e('Silent Post URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre>.</p>
+					<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
@@ -540,7 +503,7 @@
 					<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre>.</p>
+					<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
