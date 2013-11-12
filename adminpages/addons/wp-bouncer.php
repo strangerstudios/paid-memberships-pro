@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('repo', array(
 		'title' => 'WP Bouncer',
-		'version' => '1.0.1',
+		'version' => '1.1',
 		'widget' => 'pmpro_addon_wp_bouncer_widget',
 		'enabled' => class_exists('WP_Bouncer')
 	)

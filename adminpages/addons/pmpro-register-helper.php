@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Register Helper',
-		'version' => '.5.2',
+		'version' => '.5.2.1',
 		'widget' => 'pmpro_addon_pmpro_register_helper_widget',
 		'enabled' => class_exists('PMProRH_Field')
 	)

@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro Post Affiliate Pro Integration',
-		'version' => '.3',
+		'version' => '.1',
 		'widget' => 'pmpro_addon_pmpro_post_affiliate_pro_widget',
 		'enabled' => function_exists('pap_pmpro_track_sale')
 	)
