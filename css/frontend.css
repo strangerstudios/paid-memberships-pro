@@ -121,9 +121,9 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 ----------------------------------------------------*/
 .pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
 
-.pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); color: #208A1B; }
-.pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); color: #E36154; }
-.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
+.pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); background-repeat: no-repeat; color: #208A1B; }
+.pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); background-repeat: no-repeat; color: #E36154; }
+.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); background-repeat: no-repeat; color: #CF8516; }
 
 .pmpro_content_message a {margin: 5px 5px 0 0; }
 
@@ -133,6 +133,7 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 .pmpro_alert a {color: #CF8516; }
 
 input.pmpro_error {background-image: none;}
+select.pmpro_error {background-image: none;}
 
 /*---------------------------------------
 	Membership Checkout
