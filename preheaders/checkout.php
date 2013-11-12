@@ -280,10 +280,26 @@
 		$bcity = trim(stripslashes($_REQUEST['bcity']));
 	else
 		$bcity = "";
+	
 	if(isset($_REQUEST['bstate']))
 		$bstate = trim(stripslashes($_REQUEST['bstate']));
 	else
 		$bstate = "";
+	
+	//convert long state names to abbreviations
+	if(!empty($bstate))
+	{
+		global $pmpro_states;
+		foreach($pmpro_states as $abbr => $state)
+		{
+			if($bstate == $state)
+			{
+				$bstate = $abbr;
+				break;
+			}
+		}
+	}
+	
 	if(isset($_REQUEST['bzipcode']))
 		$bzipcode = trim(stripslashes($_REQUEST['bzipcode']));
 	else
