@@ -10,10 +10,13 @@
 			'AUD' => __('Australian Dollars (&#36;)', 'pmpro'),
 			'BRL' => __('Brazilian Real (&#36;)', 'pmpro'),
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),
+			'CNY' => __('Chinese Yuan', 'pmpro'),
 			'CZK' => __('Czech Koruna', 'pmpro'),
 			'DKK' => __('Danish Krone', 'pmpro'),
 			'HKD' => __('Hong Kong Dollar (&#36;)', 'pmpro'),
 			'HUF' => __('Hungarian Forint', 'pmpro'),
+			'INR' => __('Indian Rupee', 'pmpro'),
+			'IDR' => __('Indonesia Rupiah', 'pmpro'),
 			'ILS' => __('Israeli Shekel', 'pmpro'),
 			'JPY' => __('Japanese Yen (&yen;)', 'pmpro'),
 			'MYR' => __('Malaysian Ringgits', 'pmpro'),
@@ -23,15 +26,19 @@
 			'PHP' => __('Philippine Pesos', 'pmpro'),
 			'PLN' => __('Polish Zloty', 'pmpro'),
 			'SGD' => __('Singapore Dollar (&#36;)', 'pmpro'),
+			'ZAR' => __('South African Rand', 'pmpro'),
+			'KRW' => __('South Korean Won', 'pmpro'),
 			'SEK' => __('Swedish Krona', 'pmpro'),
 			'CHF' => __('Swiss Franc', 'pmpro'),
 			'TWD' => __('Taiwan New Dollars', 'pmpro'),
-			'THB' => __('Thai Baht', 'pmpro') 
+			'THB' => __('Thai Baht', 'pmpro'),
+			'TRY' => __('Turkish Lira', 'pmpro'),
+			'VND' => __('Vietnamese Dong', 'pmpro')
 			);
 	
 	$pmpro_currencies = apply_filters("pmpro_currencies", $pmpro_currencies);
 	
-	//stripe only supports a few
+	//stripe only supports a few (not using this anymore since 1.7.4)
 	global $pmpro_stripe_currencies;
 	$pmpro_stripe_currencies = array(
 			'USD' => __('US Dollars (&#36;)', 'pmpro'),			
