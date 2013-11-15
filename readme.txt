@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.4.1 =
+* Filtering $morder->membership_level at checkout as well as $pmpro_level global.
+
 = 1.7.4 =
 * Updated PayPal IPN to use HTTP 1.1 and "Connection: Close" per recent PayPal IPN updates.
 * Fixed bug with slashes being added to the SSL Seal text when Payment Settings are saved.
