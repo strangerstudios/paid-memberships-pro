@@ -676,6 +676,7 @@
 													
 						//setup level var
 						$morder->getMembershipLevel();
+						$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
 						
 						//tax
 						$morder->subtotal = $morder->InitialPayment;
