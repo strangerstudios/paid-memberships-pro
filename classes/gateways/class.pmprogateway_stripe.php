@@ -163,6 +163,7 @@
 					if(!empty($order->stripeToken))
 					{
 						$this->customer->description = trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")";
+						$this->customer->email = $order->Email;
 						$this->customer->card = $order->stripeToken;
 						$this->customer->save();
 					}
@@ -182,6 +183,7 @@
 				{
 					$this->customer = Stripe_Customer::create(array(
 							  "description" => trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")",
+							  "email" => $order->Email,
 							  "card" => $order->stripeToken
 							));
 				}
