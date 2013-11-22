@@ -151,6 +151,10 @@
 	</script>
 	<?php } ?>
 	
+	<?php
+		do_action('pmpro_checkout_after_pricing_fields');
+	?>
+	
 	<?php if(!$skip_account_fields && !$pmpro_review) { ?>
 	<table id="pmpro_user_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<thead>
@@ -256,6 +260,10 @@
 			<?php printf(__('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'pmpro'), $current_user->user_login, wp_logout_url($_SERVER['REQUEST_URI'])); ?>			
 		</p>
 	<?php } ?>
+	
+	<?php
+		do_action('pmpro_checkout_after_user_fields');
+	?>
 	
 	<?php					
 		if($tospage && !$pmpro_review)
