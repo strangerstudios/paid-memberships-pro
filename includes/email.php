@@ -30,12 +30,13 @@ if(empty($email_member_notification))
 	Adds template files and changes content type to html if using PHPMailer directly.
 */
 function pmpro_send_html( $phpmailer ) {
+		
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
 	// Clean < and > around text links in WP 3.1
 	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
 	// Convert line breaks & make links clickable
-	$phpmailer->Body = wpautop ( make_clickable ($phpmailer->Body) );
+	$phpmailer->Body = make_clickable ($phpmailer->Body);
 
 	// Add template to message
 	if(file_exists(TEMPLATEPATH . "/email_header.html"))
