@@ -3,7 +3,7 @@ global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $pmpro_curr
 if($pmpro_msg)
 {
 ?>
-<div class="message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
+<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 <?php
 }
 ?>
