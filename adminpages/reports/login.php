@@ -250,7 +250,7 @@ function pmpro_report_login_wp_visits()
 	{		
 		$visits = $current_user->pmpro_visits;		
 		if(empty($visits))
-			$visits = array("last"=>"N/A", "month"=>0, "alltime"=>0);
+			$visits = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 			
 		//track logins for user
 		$visits['last'] = date(get_option("date_format"));
@@ -271,7 +271,7 @@ function pmpro_report_login_wp_visits()
 	//track for all
 	$visits = get_option("pmpro_visits");	
 	if(empty($visits))
-		$visits = array("today"=>0, "month"=>0, "alltime"=>0);
+		$visits = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$visits['alltime']++;
 	$thisdate = date("Y-d-m");
@@ -337,7 +337,7 @@ function pmpro_report_login_wp_views()
 	//track for all
 	$views = get_option("pmpro_views");	
 	if(empty($views))
-		$views = array("today"=>0, "month"=>0, "alltime"=>0);
+		$views = array("today"=>0, "thisdate"=> NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$views['alltime']++;
 	$thisdate = date("Y-d-m");
@@ -368,7 +368,7 @@ function pmpro_report_login_wp_login($user_login)
 	$user = get_user_by("login", $user_login);	
 	$logins = $user->pmpro_logins;
 	if(empty($logins))
-		$logins = array("last"=>"N/A", "month"=>0, "alltime"=>0);
+		$logins = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 		
 	//track logins for user
 	$logins['last'] = date(get_option("date_format"));
@@ -388,7 +388,7 @@ function pmpro_report_login_wp_login($user_login)
 	//track logins overall
 	$logins = get_option("pmpro_logins");
 	if(empty($logins))
-		$logins = array("today"=>0, "month"=>0, "alltime"=>0);
+		$logins = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 	
 	$logins['alltime']++;
 	$thisdate = date("Y-d-m");
