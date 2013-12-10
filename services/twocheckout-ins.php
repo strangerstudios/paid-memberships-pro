@@ -1,5 +1,5 @@
 <?php
-	define('PMPRO_INS_DEBUG', true);
+	define('PMPRO_INS_DEBUG', false);
 	
 	//in case the file is loaded directly	
 	if(!defined("WP_USE_THEMES"))
@@ -29,16 +29,20 @@
 	}
 
 	//assign posted variables to local variables
-	$message_type = pmpro_getParam( 'message_type', 'POST' );
-	$md5_hash = pmpro_getParam( 'md5_hash', 'POST' );
-	$txn_id = pmpro_getParam( 'sale_id', 'POST' );
-	$recurring = pmpro_getParam( 'recurring', 'POST' );
-	$order_id = pmpro_getParam( 'merchant_order_id', 'POST' );
-	$product_id = pmpro_getParam( 'item_id_1', 'POST' ); // Should be item 0 or 1?
-	$invoice_status = pmpro_getParam( 'invoice_status', 'POST' ); // On single we need to check for deposited
-	$fraud_status = pmpro_getParam( 'fraud_status', 'POST' ); // Check fraud status?
-	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'POST' ); // Price paid by customer in seller currency code
-	$customer_email = pmpro_getParam( 'customer_email', 'POST' );
+	$message_type = pmpro_getParam( 'message_type', 'REQUEST' );
+	$md5_hash = pmpro_getParam( 'md5_hash', 'REQUEST' );
+	$txn_id = pmpro_getParam( 'sale_id', 'REQUEST' );
+	$recurring = pmpro_getParam( 'recurring', 'REQUEST' );
+	$order_id = pmpro_getParam( 'merchant_order_id', 'REQUEST' );
+	if(empty($order_id))
+		$order_id = pmpro_getParam( 'vendor_order_id', 'REQUEST' );
+	$product_id = pmpro_getParam( 'item_id_1', 'REQUEST' ); // Should be item 0 or 1?
+	if(empty($order_id))
+		$order_id = $product_id;
+	$invoice_status = pmpro_getParam( 'invoice_status', 'REQUEST' ); // On single we need to check for deposited
+	$fraud_status = pmpro_getParam( 'fraud_status', 'REQUEST' ); // Check fraud status?
+	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'REQUEST' ); // Price paid by customer in seller currency code
+	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST' );
 	
 	// No message = return processing
 	if( empty($message_type) ) {
@@ -46,6 +50,8 @@
 		$morder = new MemberOrder( $order_id );
 		$morder->getMembershipLevel();
 		$morder->getUser();
+		
+		inslog("NO MESSAGE: ORDER: " . var_export($morder, true) . "\n---\n");
 		
 		//update membership
 		if (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
@@ -64,6 +70,8 @@
 		$morder = new MemberOrder( $order_id );
 		$morder->getMembershipLevel();
 		$morder->getUser();
+		
+		inslog("ORDER_CREATED: ORDER: " . var_export($morder, true) . "\n---\n");
 		
 		//update membership
 		if (pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
@@ -171,7 +179,7 @@
 	function pmpro_twocheckoutExit($redirect = false)
 	{
 		global $logstr;
-		echo $logstr;
+		//echo $logstr;
 	
 		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
 			
@@ -301,7 +309,12 @@
 			else
 				$invoice = NULL;
 		
-			$user = get_userdata($morder->user_id);
+			inslog("CHANGEMEMBERSHIPLEVEL: ORDER: " . var_export($morder, true) . "\n---\n");
+		
+			$user = get_userdata($morder->user_id);					
+			if(empty($user))
+				return false;
+				
 			$user->membership_level = $morder->membership_level;		//make sure they have the right level info
 		
 			//send email to member

@@ -61,11 +61,11 @@
 			
 			// Recurring membership			
 			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
-				$tco_args['li_0_startup_fee'] = $initial_payment - $amount;		//negative amount for lower initial payments
+				$tco_args['li_0_startup_fee'] = number_format($initial_payment - $amount, 2);		//negative amount for lower initial payments
 				$recurring_payment = $order->membership_level->billing_amount;
 				$recurring_payment_tax = $order->getTaxForPrice($recurring_payment);
 				$recurring_payment = round((float)$recurring_payment + (float)$recurring_payment_tax, 2);
-				$tco_args['li_0_price'] = $recurring_payment;
+				$tco_args['li_0_price'] = number_format($recurring_payment, 2);
 
 				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod . 's';
 

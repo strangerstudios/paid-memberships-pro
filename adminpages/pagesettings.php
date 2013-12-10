@@ -116,7 +116,9 @@
 						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- Choose One --", "selected"=>$pmpro_pages['account']));
 					?>	
 					<?php if(!empty($pmpro_pages['account'])) { ?>
-						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account'];?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['account']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_account].</small>
 				</td>
@@ -130,6 +132,8 @@
 					?>
 					<?php if(!empty($pmpro_pages['billing'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['billing']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_billing].</small>
 				</td>
@@ -143,6 +147,8 @@
 					?>	
 					<?php if(!empty($pmpro_pages['cancel'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['cancel']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_cancel].</small>
 				</td>
@@ -157,6 +163,8 @@
 					?>
 					<?php if(!empty($pmpro_pages['checkout'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['checkout']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_checkout].</small>
 				</td>
@@ -171,6 +179,8 @@
 					?>	
 					<?php if(!empty($pmpro_pages['confirmation'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['confirmation']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_confirmation].</small>
 				</td>
@@ -185,6 +195,8 @@
 					?>
 					<?php if(!empty($pmpro_pages['invoice'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['invoice']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_invoice].</small>
 				</td>
@@ -199,6 +211,8 @@
 					?>
 					<?php if(!empty($pmpro_pages['levels'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
+						&nbsp;
+						<a target="_blank" href="<?php echo get_permalink($pmpro_pages['levels']);?>" class="pmpro_page_view"><?php _e('view page', 'pmpro');?></a>
 					<?php } ?>
 					<br /><small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro');?> [pmpro_levels].</small>
 				</td>
