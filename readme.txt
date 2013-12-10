@@ -104,18 +104,18 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
-* Updated pmpro.pot template along with a script gettext.sh that will allow us to easily update the pmpro.pot file when we need to.
 * The shortcodes for the PMPro pages (e.g. pmpro_levels/etc) will now work on multiple pages. Things may still act funny if you put the shortcodes on pages other than those set in the page settings, but you can do so if you know what you are doing. One limitation still in place is that you can only have one PMPro page shortcode per page. Whichever comes first will be used.
 * Added support for WPML. Simply make a copy of each PMPro page for each language. Set the PMPro page settings to the default language pages.
+* Updated pmpro.pot template along with a script gettext.sh that will allow us to easily update the pmpro.pot file when we need to.
 * Updated the pmpro_url function, should work the same but if you use addons or customizations and notice bugs around URLs, let me know.
 * Fixed bug where old membership data was being included in the members list export instead of the latest active membership data.
 * Filtering $morder->membership_level at checkout as well as $pmpro_level global.
 * When loading bemail and bconfirm email from user meta for existing users, just setting them both to $bemail so different emails don't show up.
-* Now sending email to Stripe when customers are created/updated.
+* Now sending a member's email address to Stripe when customers are created/updated.
 * No longer running wpautop on email via pmpro_send_email filter.
-* Fixed some potential warnings in adminpages/reports/login.php.
 * If first_name and/or last_name are passed at checkout, these are used to create a new user instead of bfirstname and blastname.
 * Added "view" links to the page settings page.
+* Fixed some potential warnings in adminpages/reports/login.php.
 
 = 1.7.4 =
 * Updated PayPal IPN to use HTTP 1.1 and "Connection: Close" per recent PayPal IPN updates.
