@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Series',
-		'version' => '.2',
+		'version' => '.2.1',
 		'widget' => 'pmpro_addon_pmpro_series_widget',
 		'enabled' => class_exists("PMProSeries")
 	)

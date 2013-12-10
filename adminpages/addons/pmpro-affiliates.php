@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Affiliates',
-		'version' => '.2.2',
+		'version' => '.2.3',
 		'widget' => 'pmpro_addon_pmpro_affiliates_widget',
 		'enabled' => function_exists('pmpro_affiliates_dependencies')
 	)
