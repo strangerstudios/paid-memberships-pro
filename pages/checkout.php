@@ -256,7 +256,7 @@
 	</table>   
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>                        	                       										
 		
-		<p>
+		<p id="pmpro_account_loggedin">
 			<?php printf(__('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'pmpro'), $current_user->user_login, wp_logout_url($_SERVER['REQUEST_URI'])); ?>			
 		</p>
 	<?php } ?>
