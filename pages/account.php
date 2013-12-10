@@ -84,7 +84,7 @@
 				?>	
 				
 				<div id="pmpro_account-billing" class="pmpro_box">
-					<h3>Billing Information</h3>
+					<h3><?php _e("Billing Information", "pmpro");?></h3>
 					<?php if(!empty($baddress1)) { ?>
 					<p>
 						<strong><?php _e("Billing Address", "pmpro");?></strong><br />

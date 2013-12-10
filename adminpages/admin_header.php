@@ -102,8 +102,9 @@
 			{
 				global $pmpro_twocheckout_error;
 				$pmpro_twocheckout_error = true;
+								
 				$msg = -1;
-				$msgt = __("The billing details for this level are not supported by TwoCheckout. Please review the notes in the Billing Details section below.", "pmpro");				
+				$msgt = __("The billing details for this level are not supported by 2Checkout. Please review the notes in the Billing Details section below.", "pmpro");				
 			}			
 		}
 		elseif($view == "pmpro-membershiplevels")

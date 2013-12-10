@@ -130,11 +130,29 @@ function pmpro_url($page = NULL, $querystring = "", $scheme = NULL)
 		
 	global $pmpro_pages;
 			
-	//? vs &
-	if(strpos(get_permalink($pmpro_pages[$page]), "?"))
-		return home_url(str_replace(home_url(), "", get_permalink($pmpro_pages[$page])) . str_replace("?", "&", $querystring), $scheme);
-	else
-		return home_url(str_replace(home_url(), "", get_permalink($pmpro_pages[$page])) . $querystring, $scheme);
+	//start with the permalink
+	$url = get_permalink($pmpro_pages[$page]);
+	
+	//WPML/etc support
+	if(function_exists("icl_object_id") && !empty($_REQUEST['lang']))
+	{		
+		$trans_id = icl_object_id($pmpro_pages[$page], "page", false, $_REQUEST['lang']);
+		if(!empty($trans_id))
+		{
+			$url = get_permalink($trans_id);
+		}
+	}
+		
+	//figure out querystring
+	if(strpos($url, "?"))
+		$querystring = str_replace("?", "&", $querystring);
+	$url .= $querystring;
+	
+	//figure out scheme
+	if(is_ssl())
+		$url = str_replace("http:", "https:", $url);			
+	
+	return $url;
 }
 	
 function pmpro_isLevelFree(&$level)

@@ -227,7 +227,7 @@
 			
 			$nvpStr .= "&PAYPERIOD=" . $payperiod;
 			
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;	
+			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;	
 
 			//if billing cycles are defined						
 			if(!empty($order->TotalBillingCycles))
@@ -295,9 +295,9 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
-			$this->nvpStr = $nvpStr;
+			$this->nvpStr = $nvpStr;									
 			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
-						
+			
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
 				$order->subscription_transaction_id = $this->httpParsedResponseAr['PROFILEID'];
 				$order->status = "success";				
@@ -321,7 +321,7 @@
 					
 			$nvpStr .= "&PROFILENAME=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
 						
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;	
+			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;	
 			
 			if(!empty($order->accountnumber))
 				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;

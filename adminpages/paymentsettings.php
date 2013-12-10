@@ -161,10 +161,10 @@
 						<option value="paypalstandard" <?php selected( $gateway, "paypalstandard" ); ?>>PayPal Standard</option>
 						<option value="paypalexpress" <?php selected( $gateway, "paypalexpress" ); ?>>PayPal Express</option>
 						<option value="paypal" <?php selected( $gateway, "paypal" ); ?>>PayPal Website Payments Pro</option>
-						<option value="payflowpro" <?php selected( $gateway, "payflowpro" ); ?>>PayPal Payflow Pro/PayPal Advanced</option>
+						<option value="payflowpro" <?php selected( $gateway, "payflowpro" ); ?>>PayPal Payflow Pro/PayPal Pro</option>
 						<option value="authorizenet" <?php selected( $gateway, "authorizenet" ); ?>>Authorize.net</option>
 						<option value="braintree" <?php selected( $gateway, "braintree" ); ?>>Braintree Payments</option>
-						<option value="twocheckout" <?php selected( $gateway, "twocheckout" ); ?>>Twocheckout</option>
+						<option value="twocheckout" <?php selected( $gateway, "twocheckout" ); ?>>2Checkout</option>
 						<option value="cybersource" <?php selected( $gateway, "cybersource" ); ?>>CyberSource</option>
 					</select>                        
 				</td>
@@ -487,7 +487,7 @@
 					<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<p><?php _e('To fully integrate with TwoCheckout, be sure to set your TwoCheckout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+					<p><?php _e('To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
 				</td>
 			</tr>
 			<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>

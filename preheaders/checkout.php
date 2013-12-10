@@ -124,13 +124,14 @@
 		//stripe js code for checkout
 		function pmpro_stripe_javascript()
 		{
+			global $pmpro_gateway, $pmpro_level;
 		?>
 		<script type="text/javascript">
 			// this identifies your website in the createToken call below			
 			Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 			
-			var pmpro_require_billing = true;
-												
+			var pmpro_require_billing = true;			
+			
 			jQuery(document).ready(function() {
 				jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
 								
@@ -829,15 +830,30 @@
 		//do we need to create a user account?
 		if(!$current_user->ID)
 		{
-			// create user
+			/*
+				create user
+			*/
 			if(version_compare($wp_version, "3.1") < 0)
 				require_once( ABSPATH . WPINC . '/registration.php');	//need this for WP versions before 3.1
+						
+			//first name
+			if(!empty($_REQUEST['first_name']))
+				$first_name = $_REQUEST['first_name'];
+			else
+				$first_name = $bfirstname;					
+			//last name
+			if(!empty($_REQUEST['last_name']))
+				$last_name = $_REQUEST['last_name'];
+			else
+				$last_name = $blastname;
+			
+			//insert user
 			$user_id = wp_insert_user(array(
 							"user_login" => $username,							
 							"user_pass" => $password,
 							"user_email" => $bemail,
-							"first_name" => $bfirstname,
-							"last_name" => $blastname)
+							"first_name" => $first_name,
+							"last_name" => $last_name)
 							);
 			if (!$user_id) {
 				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro");
@@ -1063,7 +1079,7 @@
 			$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
 			$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
 			$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-			$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
+			$bconfirmemail = $bemail;	//as of 1.7.5, just setting to bemail
 			$CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
 			//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
 			$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);

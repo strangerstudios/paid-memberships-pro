@@ -41,10 +41,11 @@
 				'li_0_quantity' => 1,
 				'li_0_tangible' => 'N',
 				'li_0_product_id' => $order->code,
+				'merchant_order_id' => $order->code,
 				'currency_code' => $pmpro_currency,
 				'pay_method' => 'CC',
 				'purchase_step' => 'billing-information',
-				'x_receipt_link_url' => pmpro_url("confirmation", "?level=" . $order->membership_level->id)
+				'x_receipt_link_url' => admin_url("admin-ajax.php") . "?action=twocheckout-ins" //pmpro_url("confirmation", "?level=" . $order->membership_level->id)
 			);
 
 			//taxes on initial amount
@@ -52,19 +53,26 @@
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
 			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
 
-			// Recurring membership
+			//taxes on the amount (NOT CURRENTLY USED)
+			$amount = $order->PaymentAmount;
+			$amount_tax = $order->getTaxForPrice($amount);						
+			$order->subtotal = $amount;
+			$amount = round((float)$amount + (float)$amount_tax, 2);	
+			
+			// Recurring membership			
 			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
-				$tco_args['li_0_startup_fee'] = $initial_payment;
-
+				$tco_args['li_0_startup_fee'] = $initial_payment - $amount;		//negative amount for lower initial payments
 				$recurring_payment = $order->membership_level->billing_amount;
 				$recurring_payment_tax = $order->getTaxForPrice($recurring_payment);
 				$recurring_payment = round((float)$recurring_payment + (float)$recurring_payment_tax, 2);
 				$tco_args['li_0_price'] = $recurring_payment;
 
-				$tco_args['li_0_recurrance'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod . 's';
+				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod . 's';
 
 				if( property_exists( $order, 'TotalBillingCycles' ) )
 					$tco_args['li_0_duration'] = ($order->BillingFrequency * $order->TotalBillingCycles ) . ' ' . $order->BillingPeriod;
+				else
+					$tco_args['li_0_duration'] = 'Forever';
 			}
 			// Non-recurring membership
 			else {
@@ -83,13 +91,7 @@
 				$trial_tax = $order->getTaxForPrice($trial_amount);
 				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
 				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
-			}
-
-			//taxes on the amount (NOT CURRENTLY USED)
-			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);						
-			$order->subtotal = $amount;
-			$amount = round((float)$amount + (float)$amount_tax, 2);			
+			}				
 			
 			$ptpStr = '';
 			foreach( $tco_args as $key => $value ) {
@@ -101,10 +103,13 @@
 			$additional_parameters = apply_filters( 'pmpro_twocheckout_return_url_parameters', array() );									
 			if( ! empty( $additional_parameters ) )
 				foreach( $additional_parameters as $key => $value )				
-					$ptpStr .= urlencode( "&" . $key . "=" . $value );
+					$ptpStr .= "&" . urlencode($key) . "=" . urlencode($value);
 
 			$ptpStr = apply_filters( 'pmpro_twocheckout_ptpstr', $ptpStr, $order );
 						
+			//echo str_replace("&", "&<br />", $ptpStr);
+			//exit;
+			
 			//redirect to 2checkout			
 			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 			
@@ -138,4 +143,3 @@
 			return $order;
 		}
 	}
-?>

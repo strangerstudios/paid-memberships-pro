@@ -1,4 +1,6 @@
-<?php			
+<?php
+	define('PMPRO_INS_DEBUG', true);
+	
 	//in case the file is loaded directly	
 	if(!defined("WP_USE_THEMES"))
 	{
@@ -19,6 +21,9 @@
 
 	//validate?
 	if( false || ! pmpro_twocheckoutValidate() ) {
+		
+		inslog("(!!FAILED VALIDATION!!)");
+		
 		//validation failed
 		pmpro_twocheckoutExit();
 	}
@@ -27,17 +32,36 @@
 	$message_type = pmpro_getParam( 'message_type', 'POST' );
 	$md5_hash = pmpro_getParam( 'md5_hash', 'POST' );
 	$txn_id = pmpro_getParam( 'sale_id', 'POST' );
-	$recurring = pmpro_getParam( 'recurring', 'POST' ); // Is this a recurring or single change (need to check for 0 single)
+	$recurring = pmpro_getParam( 'recurring', 'POST' );
+	$order_id = pmpro_getParam( 'merchant_order_id', 'POST' );
 	$product_id = pmpro_getParam( 'item_id_1', 'POST' ); // Should be item 0 or 1?
 	$invoice_status = pmpro_getParam( 'invoice_status', 'POST' ); // On single we need to check for deposited
 	$fraud_status = pmpro_getParam( 'fraud_status', 'POST' ); // Check fraud status?
 	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'POST' ); // Price paid by customer in seller currency code
 	$customer_email = pmpro_getParam( 'customer_email', 'POST' );
 	
-	// Single (one-time) Payment (invoice status has changed and recurring is false)
-	if( $message_type == 'INVOICE_STATUS_CHANGED' && ! $recurring ) {
+	// No message = return processing
+	if( empty($message_type) ) {
 		//initial payment, get the order
-		$morder = new MemberOrder( $product_id );
+		$morder = new MemberOrder( $order_id );
+		$morder->getMembershipLevel();
+		$morder->getUser();
+		
+		//update membership
+		if (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
+			inslog( "Checkout processed (" . $morder->code . ") success!" );
+		}
+		else {
+			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
+		}	
+		
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
+	}
+	
+	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
+	if( $message_type == 'ORDER_CREATED' ) {
+		//initial payment, get the order
+		$morder = new MemberOrder( $order_id );
 		$morder->getMembershipLevel();
 		$morder->getUser();
 		
@@ -49,16 +73,16 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
 		}	
 		
-		pmpro_twocheckoutExit();
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
 
 	// Recurring Payment Success (recurring installment success and recurring is true)
-	if( $message_type == 'RECURRING_INSTALLMENT_SUCCESS' && $recurring ) {
+	if( $message_type == 'RECURRING_INSTALLMENT_SUCCESS' ) {
 		//is this a first payment?
 		$last_subscr_order = new MemberOrder();
 		if( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $txn_id ) == false) {
 			//first payment, get order			
-			$morder = new MemberOrder( $product_id );												
+			$morder = new MemberOrder( $order_id );												
 			$morder->getMembershipLevel();
 			$morder->getUser();
 
@@ -129,7 +153,7 @@
 	
 	//Other
 	//if we got here, this is a different kind of txn
-	inslog("No recurring payment id or item number. txn_type = " . $txn_type);	
+	inslog("No recurring payment id or item number. message_type = " . $message_type);	
 	pmpro_twocheckoutExit();	
 	
 	/*
@@ -144,21 +168,23 @@
 	/*
 		Output inslog and exit;
 	*/
-	function pmpro_twocheckoutExit()
+	function pmpro_twocheckoutExit($redirect = false)
 	{
 		global $logstr;
 		echo $logstr;
 	
-		//for log
-		if($logstr)
-		{
-			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
+		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
 			
-			//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
-			//$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
-			//fwrite($loghandle, $logstr);
-			//fclose($loghandle);
+		//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
+		if(PMPRO_INS_DEBUG)
+		{
+			$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
+			fwrite($loghandle, $logstr);
+			fclose($loghandle);
 		}
+		
+		if(!empty($redirect))
+			wp_redirect($redirect);
 		
 		exit;
 	}
@@ -170,17 +196,18 @@
 		$params = array();
 		foreach ( $_REQUEST as $k => $v )
 			$params[$k] = $v;
-
-		// DEMO TEST DATA
-		/*$params['vendor_id'] = '1817037';
-		$params['sale_id'] = '4774380224';
-		$params['invoice_id'] = '4774380233';
-		$params['md5_hash'] = '566C45D68B75357AD43F9010CFFE8CF5';
-		$params['secret'] = 'tango';*/
-
-		$notification_check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
-
-		return $notification_check['response_code'] === 'Success';
+		
+		//2Checkout uses an order number of 1 in the hash for demo orders for some reason
+		if(($params['demo'] == 'Y'))
+			$params['order_number'] = 1;
+		
+		//is this a return call or notification
+		if(empty($params['message_type']))
+			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+		else		
+			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );				
+		
+		return $check['response_code'] === 'Success';
 	}
 	
 	/*
@@ -188,6 +215,8 @@
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
+		$recurring = pmpro_getParam( 'recurring', 'POST' );
+		
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_inshandler_level", $morder->membership_level, $morder->user_id);
 					

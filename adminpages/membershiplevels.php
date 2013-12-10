@@ -391,7 +391,13 @@
 
 				<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
 					<th scope="row" valign="top"><label><?php _e('Custom Trial', 'pmpro');?>:</label></th>
-					<td><input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="jQuery('.trial_info').toggle();" /> <?php _e('Check to add a custom trial period.', 'pmpro');?></td>
+					<td>
+						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="jQuery('.trial_info').toggle();" /> <?php _e('Check to add a custom trial period.', 'pmpro');?>
+												
+						<?php if($gateway == "twocheckout") { ?>
+							<br /><small><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'pmpro');?></strong></small>
+						<?php } ?>
+					</td>
 				</tr>
 
 				<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
@@ -412,9 +418,7 @@
 						<?php } elseif($gateway == "payflowpro") { ?>
 							<br /><small>
 							<strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Payflow integration currently does not support trial amounts greater than $0.', 'pmpro');?></strong>
-							</small>
-						<?php } elseif($gateway == "twocheckout") { ?>
-								<br /><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('TwoCheckout integration only supports trial amounts less than the absolute Billing Amount (e.g. if Billing Amount is $10, Trial Amount can fall between $10 and -$10 but cannot equal those).', 'pmpro');?>
+							</small>						
 						<?php } ?>
 					</td>
 				</tr>

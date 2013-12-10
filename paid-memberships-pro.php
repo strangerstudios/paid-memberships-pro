@@ -53,7 +53,6 @@ require_once(PMPRO_DIR . "/includes/recaptcha.php");			//load recaptcha files if
 require_once(PMPRO_DIR . "/includes/cleanup.php");				//clean things up when deletes happen, etc.
 require_once(PMPRO_DIR . "/includes/login.php");				//code to redirect away from login/register page
 
-require_once(PMPRO_DIR . "/shortcodes/checkout.php");			//[pmpro_checkout] shortcode for checkout pages
 require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[checkout_button] shortcode to show link to checkout for a level
 require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortcode to hide/show member content
 
@@ -74,7 +73,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.7.4.1b");
+define("PMPRO_VERSION", "1.7.5b");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 /*
