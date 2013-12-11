@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.5.1 =
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
+* Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
