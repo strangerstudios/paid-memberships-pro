@@ -48,7 +48,7 @@
 				
 				<div id="pmpro_level_cost">
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
-						<?php printf(__('<p>The <strong>%s</strong> code has been applied to your order.</p>', 'pmpro'), $discount_code);?>
+						<?php printf(__('<p class="pmpro_level_discount_applied">The <strong>%s</strong> code has been applied to your order.</p>', 'pmpro'), $discount_code);?>
 					<?php } ?>
 					<?php echo wpautop(pmpro_getLevelCost($pmpro_level)); ?>
 					<?php echo wpautop(pmpro_getLevelExpiration($pmpro_level)); ?>
