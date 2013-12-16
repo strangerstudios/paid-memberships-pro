@@ -61,7 +61,7 @@
 	//filter adjustments to the level
 	$code_level = apply_filters("pmpro_discount_code_level", $code_level, $discount_code_id);
 	?>
-	The discount code has been applied to your order.
+	The <?php echo $discount_code; ?> code has been applied to your order.
 	<script>		
 		var code_level = <?php echo json_encode($code_level); ?>;				
 		
