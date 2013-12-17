@@ -189,7 +189,7 @@
 					if($wpdb->query($sqlQuery) !== false)
 					{
 						//okay												
-						do_action("pmpro_save_discount_code_level", $saveid, $level_id);						
+						do_action("pmpro_save_discount_code_level", $edit, $level_id);						
 					}
 					else
 					{					
