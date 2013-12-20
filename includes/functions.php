@@ -132,11 +132,11 @@ function pmpro_url($page = NULL, $querystring = "", $scheme = NULL)
 			
 	//start with the permalink
 	$url = get_permalink($pmpro_pages[$page]);
-	
+		
 	//WPML/etc support
-	if(function_exists("icl_object_id") && !empty($_REQUEST['lang']))
+	if(function_exists("icl_object_id") && defined("ICL_LANGUAGE_CODE"))
 	{		
-		$trans_id = icl_object_id($pmpro_pages[$page], "page", false, $_REQUEST['lang']);
+		$trans_id = icl_object_id($pmpro_pages[$page], "page", false, ICL_LANGUAGE_CODE);
 		if(!empty($trans_id))
 		{
 			$url = get_permalink($trans_id);

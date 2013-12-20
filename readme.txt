@@ -105,6 +105,9 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.5.1 =
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
 * Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
+* Fixed bug with the pmpro_save_discount_code_level filter where -1 was being passed as the code_id for brand new codes.
+* Updated "The ____ code has been applied to your order" message to it is wrapped for localization.
+* Now checking ICL_LANGUAGE_CODE instead of $_REQUEST['lang'] to support WPML using different language URL formats.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
