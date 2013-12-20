@@ -101,7 +101,7 @@
 		if($invoices)
 		{
 			?>
-			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table id="pmpro_invoices_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
 					<th><?php _e('Date', 'pmpro'); ?></th>

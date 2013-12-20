@@ -265,6 +265,10 @@
 		do_action('pmpro_checkout_after_user_fields');
 	?>
 	
+	<?php
+		do_action('pmpro_checkout_boxes');
+	?>
+	
 	<?php					
 		if($tospage && !$pmpro_review)
 		{						
@@ -290,7 +294,7 @@
 		}
 	?>
 	
-	<?php do_action("pmpro_checkout_boxes"); ?>	
+	<?php do_action("pmpro_checkout_after_tos_fields"); ?>	
 		
 	<?php if(pmpro_getOption("gateway", true) == "paypal" && empty($pmpro_review)) { ?>
 		<table id="pmpro_payment_method" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
