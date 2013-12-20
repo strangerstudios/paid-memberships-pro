@@ -623,6 +623,10 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 	else
 		$level_id = $level;	//just id
 	
+	//remove cached level
+	global $all_membership_levels;
+	unset($all_membership_levels[$user_id]);
+	
 	//update user data and call action
 	pmpro_set_current_user();
 	do_action("pmpro_after_change_membership_level", $level_id, $user_id);	//$level is the $level_id here
@@ -1175,7 +1179,7 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;')
  *		Success returns the level object.
  *		Failure returns false.
  */
-function pmpro_getMembershipLevelForUser($user_id = NULL)
+function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 {
 	if(empty($user_id))
 	{
@@ -1190,7 +1194,7 @@ function pmpro_getMembershipLevelForUser($user_id = NULL)
 
 	global $all_membership_levels;
 
-	if(isset($all_membership_levels[$user_id]))
+	if(isset($all_membership_levels[$user_id]) && !$force)
 	{
 		return $all_membership_levels[$user_id];
 	}

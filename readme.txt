@@ -108,6 +108,8 @@ Not sure? You can find out by doing a bit a research.
 * Fixed bug with the pmpro_save_discount_code_level filter where -1 was being passed as the code_id for brand new codes.
 * Updated "The ____ code has been applied to your order" message to it is wrapped for localization.
 * Now checking ICL_LANGUAGE_CODE instead of $_REQUEST['lang'] to support WPML using different language URL formats.
+* Unsetting $all_membership_levels[$user_id] at the bottom of pmpro_changeMembershipLevel().
+* Added $force parameter to pmpro_getMembershipLevelForUser($user_id, $force). If set to true, it will ignore the cached value and pull the level from the DB.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
