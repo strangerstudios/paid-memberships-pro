@@ -151,7 +151,7 @@
 				<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
 					<li><a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Information", "pmpro");?></a></li>
 				<?php } ?>
-				<?php if(count($pmpro_levels) > 1) { ?>
+				<?php if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
 					<li><a href="<?php echo pmpro_url("levels")?>"><?php _e("Change Membership Level", "pmpro");?></a></li>
 				<?php } ?>
 				<li><a href="<?php echo pmpro_url("cancel")?>"><?php _e("Cancel Membership", "pmpro");?></a></li>
