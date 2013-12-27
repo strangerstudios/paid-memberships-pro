@@ -1036,13 +1036,13 @@ function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
 }
 
 //get a new random code for discount codes
-function pmpro_getDiscountCode()
+function pmpro_getDiscountCode($seed = NULL)
 {
 	global $wpdb;
 	
 	while(empty($code))
 	{
-		$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
+		$scramble = md5(AUTH_KEY . time() . $seed . SECURE_AUTH_KEY);		
 		$code = substr($scramble, 0, 10);
 		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '$code' LIMIT 1");				
 		if($check || is_numeric($code))

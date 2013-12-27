@@ -102,7 +102,7 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.5.1 =
+= 1.7.6 =
 * Added "Expired Members" option to the members list page to view members who don't have an active membership, but did in the past.
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
 * Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
@@ -112,6 +112,7 @@ Not sure? You can find out by doing a bit a research.
 * Unsetting $all_membership_levels[$user_id] at the bottom of pmpro_changeMembershipLevel().
 * Added $force parameter to pmpro_getMembershipLevelForUser($user_id, $force). If set to true, it will ignore the cached value and pull the level from the DB.
 * Added autocomplete="off" to credit card account number field on checkout and update billing pages.
+* Added an optional $seed parameter to pmpro_getDiscountCode() which will add $seed to the scrambled string. Useful when generating many discount codes quickly and time() might not have changed.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
