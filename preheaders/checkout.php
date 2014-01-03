@@ -331,7 +331,8 @@
 	if(isset($_REQUEST['AccountNumber']))
 		$AccountNumber = trim($_REQUEST['AccountNumber']);
 	else
-		$AccountNumber = "";
+		$AccountNumber = "";		
+	
 	if(isset($_REQUEST['ExpirationMonth']))
 		$ExpirationMonth = $_REQUEST['ExpirationMonth'];
 	else
@@ -1086,3 +1087,7 @@
 			$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
 		}	
 	}
+	
+	//clear out XXXX numbers (e.g. with Stripe)
+	if(!empty($AccountNumber) && strpos($AccountNumber, "XXXX") === 0)
+		$AccountNumber = "";

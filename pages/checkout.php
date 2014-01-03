@@ -356,7 +356,7 @@
 					</div>
 					<div>
 						<label for="bstate"><?php _e('State', 'pmpro');?></label>																
-						<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="30" value="<?php echo esc_attr($bstate)?>" /> 					
+						<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bstate");?>" size="30" value="<?php echo esc_attr($bstate)?>" /> 					
 					</div>
 					<div>
 						<label for="bzipcode"><?php _e('Postal Code', 'pmpro');?></label>

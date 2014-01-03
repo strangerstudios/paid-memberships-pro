@@ -114,6 +114,8 @@ Not sure? You can find out by doing a bit a research.
 * Added autocomplete="off" to credit card account number field on checkout and update billing pages.
 * Added an optional $seed parameter to pmpro_getDiscountCode() which will add $seed to the scrambled string. Useful when generating many discount codes quickly and time() might not have changed.
 * Now hiding "Change Membership Level" link from Member Links section of Membership Account page if PMPRO_DEFAULT_LEVEL is defined.
+* Clearing the AccountNumber value at checkout if it is XXXX..., e.g. when we mask the Stripe CC number. This way users will know they need to re-enter the credit card again. (Thanks, Gary)
+* Fixed bug on checkout page where html classes for the bstate field were being set based on the bcity value instead.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.
