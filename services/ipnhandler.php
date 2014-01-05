@@ -8,7 +8,9 @@
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
-		
+	
+	define('PMPRO_IPN_DEBUG', true);
+	
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to ipnlog.txt
@@ -34,7 +36,7 @@
 	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");			
 	
-	//check the receiver_email
+	//check the receiver_email	
 	if(!pmpro_ipnCheckReceiverEmail(array(strtolower($receiver_email), strtolower($business_email))))
 	{
 		//not our request
@@ -143,7 +145,7 @@
 		}	
 		
 		pmpro_ipnExit();
-	}
+	}		
 	
 	//PayPal Express Recurring Payments 
 	if($txn_type == "recurring_payment")
@@ -165,6 +167,66 @@
 		pmpro_ipnExit();
 	}	
 	
+	//Subscription Cancelled
+	if($txn_type == "subscr_cancel")
+	{
+		//find last order
+		$last_subscr_order = new MemberOrder();
+		if($last_subscr_order->getLastMemberOrderBySubscriptionTransactionID($subscr_id) == false)
+		{
+			ipnlog("ERROR: Couldn't find this order to cancel (" . $subscr_id . ").");		
+			
+			pmpro_ipnExit();		
+		}
+		else
+		{
+			//found order, let's cancel the membership
+			$user = get_userdata($last_subscr_order->user_id);
+			
+			if(empty($user) || empty($user->ID))
+			{
+				ipnlog("ERROR: Could not cancel membership. No user attached to order #" . $last_subscr_order->id . " with subscription transaction id = " . $subscr_id . ".");	
+			}
+			else
+			{			
+				/*
+					We want to make sure this is a cancel originating from PayPal and not one already handled by PMPro.
+					For example, if a user cancels on WP/PMPro side, we've already cancelled the membership.
+					Also, if a user is changing levels, we don't want to cancel their new membership, just the old subscription at PayPal.
+					
+					So we check 2 things and don't cancel if:
+					(1) This order already has "cancelled" status.
+					(2) The user doesn't currently have the level attached to this order.
+				*/
+				
+				if($last_subscr_order->status == "cancelled")
+				{
+					ipnlog("We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")");
+				}
+				elseif(!pmpro_hasMembershipLevel($last_subsc_order->membership_id, $user->ID))
+				{
+					ipnlog("This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")");
+				}
+				else
+				{				
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					
+					ipnlog("Canceled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $subscr_id . ".");	
+					
+					//send an email to the member
+					$myemail = new PMProEmail();
+					$myemail->sendCancelEmail($user);
+					
+					//send an email to the admin
+					$myemail = new PMProEmail();
+					$myemail->sendCancelAdminEmail($user, $last_subscr_order->membership_id);
+				}
+			}
+				
+			pmpro_ipnExit();
+		}
+	}
+	
 	//Other
 	//if we got here, this is a different kind of txn
 	ipnlog("No recurring payment id or item number. txn_type = " . $txn_type);	
@@ -185,17 +247,21 @@
 	function pmpro_ipnExit()
 	{
 		global $logstr;
-		echo $logstr;
-	
+		
 		//for log
 		if($logstr)
 		{
 			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
 			
-			//uncomment these lines and make sure logs/ipn.txt is writable to log IPN activity
-			//$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
-			//fwrite($loghandle, $logstr);
-			//fclose($loghandle);
+			//log?
+			if(PMPRO_IPN_DEBUG)
+			{
+				echo $logstr;
+				
+				$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
+				fwrite($loghandle, $logstr);
+				fclose($loghandle);
+			}
 		}
 		
 		exit;
@@ -328,17 +394,18 @@
 			ipnlog($pmpro_error);				
 		}
 		
+		//update order status and transaction ids					
+		$morder->status = "success";
+		$morder->payment_transaction_id = $txn_id;
+		if(!empty($_POST['subscr_id']))
+			$morder->subscription_transaction_id = $_POST['subscr_id'];
+		else
+			$morder->subscription_transaction_id = "";
+		$morder->saveOrder();
+		
+		//change level and continue "checkout"
 		if(pmpro_changeMembershipLevel($custom_level, $morder->user_id) !== false)
-		{
-			//update order status and transaction ids					
-			$morder->status = "success";
-			$morder->payment_transaction_id = $txn_id;
-			if(!empty($_POST['subscr_id']))
-				$morder->subscription_transaction_id = $_POST['subscr_id'];
-			else
-				$morder->subscription_transaction_id = "";
-			$morder->saveOrder();
-			
+		{						
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{

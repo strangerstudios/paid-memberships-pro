@@ -228,6 +228,9 @@ function pmpro_getLevelCost(&$level, $tags = true)
 	else
 		$r .= '.';
 	
+	//add a space
+	$r .= ' ';
+	
 	//trial part
 	if($level->trial_limit)
 	{
@@ -1542,6 +1545,44 @@ function pmpro_getParam($index, $method = "REQUEST", $default = "")
 	}
 	
 	return $default;
+}
+
+/*
+	Format an address from address, city, state, zip, country, and phone
+*/
+function pmpro_formatAddress($name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br = true)
+{
+	$address = "";
+	
+	if(!empty($name))
+		$address .= $name . "\n";
+	
+	if(!empty($address1))
+		$address .= $address1 . "\n";
+		
+	if(!empty($address2))
+		$address .= $address2 . "\n";
+		
+	if(!empty($city) && !empty($state))
+	{
+		$address .= $city . ", " . $state;
+		
+		if(!empty($zip))
+			$address .= " " . $zip;
+			
+		$address .= "\n";
+	}
+	
+	if(!empty($country))
+		$address .= $country . "\n";
+		
+	if(!empty($phone))
+		$address .= formatPhone($phone);
+		
+	if($nl2br)
+		$address = nl2br($address);
+		
+	return $address;	
 }
 
 /*

@@ -1,9 +1,9 @@
 === Paid Memberships Pro ===
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
-Requires at least: 3.0
-Tested up to: 3.7.1
-Stable tag: 1.7.5
+Requires at least: 3.5
+Tested up to: 3.8
+Stable tag: 1.7.6
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -103,10 +103,11 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.6 =
-* Added "Expired Members" option to the members list page to view members who don't have an active membership, but did in the past.
+* Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
 * Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
 * Fixed bug with the pmpro_save_discount_code_level filter where -1 was being passed as the code_id for brand new codes.
+* The PayPal IPN Handler has been updated to process "subscr_cancel" messages from PayPal. This should cancel memberships in WP/PMPro when users or PayPal admins cancel a subscription at PayPal.
 * Updated "The ____ code has been applied to your order" message to it is wrapped for localization.
 * Now checking ICL_LANGUAGE_CODE instead of $_REQUEST['lang'] to support WPML using different language URL formats.
 * Unsetting $all_membership_levels[$user_id] at the bottom of pmpro_changeMembershipLevel().
@@ -116,6 +117,11 @@ Not sure? You can find out by doing a bit a research.
 * Now hiding "Change Membership Level" link from Member Links section of Membership Account page if PMPRO_DEFAULT_LEVEL is defined.
 * Clearing the AccountNumber value at checkout if it is XXXX..., e.g. when we mask the Stripe CC number. This way users will know they need to re-enter the credit card again. (Thanks, Gary)
 * Fixed bug on checkout page where html classes for the bstate field were being set based on the bcity value instead.
+* Fixed bug where there was no space after the "." in some level cost text. (Thanks, multiple observers ;)
+* Added some explanatory text to the payment settings page about taxes and SSL seals.
+* Added a pmpro_formatAddress() function to format billing addresses/etc.
+* Fixed bug where blank billing addresses were showing up in confirmation emails. If you use custom email templates, update them to use the !!billing_address!! variable instead of the full address section.
+* Design updates to checkout buttons, admin screens, etc, to work better with WP 3.8 and the TwentyFourteen theme.
 
 = 1.7.5 =
 * Fixed all open bugs with 2Checkout gateway. You can now use this gateway for one time and recurring levels. We're still keeping the beta message though until we have further live testing.

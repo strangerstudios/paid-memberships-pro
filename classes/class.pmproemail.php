@@ -213,6 +213,14 @@
 				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
 				$this->data["expirationmonth"] = $invoice->expirationmonth;
 				$this->data["expirationyear"] = $invoice->expirationyear;
+				$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																	 $invoice->billing->street,
+																	 "", //address 2
+																	 $invoice->billing->city,
+																	 $invoice->billing->state,
+																	 $invoice->billing->zip,
+																	 $invoice->billing->country,
+																	 $invoice->billing->phone);
 				
 				if($invoice->getDiscountCode())
 					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code->code . "</p>\n";
@@ -302,6 +310,14 @@
 				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
 				$this->data["expirationmonth"] = $invoice->expirationmonth;
 				$this->data["expirationyear"] = $invoice->expirationyear;
+				$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																	 $invoice->billing->street,
+																	 "", //address 2
+																	 $invoice->billing->city,
+																	 $invoice->billing->state,
+																	 $invoice->billing->zip,
+																	 $invoice->billing->country,
+																	 $invoice->billing->phone);
 				
 				if($invoice->getDiscountCode())
 					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code->code . "</p>\n";
@@ -368,6 +384,14 @@
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_url("account")
 							);
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);
 		
 			return $this->sendEmail();
 		}
@@ -413,6 +437,14 @@
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => wp_login_url()
 							);
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);
 		
 			return $this->sendEmail();
 		}
@@ -453,6 +485,14 @@
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_url("billing")
 							);
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);
 		
 			return $this->sendEmail();
 		}				
@@ -491,7 +531,14 @@
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_url("billing")
 							);
-		
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);		
 			return $this->sendEmail();
 		}
 		
@@ -531,6 +578,14 @@
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_url("billing")
 							);
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);
 		
 			return $this->sendEmail();
 		}
@@ -575,6 +630,14 @@
 								"login_link" => pmpro_url("account"),
 								"invoice_link" => pmpro_url("invoice", "?invoice=" . $invoice->code)
 							);
+			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
+																 $invoice->billing->street,
+																 "", //address 2
+																 $invoice->billing->city,
+																 $invoice->billing->state,
+																 $invoice->billing->zip,
+																 $invoice->billing->country,
+																 $invoice->billing->phone);
 		
 			if($invoice->getDiscountCode())
 				$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code . "</p>\n";

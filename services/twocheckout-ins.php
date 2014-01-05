@@ -186,6 +186,7 @@
 		//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
 		if(PMPRO_INS_DEBUG)
 		{
+			echo $logstr;
 			$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);
