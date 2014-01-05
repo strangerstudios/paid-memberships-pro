@@ -477,7 +477,7 @@
 							
 							<tr>
 								<th scope="row" valign="top"><label><?php _e('Membership Expiration', 'pmpro');?>:</label></th>
-								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <small><?php _e('Check this to set an expiration date for new sign ups.', 'pmpro');?></small></td>
+								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <?php _e('Check this to set when membership access expires.', 'pmpro');?></td>
 							</tr>
 							
 							<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
@@ -494,7 +494,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('How long before the expiration expires. Note that any future payments will be cancelled when the membership expires.', 'pmpro');?></small>							
+									<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'pmpro');?></small>							
 								</td>
 							</tr> 
 						</tbody>
@@ -513,8 +513,8 @@
 			</div>
 			
 			<p class="submit topborder">
-				<input name="save" type="submit" class="button-primary" value="Save Code" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="save" type="submit" class="button button-primary" value="Save Code" /> 					
+				<input name="cancel" type="button" class="button button-secondary" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
@@ -523,7 +523,7 @@
 	
 		<h2>
 			<?php _e('Memberships Discount Codes', 'pmpro');?>
-			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="button add-new-h2"><?php _e('Add New Discount Code', 'pmpro');?></a>
+			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="add-new-h2"><?php _e('Add New Discount Code', 'pmpro');?></a>
 		</h2>		
 		
 		<?php if(!empty($pmpro_msg)) { ?>

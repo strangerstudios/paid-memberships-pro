@@ -493,7 +493,7 @@
 	{
 	?>							
 				
-	<h2><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="button add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
+	<h2><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
 	<form id="posts-filter" method="get" action="">			
 		<p class="search-box">
 			<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'pmpro');?>:</label>

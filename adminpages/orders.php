@@ -508,7 +508,7 @@
 		<p class="submit topborder">
 			<input name="order" type="hidden" value="<?php if(!empty($order->id)) echo $order->id; else echo $order_id;?>" />
 			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Order', 'pmpro');?>" /> 					
-			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro');?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-orders')?>';" />			
+			<input name="cancel" type="button" class="cancel button-secondary" value="<?php _e('Cancel', 'pmpro');?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-orders')?>';" />			
 		</p>
 		
 	</form>
@@ -518,8 +518,8 @@
 	<form id="posts-filter" method="get" action="">	
 	<h2>
 		<?php _e('Orders', 'pmpro');?>
-		<a href="admin.php?page=pmpro-orders&order=-1" class="button add-new-h2">+ <?php _e('Add New Order', 'pmpro');?></a>
-		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=orders_csv&s=<?php echo $s?>&l=<?php echo $l?>" class="button add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
+		<a href="admin.php?page=pmpro-orders&order=-1" class="add-new-h2">+ <?php _e('Add New Order', 'pmpro');?></a>
+		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=orders_csv&s=<?php echo $s?>&l=<?php echo $l?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
 	</h2>	
 
 	<?php if(!empty($pmpro_msg)) { ?>

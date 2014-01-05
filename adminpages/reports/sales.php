@@ -189,48 +189,46 @@ function pmpro_report_sales_page()
 		<?php _e('Sales and Revenue', 'pmpro');?>
 	</h2>
 	
-	<ul class="subsubsub">
-		<li>
-			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
-			<select id="period" name="period">
-				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
-				<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'pmpro');?></option>
-				<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'pmpro');?></option>
-			</select>
-			<select name="type">
-				<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'pmpro');?></option>
-				<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'pmpro');?></option>
-			</select>
-			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
-			<select id="month" name="month">
-				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
-				<?php } ?>
-			</select>
-			<select id="year" name="year">
-				<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-					<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
-				<?php } ?>
-			</select>
-			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
-			<select name="level">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
-				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					foreach($levels as $level)
-					{
-				?>
-					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
-				<?php
-					}
-				?>
-			</select>
-			
-			<input type="hidden" name="page" value="pmpro-reports" />		
-			<input type="hidden" name="report" value="sales" />	
-			<input type="submit" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
-		</li>
-	</ul>
+	<div class="tablenav top">
+		<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
+		<select id="period" name="period">
+			<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
+			<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'pmpro');?></option>
+			<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'pmpro');?></option>
+		</select>
+		<select name="type">
+			<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'pmpro');?></option>
+			<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'pmpro');?></option>
+		</select>
+		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+		<select id="month" name="month">
+			<?php for($i = 1; $i < 13; $i++) { ?>
+				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+			<?php } ?>
+		</select>
+		<select id="year" name="year">
+			<?php for($i = $thisyear; $i > 2007; $i--) { ?>
+				<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
+			<?php } ?>
+		</select>
+		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+		<select name="level">
+			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
+			<?php
+				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+				foreach($levels as $level)
+				{
+			?>
+				<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+			<?php
+				}
+			?>
+		</select>
+		
+		<input type="hidden" name="page" value="pmpro-reports" />		
+		<input type="hidden" name="report" value="sales" />	
+		<input type="submit" class="button action" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
+	</div>
 	
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
 	
