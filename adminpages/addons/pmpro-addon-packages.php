@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Addon Packages',
-		'version' => '.1.3',
+		'version' => '.3',
 		'widget' => 'pmpro_addon_pmpro_addon_packages_widget',
 		'enabled' => function_exists('pmproap_post_meta')
 	)
