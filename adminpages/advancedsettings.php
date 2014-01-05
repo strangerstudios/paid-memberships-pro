@@ -281,7 +281,7 @@ if(pmpro_displayAds())
 		</script>
 		
 		<p class="submit">            
-			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'pmpro');?>" /> 		                			
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'pmpro');?>" /> 		                			
 		</p> 
 	</form>
 
