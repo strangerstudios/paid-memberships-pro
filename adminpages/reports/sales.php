@@ -189,8 +189,8 @@ function pmpro_report_sales_page()
 		<?php _e('Sales and Revenue', 'pmpro');?>
 	</h2>
 	
-	<ul class="subsubsub">
-		<li>
+	<div class="tablenav top">
+		<div class="actions">
 			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
 			<select id="period" name="period">
 				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
@@ -228,9 +228,9 @@ function pmpro_report_sales_page()
 			
 			<input type="hidden" name="page" value="pmpro-reports" />		
 			<input type="hidden" name="report" value="sales" />	
-			<input type="submit" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
-		</li>
-	</ul>
+			<input type="submit" class="button action" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
+		</div>
+	</div>
 	
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
 	
