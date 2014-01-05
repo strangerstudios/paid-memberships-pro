@@ -523,7 +523,7 @@
 	
 		<h2>
 			<?php _e('Memberships Discount Codes', 'pmpro');?>
-			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="button add-new-h2"><?php _e('Add New Discount Code', 'pmpro');?></a>
+			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="add-new-h2"><?php _e('Add New Discount Code', 'pmpro');?></a>
 		</h2>		
 		
 		<?php if(!empty($pmpro_msg)) { ?>
