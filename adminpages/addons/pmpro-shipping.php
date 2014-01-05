@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Shipping Add On',
-		'version' => '.2.3',
+		'version' => '.2.4',
 		'widget' => 'pmpro_addon_pmpro_shipping_widget',
 		'enabled' => function_exists('pmproship_pmpro_checkout_boxes')
 	)
