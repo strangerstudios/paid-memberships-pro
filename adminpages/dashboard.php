@@ -105,9 +105,9 @@
 
 		echo '</ul>';
 		echo '<br class="clear"/><div style="margin-top:10px;border-top: 1px solid #ddd; padding-top: 10px; text-align:center;">';
-		echo '<a href="'.$pmpro_feed.'"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
+		echo '<a target="_blank" href="'.$pmpro_feed.'"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
 		echo ' &nbsp; &nbsp; &nbsp; ';
-		echo '<a href="http://www.paidmembershipspro.com/"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/wpmini-blue.png" alt=""/> View Online</a>';
+		echo '<a target="_blank" href="http://www.paidmembershipspro.com/blog/">View Online</a>';
 		echo '<form class="alignright" method="post"><input type="hidden" name="pmpro_removedbwidget" value="true"/><input title="Remove this widget from all users dashboards" class="button" type="submit" value="X"/></form>';
 		echo '</div>';
 	}
