@@ -531,7 +531,14 @@
 			else
 			{			
 				//cancel the gateway subscription first				
-				return $this->Gateway->cancel($this);					
+				$result = $this->Gateway->cancel($this);
+				if($result == false)
+				{
+					global $pmpro_subscription_cancel_error;
+					$pmpro_subscription_cancel_error = $this->error;
+				}
+				else
+					return $result;
 			}
 		}
 		

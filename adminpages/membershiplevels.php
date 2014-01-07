@@ -361,7 +361,7 @@
 						<br /><small>							
 							<?php _e('The amount to be billed one cycle after the initial payment.', 'pmpro');?>							
 							<?php if($gateway == "stripe") { ?>
-								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently only supports billing periods of "Month" or "Year".', 'pmpro');?>
+								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently only supports billing periods of "Week", "Month" or "Year".', 'pmpro');?>
 							<?php } elseif($gateway == "braintree") { ?>
 								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'pmpro');?>						
 							<?php } elseif($gateway == "payflowpro") { ?>
