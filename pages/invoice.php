@@ -97,7 +97,7 @@
 	else 
 	{
 		//Show all invoices for user if no invoice ID is passed	
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC");
+		$invoices = $wpdb->get_results("SELECT o.*, UNIX_TIMESTAMP(o.timestamp) as timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' ORDER BY timestamp DESC");
 		if($invoices)
 		{
 			?>
@@ -106,8 +106,8 @@
 				<tr>
 					<th><?php _e('Date', 'pmpro'); ?></th>
 					<th><?php _e('Invoice #', 'pmpro'); ?></th>
-					<th><?php _e('Total Billed', 'pmpro'); ?></th>
-					<th>&nbsp;</th>
+					<th><?php _e('Level', 'pmpro'); ?></th>
+					<th><?php _e('Total Billed', 'pmpro'); ?></th>					
 				</tr>
 			</thead>
 			<tbody>
@@ -116,10 +116,10 @@
 				{ 
 					?>
 					<tr>
-						<td><?php echo date(get_option("date_format"), $invoice->timestamp)?></td>
+						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?></a></td>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo $invoice->code; ?></a></td>
-						<td><?php echo $pmpro_currency_symbol?><?php echo $invoice->total?></td>					
-						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php _e('View Invoice', 'pmpro'); ?></a></td>
+						<td><?php echo $invoice->membership_level_name;?></td>
+						<td><?php echo $pmpro_currency_symbol?><?php echo $invoice->total?></td>											
 					</tr>
 					<?php
 				}

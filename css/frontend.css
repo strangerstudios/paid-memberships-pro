@@ -58,6 +58,7 @@ fieldset[disabled] .pmpro_btn {
           box-shadow: none;
 }
 
+.pmpro_btn.pmpro_cancel, .pmpro_btn.pmpro_cancel:link {background: none; border: none; margin: 0 0 0 10px; }
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
@@ -145,7 +146,9 @@ a.pmpro_radio {text-decoration: none; color: #000;}
 #pmpro_account #pmpro_account-invoices { }
 #pmpro_account #pmpro_account-links { }
 
-
+.pmpro_actionlinks {font-size: .8em; margin: .25em 0 0 0; }
+.pmpro_actionlinks a {display: inline-block; padding: 0 8px 0 0; margin: 0; text-decoration: none; }
+.pmpro_actionlinks a:last-child {padding: 0; }
 .pmpro_hidden {display: none;}
 li.pmpro_more {list-style-type: none; text-align: center; margin-left: -20px; padding-left: 0;}
 
