@@ -564,13 +564,13 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 				}										
 			}
 		}
-
+		
 		//cancel any other subscriptions they have (updates pmpro_membership_orders table)
 		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
-			$c_order->cancel();
+			$c_order->cancel();			
 		}
 	}
 

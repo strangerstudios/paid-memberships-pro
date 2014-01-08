@@ -157,11 +157,11 @@
 					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
 						<option value="">Testing Only</option>
 						<option value="check" <?php selected( $gateway, "check" ); ?>><?php _e('Pay by Check', 'pmpro');?></option>
-						<option value="stripe" <?php selected( $gateway, "stripe" ); ?>>Stripe</option>
-						<option value="paypalstandard" <?php selected( $gateway, "paypalstandard" ); ?>>PayPal Standard</option>
+						<option value="stripe" <?php selected( $gateway, "stripe" ); ?>>Stripe</option>						
 						<option value="paypalexpress" <?php selected( $gateway, "paypalexpress" ); ?>>PayPal Express</option>
 						<option value="paypal" <?php selected( $gateway, "paypal" ); ?>>PayPal Website Payments Pro</option>
 						<option value="payflowpro" <?php selected( $gateway, "payflowpro" ); ?>>PayPal Payflow Pro/PayPal Pro</option>
+						<option value="paypalstandard" <?php selected( $gateway, "paypalstandard" ); ?>>PayPal Standard</option>
 						<option value="authorizenet" <?php selected( $gateway, "authorizenet" ); ?>>Authorize.net</option>
 						<option value="braintree" <?php selected( $gateway, "braintree" ); ?>>Braintree Payments</option>
 						<option value="twocheckout" <?php selected( $gateway, "twocheckout" ); ?>>2Checkout</option>
@@ -173,7 +173,12 @@
 				<td colspan="2">
 					<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'pmpro');?>
 				</td>	
-			</tr> 						
+			</tr>
+			<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+				<td colspan="2">
+					<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'pmpro');?>
+				</td>	
+			</tr>			
 			<tr>
 				<th scope="row" valign="top">
 					<label for="gateway_environment"><?php _e('Gateway Environment', 'pmpro');?>:</label>

@@ -58,7 +58,9 @@
 				$this->body = file_get_contents(PMPRO_DIR . "/languages/" . $locale . "/" . $this->template . ".html");								//email folder in PMPro language folder
 			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");													//default template in plugin
-						
+			elseif(!empty($this->data) && !empty($this->data['body']))
+				$this->body = $this->data['body'];
+			
 			//header and footer
 			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
 			if(file_exists(TEMPLATEPATH . "/email_header.html"))
