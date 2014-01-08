@@ -104,10 +104,12 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
+* The PayPal IPN Handler has been updated to process "subscr_cancel" messages from PayPal. This should cancel memberships in WP/PMPro when users or PayPal admins cancel a subscription at PayPal when using PayPal Express or Website Payments Pro. There are still known issues with syncing cancellations with PayPal Standard.
+* Fixed bug where "error cancelling subscription" emails were being sent out erroneously. These should only go out now if PMPro has trouble cancelling a subscription. If you got a lot of these before, you should get less. If you never got this, you might start getting it sometimes.
+* Orders are now set to "cancelled" status whether any attached subscriptions were cancelled or not. (Keeps us from trying again.)
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
 * Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
 * Fixed bug with the pmpro_save_discount_code_level filter where -1 was being passed as the code_id for brand new codes.
-* The PayPal IPN Handler has been updated to process "subscr_cancel" messages from PayPal. This should cancel memberships in WP/PMPro when users or PayPal admins cancel a subscription at PayPal.
 * Updated "The ____ code has been applied to your order" message to it is wrapped for localization.
 * Now checking ICL_LANGUAGE_CODE instead of $_REQUEST['lang'] to support WPML using different language URL formats.
 * Unsetting $all_membership_levels[$user_id] at the bottom of pmpro_changeMembershipLevel().

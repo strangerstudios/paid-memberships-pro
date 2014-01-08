@@ -551,10 +551,10 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 				
 	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
 	if($pmpro_cancel_previous_subscriptions)
-	{
+	{		
 		//deactivate old memberships (updates pmpro_memberships_users table)
 		if(!empty($old_levels))
-		{
+		{			
 			foreach($old_levels as $old_level) {
 				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
 				if(!$wpdb->query($sql))
@@ -566,7 +566,8 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		}
 		
 		//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
+		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");		
+				
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
