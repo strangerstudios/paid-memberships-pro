@@ -9,7 +9,8 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 	
-	define('PMPRO_IPN_DEBUG', true);
+	//uncomment to log requests in logs/ipn.txt
+	//define('PMPRO_IPN_DEBUG', true);
 	
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
