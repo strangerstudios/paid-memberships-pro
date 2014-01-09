@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.6.1 =
 * Updated "Joined" column in members list to use the WP date format setting.
+* Removed redundant phone number on checkout page if bphone is already set.
 
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
