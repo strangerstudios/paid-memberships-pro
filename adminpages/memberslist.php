@@ -203,7 +203,7 @@
 									-
 								<?php } ?>
 							</td>						
-							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
+							<td><?php echo date(get_option("date_format"), strtotime($theuser->user_registered))?></td>
 							<td>
 								<?php 
 									if($auser->enddate) 

@@ -102,9 +102,11 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.6.1 =
+* Updated "Joined" column in members list to use the WP date format setting.
+
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
-* Stripe now supports weekly recurring payments. Removed the error message RE this. You may have to upgrade your Stripe API from the Stripe dashboard to use this.
 * The PayPal IPN Handler has been updated to process "subscr_cancel" messages from PayPal. This should cancel memberships in WP/PMPro when users or PayPal admins cancel a subscription at PayPal when using PayPal Express or Website Payments Pro. There are still known issues with syncing cancellations with PayPal Standard.
 * Fixed bug where "error cancelling subscription" emails were being sent out erroneously. These should only go out now if PMPro has trouble cancelling a subscription. If you got a lot of these before, you should get less. If you never got this, you might start getting it sometimes.
 * Orders are now set to "cancelled" status whether any attached subscriptions were cancelled or not. (Keeps us from trying again.)
