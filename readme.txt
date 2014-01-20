@@ -105,6 +105,8 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.6.1 =
 * Updated "Joined" column in members list to use the WP date format setting.
 * Removed redundant phone number on checkout page if bphone is already set.
+* When adding extra columns to the Members List CSV export via pmpro_members_list_csv_extra_columns, we are now passing the original heading/field name to callback function. So you can use that in your callback functions. This generally means you can use one function that just dumps the meta value rather than requiring a separate function for each meta value.
+* Fixed bug where "Show Billing Fields" option was visible on the payment settings page for the testing gateway. (This option is only for Stripe.)
 
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
@@ -112,7 +114,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed bug where "error cancelling subscription" emails were being sent out erroneously. These should only go out now if PMPro has trouble cancelling a subscription. If you got a lot of these before, you should get less. If you never got this, you might start getting it sometimes.
 * Orders are now set to "cancelled" status whether any attached subscriptions were cancelled or not. (Keeps us from trying again.)
 * Fixed bug where All Pages view in WP dashboard would sometimes redirect to the registration page if you had Theme My Login installed.
-* Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() usering a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
+* Setting startdate to NOW() when a user's level is changed via pmpro_changeMembershipLevel() using a level ID... also when admin's manually change a user's level. This fixes issues with PMPro Series where users who were given a level this way appear to have a start date in 1970, etc.
 * Fixed bug with the pmpro_save_discount_code_level filter where -1 was being passed as the code_id for brand new codes.
 * Updated "The ____ code has been applied to your order" message to it is wrapped for localization.
 * Now checking ICL_LANGUAGE_CODE instead of $_REQUEST['lang'] to support WPML using different language URL formats.

@@ -424,8 +424,8 @@
 					<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'pmpro');?></small></p>
 				</td>
 			</tr>
-			
-			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) && $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+						
+			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) || $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'pmpro');?>:</label>
 				</th>
