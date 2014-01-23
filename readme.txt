@@ -107,6 +107,7 @@ Not sure? You can find out by doing a bit a research.
 * Removed redundant phone number on checkout page if bphone is already set.
 * When adding extra columns to the Members List CSV export via pmpro_members_list_csv_extra_columns, we are now passing the original heading/field name to callback function. So you can use that in your callback functions. This generally means you can use one function that just dumps the meta value rather than requiring a separate function for each meta value.
 * Fixed bug where "Show Billing Fields" option was visible on the payment settings page for the testing gateway. (This option is only for Stripe.)
+* Fixed bug with choosing levels to hide ads from on advanced settings tab. (Thanks, Alain Fradette)
 
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
