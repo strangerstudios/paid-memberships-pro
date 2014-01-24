@@ -148,6 +148,9 @@
 			return $this->getMemberOrderByID($id);
 		}
 		
+		/*
+			Returns the order using the given order code.
+		*/
 		function getMemberOrderByCode($code)
 		{
 			global $wpdb;
@@ -158,8 +161,15 @@
 				return false;
 		}
 		
+		/*
+			Returns the last order using the given payment_transaction_id.
+		*/
 		function getMemberOrderByPaymentTransactionID($payment_transaction_id)
 		{
+			//did they pass a trans id?
+			if(empty($payment_transaction_id))
+				return false;
+			
 			global $wpdb;
 			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql($payment_transaction_id) . "' LIMIT 1");
 			if($id)
