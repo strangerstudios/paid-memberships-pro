@@ -103,6 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.6.1 =
+* Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
 * Updated "Joined" column in members list to use the WP date format setting.
 * Removed redundant phone number on checkout page if bphone is already set.
 * When adding extra columns to the Members List CSV export via pmpro_members_list_csv_extra_columns, we are now passing the original heading/field name to callback function. So you can use that in your callback functions. This generally means you can use one function that just dumps the meta value rather than requiring a separate function for each meta value.

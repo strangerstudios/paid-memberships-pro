@@ -367,7 +367,7 @@
 				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
 			}
 			if(empty($this->user_id))
-				$this->user_id = "";
+				$this->user_id = 0;
 			if(empty($this->paypal_token))
 				$this->paypal_token = "";
 			if(empty($this->couponamount))
