@@ -112,6 +112,8 @@ Not sure? You can find out by doing a bit a research.
 * Fixed bug where PayPal Express was adding tax twice for subscription charges. (This does not fix existing subscriptions on the PayPal side.)
 * Fixed bug with the Stripe Webhook where non-PMPro orders were being added to PMPro via the webhook. If the customer_id cannot be found (i.e. it's a non-PMPro customer), the order is ignored. (Thanks, Jacob Glenn)
 * The getMemberOrderByPaymentTransactionID() function has been updated to return false if no payment_transaction_id is passed in (instead of finding the first order where the id is blank). This is inline with the getMemberOrderBySubscriptionTransactionID() function.
+* Fix to code that hides posts from search to NOT hide posts that a user has access to but might also be accessible by users of a different level. (Thanks, normanyung on GitHub)
+* Added a pmpro-en_GB translation that changes "State" to "County" on the billing address fields. (Thanks, alexbiddle on GitHub)
 
 = 1.7.6 =
 * Added "Old Members" option to the members list page to view members who don't have an active membership, but did in the past. (Note that we don't differentiate between members who expired and who cancelled.)
