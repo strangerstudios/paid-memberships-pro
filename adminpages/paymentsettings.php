@@ -39,6 +39,9 @@
 		pmpro_setOption("twocheckout_secretword");
 		pmpro_setOption("cybersource_merchantid");
 		pmpro_setOption("cybersource_securitykey");
+        pmpro_setOption("payfast_debug");
+        pmpro_setOption("payfast_merchant_id");
+        pmpro_setOption("payfast_merchant_key");
 		
 		//currency
 		pmpro_setOption("currency");
@@ -105,6 +108,9 @@
 	$twocheckout_secretword = pmpro_getOption("twocheckout_secretword");
 	$cybersource_merchantid = pmpro_getOption("cybersource_merchantid");
 	$cybersource_securitykey = pmpro_getOption("cybersource_securitykey");
+    $payfast_debug = pmpro_getOption("payfast_debug");
+    $payfast_merchant_id = pmpro_getOption("payfast_merchant_id");
+    $payfast_merchant_key = pmpro_getOption("payfast_merchant_key");
 	
 	$currency = pmpro_getOption("currency");
 	
@@ -166,6 +172,7 @@
 						<option value="braintree" <?php selected( $gateway, "braintree" ); ?>>Braintree Payments</option>
 						<option value="twocheckout" <?php selected( $gateway, "twocheckout" ); ?>>2Checkout</option>
 						<option value="cybersource" <?php selected( $gateway, "cybersource" ); ?>>CyberSource</option>
+                        <option value="payfast" <?php selected( $gateway, "payfast" ); ?>>PayFast</option>
 					</select>                        
 				</td>
 			</tr>
@@ -380,7 +387,33 @@
 					<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($cybersource_securitykey);?></textarea>					
 				</td>
 			</tr>																	
-			
+			<tr class="gateway gateway_payfast" <?php if( $gateway != "payfast" ) { ?>style="display: none;"<?php } ?>> 
+                <th scope="row" valign="top">
+                    <label for="payfast_merchant_id"><?php _e('PayFast Merchant ID', 'pmpro');?>:</label>
+                </th>
+                <td>
+                    <input id="payfast_merchant_id" name="payfast_merchant_id" value="<?php echo esc_attr($payfast_merchant_id); ?>" />
+                </td>
+            </tr>
+            <tr class="gateway gateway_payfast" <?php if( $gateway != "payfast" ) { ?>style="display: none;"<?php } ?>> 
+                <th scope="row" valign="top">
+                    <label for="payfast_merchant_key"><?php _e('PayFast Merchant Key', 'pmpro');?>:</label>
+                </th>
+                <td>
+                    <input id="payfast_merchant_key" name="payfast_merchant_key" value="<?php echo esc_attr($payfast_merchant_key); ?>" />
+                </td>
+            </tr>           
+            <tr class="gateway gateway_payfast" <?php if( $gateway != "payfast" ) { ?>style="display: none;"<?php } ?>> 
+                <th scope="row" valign="top">
+                    <label for="payfast_debug"><?php _e('PayFast Debug Mode', 'pmpro');?>:</label>
+                </th>
+                <td>
+                    <select name="payfast_debug">
+                        <option value="1" <?php if( isset($payfast_debug) && $payfast_debug ) { ?>selected="selected"<?php } ?>><?php _e('On', 'pmpro');?></option>
+                        <option value="0" <?php if( isset($payfast_debug) && !$payfast_debug) { ?>selected="selected"<?php } ?>><?php _e('Off', 'pmpro');?></option>
+                    </select>
+                </td>
+            </tr>
 			<tr class="gateway gateway_ gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_braintree gateway_twocheckout gateway_cybersource gateway_stripe gateway_authorizenet gateway_payflowpro gateway_check" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource" && $gateway != "payflowpro" && $gateway != "stripe" && $gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="currency"><?php _e('Currency', 'pmpro');?>:</label>

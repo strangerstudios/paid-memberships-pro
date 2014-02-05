@@ -497,7 +497,7 @@
 		$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);	
 	?>
 	
-	<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress" || $gateway == "paypalstandard" || $gateway == "twocheckout") { ?>style="display: none;"<?php } ?>>
+	<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || $gateway == "paypalexpress" || $gateway == "paypalstandard" || $gateway == "twocheckout" || $gateway == "payfast") { ?>style="display: none;"<?php } ?>>
 	<thead>
 		<tr>
 			<th><span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span><?php _e('Payment Information', 'pmpro');?></th>

@@ -33,8 +33,16 @@ function pmpro_wp_ajax_ipnhandler()
 	require_once(dirname(__FILE__) . "/../services/ipnhandler.php");	
 	exit;	
 }
+
 add_action('wp_ajax_nopriv_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
 add_action('wp_ajax_ipnhandler', 'pmpro_wp_ajax_ipnhandler');
+function pmpro_wp_ajax_payfast_itn_handler()
+{
+    require_once(dirname(__FILE__) . "/../services/payfast_itn_handler.php");   
+    exit;   
+}
+add_action('wp_ajax_nopriv_payfast_itn_handler', 'pmpro_wp_ajax_payfast_itn_handler');
+add_action('wp_ajax_payfast_itn_handler', 'pmpro_wp_ajax_payfast_itn_handler');
 function pmpro_wp_ajax_stripe_webhook()
 {
 	require_once(dirname(__FILE__) . "/../services/stripe-webhook.php");	
