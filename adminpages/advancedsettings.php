@@ -29,6 +29,13 @@
 		
 		//footer link
 		pmpro_setOption("hide_footer_link");
+
+        // custom settings (added with pmpro_custom_advanced_settings hook)
+        foreach($_REQUEST as $key => $value ) {
+            if (strpos($key, 'custom_') === 0) {
+                pmpro_setOption($key);
+            }
+        }
 		
 		//assume success
 		$msg = true;
@@ -237,9 +244,73 @@ if(pmpro_displayAds())
 						<option value="1" <?php if($hide_footer_link == 1) { ?>selected="selected"<?php } ?>>Yes - Hide the link.</option>  
 					</select>                        
 				</td>
-			</tr> 
-			*/ ?>
-		</tbody>
+			</tr>
+			*/
+
+            // Filter to Add More Advanced Settings for Misc Plugin Options, etc.
+            if (has_action('pmpro_custom_advanced_settings')) {
+            $custom_fields = apply_filters('pmpro_custom_advanced_settings', $custom_fields);
+            foreach ($custom_fields as $field) {
+            ?>
+            <tr>
+                <th valign="top" scope="row">
+                    <label
+                        for="<?php _e($field['field_name'], 'pmpro'); ?>"><?php _e($field['label'], 'pmpro'); ?></label>
+                </th>
+                <td>
+                    <?php
+                    switch ($field['field_type']) {
+                        case 'select':
+                            ?>
+                            <select id="<?php _e($field['field_name'], 'pmpro'); ?>"
+                                    name="<?php _e($field['field_name'], 'pmpro'); ?>">
+                                <?php foreach ($field['options'] as $option) {
+                                    ?>
+                                    <option value="<?php _e($option, 'pmpro'); ?>"
+                                        <?php
+                                        if ($option == pmpro_getOption($field['field_name'])) {
+                                            _e('selected', 'pmpro');
+                                        }
+                                        ?>
+                                        ><?php _e($option, 'pmpro'); ?></option>
+                                <?php
+                                } ?>
+                            </select>
+                            <?php
+                            break;
+                        case 'text':
+                            ?>
+                            <input id="<?php _e($field['field_name'], 'pmpro'); ?>"
+                                   name="<?php _e($field['field_name'], 'pmpro'); ?>"
+                                   type="<?php _e($field['field_type'], 'pmpro'); ?>"
+                                   value="<?php echo pmpro_getOption($field['field_name']); ?> ">
+                            <?php
+                            break;
+                        case 'textarea':
+                            ?>
+                            <textarea id="<?php _e($field['field_name'], 'pmpro'); ?>"
+                                      name="<?php _e($field['field_name'], 'pmpro'); ?>">
+                                <?php echo pmpro_getOption($field['field_name']); ?>
+                            </textarea>
+                            <?php
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!empty($field['description'])) {
+                        ?>
+                        <br>
+                        <small><?php _e($field['description'], 'pmpro'); ?></small>
+                    <?php
+                    }
+                    ?>
+                </td>
+                <?php
+                }
+                }
+                ?>
+            </tr>
+        </tbody>
 		</table>
 		<script>
 			function pmpro_updateHideAdsTRs()
