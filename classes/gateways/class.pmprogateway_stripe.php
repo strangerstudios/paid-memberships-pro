@@ -164,9 +164,9 @@
 					{
 						$name = trim($order->FirstName . " " . $order->LastName);
 
-						if empty($name)
+						if (empty($name))
 						{
-							$name = trim($user->first_name . " " . $user->last_name);
+							$name = trim($current_user->first_name . " " . $current_user->last_name);
 						}
 
 						$this->customer->description = $name . " (" . $order->Email . ")";
