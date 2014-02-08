@@ -222,7 +222,11 @@
 		global $wpdb;
 		
 		$customer_id = $event->data->object->customer;
-						
+		
+		// no customer passed? we can't cross reference
+		if(empty($customer_id))
+			return false;
+		
 		// okay, add an invoice. first lookup the user_id from the subscription id passed
 		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1");
 		$old_order = new MemberOrder($old_order_id);

@@ -434,7 +434,7 @@
 							</tr>
 							
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
-								<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Ammount', 'pmpro');?>:</label></th>
+								<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Amount', 'pmpro');?>:</label></th>
 								<td>
 									<?php echo $pmpro_currency_symbol?><input name="billing_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />

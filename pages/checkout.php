@@ -447,8 +447,7 @@
 				?>
 				<div>
 					<label for="bphone"><?php _e('Phone', 'pmpro');?></label>
-					<input id="bphone" name="bphone" type="text" class="input <?php echo pmpro_getClassForField("bphone");?>" size="30" value="<?php echo esc_attr($bphone)?>" /> 
-					<?php echo formatPhone($bphone); ?>
+					<input id="bphone" name="bphone" type="text" class="input <?php echo pmpro_getClassForField("bphone");?>" size="30" value="<?php echo esc_attr(formatPhone($bphone))?>" />					
 				</div>		
 				<?php if($skip_account_fields) { ?>
 				<?php

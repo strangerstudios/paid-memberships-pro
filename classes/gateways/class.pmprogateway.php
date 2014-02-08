@@ -177,7 +177,7 @@
 			
 			//filter order before subscription. use with care.
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
-			
+						
 			//simulate a successful subscription processing
 			$order->status = "success";		
 			$order->subscription_transaction_id = "TEST" . $order->code;				

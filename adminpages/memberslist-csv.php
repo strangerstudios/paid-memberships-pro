@@ -223,7 +223,7 @@
 			{
 				foreach($extra_columns as $heading => $callback)
 				{
-					$csvoutput .= "," . pmpro_enclose(call_user_func($callback, $theuser));
+					$csvoutput .= "," . pmpro_enclose(call_user_func($callback, $theuser, $heading));
 				}
 			}
 				

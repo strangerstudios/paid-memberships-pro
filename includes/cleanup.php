@@ -15,23 +15,7 @@ function pmpro_delete_user($user_id = NULL)
 	}
 	else
 	{
-		//couldn't delete the subscription
-		//we should probably notify the admin
-		global $pmpro_subscription_cancel_error;
-				
-		if(!empty($pmpro_subscription_cancel_error))
-		{
-			//clear out the var in case we are doing multiple deletes
-			$pmpro_subscription_cancel_error = false;
-			
-			//send email
-			$pmproemail = new PMProEmail();
-			$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", "pmpro"), strval($user_id)) . "</p><p>Error: " . $pmpro_error . "</p>");
-			$last_order = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ORDER BY timestamp DESC LIMIT 1");
-			if(!empty($last_order))
-				$pmproemail->data["body"] .= "<p>Last Invoice:<br />" . nl2br(var_export($last_order, true)) . "</p>";
-			$pmproemail->sendEmail(get_bloginfo("admin_email"));
-		}
+		//okay, guessing they didn't have a level
 	}
 }
 add_action('delete_user', 'pmpro_delete_user');

@@ -129,10 +129,18 @@ function pmpro_search_filter($query)
 	if(!$query->is_admin && $query->is_search)
 	{
 		//get pages that are in levels, but not in mine
-		$sqlQuery = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
+		$sqlQuery1 = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
 		if(!empty($current_user->membership_level->ID))
-			$sqlQuery .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
-		$hidden_page_ids = $wpdb->get_col($sqlQuery);
+			$sqlQuery1 .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
+		$pages_in_levels_not_mine = $wpdb->get_col($sqlQuery1);
+
+		//get pages that are in my level
+		$sqlQuery2 = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
+		if(!empty($current_user->membership_level->ID))
+			$sqlQuery2 .= "WHERE membership_id = '" . $current_user->membership_level->ID . "' ";
+		$pages_in_my_level = $wpdb->get_col($sqlQuery2);
+
+		$hidden_page_ids = array_diff($pages_in_levels_not_mine, $pages_in_my_level);
 		if($hidden_page_ids)
 			$query->set('post__not_in', $hidden_page_ids ); // id of page or post
 

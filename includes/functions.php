@@ -87,7 +87,12 @@ function pmpro_br2nl($text, $tags = "br")
 function pmpro_getOption($s, $force = false)
 {
 	if(isset($_REQUEST[$s]) && !$force)
-		return trim($_REQUEST[$s]);
+	{
+		if(!is_array($_REQUEST[$s]))
+			return trim($_REQUEST[$s]);
+		else
+			return $_REQUEST[$s];
+	}
 	elseif(get_option("pmpro_" . $s))
 		return get_option("pmpro_" . $s);
 	else
@@ -551,10 +556,10 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 				
 	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
 	if($pmpro_cancel_previous_subscriptions)
-	{
+	{		
 		//deactivate old memberships (updates pmpro_memberships_users table)
 		if(!empty($old_levels))
-		{
+		{			
 			foreach($old_levels as $old_level) {
 				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
 				if(!$wpdb->query($sql))
@@ -564,13 +569,14 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 				}										
 			}
 		}
-
+		
 		//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
+		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");		
+				
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
-			$c_order->cancel();
+			$c_order->cancel();			
 		}
 	}
 

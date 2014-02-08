@@ -200,9 +200,10 @@
 		{			
 			//paypal profile stuff
 			$nvpStr = "";			
-			$nvpStr .= "&PROFILEID=" . $order->subscription_transaction_id . "&ACTION=Cancel&NOTE=User requested cancel.";							
+			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
+						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || $this->httpParsedResponseAr['L_ERRORCODE0'] == "11556") {								
 				$order->updateStatus("cancelled");					
 				return true;
@@ -254,7 +255,7 @@
 		
 			// NVPRequest for submitting to server
 			$nvpreq = "METHOD=$methodName_&VERSION=$version&PWD=$API_Password&USER=$API_UserName&SIGNATURE=$API_Signature$nvpStr_";
-					
+						
 			// setting the nvpreq as POST FIELD to curl
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);
 		

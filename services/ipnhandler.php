@@ -9,7 +9,8 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 	
-	define('PMPRO_IPN_DEBUG', true);
+	//uncomment to log requests in logs/ipn.txt
+	//define('PMPRO_IPN_DEBUG', true);
 	
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
@@ -35,6 +36,7 @@
 	$receiver_email = pmpro_getParam("receiver_email", "POST");	
 	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");			
+	$recurring_payment_id = pmpro_getParam("recurring_payment_id", "POST");
 	
 	//check the receiver_email	
 	if(!pmpro_ipnCheckReceiverEmail(array(strtolower($receiver_email), strtolower($business_email))))
@@ -59,8 +61,9 @@
 	if($txn_type == "subscr_signup")
 	{		
 		//if there is no amount1, this membership has a trial, and we need to update membership/etc
-		$amount = pmpro_getParam("amount1", $_POST);
-		if(empty($amount))
+		$amount = pmpro_getParam("amount1", "POST");
+				
+		if((float)$amount <= 0)
 		{
 			//trial, get the order
 			$morder = new MemberOrder($item_number);
@@ -167,14 +170,74 @@
 		pmpro_ipnExit();
 	}	
 	
-	//Subscription Cancelled
+	//Recurring Payment Profile Cancelled (PayPal Express)
+	if($txn_type == "recurring_payment_profile_cancel")
+	{
+		//find last order
+		$last_subscr_order = new MemberOrder();
+		if($last_subscr_order->getLastMemberOrderBySubscriptionTransactionID($recurring_payment_id) == false)
+		{
+			ipnlog("ERROR: Couldn't find this order to cancel (subscription_transaction_id=" . $recurring_payment_id . ").");		
+			
+			pmpro_ipnExit();		
+		}
+		else
+		{
+			//found order, let's cancel the membership
+			$user = get_userdata($last_subscr_order->user_id);
+			
+			if(empty($user) || empty($user->ID))
+			{
+				ipnlog("ERROR: Could not cancel membership. No user attached to order #" . $last_subscr_order->id . " with subscription transaction id = " . $recurring_payment_id . ".");	
+			}
+			else
+			{			
+				/*
+					We want to make sure this is a cancel originating from PayPal and not one already handled by PMPro.
+					For example, if a user cancels on WP/PMPro side, we've already cancelled the membership.
+					Also, if a user is changing levels, we don't want to cancel their new membership, just the old subscription at PayPal.
+					
+					So we check 2 things and don't cancel if:
+					(1) This order already has "cancelled" status.
+					(2) The user doesn't currently have the level attached to this order.
+				*/
+				
+				if($last_subscr_order->status == "cancelled")
+				{
+					ipnlog("We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")");
+				}
+				elseif(!pmpro_hasMembershipLevel($last_subsc_order->membership_id, $user->ID))
+				{
+					ipnlog("This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")");
+				}
+				else
+				{				
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					
+					ipnlog("Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . ".");	
+					
+					//send an email to the member
+					$myemail = new PMProEmail();
+					$myemail->sendCancelEmail($user);
+					
+					//send an email to the admin
+					$myemail = new PMProEmail();
+					$myemail->sendCancelAdminEmail($user, $last_subscr_order->membership_id);
+				}
+			}
+				
+			pmpro_ipnExit();
+		}
+	}
+	
+	//Subscription Cancelled (PayPal Standard)
 	if($txn_type == "subscr_cancel")
 	{
 		//find last order
 		$last_subscr_order = new MemberOrder();
 		if($last_subscr_order->getLastMemberOrderBySubscriptionTransactionID($subscr_id) == false)
 		{
-			ipnlog("ERROR: Couldn't find this order to cancel (" . $subscr_id . ").");		
+			ipnlog("ERROR: Couldn't find this order to cancel (subscription_transaction_id=" . $subscr_id . ").");		
 			
 			pmpro_ipnExit();		
 		}
@@ -297,8 +360,8 @@
 		}
 		
 		//log post vars and PayPal object
-		ipnlog(print_r($_POST, true));
-		ipnlog(print_r($fp, true));
+		ipnlog(print_r($_POST, true));		
+		//ipnlog(print_r($fp, true));
 				
 		if(empty($fp))
 		{
@@ -392,20 +455,20 @@
 		{
 			echo $pmpro_error;
 			ipnlog($pmpro_error);				
-		}
-		
-		//update order status and transaction ids					
-		$morder->status = "success";
-		$morder->payment_transaction_id = $txn_id;
-		if(!empty($_POST['subscr_id']))
-			$morder->subscription_transaction_id = $_POST['subscr_id'];
-		else
-			$morder->subscription_transaction_id = "";
-		$morder->saveOrder();
+		}				
 		
 		//change level and continue "checkout"
 		if(pmpro_changeMembershipLevel($custom_level, $morder->user_id) !== false)
 		{						
+			//update order status and transaction ids					
+			$morder->status = "success";
+			$morder->payment_transaction_id = $txn_id;
+			if(!empty($_POST['subscr_id']))
+				$morder->subscription_transaction_id = $_POST['subscr_id'];
+			else
+				$morder->subscription_transaction_id = "";
+			$morder->saveOrder();
+			
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
@@ -505,7 +568,7 @@
 		global $wpdb;
 			
 		//check that txn_id has not been previously processed
-		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
+		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");			
 		
 		if(empty($old_txn))
 		{	
@@ -578,7 +641,7 @@
 			ipnlog("New order (" . $morder->code . ") created.");
 			
 			return true;
-		}
+		}		
 		else
 		{
 			ipnlog("Duplicate Transaction ID: " . $txn_id);
