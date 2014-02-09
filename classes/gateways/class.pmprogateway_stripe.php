@@ -1,9 +1,25 @@
 <?php	
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 	if(!class_exists("Stripe"))
 		require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+		
+	/**
+	 * PMProGateway_stripe Class
+	 *
+	 * Handles Stripe integration.
+	 *
+	 * @since  1.4
+	 */
 	class PMProGateway_stripe extends PMProGateway
 	{
+		/**
+		 * Stripe Class Constructor
+		 *		 
+		 * @since 1.4
+		 */
 		function PMProGateway_stripe($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -14,6 +30,11 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Process checkout and decide if a charge and or subscribe is needed
+		 *		 
+		 * @since 1.4
+		 */
 		function process(&$order)
 		{
 			//check for initial payment
@@ -56,6 +77,11 @@
 			}				
 		}		
 		
+		/**
+		 * Make a one-time charge with Stripe
+		 *		 
+		 * @since 1.4
+		 */
 		function charge(&$order)
 		{
 			//create a code for the order
@@ -114,16 +140,20 @@
 				return false;
 			}									
 		}
-		
-		/*
-			This function will return a Stripe customer object.			
-			If $this->customer is set, it returns it.
-			It first checks if the order has a subscription_transaction_id. If so, that's the customer id.
-			If not, it checks for a user_id on the order and searches for a customer id in the user meta.
-			If a customer id is found, it checks for a customer through the Stripe API.
-			If a customer is found and there is a stripeToken on the order passed, it will update the customer.
-			If no customer is found and there is a stripeToken on the order passed, it will create a customer.
-		*/
+				
+		/**
+		 * Get a Stripe customer object.
+		 *		 
+		 * If $this->customer is set, it returns it.
+		 * It first checks if the order has a subscription_transaction_id. If so, that's the customer id.
+		 * If not, it checks for a user_id on the order and searches for a customer id in the user meta.
+		 * If a customer id is found, it checks for a customer through the Stripe API.
+		 * If a customer is found and there is a stripeToken on the order passed, it will update the customer.
+		 * If no customer is found and there is a stripeToken on the order passed, it will create a customer.
+		 *
+		 * @since 1.4
+		 * @return Stripe_Customer|false
+		 */
 		function getCustomer(&$order, $force = false)
 		{
 			global $current_user;
@@ -209,6 +239,11 @@
 			return false;			
 		}
 		
+		/**
+		 * Create a new subscription with Stripe
+		 *		 
+		 * @since 1.4
+		 */
 		function subscribe(&$order)
 		{
 			//create a code for the order
@@ -314,6 +349,11 @@
 			return true;
 		}	
 		
+		/**
+		 * Helper method to update the customer info via getCustomer
+		 *		 
+		 * @since 1.4
+		 */
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
@@ -329,6 +369,11 @@
 			}
 		}
 		
+		/**
+		 * Cancel a subscription at Stripe
+		 *		 
+		 * @since 1.4
+		 */
 		function cancel(&$order)
 		{
 			//require a subscription id
