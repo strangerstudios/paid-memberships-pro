@@ -1,6 +1,6 @@
 <?php	
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	class PMProGateway_check
+	class PMProGateway_check extends PMProGateway
 	{
 		function PMProGateway_check($gateway = NULL)
 		{

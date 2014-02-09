@@ -2,7 +2,7 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	if(!class_exists("Braintree"))
 		require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
-	class PMProGateway_braintree
+	class PMProGateway_braintree extends PMProGateway
 	{
 		function PMProGateway_braintree($gateway = NULL)
 		{

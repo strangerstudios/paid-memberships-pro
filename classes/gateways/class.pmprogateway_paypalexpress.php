@@ -1,6 +1,6 @@
 <?php
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	class PMProGateway_paypalexpress
+	class PMProGateway_paypalexpress extends PMProGateway
 	{
 		function PMProGateway_paypalexpress($gateway = NULL)
 		{
