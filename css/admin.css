@@ -1,3 +1,8 @@
+#wp-admin-bar-paid-memberships-pro .ab-item .ab-icon:before {
+    font-family: "dashicons";
+    content: "\f307";
+}
+
 .pmpro_admin {background: url(../images/Paid-Memberships-Pro_watermark.png) bottom right no-repeat !important; padding: 1em 0 70px 0; }
 
 .pmpro_admin .pmpro_banner h2 {float: left; }
@@ -24,8 +29,9 @@
 .checkbox_box .clickable:hover {background: #FFC;}
 .top0em {margin-top: 0;}
 
+.pmpro_admin tr td .dashicons {padding-top: 5px; }
 tr.pmpro_gray td {color: #AAA;}
-
+tr td.level_name a {font-size: 115%; font-weight: bold; }
 /* messages */
 .pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
 

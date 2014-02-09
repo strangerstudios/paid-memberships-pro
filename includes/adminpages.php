@@ -6,7 +6,7 @@ function pmpro_add_pages()
 {
 	global $wpdb;
 
-	add_menu_page(__('Memberships', 'pmpro'), __('Memberships', 'pmpro'), 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels', PMPRO_URL . '/images/menu_users.png');
+	add_menu_page(__('Memberships', 'pmpro'), __('Memberships', 'pmpro'), 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels', 'dashicons-groups');
 	add_submenu_page('pmpro-membershiplevels', __('Page Settings', 'pmpro'), __('Page Settings', 'pmpro'), 'manage_options', 'pmpro-pagesettings', 'pmpro_pagesettings');
 	add_submenu_page('pmpro-membershiplevels', __('Payment Settings', 'pmpro'), __('Payment Settings', 'pmpro'), 'manage_options', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
 	add_submenu_page('pmpro-membershiplevels', __('Email Settings', 'pmpro'), __('Email Settings', 'pmpro'), 'manage_options', 'pmpro-emailsettings', 'pmpro_emailsettings');
@@ -36,7 +36,7 @@ function pmpro_admin_bar_menu() {
 		return;
 	$wp_admin_bar->add_menu( array(
 	'id' => 'paid-memberships-pro',
-	'title' => __( 'Memberships', 'pmpro'),
+	'title' => '<span class="ab-icon"></span><span class="ab-label">' . __( 'Memberships', 'pmpro') . '</span>',
 	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels') ) );
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-membership-levels',

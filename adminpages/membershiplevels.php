@@ -425,6 +425,37 @@
 									 
 			</tbody>
 		</table>
+		
+		<h3 class="topborder"><?php _e('Group', 'pmpro');?></h3>
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th scope="row" valign="top"><label for="level_group"><?php _e('Level Group', 'pmpro');?>:</label></th>
+					<td><select name="level_group">
+						<option value="Default"><?php _e('Default','pmpro'); ?></option>
+						</select> <small><?php _e('Use groups to organize levels that are downgrades/upgrades.', 'pmpro');?></small>
+						<p><a href="javascript:void(0);" id="level_group_add"><?php _e('Add New','pmpro'); ?></a>					
+						<input style="display: none;" id="level_group_new" name="level_group_new" type="text" size="20"placeholder="Enter New Group Name" /></p>
+						<script>
+							jQuery(document).ready(function () {
+								jQuery('#level_group_add').click( function() { 
+									jQuery('#level_group_new').show();
+									jQuery('#level_group_add').hide();
+								});
+							});
+						</script>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top"><label for="level_group_action"><?php _e('When a Member Checks out for This Level', 'pmpro');?>:</label></th>
+					<td><select name="level_group_action">
+						<option value=""><?php _e('Remove all other levels (Super Level)', 'pmpro');?></option>
+						<option value=""><?php _e('Remove all other levels in the same group (Grouped Level)', 'pmpro');?></option>
+						<option value=""><?php _e('Do not remove any other levels (Standalone Level)', 'pmpro');?></option>
+					</select></td>
+				</tr>
+			</tbody>
+		</table>
 		<h3 class="topborder"><?php _e('Other Settings', 'pmpro');?></h3>
 		<table class="form-table">
 			<tbody>
@@ -510,13 +541,9 @@
 		<tr>
 			<th><?php _e('ID', 'pmpro');?></th>
 			<th><?php _e('Name', 'pmpro');?></th>
-			<th><?php _e('Initial Payment', 'pmpro');?></th>
-			<th><?php _e('Billing Cycle', 'pmpro');?></th>        
-			<th><?php _e('Trial Cycle', 'pmpro');?></th>
+			<th><?php _e('Billing Details', 'pmpro');?></th>
 			<th><?php _e('Expiration', 'pmpro');?></th>
 			<th><?php _e('Allow Signups', 'pmpro');?></th>
-			<th></th>
-			<th></th>
 			<th></th>
 		</tr>
 	</thead>
@@ -532,31 +559,14 @@
 			foreach($levels as $level)
 			{			
 		?>
-		<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
+		<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
-			<td><?php echo $level->name?></td>
+			<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a><p><small><?php _e('Group','pmpro'); ?>: Group Name | <?php _e('Type','pmpro'); ?>: Standalone</small></p></td>
 			<td>
 				<?php if(pmpro_isLevelFree($level)) { ?>
 					<?php _e('FREE', 'pmpro');?>
 				<?php } else { ?>
-					<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
-				<?php } ?>
-			</td>
-			<td>
-				<?php if(!pmpro_isLevelRecurring($level)) { ?>
-					--
-				<?php } else { ?>						
-					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
-					
-					<?php if($level->billing_limit) { ?>(<?php _e('for', 'pmpro');?> <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->billing_limit)?>)<?php } ?>
-					
-				<?php } ?>
-			</td>				
-			<td>
-				<?php if(!pmpro_isLevelTrial($level)) { ?>
-					--
-				<?php } else { ?>		
-					<?php echo $pmpro_currency_symbol?><?php echo $level->trial_amount?> <?php _e('for', 'pmpro');?> <?php echo $level->trial_limit?> <?php echo sornot("payment",$level->trial_limit)?>
+					<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
 				<?php } ?>
 			</td>
 			<td>
@@ -567,9 +577,7 @@
 				<?php } ?>
 			</td>
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
-			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
+			<td><a title="<?php _e('edit','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
 		</tr>
 		<?php
 			}

@@ -4,7 +4,10 @@
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	if($current_user->membership_level->ID)
 	{
-	?>	
+		$ssorder = new MemberOrder();
+		$ssorder->getLastMemberOrder();
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");				
+		?>	
 	<div id="pmpro_account">		
 		<div id="pmpro_account-membership" class="pmpro_box">
 			<h3><?php _e("My Memberships", "pmpro");?></h3>
@@ -12,7 +15,7 @@
 				<thead>
 					<tr>
 						<th><?php _e("Level", "pmpro");?></th>
-						<th><?php _e("Membership Fee", "pmpro"); ?></th>
+						<th><?php _e("Billing", "pmpro"); ?></th>
 						<th><?php _e("Expiration", "pmpro"); ?></th>
 					</tr>
 				</thead>
@@ -26,7 +29,9 @@
 								<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
 									<a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Info", "pmpro"); ?></a>
 								<?php } ?>
-								<?php if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
+								<?php 
+									//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
+									if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
 									<a href="<?php echo pmpro_url("levels")?>"><?php _e("Change", "pmpro");?></a>
 								<?php } ?>
 								<a href="<?php echo pmpro_url("cancel", "?level=" . $current_user->membership_level->id)?>"><?php _e("Cancel", "pmpro");?></a>
@@ -69,6 +74,10 @@
 					</tr>
 				</tbody>
 			</table>
+			<?php //To do: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>
+			<div class="pmpro_actionlinks">
+				<a href="<?php echo pmpro_url("levels")?>"><?php _e("View all Membership Options", "pmpro");?></a>
+			</div>
 		</div> <!-- end pmpro_account-membership -->
 		
 		<div id="pmpro_account-profile" class="pmpro_box">	
@@ -87,69 +96,6 @@
 			</div>
 		</div> <!-- end pmpro_account-profile -->
 	
-		<?php
-			//last invoice for current info
-			//$ssorder = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY timestamp DESC LIMIT 1");				
-			$ssorder = new MemberOrder();
-			$ssorder->getLastMemberOrder();
-			$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");				
-			if(!empty($ssorder->id) && $ssorder->gateway != "check" && $ssorder->gateway != "paypalexpress" && $ssorder->gateway != "paypalstandard" && $ssorder->gateway != "twocheckout")
-			{
-				//default values from DB (should be last order or last update)
-				$bfirstname = get_user_meta($current_user->ID, "pmpro_bfirstname", true);
-				$blastname = get_user_meta($current_user->ID, "pmpro_blastname", true);
-				$baddress1 = get_user_meta($current_user->ID, "pmpro_baddress1", true);
-				$baddress2 = get_user_meta($current_user->ID, "pmpro_baddress2", true);
-				$bcity = get_user_meta($current_user->ID, "pmpro_bcity", true);
-				$bstate = get_user_meta($current_user->ID, "pmpro_bstate", true);
-				$bzipcode = get_user_meta($current_user->ID, "pmpro_bzipcode", true);
-				$bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
-				$bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
-				$bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-				$bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
-				$CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
-				$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-				$ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
-				$ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);	
-				?>	
-				
-				<div id="pmpro_account-billing" class="pmpro_box">
-					<h3><?php _e("Billing Information", "pmpro");?></h3>
-					<?php if(!empty($baddress1)) { ?>
-					<p>
-						<strong><?php _e("Billing Address", "pmpro");?></strong><br />
-						<?php echo $bfirstname . " " . $blastname?>
-						<br />		
-						<?php echo $baddress1?><br />
-						<?php if($baddress2) echo $baddress2 . "<br />";?>
-						<?php if($bcity && $bstate) { ?>
-							<?php echo $bcity?>, <?php echo $bstate?> <?php echo $bzipcode?> <?php echo $bcountry?>
-						<?php } ?>                         
-						<br />
-						<?php echo formatPhone($bphone)?>
-					</p>
-					<?php } ?>
-					
-					<?php if(!empty($AccountNumber)) { ?>
-					<p>
-						<strong><?php _e("Payment Method", "pmpro");?></strong><br />
-						<?php echo $CardType?>: <?php echo last4($AccountNumber)?> (<?php echo $ExpirationMonth?>/<?php echo $ExpirationYear?>)
-					</p>
-					<?php } ?>
-					
-					<?php 
-						if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) 
-						{ 
-							?>
-							<div class="pmpro_actionlinks"><a href="<?php echo pmpro_url("billing", "")?>"><?php _e("Edit Billing Information", "pmpro"); ?></a></div>
-							<?php 
-						} 
-					?>
-				</div> <!-- end pmpro_account-billing -->				
-			<?php
-			}
-		?>
-		
 		<?php if(!empty($invoices)) { ?>
 		<div id="pmpro_account-invoices" class="pmpro_box">
 			<h3><?php _e("Past Invoices", "pmpro");?></h3>
