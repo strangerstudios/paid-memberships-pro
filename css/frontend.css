@@ -115,7 +115,7 @@ select.pmpro_error {background-image: none;}
 
 .pmpro_checkout select {font-size: 11px; }
 
-.pmpro_thead-msg {display: block; float: right; width: auto; font-style: italic; font-weight: normal; text-align: right; }
+.pmpro_thead-msg {display: block; float: right; width: auto; font-style: italic; font-weight: normal; text-align: right; white-space: nowrap; }
 
 .pmpro_ordersummary {float: right; }
 

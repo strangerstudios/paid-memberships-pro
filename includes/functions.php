@@ -207,27 +207,38 @@ function pmpro_getLevelCost(&$level, $tags = true)
 		{			
 			if($level->cycle_number == '1')
 			{
-				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
+				$r .= sprintf(_x(' and then <strong>%s per %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
 			}				
 			else
 			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
+				$r .= sprintf(_x(' and then <strong>%s every %d %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
 			}
 		}
 		elseif($level->billing_limit == 1)
 		{
-			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));									
+			$r .= sprintf(_x(' and then <strong>%s after %d %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));									
 		}
 		else
 		{
-			if($level->cycle_number == '1')
-			{
-				$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));					
-			}				
-			else
-			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));					
-			}			
+			if( $level->billing_amount === $level->initial_payment ) {
+				if($level->cycle_number == '1')
+				{
+					$r = sprintf(_x('The price for membership is <strong>%s per %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+				}
+				else
+				{
+					$r = sprintf(_x('The price for membership is <strong>%s every %d %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+				}
+			} else {
+				if($level->cycle_number == '1')
+				{
+					$r .= sprintf(_x(' and then <strong>%s per %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));					
+				}
+				else
+				{
+					$r .= sprintf(_x(' and then <strong>%s every %d %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));					
+				}
+			}
 		}
 	}
 	else
