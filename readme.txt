@@ -102,6 +102,10 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.8 =
+* Added hooks.
+* Updated the expiration field dropdown on the edit levels page to use translation strings. (Thanks, 24uurdates)
+
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
 * Updated "Joined" column in members list to use the WP date format setting.

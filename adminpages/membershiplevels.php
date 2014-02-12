@@ -444,7 +444,7 @@
 						<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
-							$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
+							$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
 							foreach ( $cycles as $name => $value ) {
 							  echo "<option value='$value'";
 							  if ( $level->expiration_period == $value ) echo " selected='selected'";
