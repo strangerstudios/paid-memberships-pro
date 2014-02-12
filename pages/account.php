@@ -12,12 +12,16 @@
 				<li><strong><?php _e("Level", "pmpro");?>:</strong> <?php echo $current_user->membership_level->name?></li>
 			<?php if($current_user->membership_level->billing_amount > 0) { ?>
 				<li><strong><?php _e("Membership Fee", "pmpro");?>:</strong>
-				<?php echo $pmpro_currency_symbol?><?php echo $current_user->membership_level->billing_amount?>
-				<?php if($current_user->membership_level->cycle_number > 1) { ?>
-					per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
-				<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
-					per <?php echo $current_user->membership_level->cycle_period?>
-				<?php } ?>
+				<?php
+					$level = $current_user->membership_level;
+					if($current_user->membership_level->cycle_number > 1) {
+						printf(_x('%s every %d %s.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+					} elseif($current_user->membership_level->cycle_number == 1) {
+						printf(_x('%s per %s.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+					} else { 
+						echo $pmpro_currency_symbol, $current_user->membership_level->billing_amount;
+					}
+				?>
 				</li>
 			<?php } ?>						
 			
@@ -26,7 +30,7 @@
 			<?php } ?>
 			
 			<?php if($current_user->membership_level->enddate) { ?>
-				<li><strong><?php _e("Membership Expires", "pmpro");?>:</strong> <?php echo date(get_option('date_format'), $current_user->membership_level->enddate)?></li>
+				<li><strong><?php _e("Membership Expires", "pmpro");?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 			<?php } ?>
 			
 			<?php if($current_user->membership_level->trial_limit == 1) 
@@ -131,7 +135,7 @@
 						if($count++ > 5)
 							break;
 						?>
-						<li><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
+						<li><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
 						<?php
 					}
 				?>
