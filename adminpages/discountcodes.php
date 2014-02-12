@@ -540,7 +540,14 @@
 		</form>	
 		
 		<br class="clear" />
-		
+		<?php
+			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
+			if(!empty($s))
+				$sqlQuery .= "WHERE code LIKE '%$s%' ";
+			$sqlQuery .= "ORDER BY id ASC";
+			
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+		?>		
 		<table class="widefat">
 		<thead>
 			<tr>
@@ -550,20 +557,13 @@
 				<th><?php _e('Expires', 'pmpro');?></th>        
 				<th><?php _e('Uses', 'pmpro');?></th>
 				<th><?php _e('Levels', 'pmpro');?></th>
-				<?php do_action("pmpro_discountcodes_extra_cols_header", $codes); ?>
+				<?php do_action("pmpro_discountcodes_extra_cols_header", $codes);?>
 				<th></th>		
 				<th></th>						
 			</tr>
 		</thead>
 		<tbody>
 			<?php
-				$sqlQuery = "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
-				if(!empty($s))
-					$sqlQuery .= "WHERE code LIKE '%$s%' ";
-				$sqlQuery .= "ORDER BY id ASC";
-				
-				$codes = $wpdb->get_results($sqlQuery, OBJECT);
-				
 				if(!$codes)
 				{
 				?>
@@ -611,7 +611,7 @@
 									echo "None";
 							?>
 						</td>
-						<?php do_action("pmpro_discountcodes_extra_cols_body", $code); ?>
+						<?php do_action("pmpro_discountcodes_extra_cols_body", $code);?>
 						<td>
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php _e('edit', 'pmpro');?></a>																
 						</td>
