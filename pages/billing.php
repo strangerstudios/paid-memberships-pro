@@ -16,12 +16,16 @@
 			<li><strong><?php _e("Level", "pmpro");?>:</strong> <?php echo $level->name?></li>
 		<?php if($level->billing_amount > 0) { ?>
 			<li><strong><?php _e("Membership Fee", "pmpro");?>:</strong>
-			<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?>
-			<?php if($level->cycle_number > 1) { ?>
-				per <?php echo $level->cycle_number?> <?php echo sornot($level->cycle_period,$level->cycle_number)?>
-			<?php } elseif($level->cycle_number == 1) { ?>
-				per <?php echo $level->cycle_period?>
-			<?php } ?>
+				<?php
+					$level = $current_user->membership_level;
+					if($current_user->membership_level->cycle_number > 1) {
+						printf(_x('%s every %d %s.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+					} elseif($current_user->membership_level->cycle_number == 1) {
+						printf(_x('%s per %s.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+					} else {
+						echo $pmpro_currency_symbol, $current_user->membership_level->billing_amount;
+					}
+				?>
 			</li>
 		<?php } ?>						
 		
