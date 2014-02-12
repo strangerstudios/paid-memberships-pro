@@ -550,6 +550,7 @@
 				<th><?php _e('Expires', 'pmpro');?></th>        
 				<th><?php _e('Uses', 'pmpro');?></th>
 				<th><?php _e('Levels', 'pmpro');?></th>
+				<?php do_action("pmpro_discountcodes_extra_cols_header", $codes); ?>
 				<th></th>		
 				<th></th>						
 			</tr>
@@ -610,6 +611,7 @@
 									echo "None";
 							?>
 						</td>
+						<?php do_action("pmpro_discountcodes_extra_cols_body", $code); ?>
 						<td>
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php _e('edit', 'pmpro');?></a>																
 						</td>
