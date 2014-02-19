@@ -24,7 +24,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	if($user_id == $current_user->ID)
 		$myuser = $current_user;
 	else
-		$myuser = get_user($user_id);
+		$myuser = get_userdata($user_id);
 
 	//for these post types, we want to check the parent
 	if($mypost->post_type == "attachment" || $mypost->post_type == "revision")
