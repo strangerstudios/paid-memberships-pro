@@ -267,34 +267,7 @@
 	
 	<?php
 		do_action('pmpro_checkout_boxes');
-	?>
-	
-	<?php					
-		if($tospage && !$pmpro_review)
-		{						
-		?>
-		<table id="pmpro_tos_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
-		<thead>
-		<tr>
-			<th><?php echo $tospage->post_title?></th>
-		</tr>
-	</thead>
-		<tbody>
-			<tr class="odd">
-				<td>								
-					<div id="pmpro_license">
-<?php echo wpautop($tospage->post_content)?>
-					</div>								
-					<input type="checkbox" name="tos" value="1" id="tos" /> <label for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
-				</td>
-			</tr>
-		</tbody>
-		</table>
-		<?php
-		}
-	?>
-	
-	<?php do_action("pmpro_checkout_after_tos_fields"); ?>	
+	?>		
 		
 	<?php if(pmpro_getOption("gateway", true) == "paypal" && empty($pmpro_review)) { ?>
 		<table id="pmpro_payment_method" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
@@ -664,6 +637,33 @@
 			pmpro_updateBraintreeAccountNumber();
 		</script>
 	<?php } ?>
+	
+	<?php					
+		if($tospage && !$pmpro_review)
+		{						
+		?>
+		<table id="pmpro_tos_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
+		<thead>
+		<tr>
+			<th><?php echo $tospage->post_title?></th>
+		</tr>
+	</thead>
+		<tbody>
+			<tr class="odd">
+				<td>								
+					<div id="pmpro_license">
+<?php echo wpautop($tospage->post_content)?>
+					</div>								
+					<input type="checkbox" name="tos" value="1" id="tos" /> <label for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<?php
+		}
+	?>
+	
+	<?php do_action("pmpro_checkout_after_tos_fields"); ?>	
 	
 	<?php do_action("pmpro_checkout_before_submit_button"); ?>			
 		
