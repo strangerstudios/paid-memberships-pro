@@ -1326,9 +1326,13 @@ function pmpro_getLevel($level)
 	Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest. 
 	This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
 */
-function pmpro_getAllLevels($include_hidden = false)
+function pmpro_getAllLevels($include_hidden = false, $force = false)
 {
 	global $pmpro_levels, $wpdb;
+	
+	//just use what's cached (doesn't take into account include_hidden setting)
+	if(!empty($pmpro_levels) && !$force)
+		return $pmpro_levels;
 	
 	//build query
 	$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";

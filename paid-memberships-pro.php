@@ -85,7 +85,7 @@ global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
 
 //when checking levels for users, we save the info here for caching. each key is a user id for level object for that user.
-global $all_membership_levels; 
+global $all_membership_levels;
 
 //we sometimes refer to this array of levels
 global $membership_levels;

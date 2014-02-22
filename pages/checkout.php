@@ -730,6 +730,7 @@
 <?php } ?>
 
 <script>	
+<!--
 	// Find ALL <form> tags on your page
 	jQuery('form').submit(function(){
 		// On submit disable its submit button
@@ -769,4 +770,5 @@
 		   jQuery('#other_discount_code_button').click();
 	    }
 	});
+-->
 </script>
