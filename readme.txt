@@ -109,6 +109,8 @@ Not sure? You can find out by doing a bit a research.
 * Added pmpro.getMembershipLevelForUser and pmpro.hasMembershipAccess XMLRPC methods. Example usage: https://gist.github.com/strangerstudios/9099164
 * Moved the Terms of Service page/etc to right above the checkout button.
 * Now caching the pmpro_getAllLevels() function.
+* Added HTML <!-- comment --> wrappers to the JS on checkout.php. Helps with validation and potentially really old browsers.
+* Fixed warnings in includes/login.php.
 
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
