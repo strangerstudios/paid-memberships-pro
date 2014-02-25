@@ -194,11 +194,14 @@ function pmpro_isLevelExpiring(&$level)
 		return false;
 }
 
-function pmpro_getLevelCost(&$level, $tags = true)
+function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
 	global $pmpro_currency_symbol;
 	//initial payment
-	$r = sprintf(_x('The price for membership is <strong>%s</strong> now', 'Initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+	if(!$short)
+		$r = sprintf(_x('The price for membership is <strong>%s</strong> now', 'Initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+	else
+		$r = sprintf(_x('<strong>%s</strong> now', 'Shorter initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
 			
 	//recurring part
 	if($level->billing_amount != '0.00')

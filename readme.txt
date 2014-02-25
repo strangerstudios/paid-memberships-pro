@@ -112,6 +112,8 @@ Not sure? You can find out by doing a bit a research.
 * Added HTML <!-- comment --> wrappers to the JS on checkout.php. Helps with validation and potentially really old browsers.
 * Fixed warnings in includes/login.php.
 * Added pmpro_delete_discount_code and pmpro_delete_membership_level actions which run just BEFORE a membership level is deleted. Both pass the discount code ID or level ID respectively.
+* Added a third "short" parameter to the pmpro_getLevelCost() function. If set to true the "The price for membership is" text is left off the beginning. The new levels page uses this param.
+* Updated the table on the levels page to have one "Price" column showing the cost and expiration text. The text is generated using pmpro_getLevelCost and pmpro_getLevelExpiration instead of its own rules.
 
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
