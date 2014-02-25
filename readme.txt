@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 * Now caching the pmpro_getAllLevels() function.
 * Added HTML <!-- comment --> wrappers to the JS on checkout.php. Helps with validation and potentially really old browsers.
 * Fixed warnings in includes/login.php.
+* Added pmpro_delete_discount_code and pmpro_delete_membership_level actions which run just BEFORE a membership level is deleted. Both pass the discount code ID or level ID respectively.
 
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.

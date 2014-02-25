@@ -157,6 +157,8 @@
 	  
 		if($ml_id > 0)
 		{	  
+			do_action("pmpro_delete_membership_level", $ml_id);
+			
 			//remove any categories from the ml
 			$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '$ml_id'";	  			
 			$r1 = $wpdb->query($sqlQuery);

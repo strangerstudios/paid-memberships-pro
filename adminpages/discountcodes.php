@@ -221,6 +221,9 @@
 		$code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = '" . $delete . "' LIMIT 1");
 		if(!empty($code))
 		{
+			//action
+			do_action("pmpro_delete_discount_code", $delete);
+			
 			//delete the code levels
 			$r1 = $wpdb->query("DELETE FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = '" . $delete . "'");
 			
