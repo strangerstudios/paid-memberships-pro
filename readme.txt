@@ -103,7 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.8 =
-* Added hooks.
+* Added various hooks.
 * Updated the expiration field dropdown on the edit levels page to use translation strings. (Thanks, 24uurdates)
 * Added the pmpro_member_startdate filter to filter the pmpro_getMemberStartdate function. Passes $user_id, and $level_id as parameters.
 * Added pmpro.getMembershipLevelForUser and pmpro.hasMembershipAccess XMLRPC methods. Example usage: https://gist.github.com/strangerstudios/9099164

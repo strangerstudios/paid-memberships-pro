@@ -95,7 +95,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
-					<?php _e('If unchecked, all emails from WordPress &lt;' . $default_from_email . '&gt; will be filtered to use the above settings.', 'pmpro');?>
+					<?php _e('If unchecked, all emails from "WordPress &lt;' . $default_from_email . '&gt;" will be filtered to use the above settings.', 'pmpro');?>
 				</td>
 			</tr>
 		</tbody>
