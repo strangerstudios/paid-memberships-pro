@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2013-12-10 12:14-0500\n"
+"POT-Creation-Date: 2014-02-27 17:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
@@ -119,7 +119,7 @@ msgstr ""
 msgid "User Forum"
 msgstr ""
 
-#: adminpages/admin_header.php:149 adminpages/membershiplevels.php:496
+#: adminpages/admin_header.php:149 adminpages/membershiplevels.php:498
 #: includes/adminpages.php:44 adminpages/admin_header.php:128
 #: adminpages/admin_header.php:149 adminpages/membershiplevels.php:490
 #: adminpages/membershiplevels.php:496 includes/adminpages.php:44
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Payment Gateway &amp; SSL"
 msgstr ""
 
-#: adminpages/admin_header.php:152 adminpages/memberslist.php:115
+#: adminpages/admin_header.php:152 adminpages/memberslist.php:148
 #: pages/account.php:52 adminpages/admin_header.php:131
 #: adminpages/admin_header.php:152 adminpages/memberslist.php:115
 #: pages/account.php:52
@@ -204,8 +204,8 @@ msgid "Yes - Show excerpts."
 msgstr ""
 
 #: adminpages/advancedsettings.php:128 adminpages/advancedsettings.php:187
-#: adminpages/advancedsettings.php:199 adminpages/membershiplevels.php:569
-#: adminpages/paymentsettings.php:429 adminpages/paymentsettings.php:454
+#: adminpages/advancedsettings.php:199 adminpages/membershiplevels.php:571
+#: adminpages/paymentsettings.php:434 adminpages/paymentsettings.php:459
 #: includes/profile.php:123 adminpages/advancedsettings.php:128
 #: adminpages/advancedsettings.php:187 adminpages/advancedsettings.php:199
 #: adminpages/membershiplevels.php:563 adminpages/membershiplevels.php:569
@@ -243,8 +243,8 @@ msgstr ""
 msgid "multisite only"
 msgstr ""
 
-#: adminpages/advancedsettings.php:188 adminpages/membershiplevels.php:569
-#: adminpages/paymentsettings.php:430 adminpages/paymentsettings.php:455
+#: adminpages/advancedsettings.php:188 adminpages/membershiplevels.php:571
+#: adminpages/paymentsettings.php:435 adminpages/paymentsettings.php:460
 #: includes/profile.php:124 adminpages/advancedsettings.php:188
 #: adminpages/membershiplevels.php:563 adminpages/membershiplevels.php:569
 #: adminpages/paymentsettings.php:415 adminpages/paymentsettings.php:424
@@ -292,9 +292,9 @@ msgid ""
 msgstr ""
 
 #: adminpages/advancedsettings.php:284 adminpages/pagesettings.php:223
-#: adminpages/paymentsettings.php:526 adminpages/advancedsettings.php:284
-#: adminpages/pagesettings.php:209 adminpages/paymentsettings.php:485
-#: adminpages/paymentsettings.php:526
+#: adminpages/paymentsettings.php:532 adminpages/advancedsettings.php:284
+#: adminpages/pagesettings.php:209 adminpages/pagesettings.php:223
+#: adminpages/paymentsettings.php:485 adminpages/paymentsettings.php:526
 msgid "Save Settings"
 msgstr ""
 
@@ -323,37 +323,37 @@ msgstr ""
 msgid "There were errors updating the level values: "
 msgstr ""
 
-#: adminpages/discountcodes.php:234 adminpages/discountcodes.php:234
+#: adminpages/discountcodes.php:237 adminpages/discountcodes.php:234
 #, php-format
 msgid "Code %s deleted successfully."
 msgstr ""
 
-#: adminpages/discountcodes.php:239 adminpages/discountcodes.php:239
+#: adminpages/discountcodes.php:242 adminpages/discountcodes.php:239
 msgid ""
 "Error deleting discount code. The code was only partially deleted. Please "
 "try again."
 msgstr ""
 
-#: adminpages/discountcodes.php:245 adminpages/discountcodes.php:245
+#: adminpages/discountcodes.php:248 adminpages/discountcodes.php:245
 msgid "Error deleting code. Please try again."
 msgstr ""
 
-#: adminpages/discountcodes.php:251 adminpages/discountcodes.php:251
+#: adminpages/discountcodes.php:254 adminpages/discountcodes.php:251
 msgid "Code not found."
 msgstr ""
 
-#: adminpages/discountcodes.php:264 adminpages/discountcodes.php:264
+#: adminpages/discountcodes.php:267 adminpages/discountcodes.php:264
 msgid "Edit Discount Code"
 msgstr ""
 
-#: adminpages/discountcodes.php:266 adminpages/discountcodes.php:526
+#: adminpages/discountcodes.php:269 adminpages/discountcodes.php:529
 #: adminpages/discountcodes.php:266 adminpages/discountcodes.php:526
 msgid "Add New Discount Code"
 msgstr ""
 
-#: adminpages/discountcodes.php:306 adminpages/discountcodes.php:547
-#: adminpages/membershiplevels.php:284 adminpages/membershiplevels.php:511
-#: adminpages/memberslist.php:111 adminpages/orders.php:597
+#: adminpages/discountcodes.php:309 adminpages/discountcodes.php:557
+#: adminpages/membershiplevels.php:286 adminpages/membershiplevels.php:513
+#: adminpages/memberslist.php:144 adminpages/orders.php:597
 #: adminpages/reports/login.php:140 adminpages/discountcodes.php:306
 #: adminpages/discountcodes.php:547 adminpages/membershiplevels.php:284
 #: adminpages/membershiplevels.php:505 adminpages/membershiplevels.php:511
@@ -362,75 +362,99 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-#: adminpages/discountcodes.php:307 adminpages/orders.php:211
+#: adminpages/discountcodes.php:310 adminpages/orders.php:211
 #: adminpages/discountcodes.php:307 adminpages/orders.php:211
 msgid "This will be generated when you save."
 msgstr ""
 
-#: adminpages/discountcodes.php:311 adminpages/discountcodes.php:548
+#: adminpages/discountcodes.php:314 adminpages/discountcodes.php:558
 #: adminpages/orders.php:215 adminpages/orders.php:598
 #: adminpages/discountcodes.php:311 adminpages/discountcodes.php:548
 #: adminpages/orders.php:215 adminpages/orders.php:598
 msgid "Code"
 msgstr ""
 
-#: adminpages/discountcodes.php:349 adminpages/discountcodes.php:349
+#: adminpages/discountcodes.php:352 adminpages/discountcodes.php:349
 msgid "Start Date"
 msgstr ""
 
-#: adminpages/discountcodes.php:367 pages/billing.php:249
-#: pages/checkout.php:532 adminpages/discountcodes.php:367
+#: adminpages/discountcodes.php:370 pages/billing.php:249
+#: pages/checkout.php:508 adminpages/discountcodes.php:367
 #: pages/billing.php:249 pages/checkout.php:525 pages/checkout.php:532
 msgid "Expiration Date"
 msgstr ""
 
-#: adminpages/discountcodes.php:385 adminpages/discountcodes.php:551
+#: adminpages/discountcodes.php:388 adminpages/discountcodes.php:561
 #: adminpages/discountcodes.php:385 adminpages/discountcodes.php:551
 msgid "Uses"
 msgstr ""
 
-#: adminpages/discountcodes.php:388 adminpages/discountcodes.php:388
+#: adminpages/discountcodes.php:391 adminpages/discountcodes.php:388
 msgid "Leave blank for unlimited uses."
 msgstr ""
 
-#: adminpages/discountcodes.php:427 adminpages/membershiplevels.php:337
+#: adminpages/discountcodes.php:430 adminpages/membershiplevels.php:339
+#: adminpages/membershiplevels.php:515 adminpages/discountcodes.php:427
+#: adminpages/membershiplevels.php:337 adminpages/membershiplevels.php:507
 #: adminpages/membershiplevels.php:513 pages/levels.php:14
-#: adminpages/discountcodes.php:427 adminpages/membershiplevels.php:337
-#: adminpages/membershiplevels.php:507 adminpages/membershiplevels.php:513
-#: pages/levels.php:14
 msgid "Initial Payment"
 msgstr ""
 
-#: adminpages/discountcodes.php:428 adminpages/membershiplevels.php:338
+#: adminpages/discountcodes.php:431 adminpages/membershiplevels.php:340
 #: adminpages/discountcodes.php:428 adminpages/membershiplevels.php:338
 msgid "The initial amount collected at registration."
 msgstr ""
 
-#: adminpages/discountcodes.php:432 adminpages/membershiplevels.php:342
+#: adminpages/discountcodes.php:435 adminpages/membershiplevels.php:344
 #: adminpages/discountcodes.php:432 adminpages/membershiplevels.php:342
 msgid "Recurring Subscription"
 msgstr ""
 
-#: adminpages/discountcodes.php:433 adminpages/membershiplevels.php:343
+#: adminpages/discountcodes.php:436 adminpages/membershiplevels.php:345
 #: adminpages/discountcodes.php:433 adminpages/membershiplevels.php:343
 msgid "Check if this level has a recurring subscription payment."
 msgstr ""
 
-#: adminpages/discountcodes.php:437 adminpages/discountcodes.php:437
-msgid "Billing Ammount"
+#: adminpages/discountcodes.php:440 adminpages/membershiplevels.php:349
+#: adminpages/membershiplevels.php:347
+msgid "Billing Amount"
 msgstr ""
 
-#: adminpages/discountcodes.php:451 adminpages/membershiplevels.php:362
+#: adminpages/discountcodes.php:446 adminpages/discountcodes.php:492
+#: adminpages/membershiplevels.php:355 adminpages/membershiplevels.php:449
+#: adminpages/membershiplevels.php:353
+msgid "Day(s)"
+msgstr ""
+
+#: adminpages/discountcodes.php:446 adminpages/discountcodes.php:492
+#: adminpages/membershiplevels.php:355 adminpages/membershiplevels.php:449
+#: adminpages/membershiplevels.php:353
+msgid "Month(s)"
+msgstr ""
+
+#: adminpages/discountcodes.php:446 adminpages/discountcodes.php:492
+#: adminpages/membershiplevels.php:355 adminpages/membershiplevels.php:449
+#: adminpages/membershiplevels.php:353
+msgid "Week(s)"
+msgstr ""
+
+#: adminpages/discountcodes.php:446 adminpages/discountcodes.php:492
+#: adminpages/membershiplevels.php:355 adminpages/membershiplevels.php:449
+#: adminpages/membershiplevels.php:353
+msgid "Year(s)"
+msgstr ""
+
+#: adminpages/discountcodes.php:454 adminpages/membershiplevels.php:364
 #: adminpages/discountcodes.php:451 adminpages/membershiplevels.php:362
 msgid "The amount to be billed one cycle after the initial payment."
 msgstr ""
 
-#: adminpages/discountcodes.php:456 adminpages/membershiplevels.php:380
+#: adminpages/discountcodes.php:459 adminpages/membershiplevels.php:382
 #: adminpages/discountcodes.php:456 adminpages/membershiplevels.php:380
 msgid "Billing Cycle Limit"
 msgstr ""
 
-#: adminpages/discountcodes.php:459 adminpages/membershiplevels.php:384
+#: adminpages/discountcodes.php:462 adminpages/membershiplevels.php:386
 #: adminpages/discountcodes.php:459 adminpages/membershiplevels.php:384
 msgid ""
 "The <strong>total</strong> number of recurring billing cycles for this "
@@ -438,75 +462,78 @@ msgid ""
 "initial payment. Set to zero if membership is indefinite."
 msgstr ""
 
-#: adminpages/discountcodes.php:464 adminpages/membershiplevels.php:393
+#: adminpages/discountcodes.php:467 adminpages/membershiplevels.php:395
 #: adminpages/discountcodes.php:464 adminpages/membershiplevels.php:393
 msgid "Custom Trial"
 msgstr ""
 
-#: adminpages/discountcodes.php:465 adminpages/membershiplevels.php:395
+#: adminpages/discountcodes.php:468 adminpages/membershiplevels.php:397
 #: adminpages/discountcodes.php:465 adminpages/membershiplevels.php:394
 #: adminpages/membershiplevels.php:395
 msgid "Check to add a custom trial period."
 msgstr ""
 
-#: adminpages/discountcodes.php:469 adminpages/membershiplevels.php:404
+#: adminpages/discountcodes.php:472 adminpages/membershiplevels.php:406
 #: adminpages/discountcodes.php:469 adminpages/membershiplevels.php:398
 #: adminpages/membershiplevels.php:404
 msgid "Trial Billing Amount"
 msgstr ""
 
-#: adminpages/discountcodes.php:472 adminpages/membershiplevels.php:407
+#: adminpages/discountcodes.php:475 adminpages/membershiplevels.php:409
 #: adminpages/discountcodes.php:472 adminpages/membershiplevels.php:401
 #: adminpages/membershiplevels.php:407
 msgid "for the first"
 msgstr ""
 
-#: adminpages/discountcodes.php:474 adminpages/membershiplevels.php:409
+#: adminpages/discountcodes.php:477 adminpages/membershiplevels.php:411
 #: adminpages/discountcodes.php:474 adminpages/membershiplevels.php:403
 #: adminpages/membershiplevels.php:409
 msgid "subscription payments"
 msgstr ""
 
-#: adminpages/discountcodes.php:479 adminpages/membershiplevels.php:437
+#: adminpages/discountcodes.php:482 adminpages/membershiplevels.php:439
 #: adminpages/discountcodes.php:479 adminpages/membershiplevels.php:431
 #: adminpages/membershiplevels.php:437
 msgid "Membership Expiration"
 msgstr ""
 
-#: adminpages/discountcodes.php:480 adminpages/discountcodes.php:480
-msgid "Check this to set an expiration date for new sign ups."
+#: adminpages/discountcodes.php:483 adminpages/membershiplevels.php:440
+#: adminpages/membershiplevels.php:432 adminpages/membershiplevels.php:438
+msgid "Check this to set when membership access expires."
 msgstr ""
 
-#: adminpages/discountcodes.php:484 adminpages/membershiplevels.php:442
+#: adminpages/discountcodes.php:487 adminpages/membershiplevels.php:444
 #: adminpages/discountcodes.php:484 adminpages/membershiplevels.php:436
 #: adminpages/membershiplevels.php:442
 msgid "Expires In"
 msgstr ""
 
-#: adminpages/discountcodes.php:497 adminpages/discountcodes.php:497
+#: adminpages/discountcodes.php:500 adminpages/membershiplevels.php:457
+#: adminpages/membershiplevels.php:449 adminpages/membershiplevels.php:455
 msgid ""
-"How long before the expiration expires. Note that any future payments will "
-"be cancelled when the membership expires."
+"Set the duration of membership access. Note that the any future payments "
+"(recurring subscription, if any) will be cancelled when the membership "
+"expires."
 msgstr ""
 
-#: adminpages/discountcodes.php:525 adminpages/discountcodes.php:525
+#: adminpages/discountcodes.php:528 adminpages/discountcodes.php:525
 msgid "Memberships Discount Codes"
 msgstr ""
 
-#: adminpages/discountcodes.php:535 adminpages/discountcodes.php:535
+#: adminpages/discountcodes.php:538 adminpages/discountcodes.php:535
 msgid "Search Discount Codes"
 msgstr ""
 
-#: adminpages/discountcodes.php:538 adminpages/reports/login.php:81
+#: adminpages/discountcodes.php:541 adminpages/reports/login.php:81
 #: adminpages/discountcodes.php:538 adminpages/reports/login.php:81
 msgid "Search"
 msgstr ""
 
-#: adminpages/discountcodes.php:549 adminpages/discountcodes.php:549
+#: adminpages/discountcodes.php:559 adminpages/discountcodes.php:549
 msgid "Starts"
 msgstr ""
 
-#: adminpages/discountcodes.php:550 adminpages/memberslist.php:121
+#: adminpages/discountcodes.php:560 adminpages/memberslist.php:159
 #: adminpages/reports/login.php:145 includes/profile.php:120
 #: adminpages/discountcodes.php:550 adminpages/memberslist.php:121
 #: adminpages/reports/login.php:145 includes/profile.php:118
@@ -514,28 +541,28 @@ msgstr ""
 msgid "Expires"
 msgstr ""
 
-#: adminpages/discountcodes.php:552 adminpages/discountcodes.php:552
+#: adminpages/discountcodes.php:562 adminpages/discountcodes.php:552
 msgid "Levels"
 msgstr ""
 
-#: adminpages/discountcodes.php:570 adminpages/discountcodes.php:570
+#: adminpages/discountcodes.php:574 adminpages/discountcodes.php:570
 msgid "Create your first discount code now"
 msgstr ""
 
-#: adminpages/discountcodes.php:570 adminpages/discountcodes.php:570
+#: adminpages/discountcodes.php:574 adminpages/discountcodes.php:570
 msgid ""
 "Discount codes allow you to offer your memberships at discounted prices to "
 "select customers."
 msgstr ""
 
-#: adminpages/discountcodes.php:614 adminpages/membershiplevels.php:570
+#: adminpages/discountcodes.php:619 adminpages/membershiplevels.php:572
 #: adminpages/orders.php:658 adminpages/discountcodes.php:614
 #: adminpages/membershiplevels.php:564 adminpages/membershiplevels.php:570
 #: adminpages/orders.php:658
 msgid "edit"
 msgstr ""
 
-#: adminpages/discountcodes.php:617 adminpages/discountcodes.php:617
+#: adminpages/discountcodes.php:622 adminpages/discountcodes.php:617
 #, php-format
 msgid ""
 "Are you sure you want to delete the %s discount code? The subscriptions for "
@@ -543,27 +570,27 @@ msgid ""
 "code anymore."
 msgstr ""
 
-#: adminpages/discountcodes.php:617 adminpages/membershiplevels.php:572
+#: adminpages/discountcodes.php:622 adminpages/membershiplevels.php:574
 #: adminpages/orders.php:664 adminpages/discountcodes.php:617
 #: adminpages/membershiplevels.php:566 adminpages/membershiplevels.php:572
 #: adminpages/orders.php:664
 msgid "delete"
 msgstr ""
 
-#: adminpages/emailsettings.php:60 includes/adminpages.php:12
+#: adminpages/emailsettings.php:69 includes/adminpages.php:12
 #: includes/adminpages.php:59 adminpages/emailsettings.php:60
 #: includes/adminpages.php:12 includes/adminpages.php:59
 msgid "Email Settings"
 msgstr ""
 
-#: adminpages/emailsettings.php:61 adminpages/emailsettings.php:61
+#: adminpages/emailsettings.php:70 adminpages/emailsettings.php:61
 msgid ""
 "By default, system generated emails are sent from "
 "<em><strong>wordpress@yourdomain.com</strong></em>. You can update this from "
 "address using the fields below."
 msgstr ""
 
-#: adminpages/emailsettings.php:63 adminpages/emailsettings.php:63
+#: adminpages/emailsettings.php:72 adminpages/emailsettings.php:63
 msgid ""
 "To modify the appearance of system generated emails, add the files "
 "<em>email_header.html</em> and <em>email_footer.html</em> to your theme's "
@@ -574,59 +601,67 @@ msgid ""
 "learn more about Paid Memberships Pro emails</a>."
 msgstr ""
 
-#: adminpages/emailsettings.php:69 adminpages/emailsettings.php:69
+#: adminpages/emailsettings.php:78 adminpages/emailsettings.php:69
 msgid "From Email"
 msgstr ""
 
-#: adminpages/emailsettings.php:77 adminpages/emailsettings.php:77
+#: adminpages/emailsettings.php:86 adminpages/emailsettings.php:77
 msgid "From Name"
 msgstr ""
 
-#: adminpages/emailsettings.php:86 adminpages/emailsettings.php:86
+#: adminpages/emailsettings.php:94
+msgid "Only Filter PMPro Emails?"
+msgstr ""
+
+#: adminpages/emailsettings.php:98
+msgid "If unchecked, all emails from \"WordPress &lt;"
+msgstr ""
+
+#: adminpages/emailsettings.php:104 adminpages/emailsettings.php:86
 msgid "Send the site admin emails"
 msgstr ""
 
-#: adminpages/emailsettings.php:92 adminpages/emailsettings.php:92
+#: adminpages/emailsettings.php:110 adminpages/emailsettings.php:92
 msgid "Checkout"
 msgstr ""
 
-#: adminpages/emailsettings.php:96 adminpages/emailsettings.php:96
+#: adminpages/emailsettings.php:114 adminpages/emailsettings.php:96
 msgid "when a member checks out."
 msgstr ""
 
-#: adminpages/emailsettings.php:101 adminpages/emailsettings.php:101
+#: adminpages/emailsettings.php:119 adminpages/emailsettings.php:101
 msgid "Admin Changes"
 msgstr ""
 
-#: adminpages/emailsettings.php:105 adminpages/emailsettings.php:105
+#: adminpages/emailsettings.php:123 adminpages/emailsettings.php:105
 msgid "when an admin changes a user's membership level through the dashboard."
 msgstr ""
 
-#: adminpages/emailsettings.php:110 adminpages/emailsettings.php:110
+#: adminpages/emailsettings.php:128 adminpages/emailsettings.php:110
 msgid "Cancellation"
 msgstr ""
 
-#: adminpages/emailsettings.php:114 adminpages/emailsettings.php:114
+#: adminpages/emailsettings.php:132 adminpages/emailsettings.php:114
 msgid "when a user cancels his or her account."
 msgstr ""
 
-#: adminpages/emailsettings.php:119 adminpages/emailsettings.php:119
+#: adminpages/emailsettings.php:137 adminpages/emailsettings.php:119
 msgid "Bill Updates"
 msgstr ""
 
-#: adminpages/emailsettings.php:123 adminpages/emailsettings.php:123
+#: adminpages/emailsettings.php:141 adminpages/emailsettings.php:123
 msgid "when a user updates his or her billing information."
 msgstr ""
 
-#: adminpages/emailsettings.php:129 adminpages/emailsettings.php:129
+#: adminpages/emailsettings.php:147 adminpages/emailsettings.php:129
 msgid "Send members emails"
 msgstr ""
 
-#: adminpages/emailsettings.php:135 adminpages/emailsettings.php:135
+#: adminpages/emailsettings.php:153 adminpages/emailsettings.php:135
 msgid "New Users"
 msgstr ""
 
-#: adminpages/emailsettings.php:139 adminpages/emailsettings.php:139
+#: adminpages/emailsettings.php:157 adminpages/emailsettings.php:139
 msgid ""
 "Default WP notification email. (Recommended: Leave unchecked. Members will "
 "still get an email confirmation from PMPro after checkout.)"
@@ -648,7 +683,7 @@ msgstr ""
 msgid "Error adding membership level."
 msgstr ""
 
-#: adminpages/membershiplevels.php:179 adminpages/membershiplevels.php:179
+#: adminpages/membershiplevels.php:181 adminpages/membershiplevels.php:179
 #, php-format
 msgid ""
 "There was an error canceling the subscription for user with ID=%d. You will "
@@ -656,226 +691,193 @@ msgid ""
 "active."
 msgstr ""
 
-#: adminpages/membershiplevels.php:182 adminpages/membershiplevels.php:182
+#: adminpages/membershiplevels.php:184 adminpages/membershiplevels.php:182
 msgid "Last Invoice"
 msgstr ""
 
-#: adminpages/membershiplevels.php:196 adminpages/membershiplevels.php:196
+#: adminpages/membershiplevels.php:198 adminpages/membershiplevels.php:196
 msgid "Membership level deleted successfully."
 msgstr ""
 
-#: adminpages/membershiplevels.php:201 adminpages/membershiplevels.php:207
+#: adminpages/membershiplevels.php:203 adminpages/membershiplevels.php:209
 #: adminpages/membershiplevels.php:201 adminpages/membershiplevels.php:207
 msgid "Error deleting membership level."
 msgstr ""
 
-#: adminpages/membershiplevels.php:222 adminpages/membershiplevels.php:222
+#: adminpages/membershiplevels.php:224 adminpages/membershiplevels.php:222
 msgid "Edit Membership Level"
 msgstr ""
 
-#: adminpages/membershiplevels.php:224 adminpages/membershiplevels.php:224
+#: adminpages/membershiplevels.php:226 adminpages/membershiplevels.php:224
 msgid "Add New Membership Level"
 msgstr ""
 
-#: adminpages/membershiplevels.php:291 adminpages/membershiplevels.php:512
+#: adminpages/membershiplevels.php:293 adminpages/membershiplevels.php:514
 #: adminpages/reports/login.php:142 adminpages/membershiplevels.php:291
 #: adminpages/membershiplevels.php:506 adminpages/membershiplevels.php:512
 #: adminpages/reports/login.php:142
 msgid "Name"
 msgstr ""
 
-#: adminpages/membershiplevels.php:296 adminpages/membershiplevels.php:296
+#: adminpages/membershiplevels.php:298 adminpages/membershiplevels.php:296
 msgid "Description"
 msgstr ""
 
-#: adminpages/membershiplevels.php:314 adminpages/membershiplevels.php:314
+#: adminpages/membershiplevels.php:316 adminpages/membershiplevels.php:314
 msgid "Confirmation Message"
 msgstr ""
 
-#: adminpages/membershiplevels.php:333 adminpages/membershiplevels.php:333
+#: adminpages/membershiplevels.php:335 adminpages/membershiplevels.php:333
 msgid "Billing Details"
 msgstr ""
 
-#: adminpages/membershiplevels.php:347 adminpages/membershiplevels.php:347
-msgid "Billing Amount"
-msgstr ""
-
-#: adminpages/membershiplevels.php:349 adminpages/membershiplevels.php:349
+#: adminpages/membershiplevels.php:351 adminpages/membershiplevels.php:349
 msgid "per"
 msgstr ""
 
-#: adminpages/membershiplevels.php:353 adminpages/membershiplevels.php:353
-msgid "Day(s)"
-msgstr ""
-
-#: adminpages/membershiplevels.php:353 adminpages/membershiplevels.php:353
-msgid "Month(s)"
-msgstr ""
-
-#: adminpages/membershiplevels.php:353 adminpages/membershiplevels.php:353
-msgid "Week(s)"
-msgstr ""
-
-#: adminpages/membershiplevels.php:353 adminpages/membershiplevels.php:353
-msgid "Year(s)"
-msgstr ""
-
-#: adminpages/membershiplevels.php:364 adminpages/membershiplevels.php:364
+#: adminpages/membershiplevels.php:366
 msgid ""
-"Stripe integration currently only supports billing periods of \"Month\" or "
-"\"Year\"."
+"Stripe integration currently only supports billing periods of \"Week\", "
+"\"Month\" or \"Year\"."
 msgstr ""
 
-#: adminpages/membershiplevels.php:366 adminpages/membershiplevels.php:366
+#: adminpages/membershiplevels.php:368 adminpages/membershiplevels.php:366
 msgid ""
 "Braintree integration currently only supports billing periods of \"Month\" "
 "or \"Year\"."
 msgstr ""
 
-#: adminpages/membershiplevels.php:368 adminpages/membershiplevels.php:368
+#: adminpages/membershiplevels.php:370 adminpages/membershiplevels.php:368
 msgid ""
 "Payflow integration currently only supports billing frequencies of 1 and "
 "billing periods of \"Week\", \"Month\" or \"Year\"."
 msgstr ""
 
-#: adminpages/membershiplevels.php:372 adminpages/membershiplevels.php:372
+#: adminpages/membershiplevels.php:374 adminpages/membershiplevels.php:372
 msgid ""
 "After saving this level, make note of the ID and create a \"Plan\" in your "
 "Braintree dashboard with the same settings and the \"Plan ID\" set to "
 "<em>pmpro_#</em>, where # is the level ID."
 msgstr ""
 
+#: adminpages/membershiplevels.php:374 adminpages/membershiplevels.php:376
+#: adminpages/paymentsettings.php:174 adminpages/paymentsettings.php:179
 #: adminpages/membershiplevels.php:372 adminpages/membershiplevels.php:374
-#: adminpages/paymentsettings.php:174 adminpages/membershiplevels.php:372
-#: adminpages/membershiplevels.php:374 adminpages/paymentsettings.php:170
-#: adminpages/paymentsettings.php:174
+#: adminpages/paymentsettings.php:170 adminpages/paymentsettings.php:174
 msgid "Note"
 msgstr ""
 
-#: adminpages/membershiplevels.php:374 adminpages/membershiplevels.php:374
+#: adminpages/membershiplevels.php:376 adminpages/membershiplevels.php:374
 msgid ""
 "You will need to create a \"Plan\" in your Braintree dashboard with the same "
 "settings and the \"Plan ID\" set to"
 msgstr ""
 
-#: adminpages/membershiplevels.php:386 adminpages/membershiplevels.php:386
+#: adminpages/membershiplevels.php:388 adminpages/membershiplevels.php:386
 msgid ""
 "Stripe integration currently does not support billing limits. You can still "
 "set an expiration date below."
 msgstr ""
 
-#: adminpages/membershiplevels.php:398
+#: adminpages/membershiplevels.php:400 adminpages/membershiplevels.php:398
 msgid ""
 "2Checkout integration does not support custom trials. You can do one period "
 "trials by setting an initial payment different from the billing amount."
 msgstr ""
 
-#: adminpages/membershiplevels.php:412 adminpages/membershiplevels.php:406
+#: adminpages/membershiplevels.php:414 adminpages/membershiplevels.php:406
 #: adminpages/membershiplevels.php:412
 msgid ""
 "Stripe integration currently does not support trial amounts greater than $0."
 msgstr ""
 
-#: adminpages/membershiplevels.php:416 adminpages/membershiplevels.php:410
+#: adminpages/membershiplevels.php:418 adminpages/membershiplevels.php:410
 #: adminpages/membershiplevels.php:416
 msgid ""
 "Braintree integration currently does not support trial amounts greater than "
 "$0."
 msgstr ""
 
-#: adminpages/membershiplevels.php:420 adminpages/membershiplevels.php:414
+#: adminpages/membershiplevels.php:422 adminpages/membershiplevels.php:414
 #: adminpages/membershiplevels.php:420
 msgid ""
 "Payflow integration currently does not support trial amounts greater than $0."
 msgstr ""
 
-#: adminpages/membershiplevels.php:428 adminpages/membershiplevels.php:422
+#: adminpages/membershiplevels.php:430 adminpages/membershiplevels.php:422
 #: adminpages/membershiplevels.php:428
 msgid "Other Settings"
 msgstr ""
 
-#: adminpages/membershiplevels.php:432 adminpages/membershiplevels.php:426
+#: adminpages/membershiplevels.php:434 adminpages/membershiplevels.php:426
 #: adminpages/membershiplevels.php:432
 msgid "Disable New Signups"
 msgstr ""
 
-#: adminpages/membershiplevels.php:433 adminpages/membershiplevels.php:427
+#: adminpages/membershiplevels.php:435 adminpages/membershiplevels.php:427
 #: adminpages/membershiplevels.php:433
 msgid ""
 "Check to hide this level from the membership levels page and disable "
 "registration."
 msgstr ""
 
-#: adminpages/membershiplevels.php:438 adminpages/membershiplevels.php:432
-#: adminpages/membershiplevels.php:438
-msgid "Check this to set when membership access expires."
-msgstr ""
-
-#: adminpages/membershiplevels.php:455 adminpages/membershiplevels.php:449
-#: adminpages/membershiplevels.php:455
-msgid ""
-"Set the duration of membership access. Note that the any future payments "
-"(recurring subscription, if any) will be cancelled when the membership "
-"expires."
-msgstr ""
-
-#: adminpages/membershiplevels.php:463 adminpages/membershiplevels.php:457
+#: adminpages/membershiplevels.php:465 adminpages/membershiplevels.php:457
 #: adminpages/membershiplevels.php:463
 msgid "Content Settings"
 msgstr ""
 
-#: adminpages/membershiplevels.php:467 adminpages/membershiplevels.php:461
+#: adminpages/membershiplevels.php:469 adminpages/membershiplevels.php:461
 #: adminpages/membershiplevels.php:467
 msgid "Categories"
 msgstr ""
 
-#: adminpages/membershiplevels.php:496 adminpages/membershiplevels.php:490
+#: adminpages/membershiplevels.php:498 adminpages/membershiplevels.php:490
 #: adminpages/membershiplevels.php:496
 msgid "Add New Level"
 msgstr ""
 
-#: adminpages/membershiplevels.php:499 adminpages/membershiplevels.php:502
+#: adminpages/membershiplevels.php:501 adminpages/membershiplevels.php:504
 #: adminpages/membershiplevels.php:493 adminpages/membershiplevels.php:496
 #: adminpages/membershiplevels.php:499 adminpages/membershiplevels.php:502
 msgid "Search Levels"
 msgstr ""
 
-#: adminpages/membershiplevels.php:514 adminpages/membershiplevels.php:508
+#: adminpages/membershiplevels.php:516 adminpages/membershiplevels.php:508
 #: adminpages/membershiplevels.php:514
 msgid "Billing Cycle"
 msgstr ""
 
-#: adminpages/membershiplevels.php:515 adminpages/membershiplevels.php:509
+#: adminpages/membershiplevels.php:517 adminpages/membershiplevels.php:509
 #: adminpages/membershiplevels.php:515
 msgid "Trial Cycle"
 msgstr ""
 
-#: adminpages/membershiplevels.php:516 pages/confirmation.php:83
+#: adminpages/membershiplevels.php:518 pages/confirmation.php:83
 #: pages/invoice.php:70 adminpages/membershiplevels.php:510
 #: adminpages/membershiplevels.php:516 pages/confirmation.php:81
 #: pages/confirmation.php:83 pages/invoice.php:68 pages/invoice.php:70
 msgid "Expiration"
 msgstr ""
 
-#: adminpages/membershiplevels.php:517 adminpages/membershiplevels.php:511
+#: adminpages/membershiplevels.php:519 adminpages/membershiplevels.php:511
 #: adminpages/membershiplevels.php:517
 msgid "Allow Signups"
 msgstr ""
 
-#: adminpages/membershiplevels.php:540 adminpages/membershiplevels.php:534
+#: adminpages/membershiplevels.php:542 adminpages/membershiplevels.php:534
 #: adminpages/membershiplevels.php:540
 msgid "FREE"
 msgstr ""
 
-#: adminpages/membershiplevels.php:549 adminpages/membershiplevels.php:543
+#: adminpages/membershiplevels.php:551 adminpages/membershiplevels.php:543
 #: adminpages/membershiplevels.php:549
 msgid "every"
 msgstr ""
 
-#: adminpages/membershiplevels.php:551 adminpages/membershiplevels.php:559
+#: adminpages/membershiplevels.php:553 adminpages/membershiplevels.php:561
 #: adminpages/reports/memberships.php:304
-#: adminpages/reports/memberships.php:315 adminpages/reports/sales.php:204
-#: adminpages/reports/sales.php:215 adminpages/membershiplevels.php:545
+#: adminpages/reports/memberships.php:315 adminpages/reports/sales.php:203
+#: adminpages/reports/sales.php:214 adminpages/membershiplevels.php:545
 #: adminpages/membershiplevels.php:551 adminpages/membershiplevels.php:553
 #: adminpages/membershiplevels.php:559 adminpages/reports/memberships.php:304
 #: adminpages/reports/memberships.php:315 adminpages/reports/sales.php:195
@@ -884,18 +886,18 @@ msgstr ""
 msgid "for"
 msgstr ""
 
-#: adminpages/membershiplevels.php:566 adminpages/membershiplevels.php:560
+#: adminpages/membershiplevels.php:568 adminpages/membershiplevels.php:560
 #: adminpages/membershiplevels.php:566
 msgid "After"
 msgstr ""
 
-#: adminpages/membershiplevels.php:571 adminpages/orders.php:661
+#: adminpages/membershiplevels.php:573 adminpages/orders.php:661
 #: adminpages/membershiplevels.php:565 adminpages/membershiplevels.php:571
 #: adminpages/orders.php:661
 msgid "copy"
 msgstr ""
 
-#: adminpages/membershiplevels.php:572 adminpages/membershiplevels.php:566
+#: adminpages/membershiplevels.php:574 adminpages/membershiplevels.php:566
 #: adminpages/membershiplevels.php:572
 #, php-format
 msgid ""
@@ -915,7 +917,7 @@ msgid "Export to CSV"
 msgstr ""
 
 #: adminpages/memberslist.php:30 adminpages/reports/login.php:65
-#: adminpages/reports/memberships.php:292 adminpages/reports/sales.php:194
+#: adminpages/reports/memberships.php:292 adminpages/reports/sales.php:193
 #: adminpages/memberslist.php:30 adminpages/reports/login.php:65
 #: adminpages/reports/memberships.php:292 adminpages/reports/sales.php:185
 #: adminpages/reports/sales.php:194
@@ -923,46 +925,50 @@ msgid "Show"
 msgstr ""
 
 #: adminpages/memberslist.php:32 adminpages/reports/login.php:67
-#: adminpages/reports/memberships.php:317 adminpages/reports/sales.php:217
+#: adminpages/reports/memberships.php:317 adminpages/reports/sales.php:216
 #: adminpages/memberslist.php:32 adminpages/reports/login.php:67
 #: adminpages/reports/memberships.php:317 adminpages/reports/sales.php:208
 #: adminpages/reports/sales.php:217
 msgid "All Levels"
 msgstr ""
 
-#: adminpages/memberslist.php:46 adminpages/memberslist.php:49
+#: adminpages/memberslist.php:42
+msgid "Old Members"
+msgstr ""
+
+#: adminpages/memberslist.php:47 adminpages/memberslist.php:50
 #: adminpages/memberslist.php:46 adminpages/memberslist.php:49
 msgid "Search Members"
 msgstr ""
 
-#: adminpages/memberslist.php:103 adminpages/memberslist.php:103
+#: adminpages/memberslist.php:136 adminpages/memberslist.php:103
 #, php-format
 msgid "%d members found."
 msgstr ""
 
-#: adminpages/memberslist.php:112 pages/account.php:51 pages/checkout.php:171
+#: adminpages/memberslist.php:145 pages/account.php:51 pages/checkout.php:171
 #: adminpages/memberslist.php:112 pages/account.php:51 pages/checkout.php:168
 #: pages/checkout.php:171
 msgid "Username"
 msgstr ""
 
-#: adminpages/memberslist.php:113 adminpages/memberslist.php:113
+#: adminpages/memberslist.php:146 adminpages/memberslist.php:113
 msgid "First&nbsp;Name"
 msgstr ""
 
-#: adminpages/memberslist.php:114 adminpages/memberslist.php:114
+#: adminpages/memberslist.php:147 adminpages/memberslist.php:114
 msgid "Last&nbsp;Name"
 msgstr ""
 
-#: adminpages/memberslist.php:117 pages/account.php:90 pages/billing.php:58
-#: pages/checkout.php:321 pages/confirmation.php:61 pages/invoice.php:48
+#: adminpages/memberslist.php:150 pages/account.php:90 pages/billing.php:58
+#: pages/checkout.php:298 pages/confirmation.php:61 pages/invoice.php:48
 #: adminpages/memberslist.php:117 pages/account.php:90 pages/billing.php:58
 #: pages/checkout.php:314 pages/checkout.php:321 pages/confirmation.php:59
 #: pages/confirmation.php:61 pages/invoice.php:46 pages/invoice.php:48
 msgid "Billing Address"
 msgstr ""
 
-#: adminpages/memberslist.php:118 adminpages/pagesettings.php:51
+#: adminpages/memberslist.php:151 adminpages/pagesettings.php:51
 #: adminpages/reports/login.php:143
 #: classes/gateways/class.pmprogateway_authorizenet.php:187
 #: adminpages/memberslist.php:118 adminpages/pagesettings.php:51
@@ -971,25 +977,29 @@ msgstr ""
 msgid "Membership"
 msgstr ""
 
-#: adminpages/memberslist.php:119 adminpages/memberslist.php:119
+#: adminpages/memberslist.php:152 adminpages/memberslist.php:119
 msgid "Fee"
 msgstr ""
 
-#: adminpages/memberslist.php:120 adminpages/reports/login.php:144
+#: adminpages/memberslist.php:153 adminpages/reports/login.php:144
 #: adminpages/memberslist.php:120 adminpages/reports/login.php:144
 msgid "Joined"
 msgstr ""
 
-#: adminpages/memberslist.php:184 adminpages/memberslist.php:184
+#: adminpages/memberslist.php:157
+msgid "Ended"
+msgstr ""
+
+#: adminpages/memberslist.php:212 adminpages/memberslist.php:184
 msgid "Never"
 msgstr ""
 
-#: adminpages/memberslist.php:195 adminpages/reports/login.php:210
+#: adminpages/memberslist.php:223 adminpages/reports/login.php:210
 #: adminpages/memberslist.php:195 adminpages/reports/login.php:210
 msgid "No members found."
 msgstr ""
 
-#: adminpages/memberslist.php:195 adminpages/reports/login.php:210
+#: adminpages/memberslist.php:223 adminpages/reports/login.php:210
 #: adminpages/memberslist.php:195 adminpages/reports/login.php:210
 msgid "Search all levels"
 msgstr ""
@@ -1093,7 +1103,7 @@ msgstr ""
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr ""
 
-#: adminpages/orders.php:339 pages/billing.php:234 pages/checkout.php:517
+#: adminpages/orders.php:339 pages/billing.php:234 pages/checkout.php:493
 #: adminpages/orders.php:339 pages/billing.php:234 pages/checkout.php:510
 #: pages/checkout.php:517
 msgid "Card Type"
@@ -1103,7 +1113,7 @@ msgstr ""
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr ""
 
-#: adminpages/orders.php:348 adminpages/paymentsettings.php:347
+#: adminpages/orders.php:348 adminpages/paymentsettings.php:352
 #: adminpages/orders.php:348 adminpages/paymentsettings.php:347
 msgid "Account Number"
 msgstr ""
@@ -1140,19 +1150,19 @@ msgstr ""
 msgid "Pay by Check"
 msgstr ""
 
-#: adminpages/orders.php:411 adminpages/paymentsettings.php:179
+#: adminpages/orders.php:411 adminpages/paymentsettings.php:184
 #: adminpages/orders.php:411 adminpages/paymentsettings.php:175
 #: adminpages/paymentsettings.php:179
 msgid "Gateway Environment"
 msgstr ""
 
-#: adminpages/orders.php:415 adminpages/paymentsettings.php:183
+#: adminpages/orders.php:415 adminpages/paymentsettings.php:188
 #: adminpages/orders.php:415 adminpages/paymentsettings.php:179
 #: adminpages/paymentsettings.php:183
 msgid "Sandbox/Testing"
 msgstr ""
 
-#: adminpages/orders.php:416 adminpages/paymentsettings.php:184
+#: adminpages/orders.php:416 adminpages/paymentsettings.php:189
 #: adminpages/orders.php:416 adminpages/paymentsettings.php:180
 #: adminpages/paymentsettings.php:184
 msgid "Live/Production"
@@ -1221,7 +1231,7 @@ msgstr ""
 msgid "%d orders found."
 msgstr ""
 
-#: adminpages/orders.php:599 adminpages/paymentsettings.php:215
+#: adminpages/orders.php:599 adminpages/paymentsettings.php:220
 #: adminpages/reports/login.php:141 adminpages/orders.php:599
 #: adminpages/paymentsettings.php:211 adminpages/paymentsettings.php:215
 #: adminpages/reports/login.php:141
@@ -1295,16 +1305,22 @@ msgstr ""
 #: adminpages/pagesettings.php:149 adminpages/pagesettings.php:165
 #: adminpages/pagesettings.php:181 adminpages/pagesettings.php:197
 #: adminpages/pagesettings.php:213 adminpages/pagesettings.php:119
-#: adminpages/pagesettings.php:132 adminpages/pagesettings.php:145
-#: adminpages/pagesettings.php:159 adminpages/pagesettings.php:173
-#: adminpages/pagesettings.php:187 adminpages/pagesettings.php:201
+#: adminpages/pagesettings.php:132 adminpages/pagesettings.php:134
+#: adminpages/pagesettings.php:145 adminpages/pagesettings.php:149
+#: adminpages/pagesettings.php:159 adminpages/pagesettings.php:165
+#: adminpages/pagesettings.php:173 adminpages/pagesettings.php:181
+#: adminpages/pagesettings.php:187 adminpages/pagesettings.php:197
+#: adminpages/pagesettings.php:201 adminpages/pagesettings.php:213
 msgid "edit page"
 msgstr ""
 
 #: adminpages/pagesettings.php:121 adminpages/pagesettings.php:136
 #: adminpages/pagesettings.php:151 adminpages/pagesettings.php:167
 #: adminpages/pagesettings.php:183 adminpages/pagesettings.php:199
-#: adminpages/pagesettings.php:215
+#: adminpages/pagesettings.php:215 adminpages/pagesettings.php:121
+#: adminpages/pagesettings.php:136 adminpages/pagesettings.php:151
+#: adminpages/pagesettings.php:167 adminpages/pagesettings.php:183
+#: adminpages/pagesettings.php:199 adminpages/pagesettings.php:215
 msgid "view page"
 msgstr ""
 
@@ -1312,33 +1328,43 @@ msgstr ""
 #: adminpages/pagesettings.php:153 adminpages/pagesettings.php:169
 #: adminpages/pagesettings.php:185 adminpages/pagesettings.php:201
 #: adminpages/pagesettings.php:217 adminpages/pagesettings.php:121
-#: adminpages/pagesettings.php:134 adminpages/pagesettings.php:147
-#: adminpages/pagesettings.php:161 adminpages/pagesettings.php:175
-#: adminpages/pagesettings.php:189 adminpages/pagesettings.php:203
+#: adminpages/pagesettings.php:123 adminpages/pagesettings.php:134
+#: adminpages/pagesettings.php:138 adminpages/pagesettings.php:147
+#: adminpages/pagesettings.php:153 adminpages/pagesettings.php:161
+#: adminpages/pagesettings.php:169 adminpages/pagesettings.php:175
+#: adminpages/pagesettings.php:185 adminpages/pagesettings.php:189
+#: adminpages/pagesettings.php:201 adminpages/pagesettings.php:203
+#: adminpages/pagesettings.php:217
 msgid "Include the shortcode"
 msgstr ""
 
 #: adminpages/pagesettings.php:127 adminpages/pagesettings.php:125
+#: adminpages/pagesettings.php:127
 msgid "Billing Information Page"
 msgstr ""
 
 #: adminpages/pagesettings.php:142 adminpages/pagesettings.php:138
+#: adminpages/pagesettings.php:142
 msgid "Cancel Page"
 msgstr ""
 
 #: adminpages/pagesettings.php:158 adminpages/pagesettings.php:152
+#: adminpages/pagesettings.php:158
 msgid "Checkout Page"
 msgstr ""
 
 #: adminpages/pagesettings.php:174 adminpages/pagesettings.php:166
+#: adminpages/pagesettings.php:174
 msgid "Confirmation Page"
 msgstr ""
 
 #: adminpages/pagesettings.php:190 adminpages/pagesettings.php:180
+#: adminpages/pagesettings.php:190
 msgid "Invoice Page"
 msgstr ""
 
 #: adminpages/pagesettings.php:206 adminpages/pagesettings.php:194
+#: adminpages/pagesettings.php:206
 msgid "Levels Page"
 msgstr ""
 
@@ -1366,226 +1392,237 @@ msgid ""
 "versions when available.</strong>"
 msgstr ""
 
-#: adminpages/paymentsettings.php:199 adminpages/paymentsettings.php:195
+#: adminpages/paymentsettings.php:179
+msgid ""
+"We do not recommend using PayPal Standard. We suggest using PayPal Express, "
+"Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="
+"\"_blank\" href=\"http://www.paidmembershipspro.com/2013/09/read-using-"
+"paypal-standard-paid-memberships-pro/\">More information on why can be found "
+"here.</a>"
+msgstr ""
+
+#: adminpages/paymentsettings.php:204 adminpages/paymentsettings.php:195
 #: adminpages/paymentsettings.php:199
 msgid "Partner"
 msgstr ""
 
-#: adminpages/paymentsettings.php:207 adminpages/paymentsettings.php:203
+#: adminpages/paymentsettings.php:212 adminpages/paymentsettings.php:203
 #: adminpages/paymentsettings.php:207
 msgid "Vendor"
 msgstr ""
 
-#: adminpages/paymentsettings.php:223 pages/checkout.php:180
+#: adminpages/paymentsettings.php:228 pages/checkout.php:180
 #: adminpages/paymentsettings.php:219 adminpages/paymentsettings.php:223
 #: pages/checkout.php:177 pages/checkout.php:180
 msgid "Password"
 msgstr ""
 
-#: adminpages/paymentsettings.php:231 adminpages/paymentsettings.php:227
+#: adminpages/paymentsettings.php:236 adminpages/paymentsettings.php:227
 #: adminpages/paymentsettings.php:231
 msgid "Gateway Account Email"
 msgstr ""
 
-#: adminpages/paymentsettings.php:239 adminpages/paymentsettings.php:331
+#: adminpages/paymentsettings.php:244 adminpages/paymentsettings.php:336
 #: adminpages/paymentsettings.php:235 adminpages/paymentsettings.php:239
 #: adminpages/paymentsettings.php:331
 msgid "API Username"
 msgstr ""
 
-#: adminpages/paymentsettings.php:247 adminpages/paymentsettings.php:339
+#: adminpages/paymentsettings.php:252 adminpages/paymentsettings.php:344
 #: adminpages/paymentsettings.php:243 adminpages/paymentsettings.php:247
 #: adminpages/paymentsettings.php:339
 msgid "API Password"
 msgstr ""
 
-#: adminpages/paymentsettings.php:255 adminpages/paymentsettings.php:251
+#: adminpages/paymentsettings.php:260 adminpages/paymentsettings.php:251
 #: adminpages/paymentsettings.php:255
 msgid "API Signature"
 msgstr ""
 
-#: adminpages/paymentsettings.php:264 adminpages/paymentsettings.php:260
+#: adminpages/paymentsettings.php:269 adminpages/paymentsettings.php:260
 #: adminpages/paymentsettings.php:264
 msgid "Login Name"
 msgstr ""
 
-#: adminpages/paymentsettings.php:272 adminpages/paymentsettings.php:268
+#: adminpages/paymentsettings.php:277 adminpages/paymentsettings.php:268
 #: adminpages/paymentsettings.php:272
 msgid "Transaction Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:281 adminpages/paymentsettings.php:277
+#: adminpages/paymentsettings.php:286 adminpages/paymentsettings.php:277
 #: adminpages/paymentsettings.php:281
 msgid "Secret Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:289 adminpages/paymentsettings.php:285
+#: adminpages/paymentsettings.php:294 adminpages/paymentsettings.php:285
 #: adminpages/paymentsettings.php:289
 msgid "Publishable Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:298 adminpages/paymentsettings.php:364
+#: adminpages/paymentsettings.php:303 adminpages/paymentsettings.php:369
 #: adminpages/paymentsettings.php:294 adminpages/paymentsettings.php:298
 #: adminpages/paymentsettings.php:364
 msgid "Merchant ID"
 msgstr ""
 
-#: adminpages/paymentsettings.php:306 adminpages/paymentsettings.php:302
+#: adminpages/paymentsettings.php:311 adminpages/paymentsettings.php:302
 #: adminpages/paymentsettings.php:306
 msgid "Public Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:314 adminpages/paymentsettings.php:310
+#: adminpages/paymentsettings.php:319 adminpages/paymentsettings.php:310
 #: adminpages/paymentsettings.php:314
 msgid "Private Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:322 adminpages/paymentsettings.php:318
+#: adminpages/paymentsettings.php:327 adminpages/paymentsettings.php:318
 #: adminpages/paymentsettings.php:322
 msgid "Client-Side Encryption Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:355 adminpages/paymentsettings.php:355
+#: adminpages/paymentsettings.php:360 adminpages/paymentsettings.php:355
 msgid "Secret Word"
 msgstr ""
 
-#: adminpages/paymentsettings.php:372 adminpages/paymentsettings.php:372
+#: adminpages/paymentsettings.php:377 adminpages/paymentsettings.php:372
 msgid "Transaction Security Key"
 msgstr ""
 
-#: adminpages/paymentsettings.php:381 adminpages/paymentsettings.php:327
+#: adminpages/paymentsettings.php:386 adminpages/paymentsettings.php:327
 #: adminpages/paymentsettings.php:337 adminpages/paymentsettings.php:356
 #: adminpages/paymentsettings.php:381
 msgid "Currency"
 msgstr ""
 
-#: adminpages/paymentsettings.php:401 adminpages/paymentsettings.php:375
+#: adminpages/paymentsettings.php:406 adminpages/paymentsettings.php:375
 #: adminpages/paymentsettings.php:401
 msgid "Accepted Credit Card Types"
 msgstr ""
 
-#: adminpages/paymentsettings.php:415 adminpages/paymentsettings.php:389
+#: adminpages/paymentsettings.php:420 adminpages/paymentsettings.php:389
 #: adminpages/paymentsettings.php:415
 msgid "Instructions"
 msgstr ""
 
-#: adminpages/paymentsettings.php:419 adminpages/paymentsettings.php:393
+#: adminpages/paymentsettings.php:424 adminpages/paymentsettings.php:393
 #: adminpages/paymentsettings.php:419
 msgid ""
 "Who to write the check out to. Where to mail it. Shown on checkout, "
 "confirmation, and invoice pages."
 msgstr ""
 
-#: adminpages/paymentsettings.php:425 adminpages/paymentsettings.php:425
+#: adminpages/paymentsettings.php:430 adminpages/paymentsettings.php:425
 msgid "Show Billing Address Fields"
 msgstr ""
 
-#: adminpages/paymentsettings.php:432 adminpages/paymentsettings.php:432
+#: adminpages/paymentsettings.php:437
 msgid ""
 "Stripe doesn't require billing address fields. Choose 'No' to hide them on "
-"the checkout page."
+"the checkout page.<br /><strong>If No, make sure you disable address "
+"verification in the Stripe dashboard settings.</strong>"
 msgstr ""
 
-#: adminpages/paymentsettings.php:438 adminpages/paymentsettings.php:398
+#: adminpages/paymentsettings.php:443 adminpages/paymentsettings.php:398
 #: adminpages/paymentsettings.php:438
 msgid "Sales Tax"
 msgstr ""
 
-#: adminpages/paymentsettings.php:438 pages/billing.php:78
+#: adminpages/paymentsettings.php:443 pages/billing.php:78
 #: adminpages/paymentsettings.php:398 adminpages/paymentsettings.php:438
 #: pages/billing.php:78
 msgid "optional"
 msgstr ""
 
-#: adminpages/paymentsettings.php:441 adminpages/paymentsettings.php:401
+#: adminpages/paymentsettings.php:446 adminpages/paymentsettings.php:401
 #: adminpages/paymentsettings.php:441
 msgid "Tax State"
 msgstr ""
 
-#: adminpages/paymentsettings.php:442 adminpages/paymentsettings.php:402
+#: adminpages/paymentsettings.php:447 adminpages/paymentsettings.php:402
 #: adminpages/paymentsettings.php:442
 msgid "abbreviation, e.g. \"PA\""
 msgstr ""
 
-#: adminpages/paymentsettings.php:444 adminpages/paymentsettings.php:404
+#: adminpages/paymentsettings.php:449 adminpages/paymentsettings.php:404
 #: adminpages/paymentsettings.php:444
 msgid "decimal, e.g. \"0.06\""
 msgstr ""
 
-#: adminpages/paymentsettings.php:445 adminpages/paymentsettings.php:405
-#: adminpages/paymentsettings.php:445
+#: adminpages/paymentsettings.php:450
 msgid ""
-"If values are given, tax will be applied for any members ordering from the "
-"selected state. For more complex tax rules, use the \"pmpro_tax\" filter."
+"US only. If values are given, tax will be applied for any members ordering "
+"from the selected state.<br />For non-US or more complex tax rules, use the "
+"<a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-"
+"taxes-paid-memberships-pro/\">pmpro_tax filter</a>."
 msgstr ""
 
-#: adminpages/paymentsettings.php:450 adminpages/paymentsettings.php:450
+#: adminpages/paymentsettings.php:455 adminpages/paymentsettings.php:450
 msgid "Force SSL"
 msgstr ""
 
-#: adminpages/paymentsettings.php:456 adminpages/paymentsettings.php:456
+#: adminpages/paymentsettings.php:461 adminpages/paymentsettings.php:456
 msgid "Yes (with JavaScript redirects)"
 msgstr ""
 
-#: adminpages/paymentsettings.php:463 adminpages/paymentsettings.php:430
+#: adminpages/paymentsettings.php:468 adminpages/paymentsettings.php:430
 #: adminpages/paymentsettings.php:463
 msgid "SSL Seal Code"
 msgstr ""
 
-#: adminpages/paymentsettings.php:471 adminpages/paymentsettings.php:438
+#: adminpages/paymentsettings.php:477 adminpages/paymentsettings.php:438
 #: adminpages/paymentsettings.php:471
 msgid "HTTPS Nuclear Option"
 msgstr ""
 
-#: adminpages/paymentsettings.php:474 adminpages/paymentsettings.php:441
+#: adminpages/paymentsettings.php:480 adminpages/paymentsettings.php:441
 #: adminpages/paymentsettings.php:474
 msgid ""
 "Use the \"Nuclear Option\" to use secure (HTTPS) URLs on your secure pages. "
 "Check this if you are using SSL and have warnings on your checkout pages."
 msgstr ""
 
-#: adminpages/paymentsettings.php:479 adminpages/paymentsettings.php:446
+#: adminpages/paymentsettings.php:485 adminpages/paymentsettings.php:446
 #: adminpages/paymentsettings.php:479
 msgid "IPN Handler URL"
 msgstr ""
 
-#: adminpages/paymentsettings.php:482 adminpages/paymentsettings.php:449
+#: adminpages/paymentsettings.php:488 adminpages/paymentsettings.php:449
 #: adminpages/paymentsettings.php:482
 msgid "To fully integrate with PayPal, be sure to set your IPN Handler URL to "
 msgstr ""
 
-#: adminpages/paymentsettings.php:487 adminpages/paymentsettings.php:487
+#: adminpages/paymentsettings.php:493 adminpages/paymentsettings.php:487
 msgid "TwoCheckout INS URL"
 msgstr ""
 
-#: adminpages/paymentsettings.php:490 adminpages/paymentsettings.php:490
+#: adminpages/paymentsettings.php:496 adminpages/paymentsettings.php:490
 msgid ""
 "To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL "
 msgstr ""
 
-#: adminpages/paymentsettings.php:495 adminpages/paymentsettings.php:454
+#: adminpages/paymentsettings.php:501 adminpages/paymentsettings.php:454
 #: adminpages/paymentsettings.php:495
 msgid "Silent Post URL"
 msgstr ""
 
-#: adminpages/paymentsettings.php:498 adminpages/paymentsettings.php:457
+#: adminpages/paymentsettings.php:504 adminpages/paymentsettings.php:457
 #: adminpages/paymentsettings.php:498
 msgid ""
 "To fully integrate with Authorize.net, be sure to set your Silent Post URL to"
 msgstr ""
 
-#: adminpages/paymentsettings.php:503 adminpages/paymentsettings.php:511
+#: adminpages/paymentsettings.php:509 adminpages/paymentsettings.php:517
 #: adminpages/paymentsettings.php:462 adminpages/paymentsettings.php:470
 #: adminpages/paymentsettings.php:503 adminpages/paymentsettings.php:511
 msgid "Web Hook URL"
 msgstr ""
 
-#: adminpages/paymentsettings.php:506 adminpages/paymentsettings.php:465
+#: adminpages/paymentsettings.php:512 adminpages/paymentsettings.php:465
 #: adminpages/paymentsettings.php:506
 msgid "To fully integrate with Stripe, be sure to set your Web Hook URL to"
 msgstr ""
 
-#: adminpages/paymentsettings.php:515 adminpages/paymentsettings.php:474
+#: adminpages/paymentsettings.php:521 adminpages/paymentsettings.php:474
 #: adminpages/paymentsettings.php:515
 msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 msgstr ""
@@ -1673,19 +1710,19 @@ msgstr ""
 msgid "Membership Stats"
 msgstr ""
 
-#: adminpages/reports/memberships.php:294 adminpages/reports/sales.php:196
+#: adminpages/reports/memberships.php:294 adminpages/reports/sales.php:195
 #: adminpages/reports/memberships.php:294 adminpages/reports/sales.php:187
 #: adminpages/reports/sales.php:196
 msgid "Daily"
 msgstr ""
 
-#: adminpages/reports/memberships.php:295 adminpages/reports/sales.php:197
+#: adminpages/reports/memberships.php:295 adminpages/reports/sales.php:196
 #: adminpages/reports/memberships.php:295 adminpages/reports/sales.php:188
 #: adminpages/reports/sales.php:197
 msgid "Monthly"
 msgstr ""
 
-#: adminpages/reports/memberships.php:296 adminpages/reports/sales.php:198
+#: adminpages/reports/memberships.php:296 adminpages/reports/sales.php:197
 #: adminpages/reports/memberships.php:296 adminpages/reports/sales.php:189
 #: adminpages/reports/sales.php:198
 msgid "Annual"
@@ -1696,7 +1733,7 @@ msgstr ""
 msgid "Signups vs. Cancellations"
 msgstr ""
 
-#: adminpages/reports/memberships.php:331 adminpages/reports/sales.php:231
+#: adminpages/reports/memberships.php:331 adminpages/reports/sales.php:230
 #: adminpages/reports/memberships.php:331 adminpages/reports/sales.php:222
 #: adminpages/reports/sales.php:231
 msgid "Generate Report"
@@ -1712,14 +1749,22 @@ msgstr ""
 msgid "Sales and Revenue"
 msgstr ""
 
-#: adminpages/reports/sales.php:201 adminpages/reports/sales.php:192
+#: adminpages/reports/sales.php:200 adminpages/reports/sales.php:192
 #: adminpages/reports/sales.php:201
 msgid "Revenue"
 msgstr ""
 
-#: adminpages/reports/sales.php:202 adminpages/reports/sales.php:193
+#: adminpages/reports/sales.php:201 adminpages/reports/sales.php:193
 #: adminpages/reports/sales.php:202
 msgid "Sales"
+msgstr ""
+
+#: classes/class.memberorder.php:553 includes/cleanup.php:24
+#, php-format
+msgid ""
+"There was an error canceling the subscription for user with ID=%s. You will "
+"want to check your payment gateway to see if their subscription is still "
+"active."
 msgstr ""
 
 #: classes/class.pmproemail.php:37 classes/class.pmproemail.php:37
@@ -1727,26 +1772,26 @@ msgstr ""
 msgid "An Email From %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:120 classes/class.pmproemail.php:120
+#: classes/class.pmproemail.php:122 classes/class.pmproemail.php:120
 #, php-format
 msgid "Your membership at %s has been CANCELLED"
 msgstr ""
 
-#: classes/class.pmproemail.php:142 classes/class.pmproemail.php:142
+#: classes/class.pmproemail.php:144 classes/class.pmproemail.php:142
 #, php-format
 msgid "Membership for %s at %s has been CANCELLED"
 msgstr ""
 
-#: classes/class.pmproemail.php:173 classes/class.pmproemail.php:172
+#: classes/class.pmproemail.php:175 classes/class.pmproemail.php:172
 #: classes/class.pmproemail.php:173
 #, php-format
 msgid "Your membership confirmation for %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:218 classes/class.pmproemail.php:227
-#: classes/class.pmproemail.php:236 classes/class.pmproemail.php:307
-#: classes/class.pmproemail.php:316 classes/class.pmproemail.php:580
-#: pages/checkout.php:66 pages/checkout.php:76 pages/checkout.php:573
+#: classes/class.pmproemail.php:228 classes/class.pmproemail.php:237
+#: classes/class.pmproemail.php:246 classes/class.pmproemail.php:325
+#: classes/class.pmproemail.php:334 classes/class.pmproemail.php:645
+#: pages/checkout.php:66 pages/checkout.php:76 pages/checkout.php:549
 #: pages/confirmation.php:52 pages/invoice.php:33
 #: classes/class.pmproemail.php:216 classes/class.pmproemail.php:218
 #: classes/class.pmproemail.php:225 classes/class.pmproemail.php:227
@@ -1761,8 +1806,8 @@ msgstr ""
 msgid "Discount Code"
 msgstr ""
 
-#: classes/class.pmproemail.php:243 classes/class.pmproemail.php:328
-#: classes/class.pmproemail.php:586 classes/class.pmproemail.php:241
+#: classes/class.pmproemail.php:253 classes/class.pmproemail.php:346
+#: classes/class.pmproemail.php:651 classes/class.pmproemail.php:241
 #: classes/class.pmproemail.php:243 classes/class.pmproemail.php:325
 #: classes/class.pmproemail.php:328 classes/class.pmproemail.php:538
 #: classes/class.pmproemail.php:586
@@ -1770,103 +1815,108 @@ msgstr ""
 msgid "This membership will expire on %s."
 msgstr ""
 
-#: classes/class.pmproemail.php:265 classes/class.pmproemail.php:263
+#: classes/class.pmproemail.php:275 classes/class.pmproemail.php:263
 #: classes/class.pmproemail.php:265
 #, php-format
 msgid "Member Checkout for %s at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:345 classes/class.pmproemail.php:342
+#: classes/class.pmproemail.php:363 classes/class.pmproemail.php:342
 #: classes/class.pmproemail.php:345
 #, php-format
 msgid "Your billing information has been udpated at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:390 classes/class.pmproemail.php:386
+#: classes/class.pmproemail.php:416 classes/class.pmproemail.php:386
 #: classes/class.pmproemail.php:390
 #, php-format
 msgid "Billing information has been udpated for %s at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:430 classes/class.pmproemail.php:425
+#: classes/class.pmproemail.php:464 classes/class.pmproemail.php:425
 #: classes/class.pmproemail.php:430
 #, php-format
 msgid "Membership Payment Failed at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:468 classes/class.pmproemail.php:462
+#: classes/class.pmproemail.php:510 classes/class.pmproemail.php:462
 #: classes/class.pmproemail.php:468
 #, php-format
 msgid "Membership Payment Failed For %s at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:508 classes/class.pmproemail.php:508
+#: classes/class.pmproemail.php:557 classes/class.pmproemail.php:508
 #, php-format
 msgid "Credit Card on File Expiring Soon at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:548 classes/class.pmproemail.php:501
+#: classes/class.pmproemail.php:605 classes/class.pmproemail.php:501
 #: classes/class.pmproemail.php:548
 #, php-format
 msgid "INVOICE for %s membership"
 msgstr ""
 
-#: classes/class.pmproemail.php:611 classes/class.pmproemail.php:563
+#: classes/class.pmproemail.php:676 classes/class.pmproemail.php:563
 #: classes/class.pmproemail.php:611
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr ""
 
-#: classes/class.pmproemail.php:645 classes/class.pmproemail.php:596
+#: classes/class.pmproemail.php:710 classes/class.pmproemail.php:596
 #: classes/class.pmproemail.php:645
 #, php-format
 msgid "Your membership at %s has ended"
 msgstr ""
 
-#: classes/class.pmproemail.php:670 classes/class.pmproemail.php:621
+#: classes/class.pmproemail.php:735 classes/class.pmproemail.php:621
 #: classes/class.pmproemail.php:670
 #, php-format
 msgid "Your membership at %s will end soon"
 msgstr ""
 
-#: classes/class.pmproemail.php:690 classes/class.pmproemail.php:641
+#: classes/class.pmproemail.php:755 classes/class.pmproemail.php:641
 #: classes/class.pmproemail.php:690
 #, php-format
 msgid "Your membership at %s has been changed"
 msgstr ""
 
-#: classes/class.pmproemail.php:694 classes/class.pmproemail.php:732
-#: classes/class.pmproemail.php:645 classes/class.pmproemail.php:683
-#: classes/class.pmproemail.php:694 classes/class.pmproemail.php:732
+#: classes/class.pmproemail.php:759
 #, php-format
-msgid "The new level is %s. This membership is free"
+msgid "The new level is %s."
 msgstr ""
 
-#: classes/class.pmproemail.php:696 classes/class.pmproemail.php:647
+#: classes/class.pmproemail.php:761 classes/class.pmproemail.php:647
 #: classes/class.pmproemail.php:696
 msgid "Your membership has been cancelled"
 msgstr ""
 
-#: classes/class.pmproemail.php:700 classes/class.pmproemail.php:738
+#: classes/class.pmproemail.php:765 classes/class.pmproemail.php:803
 #: classes/class.pmproemail.php:651 classes/class.pmproemail.php:689
 #: classes/class.pmproemail.php:700 classes/class.pmproemail.php:738
 #, php-format
 msgid "This membership will expire on %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:704 classes/class.pmproemail.php:742
+#: classes/class.pmproemail.php:769 classes/class.pmproemail.php:807
 #: classes/class.pmproemail.php:655 classes/class.pmproemail.php:693
 #: classes/class.pmproemail.php:704 classes/class.pmproemail.php:742
 msgid "This membership does not expire"
 msgstr ""
 
-#: classes/class.pmproemail.php:728 classes/class.pmproemail.php:679
+#: classes/class.pmproemail.php:793 classes/class.pmproemail.php:679
 #: classes/class.pmproemail.php:728
 #, php-format
 msgid "Membership for %s at %s has been changed"
 msgstr ""
 
-#: classes/class.pmproemail.php:734 classes/class.pmproemail.php:685
+#: classes/class.pmproemail.php:797 classes/class.pmproemail.php:645
+#: classes/class.pmproemail.php:683 classes/class.pmproemail.php:694
+#: classes/class.pmproemail.php:732
+#, php-format
+msgid "The new level is %s. This membership is free"
+msgstr ""
+
+#: classes/class.pmproemail.php:799 classes/class.pmproemail.php:685
 #: classes/class.pmproemail.php:734
 msgid "membership has been cancelled"
 msgstr ""
@@ -1987,8 +2037,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:410
 #: classes/gateways/class.pmprogateway_braintree.php:417
-#: classes/gateways/class.pmprogateway_stripe.php:344
-#: classes/gateways/class.pmprogateway_stripe.php:354
+#: classes/gateways/class.pmprogateway_stripe.php:351
+#: classes/gateways/class.pmprogateway_stripe.php:361
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:398
 #: classes/gateways/class.pmprogateway_braintree.php:410
@@ -2011,19 +2061,19 @@ msgid ""
 "owner immediately to correct this."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:192
+#: classes/gateways/class.pmprogateway_stripe.php:199
 #: classes/gateways/class.pmprogateway_stripe.php:190
 #: classes/gateways/class.pmprogateway_stripe.php:192
 msgid "Error creating customer record with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:279
+#: classes/gateways/class.pmprogateway_stripe.php:286
 #: classes/gateways/class.pmprogateway_stripe.php:278
 #: classes/gateways/class.pmprogateway_stripe.php:279
 msgid "Error creating plan with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:295
+#: classes/gateways/class.pmprogateway_stripe.php:302
 #: classes/gateways/class.pmprogateway_stripe.php:294
 #: classes/gateways/class.pmprogateway_stripe.php:295
 msgid "Error subscribing customer to plan with Stripe:"
@@ -2052,14 +2102,6 @@ msgstr ""
 #: includes/adminpages.php:18 includes/adminpages.php:89
 #: includes/adminpages.php:18 includes/adminpages.php:89
 msgid "Discount Codes"
-msgstr ""
-
-#: includes/cleanup.php:24 includes/cleanup.php:24
-#, php-format
-msgid ""
-"There was an error canceling the subscription for user with ID=%s. You will "
-"want to check your payment gateway to see if their subscription is still "
-"active."
 msgstr ""
 
 #: includes/currencies.php:7 includes/currencies.php:44
@@ -2207,149 +2249,154 @@ msgstr ""
 msgid "Vietnamese Dong"
 msgstr ""
 
-#: includes/functions.php:196 includes/functions.php:160
+#: includes/functions.php:202 includes/functions.php:160
 #: includes/functions.php:196
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr ""
 
-#: includes/functions.php:205 includes/functions.php:169
+#: includes/functions.php:204
+#, php-format
+msgid "<strong>%s</strong> now"
+msgstr ""
+
+#: includes/functions.php:213 includes/functions.php:169
 #: includes/functions.php:205
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
 msgstr ""
 
-#: includes/functions.php:209 includes/functions.php:173
+#: includes/functions.php:217 includes/functions.php:173
 #: includes/functions.php:209
 #, php-format
 msgid " and then <strong>%s every %d %s for %d more %s</strong>."
 msgstr ""
 
-#: includes/functions.php:214 includes/functions.php:178
+#: includes/functions.php:222 includes/functions.php:178
 #: includes/functions.php:214
 #, php-format
 msgid " and then <strong>%s after %d %s</strong>."
 msgstr ""
 
-#: includes/functions.php:220 includes/functions.php:184
+#: includes/functions.php:228 includes/functions.php:184
 #: includes/functions.php:220
 #, php-format
 msgid " and then <strong>%s per %s</strong>."
 msgstr ""
 
-#: includes/functions.php:224 includes/functions.php:188
+#: includes/functions.php:232 includes/functions.php:188
 #: includes/functions.php:224
 #, php-format
 msgid " and then <strong>%s every %d %s</strong>."
 msgstr ""
 
-#: includes/functions.php:238 pages/levels.php:82 includes/functions.php:202
+#: includes/functions.php:249 includes/functions.php:202
 #: includes/functions.php:238 pages/levels.php:82
 msgid "After your initial payment, your first payment is Free."
 msgstr ""
 
-#: includes/functions.php:242 pages/levels.php:86 includes/functions.php:206
+#: includes/functions.php:253 includes/functions.php:206
 #: includes/functions.php:242 pages/levels.php:86
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr ""
 
-#: includes/functions.php:249 pages/levels.php:93 includes/functions.php:213
+#: includes/functions.php:260 includes/functions.php:213
 #: includes/functions.php:249 pages/levels.php:93
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr ""
 
-#: includes/functions.php:253 pages/levels.php:97 includes/functions.php:217
+#: includes/functions.php:264 includes/functions.php:217
 #: includes/functions.php:253 pages/levels.php:97
 #, php-format
 msgid "After your initial payment, your first %d payments will cost %s."
 msgstr ""
 
-#: includes/functions.php:264 includes/functions.php:228
+#: includes/functions.php:275 includes/functions.php:228
 #: includes/functions.php:264
 #, php-format
 msgid "Customers in %s will be charged %s%% tax."
 msgstr ""
 
-#: includes/functions.php:278 includes/functions.php:242
+#: includes/functions.php:289 includes/functions.php:242
 #: includes/functions.php:278
 #, php-format
 msgid "Membership expires after %d %s."
 msgstr ""
 
-#: includes/functions.php:514 includes/functions.php:491
+#: includes/functions.php:525 includes/functions.php:491
 #: includes/functions.php:514
 msgid "User ID not found."
 msgstr ""
 
-#: includes/functions.php:531 includes/functions.php:508
+#: includes/functions.php:542 includes/functions.php:508
 #: includes/functions.php:531
 msgid "Invalid level."
 msgstr ""
 
-#: includes/functions.php:542 includes/functions.php:520
+#: includes/functions.php:553 includes/functions.php:520
 #: includes/functions.php:542
 msgid "not changing?"
 msgstr ""
 
-#: includes/functions.php:559 includes/functions.php:605
-#: includes/functions.php:614 includes/functions.php:537
+#: includes/functions.php:570 includes/functions.php:617
+#: includes/functions.php:626 includes/functions.php:537
 #: includes/functions.php:559 includes/functions.php:583
 #: includes/functions.php:592 includes/functions.php:605
 #: includes/functions.php:614
 msgid "Error interacting with database"
 msgstr ""
 
-#: includes/functions.php:651 includes/functions.php:690
+#: includes/functions.php:667 includes/functions.php:706
 #: includes/functions.php:629 includes/functions.php:651
 #: includes/functions.php:668 includes/functions.php:690
 msgid "Membership level not found."
 msgstr ""
 
-#: includes/functions.php:1072 includes/functions.php:1050
+#: includes/functions.php:1088 includes/functions.php:1050
 #: includes/functions.php:1072
 msgid "The discount code could not be found."
 msgstr ""
 
-#: includes/functions.php:1088 includes/functions.php:1066
+#: includes/functions.php:1104 includes/functions.php:1066
 #: includes/functions.php:1088
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
 
-#: includes/functions.php:1097 includes/functions.php:1075
+#: includes/functions.php:1113 includes/functions.php:1075
 #: includes/functions.php:1097
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
 
-#: includes/functions.php:1109 includes/functions.php:1087
+#: includes/functions.php:1125 includes/functions.php:1087
 #: includes/functions.php:1109
 msgid "This discount code is no longer valid."
 msgstr ""
 
-#: includes/functions.php:1124 includes/functions.php:1102
+#: includes/functions.php:1140 includes/functions.php:1102
 #: includes/functions.php:1124
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
-#: includes/functions.php:1132 includes/functions.php:1110
+#: includes/functions.php:1148 includes/functions.php:1110
 #: includes/functions.php:1132
 msgid "This discount code is okay."
 msgstr ""
 
-#: includes/functions.php:1156 includes/functions.php:1134
+#: includes/functions.php:1172 includes/functions.php:1134
 #: includes/functions.php:1156
 msgid "and"
 msgstr ""
 
-#: includes/functions.php:1341 includes/functions.php:1319
+#: includes/functions.php:1361 includes/functions.php:1319
 #: includes/functions.php:1341
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
-#: includes/functions.php:1347 includes/functions.php:1325
+#: includes/functions.php:1367 includes/functions.php:1325
 #: includes/functions.php:1347
 msgid "Please specify a level id."
 msgstr ""
@@ -2493,63 +2540,63 @@ msgid ""
 "paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr ""
 
-#: pages/billing.php:65 pages/checkout.php:328 pages/billing.php:65
+#: pages/billing.php:65 pages/checkout.php:305 pages/billing.php:65
 #: pages/checkout.php:321 pages/checkout.php:328
 msgid "First Name"
 msgstr ""
 
-#: pages/billing.php:69 pages/checkout.php:332 pages/billing.php:69
+#: pages/billing.php:69 pages/checkout.php:309 pages/billing.php:69
 #: pages/checkout.php:325 pages/checkout.php:332
 msgid "Last Name"
 msgstr ""
 
-#: pages/billing.php:73 pages/checkout.php:336 pages/billing.php:73
+#: pages/billing.php:73 pages/checkout.php:313 pages/billing.php:73
 #: pages/checkout.php:329 pages/checkout.php:336
 msgid "Address 1"
 msgstr ""
 
-#: pages/billing.php:77 pages/checkout.php:340 pages/billing.php:77
+#: pages/billing.php:77 pages/checkout.php:317 pages/billing.php:77
 #: pages/checkout.php:333 pages/checkout.php:340
 msgid "Address 2"
 msgstr ""
 
-#: pages/billing.php:87 pages/checkout.php:350 pages/billing.php:87
+#: pages/billing.php:87 pages/checkout.php:327 pages/billing.php:87
 #: pages/checkout.php:343 pages/checkout.php:350
 msgid "City"
 msgstr ""
 
-#: pages/billing.php:91 pages/checkout.php:354 pages/billing.php:91
+#: pages/billing.php:91 pages/checkout.php:331 pages/billing.php:91
 #: pages/checkout.php:347 pages/checkout.php:354
 msgid "State"
 msgstr ""
 
-#: pages/billing.php:95 pages/checkout.php:358 pages/billing.php:95
+#: pages/billing.php:95 pages/checkout.php:335 pages/billing.php:95
 #: pages/checkout.php:351 pages/checkout.php:358
 msgid "Postal Code"
 msgstr ""
 
-#: pages/billing.php:104 pages/checkout.php:367 pages/billing.php:104
+#: pages/billing.php:104 pages/checkout.php:344 pages/billing.php:104
 #: pages/checkout.php:360 pages/checkout.php:367
 msgid "City, State Zip"
 msgstr ""
 
-#: pages/billing.php:157 pages/checkout.php:420 pages/billing.php:157
+#: pages/billing.php:157 pages/checkout.php:397 pages/billing.php:157
 #: pages/checkout.php:413 pages/checkout.php:420
 msgid "Country"
 msgstr ""
 
-#: pages/billing.php:182 pages/checkout.php:445 pages/billing.php:182
+#: pages/billing.php:182 pages/checkout.php:422 pages/billing.php:182
 #: pages/checkout.php:438 pages/checkout.php:445
 msgid "Phone"
 msgstr ""
 
-#: pages/billing.php:193 pages/checkout.php:207 pages/checkout.php:460
+#: pages/billing.php:193 pages/checkout.php:207 pages/checkout.php:436
 #: pages/billing.php:193 pages/checkout.php:204 pages/checkout.php:207
 #: pages/checkout.php:453 pages/checkout.php:460
 msgid "E-mail Address"
 msgstr ""
 
-#: pages/billing.php:197 pages/checkout.php:469 pages/billing.php:197
+#: pages/billing.php:197 pages/checkout.php:445 pages/billing.php:197
 #: pages/checkout.php:462 pages/checkout.php:469
 msgid "Confirm E-mail"
 msgstr ""
@@ -2563,17 +2610,17 @@ msgstr ""
 msgid "We accept %s"
 msgstr ""
 
-#: pages/billing.php:244 pages/checkout.php:527 pages/billing.php:244
+#: pages/billing.php:244 pages/checkout.php:503 pages/billing.php:244
 #: pages/checkout.php:520 pages/checkout.php:527
 msgid "Card Number"
 msgstr ""
 
-#: pages/billing.php:281 pages/checkout.php:564 pages/billing.php:281
+#: pages/billing.php:281 pages/checkout.php:540 pages/billing.php:281
 #: pages/checkout.php:557 pages/checkout.php:564
 msgid "CVV"
 msgstr ""
 
-#: pages/billing.php:282 pages/checkout.php:565 pages/billing.php:282
+#: pages/billing.php:282 pages/checkout.php:541 pages/billing.php:282
 #: pages/checkout.php:558 pages/checkout.php:565
 msgid "what's this?"
 msgstr ""
@@ -2619,12 +2666,14 @@ msgstr ""
 msgid "You have selected the <strong>%s</strong> membership level."
 msgstr ""
 
-#: pages/checkout.php:51 pages/checkout.php:51 pages/checkout.php:52
+#: pages/checkout.php:51
 #, php-format
-msgid "<p>The <strong>%s</strong> code has been applied to your order.</p>"
+msgid ""
+"<p class=\"pmpro_level_discount_applied\">The <strong>%s</strong> code has "
+"been applied to your order.</p>"
 msgstr ""
 
-#: pages/checkout.php:62 services/applydiscountcode.php:74
+#: pages/checkout.php:62 services/applydiscountcode.php:75
 #: pages/checkout.php:62 pages/checkout.php:63
 #: services/applydiscountcode.php:74
 msgid "Click here to change your discount code"
@@ -2638,7 +2687,7 @@ msgstr ""
 msgid "Do you have a discount code?"
 msgstr ""
 
-#: pages/checkout.php:78 pages/checkout.php:575 pages/checkout.php:78
+#: pages/checkout.php:78 pages/checkout.php:551 pages/checkout.php:78
 #: pages/checkout.php:79 pages/checkout.php:568 pages/checkout.php:575
 msgid "Apply"
 msgstr ""
@@ -2678,50 +2727,50 @@ msgid ""
 "different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr ""
 
-#: pages/checkout.php:284 pages/checkout.php:277 pages/checkout.php:284
-#, php-format
-msgid "I agree to the %s"
-msgstr ""
-
-#: pages/checkout.php:299 pages/checkout.php:292 pages/checkout.php:299
+#: pages/checkout.php:276 pages/checkout.php:292 pages/checkout.php:299
 msgid "Choose your Payment Method"
 msgstr ""
 
-#: pages/checkout.php:307 pages/checkout.php:300 pages/checkout.php:307
+#: pages/checkout.php:284 pages/checkout.php:300 pages/checkout.php:307
 msgid "Check Out with a Credit Card Here"
 msgstr ""
 
-#: pages/checkout.php:309 pages/checkout.php:682 pages/checkout.php:302
+#: pages/checkout.php:286 pages/checkout.php:685 pages/checkout.php:302
 #: pages/checkout.php:309 pages/checkout.php:675 pages/checkout.php:682
 msgid "Check Out with PayPal"
 msgstr ""
 
-#: pages/checkout.php:500 pages/checkout.php:493 pages/checkout.php:500
+#: pages/checkout.php:476 pages/checkout.php:493 pages/checkout.php:500
 msgid "Payment Information"
 msgstr ""
 
-#: pages/checkout.php:500 pages/checkout.php:493 pages/checkout.php:500
+#: pages/checkout.php:476 pages/checkout.php:493 pages/checkout.php:500
 #, php-format
 msgid "We Accept %s"
 msgstr ""
 
-#: pages/checkout.php:674 pages/checkout.php:667 pages/checkout.php:674
+#: pages/checkout.php:657 pages/checkout.php:277 pages/checkout.php:284
+#, php-format
+msgid "I agree to the %s"
+msgstr ""
+
+#: pages/checkout.php:677 pages/checkout.php:667 pages/checkout.php:674
 msgid "Complete Payment"
 msgstr ""
 
-#: pages/checkout.php:688 pages/checkout.php:681 pages/checkout.php:688
+#: pages/checkout.php:691 pages/checkout.php:681 pages/checkout.php:688
 msgid "Submit and Check Out"
 msgstr ""
 
-#: pages/checkout.php:688 pages/checkout.php:681 pages/checkout.php:688
+#: pages/checkout.php:691 pages/checkout.php:681 pages/checkout.php:688
 msgid "Submit and Confirm"
 msgstr ""
 
-#: pages/checkout.php:688 pages/checkout.php:688
+#: pages/checkout.php:691 pages/checkout.php:688
 msgid "Submit and Pay with 2CheckOut"
 msgstr ""
 
-#: pages/checkout.php:694 pages/checkout.php:687 pages/checkout.php:694
+#: pages/checkout.php:697 pages/checkout.php:687 pages/checkout.php:694
 msgid "Processing..."
 msgstr ""
 
@@ -2820,61 +2869,28 @@ msgstr ""
 msgid "&larr; View All Invoices"
 msgstr ""
 
-#: pages/levels.php:15 pages/levels.php:15
-msgid "Subscription Information"
+#: pages/levels.php:14
+msgid "Price"
 msgstr ""
 
-#: pages/levels.php:33 pages/levels.php:33
-msgid "--"
-msgstr ""
-
-#: pages/levels.php:43 pages/levels.php:43
-msgid "Free"
-msgstr ""
-
-#: pages/levels.php:51 pages/levels.php:51
-#, php-format
-msgid "%s per %s for %d more %s."
-msgstr ""
-
-#: pages/levels.php:55 pages/levels.php:55
-#, php-format
-msgid "%s every %d %s for %d more %s."
-msgstr ""
-
-#: pages/levels.php:60 pages/levels.php:60
-#, php-format
-msgid "%s after %d %s."
-msgstr ""
-
-#: pages/levels.php:66 pages/levels.php:66
-#, php-format
-msgid "%s per %s."
-msgstr ""
-
-#: pages/levels.php:70 pages/levels.php:70
-#, php-format
-msgid "%s every %d %s."
-msgstr ""
-
-#: pages/levels.php:113 pages/levels.php:115 pages/levels.php:113
+#: pages/levels.php:47 pages/levels.php:49 pages/levels.php:113
 #: pages/levels.php:115
 msgid "Select"
 msgstr ""
 
-#: pages/levels.php:123 pages/levels.php:123
+#: pages/levels.php:57 pages/levels.php:123
 msgid "Renew"
 msgstr ""
 
-#: pages/levels.php:129 pages/levels.php:117 pages/levels.php:129
+#: pages/levels.php:63 pages/levels.php:117 pages/levels.php:129
 msgid "Your&nbsp;Level"
 msgstr ""
 
-#: pages/levels.php:145 pages/levels.php:129 pages/levels.php:145
+#: pages/levels.php:79 pages/levels.php:129 pages/levels.php:145
 msgid "&larr; Return to Your Account"
 msgstr ""
 
-#: pages/levels.php:147 pages/levels.php:131 pages/levels.php:147
+#: pages/levels.php:81 pages/levels.php:131 pages/levels.php:147
 msgid "&larr; Return to Home"
 msgstr ""
 
@@ -2890,19 +2906,19 @@ msgid ""
 "moments."
 msgstr ""
 
-#: preheaders/billing.php:258 preheaders/checkout.php:481
+#: preheaders/billing.php:258 preheaders/checkout.php:482
 #: preheaders/billing.php:258 preheaders/checkout.php:464
 #: preheaders/checkout.php:481
 msgid "Please complete all required fields."
 msgstr ""
 
-#: preheaders/billing.php:263 preheaders/checkout.php:491
+#: preheaders/billing.php:263 preheaders/checkout.php:492
 #: preheaders/billing.php:263 preheaders/checkout.php:474
 #: preheaders/checkout.php:491
 msgid "Your email addresses do not match. Please try again."
 msgstr ""
 
-#: preheaders/billing.php:268 preheaders/checkout.php:497
+#: preheaders/billing.php:268 preheaders/checkout.php:498
 #: preheaders/billing.php:268 preheaders/checkout.php:480
 #: preheaders/checkout.php:497
 msgid "The email address entered is in an invalid format. Please try again."
@@ -2925,7 +2941,7 @@ msgstr ""
 msgid "Your membership has been cancelled."
 msgstr ""
 
-#: preheaders/checkout.php:28 preheaders/checkout.php:508
+#: preheaders/checkout.php:28 preheaders/checkout.php:509
 #: preheaders/checkout.php:28 preheaders/checkout.php:491
 #: preheaders/checkout.php:508
 msgid "Invalid gateway."
@@ -2939,88 +2955,88 @@ msgstr ""
 msgid "Setup Your Account"
 msgstr ""
 
-#: preheaders/checkout.php:485 preheaders/checkout.php:468
+#: preheaders/checkout.php:486 preheaders/checkout.php:468
 #: preheaders/checkout.php:485
 msgid "Your passwords do not match. Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:503 preheaders/checkout.php:486
+#: preheaders/checkout.php:504 preheaders/checkout.php:486
 #: preheaders/checkout.php:503
 #, php-format
 msgid "Please check the box to agree to the %s."
 msgstr ""
 
-#: preheaders/checkout.php:512 preheaders/checkout.php:495
+#: preheaders/checkout.php:513 preheaders/checkout.php:495
 #: preheaders/checkout.php:512
 msgid "Are you a spammer?"
 msgstr ""
 
-#: preheaders/checkout.php:535 preheaders/checkout.php:518
+#: preheaders/checkout.php:536 preheaders/checkout.php:518
 #: preheaders/checkout.php:535
 msgid "That username is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:541 preheaders/checkout.php:524
+#: preheaders/checkout.php:542 preheaders/checkout.php:524
 #: preheaders/checkout.php:541
 msgid "That email address is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:561 preheaders/checkout.php:544
+#: preheaders/checkout.php:562 preheaders/checkout.php:544
 #: preheaders/checkout.php:561
 #, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:701 preheaders/checkout.php:683
+#: preheaders/checkout.php:702 preheaders/checkout.php:683
 #: preheaders/checkout.php:701
 msgid "Payment accepted."
 msgstr ""
 
-#: preheaders/checkout.php:709 preheaders/checkout.php:691
+#: preheaders/checkout.php:710 preheaders/checkout.php:691
 #: preheaders/checkout.php:709
 msgid ""
 "Unknown error generating account. Please contact us to setup your membership."
 msgstr ""
 
-#: preheaders/checkout.php:753 preheaders/checkout.php:822
+#: preheaders/checkout.php:754 preheaders/checkout.php:823
 #: preheaders/checkout.php:735 preheaders/checkout.php:753
 #: preheaders/checkout.php:803 preheaders/checkout.php:822
 msgid "The PayPal Token was lost."
 msgstr ""
 
-#: preheaders/checkout.php:859 preheaders/checkout.php:825
-#: preheaders/checkout.php:844
+#: preheaders/checkout.php:860 preheaders/checkout.php:825
+#: preheaders/checkout.php:844 preheaders/checkout.php:859
 msgid ""
 "Your payment was accepted, but there was an error setting up your account. "
 "Please contact us."
 msgstr ""
 
-#: preheaders/checkout.php:1045 preheaders/checkout.php:983
-#: preheaders/checkout.php:1030
+#: preheaders/checkout.php:1046 preheaders/checkout.php:983
+#: preheaders/checkout.php:1030 preheaders/checkout.php:1045
 msgid ""
 "IMPORTANT: Something went wrong during membership creation. Your credit card "
 "authorized, but we cancelled the order immediately. You should not try to "
 "submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:1050 preheaders/checkout.php:988
-#: preheaders/checkout.php:1035
+#: preheaders/checkout.php:1051 preheaders/checkout.php:988
+#: preheaders/checkout.php:1035 preheaders/checkout.php:1050
 msgid ""
 "IMPORTANT: Something went wrong during membership creation. Your credit card "
 "was charged, but we couldn't assign your membership. You should not submit "
 "this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:1063 preheaders/checkout.php:1001
-#: preheaders/checkout.php:1048
+#: preheaders/checkout.php:1064 preheaders/checkout.php:1001
+#: preheaders/checkout.php:1048 preheaders/checkout.php:1063
 #, php-format
 msgid ""
 "You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
 
-#: preheaders/checkout.php:1065 preheaders/checkout.php:1003
-#: preheaders/checkout.php:1050
+#: preheaders/checkout.php:1066 preheaders/checkout.php:1003
+#: preheaders/checkout.php:1050 preheaders/checkout.php:1065
 msgid "A Payment Gateway must be setup before any payments will be processed."
 msgstr ""
 
@@ -3044,12 +3060,17 @@ msgstr ""
 msgid "Trial ending email sent to %s. "
 msgstr ""
 
-#: services/applydiscountcode.php:82 services/applydiscountcode.php:82
+#: services/applydiscountcode.php:64
+#, php-format
+msgid "The %s code has been applied to your order. "
+msgstr ""
+
+#: services/applydiscountcode.php:83 services/applydiscountcode.php:82
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr ""
 
-#: services/authnet-silent-post.php:133 services/authnet-silent-post.php:133
+#: services/authnet-silent-post.php:138 services/authnet-silent-post.php:133
 msgid ""
 "<p>A payment is being held for review within Authorize.net.</p><p>Payment "
 "Information From Authorize.net"
@@ -3060,6 +3081,26 @@ msgstr ""
 msgid ""
 "%s has had their payment subscription cancelled by Stripe. Please check that "
 "this user's membership is cancelled on your site if it should be."
+msgstr ""
+
+#: adminpages/discountcodes.php:437
+msgid "Billing Ammount"
+msgstr ""
+
+#: adminpages/discountcodes.php:480
+msgid "Check this to set an expiration date for new sign ups."
+msgstr ""
+
+#: adminpages/discountcodes.php:497
+msgid ""
+"How long before the expiration expires. Note that any future payments will "
+"be cancelled when the membership expires."
+msgstr ""
+
+#: adminpages/membershiplevels.php:364
+msgid ""
+"Stripe integration currently only supports billing periods of \"Month\" or "
+"\"Year\"."
 msgstr ""
 
 #: adminpages/membershiplevels.php:398
@@ -3075,6 +3116,12 @@ msgid ""
 "able to checkout for levels with recurring payments."
 msgstr ""
 
+#: adminpages/paymentsettings.php:405 adminpages/paymentsettings.php:445
+msgid ""
+"If values are given, tax will be applied for any members ordering from the "
+"selected state. For more complex tax rules, use the \"pmpro_tax\" filter."
+msgstr ""
+
 #: adminpages/paymentsettings.php:410 adminpages/paymentsettings.php:421
 msgid "Use SSL"
 msgstr ""
@@ -3083,8 +3130,56 @@ msgstr ""
 msgid "Required by this Gateway Option"
 msgstr ""
 
+#: adminpages/paymentsettings.php:432
+msgid ""
+"Stripe doesn't require billing address fields. Choose 'No' to hide them on "
+"the checkout page."
+msgstr ""
+
+#: pages/checkout.php:51 pages/checkout.php:52
+#, php-format
+msgid "<p>The <strong>%s</strong> code has been applied to your order.</p>"
+msgstr ""
+
 #: pages/confirmation.php:12
 msgid ""
 "Your payment has been submitted to PayPal. Your membership will be activated "
 "shortly."
+msgstr ""
+
+#: pages/levels.php:15
+msgid "Subscription Information"
+msgstr ""
+
+#: pages/levels.php:33
+msgid "--"
+msgstr ""
+
+#: pages/levels.php:43
+msgid "Free"
+msgstr ""
+
+#: pages/levels.php:51
+#, php-format
+msgid "%s per %s for %d more %s."
+msgstr ""
+
+#: pages/levels.php:55
+#, php-format
+msgid "%s every %d %s for %d more %s."
+msgstr ""
+
+#: pages/levels.php:60
+#, php-format
+msgid "%s after %d %s."
+msgstr ""
+
+#: pages/levels.php:66
+#, php-format
+msgid "%s per %s."
+msgstr ""
+
+#: pages/levels.php:70
+#, php-format
+msgid "%s every %d %s."
 msgstr ""
