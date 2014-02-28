@@ -586,7 +586,7 @@
 			<select id="filter" name="filter">
 				<option value="all" <?php selected($filter, "all");?>><?php _e('All', 'pmpro');?></option>
 				<option value="within-a-date-range" <?php selected($filter, "within-a-date-range");?>><?php _e('Within a Date Range', 'pmpro');?></option>
-				<option value="predefined-date-range" <?php selected($filter, "predefined-date-range");?>><?php _e('Predefined a Date Range', 'pmpro');?></option>
+				<option value="predefined-date-range" <?php selected($filter, "predefined-date-range");?>><?php _e('Predefined Date Range', 'pmpro');?></option>
 				<option value="within-a-level" <?php selected($filter, "within-a-level");?>><?php _e('Within a Level', 'pmpro');?></option>
 				<option value="within-a-status" <?php selected($filter, "within-a-status");?>><?php _e('Within a Status', 'pmpro');?></option>
 			</select>
