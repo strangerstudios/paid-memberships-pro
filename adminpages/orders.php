@@ -35,12 +35,12 @@
 	if(isset($_REQUEST['end-month']))
 		$end_month = $_REQUEST['end-month'];
 	else
-		$end_month = "1";
+		$end_month = date("n");
 		
 	if(isset($_REQUEST['end-day']))
 		$end_day = $_REQUEST['end-day'];
 	else
-		$end_day = "1";
+		$end_day = date("j");
 		
 	if(isset($_REQUEST['end-year']))
 		$end_year = $_REQUEST['end-year'];
@@ -51,8 +51,7 @@
 		$predefined_date = $_REQUEST['predefined-date'];
 	else
 		$predefined_date = "This Month";		
-		
-	
+			
 	if(isset($_REQUEST['status']))
 		$status = $_REQUEST['status'];
 	else
@@ -570,7 +569,26 @@
 	<h2>
 		<?php _e('Orders', 'pmpro');?>
 		<a href="admin.php?page=pmpro-orders&order=-1" class="add-new-h2">+ <?php _e('Add New Order', 'pmpro');?></a>
-		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=orders_csv&s=<?php echo $s?>&l=<?php echo $l?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
+		
+		<?php
+			//build the export URL
+			$export_url = admin_url('admin-ajax.php') . "?action=orders_csv";
+			$url_params = array(
+				"filter"=>$filter,
+				"s"=>$s,
+				"l"=>$l,
+				"start-month"=>$start_month,
+				"start-day"=>$start_day,
+				"start-year"=>$start_year,
+				"end-month"=>$end_month,
+				"end-day"=>$end_day,
+				"end-year"=>$end_year,
+				"predefined-date"=>$predefined_date,
+				"status"=>$status			
+			);			
+			$export_url = add_query_arg($url_params, $export_url);
+		?>		
+		<a target="_blank" href="<?php echo $export_url;?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
 	</h2>
 	
 		
@@ -777,6 +795,62 @@
 		$end = $pn * $limit;
 		$start = $end - $limit;				
 					
+		//filters
+		if($filter == "all" || !$filter)
+				$condition = "1=1";
+		elseif($filter == "within-a-date-range")
+		{	
+			$start_date = $start_year."-".$start_month."-".$start_day;
+			$end_date = $end_year."-".$end_month."-".$end_day;
+			
+			//add times to dates
+			$start_date =  $start_date . " 00:00:00";
+			$end_date =  $end_date . " 23:59:59";
+			
+			$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+		}
+		elseif($filter == "predefined-date-range")
+		{	
+			if($predefined_date == "Last Month")
+			{
+				$start_date = date("Y-m-d", strtotime("first day of last month"));
+				$end_date   = date("Y-m-d", strtotime("last day of last month"));					
+			}
+			elseif($predefined_date == "This Month")
+			{
+				$start_date = date("Y-m-d", strtotime("first day of this month"));
+				$end_date   = date("Y-m-d", strtotime("last day of this month"));	
+			}
+			elseif($predefined_date == "This Year")
+			{
+				$year = date('Y');
+				$start_date = date("Y-m-d", strtotime("first day of January $year"));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+			}
+			
+			elseif($predefined_date == "Last Year")
+			{
+				$year = date('Y') - 1;
+				$start_date = date("Y-m-d", strtotime("first day of January $year"));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+			}
+		
+			//add times to dates
+			$start_date =  $start_date . " 00:00:00";
+			$end_date =  $end_date . " 23:59:59";
+		
+			$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+		}			
+		elseif($filter == "within-a-level")
+		{
+			$condition = "membership_id = $l";
+		}			
+		elseif($filter == "within-a-status")
+		{
+			$condition = "status = '$status' ";
+		}		
+		
+		//string search
 		if($s)
 		{
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
@@ -797,59 +871,14 @@
 			foreach($fields as $field)
 				$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql($s) . "%' ";
 			$sqlQuery .= ") ";
+			
+			$sqlQuery .= "AND " . $condition . " ";
+			
 			$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 		}
 		else
 		{
-			if($filter == "all" || !$filter)
-				$condition = "";
-			elseif($filter == "within-a-date-range")
-			{	
-				$start_date = $start_year."-".$start_month."-".$start_day;
-				$end_date = $end_year."-".$end_month."-".$end_day;
-				$condition = "WHERE timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
-			}
-			elseif($filter == "predefined-date-range")
-			{	
-				if($predefined_date == "Last Month")
-				{
-					$start_date = date("Y-m-d", strtotime("first day of last month"));
-					$end_date   = date("Y-m-d", strtotime("last day of last month"));					
-				}
-				elseif($predefined_date == "This Month")
-				{
-					$start_date = date("Y-m-d", strtotime("first day of this month"));
-					$end_date   = date("Y-m-d", strtotime("last day of this month"));	
-				}
-				elseif($predefined_date == "This Year")
-				{
-					$year = date('Y');
-					$start_date = date("Y-m-d", strtotime("first day of January $year"));
-					$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
-				}
-				
-				elseif($predefined_date == "Last Year")
-				{
-					$year = date('Y') - 1;
-					$start_date = date("Y-m-d", strtotime("first day of January $year"));
-					$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
-				}
-			
-				$condition = "WHERE timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
-			}
-			
-			elseif($filter == "within-a-level")
-			{
-				$condition = "WHERE membership_id = $l";
-			}
-			
-			elseif($filter == "within-a-status")
-			{
-				$condition = "WHERE status = '$status' ";
-			}
-		
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ".$condition." ORDER BY id DESC, timestamp DESC ";
-
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders WHERE ".$condition." ORDER BY id DESC, timestamp DESC ";
 		}
 		
 		$sqlQuery .= "LIMIT $start, $limit";
@@ -955,7 +984,9 @@
 	</form>
 	
 	<?php
-		echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, get_admin_url(NULL, "/admin.php?page=pmpro-orders&s=" . urlencode($s)), "&filter=$filter&start-month=$start_month&start-day=$start_day&start-year=$start_year&end-month=$end_month&end-day=$end_day&predefined-date=$predefined_date&end-year=$end_year&status="."&l=$l&limit=$limit&pn=");
+		//add normal args
+		$pagination_url = add_query_arg($url_params, get_admin_url(NULL, "/admin.php?page=pmpro-orders"));		
+		echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=");
 	?>
 
 <?php } ?>
