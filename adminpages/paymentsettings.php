@@ -145,7 +145,7 @@
 	<form action="" method="post" enctype="multipart/form-data">         
 		<h2><?php _e('Payment Gateway', 'pmpro');?> &amp; <?php _e('SSL Settings', 'pmpro');?></h2>
 		
-		<p>Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.</p>
+		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.', 'pmpro'); ?></p>
 		
 		<table class="form-table">
 		<tbody>                		   
@@ -397,7 +397,7 @@
 						}
 					?>
 					</select>
-					<small>Not all currencies will be supported by every gateway. Please check with your gateway.</small>
+					<small><?php _e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'pmpro' ); ?></small>
 				</td>
 			</tr>
 			
@@ -425,7 +425,7 @@
 				</td>
 			</tr>
 						
-			<tr class="gateway gateway_stripe" <?php if(!empty($gateway) || $gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'pmpro');?>:</label>
 				</th>

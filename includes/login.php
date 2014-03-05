@@ -86,7 +86,7 @@ function pmpro_login_head()
 			//check for the login page id and redirect there if we're not there already
 			global $post;
 						
-			if(is_array($GLOBALS['theme_my_login']->options))
+			if(!empty($GLOBALS['theme_my_login']) && is_array($GLOBALS['theme_my_login']->options))
 			{
 				//an older version of TML stores it this way
 				if($GLOBALS['theme_my_login']->options['page_id'] !== $post->ID)

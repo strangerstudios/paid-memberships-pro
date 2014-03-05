@@ -383,7 +383,15 @@
 			if(empty($this->affiliate_subid))
 				$this->affiliate_subid = "";	
 			if(empty($this->session_id))
-				$this->session_id = "";		
+				$this->session_id = "";
+			if(empty($this->accountnumber))
+				$this->accountnumber = "";
+			if(empty($this->cardtype))
+				$this->cardtype = "";
+			if(empty($this->ExpirationDate))
+				$this->ExpirationDate = "";
+			if (empty($this->status))
+				$this->status = "";    
 			
 			if(empty($this->gateway))
 				$this->gateway = pmpro_getOption("gateway");				

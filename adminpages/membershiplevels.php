@@ -157,6 +157,8 @@
 	  
 		if($ml_id > 0)
 		{	  
+			do_action("pmpro_delete_membership_level", $ml_id);
+			
 			//remove any categories from the ml
 			$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '$ml_id'";	  			
 			$r1 = $wpdb->query($sqlQuery);
@@ -444,7 +446,7 @@
 						<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
-							$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
+							$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
 							foreach ( $cycles as $name => $value ) {
 							  echo "<option value='$value'";
 							  if ( $level->expiration_period == $value ) echo " selected='selected'";
@@ -546,7 +548,7 @@
 				<?php if(!pmpro_isLevelRecurring($level)) { ?>
 					--
 				<?php } else { ?>						
-					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
+					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.pmpro_translate_billing_period($level->cycle_period,$level->cycle_number)?>
 					
 					<?php if($level->billing_limit) { ?>(<?php _e('for', 'pmpro');?> <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->billing_limit)?>)<?php } ?>
 					
@@ -567,9 +569,9 @@
 				<?php } ?>
 			</td>
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
-			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
+			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&amp;edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
+			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&amp;copy=<?php echo $level->id?>&amp;edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
+			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&amp;action=delete_membership_level&amp;deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
 		</tr>
 		<?php
 			}

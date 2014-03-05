@@ -194,11 +194,14 @@ function pmpro_isLevelExpiring(&$level)
 		return false;
 }
 
-function pmpro_getLevelCost(&$level, $tags = true)
+function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
 	global $pmpro_currency_symbol;
 	//initial payment
-	$r = sprintf(_x('The price for membership is <strong>%s</strong> now', 'Initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+	if(!$short)
+		$r = sprintf(_x('The price for membership is <strong>%s</strong> now', 'Initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+	else
+		$r = sprintf(_x('<strong>%s</strong> now', 'Shorter initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
 			
 	//recurring part
 	if($level->billing_amount != '0.00')
@@ -207,27 +210,38 @@ function pmpro_getLevelCost(&$level, $tags = true)
 		{			
 			if($level->cycle_number == '1')
 			{
-				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
+				$r .= sprintf(_x(' and then <strong>%s per %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}				
 			else
 			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
+				$r .= sprintf(_x(' and then <strong>%s every %d %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}
 		}
 		elseif($level->billing_limit == 1)
 		{
-			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));									
+			$r .= sprintf(_x(' and then <strong>%s after %d %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 		}
 		else
 		{
-			if($level->cycle_number == '1')
-			{
-				$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));					
-			}				
-			else
-			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));					
-			}			
+			if( $level->billing_amount === $level->initial_payment ) {
+				if($level->cycle_number == '1')
+				{
+					$r = sprintf(_x('The price for membership is <strong>%s per %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+				}
+				else
+				{
+					$r = sprintf(_x('The price for membership is <strong>%s every %d %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+				}
+			} else {
+				if($level->cycle_number == '1')
+				{
+					$r .= sprintf(_x(' and then <strong>%s per %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+				}
+				else
+				{
+					$r .= sprintf(_x(' and then <strong>%s every %d %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+				}
+			}
 		}
 	}
 	else
@@ -1326,9 +1340,13 @@ function pmpro_getLevel($level)
 	Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest. 
 	This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
 */
-function pmpro_getAllLevels($include_hidden = false)
+function pmpro_getAllLevels($include_hidden = false, $force = false)
 {
 	global $pmpro_levels, $wpdb;
+	
+	//just use what's cached (doesn't take into account include_hidden setting)
+	if(!empty($pmpro_levels) && !$force)
+		return $pmpro_levels;
 	
 	//build query
 	$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
@@ -1453,7 +1471,7 @@ if(!function_exists("pmpro_getMemberStartdate"))
 			else
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";		
 						
-			$startdate = $wpdb->get_var($sqlQuery);
+			$startdate = apply_filters("pmpro_member_startdate", $wpdb->get_var($sqlQuery), $user_id, $level_id);
 			
 			$pmpro_startdates[$user_id][$level_id] = $startdate;
 		}

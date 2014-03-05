@@ -503,9 +503,9 @@ AND mu1.startdate >= '" . $startdate . "' ";
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
 	
 	$cancellations = $wpdb->get_var($sqlQuery);
-	
+		
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]))
+	if(!empty($cache) && !empty($cache[$period]) && is_array($cache[$period]))
 		$cache[$period][$levels] = $cancellations;
 	elseif(!empty($cache))
 		$cache[$period] = array($levels => $sales);

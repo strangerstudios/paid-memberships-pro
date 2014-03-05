@@ -162,7 +162,14 @@
 					//update the customer description and card
 					if(!empty($order->stripeToken))
 					{
-						$this->customer->description = trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")";
+						$name = trim($order->FirstName . " " . $order->LastName);
+
+						if (empty($name))
+						{
+							$name = trim($current_user->first_name . " " . $current_user->last_name);
+						}
+
+						$this->customer->description = $name . " (" . $order->Email . ")";
 						$this->customer->email = $order->Email;
 						$this->customer->card = $order->stripeToken;
 						$this->customer->save();

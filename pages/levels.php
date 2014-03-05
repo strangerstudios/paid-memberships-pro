@@ -11,8 +11,7 @@ if($pmpro_msg)
 <thead>
   <tr>
 	<th><?php _e('Level', 'pmpro');?></th>
-	<th><?php _e('Initial Payment', 'pmpro');?></th>
-	<th><?php _e('Subscription Information', 'pmpro');?></th>	
+	<th><?php _e('Price', 'pmpro');?></th>	
 	<th>&nbsp;</th>
   </tr>
 </thead>
@@ -29,90 +28,25 @@ if($pmpro_msg)
 	<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
 		<td><?php echo $current_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
 		<td>
-			<?php if(pmpro_isLevelFree($level) || $level->initial_payment === "0.00") { ?>
-				<strong><?php _e('--', 'pmpro');?></strong>
-			<?php } else { ?>
-				<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
-			<?php } ?>
-		</td>
-		<td>
-		<?php
-			//recurring part
-			if(pmpro_isLevelFree($level))
-			{
-				echo "<strong>" . __('Free', 'pmpro') . "</strong>";
-			}
-			elseif($level->billing_amount != '0.00')
-			{
-				if($level->billing_limit > 1)
-				{			
-					if($level->cycle_number == '1')
-					{
-						printf(__('%s per %s for %d more %s.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
-					}				
-					else
-					{ 
-						printf(__('%s every %d %s for %d more %s.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));					
-					}
-				}
-				elseif($level->billing_limit == 1)
-				{
-					printf(__('%s after %d %s.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));									
-				}
+			<?php 
+				if(pmpro_isLevelFree($level))
+					$cost_text = "<strong>Free</strong>";
 				else
-				{
-					if($level->cycle_number == '1')
-					{
-						printf(__('%s per %s.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));					
-					}				
-					else
-					{ 
-						printf(__('%s every %d %s.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));					
-					}			
-				}
-			}			
-		
-			//trial
-			if(pmpro_isLevelTrial($level))
-			{
-				if($level->trial_amount == '0.00')
-				{
-					if($level->trial_limit == '1')
-					{
-						echo ' ' . _x('After your initial payment, your first payment is Free.', 'Trial payment in cost text generation.', 'pmpro');
-					}
-					else
-					{
-						printf(' ' . _x('After your initial payment, your first %d payments are Free.', 'Trial payment in cost text generation.', 'pmpro'), $level->trial_limit);
-					}
-				}
-				else
-				{
-					if($level->trial_limit == '1')
-					{
-						printf(' ' . _x('After your initial payment, your first payment will cost %s.', 'Trial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . $level->trial_amount);
-					}
-					else
-					{
-						printf(' ' . _x('After your initial payment, your first %d payments will cost %s.', 'Trial payment in cost text generation. E.g. ... first 2 payments will cost $5', 'pmpro'), $level->trial_limit, $pmpro_currency_symbol . $level->trial_amount);
-					}
-				}
-			}
-						  
-			$expiration_text = pmpro_getLevelExpiration($level);
-			if($expiration_text)
-			{
+					$cost_text = pmpro_getLevelCost($level, true, true); 
+				$expiration_text = pmpro_getLevelExpiration($level);
+				if(!empty($cost_text) && !empty($expiration_text))
+					echo $cost_text . "<br />" . $expiration_text;
+				elseif(!empty($cost_text))
+					echo $cost_text;
+				elseif(!empty($expiration_text))
+					echo $expiration_text;
 			?>
-				<br /><span class="pmpro_level-expiration"><?php echo $expiration_text?></span>
-			<?php
-			}
-		?>
 		</td>
 		<td>
 		<?php if(empty($current_user->membership_level->ID)) { ?>
-			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>               
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Select', 'Choose a level from levels page', 'pmpro');?></a>
 		<?php } elseif ( !$current_level ) { ?>                	
-			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'Choose a level from levels page', 'pmpro');?></a>       			
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Select', 'Choose a level from levels page', 'pmpro');?></a>
 		<?php } elseif($current_level) { ?>      
 			
 			<?php
@@ -120,7 +54,7 @@ if($pmpro_msg)
 				if(!pmpro_isLevelRecurring($current_user->membership_level))
 				{
 				?>
-					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'Clickign to renew from levels page', 'pmpro');?></a>
+					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Renew', 'Clicking to renew from levels page', 'pmpro');?></a>
 				<?php
 				}
 				else

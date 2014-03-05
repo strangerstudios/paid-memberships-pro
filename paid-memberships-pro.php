@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.7.7
+Version: 1.7.8
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -53,6 +53,8 @@ require_once(PMPRO_DIR . "/includes/recaptcha.php");			//load recaptcha files if
 require_once(PMPRO_DIR . "/includes/cleanup.php");				//clean things up when deletes happen, etc.
 require_once(PMPRO_DIR . "/includes/login.php");				//code to redirect away from login/register page
 
+require_once(PMPRO_DIR . "/includes/xmlrpc.php");				//xmlrpc methods
+
 require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[checkout_button] shortcode to show link to checkout for a level
 require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortcode to hide/show member content
 
@@ -73,7 +75,7 @@ $urlparts = explode("//", home_url());
 define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
-define("PMPRO_VERSION", "1.7.7");
+define("PMPRO_VERSION", "1.7.8");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 
 /*
@@ -83,7 +85,7 @@ global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
 
 //when checking levels for users, we save the info here for caching. each key is a user id for level object for that user.
-global $all_membership_levels; 
+global $all_membership_levels;
 
 //we sometimes refer to this array of levels
 global $membership_levels;
