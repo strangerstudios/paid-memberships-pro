@@ -548,7 +548,7 @@
 				<?php if(!pmpro_isLevelRecurring($level)) { ?>
 					--
 				<?php } else { ?>						
-					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.sornot($level->cycle_period,$level->cycle_number)?>
+					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.pmpro_translate_billing_period($level->cycle_period,$level->cycle_number)?>
 					
 					<?php if($level->billing_limit) { ?>(<?php _e('for', 'pmpro');?> <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->billing_limit)?>)<?php } ?>
 					
@@ -569,9 +569,9 @@
 				<?php } ?>
 			</td>
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
-			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
-			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
+			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&amp;edit=<?php echo $level->id?>" class="edit"><?php _e('edit', 'pmpro');?></a></td>
+			<td align="center"><a href="admin.php?page=pmpro-membershiplevels&amp;copy=<?php echo $level->id?>&amp;edit=-1" class="edit"><?php _e('copy', 'pmpro');?></a></td>
+			<td align="center"><a href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&amp;action=delete_membership_level&amp;deleteid=<?php echo $level->id?>'); void(0);" class="delete"><?php _e('delete', 'pmpro');?></a></td>
 		</tr>
 		<?php
 			}

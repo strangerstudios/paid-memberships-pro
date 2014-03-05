@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.8 =
 * Added various hooks.
 * Updated the expiration field dropdown on the edit levels page to use translation strings. (Thanks, 24uurdates)
+* Fixed other missing strings for translation. Added Right-to-Left support. (Thanks, louy on GitHub.)
 * Added the pmpro_member_startdate filter to filter the pmpro_getMemberStartdate function. Passes $user_id, and $level_id as parameters.
 * Added pmpro.getMembershipLevelForUser and pmpro.hasMembershipAccess XMLRPC methods. Example usage: https://gist.github.com/strangerstudios/9099164
 * Moved the Terms of Service page/etc to right above the checkout button.
@@ -114,6 +115,7 @@ Not sure? You can find out by doing a bit a research.
 * Added pmpro_delete_discount_code and pmpro_delete_membership_level actions which run just BEFORE a membership level is deleted. Both pass the discount code ID or level ID respectively.
 * Added a third "short" parameter to the pmpro_getLevelCost() function. If set to true the "The price for membership is" text is left off the beginning. The new levels page uses this param.
 * Updated the table on the levels page to have one "Price" column showing the cost and expiration text. The text is generated using pmpro_getLevelCost and pmpro_getLevelExpiration instead of its own rules.
+* Updated level cost text to say $1/mo instead of $1 now and then $1/mo, etc. (Thanks, louy on GitHub.)
 * Added a debug by email method for the Authorize.net Silent Post handler. Add define('PMPRO_AUTHNET_SILENT_POST_DEBUG', true); to your wp-config.php. We will probably move the other services to debug by email as well.
 * PMPro will now only filter the from name and email if the default values are detected (WordPress <wordpress@sitename.com>). This fixes issues where the from name and email on form emails or other plugin emails were being swapped out with the PMPro settings, which was not always desirable. (Thanks, Helen Hou-Sandi and others.)
 * Added an "Only Filter PMPro Emails?" option to the email settings. If checked, only emails sent through the PMProEmail class will have their from name and email adjusted to match the PMPro email settings.
