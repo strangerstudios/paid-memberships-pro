@@ -117,6 +117,10 @@ Not sure? You can find out by doing a bit a research.
 * Added a debug by email method for the Authorize.net Silent Post handler. Add define('PMPRO_AUTHNET_SILENT_POST_DEBUG', true); to your wp-config.php. We will probably move the other services to debug by email as well.
 * PMPro will now only filter the from name and email if the default values are detected (WordPress <wordpress@sitename.com>). This fixes issues where the from name and email on form emails or other plugin emails were being swapped out with the PMPro settings, which was not always desirable. (Thanks, Helen Hou-Sandi and others.)
 * Added an "Only Filter PMPro Emails?" option to the email settings. If checked, only emails sent through the PMProEmail class will have their from name and email adjusted to match the PMPro email settings.
+* Added filter options to orders page in admin and export. (Thanks, HTCIA and Harsha Venkatesh)
+* Added Brazilian Portuguese translation. (Thanks, dballona on GitHub.)
+* Fixed some warnings. (Thanks, AlexBiddle on GitHub.)
+* Added pmpro_custom_advanced_settings hook to add settings to advanced settings page. Details on usage here: https://github.com/strangerstudios/paid-memberships-pro/pull/86 (Thanks, Jess Oros)
 
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
