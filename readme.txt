@@ -123,6 +123,7 @@ Not sure? You can find out by doing a bit a research.
 * Added Brazilian Portuguese translation. (Thanks, dballona on GitHub.)
 * Fixed some warnings. (Thanks, AlexBiddle on GitHub.)
 * Added pmpro_custom_advanced_settings hook to add settings to advanced settings page. Details on usage here: https://github.com/strangerstudios/paid-memberships-pro/pull/86 (Thanks, Jess Oros)
+* Updated addon categorization to reflect a lot of addons which have moved into the WordPress.org repository as well as updated versions.
 
 = 1.7.7 =
 * Fixed bug where user_id = '' was breaking on some MySQL setups and keeping the pmpro_membership_orders table from being populated.
