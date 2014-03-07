@@ -117,6 +117,19 @@
 		add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
 	}
 	
+	//code for Braintree
+	if($gateway == "braintree")
+	{
+		//don't require the CVV, but look for cvv (lowercase) that braintree sends
+		function pmpro_braintree_dont_require_CVV($fields)
+		{
+			unset($fields['CVV']);	
+			$fields['cvv'] = true;
+			return $fields;
+		}
+		add_filter("pmpro_required_billing_fields", "pmpro_braintree_dont_require_CVV");
+	}
+	
 	//_x stuff in case they clicked on the image button with their mouse
 	if(isset($_REQUEST['update-billing']))
 		$submit = $_REQUEST['update-billing'];
@@ -172,7 +185,15 @@
 		if(isset($_REQUEST['stripeToken']))
 		{
 			$stripeToken = $_REQUEST['stripeToken'];				
-		}	
+		}		
+		
+		//for Braintree, load up values
+		if(isset($_REQUEST['number']) && isset($_REQUEST['expiration_date']) && isset($_REQUEST['cvv']))
+		{
+			$braintree_number = $_REQUEST['number'];
+			$braintree_expiration_date = $_REQUEST['expiration_date'];
+			$braintree_cvv = $_REQUEST['cvv'];
+		}
 		
 		//avoid warnings for the required fields
 		if(!isset($bfirstname))
@@ -291,6 +312,15 @@
 				if(isset($stripeToken))
 					$morder->stripeToken = $stripeToken;
 			
+				//Braintree values
+				if(isset($braintree_number))
+				{
+					$morder->braintree = new stdClass();
+					$morder->braintree->number = $braintree_number;
+					$morder->braintree->expiration_date = $braintree_expiration_date;
+					$morder->braintree->cvv = $braintree_cvv;
+				}
+			
 				//not saving email in order table, but the sites need it
 				$morder->Email = $bemail;
 				
@@ -343,6 +373,9 @@
 			else
 			{
 				$pmpro_msg = $morder->error;
+				
+				krumo($morder);
+				
 				if(!$pmpro_msg)
 					$pmpro_msg = __("Error updating billing information.", 'pmpro');
 				$pmpro_msgt = "pmpro_error";

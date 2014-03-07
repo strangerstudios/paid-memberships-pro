@@ -183,19 +183,19 @@
 								'expirationDate' => $order->braintree->expiration_date,
 								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
 								'options' => array(
-									'updateExistingToken' => $customer_id
+									'updateExistingToken' => $this->customer->creditCards[0]->token
 								)
 							 )
 						  )
 						);
-
+						
 						if($response->success)
 						{
-							$this->customer = $result->customer;
+							$this->customer = $response->customer;
 						}
 						else
 						{
-							$order->error = __("Failed to update customer.", "pmpro");
+							$order->error = __("Failed to update customer.", "pmpro") . " " . $response->message;
 							$order->shorterror = $order->error;
 							return false;
 						}
@@ -208,7 +208,7 @@
 					//assume no customer found							
 				}
 			}
-			
+						
 			//no customer id, create one
 			if(!empty($order->accountnumber))
 			{
@@ -243,7 +243,7 @@
 					}
 					else
 					{
-						$order->error = __("Failed to create customer.", "pmpro");
+						$order->error = __("Failed to create customer.", "pmpro") . " " . $result->message;
 						$order->shorterror = $order->error;
 						return false;
 					}										
@@ -367,12 +367,12 @@
 			//we just have to run getCustomer which will look for the customer and update it with the new token
 			$this->getCustomer($order);
 			
-			if(!empty($this->customer))
+			if(!empty($this->customer) && empty($order->error))
 			{
 				return true;
 			}			
 			else
-			{
+			{				
 				return false;	//couldn't find the customer
 			}
 		}
@@ -394,7 +394,7 @@
 				catch(Exception $e)
 				{
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = __("Could not find the subscription.", "pmpro");
+					$order->error = __("Could not find the subscription.", "pmpro") . " " . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;	//no subscription found	
 				}
@@ -407,7 +407,7 @@
 				else
 				{
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = __("Could not find the subscription.", "pmpro");
+					$order->error = __("Could not find the subscription.", "pmpro") . " " . $result->message;
 					$order->shorterror = $order->error;
 					return false;	//no subscription found	
 				}

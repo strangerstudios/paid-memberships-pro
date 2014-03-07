@@ -44,7 +44,7 @@
 		
 	<?php } else { ?>
 	
-		<form class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
+		<form id="pmpro_form" class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />		
 			<?php if($pmpro_msg) 
@@ -246,9 +246,9 @@
 					
 						<div>
 							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
-							<input id="AccountNumber" <?php if($gateway != "stripe") { ?>name="AccountNumber"<?php } ?> class="input" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" /> 
+							<input id="AccountNumber" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="AccountNumber"<?php } ?> class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="number"<?php } ?> autocomplete="off" /> 
 						</div>
-					
+						
 						<div>
 							<label for="ExpirationMonth"><?php _e('Expiration Date', 'pmpro');?></label>
 							<select id="ExpirationMonth" <?php if($gateway != "stripe") { ?>name="ExpirationMonth"<?php } ?>>
@@ -283,8 +283,8 @@
 						?>
 						<div>
 							<label for="CVV"><?php _ex('CVV', 'Credit card security code, CVV/CCV/CVV2', 'pmpro');?></label>
-							<input class="input" id="CVV" <?php if($gateway != "stripe") { ?>name="CVV"<?php } ?> type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" />  <small>(<a href="#" onclick="javascript:window.open('<?php echo plugins_url( "/pages/popup-cvv.html", dirname(__FILE__))?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _ex("what's this?", 'link to CVV help', 'pmpro');?></a>)</small>
-						</div>	
+							<input class="input" id="CVV" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="CVV"<?php } ?> type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="cvv"<?php } ?> />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _ex("what's this?", 'link to CVV help', 'pmpro');?></a>)</small>
+						</div>						
 						<?php
 							}
 						?>
@@ -292,6 +292,37 @@
 				</tr>		
 			</tbody>
 			</table>																	
+			
+			<?php if($gateway == "braintree") { ?>						  
+				<input type='hidden' data-encrypted-name='expiration_date' id='credit_card_exp' />
+				<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
+				<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
+				<script type="text/javascript">
+					//setup braintree encryption
+					var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
+					braintree.onSubmitEncryptForm('pmpro_form');
+
+					//pass expiration dates in original format
+					function pmpro_updateBraintreeCardExp()
+					{
+						jQuery('#credit_card_exp').val(jQuery('#ExpirationMonth').val() + "/" + jQuery('#ExpirationYear').val());
+					}
+					jQuery('#ExpirationMonth, #ExpirationYear').change(function() {
+						pmpro_updateBraintreeCardExp();
+					});
+					pmpro_updateBraintreeCardExp();
+					
+					//pass last 4 of credit card
+					function pmpro_updateBraintreeAccountNumber()
+					{
+						jQuery('#BraintreeAccountNumber').val('XXXXXXXXXXXXX' + jQuery('#AccountNumber').val().substr(jQuery('#AccountNumber').val().length - 4));
+					}
+					jQuery('#AccountNumber').change(function() {
+						pmpro_updateBraintreeAccountNumber();
+					});
+					pmpro_updateBraintreeAccountNumber();
+				</script>
+			<?php } ?>
 			
 			<div align="center">
 				<input type="hidden" name="update-billing" value="1" />
