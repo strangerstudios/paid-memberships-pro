@@ -175,16 +175,15 @@
 					{
 						$response = Braintree_Customer::update(
 						  $customer_id,
-						  array(
+array(
 							'firstName' => $order->FirstName,
 							'lastName' => $order->LastName,
 							'creditCard' => array(
-								'number' => $order->braintree->number,
-								'expirationDate' => $order->braintree->expiration_date,
+								'number' => $order->accountnumber,
+								'expirationDate' => $order->expirationmonth . '/' . substr($order->expirationyear, -2, 2),
 								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
 								'options' => array(
-									'updateExistingToken' => $customer_id
-								)
+									'updateExistingToken' => $order->Gateway->customer->creditCards[0]->token								)
 							 )
 						  )
 						);
