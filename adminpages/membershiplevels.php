@@ -157,6 +157,8 @@
 	  
 		if($ml_id > 0)
 		{	  
+			do_action("pmpro_delete_membership_level", $ml_id);
+			
 			//remove any categories from the ml
 			$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '$ml_id'";	  			
 			$r1 = $wpdb->query($sqlQuery);
@@ -475,7 +477,7 @@
 						<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->expiration_number))?>" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
-							$cycles = array( 'Day(s)' => 'Day', 'Week(s)' => 'Week', 'Month(s)' => 'Month', 'Year(s)' => 'Year' );
+							$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
 							foreach ( $cycles as $name => $value ) {
 							  echo "<option value='$value'";
 							  if ( $level->expiration_period == $value ) echo " selected='selected'";
@@ -566,7 +568,9 @@
 				<?php if(pmpro_isLevelFree($level)) { ?>
 					<?php _e('FREE', 'pmpro');?>
 				<?php } else { ?>
+
 					<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
+
 				<?php } ?>
 			</td>
 			<td>
@@ -577,6 +581,7 @@
 				<?php } ?>
 			</td>
 			<td><?php if($level->allow_signups) { ?><?php _e('Yes', 'pmpro');?><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
+
 			<td><a title="<?php _e('edit','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript: askfirst('<?php printf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
 		</tr>
 		<?php

@@ -10,6 +10,7 @@
 		?>	
 	<div id="pmpro_account">		
 		<div id="pmpro_account-membership" class="pmpro_box">
+
 			<h3><?php _e("My Memberships", "pmpro");?></h3>
 			<table width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
@@ -78,6 +79,7 @@
 			<div class="pmpro_actionlinks">
 				<a href="<?php echo pmpro_url("levels")?>"><?php _e("View all Membership Options", "pmpro");?></a>
 			</div>
+
 		</div> <!-- end pmpro_account-membership -->
 		
 		<div id="pmpro_account-profile" class="pmpro_box">	

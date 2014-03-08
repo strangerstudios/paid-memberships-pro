@@ -16,6 +16,47 @@
 		$l = $_REQUEST['l'];
 	else
 		$l = false;
+		
+	if(isset($_REQUEST['start-month']))
+		$start_month = $_REQUEST['start-month'];
+	else
+		$start_month = "1";
+		
+	if(isset($_REQUEST['start-day']))
+		$start_day = $_REQUEST['start-day'];
+	else
+		$start_day = "1";
+		
+	if(isset($_REQUEST['start-year']))
+		$start_year = $_REQUEST['start-year'];
+	else
+		$start_year = date("Y");
+		
+	if(isset($_REQUEST['end-month']))
+		$end_month = $_REQUEST['end-month'];
+	else
+		$end_month = date("n");
+		
+	if(isset($_REQUEST['end-day']))
+		$end_day = $_REQUEST['end-day'];
+	else
+		$end_day = date("j");
+		
+	if(isset($_REQUEST['end-year']))
+		$end_year = $_REQUEST['end-year'];
+	else
+		$end_year = date("Y");	
+	
+	if(isset($_REQUEST['predefined-date']))
+		$predefined_date = $_REQUEST['predefined-date'];
+	else
+		$predefined_date = "This Month";		
+			
+	if(isset($_REQUEST['status']))
+		$status = $_REQUEST['status'];
+	else
+		$status = "";
+	
 	
 	//deleting?
 	if(!empty($_REQUEST['delete']))
@@ -32,6 +73,15 @@
 			$pmpro_msgt = "error";
 		}
 	}
+	
+	if(isset($_REQUEST['filter']))
+		$filter = sanitize_text_field($_REQUEST['filter']);
+	else
+		$filter = "all";
+		
+	$thisyear = date("Y");
+	
+	
 	
 	//this array stores fields that should be read only
 	$read_only_fields = apply_filters("pmpro_orders_read_only_fields", array("code", "payment_transaction_id", "subscription_transaction_id"));
@@ -519,24 +569,217 @@
 	<h2>
 		<?php _e('Orders', 'pmpro');?>
 		<a href="admin.php?page=pmpro-orders&order=-1" class="add-new-h2">+ <?php _e('Add New Order', 'pmpro');?></a>
-		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=orders_csv&s=<?php echo $s?>&l=<?php echo $l?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
-	</h2>	
+		
+		<?php
+			//build the export URL
+			$export_url = admin_url('admin-ajax.php') . "?action=orders_csv";
+			$url_params = array(
+				"filter"=>$filter,
+				"s"=>$s,
+				"l"=>$l,
+				"start-month"=>$start_month,
+				"start-day"=>$start_day,
+				"start-year"=>$start_year,
+				"end-month"=>$end_month,
+				"end-day"=>$end_day,
+				"end-year"=>$end_year,
+				"predefined-date"=>$predefined_date,
+				"status"=>$status			
+			);			
+			$export_url = add_query_arg($url_params, $export_url);
+		?>		
+		<a target="_blank" href="<?php echo $export_url;?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
+	</h2>
+	
+		
 
 	<?php if(!empty($pmpro_msg)) { ?>
 		<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
 	<?php } ?>
 	
+	
 	<ul class="subsubsub">
 		<li>			
+			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Orders for January', 'pmpro')?>
+			<select id="filter" name="filter">
+				<option value="all" <?php selected($filter, "all");?>><?php _e('All', 'pmpro');?></option>
+				<option value="within-a-date-range" <?php selected($filter, "within-a-date-range");?>><?php _e('Within a Date Range', 'pmpro');?></option>
+				<option value="predefined-date-range" <?php selected($filter, "predefined-date-range");?>><?php _e('Predefined Date Range', 'pmpro');?></option>
+				<option value="within-a-level" <?php selected($filter, "within-a-level");?>><?php _e('Within a Level', 'pmpro');?></option>
+				<option value="within-a-status" <?php selected($filter, "within-a-status");?>><?php _e('Within a Status', 'pmpro');?></option>
+			</select>
+			
+			<span id="from"><?php _ex('From', 'Dropdown label', 'pmpro')?></span>
+			
+			<select id="start-month" name="start-month">
+				<?php for($i = 1; $i < 13; $i++) { ?>
+					<option value="<?php echo $i;?>" <?php selected($start_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+				<?php } ?>
+			</select>
+			
+			<input id='start-day' name="start-day" type="text" size="2" value="<?php echo $start_day?>" />
+			<input id='start-year' name="start-year" type="text" size="4" value="<?php echo $start_year?>" />
+
+
+			<span id="to"><?php _ex('To', 'Dropdown label', 'pmpro')?></span>
+
+			<select id="end-month" name="end-month">
+				<?php for($i = 1; $i < 13; $i++) { ?>
+					<option value="<?php echo $i;?>" <?php selected($end_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+				<?php } ?>
+			</select>
+			
+
+			<input id='end-day' name="end-day" type="text" size="2" value="<?php echo $end_day?>" />
+			<input id='end-year' name="end-year" type="text" size="4" value="<?php echo $end_year?>" />
+			
+			<span id="filterby"><?php _ex('filter by ', 'Dropdown label', 'pmpro')?></span>
+			
+			<select id="predefined-date" name="predefined-date">
 				
+					<option value="<?php echo "This Month";?>" <?php selected($predefined_date, "This Month");?>><?php echo "This Month";?></option>
+					<option value="<?php echo "Last Month";?>" <?php selected($predefined_date, "Last Month");?>><?php echo "Last Month";?></option>
+					<option value="<?php echo "This Year";?>" <?php selected($predefined_date, "This Year");?>><?php echo "This Year";?></option>
+					<option value="<?php echo "Last Year";?>" <?php selected($predefined_date, "Last Year");?>><?php echo "Last Year";?></option>
+				
+			</select>
+
+			<?php
+			//Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
+			 $levels = pmpro_getAllLevels(); 
+					
+			?>
+			<select id="l" name="l">
+			<?php foreach($levels as $level) { ?>
+				<option value="<?php echo $level->id;?>" <?php selected($l, $level->id);?>><?php echo $level->name;?></option>	
+			<?php } ?>
+				
+			</select>
+			
+	<?php
+	$statuses = array();
+	$default_statuses = array("", "success", "cancelled", "review", "token", "refunded");
+	$used_statuses = $wpdb->get_col("SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders");
+	$statuses = array_unique(array_merge($default_statuses, $used_statuses));
+	asort($statuses);
+	$statuses = apply_filters("pmpro_order_statuses", $statuses);	
+	?>
+	<select id="status" name="status">
+		<?php foreach($statuses as $the_status) { ?>
+		<option value="<?php echo esc_attr($the_status);?>" <?php selected($the_status, $status);?>><?php echo $the_status;?></option>
+		<?php } ?>
+	</select>			
+		
+		
+		<input id="submit" type="submit" value="<?php _ex('Filter', 'Submit button value.', 'pmpro');?>" />
 		</li>
 	</ul>
+	
+	<script>
+		//update month/year when period dropdown is changed
+		jQuery(document).ready(function() {
+			jQuery('#filter').change(function() {
+				pmpro_ShowMonthOrYear();
+			});
+		});
+		
+		function pmpro_ShowMonthOrYear()
+		{
+			var filter = jQuery('#filter').val();
+			if(filter == 'all')
+			{
+				jQuery('#start-month').hide();
+				jQuery('#start-day').hide();
+				jQuery('#start-year').hide();
+				jQuery('#end-month').hide();
+				jQuery('#end-day').hide();
+				jQuery('#end-year').hide();
+				jQuery('#predefined-date').hide();
+				jQuery('#status').hide();
+				jQuery('#l').hide();
+				jQuery('#from').hide();
+				jQuery('#to').hide();
+				jQuery('#submit').show();
+				jQuery('#filterby').hide();
+			}
+			else if(filter == 'within-a-date-range')
+			{
+				jQuery('#start-month').show();
+				jQuery('#start-day').show();
+				jQuery('#start-year').show();
+				jQuery('#end-month').show();
+				jQuery('#end-day').show();
+				jQuery('#end-year').show();
+				jQuery('#predefined-date').hide();
+				jQuery('#status').hide();
+				jQuery('#l').hide();
+				jQuery('#submit').show();
+				jQuery('#from').show();
+				jQuery('#to').show();
+				jQuery('#filterby').hide();
+			}
+			else if(filter == 'predefined-date-range')
+			{
+				jQuery('#start-month').hide();
+				jQuery('#start-day').hide();
+				jQuery('#start-year').hide();
+				jQuery('#end-month').hide();
+				jQuery('#end-day').hide();
+				jQuery('#end-year').hide();
+				jQuery('#predefined-date').show();
+				jQuery('#status').hide();
+				jQuery('#l').hide();
+				jQuery('#submit').show();
+				jQuery('#from').hide();
+				jQuery('#to').hide();
+				jQuery('#filterby').show();
+			}
+			else if(filter == 'within-a-level')
+			{
+				jQuery('#start-month').hide();
+				jQuery('#start-day').hide();
+				jQuery('#start-year').hide();
+				jQuery('#end-month').hide();
+				jQuery('#end-day').hide();
+				jQuery('#end-year').hide();
+				jQuery('#predefined-date').hide();
+				jQuery('#status').hide();
+				jQuery('#l').show();
+				jQuery('#submit').show();
+				jQuery('#from').hide();
+				jQuery('#to').hide();
+				jQuery('#filterby').show();
+			}
+			else if(filter == 'within-a-status')
+			{
+				jQuery('#start-month').hide();
+				jQuery('#start-day').hide();
+				jQuery('#start-year').hide();
+				jQuery('#end-month').hide();
+				jQuery('#end-day').hide();
+				jQuery('#end-year').hide();
+				jQuery('#predefined-date').hide();
+				jQuery('#status').show();
+				jQuery('#l').hide();
+				jQuery('#submit').show();
+				jQuery('#from').hide();
+				jQuery('#to').hide();
+				jQuery('#filterby').show();
+			}
+		}
+		
+		pmpro_ShowMonthOrYear();
+		
+		
+	</script>
+	
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php _e('Search Orders', 'pmpro');?>:</label>
 		<input type="hidden" name="page" value="pmpro-orders" />		
 		<input id="post-search-input" type="text" value="<?php echo $s?>" name="s"/>
 		<input class="button" type="submit" value="<?php _e('Search Orders', 'pmpro');?>"/>
 	</p>
+
 	<?php 
 		//some vars for the search
 		if(isset($_REQUEST['pn']))
@@ -552,6 +795,62 @@
 		$end = $pn * $limit;
 		$start = $end - $limit;				
 					
+		//filters
+		if($filter == "all" || !$filter)
+				$condition = "1=1";
+		elseif($filter == "within-a-date-range")
+		{	
+			$start_date = $start_year."-".$start_month."-".$start_day;
+			$end_date = $end_year."-".$end_month."-".$end_day;
+			
+			//add times to dates
+			$start_date =  $start_date . " 00:00:00";
+			$end_date =  $end_date . " 23:59:59";
+			
+			$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+		}
+		elseif($filter == "predefined-date-range")
+		{	
+			if($predefined_date == "Last Month")
+			{
+				$start_date = date("Y-m-d", strtotime("first day of last month"));
+				$end_date   = date("Y-m-d", strtotime("last day of last month"));					
+			}
+			elseif($predefined_date == "This Month")
+			{
+				$start_date = date("Y-m-d", strtotime("first day of this month"));
+				$end_date   = date("Y-m-d", strtotime("last day of this month"));	
+			}
+			elseif($predefined_date == "This Year")
+			{
+				$year = date('Y');
+				$start_date = date("Y-m-d", strtotime("first day of January $year"));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+			}
+			
+			elseif($predefined_date == "Last Year")
+			{
+				$year = date('Y') - 1;
+				$start_date = date("Y-m-d", strtotime("first day of January $year"));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+			}
+		
+			//add times to dates
+			$start_date =  $start_date . " 00:00:00";
+			$end_date =  $end_date . " 23:59:59";
+		
+			$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+		}			
+		elseif($filter == "within-a-level")
+		{
+			$condition = "membership_id = $l";
+		}			
+		elseif($filter == "within-a-status")
+		{
+			$condition = "status = '$status' ";
+		}		
+		
+		//string search
 		if($s)
 		{
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
@@ -572,16 +871,20 @@
 			foreach($fields as $field)
 				$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql($s) . "%' ";
 			$sqlQuery .= ") ";
+			
+			$sqlQuery .= "AND " . $condition . " ";
+			
 			$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 		}
 		else
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders WHERE ".$condition." ORDER BY id DESC, timestamp DESC ";
 		}
 		
 		$sqlQuery .= "LIMIT $start, $limit";
 				
 		$order_ids = $wpdb->get_col($sqlQuery);
+		
 		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 		
 		if($order_ids)
@@ -681,7 +984,9 @@
 	</form>
 	
 	<?php
-	echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, get_admin_url(NULL, "/admin.php?page=pmpro-orders&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
+		//add normal args
+		$pagination_url = add_query_arg($url_params, get_admin_url(NULL, "/admin.php?page=pmpro-orders"));		
+		echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=");
 	?>
 
 <?php } ?>

@@ -19,7 +19,7 @@
 		?>
 		
 		<h3>
-			<?php printf(_x('Invoice #%s on %s', 'Invoice # header. E.g. Invoice #ABCDEF on 2013-01-01.', 'pmpro'), $pmpro_invoice->code, date(get_option('date_format'), $pmpro_invoice->timestamp));?>	
+			<?php printf(_x('Invoice #%s on %s', 'Invoice # header. E.g. Invoice #ABCDEF on 2013-01-01.', 'pmpro'), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>	
 		</h3>
 		<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
 		<ul>
@@ -66,7 +66,7 @@
 					<?php } ?>
 					<td>
 						<?php if($pmpro_invoice->accountnumber) { ?>
-							<?php echo $pmpro_invoice->cardtype?> <?php _e('ending in', 'credit card type {ending in} xxxx', 'pmpro');?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
+							<?php echo $pmpro_invoice->cardtype?> <?php echo _x('ending in', 'credit card type {ending in} xxxx', 'pmpro');?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
 							<small><?php _e('Expiration', 'pmpro');?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
 						<?php } elseif($pmpro_invoice->payment_type) { ?>
 							<?php echo $pmpro_invoice->payment_type?>

@@ -14,7 +14,8 @@
 		//email options
 		pmpro_setOption("from_email");
 		pmpro_setOption("from_name");
-
+		pmpro_setOption("only_filter_pmpro_emails");
+		
 		pmpro_setOption("email_admin_checkout");
 		pmpro_setOption("email_admin_changes");
 		pmpro_setOption("email_admin_cancels");
@@ -29,6 +30,7 @@
 	
 	$from_email = pmpro_getOption("from_email");
 	$from_name = pmpro_getOption("from_name");
+	$only_filter_pmpro_emails = pmpro_getOption("only_filter_pmpro_emails");
 	
 	$email_admin_checkout = pmpro_getOption("email_admin_checkout");
 	$email_admin_changes = pmpro_getOption("email_admin_changes");
@@ -52,6 +54,13 @@
 		$from_name = "WordPress";
 		pmpro_setOption("from_name", $from_name);
 	}
+	
+	// default from email wordpress@sitename
+	$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+	if ( substr( $sitename, 0, 4 ) == 'www.' ) {
+		$sitename = substr( $sitename, 4 );
+	}
+	$default_from_email = 'wordpress@' . $sitename;
 				
 	require_once(dirname(__FILE__) . "/admin_header.php");		
 ?>
@@ -78,6 +87,15 @@
 				</th>
 				<td>
 					<input type="text" name="from_name" size="60" value="<?php echo $from_name?>" />
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="only_filter_pmpro_emails"><?php _e('Only Filter PMPro Emails?', 'pmpro');?>:</label>
+				</th>
+				<td>
+					<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
+					<?php _e('If unchecked, all emails from "WordPress &lt;' . $default_from_email . '&gt;" will be filtered to use the above settings.', 'pmpro');?>
 				</td>
 			</tr>
 		</tbody>

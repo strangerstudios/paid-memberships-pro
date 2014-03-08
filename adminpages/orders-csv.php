@@ -17,6 +17,51 @@
 		$l = $_REQUEST['l'];
 	else
 		$l = false;
+		
+	if(isset($_REQUEST['start-month']))
+		$start_month = $_REQUEST['start-month'];
+	else
+		$start_month = "1";
+		
+	if(isset($_REQUEST['start-day']))
+		$start_day = $_REQUEST['start-day'];
+	else
+		$start_day = "1";
+		
+	if(isset($_REQUEST['start-year']))
+		$start_year = $_REQUEST['start-year'];
+	else
+		$start_year = date("Y");
+		
+	if(isset($_REQUEST['end-month']))
+		$end_month = $_REQUEST['end-month'];
+	else
+		$end_month = date("n");
+		
+	if(isset($_REQUEST['end-day']))
+		$end_day = $_REQUEST['end-day'];
+	else
+		$end_day = date("j");
+		
+	if(isset($_REQUEST['end-year']))
+		$end_year = $_REQUEST['end-year'];
+	else
+		$end_year = date("Y");	
+	
+	if(isset($_REQUEST['predefined-date']))
+		$predefined_date = $_REQUEST['predefined-date'];
+	else
+		$predefined_date = "This Month";		
+			
+	if(isset($_REQUEST['status']))
+		$status = $_REQUEST['status'];
+	else
+		$status = "";
+	
+	if(isset($_REQUEST['filter']))
+		$filter = sanitize_text_field($_REQUEST['filter']);
+	else
+		$filter = "all";	
 	
 	//some vars for the search
 	if(!empty($_REQUEST['pn']))
@@ -40,6 +85,62 @@
 		$start = NULL;
 	}
 		
+	//filters
+	if($filter == "all" || !$filter)
+			$condition = "1=1";
+	elseif($filter == "within-a-date-range")
+	{	
+		$start_date = $start_year."-".$start_month."-".$start_day;
+		$end_date = $end_year."-".$end_month."-".$end_day;
+		
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+		
+		$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+	}
+	elseif($filter == "predefined-date-range")
+	{	
+		if($predefined_date == "Last Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of last month"));
+			$end_date   = date("Y-m-d", strtotime("last day of last month"));					
+		}
+		elseif($predefined_date == "This Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of this month"));
+			$end_date   = date("Y-m-d", strtotime("last day of this month"));	
+		}
+		elseif($predefined_date == "This Year")
+		{
+			$year = date('Y');
+			$start_date = date("Y-m-d", strtotime("first day of January $year"));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+		}
+		
+		elseif($predefined_date == "Last Year")
+		{
+			$year = date('Y') - 1;
+			$start_date = date("Y-m-d", strtotime("first day of January $year"));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+		}
+	
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+	
+		$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+	}			
+	elseif($filter == "within-a-level")
+	{
+		$condition = "membership_id = $l";
+	}			
+	elseif($filter == "within-a-status")
+	{
+		$condition = "status = '$status' ";
+	}		
+	
+	//string search
 	if($s)
 	{
 		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
@@ -49,39 +150,40 @@
 			$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 		
 		$sqlQuery .= "WHERE (1=2 ";
-						
+		
 		$fields = array("o.id", "o.code", "o.billing_name", "o.billing_street", "o.billing_city", "o.billing_state", "o.billing_zip", "o.billing_phone", "o.payment_type", "o.cardtype", "o.accountnumber", "o.status", "o.gateway", "o.gateway_environment", "o.payment_transaction_id", "o.subscription_transaction_id", "u.user_login", "u.user_email", "u.display_name", "l.name");
 		
 		if($join_with_usermeta)
 			$fields[] = "um.meta_value";
-				
+		
 		$fields = apply_filters("pmpro_orders_search_fields", $fields);
 		
 		foreach($fields as $field)
 			$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql($s) . "%' ";
 		$sqlQuery .= ") ";
-		$sqlQuery .= "ORDER BY o.timestamp DESC ";
+		
+		$sqlQuery .= "AND " . $condition . " ";
+		
+		$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 	}
 	else
 	{
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY timestamp DESC ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders WHERE ".$condition." ORDER BY id DESC, timestamp DESC ";
 	}
 	
-	if($limit)
+	if(!empty($start) && !empty($limit))
 		$sqlQuery .= "LIMIT $start, $limit";
 		
 	$order_ids = $wpdb->get_col($sqlQuery);	
-	
+		
 	//begin output
 	header("Content-type: text/csv");	
-	if($s && $l)
-		header("Content-Disposition: attachment; filename=orders" . intval($l) . "_level" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($s)
-		header("Content-Disposition: attachment; filename=orders_" . sanitize_file_name($s) . ".csv; size=$size_in_bytes");
-	elseif($l)
-		header("Content-Disposition: attachment; filename=orders_level" . intval($l) . ".csv; size=$size_in_bytes");
-	else
-		header("Content-Disposition: attachment; filename=orders.csv; size=$size_in_bytes");
+	
+	$filename = "orders.csv";
+	/*
+		Insert logic here for building filename from $filter and other values.
+	*/
+	header("Content-Disposition: attachment; filename=$filename;");		
 	
 	$csvoutput = "id,user_id,user_login,first_name,last_name,user_email,billing_name,billing_street,billing_city,billing_state,billing_zip,billing_country,billing_phone,membership_id,level_name,subtotal,tax,couponamount,total,payment_type,cardtype,accountnumber,expirationmonth,expirationyear,status,gateway,gateway_environment,payment_transaction_id,subscription_transaction_id,discount_code_id,discount_code,timestamp";
 	
