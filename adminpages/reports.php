@@ -20,6 +20,9 @@
 		$split = false;
 		foreach($pmpro_reports as $report => $title)
 		{
+			//make sure title is translated (since these are set before translations happen)
+			$title = __($title, "pmpro");
+			
 			//put half of the report widgets in postbox-container-2
 			if(!$split && $count++ > $nreports/2)
 			{

@@ -45,55 +45,55 @@ function pmpro_report_memberships_widget() {
 		#pmpro_report_memberships em {display: block; font-style: normal; font-size: 2em; margin: 5px; line-height: 26px;}	
 	</style>
 	<span id="pmpro_report_memberships">
-		<label class="section-label">Signups:</label>
+		<label class="section-label"><?php _e('Signups', 'pmpro');?>:</label>
 		<div style="width: 25%; float: left;">	
-			<label>All Time</label>
+			<label><?php _e('All Time', 'pmpro');?></label>
 			<em><?php echo pmpro_getSignups( 'all time' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">	
-			<label>This Year</label>
+			<label><?php _e('This Year', 'pmpro');?></label>
 			<em><?php echo pmpro_getSignups( 'this year' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">	
-			<label>This Month</label>
+			<label><?php _e('This Month', 'pmpro');?></label>
 			<em><?php echo pmpro_getSignups( 'this month' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">
-			<label>Today</label>
+			<label><?php _e('Today', 'pmpro');?></label>
 			<em><?php echo pmpro_getSignups( 'today' ); ?></em>		
 		</div>	
 		<div class="clear"></div>
 
-		<label class="section-label">Cancellations:</label>
+		<label class="section-label"><?php _e('Cancellations', 'pmpro');?>:</label>
 		<div style="width: 25%; float: left;">	
-			<label>All Time</label>
+			<label><?php _e('All Time', 'pmpro');?></label>
 			<em><?php echo pmpro_getCancellations( 'all time' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">	
-			<label>This Year</label>
+			<label><?php _e('This Year', 'pmpro');?></label>
 			<em><?php echo pmpro_getCancellations( 'this year' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">	
-			<label>This Month</label>
+			<label><?php _e('This Month', 'pmpro');?></label>
 			<em><?php echo pmpro_getCancellations( 'this month' ); ?></em>		
 		</div>
 		<div style="width: 25%; float: left;">
-			<label>Today</label>
+			<label><?php _e('Today', 'pmpro');?></label>
 			<em><?php echo pmpro_getCancellations( 'today' ); ?></em>		
 		</div>	
 		<div class="clear"></div>
 
-		<label class="section-label">Other Stats:</label>
+		<label class="section-label"><?php _e('Other Stats', 'pmpro');?>:</label>
 		<div style="width: 33%; float: left;">	
-			<label>Monthly Recurring Revenue (MRR)</label>
+			<label><?php _e('Monthly Recurring Revenue (MRR)', 'pmpro');?></label>
 			<em><?php echo $pmpro_currency_symbol . $pmpro_mrr = number_format(pmpro_getMRR( 'all time' ), 2); ?></em>		
 		</div>
 		<div style="width: 33%; float: left;">	
-			<label>Cancellation Rate</label>
+			<label><?php _e('Cancellation Rate', 'pmpro');?></label>
 			<em><?php echo pmpro_getCancellationRate('all time' ); ?>%</em>		
 		</div>
 		<div style="width: 33%; float: left;">	
-			<label>Lifetime Value (LTV)</label>
+			<label><?php _e('Lifetime Value (LTV)', 'pmpro');?></label>
 			<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getLTV('all time' ), 2); ?></em>		
 		</div>
 		<div class="clear"></div>
@@ -508,7 +508,7 @@ AND mu1.startdate >= '" . $startdate . "' ";
 	if(!empty($cache) && !empty($cache[$period]) && is_array($cache[$period]))
 		$cache[$period][$levels] = $cancellations;
 	elseif(!empty($cache))
-		$cache[$period] = array($levels => $sales);
+		$cache[$period] = array($levels => $cancellations);
 	else
 		$cache = array($period => array($levels => $cancellations));
 	

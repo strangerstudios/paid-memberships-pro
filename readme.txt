@@ -105,6 +105,8 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.8.1 =
 * Important fix for Braintree Payments users. Credit card information is now correctly updated in Braintree when users submit the form on the billing information page or checkout again on the site. (Thanks, Bryan Paronto and venrooy)
 * Updated Italian translation files. (Thanks, Angelo Giammarresi)
+* Fixed string wrapping in reports for translation.
+* Fixed PHP warning in membership stats report.
 
 = 1.7.8 =
 * Added various hooks.
