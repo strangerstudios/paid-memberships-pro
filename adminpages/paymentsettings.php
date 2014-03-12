@@ -1,12 +1,12 @@
 <?php
-	//only admins can get this
-	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_paymentsettings")))
-	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
-	}	
-	
+
+    //only admins can get this
+    global $membership_level_capability;
+    if(!function_exists("current_user_can") || (!current_user_can($membership_level_capability)) || (!current_user_can('pmpro_paymentsettings')))
+        die(__("You do not have permissions to perform this action.", "pmpro"));
+
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
-	
+
 	//get/set settings	
 	if(!empty($_REQUEST['savesettings']))
 	{                   

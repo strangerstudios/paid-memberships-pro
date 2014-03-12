@@ -1,12 +1,13 @@
 <?php
-	//only admins can get this
-	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslist")))
-	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
-	}	
-	
+
+    //only admins can get this
+    global $membership_level_capability;
+    if(!function_exists("current_user_can") || (!current_user_can($membership_level_capability)) || (!current_user_can('pmpro_memberslist')))
+        die(__("You do not have permissions to perform this action.", "pmpro"));
+
 	//vars
 	global $wpdb, $pmpro_currency_symbol;
+
 	if(isset($_REQUEST['s']))
 		$s = $_REQUEST['s'];
 	else

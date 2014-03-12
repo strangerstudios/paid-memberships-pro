@@ -91,22 +91,42 @@ global $all_membership_levels;
 global $membership_levels;
 $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
+//edit membership capability
+global $membership_level_capability;
+$membership_level_capability = apply_filters("pmpro_edit_member_capability", "pmpro_edit_membership");
+
 /*
 	Activation/Deactivation
 */
 function pmpro_activation()
 {
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
-	//wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
-	wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+    wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
+    //wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
+    wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
+    wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+    add_role('pmpro_membership_manager', 'Membership Manager', array(
+        'read' => true,
+        'pmpro_edit_membership' => true,
+        'pmpro_discountcodes' => true,
+        'pmpro_emailsettings' => true,
+        'pmpro_membershiplevels' => true,
+        'pmpro_memberslist_csv' => true,
+        'pmpro_memberslist' => true,
+        'pmpro_orders_csv' => true,
+        'pmpro_orders' => true,
+        'pmpro_pagesettings' => true,
+        'pmpro_paymentsettings' => true
+    ));
 }
 function pmpro_deactivation()
 {
-	wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
-	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
-	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
-	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
+    wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
+    wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
+    wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
+    wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
+    get_role('administrator')->remove_cap('edit_membership');
+    remove_role('pmpro_membership_manager');
 }
+
 register_activation_hook(__FILE__, 'pmpro_activation');
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');

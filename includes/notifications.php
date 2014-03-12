@@ -4,7 +4,8 @@
 */
 function pmpro_notifications()
 {
-	if(current_user_can("manage_options"))
+    global $membership_level_capability;
+	if(current_user_can($membership_level_capability))
 	{			
 		delete_transient("pmpro_notification_" . PMPRO_VERSION);
 		

@@ -5,9 +5,8 @@
 //add the fields
 function pmpro_membership_level_profile_fields($user)
 {
-	global $current_user, $pmpro_currency_symbol;
+	global $current_user, $pmpro_currency_symbol, $membership_level_capability;
 
-	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
 
@@ -159,13 +158,12 @@ function pmpro_membership_level_profile_fields($user)
 function pmpro_membership_level_profile_fields_update()
 {
 	//get the user id
-	global $wpdb, $current_user, $user_ID;
+	global $wpdb, $current_user, $user_ID, $membership_level_capability;
 	get_currentuserinfo();
 	
 	if(!empty($_REQUEST['user_id'])) 
 		$user_ID = $_REQUEST['user_id'];
 
-	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
 		

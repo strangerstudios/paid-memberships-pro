@@ -765,14 +765,14 @@ function pmpro_getMembershipCategories($level_id)
 
 function pmpro_isAdmin($user_id = NULL)
 {
-	global $current_user, $wpdb;
+	global $current_user, $wpdb, $membership_level_capability;
 	if(!$user_id)
 		$user_id = $current_user->ID;
 	
 	if(!$user_id)
 		return false;
 				
-	$admincap = user_can($user_id, "manage_options");
+	$admincap = user_can($user_id, $membership_level_capability);
 	if($admincap)
 		return true;
 	else
