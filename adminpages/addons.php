@@ -1,10 +1,9 @@
 <?php
 	//only admins can get this
-	if(!function_exists("current_user_can") || !current_user_can("manage_options"))
-	{
+    global $membership_level_capability;
+	if(!function_exists("current_user_can") || !current_user_can($membership_level_capability))
 		die(__("You do not have permissions to perform this action.", "pmpro"));
-	}	
-	
+
 	global $wpdb, $msg, $msgt, $pmpro_addons;
 	
 	/*

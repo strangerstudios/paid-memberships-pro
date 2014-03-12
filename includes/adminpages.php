@@ -4,18 +4,18 @@
 */
 function pmpro_add_pages()
 {
-	global $wpdb;
+	global $wpdb, $membership_level_capability;
 
-	add_menu_page(__('Memberships', 'pmpro'), __('Memberships', 'pmpro'), 'manage_options', 'pmpro-membershiplevels', 'pmpro_membershiplevels', PMPRO_URL . '/images/menu_users.png');
-	add_submenu_page('pmpro-membershiplevels', __('Page Settings', 'pmpro'), __('Page Settings', 'pmpro'), 'manage_options', 'pmpro-pagesettings', 'pmpro_pagesettings');
-	add_submenu_page('pmpro-membershiplevels', __('Payment Settings', 'pmpro'), __('Payment Settings', 'pmpro'), 'manage_options', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Email Settings', 'pmpro'), __('Email Settings', 'pmpro'), 'manage_options', 'pmpro-emailsettings', 'pmpro_emailsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Advanced Settings', 'pmpro'), __('Advanced Settings', 'pmpro'), 'manage_options', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Add Ons', 'pmpro'), __('Add Ons', 'pmpro'), 'manage_options', 'pmpro-addons', 'pmpro_addons');
-	add_submenu_page('pmpro-membershiplevels', __('Members List', 'pmpro'), __('Members List', 'pmpro'), 'manage_options', 'pmpro-memberslist', 'pmpro_memberslist');
-	add_submenu_page('pmpro-membershiplevels', __('Reports', 'pmpro'), __('Reports', 'pmpro'), 'manage_options', 'pmpro-reports', 'pmpro_reports');	
-	add_submenu_page('pmpro-membershiplevels', __('Orders', 'pmpro'), __('Orders', 'pmpro'), 'manage_options', 'pmpro-orders', 'pmpro_orders');
-	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'pmpro'), __('Discount Codes', 'pmpro'), 'manage_options', 'pmpro-discountcodes', 'pmpro_discountcodes');		
+	add_menu_page(__('Memberships', 'pmpro'), __('Memberships', 'pmpro'), $membership_level_capability, 'pmpro-membershiplevels', 'pmpro_membershiplevels', PMPRO_URL . '/images/menu_users.png');
+	add_submenu_page('pmpro-membershiplevels', __('Page Settings', 'pmpro'), __('Page Settings', 'pmpro'), $membership_level_capability, 'pmpro-pagesettings', 'pmpro_pagesettings');
+	add_submenu_page('pmpro-membershiplevels', __('Payment Settings', 'pmpro'), __('Payment Settings', 'pmpro'), $membership_level_capability, 'pmpro-paymentsettings', 'pmpro_paymentsettings');
+	add_submenu_page('pmpro-membershiplevels', __('Email Settings', 'pmpro'), __('Email Settings', 'pmpro'), $membership_level_capability, 'pmpro-emailsettings', 'pmpro_emailsettings');
+	add_submenu_page('pmpro-membershiplevels', __('Advanced Settings', 'pmpro'), __('Advanced Settings', 'pmpro'), $membership_level_capability, 'pmpro-advancedsettings', 'pmpro_advancedsettings');
+	add_submenu_page('pmpro-membershiplevels', __('Add Ons', 'pmpro'), __('Add Ons', 'pmpro'), $membership_level_capability, 'pmpro-addons', 'pmpro_addons');
+	add_submenu_page('pmpro-membershiplevels', __('Members List', 'pmpro'), __('Members List', 'pmpro'), $membership_level_capability, 'pmpro-memberslist', 'pmpro_memberslist');
+	add_submenu_page('pmpro-membershiplevels', __('Reports', 'pmpro'), __('Reports', 'pmpro'), $membership_level_capability, 'pmpro-reports', 'pmpro_reports');
+	add_submenu_page('pmpro-membershiplevels', __('Orders', 'pmpro'), __('Orders', 'pmpro'), $membership_level_capability, 'pmpro-orders', 'pmpro_orders');
+	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'pmpro'), __('Discount Codes', 'pmpro'), $membership_level_capability, 'pmpro-discountcodes', 'pmpro_discountcodes');
 	
 	//rename the automatically added Memberships submenu item
 	global $submenu;
