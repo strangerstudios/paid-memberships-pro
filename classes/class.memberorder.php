@@ -148,6 +148,9 @@
 			return $this->getMemberOrderByID($id);
 		}
 		
+		/*
+			Returns the order using the given order code.
+		*/
 		function getMemberOrderByCode($code)
 		{
 			global $wpdb;
@@ -158,8 +161,15 @@
 				return false;
 		}
 		
+		/*
+			Returns the last order using the given payment_transaction_id.
+		*/
 		function getMemberOrderByPaymentTransactionID($payment_transaction_id)
 		{
+			//did they pass a trans id?
+			if(empty($payment_transaction_id))
+				return false;
+			
 			global $wpdb;
 			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql($payment_transaction_id) . "' LIMIT 1");
 			if($id)
@@ -357,7 +367,7 @@
 				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
 			}
 			if(empty($this->user_id))
-				$this->user_id = "";
+				$this->user_id = 0;
 			if(empty($this->paypal_token))
 				$this->paypal_token = "";
 			if(empty($this->couponamount))
@@ -373,7 +383,15 @@
 			if(empty($this->affiliate_subid))
 				$this->affiliate_subid = "";	
 			if(empty($this->session_id))
-				$this->session_id = "";		
+				$this->session_id = "";
+			if(empty($this->accountnumber))
+				$this->accountnumber = "";
+			if(empty($this->cardtype))
+				$this->cardtype = "";
+			if(empty($this->ExpirationDate))
+				$this->ExpirationDate = "";
+			if (empty($this->status))
+				$this->status = "";    
 			
 			if(empty($this->gateway))
 				$this->gateway = pmpro_getOption("gateway");				
@@ -393,8 +411,8 @@
 				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
 									SET `code` = '" . $this->code . "',
 									`session_id` = '" . $this->session_id . "',
-									`user_id` = '" . $this->user_id . "',
-									`membership_id` = '" . $this->membership_id . "',
+									`user_id` = " . intval($this->user_id) . ",
+									`membership_id` = " . intval($this->membership_id) . ",
 									`paypal_token` = '" . $this->paypal_token . "',
 									`billing_name` = '" . esc_sql($this->billing->name) . "',
 									`billing_street` = '" . esc_sql($this->billing->street) . "',
@@ -406,7 +424,7 @@
 									`subtotal` = '" . $this->subtotal . "',
 									`tax` = '" . $this->tax . "',
 									`couponamount` = '" . $this->couponamount . "',
-									`certificate_id` = '" . $this->certificate_id . "',
+									`certificate_id` = " . intval($this->certificate_id) . ",
 									`certificateamount` = '" . $this->certificateamount . "',
 									`total` = '" . $this->total . "',
 									`payment_type` = '" . $this->payment_type . "',
@@ -435,8 +453,8 @@
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`) 
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
-									   '" . $this->user_id . "',
-									   '" . $this->membership_id . "',
+									   " . intval($this->user_id) . ",
+									   " . intval($this->membership_id) . ",
 									   '" . $this->paypal_token . "',
 									   '" . esc_sql(trim($this->billing->name)) . "',
 									   '" . esc_sql(trim($this->billing->street)) . "',
@@ -448,7 +466,7 @@
 									   '" . $amount . "',
 									   '" . $tax . "',
 									   '" . $this->couponamount. "',
-									   '" . intval($this->certificate_id) . "',
+									   " . intval($this->certificate_id) . ",
 									   '" . $this->certificateamount . "',
 									   '" . $total . "',
 									   '" . $this->payment_type . "',

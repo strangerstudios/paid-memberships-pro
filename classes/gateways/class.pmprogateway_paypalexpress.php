@@ -90,7 +90,10 @@
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
 			
 			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);						
-						
+			
+			///echo str_replace("&", "&<br />", $nvpStr);
+			///exit;
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('SetExpressCheckout', $nvpStr);					
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -223,7 +226,7 @@
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);									
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			//$amount = round((float)$amount + (float)$amount_tax, 2);
 						
 			//paypal profile stuff
 			$nvpStr = "";
@@ -253,7 +256,10 @@
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 			
 			$this->nvpStr = $nvpStr;						
-						
+			
+			///echo str_replace("&", "&<br />", $nvpStr);
+			///exit;
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
@@ -282,6 +288,7 @@
 			$nvpStr .= "&PROFILEID=" . $order->subscription_transaction_id . "&ACTION=Cancel&NOTE=User requested cancel.";							
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
+						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || $this->httpParsedResponseAr['L_ERRORCODE0'] == "11556") {								
 				$order->updateStatus("cancelled");					
 				return true;

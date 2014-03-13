@@ -46,9 +46,37 @@
 		{
 			if(!$pmpro_page_id)
 			{
+				switch ($pmpro_page_name) {
+ 					case 'account':
+ 						$pmpro_page_title = _x( 'Membership Account', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'billing':
+ 						$pmpro_page_title = _x( 'Membership Billing', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'cancel':
+ 						$pmpro_page_title = _x( 'Membership Cancel', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'checkout':
+ 						$pmpro_page_title = _x( 'Membership Checkout', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'confirmation':
+ 						$pmpro_page_title = _x( 'Membership Confirmation', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'invoice':
+ 						$pmpro_page_title = _x( 'Membership Invoice', 'Page title', 'pmpro' );
+ 						break;
+ 					case 'levels':
+ 						$pmpro_page_title = _x( 'Membership Levels', 'Page title', 'pmpro' );
+ 						break;
+ 					
+ 					default:
+ 						$pmpro_page_title = sprintf( _x( 'Membership %s', 'Page title template', 'pmpro' ), ucwords($pmpro_page_name) );
+ 						break;
+ 				}
+ 				
 				//no id set. create an array to store the page info
 				$insert = array(
-					'post_title' => __('Membership', 'pmpro') . ' ' . ucwords($pmpro_page_name),
+					'post_title' => $pmpro_page_title,
 					'post_status' => 'publish',
 					'post_type' => 'page',
 					'post_content' => '[pmpro_' . $pmpro_page_name . ']',

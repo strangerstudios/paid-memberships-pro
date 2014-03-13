@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Addon Packages',
-		'version' => '.3',
+		'version' => '.4.2',
 		'widget' => 'pmpro_addon_pmpro_addon_packages_widget',
 		'enabled' => function_exists('pmproap_post_meta')
 	)
@@ -22,7 +22,7 @@ function pmpro_addon_pmpro_addon_packages_widget($addon)
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-addon-packages/pmpro-addon-packages.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-addon-packages/pmpro-addon-packages.php'), 'activate-plugin_pmpro-addon-packages/pmpro-addon-packages.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
-			<a href="https://github.com/strangerstudios/pmpro-addon-packages/archive/master.zip" class="button button-primary">Download</a>
+			<a href="https://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-addon-packages.zip" class="button button-primary">Download</a>
 		<?php } ?>
 	</div>						
 </div> <!-- end info -->

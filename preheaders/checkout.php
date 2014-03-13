@@ -847,7 +847,7 @@
 				$last_name = $_REQUEST['last_name'];
 			else
 				$last_name = $blastname;
-			
+						
 			//insert user
 			$user_id = wp_insert_user(array(
 							"user_login" => $username,							

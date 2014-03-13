@@ -35,6 +35,11 @@
 	$fields = apply_filters("pmpro_authnet_silent_post_fields", $fields);
 	do_action("pmpro_before_authnet_silent_post", $fields);
 	
+	//uncomment or add this to your wp-config to log requests by email
+	//define('PMPRO_AUTHNET_SILENT_POST_DEBUG', true);
+	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG)
+		wp_mail(get_option("admin_email"), "Authorize.net Silent Post From " . get_option("blogname"), nl2br(var_export($fields, true)));
+	
 	// If it is an ARB transaction, do something with it
 	if($arb == true)
 	{

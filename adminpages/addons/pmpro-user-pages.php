@@ -14,7 +14,7 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_user_pages_widget($addon)
 {
 ?>
-<div class="info">							
+<div class="info">				
 	<p>Creates a unique page for each Member after checkout, giving the Admin access to write customized content for each specific member.</p>
 	<div class="actions">							
 		<?php if($addon['enabled']) { ?>
