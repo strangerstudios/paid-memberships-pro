@@ -7,7 +7,7 @@
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
-		define('PMPRO_STRIPE_WEBHOOK_DELAY', 5);
+		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
 	
 	//in case the file is loaded directly
 	if(!defined("WP_USE_THEMES"))
