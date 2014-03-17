@@ -3,7 +3,7 @@
 	Addon: PMPro WooCommerce
 	Slug: pmpro-woocommerce
 */
-pmpro_add_addon('repo', array(
+pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro WooCommerce',
 		'version' => '1.0',
 		'widget' => 'pmpro_addon_pmpro_woocommerce_widget',
@@ -14,8 +14,9 @@ pmpro_add_addon('repo', array(
 function pmpro_addon_pmpro_woocommerce_widget($addon)
 {
 ?>
+<img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-woocommerce.gif" />
 <div class="info">							
-	<p>Integrates Paid Memberships Pro with WooCommerce to use WooCommerce to checkout for PMPro levels or set membership pricing.</p>
+	<p>Use WooCommerce to purchase membership or set members-only product pricing.</p>
 	<div class="actions">							
 		<?php if($addon['enabled']) { ?>
 			<a href="<?php echo admin_url("plugins.php");?>" class="button">Enabled</a>

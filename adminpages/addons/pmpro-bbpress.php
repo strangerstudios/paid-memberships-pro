@@ -14,6 +14,7 @@ pmpro_add_addon('repo', array(
 function pmpro_addon_pmpro_bbpress_widget($addon)
 {
 ?>
+<img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-bbpress.jpg" />
 <div class="info">
 	<p>Locking down bbPress Forums by Membership Level and Forum ID.</p>
 	<div class="actions">							
