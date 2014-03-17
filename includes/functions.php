@@ -590,7 +590,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
-			$c_order->cancel();			
+			$c_order->cancel();
 		}
 	}
 

@@ -316,14 +316,25 @@
 		{
 			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
 			
-			//log?
-			if(PMPRO_IPN_DEBUG)
-			{
-				echo $logstr;
-				
+			echo $logstr;
+			
+			//log in file or email?
+			if(defined('PMPRO_IPN_DEBUG') && PMPRO_IPN_DEBUG == "log")
+			{			
+				//file
 				$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
 				fwrite($loghandle, $logstr);
 				fclose($loghandle);
+			}
+			elseif(defined('PMPRO_IPN_DEBUG'))
+			{			
+				//email
+				if(strpos(PMPRO_IPN_DEBUG, "@"))
+					$log_email = PMPRO_IPN_DEBUG;	//constant defines a specific email address
+				else
+					$log_email = get_option("admin_email");
+				
+				wp_mail($log_email, get_option("blogname") . " IPN Log", nl2br($logstr));
 			}
 		}
 		

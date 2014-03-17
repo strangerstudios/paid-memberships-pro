@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 3.8.1
-Stable tag: 1.7.8.1
+Stable tag: 1.7.8.2
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,16 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.8.2 =
+* Updated the Stripe API library to version 1.11.0.
+* Fixed issues where users upgrading or downgrading would have their subscriptions cancelled at Stripe.
+* Fixed issues where extra emails were being sent out when users cancelled a membership when using Stripe.
+* Generally made the Stripe integration better and ready for version 2.0.
+* The Stripe webhook will now add a 5 second delay before processing most requests. This is to ensure that PMPro has time to update the order during checkout (Stripe can sometimes receive a charge or cancellation, then send the webhook, and WP can process that in the split second it takes PMPro to save an order during checkout.). This prevents duplicate orders in the PMPro DB on some charges and fixes some issues with cancellations.
+* Setting constant PMPRO_STRIPE_WEBHOOK_DEBUG to true will send an email to the WP admin every time the Stripe Webhook is hit. You can also set it to an alternative email address or "log" to have it added to ../paid-memberships-pro/logs/stripe-webhook.txt.
+* Setting constant PMPRO_IPN_DEBUG to true will send an email to the WP admin every time the IPN handler is hit. You can also set it to an alternative email address or "log" to have it added to ../paid-memberships-pro/logs/ipn.txt.
+* Now showing the PMPro order ID/code in INVOICE emails instead of the Stripe order id when using the Stripe gateway.
+
 = 1.7.8.1 =
 * Important fix for Braintree Payments users. Credit card information is now correctly updated in Braintree when users submit the form on the billing information page or checkout again on the site. (Thanks, Bryan Paronto and venrooy)
 * Updated Italian translation files. (Thanks, Angelo Giammarresi)

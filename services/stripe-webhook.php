@@ -1,9 +1,13 @@
-<?php			
+<?php	
 	global $isapage;
 	$isapage = true;
 	
 	global $logstr;
 	$logstr = "";		
+
+	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
+	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
+		define('PMPRO_STRIPE_WEBHOOK_DELAY', 5);
 	
 	//in case the file is loaded directly
 	if(!defined("WP_USE_THEMES"))
@@ -21,7 +25,7 @@
 	if(empty($_REQUEST['event_id']))
 	{
 		$body = @file_get_contents('php://input');
-		$post_event = json_decode($body);		
+		$post_event = json_decode($body);
 			
 		//get the id
 		$event_id = $post_event->id;
@@ -38,7 +42,8 @@
 	}
 	catch(Exception $e)
 	{
-		die("Could not find an event with ID #" . $event_id . ". " . $e->getMessage());
+		$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
+		pmpro_stripeWebhookExit();
 		//$event = $post_event;			//for testing you may want to assume that the passed in event is legit
 	}
 		
@@ -60,14 +65,20 @@
 				$old_order = getOldOrderFromInvoiceEvent($event);				
 				
 				if(empty($old_order))
-					die("Couldn't find the original subscription.");
+				{
+					$logstr .= "Couldn't find the original subscription.";
+					pmpro_stripeWebhookExit();
+				}
 					
 				$user_id = $old_order->user_id;	
 				$user = get_userdata($user_id);
 				$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 				
 				if(empty($user))
-					die("Couldn't find the old order's user. Order ID = " . $old_order->id . ".");
+				{
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 				
 				$invoice = $event->data->object;
 								
@@ -114,10 +125,14 @@
 				//email the user their invoice				
 				$pmproemail = new PMProEmail();				
 				$pmproemail->sendInvoiceEmail($user, $morder);	
+				
+				$logstr .= "Created new order with ID #" . $morder->id . ". Event ID #" . $event->id . ".";
+				pmpro_stripeWebhookExit();
 			}
 			else
 			{
-				die("We've already processed this order with ID #" . $event->id);
+				$logstr .= "We've already processed this order with ID #" . $order->id . ". Event ID #" . $event->id . ".";
+				pmpro_stripeWebhookExit();
 			}
 		}
 		elseif($event->type == "charge.failed")
@@ -156,39 +171,55 @@
 				$pmproemail = new PMProEmail();				
 				$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $morder);		
 
-				echo "Sent email to the member and site admin. Thanks.";
-				exit;
+				$logstr .= "Subscription payment failed on order ID #" . $old_order->id . ". Sent email to the member and site admin.";
+				pmpro_stripeWebhookExit();
 			}
 			else
 			{
-				die("Could not find the related subscription for order with ID #" . $event->id);
+				$logstr .= "Could not find the related subscription for event with ID #" . $event->id . ".";
+				if(!empty($event->data->object->customer))
+					$logstr .= " Customer ID #" . $event->data->object->customer . ".";
+				pmpro_stripeWebhookExit();
 			}
 		}
 		elseif($event->type == "customer.subscription.deleted")
 		{						
 			//for one of our users? if they still have a membership, notify the admin			
-			$user = getUserFromCustomerEvent($event);
+			$user = getUserFromCustomerEvent($event, "success");
 			if(!empty($user->ID))
-			{			
+			{				
 				do_action("pmpro_stripe_subscription_deleted", $user->ID);	
 				
 				$pmproemail = new PMProEmail();	
 				$pmproemail->data = array("body"=>"<p>" . sprintf(__("%s has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be.", "pmpro"), $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ")") . "</p>");
-				$pmproemail->sendEmail(get_bloginfo("admin_email"));	
+				$pmproemail->sendEmail(get_bloginfo("admin_email"));
+				
+				$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $event->id . ".";
+				pmpro_stripeWebhookExit();
 			}
 			else
 			{
-				die("Not a user here.");
+				//check for any user at all
+				$user = getUserFromCustomerEvent($event);
+				if(!empty($user->ID))
+					$logstr .= "Stripe tells us a subscription is deleted. This was probably initiated from PMPro and the membership/order is already cancelled. Event ID #" . $event->id . ".";
+				else
+					$logstr .= "Stripe tells us a subscription is deleted, but we could not find a user here for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $event->id . ".";
+				pmpro_stripeWebhookExit();
 			}
 		}
 	}
 	else
 	{
-		die("Could not find an event with ID #" . $event_id);
+		$logstr .= "Could not find an event with ID #" . $event_id;
+		pmpro_stripeWebhookExit();
 	}
 
 	function getUserFromInvoiceEvent($event)
 	{
+		//pause here to give PMPro a chance to finish checkout
+		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+		
 		global $wpdb;
 		
 		$customer_id = $event->data->object->customer;
@@ -202,15 +233,23 @@
 			return false;
 	}
 	
-	function getUserFromCustomerEvent($event)
+	function getUserFromCustomerEvent($event, $status = false)
 	{
+		//pause here to give PMPro a chance to finish checkout
+		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+		
 		global $wpdb;
 		
 		$customer_id = $event->data->object->customer;
 		
 		//look up the order
-		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' LIMIT 1");
-		
+		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' ";
+		if($status)
+			$sqlQuery .= " AND status='" . $status . "' ";
+		$sqlQuery .= " LIMIT 1";
+				
+		$user_id = $wpdb->get_var($sqlQuery);
+				
 		if(!empty($user_id))
 			return get_userdata($user_id);
 		else
@@ -219,6 +258,9 @@
 	
 	function getOldOrderFromInvoiceEvent($event)
 	{
+		//pause here to give PMPro a chance to finish checkout
+		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+		
 		global $wpdb;
 		
 		$customer_id = $event->data->object->customer;
@@ -239,6 +281,9 @@
 	
 	function getOrderFromInvoiceEvent($event)
 	{
+		//pause here to give PMPro a chance to finish checkout
+		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+		
 		$invoice_id = $event->data->object->id;
 		
 		$order = new MemberOrder();
@@ -248,4 +293,38 @@
 			return $order;
 		else
 			return false;		
+	}
+
+	function pmpro_stripeWebhookExit()
+	{
+		global $logstr;
+		
+		//for log
+		if($logstr)
+		{
+			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
+			
+			echo $logstr;
+			
+			//log in file or email?
+			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
+			{			
+				//file
+				$loghandle = fopen(dirname(__FILE__) . "/../logs/stripe-webhook.txt", "a+");	
+				fwrite($loghandle, $logstr);
+				fclose($loghandle);
+			}
+			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG'))
+			{			
+				//email
+				if(strpos(PMPRO_STRIPE_WEBHOOK_DEBUG, "@"))
+					$log_email = PMPRO_STRIPE_WEBHOOK_DEBUG;	//constant defines a specific email address
+				else
+					$log_email = get_option("admin_email");
+				
+				wp_mail($log_email, get_option("blogname") . " Stripe Webhook Log", nl2br($logstr));
+			}
+		}
+		
+		exit;
 	}

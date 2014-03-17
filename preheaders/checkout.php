@@ -1031,7 +1031,7 @@
 				//send email to admin
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCheckoutAdminEmail($current_user, $invoice);
-												
+				
 				//redirect to confirmation		
 				$rurl = pmpro_url("confirmation", "?level=" . $pmpro_level->id);
 				$rurl = apply_filters("pmpro_confirmation_url", $rurl, $user_id, $pmpro_level);
