@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('repo', array(
 		'title' => 'PMPro bbPress',
-		'version' => '1.0',
+		'version' => '1.0.1',
 		'widget' => 'pmpro_addon_pmpro_bbpress_widget',
 		'enabled' => function_exists('pmpro_check_forum')
 	)

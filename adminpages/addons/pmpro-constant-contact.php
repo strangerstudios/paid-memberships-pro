@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro Constant Contact Integration',
-		'version' => '.2',
+		'version' => '1.0',
 		'widget' => 'pmpro_addon_pmpro_constant_contact_widget',
 		'enabled' => function_exists('pmprocc_init')
 	)
