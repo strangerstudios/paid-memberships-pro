@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.8.3 =
 * Updated PayPal Express/Standard/WPP gateways to throw an error when trying to cancel a subscription that is in pending or suspended status. A warning is shown to the user to contact the site owner or cancel the subscription through PayPal. The WP admin should also get an email about the failure. In the future, there may be a better way to handle these situations automatically, but PayPal doesn't advise how to "cancel" pending subscriptions.
 * Added optional $membership_id parameter to getLastMemberOrder() method of the MemberOrder class. So you can get the last member order of a specific level.
+* Added Slovakian translation. (Thanks, Peter Belko)
 
 = 1.7.8.2 =
 * Updated the Stripe API library to version 1.11.0.
