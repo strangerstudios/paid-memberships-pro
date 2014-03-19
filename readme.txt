@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 3.8.1
-Stable tag: 1.7.9
+Stable tag: 1.7.9.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.9.1 =
+* Firing activation hook on upgrade so menu doesn't disappear.
+
 = 1.7.9 =
 * Updated PayPal Express/Standard/WPP gateways to throw an error when trying to cancel a subscription that is in pending or suspended status. A warning is shown to the user to contact the site owner or cancel the subscription through PayPal. The WP admin should also get an email about the failure. In the future, there may be a better way to handle these situations automatically, but PayPal doesn't advise how to "cancel" pending subscriptions.
 * Added optional $membership_id parameter to getLastMemberOrder() method of the MemberOrder class. So you can get the last member order of a specific level.

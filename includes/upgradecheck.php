@@ -84,6 +84,15 @@ function pmpro_checkForUpgrades()
 		- default Stripe Billing Fields to true
 		- unless Stripe Lite is activated, then deactivate Stripe Lite and set Stripe Billing Fields to false
 	*/
+	
+	if($pmpro_db_version < 1.79)
+	{
+		//need to register caps for menu
+		pmpro_activation();
+		
+		pmpro_setOption("db_version", "1.79");
+		$pmpro_db_version = 1.79;
+	}
 }
 
 function pmpro_upgrade_1_7()
