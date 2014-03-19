@@ -566,13 +566,13 @@
 					{
 						// Your code here to handle a successful verification
 						if($pmpro_msgt != "pmpro_error")
-							$pmpro_msg = "All good!";
+							$pmpro_msg = apply_filters('pmpro_confirmation_message', $msg = "All good!");
 					}
 				}
 				else
 				{
 					if($pmpro_msgt != "pmpro_error")
-						$pmpro_msg = "All good!";										
+						$pmpro_msg = apply_filters('pmpro_confirmation_message', $msg = "All good!");										
 				}
 				
 				//no errors yet
@@ -1035,8 +1035,11 @@
 				//redirect to confirmation		
 				$rurl = pmpro_url("confirmation", "?level=" . $pmpro_level->id);
 				$rurl = apply_filters("pmpro_confirmation_url", $rurl, $user_id, $pmpro_level);
-				wp_redirect($rurl);
-				exit;
+		                $redirect = apply_filters('pmpro_confrimation_redirect', true);
+		                if($redirect) {
+					wp_redirect($rurl);
+					exit;
+                		}
 			}
 			else
 			{
