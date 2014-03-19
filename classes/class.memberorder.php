@@ -125,7 +125,7 @@
 			return $this->Gateway;
 		}
 		
-		function getLastMemberOrder($user_id = NULL, $status = 'success')
+		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL)
 		{
 			global $current_user, $wpdb;
 			if(!$user_id)
@@ -140,6 +140,9 @@
 				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
 			elseif(!empty($status))
 				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
+			
+			if(!empty($membership_id))
+				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
 			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
 						
 			//get id

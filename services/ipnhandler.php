@@ -319,7 +319,7 @@
 			echo $logstr;
 			
 			//log in file or email?
-			if(defined('PMPRO_IPN_DEBUG') && PMPRO_IPN_DEBUG == "log")
+			if(defined('PMPRO_IPN_DEBUG') && PMPRO_IPN_DEBUG === "log")
 			{			
 				//file
 				$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	

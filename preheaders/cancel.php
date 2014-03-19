@@ -2,7 +2,7 @@
 	global $besecure;
 	$besecure = false;	
 	
-	global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm; 
+	global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $pmpro_error; 
 	
 	//if they don't have a membership, send them back to the subscription page
 	if(empty($current_user->membership_level->ID))
@@ -19,7 +19,7 @@
 	{		
 		$old_level_id = $current_user->membership_level->id;
 		$worked = pmpro_changeMembershipLevel(false, $current_user->ID);						
-		if($worked === true)
+		if($worked === true && empty($pmpro_error))
 		{			
 			$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			$pmpro_msgt = "pmpro_success";
@@ -36,6 +36,6 @@
 		{
 			global $pmpro_error;
 			$pmpro_msg = $pmpro_error;
-			$pmpro_msgt = "pmpro_error";			
+			$pmpro_msgt = "pmpro_error";		
 		}		
 	}	

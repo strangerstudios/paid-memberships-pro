@@ -318,7 +318,7 @@ function pmpro_displayAds()
 	return $pmpro_display_ads;
 }
 
-function pmpro_next_payment($user_id = NULL)
+function pmpro_next_payment($user_id = NULL, $order_status = "success")
 {
 	global $wpdb, $current_user;
 	if(!$user_id)
@@ -329,10 +329,10 @@ function pmpro_next_payment($user_id = NULL)
 	
 	//get last order
 	$order = new MemberOrder();
-	$order->getLastMemberOrder($user_id);
+	$order->getLastMemberOrder($user_id, $order_status);
 	
 	//get current membership level
-	$level = pmpro_getMembershipLevelForUser($user_id);
+	$level = pmpro_getMembershipLevelForUser($user_id);		
 	
 	if(!empty($order) && !empty($level) && !empty($level->cycle_number))
 	{					
@@ -340,8 +340,8 @@ function pmpro_next_payment($user_id = NULL)
 		$lastdate = date("Y-m-d", $order->timestamp);
 				
 		//next payment date
-		$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
-				
+		$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");				
+		
 		return $nextdate;
 	}
 	else
@@ -591,6 +591,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		{
 			$c_order = new MemberOrder($order_id);
 			$c_order->cancel();
+						
+			if(!empty($c_order->error))
+				$pmpro_error = $c_order->error;
 		}
 	}
 
