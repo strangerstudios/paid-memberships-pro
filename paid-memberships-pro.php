@@ -102,6 +102,20 @@ function pmpro_activation()
 	//wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
 	wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+    add_role('pmpro_membership_manager', 'Membership Manager', array(
+        'pmpro_edit_memberships' => true,
+        'pmpro_discountcodes' => true,
+        'pmpro_emailsettings' => true,
+        'pmpro_membershiplevels' => true,
+        'pmpro_memberslist' => true,
+        'pmpro_membersliscsv' => true,
+        'pmpro_orders' => true,
+        'pmpro_orderscsv' => true,
+        'pmpro_pagesettings' => true,
+        'pmpro_paymentsettings' => true,
+        'pmpro_reports' => true,
+        'read' => true
+    ));
 }
 function pmpro_deactivation()
 {
@@ -109,6 +123,7 @@ function pmpro_deactivation()
 	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
 	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
+    remove_role('pmpro_membership_manager');
 }
 register_activation_hook(__FILE__, 'pmpro_activation');
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');
