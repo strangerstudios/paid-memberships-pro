@@ -634,7 +634,22 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		}
 		else
 		{
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (`membership_id`,`user_id`, `startdate`) VALUES ('" . $level . "','" . $user_id . "',NOW())";
+			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
+			    VALUES (
+			    '" . $user_id . "',
+			    '" . $level . "',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    NOW(),
+                	    '0000-00-00 00:00:00'
+                	    )";
+
 			if(!$wpdb->query($sql))
 			{
 				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
