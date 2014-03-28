@@ -580,6 +580,16 @@
 			return $this->Gateway->update($this);						
 		}									
 		
+		function getGatewaySubscriptionStatus()
+		{
+			return $this->Gateway->getSubscriptionStatus($this);
+		}
+		
+		function getGatewayTransactionStatus()
+		{
+			return $this->Gateway->getTransactionStatus($this);
+		}
+		
 		function deleteMe()
 		{
 			if(empty($this->id))
