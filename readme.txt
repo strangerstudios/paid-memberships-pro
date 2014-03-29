@@ -104,6 +104,8 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.10 =
 * Added getGatewaySubscriptionStatus() and getGatewayTransactionStatus() methods to the MemberOrder class. These are implemented for PayPalExpress right now and will hit the gateway API to return information on a subscription or transaction.
+* Added pmpro_memberslist_expires_column filter to members list. $order is passed as second parameter. Use this to filter the date or "Never" shown in the Expires column.
+* No longer showing "Membership Levels" link in dashboard menu if a user has access to other PMPro settings pages, but not the membership levels page.
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.

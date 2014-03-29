@@ -59,8 +59,15 @@ function pmpro_add_pages()
 	global $submenu;
 	if(!empty($submenu['pmpro-membershiplevels']))
 	{
-		$submenu['pmpro-membershiplevels'][0][0] = "Membership Levels";
-		$submenu['pmpro-membershiplevels'][0][3] = "Membership Levels";
+		if(current_user_can("pmpro_membershiplevels"))
+		{
+			$submenu['pmpro-membershiplevels'][0][0] = "Membership Levels";
+			$submenu['pmpro-membershiplevels'][0][3] = "Membership Levels";
+		}
+		else
+		{
+			unset($submenu['pmpro-membershiplevels']);
+		}
 	}
 }
 add_action('admin_menu', 'pmpro_add_pages');

@@ -207,9 +207,9 @@
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
-					$csvoutput .= pmpro_enclose(date("Y-m-d", $theuser->enddate));
+					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date("Y-m-d", $theuser->enddate), $theuser));
 				else
-					$csvoutput .= pmpro_enclose("Never");
+					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser));
 			}
 			elseif($l == "oldmembers" && $theuser->enddate)
 			{
