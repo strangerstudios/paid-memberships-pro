@@ -615,7 +615,7 @@ msgid ""
 "existing users will not change, but new users will not be able to use this "
 "code anymore."
 msgstr ""
-"Sicuro di voler elimitare il %s codice sconto? L'iscrizione per gli utenti "
+"Sicuro di voler eliminare il %s codice sconto? L'iscrizione per gli utenti "
 "esistenti non cambierà, ma i nuovi utenti non saranno più in grado di "
 "utilizzare questo codice."
 
@@ -982,7 +982,7 @@ msgid ""
 "Are you sure you want to delete membership level %s? All subscriptions will "
 "be cancelled."
 msgstr ""
-"Sicuro di voler elimitare il livello %s? Tutte le iscrizioni verranno "
+"Sicuro di voler eliminare il livello %s? Tutte le iscrizioni verranno "
 "eliminate."
 
 #: adminpages/memberslist.php:25 includes/adminpages.php:15
@@ -993,7 +993,7 @@ msgstr "Membri"
 #: adminpages/memberslist.php:26 adminpages/orders.php:591
 #: adminpages/orders.php:522
 msgid "Export to CSV"
-msgstr "Escorta come CSV"
+msgstr "Esporta come CSV"
 
 #: adminpages/memberslist.php:30 adminpages/orders.php:603
 #: adminpages/reports/login.php:65 adminpages/reports/memberships.php:292
@@ -1361,7 +1361,7 @@ msgstr "ID Transazioni"
 
 #: adminpages/orders.php:933 adminpages/orders.php:630
 msgid "deleted"
-msgstr "elimitano"
+msgstr "eliminato"
 
 #: adminpages/orders.php:956 adminpages/orders.php:653
 msgid "Subscription"

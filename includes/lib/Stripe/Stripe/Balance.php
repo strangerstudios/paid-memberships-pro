@@ -1,11 +1,11 @@
 <?php
 
-class Stripe_Account extends Stripe_SingletonApiResource
+class Stripe_Balance extends Stripe_SingletonApiResource
 {
   /**
     * @param string|null $apiKey
     *
-    * @return Stripe_Account
+    * @return Stripe_Balance
     */
   public static function retrieve($apiKey=null)
   {

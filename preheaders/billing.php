@@ -373,9 +373,7 @@
 			else
 			{
 				$pmpro_msg = $morder->error;
-				
-				krumo($morder);
-				
+								
 				if(!$pmpro_msg)
 					$pmpro_msg = __("Error updating billing information.", 'pmpro');
 				$pmpro_msgt = "pmpro_error";

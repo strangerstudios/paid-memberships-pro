@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 3.8.1
-Stable tag: 1.7.8.1
+Stable tag: 1.7.9.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,30 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.10 =
+* Added getGatewaySubscriptionStatus() and getGatewayTransactionStatus() methods to the MemberOrder class. These are implemented for PayPalExpress right now and will hit the gateway API to return information on a subscription or transaction.
+* Added pmpro_memberslist_expires_column filter to members list. $order is passed as second parameter. Use this to filter the date or "Never" shown in the Expires column.
+* No longer showing "Membership Levels" link in dashboard menu if a user has access to other PMPro settings pages, but not the membership levels page.
+
+= 1.7.9.1 =
+* Firing activation hook on upgrade so menu doesn't disappear.
+
+= 1.7.9 =
+* Updated PayPal Express/Standard/WPP gateways to throw an error when trying to cancel a subscription that is in pending or suspended status. A warning is shown to the user to contact the site owner or cancel the subscription through PayPal. The WP admin should also get an email about the failure. In the future, there may be a better way to handle these situations automatically, but PayPal doesn't advise how to "cancel" pending subscriptions.
+* Added optional $membership_id parameter to getLastMemberOrder() method of the MemberOrder class. So you can get the last member order of a specific level.
+* Added Slovakian translation. (Thanks, Peter Belko)
+* Added WP capabilities for each PMPro settings or report page. Admins are given these caps on plugin activation. Or you can set up other roles to use these caps. E.g. https://github.com/strangerstudios/pmpro-membership-manager-role/
+
+= 1.7.8.2 =
+* Updated the Stripe API library to version 1.11.0.
+* Fixed issues where users upgrading or downgrading would have their subscriptions cancelled at Stripe.
+* Fixed issues where extra emails were being sent out when users cancelled a membership when using Stripe.
+* Generally made the Stripe integration better and ready for version 2.0.
+* The Stripe webhook will now add a 5 second delay before processing most requests. This is to ensure that PMPro has time to update the order during checkout (Stripe can sometimes receive a charge or cancellation, then send the webhook, and WP can process that in the split second it takes PMPro to save an order during checkout.). This prevents duplicate orders in the PMPro DB on some charges and fixes some issues with cancellations.
+* Setting constant PMPRO_STRIPE_WEBHOOK_DEBUG to true will send an email to the WP admin every time the Stripe Webhook is hit. You can also set it to an alternative email address or "log" to have it added to ../paid-memberships-pro/logs/stripe-webhook.txt.
+* Setting constant PMPRO_IPN_DEBUG to true will send an email to the WP admin every time the IPN handler is hit. You can also set it to an alternative email address or "log" to have it added to ../paid-memberships-pro/logs/ipn.txt.
+* Now showing the PMPro order ID/code in INVOICE emails instead of the Stripe order id when using the Stripe gateway.
+
 = 1.7.8.1 =
 * Important fix for Braintree Payments users. Credit card information is now correctly updated in Braintree when users submit the form on the billing information page or checkout again on the site. (Thanks, Bryan Paronto and venrooy)
 * Updated Italian translation files. (Thanks, Angelo Giammarresi)

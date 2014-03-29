@@ -365,10 +365,13 @@
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
 												
-			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {			
+			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) 
+			{			
 				$order->updateStatus("cancelled");					
 				return true;				
-			} else  {				
+			}
+			else
+			{				
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['RESULT'];
 				$order->error = urldecode($this->httpParsedResponseAr['RESPMSG']);

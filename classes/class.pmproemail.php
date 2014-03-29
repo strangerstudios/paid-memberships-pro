@@ -615,7 +615,7 @@
 								"membership_level_name" => $user->membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,	
-								"invoice_id" => $invoice->payment_transaction_id,
+								"invoice_id" => $invoice->code,
 								"invoice_total" => $pmpro_currency_symbol . number_format($invoice->total, 2),
 								"invoice_date" => date(get_option('date_format'), $invoice->timestamp),								
 								"billing_name" => $invoice->billing->name,

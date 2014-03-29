@@ -285,24 +285,51 @@
 		{			
 			//paypal profile stuff
 			$nvpStr = "";			
-			$nvpStr .= "&PROFILEID=" . $order->subscription_transaction_id . "&ACTION=Cancel&NOTE=User requested cancel.";							
+			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");						
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
 						
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]) || $this->httpParsedResponseAr['L_ERRORCODE0'] == "11556") {								
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) 
+			{								
 				$order->updateStatus("cancelled");					
-				return true;
-				//exit('CreateRecurringPaymentsProfile Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
-			} else  {				
+				return true;				
+			} 
+			else  
+			{
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", "pmpro");
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+								
+				return false;				
+			}
+		}
+
+		function getSubscriptionStatus(&$order)
+		{			
+			if(empty($order->subscription_transaction_id))
+				return false;
+			
+			//paypal profile stuff
+			$nvpStr = "";			
+			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);						
+						
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);						
+											
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) 
+			{				
+				return $this->httpParsedResponseAr;				
+			} 
+			else  
+			{
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
-								
-				return false;
-				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
+				
+				return false;				
 			}
-		}	
+		}		
 		
 		/**
 		 * PAYPAL Function
