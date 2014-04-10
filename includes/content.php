@@ -105,7 +105,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//general filter for all posts
 	$hasaccess = apply_filters("pmpro_has_membership_access_filter", $hasaccess, $mypost, $myuser, $post_membership_levels);
 	//filter for this post type
-	if(has_filter("pmpro_has_membership_access_action_" . $mypost->post_type))
+	if(has_filter("pmpro_has_membership_access_filter_" . $mypost->post_type))
 		$hasaccess = apply_filters("pmpro_has_membership_access_filter_" . $mypost->post_type, $hasaccess, $mypost, $myuser, $post_membership_levels);
 
 	//return
