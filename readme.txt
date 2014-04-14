@@ -107,6 +107,7 @@ Not sure? You can find out by doing a bit a research.
 * Added pmpro_memberslist_expires_column filter to members list. $order is passed as second parameter. Use this to filter the date or "Never" shown in the Expires column.
 * No longer showing "Membership Levels" link in dashboard menu if a user has access to other PMPro settings pages, but not the membership levels page.
 * Added pmpro_applydiscountcode_return_js hook. http://www.paidmembershipspro.com/hook/pmpro_applydiscountcode_return_js/
+* Fixed formatting of the level cost when a discount code is applied via AJAX.
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.
