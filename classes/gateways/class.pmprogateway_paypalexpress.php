@@ -89,6 +89,10 @@
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
 			
+			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
+            		if ($account_optional)
+                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
+			
 			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);						
 			
 			///echo str_replace("&", "&<br />", $nvpStr);

@@ -184,6 +184,10 @@
 				foreach($additional_parameters as $key => $value)				
 					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}
+			
+			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
+            		if ($account_optional)
+                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
 
 			$nvpStr = apply_filters("pmpro_paypal_standard_nvpstr", $nvpStr, $order);
 			
