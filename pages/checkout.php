@@ -4,7 +4,7 @@
 	
 	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 ?>
-
+<div id="pmpro_level-<?php echo $pmpro_level->id; ?>">
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
@@ -701,7 +701,7 @@
 	</div>	
 		
 </form>
-
+</div> <!-- end pmpro_level-ID -->
 <?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
 <script>	
 	//choosing payment method
