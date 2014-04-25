@@ -109,6 +109,7 @@ Not sure? You can find out by doing a bit a research.
 * Added pmpro_applydiscountcode_return_js hook. http://www.paidmembershipspro.com/hook/pmpro_applydiscountcode_return_js/
 * Fixed formatting of the level cost when a discount code is applied via AJAX.
 * Removed extra $ in checkout_check.html email template.
+* pmpro_getMembershipCategories($level_id) now returns an array of category IDs instead of an array of arrays.
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.
