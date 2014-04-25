@@ -796,7 +796,7 @@
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s. This membership is free", "pmpro"), $user->membership_level->name);
 			else
-				$this->data["membership_change"] = __("membership has been cancelled", "pmpro");
+				$this->data["membership_change"] = __("Membership has been cancelled", "pmpro");
 			
 			if(!empty($user->membership_level->enddate))
 			{
