@@ -766,20 +766,13 @@ function pmpro_updateMembershipCategories($level, $categories)
 function pmpro_getMembershipCategories($level_id)
 {
 	global $wpdb;
-	$categories = $wpdb->get_results("SELECT c.category_id
+	$categories = $wpdb->get_col("SELECT c.category_id
 										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . $level_id . "'", ARRAY_N);
-
-	$returns = array();
-	if(is_array($categories))
-	{
-		foreach($categories as $cat)
-		{
-			$returns[] = $cat;
-		}
-	}
-	return $returns;
+										WHERE c.membership_id = '" . $level_id . "'");
+	
+	return $categories;
 }
+
 
 function pmpro_isAdmin($user_id = NULL)
 {
