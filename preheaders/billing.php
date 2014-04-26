@@ -58,7 +58,7 @@
 					
 					<?php
 						$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
-						if(!empty($pmpro_strip_verify_address))
+						if(!empty($pmpro_stripe_verify_address))
 						{
 						?>
 						,address_line1: jQuery('#baddress1').val(),
