@@ -37,7 +37,6 @@ require_once(PMPRO_DIR . "/includes/upgradecheck.php");			//database and other u
 
 require_once(PMPRO_DIR . "/scheduled/crons.php");				//crons for expiring members, sending expiration emails, etc
 
-//require_once(PMPRO_DIR . "/classes/class.pmprogateway.php");	//loaded by memberorder class when needed
 require_once(PMPRO_DIR . "/classes/class.memberorder.php");		//class to process and save orders
 require_once(PMPRO_DIR . "/classes/class.pmproemail.php");		//setup and filter emails sent by PMPro
 
@@ -60,6 +59,12 @@ require_once(PMPRO_DIR . "/includes/xmlrpc.php");				//xmlrpc methods
 
 require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[checkout_button] shortcode to show link to checkout for a level
 require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortcode to hide/show member content
+
+//load gateway
+require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded by memberorder class when needed
+$pmpro_gateway = pmpro_getOption("gateway");
+if(!empty($pmpro_gateway))
+	require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_" . $pmpro_gateway . ".php");
 
 /*
 	Setup the DB and check for upgrades

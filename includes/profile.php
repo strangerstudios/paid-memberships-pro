@@ -153,6 +153,7 @@ function pmpro_membership_level_profile_fields($user)
 		?>
 </table>
 <?php
+	do_action("pmpro_after_membership_level_profile_fields", $user);	
 }
 
 //save the fields on update

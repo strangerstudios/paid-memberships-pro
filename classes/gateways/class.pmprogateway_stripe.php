@@ -5,6 +5,9 @@
 	//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 	if(!class_exists("Stripe"))
 		require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_stripe', 'init'));
 		
 	/**
 	 * PMProGateway_stripe Class
@@ -29,6 +32,110 @@
 			
 			return $this->gateway;
 		}										
+		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
+		}
+		
+		/**
+		 * Fields shown on edit user page
+		 *		 
+		 * @since 2.0
+		 */
+		static function user_profile_fields($user)
+		{
+			global $wpdb, $current_user, $pmpro_currency_symbol;
+
+			$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
+			$current_year = date("Y");
+			$current_month = date("m");
+			
+			//make sure the current user has privileges
+			$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
+			if(!current_user_can($membership_level_capability))
+				return false;
+
+			//more privelges they should have			
+			$show_membership_level = apply_filters("pmpro_profile_show_membership_level", true, $user);
+			if(!$show_membership_level)
+				return false;
+				
+			//check that user has a current subscription at Stripe
+			$sub = true;
+			
+			if(!empty($sub))
+			{
+				$uwhen = "no";	///testing
+			?>
+			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
+			<table class="form-table">
+				<tr>
+					<th><label for="membership_level"><?php _e("Update", "pmpro"); ?></label></th>
+					<td>
+						<select id="updates_when" name="updates_when[]">
+							<option value="no">No</option>
+							<option value="now">Now</option>
+							<option value="payment">After Next Payment</option>
+							<option value="date">On Date</option>
+						</select>
+						<span id="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>														
+							<select name="updates_date_month[]">
+								<?php																
+									for($i = 1; $i < 13; $i++)
+									{
+									?>
+									<option value="<?php echo $i?>" <?php if($i == $udate_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+									<?php
+									}
+								?>
+							</select>
+							<input name="updates_date_day[]"" type="text" size="2" value="" />
+							<input name="updates_date_year[]" type="text" size="4" value="" />
+						</span>
+						<span id="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
+							<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="" /> 
+							<small><?php _e('per', 'pmpro');?></small>
+							<input name="updates_cycle_number[]" type="text" size="5" value="" />
+							<select name="updates_cycle_period[]">
+							  <?php							
+								foreach ( $cycles as $name => $value ) {
+								  echo "<option value='$value'";
+								  if ( $uv == $value ) echo " selected='selected'";
+								  echo ">$name</option>";
+								}
+							  ?>
+							</select>
+						</span>	
+						<span id="updates_add">
+							<a href="#">+ Update</a>
+						</span>								
+						<script>
+							jQuery(document).ready(function() {
+								jQuery('#updates_when').change(function() {
+									if(jQuery(this).val() == 'date')
+										jQuery('#updates_date').show();
+									else
+										jQuery('#updates_date').hide();
+										
+									if(jQuery(this).val() == 'no')
+										jQuery('#updates_billing').hide();
+									else
+										jQuery('#updates_billing').show();
+								});
+							});
+						</script>
+					</td>
+				</tr>				
+			</table>
+			<?php
+			}
+		}
 		
 		/**
 		 * Process checkout and decide if a charge and or subscribe is needed
