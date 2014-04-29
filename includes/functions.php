@@ -103,11 +103,13 @@ function pmpro_setOption($s, $v = NULL)
 {
 	//no value is given, set v to the request var
 	if($v === NULL && isset($_REQUEST[$s]))
-		$v = trim($_REQUEST[$s]);
+		$v = $_REQUEST[$s];
 			
 	if(is_array($v))
 		$v = implode(",", $v);
-	
+	else
+		$v = trim($v);	
+
 	return update_option("pmpro_" . $s, $v);	
 }		
 
