@@ -110,6 +110,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed formatting of the level cost when a discount code is applied via AJAX.
 * Removed extra $ in checkout_check.html email template.
 * Fixed bug where pmpro_setOption was not working for array values in $_POST, e.g. the hideadlevels setting on the Advanced Settings page.
+* pmpro_getMembershipCategories($level_id) now returns an array of category IDs instead of an array of arrays.
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.
