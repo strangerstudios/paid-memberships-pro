@@ -175,7 +175,6 @@
 							_e('Expires', 'pmpro');
 					?>
 				</th>
-				<th><?php _e('Status', 'pmpro');?></th>
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -229,22 +228,7 @@
 										echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
 								?>
 							</td>
-		<td>
-							
-							<?php
-							//TODO: Ask Jason...do we need to sanitize??
-							//Display the current status of the member.
-							$sql_query = "SELECT* FROM `".$wpdb->pmpro_memberships_users."` WHERE `user_id` = ".$auser->ID. " ORDER BY `modified` DESC";
-							
-							$user_info = $wpdb->get_results($sql_query);
-							if($user_info)
-							{
-								echo $user_info[0]->status;
-							}
-							
-							?>
-							
-							</td>
+
 						</tr>
 					<?php
 				}
