@@ -946,7 +946,7 @@
 				'startdate' => $startdate,
 				'enddate' => $enddate);
 
-			if(pmpro_changeMembershipLevel($custom_level, $user_id))
+			if(pmpro_changeMembershipLevel($custom_level, $user_id, 'changed'))
 			{
 				//we're good
 				//blank order for free levels

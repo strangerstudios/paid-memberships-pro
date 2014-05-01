@@ -212,7 +212,7 @@
 				}
 				else
 				{				
-					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'inactive');
 					
 					ipnlog("Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . ".");	
 					
@@ -272,7 +272,7 @@
 				}
 				else
 				{				
-					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'inactive');
 					
 					ipnlog("Canceled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $subscr_id . ".");	
 					
@@ -469,7 +469,7 @@
 		}				
 		
 		//change level and continue "checkout"
-		if(pmpro_changeMembershipLevel($custom_level, $morder->user_id) !== false)
+		if(pmpro_changeMembershipLevel($custom_level, $morder->user_id, 'active') !== false)
 		{						
 			//update order status and transaction ids					
 			$morder->status = "success";

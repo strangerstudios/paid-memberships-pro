@@ -271,7 +271,7 @@
 			inslog($pmpro_error);				
 		}
 		
-		if( pmpro_changeMembershipLevel($custom_level, $morder->user_id) !== false ) {
+		if( pmpro_changeMembershipLevel($custom_level, $morder->user_id, 'active') !== false ) {
 			//update order status and transaction ids					
 			$morder->status = "success";
 			$morder->payment_transaction_id = $txn_id;
@@ -412,7 +412,7 @@
 		//hook to do other stuff when payments stop
 		do_action("pmpro_subscription_recuring_stopped", $last_order);							
 	
-		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID );
+		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {			
 			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			//$pmpro_msgt = "pmpro_success";
@@ -444,7 +444,7 @@
 		//hook to do other stuff when payments restart	
 		do_action("pmpro_subscription_recuring_restarted", $last_order);							
 	
-		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
+		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'active' );
 		if( $worked === true ) {			
 			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			//$pmpro_msgt = "pmpro_success";

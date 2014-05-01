@@ -9,7 +9,9 @@ function pmpro_delete_user($user_id = NULL)
 
 	//changing their membership level to 0 will cancel any subscription and remove their membership level entry
 	//we don't remove the orders because it would affect reporting
-	if(pmpro_changeMembershipLevel(0, $user_id))
+	
+	//If the user is deleted, count it as an admin cancellation.
+	if(pmpro_changeMembershipLevel(0, $user_id, 'admin_cancelled'))
 	{
 		//okay
 	}

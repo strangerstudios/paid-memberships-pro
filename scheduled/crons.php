@@ -18,7 +18,7 @@
 		foreach($expired as $e)
 		{						
 			//remove their membership
-			pmpro_changeMembershipLevel(false, $e->user_id);
+			pmpro_changeMembershipLevel(false, $e->user_id, 'expired');
 			
 			$send_email = apply_filters("pmpro_send_expiration_email", true, $e->user_id);
 			if($send_email)
