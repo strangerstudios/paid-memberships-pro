@@ -96,8 +96,8 @@ function pmpro_page_save($post_id)
 //wrapper to add meta boxes
 function pmpro_page_meta_wrapper()
 {
-	add_meta_box('pmpro_page_meta', _x('Require Membership', 'metabox heading', 'pmpro'), 'pmpro_page_meta', 'page', 'side');
-	add_meta_box('pmpro_page_meta', _x('Require Membership', 'metabox heading', 'pmpro'), 'pmpro_page_meta', 'post', 'side');
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'pmpro'), 'pmpro_page_meta', 'page', 'side');
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'pmpro'), 'pmpro_page_meta', 'post', 'side');
 }
 if (is_admin())
 {

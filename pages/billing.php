@@ -19,9 +19,9 @@
 				<?php
 					$level = $current_user->membership_level;
 					if($current_user->membership_level->cycle_number > 1) {
-						printf(_x('%s every %d %s.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+						printf(__('%s every %d %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 					} elseif($current_user->membership_level->cycle_number == 1) {
-						printf(_x('%s per %s.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+						printf(__('%s per %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
 					} else {
 						echo $pmpro_currency_symbol, $current_user->membership_level->billing_amount;
 					}

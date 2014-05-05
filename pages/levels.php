@@ -44,9 +44,9 @@ if($pmpro_msg)
 		</td>
 		<td>
 		<?php if(empty($current_user->membership_level->ID)) { ?>
-			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Select', 'Choose a level from levels page', 'pmpro');?></a>
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'pmpro');?></a>
 		<?php } elseif ( !$current_level ) { ?>                	
-			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Select', 'Choose a level from levels page', 'pmpro');?></a>
+			<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Select', 'pmpro');?></a>
 		<?php } elseif($current_level) { ?>      
 			
 			<?php
@@ -54,7 +54,7 @@ if($pmpro_msg)
 				if(!pmpro_isLevelRecurring($current_user->membership_level))
 				{
 				?>
-					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php echo _x('Renew', 'Clicking to renew from levels page', 'pmpro');?></a>
+					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'pmpro');?></a>
 				<?php
 				}
 				else

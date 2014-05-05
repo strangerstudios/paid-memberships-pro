@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 * Removed extra $ in checkout_check.html email template.
 * Fixed bug where pmpro_setOption was not working for array values in $_POST, e.g. the hideadlevels setting on the Advanced Settings page.
 * pmpro_getMembershipCategories($level_id) now returns an array of category IDs instead of an array of arrays.
+* Swapped all _x function calls to use __ or _e so they are translated.
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.
