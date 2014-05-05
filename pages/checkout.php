@@ -654,7 +654,7 @@
 					<div id="pmpro_license">
 <?php echo wpautop($tospage->post_content)?>
 					</div>								
-					<input type="checkbox" name="tos" value="1" id="tos" /> <label for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
+					<input type="checkbox" name="tos" value="1" id="tos" /> <label class="pmpro_normal pmpro_clickable" for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
 				</td>
 			</tr>
 		</tbody>
