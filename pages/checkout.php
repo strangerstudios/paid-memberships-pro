@@ -4,7 +4,7 @@
 	
 	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 ?>
-
+<div id="pmpro_level-<?php echo $pmpro_level->id; ?>">
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
@@ -489,7 +489,7 @@
 					}
 				?>
 				<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
-				<div>
+				<div class="pmpro_payment-card-type">
 					<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
 					<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?> class=" <?php echo pmpro_getClassForField("CardType");?>">
 						<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
@@ -499,12 +499,12 @@
 				</div>
 				<?php } ?>
 			
-				<div>
+				<div class="pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
 					<input id="AccountNumber" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="AccountNumber"<?php } ?> class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="number"<?php } ?> autocomplete="off" /> 
 				</div>
 			
-				<div>
+				<div class="pmpro_payment-expiration">
 					<label for="ExpirationMonth"><?php _e('Expiration Date', 'pmpro');?></label>
 					<select id="ExpirationMonth" <?php if($gateway != "stripe") { ?>name="ExpirationMonth"<?php } ?> class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
 						<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
@@ -536,7 +536,7 @@
 					if($pmpro_show_cvv)
 					{
 				?>
-				<div>
+				<div class="pmpro_payment-cvv">
 					<label for="CVV"><?php _ex('CVV', 'Credit card security code, CVV/CCV/CVV2', 'pmpro');?></label>
 					<input class="input" id="CVV" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="CVV"<?php } ?> type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="cvv"<?php } ?> />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _ex("what's this?", 'link to CVV help', 'pmpro');?></a>)</small>
 				</div>
@@ -545,7 +545,7 @@
 				?>
 				
 				<?php if($pmpro_show_discount_code) { ?>
-				<div>
+				<div class="pmpro_payment-discount-code">
 					<label for="discount_code"><?php _e('Discount Code', 'pmpro');?></label>
 					<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
 					<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'pmpro');?>" />
@@ -654,7 +654,7 @@
 					<div id="pmpro_license">
 <?php echo wpautop($tospage->post_content)?>
 					</div>								
-					<input type="checkbox" name="tos" value="1" id="tos" /> <label for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
+					<input type="checkbox" name="tos" value="1" id="tos" /> <label class="pmpro_normal pmpro_clickable" for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
 				</td>
 			</tr>
 		</tbody>
@@ -701,7 +701,7 @@
 	</div>	
 		
 </form>
-
+</div> <!-- end pmpro_level-ID -->
 <?php if($gateway == "paypal" || $gateway == "paypalexpress") { ?>
 <script>	
 	//choosing payment method

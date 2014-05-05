@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 3.8.1
-Stable tag: 1.7.9.1
+Tested up to: 3.9
+Stable tag: 1.7.10
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,17 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.10 =
+* Added getGatewaySubscriptionStatus() and getGatewayTransactionStatus() methods to the MemberOrder class. These are implemented for PayPalExpress right now and will hit the gateway API to return information on a subscription or transaction.
+* Added pmpro_memberslist_expires_column filter to members list. $order is passed as second parameter. Use this to filter the date or "Never" shown in the Expires column.
+* No longer showing "Membership Levels" link in dashboard menu if a user has access to other PMPro settings pages, but not the membership levels page.
+* Added pmpro_applydiscountcode_return_js hook. http://www.paidmembershipspro.com/hook/pmpro_applydiscountcode_return_js/
+* Fixed formatting of the level cost when a discount code is applied via AJAX.
+* Removed extra $ in checkout_check.html email template.
+* Fixed bug where pmpro_setOption was not working for array values in $_POST, e.g. the hideadlevels setting on the Advanced Settings page.
+* pmpro_getMembershipCategories($level_id) now returns an array of category IDs instead of an array of arrays.
+* Swapped all _x function calls to use __ or _e so they are translated.
+
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.
 

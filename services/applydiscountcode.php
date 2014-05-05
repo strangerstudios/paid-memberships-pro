@@ -44,6 +44,9 @@
 			jQuery('#<?php echo $msgfield?>').removeClass('pmpro_success');
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_error');
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
+			
+			//filter to insert your own code
+			<?php do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, $level_id, false); ?>
 		</script>
 		<?php
 		
@@ -80,7 +83,7 @@
 			jQuery('#other_discount_code_p').hide();			
 		});
 		
-		jQuery('#pmpro_level_cost').html('<?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'pmpro'), $discount_code);?><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?>');
+		jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'pmpro'), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?></p>');
 		
 		<?php
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
@@ -98,7 +101,7 @@
 			}
 			
 			//hide/show billing
-			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress" || pmpro_getOption("gateway") == "paypalstandard")
+			if(pmpro_isLevelFree($code_level) || pmpro_getOption("gateway") == "paypalexpress" || pmpro_getOption("gateway") == "paypalstandard" || pmpro_getOption('gateway') == 'check')
 			{				
 				?>
 				jQuery('#pmpro_billing_address_fields').hide();
@@ -131,5 +134,8 @@
 					<?php
 				}
 			}
+			
+			//filter to insert your own code
+			do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, $level_id, $code_level);
 		?>
 	</script>

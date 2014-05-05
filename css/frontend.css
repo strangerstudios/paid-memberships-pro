@@ -63,6 +63,8 @@ fieldset[disabled] .pmpro_btn {
 ---------------------------------------*/
 form.pmpro_form div {clear: left; margin: .5em 0 1em 0;  }
 form.pmpro_form label {float: left; margin: 3px 10px 0 0; width: 120px; font-weight: bold; text-align: right; }
+form.pmpro_form label.pmpro_normal {float: none; margin: 0 0 0 0; width: auto; font-weight: normal; text-align: auto;}
+.pmpro_clickable {cursor: pointer;}
 form.pmpro_form .likelabel {font-weight: bold; }
 form.pmpro_form .input, form.pmpro_form textarea, .input, form.pmpro_form select {padding: 3px; border: 1px solid #AAA; margin: 0 3px 0 0; }
 form.pmpro_form textarea {font-family: Arial, Helvetica, sans-serif; font-size: 12px; }

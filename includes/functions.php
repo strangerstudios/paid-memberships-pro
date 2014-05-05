@@ -103,11 +103,13 @@ function pmpro_setOption($s, $v = NULL)
 {
 	//no value is given, set v to the request var
 	if($v === NULL && isset($_REQUEST[$s]))
-		$v = trim($_REQUEST[$s]);
+		$v = $_REQUEST[$s];
 			
 	if(is_array($v))
 		$v = implode(",", $v);
-	
+	else
+		$v = trim($v);	
+
 	return update_option("pmpro_" . $s, $v);	
 }		
 
@@ -199,9 +201,9 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 	global $pmpro_currency_symbol;
 	//initial payment
 	if(!$short)
-		$r = sprintf(_x('The price for membership is <strong>%s</strong> now', 'Initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
 	else
-		$r = sprintf(_x('<strong>%s</strong> now', 'Shorter initial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
 			
 	//recurring part
 	if($level->billing_amount != '0.00')
@@ -210,36 +212,36 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{			
 			if($level->cycle_number == '1')
 			{
-				$r .= sprintf(_x(' and then <strong>%s per %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}				
 			else
 			{ 
-				$r .= sprintf(_x(' and then <strong>%s every %d %s for %d more %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}
 		}
 		elseif($level->billing_limit == 1)
 		{
-			$r .= sprintf(_x(' and then <strong>%s after %d %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 after 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 		}
 		else
 		{
 			if( $level->billing_amount === $level->initial_payment ) {
 				if($level->cycle_number == '1')
 				{
-					$r = sprintf(_x('The price for membership is <strong>%s per %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+					$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
 				}
 				else
 				{
-					$r = sprintf(_x('The price for membership is <strong>%s every %d %s</strong>.', 'Initial payment in cost text generation, with recurrence.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+					$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
 				}
 			} else {
 				if($level->cycle_number == '1')
 				{
-					$r .= sprintf(_x(' and then <strong>%s per %s</strong>.', 'Recurring payment in cost text generation. E.g. $5 every month.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
 				}
 				else
 				{
-					$r .= sprintf(_x(' and then <strong>%s every %d %s</strong>.', 'Recurring payment in cost text generation. E.g., $5 every 2 months.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 				}
 			}
 		}
@@ -257,22 +259,22 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{
 			if($level->trial_limit == '1')
 			{
-				$r .= ' ' . _x('After your initial payment, your first payment is Free.', 'Trial payment in cost text generation.', 'pmpro');
+				$r .= ' ' . __('After your initial payment, your first payment is Free.', 'pmpro');
 			}
 			else
 			{
-				$r .= ' ' . sprintf(_x('After your initial payment, your first %d payments are Free.', 'Trial payment in cost text generation.', 'pmpro'), $level->trial_limit);
+				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments are Free.', 'pmpro'), $level->trial_limit);
 			}
 		}
 		else
 		{
 			if($level->trial_limit == '1')
 			{
-				$r .= ' ' . sprintf(_x('After your initial payment, your first payment will cost %s.', 'Trial payment in cost text generation.', 'pmpro'), $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), $pmpro_currency_symbol . $level->trial_amount);
 			}
 			else
 			{
-				$r .= ' ' . sprintf(_x('After your initial payment, your first %d payments will cost %s.', 'Trial payment in cost text generation. E.g. ... first 2 payments will cost $5', 'pmpro'), $level->trial_limit, $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, $pmpro_currency_symbol . $level->trial_amount);
 			}
 		}
 	}
@@ -283,7 +285,7 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 	
 	if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
 	{
-		$r .= sprintf(_x('Customers in %s will be charged %s%% tax.', 'Tax part in cost text generation', 'pmpro'), $tax_state, round($tax_rate * 100, 2));			
+		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));			
 	}
 	
 	if(!$tags)
@@ -297,7 +299,7 @@ function pmpro_getLevelExpiration(&$level)
 {		
 	if($level->expiration_number)
 	{
-		$expiration_text = sprintf(_x("Membership expires after %d %s.", "Expiration text. E.g. Membership expires after 5 Months.", "pmpro"), $level->expiration_number, pmpro_translate_billing_period($level->expiration_period, $level->expiration_number));			
+		$expiration_text = sprintf(__("Membership expires after %d %s.", "pmpro"), $level->expiration_number, pmpro_translate_billing_period($level->expiration_period, $level->expiration_number));			
 	}
 	else
 		$expiration_text = "";
@@ -634,7 +636,22 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		}
 		else
 		{
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (`membership_id`,`user_id`, `startdate`) VALUES ('" . $level . "','" . $user_id . "',NOW())";
+			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
+			    VALUES (
+			    '" . $user_id . "',
+			    '" . $level . "',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    '0',
+			    NOW(),
+                	    '0000-00-00 00:00:00'
+                	    )";
+
 			if(!$wpdb->query($sql))
 			{
 				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
@@ -751,20 +768,13 @@ function pmpro_updateMembershipCategories($level, $categories)
 function pmpro_getMembershipCategories($level_id)
 {
 	global $wpdb;
-	$categories = $wpdb->get_results("SELECT c.category_id
+	$categories = $wpdb->get_col("SELECT c.category_id
 										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . $level_id . "'", ARRAY_N);
-
-	$returns = array();
-	if(is_array($categories))
-	{
-		foreach($categories as $cat)
-		{
-			$returns[] = $cat;
-		}
-	}
-	return $returns;
+										WHERE c.membership_id = '" . $level_id . "'");
+	
+	return $categories;
 }
+
 
 function pmpro_isAdmin($user_id = NULL)
 {
@@ -1183,7 +1193,7 @@ function pmpro_implodeToEnglish($array)
 	if (!count ($array)) 
 		return $last;    
 
-	return implode (', ', $array).' ' . _x('and', 'Used in generation of a list. E.g. a, b, c (AND) d.', 'pmpro') . ' '.$last; 
+	return implode (', ', $array).' ' . __('and', 'pmpro') . ' '.$last; 
 } 
 
 //from yoast wordpress seo
@@ -1372,7 +1382,7 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
 function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)
 {
 	if(empty($button_text))
-		$button_text = _x("Sign Up for !!name!! Now", "Do not translate !!name!!", "pmpro");
+		$button_text = __("Sign Up for !!name!! Now", "pmpro");
 		
 	if(empty($classes))
 		$classes = "btn btn-primary";

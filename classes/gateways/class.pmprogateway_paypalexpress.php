@@ -89,6 +89,10 @@
 			
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));									
 			
+			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
+            		if ($account_optional)
+                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
+			
 			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);						
 			
 			///echo str_replace("&", "&<br />", $nvpStr);
@@ -303,7 +307,33 @@
 								
 				return false;				
 			}
-		}	
+		}
+
+		function getSubscriptionStatus(&$order)
+		{			
+			if(empty($order->subscription_transaction_id))
+				return false;
+			
+			//paypal profile stuff
+			$nvpStr = "";			
+			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);						
+						
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);						
+											
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) 
+			{				
+				return $this->httpParsedResponseAr;				
+			} 
+			else  
+			{
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+				
+				return false;				
+			}
+		}		
 		
 		/**
 		 * PAYPAL Function
