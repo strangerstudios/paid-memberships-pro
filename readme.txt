@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: 1.7.10
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 * Added pmpro_applydiscountcode_return_js hook. http://www.paidmembershipspro.com/hook/pmpro_applydiscountcode_return_js/
 * Fixed formatting of the level cost when a discount code is applied via AJAX.
 * Removed extra $ in checkout_check.html email template.
+* Fixed bug where pmpro_setOption was not working for array values in $_POST, e.g. the hideadlevels setting on the Advanced Settings page.
+* pmpro_getMembershipCategories($level_id) now returns an array of category IDs instead of an array of arrays.
+* Swapped all _x function calls to use __ or _e so they are translated.
+* Initial Czech Republic (cs_CZ) translation files. (Thanks, Petr Hlaváček)
 
 = 1.7.9.1 =
 * Firing activation hook on upgrade so menu doesn't disappear.

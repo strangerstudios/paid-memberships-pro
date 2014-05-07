@@ -48,29 +48,29 @@
 			{
 				switch ($pmpro_page_name) {
  					case 'account':
- 						$pmpro_page_title = _x( 'Membership Account', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Account', 'pmpro' );
  						break;
  					case 'billing':
- 						$pmpro_page_title = _x( 'Membership Billing', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Billing', 'pmpro' );
  						break;
  					case 'cancel':
- 						$pmpro_page_title = _x( 'Membership Cancel', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Cancel', 'pmpro' );
  						break;
  					case 'checkout':
- 						$pmpro_page_title = _x( 'Membership Checkout', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Checkout', 'pmpro' );
  						break;
  					case 'confirmation':
- 						$pmpro_page_title = _x( 'Membership Confirmation', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Confirmation', 'pmpro' );
  						break;
  					case 'invoice':
- 						$pmpro_page_title = _x( 'Membership Invoice', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Invoice', 'pmpro' );
  						break;
  					case 'levels':
- 						$pmpro_page_title = _x( 'Membership Levels', 'Page title', 'pmpro' );
+ 						$pmpro_page_title = __( 'Membership Levels', 'pmpro' );
  						break;
  					
  					default:
- 						$pmpro_page_title = sprintf( _x( 'Membership %s', 'Page title template', 'pmpro' ), ucwords($pmpro_page_name) );
+ 						$pmpro_page_title = sprintf( __( 'Membership %s', 'Page title template', 'pmpro' ), ucwords($pmpro_page_name) );
  						break;
  				}
  				
