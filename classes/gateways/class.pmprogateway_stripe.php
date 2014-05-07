@@ -74,65 +74,118 @@
 				$uwhen = "no";	///testing
 			?>
 			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
+			<p>
+				<?php 
+					if(empty($_REQUEST['user_id'])) 
+						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes.", 'pmpro');
+					else
+						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'pmpro');
+				?>
+			</p>
 			<table class="form-table">
 				<tr>
 					<th><label for="membership_level"><?php _e("Update", "pmpro"); ?></label></th>
-					<td>
-						<select id="updates_when" name="updates_when[]">
-							<option value="no">No</option>
-							<option value="now">Now</option>
-							<option value="payment">After Next Payment</option>
-							<option value="date">On Date</option>
-						</select>
-						<span id="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>														
-							<select name="updates_date_month[]">
-								<?php																
-									for($i = 1; $i < 13; $i++)
-									{
+					<td id="updates_td">
+						<?php
+							$updates = array(1);
+						?>
+						<div class="updates_update" style="display: none;">
+							<select class="updates_when" name="updates_when[]">							
+								<option value="now">Now</option>
+								<option value="payment">After Next Payment</option>
+								<option value="date">On Date</option>
+							</select>
+							<span class="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>
+								<select name="updates_date_month[]">
+									<?php																
+										for($i = 1; $i < 13; $i++)
+										{
+										?>
+										<option value="<?php echo $i?>" <?php if($i == $udate_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+										<?php
+										}
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $udate_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
-									<?php
+								</select>
+								<input name="updates_date_day[]" type="text" size="2" value="" />
+								<input name="updates_date_year[]" type="text" size="4" value="" />
+							</span>
+							<span class="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
+								<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="" /> 
+								<small><?php _e('per', 'pmpro');?></small>
+								<input name="updates_cycle_number[]" type="text" size="5" value="" />
+								<select name="updates_cycle_period[]">
+								  <?php							
+									foreach ( $cycles as $name => $value ) {
+									  echo "<option value='$value'";
+									  if ( $uv == $value ) echo " selected='selected'";
+									  echo ">$name</option>";
 									}
-								?>
-							</select>
-							<input name="updates_date_day[]"" type="text" size="2" value="" />
-							<input name="updates_date_year[]" type="text" size="4" value="" />
-						</span>
-						<span id="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
-							<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="" /> 
-							<small><?php _e('per', 'pmpro');?></small>
-							<input name="updates_cycle_number[]" type="text" size="5" value="" />
-							<select name="updates_cycle_period[]">
-							  <?php							
-								foreach ( $cycles as $name => $value ) {
-								  echo "<option value='$value'";
-								  if ( $uv == $value ) echo " selected='selected'";
-								  echo ">$name</option>";
-								}
-							  ?>
-							</select>
-						</span>	
-						<span id="updates_add">
-							<a href="#">+ Update</a>
-						</span>								
-						<script>
-							jQuery(document).ready(function() {
-								jQuery('#updates_when').change(function() {
-									if(jQuery(this).val() == 'date')
-										jQuery('#updates_date').show();
-									else
-										jQuery('#updates_date').hide();
-										
-									if(jQuery(this).val() == 'no')
-										jQuery('#updates_billing').hide();
-									else
-										jQuery('#updates_billing').show();
-								});
-							});
-						</script>
+								  ?>
+								</select>
+							</span>	
+							<span>
+								<a class="updates_remove" href="javascript:void(0);">Remove</a>								
+							</span>
+						</div>
+						
+						<p><a id="updates_new_update" href="javascript:void(0);">+ New Update</a></p>
 					</td>
 				</tr>				
-			</table>
+			</table>						
+			<script>
+				jQuery(document).ready(function() {
+					//function to update dropdowns/etc based on when field
+					function updateSubscriptionUpdateFields(when)
+					{
+						if(jQuery(when).val() == 'date')
+							jQuery(when).parent().children('.updates_date').show();
+						else
+							jQuery(when).parent().children('.updates_date').hide();
+							
+						if(jQuery(when).val() == 'no')
+							jQuery(when).parent().children('.updates_billing').hide();
+						else
+							jQuery(when).parent().children('.updates_billing').show();
+					}										
+
+					//and update on page load
+					jQuery('.updates_when').each(function() { if(jQuery(this).parent().css('display') != 'none') updateSubscriptionUpdateFields(this); });
+					
+					//add a new update when clicking to
+					var num_updates_divs = <?php echo count($updates);?>;
+					jQuery('#updates_new_update').click(function() {
+						//get updates
+						updates = jQuery('.updates_update').toArray();
+												
+						//clone the first one
+						new_div = jQuery(updates[0]).clone();													
+												
+						//append
+						new_div.insertBefore('#updates_new_update');
+												
+						//update events
+						addUpdateEvents()
+												
+						//unhide it
+						new_div.show();
+						updateSubscriptionUpdateFields(new_div.children('.updates_when'));												
+					});
+										
+					function addUpdateEvents()
+					{
+						//update when when changes
+						jQuery('.updates_when').change(function() {
+							updateSubscriptionUpdateFields(this);
+						});
+						
+						//remove updates when clicking
+						jQuery('.updates_remove').click(function() {						
+							jQuery(this).parent().parent().remove();
+						});
+					}
+					addUpdateEvents();
+				});
+			</script>
 			<?php
 			}
 		}
