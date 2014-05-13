@@ -1511,10 +1511,16 @@ if(!function_exists("pmpro_getMemberDays"))
 		{		
 			$startdate = pmpro_getMemberStartdate($user_id, $level_id);
 				
-			$now = time();
-			$days = ($now - $startdate)/3600/24;
+			//check that there was a startdate at all
+			if(empty($startdate))
+				$pmpro_member_days[$user_id][$level_id] = 0;
+			else
+			{			
+				$now = time();
+				$days = ($now - $startdate)/3600/24;
 					
-			$pmpro_member_days[$user_id][$level_id] = $days;
+				$pmpro_member_days[$user_id][$level_id] = $days;
+			}
 		}
 		
 		return $pmpro_member_days[$user_id][$level_id];
