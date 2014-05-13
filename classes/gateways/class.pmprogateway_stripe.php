@@ -41,6 +41,14 @@
 		static function init()
 		{			
 			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
+			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));
+			
+			/*
+				Notes for updates.
+				
+				* Add on pmpro_change_membership_level hook to remove updates when a level is changed.
+				* Make sure that there is an active subscription/customer on the Stripe side.
+			*/
 		}
 		
 		/**
@@ -87,47 +95,63 @@
 					<th><label for="membership_level"><?php _e("Update", "pmpro"); ?></label></th>
 					<td id="updates_td">
 						<?php
-							$updates = array(1);
-						?>
-						<div class="updates_update" style="display: none;">
-							<select class="updates_when" name="updates_when[]">							
-								<option value="now">Now</option>
-								<option value="payment">After Next Payment</option>
-								<option value="date">On Date</option>
-							</select>
-							<span class="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>
-								<select name="updates_date_month[]">
-									<?php																
-										for($i = 1; $i < 13; $i++)
-										{
+							$old_updates = $user->pmpro_stripe_updates;
+							if(is_array($old_updates))
+							{
+								$updates = array_merge(
+									array(array('template'=>true, 'when'=>'now', 'date_month'=>'', 'date_day'=>'', 'date_year'=>'', 'billing_amount'=>'', 'cycle_number'=>'', 'cycle_period'=>'Month')),
+									$old_updates
+								);
+							}
+							else
+								$updates = array(array('template'=>true, 'when'=>'now', 'date_month'=>'', 'date_day'=>'', 'date_year'=>'', 'billing_amount'=>'', 'cycle_number'=>'', 'cycle_period'=>'Month'));
+														
+							foreach($updates as $update)
+							{
+							?>
+							<div class="updates_update" <?php if(!empty($update['template'])) { ?>style="display: none;"<?php } ?>>
+								<select class="updates_when" name="updates_when[]">							
+									<option value="now" <?php selected($update['when'], "now");?>>Now</option>
+									<option value="payment" <?php selected($update['when'], "payment");?>>After Next Payment</option>
+									<option value="date" <?php selected($update['when'], "date");?>>On Date</option>
+								</select>
+								<span class="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>
+									<select name="updates_date_month[]">
+										<?php																
+											for($i = 1; $i < 13; $i++)
+											{
+											?>
+											<option value="<?php echo $i?>" <?php if(!empty($update['date_month']) && $update['date_month'] == $i) { ?>selected="selected"<?php } ?>>
+												<?php echo date("M", strtotime($i . "/1/" . $current_year));?>
+											</option>
+											<?php
+											}
 										?>
-										<option value="<?php echo $i?>" <?php if($i == $udate_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
-										<?php
+									</select>
+									<input name="updates_date_day[]" type="text" size="2" value="<?php if(!empty($update['date_day'])) echo esc_attr($update['date_day']);?>" />
+									<input name="updates_date_year[]" type="text" size="4" value="<?php if(!empty($update['date_year'])) echo esc_attr($update['date_year']);?>" />
+								</span>
+								<span class="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
+									<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="<?php echo esc_attr($update['billing_amount']);?>" /> 
+									<small><?php _e('per', 'pmpro');?></small>
+									<input name="updates_cycle_number[]" type="text" size="5" value="<?php echo esc_attr($update['cycle_number']);?>" />
+									<select name="updates_cycle_period[]">
+									  <?php							
+										foreach ( $cycles as $name => $value ) {
+										  echo "<option value='$value'";
+										  if(!empty($update['cycle_period']) && $update['cycle_period'] == $value) echo " selected='selected'";
+										  echo ">$name</option>";
 										}
-									?>
-								</select>
-								<input name="updates_date_day[]" type="text" size="2" value="" />
-								<input name="updates_date_year[]" type="text" size="4" value="" />
-							</span>
-							<span class="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="" /> 
-								<small><?php _e('per', 'pmpro');?></small>
-								<input name="updates_cycle_number[]" type="text" size="5" value="" />
-								<select name="updates_cycle_period[]">
-								  <?php							
-									foreach ( $cycles as $name => $value ) {
-									  echo "<option value='$value'";
-									  if ( $uv == $value ) echo " selected='selected'";
-									  echo ">$name</option>";
-									}
-								  ?>
-								</select>
-							</span>	
-							<span>
-								<a class="updates_remove" href="javascript:void(0);">Remove</a>								
-							</span>
-						</div>
-						
+									  ?>
+									</select>
+								</span>	
+								<span>
+									<a class="updates_remove" href="javascript:void(0);">Remove</a>								
+								</span>
+							</div>
+							<?php
+							}
+							?>						
 						<p><a id="updates_new_update" href="javascript:void(0);">+ New Update</a></p>
 					</td>
 				</tr>				
@@ -188,6 +212,61 @@
 			</script>
 			<?php
 			}
+		}
+		
+		/**
+		 * Process fields from the edit user page
+		 *		 
+		 * @since 2.0
+		 */
+		static function user_profile_fields_save($user_id)
+		{
+			//check capabilities
+			$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
+			if(!current_user_can($membership_level_capability))
+				return false;
+			
+			//make sure some value was passed
+			if(!isset($_POST['updates_when']) || !is_array($_POST['updates_when']))
+				return;
+			
+			//build array of updates (we skip the first because it's the template field for the JavaScript
+			for($i = 1; $i < count($_POST['updates_when']); $i++)
+			{
+				$update = array();
+				
+				//all updates have these values
+				$update['when'] = $_POST['updates_when'][$i];
+				$update['billing_amount'] = $_POST['updates_billing_amount'][$i];
+				$update['cycle_number'] = $_POST['updates_cycle_number'][$i];
+				$update['cycle_period'] = $_POST['updates_cycle_period'][$i];
+								
+				//these values only for on date updates
+				if($_POST['updates_when'][$i] == "date")
+				{
+					$update['date_month'] = $_POST['updates_date_month'][$i];
+					$update['date_day'] = $_POST['updates_date_day'][$i];
+					$update['date_year'] = $_POST['updates_date_year'][$i];
+				}
+				
+				//make sure the update is valid
+				if(empty($update['cycle_number']))
+					continue;
+				
+				//if when is now, update the subscription
+				if($update['when'] == "now")
+				{
+					//update subscription
+				
+					continue;
+				}
+				
+				//add to array
+				$updates[] = $update;
+			}
+			
+			//save in user meta
+			update_user_meta($user_id, "pmpro_stripe_updates", $updates);			
 		}
 		
 		/**
