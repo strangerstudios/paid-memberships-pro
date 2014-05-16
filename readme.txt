@@ -103,7 +103,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.10.1 =
+* Fixed bug where the $pmpro_levels global would sometimes not include all levels on the levels page. (A better fix for this is coming in v2.0.)
 * Fixed bug in pmpro_getMemberDays that sometimes reported more days than the user had really been a member. (Thanks, surefireweb)
+* Fixed bug where search results were being incorrectly filtered. The pmpro_search_filter() function in includes/content.php hides member content from non-members if the "show exceprts" setting is set to false.
 
 = 1.7.10 =
 * Added getGatewaySubscriptionStatus() and getGatewayTransactionStatus() methods to the MemberOrder class. These are implemented for PayPalExpress right now and will hit the gateway API to return information on a subscription or transaction.
