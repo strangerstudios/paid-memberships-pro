@@ -117,50 +117,64 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 
 function pmpro_search_filter($query)
 {
-	global $current_user, $wpdb, $pmpro_pages;
+    global $current_user, $wpdb, $pmpro_pages;
 
-	//hide pmpro pages from search results
-	if(!$query->is_admin && $query->is_search)
-	{
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post
-	}
+    //hide pmpro pages from search results
+    if(!$query->is_admin && $query->is_search)
+    {
+        $query->set('post__not_in', $pmpro_pages ); // id of page or post
+    }
 
-	//hide member pages from non-members (make sure they aren't hidden from members)
-	if(!$query->is_admin && $query->is_search)
-	{
-		//get pages that are in levels, but not in mine
-		$sqlQuery1 = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
-		if(!empty($current_user->membership_level->ID))
-			$sqlQuery1 .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
-		$pages_in_levels_not_mine = $wpdb->get_col($sqlQuery1);
+    //hide member pages from non-members (make sure they aren't hidden from members)
+    if(!$query->is_admin)
+    {
+        //get page ids that are in my levels
+        $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+        $my_pages = array();
 
-		//get pages that are in my level
-		$sqlQuery2 = "SELECT page_id FROM $wpdb->pmpro_memberships_pages ";
-		if(!empty($current_user->membership_level->ID))
-			$sqlQuery2 .= "WHERE membership_id = '" . $current_user->membership_level->ID . "' ";
-		$pages_in_my_level = $wpdb->get_col($sqlQuery2);
+        if($levels) {
+            foreach($levels as $key => $level) {
+                //get restricted posts for level
+                $sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE membership_id=" . $current_user->membership_level->ID;
+                $member_pages = $wpdb->get_col($sql);
+                $my_pages = array_unique(array_merge($my_pages, $member_pages));
+            }
+        }
 
-		$hidden_page_ids = array_diff($pages_in_levels_not_mine, $pages_in_my_level);
-		if($hidden_page_ids)
-			$query->set('post__not_in', $hidden_page_ids ); // id of page or post
+        //get hidden page ids
+        $sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
+        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
 
-		//get categories that are filtered by level, but not my level
-		$sqlQuery = "SELECT category_id FROM $wpdb->pmpro_memberships_categories ";
-		if(!empty($current_user->membership_level->ID))
-			$sqlQuery .= "WHERE membership_id <> '" . $current_user->membership_level->ID . "' ";
-		$hidden_post_cats = $wpdb->get_col($sqlQuery);
+        if($hidden_page_ids)
+            $query->set('post__not_in', $hidden_page_ids);
 
-		//make this work
-		if($hidden_post_cats)
-			$query->set('category__not_in', $hidden_post_cats);
-	}
+        //get categories that are filtered by level, but not my level
+        $my_cats = array();
 
-	return $query;
+        if($levels) {
+            foreach($levels as $key => $level) {
+                $member_cats = pmpro_getMembershipCategories($level->id);
+                $my_cats = array_unique(array_merge($my_cats, $member_cats));
+            }
+        }
+
+        //get hidden cats
+
+        $sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
+        $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
+
+        //make this work
+        if($hidden_cat_ids)
+            $query->set('category__not_in', $hidden_cat_ids);
+    }
+
+    return $query;
 }
 $showexcerpts = pmpro_getOption("showexcerpts");
-if(empty($showexcerpts))
-	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 
+if(empty($showexcerpts))
+    add_filter( 'pre_get_posts', 'pmpro_search_filter' );
+    
 function pmpro_membership_content_filter($content, $skipcheck = false)
 {	
 	global $post, $current_user;
