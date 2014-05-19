@@ -93,6 +93,18 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.79");
 		$pmpro_db_version = 1.79;
 	}
+	
+	//set default filter_queries setting
+	if($pmpro_db_version < 1.791)
+	{
+		if(!pmpro_getOption("showexcerpts"))
+			pmpro_setOption("filterqueries", 1);
+		else
+			pmpro_SetOption("filterqueries", 0);
+			
+		pmpro_setOption("db_version", "1.791");
+		$pmpro_db_version = 1.791;
+	}
 }
 
 function pmpro_upgrade_1_7()

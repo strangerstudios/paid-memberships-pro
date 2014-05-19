@@ -14,6 +14,7 @@
 		pmpro_setOption("nonmembertext");
 		pmpro_setOption("notloggedintext");
 		pmpro_setOption("rsstext");		
+		pmpro_setOption("filterqueries");
 		pmpro_setOption("showexcerpts");
 		pmpro_setOption("hideads");
 		pmpro_setOption("hideadslevels");
@@ -46,6 +47,7 @@
 	$notloggedintext = pmpro_getOption("notloggedintext");
 	$rsstext = pmpro_getOption("rsstext");	
 	$hideads = pmpro_getOption("hideads");
+    $filterqueries = pmpro_getOption('filterqueries');
 	$showexcerpts = pmpro_getOption("showexcerpts");
 	$hideadslevels = pmpro_getOption("hideadslevels");
 	
@@ -117,16 +119,27 @@
 			
 			<tr>
 				<th scope="row" valign="top">
-					<label for="showexcerpts"><?php _e('Show Excerpts to Non-Members?', 'pmpro');?></label>
+					<label for="filterqueries"><?php _e("Filter searches and archives?", 'pmpro');?></label>
 				</th>
 				<td>
-					<select id="showexcerpts" name="showexcerpts">
-						<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php _e('No - Hide excerpts.', 'pmpro');?></option>
-						<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Show excerpts.', 'pmpro');?></option>  
+					<select id="filterqueries" name="filterqueries">
+						<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php _e('No - Non-members will see restricted posts/pages in searches and archives.', 'pmpro');?></option>
+						<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Only members will see restricted posts/pages in searches and archives.', 'pmpro');?></option>  
 					</select>                        
 				</td>
 			</tr> 
 			<tr>
+				<th scope="row" valign="top">
+					<label for="showexcerpts"><?php _e('Show Excerpts to Non-Members?', 'pmpro');?></label>
+            </th>
+            <td>
+                <select id="showexcerpts" name="showexcerpts">
+                    <option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php _e('No - Hide excerpts.', 'pmpro');?></option>
+                    <option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Show excerpts.', 'pmpro');?></option>
+                </select>
+            </td>
+            </tr>
+            <tr>
 				<th scope="row" valign="top">
 					<label for="hideads">Hide Ads From Members?</label>
 				</th>
