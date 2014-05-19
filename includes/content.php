@@ -119,15 +119,11 @@ function pmpro_search_filter($query)
 {
     global $current_user, $wpdb, $pmpro_pages;
 
-    //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search)
     {
+        //hide pmpro pages from search results
         $query->set('post__not_in', $pmpro_pages ); // id of page or post
-    }
-	
-    //hide member pages from non-members (make sure they aren't hidden from members)
-    if(!$query->is_admin)
-    {
+
         //get page ids that are in my levels
         $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
         $my_pages = array();
@@ -142,10 +138,7 @@ function pmpro_search_filter($query)
         }
 
         //get hidden page ids
-        if(!empty($my_pages))
-			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
-		else
-			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
+        $sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
         $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
 
         if($hidden_page_ids)
@@ -162,11 +155,8 @@ function pmpro_search_filter($query)
         }
 
         //get hidden cats
-        if(!empty($my_cats))
-			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
-		else
-			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
-					
+
+        $sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
 
         //make this work
