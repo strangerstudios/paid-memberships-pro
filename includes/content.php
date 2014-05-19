@@ -118,15 +118,15 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 function pmpro_search_filter($query)
 {
     global $current_user, $wpdb, $pmpro_pages;
-
+	
     //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search)
     {
         $query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
-
-    //hide member pages from non-members (make sure they aren't hidden from members)
-    if(!$query->is_admin)
+		
+    //hide member pages from non-members (make sure they aren't hidden from members)    
+	if(!$query->is_admin && !$query->is_singular)
     {
         //get page ids that are in my levels
         $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
@@ -142,7 +142,10 @@ function pmpro_search_filter($query)
         }
 
         //get hidden page ids
-        $sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
+        if(!empty($my_pages))
+			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
+		else
+			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
         $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
 
         if($hidden_page_ids)
@@ -159,8 +162,11 @@ function pmpro_search_filter($query)
         }
 
         //get hidden cats
-
-        $sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
+        if(!empty($my_cats))
+			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
+		else
+			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
+					
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
 
         //make this work
@@ -170,9 +176,8 @@ function pmpro_search_filter($query)
 
     return $query;
 }
-$showexcerpts = pmpro_getOption("showexcerpts");
-
-if(empty($showexcerpts))
+$filterqueries = pmpro_getOption("filterqueries");
+if(empty($filterqueries))
     add_filter( 'pre_get_posts', 'pmpro_search_filter' );
     
 function pmpro_membership_content_filter($content, $skipcheck = false)
