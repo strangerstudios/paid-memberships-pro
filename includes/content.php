@@ -177,7 +177,7 @@ function pmpro_search_filter($query)
     return $query;
 }
 $filterqueries = pmpro_getOption("filterqueries");
-if(empty($filterqueries))
+if(!empty($filterqueries))
     add_filter( 'pre_get_posts', 'pmpro_search_filter' );
     
 function pmpro_membership_content_filter($content, $skipcheck = false)
