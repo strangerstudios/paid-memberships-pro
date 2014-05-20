@@ -5,12 +5,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"Report-Msgid-Bugs-To: jason@strangerstudios.com\n"
-"POT-Creation-Date: 2014-05-20 21:27+0000\n"
+"POT-Creation-Date: 2014-05-20 23:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -163,11 +161,12 @@ msgid "Add Ons"
 msgstr ""
 
 #: adminpages/advancedsettings.php:43 adminpages/advancedsettings.php:35
-#: adminpages/advancedsettings.php:42
+#: adminpages/advancedsettings.php:42 adminpages/advancedsettings.php:43
 msgid "Your advanced settings have been updated."
 msgstr ""
 
 #: adminpages/advancedsettings.php:68 adminpages/advancedsettings.php:66
+#: adminpages/advancedsettings.php:68
 #, php-format
 msgid ""
 "This content is for !!levels!! members only. <a href=\"%s\">Register here</"
@@ -175,6 +174,7 @@ msgid ""
 msgstr ""
 
 #: adminpages/advancedsettings.php:73 adminpages/advancedsettings.php:71
+#: adminpages/advancedsettings.php:73
 #, php-format
 msgid ""
 "Please <a href=\"%s\">login</a> to view this content. (<a href=\"%s"
@@ -182,75 +182,77 @@ msgid ""
 msgstr ""
 
 #: adminpages/advancedsettings.php:78 adminpages/advancedsettings.php:76
+#: adminpages/advancedsettings.php:78
 msgid ""
 "This content is for members only. Visit the site and log in/register to read."
 msgstr ""
 
 #: adminpages/advancedsettings.php:88 includes/adminpages.php:51
 #: includes/adminpages.php:135 adminpages/advancedsettings.php:79
-#: adminpages/advancedsettings.php:86 includes/adminpages.php:13
-#: includes/adminpages.php:51 includes/adminpages.php:64
-#: includes/adminpages.php:128 includes/adminpages.php:135
+#: adminpages/advancedsettings.php:86 adminpages/advancedsettings.php:88
+#: includes/adminpages.php:13 includes/adminpages.php:51
+#: includes/adminpages.php:64 includes/adminpages.php:128
+#: includes/adminpages.php:135
 msgid "Advanced Settings"
 msgstr ""
 
 #: adminpages/advancedsettings.php:94 adminpages/advancedsettings.php:85
-#: adminpages/advancedsettings.php:92
+#: adminpages/advancedsettings.php:92 adminpages/advancedsettings.php:94
 msgid "Message for Logged-in Non-members"
 msgstr ""
 
 #: adminpages/advancedsettings.php:98 adminpages/advancedsettings.php:89
-#: adminpages/advancedsettings.php:96
+#: adminpages/advancedsettings.php:96 adminpages/advancedsettings.php:98
 msgid ""
 "This message replaces the post content for non-members. Available variables"
 msgstr ""
 
 #: adminpages/advancedsettings.php:103 adminpages/advancedsettings.php:94
-#: adminpages/advancedsettings.php:101
+#: adminpages/advancedsettings.php:101 adminpages/advancedsettings.php:103
 msgid "Message for Logged-out Users"
 msgstr ""
 
 #: adminpages/advancedsettings.php:107 adminpages/advancedsettings.php:98
-#: adminpages/advancedsettings.php:105
+#: adminpages/advancedsettings.php:105 adminpages/advancedsettings.php:107
 msgid "This message replaces the post content for logged-out visitors."
 msgstr ""
 
 #: adminpages/advancedsettings.php:112 adminpages/advancedsettings.php:103
-#: adminpages/advancedsettings.php:110
+#: adminpages/advancedsettings.php:110 adminpages/advancedsettings.php:112
 msgid "Message for RSS Feed"
 msgstr ""
 
 #: adminpages/advancedsettings.php:116 adminpages/advancedsettings.php:107
-#: adminpages/advancedsettings.php:114
+#: adminpages/advancedsettings.php:114 adminpages/advancedsettings.php:116
 msgid "This message replaces the post content in RSS feeds."
 msgstr ""
 
-#: adminpages/advancedsettings.php:122
+#: adminpages/advancedsettings.php:122 adminpages/advancedsettings.php:122
 msgid "Filter searches and archives?"
 msgstr ""
 
-#: adminpages/advancedsettings.php:126
+#: adminpages/advancedsettings.php:126 adminpages/advancedsettings.php:126
 msgid ""
 "No - Non-members will see restricted posts/pages in searches and archives."
 msgstr ""
 
-#: adminpages/advancedsettings.php:127
+#: adminpages/advancedsettings.php:127 adminpages/advancedsettings.php:127
 msgid ""
 "Yes - Only members will see restricted posts/pages in searches and archives."
 msgstr ""
 
 #: adminpages/advancedsettings.php:133 adminpages/advancedsettings.php:113
-#: adminpages/advancedsettings.php:120
+#: adminpages/advancedsettings.php:120 adminpages/advancedsettings.php:133
 msgid "Show Excerpts to Non-Members?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:137 adminpages/advancedsettings.php:117
-#: adminpages/advancedsettings.php:124
+#: adminpages/advancedsettings.php:124 adminpages/advancedsettings.php:137
 msgid "No - Hide excerpts."
 msgstr ""
 
 #: adminpages/advancedsettings.php:138 adminpages/advancedsettings.php:118
-#: adminpages/advancedsettings.php:125
+#: adminpages/advancedsettings.php:125 adminpages/advancedsettings.php:138
 msgid "Yes - Show excerpts."
 msgstr ""
 
@@ -258,121 +260,124 @@ msgstr ""
 #: adminpages/advancedsettings.php:219 adminpages/membershiplevels.php:571
 #: adminpages/paymentsettings.php:434 adminpages/paymentsettings.php:459
 #: includes/profile.php:123 adminpages/advancedsettings.php:128
-#: adminpages/advancedsettings.php:135 adminpages/advancedsettings.php:187
-#: adminpages/advancedsettings.php:194 adminpages/advancedsettings.php:199
-#: adminpages/advancedsettings.php:206 adminpages/membershiplevels.php:563
-#: adminpages/membershiplevels.php:569 adminpages/membershiplevels.php:571
-#: adminpages/paymentsettings.php:414 adminpages/paymentsettings.php:429
-#: adminpages/paymentsettings.php:434 adminpages/paymentsettings.php:454
-#: adminpages/paymentsettings.php:459 includes/profile.php:121
-#: includes/profile.php:123
+#: adminpages/advancedsettings.php:135 adminpages/advancedsettings.php:148
+#: adminpages/advancedsettings.php:187 adminpages/advancedsettings.php:194
+#: adminpages/advancedsettings.php:199 adminpages/advancedsettings.php:206
+#: adminpages/advancedsettings.php:207 adminpages/advancedsettings.php:219
+#: adminpages/membershiplevels.php:563 adminpages/membershiplevels.php:569
+#: adminpages/membershiplevels.php:571 adminpages/paymentsettings.php:414
+#: adminpages/paymentsettings.php:429 adminpages/paymentsettings.php:434
+#: adminpages/paymentsettings.php:454 adminpages/paymentsettings.php:459
+#: includes/profile.php:121 includes/profile.php:123
 msgid "No"
 msgstr ""
 
 #: adminpages/advancedsettings.php:149 adminpages/advancedsettings.php:129
-#: adminpages/advancedsettings.php:136
+#: adminpages/advancedsettings.php:136 adminpages/advancedsettings.php:149
 msgid "Hide Ads From All Members"
 msgstr ""
 
 #: adminpages/advancedsettings.php:150 adminpages/advancedsettings.php:130
-#: adminpages/advancedsettings.php:137
+#: adminpages/advancedsettings.php:137 adminpages/advancedsettings.php:150
 msgid "Hide Ads From Certain Members"
 msgstr ""
 
 #: adminpages/advancedsettings.php:157 adminpages/advancedsettings.php:137
-#: adminpages/advancedsettings.php:144
+#: adminpages/advancedsettings.php:144 adminpages/advancedsettings.php:157
 msgid "Ads from the following plugins will be automatically turned off"
 msgstr ""
 
 #: adminpages/advancedsettings.php:158 adminpages/advancedsettings.php:138
-#: adminpages/advancedsettings.php:145
+#: adminpages/advancedsettings.php:145 adminpages/advancedsettings.php:158
 msgid "To hide ads in your template code, use code like the following"
 msgstr ""
 
 #: adminpages/advancedsettings.php:169 adminpages/advancedsettings.php:149
-#: adminpages/advancedsettings.php:156
+#: adminpages/advancedsettings.php:156 adminpages/advancedsettings.php:169
 msgid "Choose Levels to Hide Ads From"
 msgstr ""
 
 #: adminpages/advancedsettings.php:203 adminpages/advancedsettings.php:183
-#: adminpages/advancedsettings.php:190
+#: adminpages/advancedsettings.php:190 adminpages/advancedsettings.php:203
 msgid "Redirect all traffic from registration page to /susbcription/?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:203 adminpages/advancedsettings.php:183
-#: adminpages/advancedsettings.php:190
+#: adminpages/advancedsettings.php:190 adminpages/advancedsettings.php:203
 msgid "multisite only"
 msgstr ""
 
 #: adminpages/advancedsettings.php:208 adminpages/membershiplevels.php:571
 #: adminpages/paymentsettings.php:435 adminpages/paymentsettings.php:460
 #: includes/profile.php:124 adminpages/advancedsettings.php:188
-#: adminpages/advancedsettings.php:195 adminpages/membershiplevels.php:563
-#: adminpages/membershiplevels.php:569 adminpages/membershiplevels.php:571
-#: adminpages/paymentsettings.php:415 adminpages/paymentsettings.php:424
-#: adminpages/paymentsettings.php:430 adminpages/paymentsettings.php:435
-#: adminpages/paymentsettings.php:455 adminpages/paymentsettings.php:460
-#: includes/profile.php:122 includes/profile.php:124
+#: adminpages/advancedsettings.php:195 adminpages/advancedsettings.php:208
+#: adminpages/membershiplevels.php:563 adminpages/membershiplevels.php:569
+#: adminpages/membershiplevels.php:571 adminpages/paymentsettings.php:415
+#: adminpages/paymentsettings.php:424 adminpages/paymentsettings.php:430
+#: adminpages/paymentsettings.php:435 adminpages/paymentsettings.php:455
+#: adminpages/paymentsettings.php:460 includes/profile.php:122
+#: includes/profile.php:124
 msgid "Yes"
 msgstr ""
 
 #: adminpages/advancedsettings.php:215 adminpages/advancedsettings.php:195
-#: adminpages/advancedsettings.php:202
+#: adminpages/advancedsettings.php:202 adminpages/advancedsettings.php:215
 msgid "Use reCAPTCHA?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:220 adminpages/advancedsettings.php:200
-#: adminpages/advancedsettings.php:207
+#: adminpages/advancedsettings.php:207 adminpages/advancedsettings.php:220
 msgid "Yes - Free memberships only."
 msgstr ""
 
 #: adminpages/advancedsettings.php:221 adminpages/advancedsettings.php:201
-#: adminpages/advancedsettings.php:208
+#: adminpages/advancedsettings.php:208 adminpages/advancedsettings.php:221
 msgid "Yes - All memberships."
 msgstr ""
 
 #: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
-#: adminpages/advancedsettings.php:210
+#: adminpages/advancedsettings.php:210 adminpages/advancedsettings.php:223
 msgid "A free reCAPTCHA key is required."
 msgstr ""
 
 #: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
-#: adminpages/advancedsettings.php:210
+#: adminpages/advancedsettings.php:210 adminpages/advancedsettings.php:223
 msgid "Click here to signup for reCAPTCHA"
 msgstr ""
 
 #: adminpages/advancedsettings.php:229 adminpages/advancedsettings.php:209
-#: adminpages/advancedsettings.php:216
+#: adminpages/advancedsettings.php:216 adminpages/advancedsettings.php:229
 msgid "reCAPTCHA Public Key"
 msgstr ""
 
 #: adminpages/advancedsettings.php:232 adminpages/advancedsettings.php:212
-#: adminpages/advancedsettings.php:219
+#: adminpages/advancedsettings.php:219 adminpages/advancedsettings.php:232
 msgid "reCAPTCHA Private Key"
 msgstr ""
 
 #: adminpages/advancedsettings.php:238 adminpages/advancedsettings.php:218
-#: adminpages/advancedsettings.php:225
+#: adminpages/advancedsettings.php:225 adminpages/advancedsettings.php:238
 msgid "Require Terms of Service on signups?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:245 adminpages/advancedsettings.php:225
-#: adminpages/advancedsettings.php:232
+#: adminpages/advancedsettings.php:232 adminpages/advancedsettings.php:245
 msgid ""
 "If yes, create a WordPress page containing your TOS agreement and assign it "
 "using the dropdown above."
 msgstr ""
 
 #: adminpages/advancedsettings.php:285 adminpages/advancedsettings.php:272
+#: adminpages/advancedsettings.php:285
 msgid "selected"
 msgstr ""
 
 #: adminpages/advancedsettings.php:368 adminpages/pagesettings.php:251
 #: adminpages/paymentsettings.php:532 adminpages/advancedsettings.php:284
-#: adminpages/advancedsettings.php:355 adminpages/pagesettings.php:209
-#: adminpages/pagesettings.php:223 adminpages/pagesettings.php:251
-#: adminpages/paymentsettings.php:485 adminpages/paymentsettings.php:526
-#: adminpages/paymentsettings.php:532
+#: adminpages/advancedsettings.php:355 adminpages/advancedsettings.php:368
+#: adminpages/pagesettings.php:209 adminpages/pagesettings.php:223
+#: adminpages/pagesettings.php:251 adminpages/paymentsettings.php:485
+#: adminpages/paymentsettings.php:526 adminpages/paymentsettings.php:532
 msgid "Save Settings"
 msgstr ""
 
@@ -488,7 +493,7 @@ msgstr ""
 msgid "Leave blank for unlimited uses."
 msgstr ""
 
-#: adminpages/discountcodes.php:400
+#: adminpages/discountcodes.php:400 adminpages/discountcodes.php:400
 msgid "Which Levels Will This Code Apply To?"
 msgstr ""
 
@@ -1510,8 +1515,8 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: adminpages/orders.php:904 includes/profile.php:27 pages/checkout.php:33
-#: pages/confirmation.php:47 pages/confirmation.php:64
+#: adminpages/orders.php:904 includes/init.php:217 includes/profile.php:27
+#: pages/checkout.php:33 pages/confirmation.php:47 pages/confirmation.php:64
 #: pages/confirmation.php:105 pages/invoice.php:28 pages/invoice.php:51
 #: adminpages/orders.php:601 adminpages/orders.php:904 includes/profile.php:25
 #: includes/profile.php:27 pages/checkout.php:33 pages/checkout.php:34
@@ -2896,6 +2901,11 @@ msgstr ""
 msgid "Please specify a level id."
 msgstr ""
 
+#: includes/init.php:232 includes/profile.php:39 includes/profile.php:37
+#: includes/profile.php:39
+msgid "None"
+msgstr ""
+
 #: includes/localization.php:23 includes/localization.php:23
 msgid "Day"
 msgstr ""
@@ -2927,23 +2937,19 @@ msgstr ""
 msgid "Current Level"
 msgstr ""
 
-#: includes/profile.php:39 includes/profile.php:37 includes/profile.php:39
-msgid "None"
-msgstr ""
-
 #: includes/profile.php:84 includes/profile.php:82 includes/profile.php:84
 msgid "User is not paying."
 msgstr ""
 
 #: includes/upgradecheck.php:422 includes/upgradecheck.php:401
-#: includes/upgradecheck.php:410
+#: includes/upgradecheck.php:410 includes/upgradecheck.php:422
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Register</a>"
 msgstr ""
 
 #: includes/upgradecheck.php:425 includes/upgradecheck.php:404
-#: includes/upgradecheck.php:413
+#: includes/upgradecheck.php:413 includes/upgradecheck.php:425
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Log In</a> "
@@ -2951,7 +2957,7 @@ msgid ""
 msgstr ""
 
 #: includes/upgradecheck.php:429 includes/upgradecheck.php:408
-#: includes/upgradecheck.php:417
+#: includes/upgradecheck.php:417 includes/upgradecheck.php:429
 msgid ""
 "This content is for !!levels!! members only. Visit the site and log in/"
 "register to read."
@@ -3378,7 +3384,7 @@ msgstr ""
 msgid "ending in"
 msgstr ""
 
-#: pages/confirmation.php:97
+#: pages/confirmation.php:97 pages/confirmation.php:97
 #, php-format
 msgid ""
 "Below are details about your membership account. A welcome email has been "
