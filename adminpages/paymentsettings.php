@@ -155,17 +155,15 @@
 				</th>
 				<td>
 					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
-						<option value="">Testing Only</option>
-						<option value="check" <?php selected( $gateway, "check" ); ?>><?php _e('Pay by Check', 'pmpro');?></option>
-						<option value="stripe" <?php selected( $gateway, "stripe" ); ?>>Stripe</option>						
-						<option value="paypalexpress" <?php selected( $gateway, "paypalexpress" ); ?>>PayPal Express</option>
-						<option value="paypal" <?php selected( $gateway, "paypal" ); ?>>PayPal Website Payments Pro</option>
-						<option value="payflowpro" <?php selected( $gateway, "payflowpro" ); ?>>PayPal Payflow Pro/PayPal Pro</option>
-						<option value="paypalstandard" <?php selected( $gateway, "paypalstandard" ); ?>>PayPal Standard</option>
-						<option value="authorizenet" <?php selected( $gateway, "authorizenet" ); ?>>Authorize.net</option>
-						<option value="braintree" <?php selected( $gateway, "braintree" ); ?>>Braintree Payments</option>
-						<option value="twocheckout" <?php selected( $gateway, "twocheckout" ); ?>>2Checkout</option>
-						<option value="cybersource" <?php selected( $gateway, "cybersource" ); ?>>CyberSource</option>
+						<?php
+							global $pmpro_gateways;
+							foreach($pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label)
+							{
+							?>
+							<option value="<?php echo esc_attr($pmpro_gateway_name);?>" <?php selected($gateway, $pmpro_gateway_name);?>><?php echo $pmpro_gateway_label;?></option>
+							<?php
+							}
+						?>
 					</select>                        
 				</td>
 			</tr>

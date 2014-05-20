@@ -445,14 +445,15 @@
 					<td>
 						<?php if(in_array("gateway", $read_only_fields) && $order_id > 0) { echo $order->gateway; } else { ?>
 						<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
-							<option value="" <?php if(empty($order->gateway)) { ?>selected="selected"<?php } ?>><?php _e('Testing Only', 'pmpro');?></option>
-							<option value="check" <?php if($order->gateway == "check") { ?>selected="selected"<?php } ?>><?php _e('Pay by Check', 'pmpro');?></option>
-							<option value="stripe" <?php if($order->gateway == "stripe") { ?>selected="selected"<?php } ?>>Stripe</option>
-							<option value="paypalstandard" <?php if($order->gateway == "paypalstandard") { ?>selected="selected"<?php } ?>>PayPal Standard</option>
-							<option value="paypalexpress" <?php if($order->gateway == "paypalexpress") { ?>selected="selected"<?php } ?>>PayPal Express</option>
-							<option value="paypal" <?php if($order->gateway == "paypal") { ?>selected="selected"<?php } ?>>PayPal Website Payments Pro</option>
-							<option value="payflowpro" <?php if($order->gateway == "payflowpro") { ?>selected="selected"<?php } ?>>PayPal Payflow Pro</option>
-							<option value="authorizenet" <?php if($order->gateway == "authorizenet") { ?>selected="selected"<?php } ?>>Authorize.net</option>
+							<?php
+								global $pmpro_gateways;
+								foreach($pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label)
+								{
+								?>
+								<option value="<?php echo esc_attr($pmpro_gateway_name);?>" <?php selected($order->gateway, $pmpro_gateway_name);?>><?php echo $pmpro_gateway_label;?></option>
+								<?php
+								}
+							?>
 						</select>  
 						<?php } ?>
 					</td>

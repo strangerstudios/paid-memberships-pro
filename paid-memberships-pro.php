@@ -98,6 +98,24 @@ define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
 global $gateway_environment;
 $gateway_environment = pmpro_getOption("gateway_environment");
 
+//all gateways with filter (since v2.0)
+global $pmpro_gateways;
+$pmpro_gateways = apply_filters('pmpro_gateways',
+							    array(
+									'' => __('Testing Only', 'pmpro'),
+									'check' => __('Pay by Check', 'pmpro'),
+									'stripe' => __('Stripe', 'pmpro'),
+									'paypalexpress' => __('PayPal Express', 'pmpro'),
+									'paypal' => __('PayPal Website Payments Pro', 'pmpro'),
+									'payflowpro' => __('PayPal Payflow Pro/PayPal Pro', 'pmpro'),
+									'paypalstandard' => __('PayPal Standard', 'pmpro'),
+									'authorizenet' => __('Authorize.net', 'pmpro'),
+									'braintree' => __('Braintree Payments', 'pmpro'),
+									'twocheckout' => __('2Checkout', 'pmpro'),
+									'cybersource' => __('Cybersource', 'pmpro')														
+							    )
+							);
+
 //when checking levels for users, we save the info here for caching. each key is a user id for level object for that user.
 global $all_membership_levels;
 
