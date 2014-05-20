@@ -94,7 +94,7 @@
 	} 
 	else 
 	{
-		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account. A welcome email with has been sent to %s.', 'pmpro'), $current_user->user_email) . "</p>";
+		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account. A welcome email has been sent to %s.', 'pmpro'), $current_user->user_email) . "</p>";
 		
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, false);
 		

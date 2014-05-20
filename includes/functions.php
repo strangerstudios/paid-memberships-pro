@@ -1365,7 +1365,7 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
 	$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 	if(!$include_hidden)
 		$sqlQuery .= " WHERE allow_signups = 1 ORDER BY id";
-		
+	
 	//get levels from the DB
 	$raw_levels = $wpdb->get_results($sqlQuery);
 	
@@ -1511,10 +1511,16 @@ if(!function_exists("pmpro_getMemberDays"))
 		{		
 			$startdate = pmpro_getMemberStartdate($user_id, $level_id);
 				
-			$now = time();
-			$days = ($now - $startdate)/3600/24;
+			//check that there was a startdate at all
+			if(empty($startdate))
+				$pmpro_member_days[$user_id][$level_id] = 0;
+			else
+			{			
+				$now = time();
+				$days = ($now - $startdate)/3600/24;
 					
-			$pmpro_member_days[$user_id][$level_id] = $days;
+				$pmpro_member_days[$user_id][$level_id] = $days;
+			}
 		}
 		
 		return $pmpro_member_days[$user_id][$level_id];

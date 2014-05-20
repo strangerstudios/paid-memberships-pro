@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 3.9
-Stable tag: 1.7.10
+Stable tag: 1.7.11
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -101,12 +101,24 @@ Not sure? You can find out by doing a bit a research.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
-== Changelog == 
+== Changelog ==
 = 2.0 =
 * Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
 * Added a pmpro_after_membership_level_profile_fields hook after the "Membership Level" field dropdown on the edit profile page.
 * Users can now have multiple membership levels at the same time. For more information: TBA
 * Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
+
+= 1.7.11 =
+* Added "Filter searches and archives?" setting to advanced settings tab. If you had "Show excerpts to non-members?" set to No before, then this will be set to Yes after upgrade. But now you can show excerpts on single post pages while still hiding restricted content from searches and archives.
+
+= 1.7.10.2 =
+* Fixed MySQL warning/error that was introduced in 1.7.10.1 and showing for some people who had "hide excerpts" enabled.
+
+= 1.7.10.1 =
+* Fixed bug where the $pmpro_levels global would sometimes not include all levels on the levels page. (A better fix for this is coming in v2.0.)
+* Fixed bug in pmpro_getMemberDays that sometimes reported more days than the user had really been a member. (Thanks, surefireweb)
+* Fixed bug where search results were being incorrectly filtered. The pmpro_search_filter() function in includes/content.php hides member content from non-members if the "show exceprts" setting is set to false.
+* Now checking specifically for payment_status = 'Failed' in the IPN handler before sending off the payment failed emails. (There may be other statuses we want to consider as "failures" as well, but we want to avoid failing on "pending" statuses/etc.)
 
 = 1.7.10 =
 * Added getGatewaySubscriptionStatus() and getGatewayTransactionStatus() methods to the MemberOrder class. These are implemented for PayPalExpress right now and will hit the gateway API to return information on a subscription or transaction.

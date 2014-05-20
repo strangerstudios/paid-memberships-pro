@@ -122,8 +122,10 @@
 			//subscription payment, completed or failure?
 			if($_POST['payment_status'] == "Completed")
 				pmpro_ipnSaveOrder($txn_id, $last_subscr_order);
-			else
+			elseif($_POST['payment_status'] == "Failed")
 				pmpro_ipnFailedPayment($last_subscr_order);
+			else
+				ipnlog('Payment status is ' . $_POST['payment_status'] . '.');
 				
 			pmpro_ipnExit();
 		}

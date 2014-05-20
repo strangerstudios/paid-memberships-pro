@@ -30,5 +30,5 @@
 	}
 	
 	global $pmpro_levels;
-	$pmpro_levels = pmpro_getAllLevels();	
+	$pmpro_levels = pmpro_getAllLevels(false, true);		
 	$pmpro_levels = apply_filters("pmpro_levels_array", $pmpro_levels);
