@@ -5,10 +5,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2014-05-05 13:29-0400\n"
+"Report-Msgid-Bugs-To: jason@strangerstudios.com\n"
+"POT-Creation-Date: 2014-05-20 21:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -125,6 +127,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:490 adminpages/membershiplevels.php:496
 #: adminpages/membershiplevels.php:498 adminpages/pagesettings.php:69
 #: includes/adminpages.php:44 includes/adminpages.php:100
+#: includes/adminpages.php:107
 msgid "Membership Levels"
 msgstr ""
 
@@ -155,90 +158,104 @@ msgstr ""
 #: includes/adminpages.php:142 adminpages/admin_header.php:133
 #: adminpages/admin_header.php:154 includes/adminpages.php:14
 #: includes/adminpages.php:52 includes/adminpages.php:69
-#: includes/adminpages.php:135
+#: includes/adminpages.php:135 includes/adminpages.php:142
 msgid "Add Ons"
 msgstr ""
 
-#: adminpages/advancedsettings.php:42 adminpages/advancedsettings.php:35
+#: adminpages/advancedsettings.php:43 adminpages/advancedsettings.php:35
 #: adminpages/advancedsettings.php:42
 msgid "Your advanced settings have been updated."
 msgstr ""
 
-#: adminpages/advancedsettings.php:66 adminpages/advancedsettings.php:66
+#: adminpages/advancedsettings.php:68 adminpages/advancedsettings.php:66
 #, php-format
 msgid ""
 "This content is for !!levels!! members only. <a href=\"%s\">Register here</"
 "a>."
 msgstr ""
 
-#: adminpages/advancedsettings.php:71 adminpages/advancedsettings.php:71
+#: adminpages/advancedsettings.php:73 adminpages/advancedsettings.php:71
 #, php-format
 msgid ""
 "Please <a href=\"%s\">login</a> to view this content. (<a href=\"%s"
 "\">Register here</a>.)"
 msgstr ""
 
-#: adminpages/advancedsettings.php:76 adminpages/advancedsettings.php:76
+#: adminpages/advancedsettings.php:78 adminpages/advancedsettings.php:76
 msgid ""
 "This content is for members only. Visit the site and log in/register to read."
 msgstr ""
 
-#: adminpages/advancedsettings.php:86 includes/adminpages.php:51
+#: adminpages/advancedsettings.php:88 includes/adminpages.php:51
 #: includes/adminpages.php:135 adminpages/advancedsettings.php:79
 #: adminpages/advancedsettings.php:86 includes/adminpages.php:13
 #: includes/adminpages.php:51 includes/adminpages.php:64
-#: includes/adminpages.php:128
+#: includes/adminpages.php:128 includes/adminpages.php:135
 msgid "Advanced Settings"
 msgstr ""
 
-#: adminpages/advancedsettings.php:92 adminpages/advancedsettings.php:85
+#: adminpages/advancedsettings.php:94 adminpages/advancedsettings.php:85
 #: adminpages/advancedsettings.php:92
 msgid "Message for Logged-in Non-members"
 msgstr ""
 
-#: adminpages/advancedsettings.php:96 adminpages/advancedsettings.php:89
+#: adminpages/advancedsettings.php:98 adminpages/advancedsettings.php:89
 #: adminpages/advancedsettings.php:96
 msgid ""
 "This message replaces the post content for non-members. Available variables"
 msgstr ""
 
-#: adminpages/advancedsettings.php:101 adminpages/advancedsettings.php:94
+#: adminpages/advancedsettings.php:103 adminpages/advancedsettings.php:94
 #: adminpages/advancedsettings.php:101
 msgid "Message for Logged-out Users"
 msgstr ""
 
-#: adminpages/advancedsettings.php:105 adminpages/advancedsettings.php:98
+#: adminpages/advancedsettings.php:107 adminpages/advancedsettings.php:98
 #: adminpages/advancedsettings.php:105
 msgid "This message replaces the post content for logged-out visitors."
 msgstr ""
 
-#: adminpages/advancedsettings.php:110 adminpages/advancedsettings.php:103
+#: adminpages/advancedsettings.php:112 adminpages/advancedsettings.php:103
 #: adminpages/advancedsettings.php:110
 msgid "Message for RSS Feed"
 msgstr ""
 
-#: adminpages/advancedsettings.php:114 adminpages/advancedsettings.php:107
+#: adminpages/advancedsettings.php:116 adminpages/advancedsettings.php:107
 #: adminpages/advancedsettings.php:114
 msgid "This message replaces the post content in RSS feeds."
 msgstr ""
 
-#: adminpages/advancedsettings.php:120 adminpages/advancedsettings.php:113
+#: adminpages/advancedsettings.php:122
+msgid "Filter searches and archives?"
+msgstr ""
+
+#: adminpages/advancedsettings.php:126
+msgid ""
+"No - Non-members will see restricted posts/pages in searches and archives."
+msgstr ""
+
+#: adminpages/advancedsettings.php:127
+msgid ""
+"Yes - Only members will see restricted posts/pages in searches and archives."
+msgstr ""
+
+#: adminpages/advancedsettings.php:133 adminpages/advancedsettings.php:113
 #: adminpages/advancedsettings.php:120
 msgid "Show Excerpts to Non-Members?"
 msgstr ""
 
-#: adminpages/advancedsettings.php:124 adminpages/advancedsettings.php:117
+#: adminpages/advancedsettings.php:137 adminpages/advancedsettings.php:117
 #: adminpages/advancedsettings.php:124
 msgid "No - Hide excerpts."
 msgstr ""
 
-#: adminpages/advancedsettings.php:125 adminpages/advancedsettings.php:118
+#: adminpages/advancedsettings.php:138 adminpages/advancedsettings.php:118
 #: adminpages/advancedsettings.php:125
 msgid "Yes - Show excerpts."
 msgstr ""
 
-#: adminpages/advancedsettings.php:135 adminpages/advancedsettings.php:194
-#: adminpages/advancedsettings.php:206 adminpages/membershiplevels.php:571
+#: adminpages/advancedsettings.php:148 adminpages/advancedsettings.php:207
+#: adminpages/advancedsettings.php:219 adminpages/membershiplevels.php:571
 #: adminpages/paymentsettings.php:434 adminpages/paymentsettings.php:459
 #: includes/profile.php:123 adminpages/advancedsettings.php:128
 #: adminpages/advancedsettings.php:135 adminpages/advancedsettings.php:187
@@ -252,42 +269,42 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: adminpages/advancedsettings.php:136 adminpages/advancedsettings.php:129
+#: adminpages/advancedsettings.php:149 adminpages/advancedsettings.php:129
 #: adminpages/advancedsettings.php:136
 msgid "Hide Ads From All Members"
 msgstr ""
 
-#: adminpages/advancedsettings.php:137 adminpages/advancedsettings.php:130
+#: adminpages/advancedsettings.php:150 adminpages/advancedsettings.php:130
 #: adminpages/advancedsettings.php:137
 msgid "Hide Ads From Certain Members"
 msgstr ""
 
-#: adminpages/advancedsettings.php:144 adminpages/advancedsettings.php:137
+#: adminpages/advancedsettings.php:157 adminpages/advancedsettings.php:137
 #: adminpages/advancedsettings.php:144
 msgid "Ads from the following plugins will be automatically turned off"
 msgstr ""
 
-#: adminpages/advancedsettings.php:145 adminpages/advancedsettings.php:138
+#: adminpages/advancedsettings.php:158 adminpages/advancedsettings.php:138
 #: adminpages/advancedsettings.php:145
 msgid "To hide ads in your template code, use code like the following"
 msgstr ""
 
-#: adminpages/advancedsettings.php:156 adminpages/advancedsettings.php:149
+#: adminpages/advancedsettings.php:169 adminpages/advancedsettings.php:149
 #: adminpages/advancedsettings.php:156
 msgid "Choose Levels to Hide Ads From"
 msgstr ""
 
-#: adminpages/advancedsettings.php:190 adminpages/advancedsettings.php:183
+#: adminpages/advancedsettings.php:203 adminpages/advancedsettings.php:183
 #: adminpages/advancedsettings.php:190
 msgid "Redirect all traffic from registration page to /susbcription/?"
 msgstr ""
 
-#: adminpages/advancedsettings.php:190 adminpages/advancedsettings.php:183
+#: adminpages/advancedsettings.php:203 adminpages/advancedsettings.php:183
 #: adminpages/advancedsettings.php:190
 msgid "multisite only"
 msgstr ""
 
-#: adminpages/advancedsettings.php:195 adminpages/membershiplevels.php:571
+#: adminpages/advancedsettings.php:208 adminpages/membershiplevels.php:571
 #: adminpages/paymentsettings.php:435 adminpages/paymentsettings.php:460
 #: includes/profile.php:124 adminpages/advancedsettings.php:188
 #: adminpages/advancedsettings.php:195 adminpages/membershiplevels.php:563
@@ -299,58 +316,58 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: adminpages/advancedsettings.php:202 adminpages/advancedsettings.php:195
+#: adminpages/advancedsettings.php:215 adminpages/advancedsettings.php:195
 #: adminpages/advancedsettings.php:202
 msgid "Use reCAPTCHA?"
 msgstr ""
 
-#: adminpages/advancedsettings.php:207 adminpages/advancedsettings.php:200
+#: adminpages/advancedsettings.php:220 adminpages/advancedsettings.php:200
 #: adminpages/advancedsettings.php:207
 msgid "Yes - Free memberships only."
 msgstr ""
 
-#: adminpages/advancedsettings.php:208 adminpages/advancedsettings.php:201
+#: adminpages/advancedsettings.php:221 adminpages/advancedsettings.php:201
 #: adminpages/advancedsettings.php:208
 msgid "Yes - All memberships."
 msgstr ""
 
-#: adminpages/advancedsettings.php:210 adminpages/advancedsettings.php:203
+#: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
 #: adminpages/advancedsettings.php:210
 msgid "A free reCAPTCHA key is required."
 msgstr ""
 
-#: adminpages/advancedsettings.php:210 adminpages/advancedsettings.php:203
+#: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
 #: adminpages/advancedsettings.php:210
 msgid "Click here to signup for reCAPTCHA"
 msgstr ""
 
-#: adminpages/advancedsettings.php:216 adminpages/advancedsettings.php:209
+#: adminpages/advancedsettings.php:229 adminpages/advancedsettings.php:209
 #: adminpages/advancedsettings.php:216
 msgid "reCAPTCHA Public Key"
 msgstr ""
 
-#: adminpages/advancedsettings.php:219 adminpages/advancedsettings.php:212
+#: adminpages/advancedsettings.php:232 adminpages/advancedsettings.php:212
 #: adminpages/advancedsettings.php:219
 msgid "reCAPTCHA Private Key"
 msgstr ""
 
-#: adminpages/advancedsettings.php:225 adminpages/advancedsettings.php:218
+#: adminpages/advancedsettings.php:238 adminpages/advancedsettings.php:218
 #: adminpages/advancedsettings.php:225
 msgid "Require Terms of Service on signups?"
 msgstr ""
 
-#: adminpages/advancedsettings.php:232 adminpages/advancedsettings.php:225
+#: adminpages/advancedsettings.php:245 adminpages/advancedsettings.php:225
 #: adminpages/advancedsettings.php:232
 msgid ""
 "If yes, create a WordPress page containing your TOS agreement and assign it "
 "using the dropdown above."
 msgstr ""
 
-#: adminpages/advancedsettings.php:272 adminpages/advancedsettings.php:272
+#: adminpages/advancedsettings.php:285 adminpages/advancedsettings.php:272
 msgid "selected"
 msgstr ""
 
-#: adminpages/advancedsettings.php:355 adminpages/pagesettings.php:251
+#: adminpages/advancedsettings.php:368 adminpages/pagesettings.php:251
 #: adminpages/paymentsettings.php:532 adminpages/advancedsettings.php:284
 #: adminpages/advancedsettings.php:355 adminpages/pagesettings.php:209
 #: adminpages/pagesettings.php:223 adminpages/pagesettings.php:251
@@ -469,6 +486,10 @@ msgstr ""
 #: adminpages/discountcodes.php:391 adminpages/discountcodes.php:388
 #: adminpages/discountcodes.php:391
 msgid "Leave blank for unlimited uses."
+msgstr ""
+
+#: adminpages/discountcodes.php:400
+msgid "Which Levels Will This Code Apply To?"
 msgstr ""
 
 #: adminpages/discountcodes.php:430 adminpages/membershiplevels.php:339
@@ -696,7 +717,7 @@ msgstr ""
 #: includes/adminpages.php:128 adminpages/emailsettings.php:60
 #: adminpages/emailsettings.php:69 includes/adminpages.php:12
 #: includes/adminpages.php:50 includes/adminpages.php:59
-#: includes/adminpages.php:121
+#: includes/adminpages.php:121 includes/adminpages.php:128
 msgid "Email Settings"
 msgstr ""
 
@@ -1065,6 +1086,7 @@ msgstr ""
 #: includes/adminpages.php:149 adminpages/memberslist.php:25
 #: includes/adminpages.php:15 includes/adminpages.php:53
 #: includes/adminpages.php:74 includes/adminpages.php:142
+#: includes/adminpages.php:149
 msgid "Members List"
 msgstr ""
 
@@ -1423,7 +1445,7 @@ msgstr ""
 #: includes/adminpages.php:163 adminpages/orders.php:520
 #: adminpages/orders.php:570 includes/adminpages.php:17
 #: includes/adminpages.php:55 includes/adminpages.php:84
-#: includes/adminpages.php:156
+#: includes/adminpages.php:156 includes/adminpages.php:163
 msgid "Orders"
 msgstr ""
 
@@ -2300,7 +2322,7 @@ msgstr ""
 msgid "The new level is %s. This membership is free"
 msgstr ""
 
-#: classes/class.pmproemail.php:799
+#: classes/class.pmproemail.php:799 classes/class.pmproemail.php:799
 msgid "Membership has been cancelled"
 msgstr ""
 
@@ -2451,7 +2473,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalstandard.php:220
 #: classes/gateways/class.pmprogateway_paypal.php:385
 #: classes/gateways/class.pmprogateway_paypalexpress.php:301
+#: classes/gateways/class.pmprogateway_paypalexpress.php:305
 #: classes/gateways/class.pmprogateway_paypalstandard.php:216
+#: classes/gateways/class.pmprogateway_paypalstandard.php:220
 msgid ""
 "Please contact the site owner or cancel your subscription from within PayPal "
 "to make sure you are not charged going forward."
@@ -2488,30 +2512,35 @@ msgstr ""
 #: includes/adminpages.php:47 includes/adminpages.php:100
 #: includes/adminpages.php:9 includes/adminpages.php:39
 #: includes/adminpages.php:47 includes/adminpages.php:93
+#: includes/adminpages.php:100
 msgid "Memberships"
 msgstr ""
 
 #: includes/adminpages.php:48 includes/adminpages.php:114
 #: includes/adminpages.php:10 includes/adminpages.php:48
 #: includes/adminpages.php:49 includes/adminpages.php:107
+#: includes/adminpages.php:114
 msgid "Page Settings"
 msgstr ""
 
 #: includes/adminpages.php:49 includes/adminpages.php:121
 #: includes/adminpages.php:11 includes/adminpages.php:49
 #: includes/adminpages.php:54 includes/adminpages.php:114
+#: includes/adminpages.php:121
 msgid "Payment Settings"
 msgstr ""
 
 #: includes/adminpages.php:54 includes/adminpages.php:156
 #: includes/adminpages.php:16 includes/adminpages.php:54
 #: includes/adminpages.php:79 includes/adminpages.php:149
+#: includes/adminpages.php:156
 msgid "Reports"
 msgstr ""
 
 #: includes/adminpages.php:56 includes/adminpages.php:170
 #: includes/adminpages.php:18 includes/adminpages.php:56
 #: includes/adminpages.php:89 includes/adminpages.php:163
+#: includes/adminpages.php:170
 msgid "Discount Codes"
 msgstr ""
 
@@ -2662,113 +2691,120 @@ msgstr ""
 
 #: includes/functions.php:204 includes/functions.php:160
 #: includes/functions.php:196 includes/functions.php:202
+#: includes/functions.php:204
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr ""
 
 #: includes/functions.php:206 includes/functions.php:204
+#: includes/functions.php:206
 #, php-format
 msgid "<strong>%s</strong> now"
 msgstr ""
 
 #: includes/functions.php:215 includes/functions.php:169
 #: includes/functions.php:205 includes/functions.php:213
+#: includes/functions.php:215
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
 msgstr ""
 
 #: includes/functions.php:219 includes/functions.php:173
 #: includes/functions.php:209 includes/functions.php:217
+#: includes/functions.php:219
 #, php-format
 msgid " and then <strong>%s every %d %s for %d more %s</strong>."
 msgstr ""
 
 #: includes/functions.php:224 includes/functions.php:178
 #: includes/functions.php:214 includes/functions.php:222
+#: includes/functions.php:224
 #, php-format
 msgid " and then <strong>%s after %d %s</strong>."
 msgstr ""
 
 #: includes/functions.php:231 includes/functions.php:229
+#: includes/functions.php:231
 #, php-format
 msgid "The price for membership is <strong>%s per %s</strong>."
 msgstr ""
 
 #: includes/functions.php:235 includes/functions.php:233
+#: includes/functions.php:235
 #, php-format
 msgid "The price for membership is <strong>%s every %d %s</strong>."
 msgstr ""
 
 #: includes/functions.php:240 includes/functions.php:184
 #: includes/functions.php:220 includes/functions.php:228
-#: includes/functions.php:238
+#: includes/functions.php:238 includes/functions.php:240
 #, php-format
 msgid " and then <strong>%s per %s</strong>."
 msgstr ""
 
 #: includes/functions.php:244 includes/functions.php:188
 #: includes/functions.php:224 includes/functions.php:232
-#: includes/functions.php:242
+#: includes/functions.php:242 includes/functions.php:244
 #, php-format
 msgid " and then <strong>%s every %d %s</strong>."
 msgstr ""
 
 #: includes/functions.php:262 includes/functions.php:202
 #: includes/functions.php:238 includes/functions.php:249
-#: includes/functions.php:260 pages/levels.php:82
+#: includes/functions.php:260 includes/functions.php:262 pages/levels.php:82
 msgid "After your initial payment, your first payment is Free."
 msgstr ""
 
 #: includes/functions.php:266 includes/functions.php:206
 #: includes/functions.php:242 includes/functions.php:253
-#: includes/functions.php:264 pages/levels.php:86
+#: includes/functions.php:264 includes/functions.php:266 pages/levels.php:86
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr ""
 
 #: includes/functions.php:273 includes/functions.php:213
 #: includes/functions.php:249 includes/functions.php:260
-#: includes/functions.php:271 pages/levels.php:93
+#: includes/functions.php:271 includes/functions.php:273 pages/levels.php:93
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr ""
 
 #: includes/functions.php:277 includes/functions.php:217
 #: includes/functions.php:253 includes/functions.php:264
-#: includes/functions.php:275 pages/levels.php:97
+#: includes/functions.php:275 includes/functions.php:277 pages/levels.php:97
 #, php-format
 msgid "After your initial payment, your first %d payments will cost %s."
 msgstr ""
 
 #: includes/functions.php:288 includes/functions.php:228
 #: includes/functions.php:264 includes/functions.php:275
-#: includes/functions.php:286
+#: includes/functions.php:286 includes/functions.php:288
 #, php-format
 msgid "Customers in %s will be charged %s%% tax."
 msgstr ""
 
 #: includes/functions.php:302 includes/functions.php:242
 #: includes/functions.php:278 includes/functions.php:289
-#: includes/functions.php:300
+#: includes/functions.php:300 includes/functions.php:302
 #, php-format
 msgid "Membership expires after %d %s."
 msgstr ""
 
 #: includes/functions.php:538 includes/functions.php:491
 #: includes/functions.php:514 includes/functions.php:525
-#: includes/functions.php:536
+#: includes/functions.php:536 includes/functions.php:538
 msgid "User ID not found."
 msgstr ""
 
 #: includes/functions.php:555 includes/functions.php:508
 #: includes/functions.php:531 includes/functions.php:542
-#: includes/functions.php:553
+#: includes/functions.php:553 includes/functions.php:555
 msgid "Invalid level."
 msgstr ""
 
 #: includes/functions.php:566 includes/functions.php:520
 #: includes/functions.php:542 includes/functions.php:553
-#: includes/functions.php:564
+#: includes/functions.php:564 includes/functions.php:566
 msgid "not changing?"
 msgstr ""
 
@@ -2779,8 +2815,9 @@ msgstr ""
 #: includes/functions.php:592 includes/functions.php:605
 #: includes/functions.php:614 includes/functions.php:617
 #: includes/functions.php:626 includes/functions.php:628
-#: includes/functions.php:631 includes/functions.php:637
-#: includes/functions.php:640
+#: includes/functions.php:631 includes/functions.php:633
+#: includes/functions.php:637 includes/functions.php:640
+#: includes/functions.php:657
 msgid "Error interacting with database"
 msgstr ""
 
@@ -2788,20 +2825,23 @@ msgstr ""
 #: includes/functions.php:629 includes/functions.php:651
 #: includes/functions.php:667 includes/functions.php:668
 #: includes/functions.php:678 includes/functions.php:681
-#: includes/functions.php:690 includes/functions.php:706
-#: includes/functions.php:717 includes/functions.php:720
+#: includes/functions.php:690 includes/functions.php:698
+#: includes/functions.php:706 includes/functions.php:717
+#: includes/functions.php:720 includes/functions.php:737
 msgid "Membership level not found."
 msgstr ""
 
 #: includes/functions.php:1112 includes/functions.php:1050
 #: includes/functions.php:1072 includes/functions.php:1088
 #: includes/functions.php:1099 includes/functions.php:1102
+#: includes/functions.php:1112
 msgid "The discount code could not be found."
 msgstr ""
 
 #: includes/functions.php:1128 includes/functions.php:1066
 #: includes/functions.php:1088 includes/functions.php:1104
 #: includes/functions.php:1115 includes/functions.php:1118
+#: includes/functions.php:1128
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
@@ -2809,6 +2849,7 @@ msgstr ""
 #: includes/functions.php:1137 includes/functions.php:1075
 #: includes/functions.php:1097 includes/functions.php:1113
 #: includes/functions.php:1124 includes/functions.php:1127
+#: includes/functions.php:1137
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
@@ -2816,36 +2857,42 @@ msgstr ""
 #: includes/functions.php:1149 includes/functions.php:1087
 #: includes/functions.php:1109 includes/functions.php:1125
 #: includes/functions.php:1136 includes/functions.php:1139
+#: includes/functions.php:1149
 msgid "This discount code is no longer valid."
 msgstr ""
 
 #: includes/functions.php:1164 includes/functions.php:1102
 #: includes/functions.php:1124 includes/functions.php:1140
 #: includes/functions.php:1151 includes/functions.php:1154
+#: includes/functions.php:1164
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
 #: includes/functions.php:1172 includes/functions.php:1110
 #: includes/functions.php:1132 includes/functions.php:1148
 #: includes/functions.php:1159 includes/functions.php:1162
+#: includes/functions.php:1172
 msgid "This discount code is okay."
 msgstr ""
 
 #: includes/functions.php:1196 includes/functions.php:1134
 #: includes/functions.php:1156 includes/functions.php:1172
 #: includes/functions.php:1183 includes/functions.php:1186
+#: includes/functions.php:1196
 msgid "and"
 msgstr ""
 
 #: includes/functions.php:1385 includes/functions.php:1319
 #: includes/functions.php:1341 includes/functions.php:1361
 #: includes/functions.php:1372 includes/functions.php:1375
+#: includes/functions.php:1385
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
 #: includes/functions.php:1391 includes/functions.php:1325
 #: includes/functions.php:1347 includes/functions.php:1367
 #: includes/functions.php:1378 includes/functions.php:1381
+#: includes/functions.php:1391
 msgid "Please specify a level id."
 msgstr ""
 
@@ -2888,20 +2935,23 @@ msgstr ""
 msgid "User is not paying."
 msgstr ""
 
-#: includes/upgradecheck.php:410 includes/upgradecheck.php:401
+#: includes/upgradecheck.php:422 includes/upgradecheck.php:401
+#: includes/upgradecheck.php:410
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Register</a>"
 msgstr ""
 
-#: includes/upgradecheck.php:413 includes/upgradecheck.php:404
+#: includes/upgradecheck.php:425 includes/upgradecheck.php:404
+#: includes/upgradecheck.php:413
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Log In</a> "
 "<a href=\"%s\">Register</a>"
 msgstr ""
 
-#: includes/upgradecheck.php:417 includes/upgradecheck.php:408
+#: includes/upgradecheck.php:429 includes/upgradecheck.php:408
+#: includes/upgradecheck.php:417
 msgid ""
 "This content is for !!levels!! members only. Visit the site and log in/"
 "register to read."
@@ -3172,6 +3222,7 @@ msgstr ""
 #: pages/checkout.php:62 services/applydiscountcode.php:78
 #: pages/checkout.php:62 pages/checkout.php:63
 #: services/applydiscountcode.php:74 services/applydiscountcode.php:75
+#: services/applydiscountcode.php:78
 msgid "Click here to change your discount code"
 msgstr ""
 
@@ -3327,12 +3378,11 @@ msgstr ""
 msgid "ending in"
 msgstr ""
 
-#: pages/confirmation.php:97 pages/confirmation.php:95
 #: pages/confirmation.php:97
 #, php-format
 msgid ""
-"Below are details about your membership account. A welcome email with has "
-"been sent to %s."
+"Below are details about your membership account. A welcome email has been "
+"sent to %s."
 msgstr ""
 
 #: pages/confirmation.php:105 pages/confirmation.php:103
@@ -3583,12 +3633,13 @@ msgid "Trial ending email sent to %s. "
 msgstr ""
 
 #: services/applydiscountcode.php:67 services/applydiscountcode.php:64
+#: services/applydiscountcode.php:67
 #, php-format
 msgid "The %s code has been applied to your order. "
 msgstr ""
 
 #: services/applydiscountcode.php:86 services/applydiscountcode.php:82
-#: services/applydiscountcode.php:83
+#: services/applydiscountcode.php:83 services/applydiscountcode.php:86
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr ""
@@ -3679,6 +3730,13 @@ msgstr ""
 msgid ""
 "Your payment has been submitted to PayPal. Your membership will be activated "
 "shortly."
+msgstr ""
+
+#: pages/confirmation.php:95 pages/confirmation.php:97
+#, php-format
+msgid ""
+"Below are details about your membership account. A welcome email with has "
+"been sent to %s."
 msgstr ""
 
 #: pages/levels.php:15
