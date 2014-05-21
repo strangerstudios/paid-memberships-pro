@@ -176,7 +176,7 @@
 					}
 					
 					return $this->customer;
-				} 
+				}
 				catch (Exception $e) 
 				{
 					//assume no customer found					
@@ -218,8 +218,8 @@
 					}
 					add_action("user_register", "pmpro_user_register_stripe_customerid");
 				}
-				
-				return $this->customer;
+
+                return apply_filters('pmpro_stripe_create_customer', $this->customer);
 			}
 			
 			return false;			
@@ -286,16 +286,18 @@
 			
 			//create a plan
 			try
-			{						
-				$plan = Stripe_Plan::create(array(
-				  "amount" => $amount * 100,
-				  "interval_count" => $order->BillingFrequency,
-				  "interval" => strtolower($order->BillingPeriod),
-				  "trial_period_days" => $trial_period_days,
-				  "name" => $order->membership_name . " for order " . $order->code,
-				  "currency" => strtolower(pmpro_getOption("currency")),
-				  "id" => $order->code)
-				);
+			{
+                $plan = array(
+                    "amount" => $amount * 100,
+                    "interval_count" => $order->BillingFrequency,
+                    "interval" => strtolower($order->BillingPeriod),
+                    "trial_period_days" => $trial_period_days,
+                    "name" => $order->membership_name . " for order " . $order->code,
+                    "currency" => strtolower(pmpro_getOption("currency")),
+                    "id" => $order->code
+                );
+
+				$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
 			}
 			catch (Exception $e)
 			{
