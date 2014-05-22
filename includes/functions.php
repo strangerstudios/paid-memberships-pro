@@ -204,7 +204,7 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
 	else
 		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
-			
+		
 	//recurring part
 	if($level->billing_amount != '0.00')
 	{
@@ -228,11 +228,17 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 			if( $level->billing_amount === $level->initial_payment ) {
 				if($level->cycle_number == '1')
 				{
-					$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+					if(!$short)
+						$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+					else
+						$r = sprintf(__('<strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
 				}
 				else
 				{
-					$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+					if(!$short)
+						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+					else
+						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
 				}
 			} else {
 				if($level->cycle_number == '1')
