@@ -59,30 +59,8 @@ function pmpro_membership_level_profile_fields($user)
 					}
 				</script>
 				<?php
-					$membership_values = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1");
-					if(!empty($membership_values->billing_amount) || !empty($membership_values->trial_amount))
-					{
-					?>
-						<?php if($membership_values->billing_amount > 0) { ?>
-							at <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->billing_amount?>
-							<?php if($membership_values->cycle_number > 1) { ?>
-								per <?php echo $membership_values->cycle_number?> <?php echo sornot($membership_values->cycle_period,$membership_values->cycle_number)?>
-							<?php } elseif($membership_values->cycle_number == 1) { ?>
-								per <?php echo $membership_values->cycle_period?>
-							<?php } ?>
-						<?php } ?>
-
-						<?php if($membership_values->billing_limit) { ?> for <?php echo $membership_values->billing_limit.' '.sornot($membership_values->cycle_period,$membership_values->billing_limit)?><?php } ?>.
-
-						<?php if($membership_values->trial_limit) { ?>
-							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->trial_amount?>.
-						<?php } ?>
-					<?php
-					}
-					else
-					{
-						_e("User is not paying.", "pmpro");
-					}
+					$membership_values = pmpro_getMembershipLevelForUser($user->ID);
+					echo pmpro_getLevelCost($membership_values, true, true);
 				?>
 			</td>
 		</tr>
