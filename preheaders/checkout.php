@@ -2,7 +2,7 @@
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version;	
 	
 	//this var stores fields with errors so we can make them red on the frontend
-	$pmpro_error_fields = array();			
+	$pmpro_error_fields = array();
 	
 	//blank array for required fields, set below
 	$pmpro_required_billing_fields = array();
@@ -388,7 +388,7 @@
 		$submit = $_REQUEST['submit-checkout'];
 	if(empty($submit) && isset($_REQUEST['submit-checkout_x']) )
 		$submit = $_REQUEST['submit-checkout_x'];	
-	if(isset($submit) && $submit === "0") 
+	if(isset($submit) && $submit === "0")
 		$submit = true;	
 	elseif(!isset($submit))
 		$submit = false;
@@ -557,12 +557,12 @@
 								$_POST["recaptcha_challenge_field"],
 								$_POST["recaptcha_response_field"]);
 						
-					if(!$resp->is_valid) 
+					if(!$resp->is_valid)
 					{
 						$pmpro_msg = sprintf(__("reCAPTCHA failed. (%s) Please try again.", "pmpro"), $resp->error);
 						$pmpro_msgt = "pmpro_error";
-					} 
-					else 
+					}
+					else
 					{
 						// Your code here to handle a successful verification
 						if($pmpro_msgt != "pmpro_error")
