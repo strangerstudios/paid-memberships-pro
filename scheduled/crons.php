@@ -206,10 +206,6 @@ function pmpro_cron_trial_ending_warnings()
 	
 	As of v2.0, these can be set for members with Stripe subscriptions.
 */
-if(!empty($_REQUEST['testcron']))
-{
-	add_action('init', 'pmpro_cron_subscription_updates');
-}
 function pmpro_cron_subscription_updates()
 {
 	global $wpdb;
