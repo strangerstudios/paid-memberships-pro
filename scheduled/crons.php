@@ -286,9 +286,7 @@ function pmpro_cron_subscription_updates()
 					$wpdb->query($sqlQuery);
 											
 					//remove update from list
-					unset($user_updates[$key]);
-					
-					//email user and/or admin about update?
+					unset($user_updates[$key]);									
 				}
 				elseif($update['when'] == 'date')
 				{
