@@ -60,6 +60,8 @@ function pmpro_membership_level_profile_fields($user)
 				</script>
 				<?php
 					$membership_values = pmpro_getMembershipLevelForUser($user->ID);
+					//we tweak the initial payment here so the text here effectively shows the recurring amount
+					$membership_values->initial_payment = $membership_values->billing_amount;
 					echo pmpro_getLevelCost($membership_values, true, true);
 				?>
 			</td>
