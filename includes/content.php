@@ -122,7 +122,8 @@ function pmpro_search_filter($query)
     //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search)
     {
-        $query->set('post__not_in', $pmpro_pages ); // id of page or post
+        if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now			
+			$query->set('post__not_in', $pmpro_pages );
     }
 		
     //hide member pages from non-members (make sure they aren't hidden from members)    
@@ -146,11 +147,14 @@ function pmpro_search_filter($query)
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
 		else
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
-        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
-
+        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));						
+		
         if($hidden_page_ids)
-            $query->set('post__not_in', $hidden_page_ids);
-
+		{
+			if(empty($query->query_vars['post_parent']))			//avoiding post_parent queries for now				
+				$query->set('post__not_in', $hidden_page_ids);
+		}
+				
         //get categories that are filtered by level, but not my level
         $my_cats = array();
 
