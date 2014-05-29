@@ -39,7 +39,9 @@
 				<?php
 					}
 				?>
-				<option value="oldmembers" <?php if($l == "oldmembers") { ?>selected="selected"<?php } ?>><?php _e('Old Members', 'pmpro');?></option>
+				<option value="cancelled" <?php if($l == "cancelled") { ?>selected="selected"<?php } ?>><?php _e('Cancelled Members', 'pmpro');?></option>
+				<option value="expired" <?php if($l == "expired") { ?>selected="selected"<?php } ?>><?php _e('Expired Members', 'pmpro');?></option>
+				<option value="oldmembers" <?php if($l == "oldmembers") { ?>selected="selected"<?php } ?>><?php _e('Old Members', 'pmpro');?></option>				
 			</select>			
 		</li>
 	</ul>
@@ -68,13 +70,17 @@
 		{
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 			
-			if($l == "oldmembers")
+			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 			
 			$sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";				
 		
 			if($l == "oldmembers")
 				$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+			elseif($l == "expired")
+				$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+			elseif($l == "cancelled")
+				$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 			elseif($l)
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";					
 			else
@@ -82,7 +88,7 @@
 			
 			$sqlQuery .= "GROUP BY u.ID ";
 			
-			if($l == "oldmembers")
+			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= "ORDER BY enddate DESC ";
 			else
 				$sqlQuery .= "ORDER BY u.user_registered DESC ";
@@ -93,20 +99,24 @@
 		{
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 			
-			if($l == "oldmembers")
+			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 			
 			$sqlQuery .= " WHERE mu.membership_id > 0  ";
 			
 			if($l == "oldmembers")
 				$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+			elseif($l == "expired")
+				$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+			elseif($l == "cancelled")
+				$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 			elseif($l)
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";
 			else
 				$sqlQuery .= " AND mu.status = 'active' ";
 			$sqlQuery .= "GROUP BY u.ID ";
 						
-			if($l == "oldmembers")
+			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= "ORDER BY enddate DESC ";
 			else
 				$sqlQuery .= "ORDER BY u.user_registered DESC ";
