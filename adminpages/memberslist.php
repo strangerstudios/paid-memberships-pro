@@ -74,7 +74,7 @@
 			$sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";				
 		
 			if($l == "oldmembers")
-				$sqlQuery .= " AND mu.status = 'inactive' AND mu2.status IS NULL ";
+				$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
 			elseif($l)
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";					
 			else
@@ -99,7 +99,7 @@
 			$sqlQuery .= " WHERE mu.membership_id > 0  ";
 			
 			if($l == "oldmembers")
-				$sqlQuery .= " AND mu.status = 'inactive' AND mu2.status IS NULL ";
+				$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
 			elseif($l)
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";
 			else
@@ -113,7 +113,7 @@
 			
 			$sqlQuery .= "LIMIT $start, $limit";
 		}
-
+		
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
 				
 		$theusers = $wpdb->get_results($sqlQuery);
