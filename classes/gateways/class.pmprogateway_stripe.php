@@ -287,6 +287,7 @@
 					//build order object
 					$update_order = new MemberOrder();
 					$update_order->setGateway('stripe');
+					$update_order->user_id = $user_id;
 					$update_order->membership_id = $user_level->id;
 					$update_order->membership_name = $user_level->name;
 					$update_order->InitialPayment = 0;
@@ -605,9 +606,9 @@
 
 			//convert back to days
 			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
-
-			//now add the actual trial set by the site
-			if(!empty($order->TrialBillingCycles))						
+						
+			//for free trials, just push the start date of the subscription back
+			if(!empty($order->TrialBillingCycles) && $order->TrialAmount == 0)
 			{
 				$trialOccurrences = (int)$order->TrialBillingCycles;
 				if($order->BillingPeriod == "Year")
@@ -618,7 +619,45 @@
 					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
 				else
 					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
-			}					
+			}
+			elseif(!empty($order->TrialBillingCycles))
+			{
+				/*
+					Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
+				*/
+				//figure out the user
+				if(!empty($order->user_id))
+					$user_id = $order->user_id;
+				else
+				{
+					global $current_user;
+					$user_id = $current_user->ID;
+				}
+				
+				//add the update first
+				$user = get_userdata($user_id);
+				$user_updates = $user->pmpro_stripe_updates;
+								
+				if(empty($user_updates))
+					$user_updates = array();
+				$user_updates = array(
+					'when' => 'payment',
+					'billing_amount' => $order->PaymentAmount,
+					'cycle_period' => $order->BillingPeriod,
+					'cycle_number' => $order->BillingFrequency
+				);
+				update_user_meta($user->ID, "pmpro_stripe_updates", $user_updates);
+				
+				//now amount to equal the trial #s				
+				$amount = $order->TrialAmount;
+				$amount_tax = $order->getTaxForPrice($amount);			
+				$amount = round((float)$amount + (float)$amount_tax, 2);
+				
+				//update order numbers so entry in pmpro_memberships_users is correct
+				$order->PaymentAmount = $order->TrialAmount;
+				$order->TrialAmount = 0;
+				$order->TrialBillingCycles = 0;
+			}			
 			
 			//create a plan
 			try

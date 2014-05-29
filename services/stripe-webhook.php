@@ -160,6 +160,7 @@
 							//build order object
 							$update_order = new MemberOrder();
 							$update_order->setGateway('stripe');
+							$update_order->user_id = $user->ID;
 							$update_order->membership_id = $user->membership_level->id;
 							$update_order->membership_name = $user->membership_level->name;
 							$update_order->InitialPayment = 0;

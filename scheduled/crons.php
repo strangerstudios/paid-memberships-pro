@@ -262,6 +262,7 @@ function pmpro_cron_subscription_updates()
 					//build order object
 					$update_order = new MemberOrder();
 					$update_order->setGateway('stripe');
+					$update_order->user_id = $user_id;
 					$update_order->membership_id = $user_level->id;
 					$update_order->membership_name = $user_level->name;
 					$update_order->InitialPayment = 0;
