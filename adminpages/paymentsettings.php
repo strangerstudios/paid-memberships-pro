@@ -472,10 +472,10 @@
 		   </tr>		   
 		   <tr>
 				<th scope="row" valign="top">
-					<label for="nuclear_HTTPS"><?php _e('HTTPS Nuclear Option', 'pmpro');?>:</label>
+					<label for="nuclear_HTTPS"><?php _e('Extra HTTPS URL Filter', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <?php _e('Use the "Nuclear Option" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'pmpro');?>
+					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <?php _e('Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'pmpro');?>
 				</td>
 		   </tr>
 		   <tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>

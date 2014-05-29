@@ -41,14 +41,7 @@
 		static function init()
 		{			
 			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
-			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));
-			
-			/*
-				Notes for updates.
-				
-				* Add on pmpro_change_membership_level hook to remove updates when a level is changed.
-				* Make sure that there is an active subscription/customer on the Stripe side.
-			*/
+			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));						
 		}
 		
 		/**
@@ -75,11 +68,34 @@
 				return false;
 				
 			//check that user has a current subscription at Stripe
-			$sub = true;
+			$last_order = new MemberOrder();
+			$last_order->getLastMemberOrder($user->ID);
 			
-			if(!empty($sub))
+			//assume no sub to start
+			$sub = false;
+			
+			//check that gateway is Stripe
+			if($last_order->gateway == "stripe")
+			{				
+				//is there a customer?
+				$last_order->Gateway->getCustomer();
+				if(!empty($last_order->Gateway->customer))
+				{					
+					//find subscription with this order code
+					$subscriptions = $last_order->Gateway->customer->subscriptions->all();						
+					
+					if(!empty($subscriptions))
+						$sub = true;
+				}				
+			}			
+			
+			if(empty($sub))
 			{
-				$uwhen = "no";	///testing
+				//make sure we delete stripe updates
+				update_user_meta($user->ID, "pmpro_stripe_updates", array());
+			}
+			else			
+			{				
 			?>
 			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
 			<p>
@@ -321,8 +337,8 @@
 						$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
 				}
 				
-				//add to array
-				$updates[] = $update;
+				//add to array				
+				$updates[] = $update;				
 			}
 			
 			//save in user meta
@@ -634,31 +650,34 @@
 					$user_id = $current_user->ID;
 				}
 				
-				//add the update first
-				$user = get_userdata($user_id);
-				$user_updates = $user->pmpro_stripe_updates;
-								
-				if(empty($user_updates))
-					$user_updates = array();
-				$user_updates = array(
+				//add the update first (we're overwriting any other updates already on file)
+				$user_updates = array();
+				$user_updates[] = array(
 					'when' => 'payment',
 					'billing_amount' => $order->PaymentAmount,
 					'cycle_period' => $order->BillingPeriod,
 					'cycle_number' => $order->BillingFrequency
 				);
-				update_user_meta($user->ID, "pmpro_stripe_updates", $user_updates);
+				update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
 				
 				//now amount to equal the trial #s				
 				$amount = $order->TrialAmount;
 				$amount_tax = $order->getTaxForPrice($amount);			
 				$amount = round((float)$amount + (float)$amount_tax, 2);
 				
-				//update order numbers so entry in pmpro_memberships_users is correct
+				//update order numbers so entry in invoice and pmpro_memberships_users is correct				
 				$order->PaymentAmount = $order->TrialAmount;
 				$order->TrialAmount = 0;
 				$order->TrialBillingCycles = 0;
+				
+				$order->billing_amount = $order->PaymentAmount;
+				$order->trial_amount = 0;
+				
+				global $pmpro_level;
+				$pmpro_level->billing_amount = $order->PaymentAmount;
+				$pmpro_level->trial_amount = 0;				
 			}			
-			
+						
 			//create a plan
 			try
 			{				
@@ -773,6 +792,12 @@
 						}
 					}
 				}															
+				
+				/*
+					Clear updates for this user. (But not if checking out, we would have already done that.)
+				*/
+				if(empty($_REQUEST['submit-checkout']))
+					update_user_meta($order->user_id, "pmpro_stripe_updates", array());
 				
 				return true;
 			}
