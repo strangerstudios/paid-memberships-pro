@@ -38,13 +38,11 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				foreach($levels as $level)
 				{
 					/*
-						Stripe currently does not support:
-						* Trial Amounts > 0.
+						Stripe currently does not support:					
 						* Daily billing periods.						
 						* Billing Limits.										
 					*/
-					if($level->trial_amount > 0 ||
-					   ($level->cycle_number > 0 && $level->cycle_period == "Day") ||
+					if(($level->cycle_number > 0 && $level->cycle_period == "Day") ||
 					   $level->billing_limit > 0)
 					{
 						return false;
@@ -59,8 +57,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
 			
 			//check this level
-			if($level->trial_amount > 0 ||
-			   ($level->cycle_number > 0 && $level->cycle_period == "Day") ||
+			if(($level->cycle_number > 0 && $level->cycle_period == "Day") ||
 			   $level->billing_limit > 0)
 			{
 				return false;
