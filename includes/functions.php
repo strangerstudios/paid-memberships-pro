@@ -559,7 +559,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		if(empty($level_obj))
 		{
 			$pmpro_error = __("Invalid level.", "pmpro");
-			return false;
+            return false;
 		}
 		$level = $level_obj->id;
 	}
@@ -567,17 +567,17 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 	//if it's a custom level, they're changing
 	if(!is_array($level))
 	{
-		//are they even changing?
+        //are they even changing?
 		if(pmpro_hasMembershipLevel($level, $user_id)) {
-			$pmpro_error = __("not changing?", "pmpro");
-			return false; //not changing
+            $pmpro_error = __("not changing?", "pmpro");
+            return false; //not changing
 		}
 	}
 
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
-				
-	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
-	if($pmpro_cancel_previous_subscriptions)
+
+    $pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
+	if(!empty($_REQUEST['cancel_subscription']) && $pmpro_cancel_previous_subscriptions)
 	{		
 		//deactivate old memberships (updates pmpro_memberships_users table)
 		if(!empty($old_levels))

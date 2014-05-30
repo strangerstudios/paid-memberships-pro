@@ -35,7 +35,7 @@ function pmpro_membership_level_profile_fields($user)
 		<tr>
 			<th><label for="membership_level"><?php _e("Current Level", "pmpro"); ?></label></th>
 			<td>
-				<select name="membership_level" onchange="pmpro_mchange_warning();">
+				<select name="membership_level">
 					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- <?php _e("None", "pmpro");?> --</option>
 				<?php
 					foreach($levels as $level)
@@ -47,31 +47,23 @@ function pmpro_membership_level_profile_fields($user)
 					}
 				?>
 				</select>
-				<script>
-					var pmpro_mchange_once = 0;
-					function pmpro_mchange_warning()
-					{
-						if(pmpro_mchange_once == 0)
-						{
-							alert('Warning: The existing membership will be cancelled, and the new membership will be free.');
-							pmpro_mchange_once = 1;
-						}
-					}
-				</script>
-				<?php
-					$membership_values = pmpro_getMembershipLevelForUser($user->ID);					
-					if(empty($membership_values) || pmpro_isLevelFree($membership_values))
-					{
-						echo "Not paying.";
-					}
-					else
-					{
-						//we tweak the initial payment here so the text here effectively shows the recurring amount
-						$membership_values->initial_payment = $membership_values->billing_amount;
-						echo pmpro_getLevelCost($membership_values, true, true);
-					}					
-				?>
-			</td>
+                <span id="current_level_cost">
+                <?php
+                $membership_values = pmpro_getMembershipLevelForUser($user->ID);
+                if(empty($membership_values) || pmpro_isLevelFree($membership_values))
+                {
+                    echo "Not paying.";
+                }
+                else
+                {
+                    //we tweak the initial payment here so the text here effectively shows the recurring amount
+                    $membership_values->initial_payment = $membership_values->billing_amount;
+                    echo pmpro_getLevelCost($membership_values, true, true);
+                }
+                ?>
+                </span>
+                <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", "pmpro"); ?></p>
+            </td>
 		</tr>
 		<?php
 		}
@@ -135,10 +127,67 @@ function pmpro_membership_level_profile_fields($user)
 				</script>
 			</td>
 		</tr>
+        <tr class="more_level_options">
+            <th></th>
+            <td>
+                <label for="send_admin_change_email"><input value="1" id="send_admin_change_email" name="send_admin_change_email" type="checkbox"> Send the user an email about this change.</label>
+            </td>
+        </tr>
+        <tr class="more_level_options">
+            <th></th>
+            <td>
+                <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> Cancel this user's subscription at the gateway.</label>
+            </td>
+        </tr>
 		<?php
 		}
 		?>
 </table>
+    <script>
+        jQuery(document).ready(function() {
+            var $membership_level_select = jQuery("[name=membership_level]");
+            var old_level = $membership_level_select.val();
+            var current_level_cost = jQuery("#current_level_cost").text();
+
+            jQuery(".more_level_options").hide();
+
+            $membership_level_select.change(function() {
+                if(jQuery(this).val() == 0) {
+                    jQuery("#cancel_subscription").attr('checked', true);
+                    jQuery("#current_level_cost").text("Not paying.");
+                }
+                else {
+                    jQuery("#cancel_subscription").attr('checked', false);
+                    jQuery("#current_level_cost").text(current_level_cost);
+                }
+
+                if(jQuery(this).val() != old_level)
+                {
+                    jQuery(".more_level_options").show();
+                    jQuery("#cancel_description").show();
+                }
+                else
+                {
+                    jQuery(".more_level_options").hide();
+                    jQuery("#cancel_description").hide();
+
+                }
+            });
+
+            jQuery("#cancel_subscription").change(function() {
+                if(jQuery(this).attr('checked') == 'checked')
+                {
+                    jQuery("#cancel_description").hide();
+                    jQuery("#current_level_cost").text("Not paying.");
+                }
+                else
+                {
+                    jQuery("#current_level_cost").text(current_level_cost);
+                    jQuery("#cancel_description").show();
+                }
+            });
+        });
+    </script>
 <?php
 	do_action("pmpro_after_membership_level_profile_fields", $user);	
 }
@@ -192,7 +241,7 @@ function pmpro_membership_level_profile_fields_update()
 	}
 	
 	//send email
-	if(!empty($level_changed) || !empty($expiration_changed))
+    if(!empty($_REQUEST['send_admin_change_email']))
 	{
 		//email to member
 		$pmproemail = new PMProEmail();
