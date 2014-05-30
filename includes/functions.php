@@ -847,7 +847,8 @@ function pmpro_getMetavalues($query)
 	$results = $wpdb->get_results($query);
 	foreach($results as $result)
 	{
-		$r->{$result->key} = $result->value;
+        if(!empty($r))
+		    $r->{$result->key} = $result->value;
 	}
 	
 	return $r;
