@@ -529,7 +529,7 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
  *		Success returns boolean true.
  *		Failure returns boolean false.
  */
-function pmpro_changeMembershipLevel($level, $user_id = NULL)
+function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive')
 {
 	global $wpdb;
 	global $current_user, $pmpro_error;
@@ -574,35 +574,44 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		}
 	}
 
+    //get all active membershipships for this user
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 
-    $pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
-	if(!empty($_REQUEST['cancel_subscription']) && $pmpro_cancel_previous_subscriptions)
-	{		
-		//deactivate old memberships (updates pmpro_memberships_users table)
-		if(!empty($old_levels))
-		{			
-			foreach($old_levels as $old_level) {
-				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
-				if(!$wpdb->query($sql))
-				{
-					$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
-					return false;
-				}										
-			}
-		}
-		
-		//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");		
-				
-		foreach($other_order_ids as $order_id)
-		{
-			$c_order = new MemberOrder($order_id);
-			$c_order->cancel();
-						
-			if(!empty($c_order->error))
-				$pmpro_error = $c_order->error;
-		}
+    //deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
+    if($old_levels)
+    {
+        foreach($old_levels as $old_level) {
+
+            $sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;
+
+            if(!$wpdb->query($sql))
+            {
+                $pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
+
+                return false;
+            }
+        }
+    }
+
+    //should we cancel their gateway subscriptions?
+    $pmpro_cancel_previous_subscriptions = true;
+    if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_memberhip'] == false)
+        $pmpro_cancel_previous_subscriptions = false;
+    $pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
+
+    //cancel any other subscriptions they have (updates pmpro_membership_orders table)
+	if($pmpro_cancel_previous_subscriptions)
+	{
+        $other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
+
+        foreach($other_order_ids as $order_id)
+        {
+            $c_order = new MemberOrder($order_id);
+            $c_order->cancel();
+
+            if(!empty($c_order->error))
+                $pmpro_error = $c_order->error;
+        }
 	}
 
 	//insert current membership

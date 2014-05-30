@@ -412,7 +412,7 @@
 		//hook to do other stuff when payments stop
 		do_action("pmpro_subscription_recuring_stopped", $last_order);							
 	
-		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID );
+		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {			
 			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			//$pmpro_msgt = "pmpro_success";
