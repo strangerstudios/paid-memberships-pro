@@ -52,6 +52,9 @@
 		{
 			if(!pmpro_has_membership_access($file_post_parent))
 			{
+				//hook for users without access
+				do_action('pmpro_getfile_no_access', $filename);
+				
 				//nope				
 				header('HTTP/1.1 503 Service Unavailable', true, 503);
 				echo "HTTP/1.1 503 Service Unavailable";
