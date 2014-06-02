@@ -417,6 +417,8 @@ if(!function_exists("formatPhone"))
 
 function pmpro_showRequiresMembershipMessage()
 {
+	global $current_user;
+	
 	//get the correct message
 	if(is_feed())
 	{
