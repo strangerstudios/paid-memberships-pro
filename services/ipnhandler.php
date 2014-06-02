@@ -214,7 +214,7 @@
 				}
 				else
 				{				
-					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'cancelled');
 					
 					ipnlog("Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . ".");	
 					
@@ -274,7 +274,7 @@
 				}
 				else
 				{				
-					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id);
+					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'cancelled');
 					
 					ipnlog("Canceled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $subscr_id . ".");	
 					
