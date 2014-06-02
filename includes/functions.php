@@ -523,8 +523,9 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
  *		Success returns boolean true.
  *		Failure returns boolean false.
  */
-function pmpro_changeMembershipLevel($level, $user_id = NULL)
-{
+
+function pmpro_changeMembershipLevel($level, $user_id = NULL, $type = '')
+{	
 	global $wpdb;
 	global $current_user, $pmpro_error;
 
@@ -562,30 +563,61 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 	if(!is_array($level))
 	{
 		//are they even changing?
-		if(pmpro_hasMembershipLevel($level, $user_id)) {
+		if(pmpro_hasMembershipLevel($level, $user_id))
+		{
 			$pmpro_error = __("not changing?", "pmpro");
 			return false; //not changing
 		}
 	}
 
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
-				
+		
 	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", true);
+	
+	
 	if($pmpro_cancel_previous_subscriptions)
 	{		
-		//deactivate old memberships (updates pmpro_memberships_users table)
+		//deactivate old memberships based on type of deactivation (updates pmpro_memberships_users table)
+	
 		if(!empty($old_levels))
-		{			
+		{
 			foreach($old_levels as $old_level) {
-				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
-				if(!$wpdb->query($sql))
+				
+				$status = '';				
+				
+				if($type == 'admin_cancelled')
 				{
+					$status = 'admin_cancelled';
+				}
+				
+				else if($type == 'admin_changed')
+				{
+					$status = 'admin_changed';
+				}
+				
+				else if($type == 'cancelled')
+				{
+					$status = 'cancelled';
+				}
+					
+				else if($type == 'expired')
+					$status = 'expired';
+				else if($type == 'changed')
+					$status = 'changed';
+				else if($type == 'inactive')
+					$status = 'inactive';
+				
+				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$status', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;
+								
+				if(!$wpdb->query($sql))
+				{					
 					$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
+	
 					return false;
 				}										
 			}
 		}
-		
+	
 		//cancel any other subscriptions they have (updates pmpro_membership_orders table)
 		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");		
 				

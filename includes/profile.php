@@ -171,8 +171,17 @@ function pmpro_membership_level_profile_fields_update()
 		
 	//level change
 	if(isset($_REQUEST['membership_level']))
-	{
-		if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID))
+	{	
+		//if the level is being set to 0 by the admin, it's a cancellation.
+		$changed_or_cancelled = '';
+		if($_REQUEST['membership_level'] === 0 ||$_REQUEST['membership_level'] === '0' || $_REQUEST['membership_level'] =='')
+		{
+			$changed_or_cancelled = 'admin_cancelled';		
+		}
+		else 
+			$changed_or_cancelled = 'admin_changed';
+		
+		if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID, $changed_or_cancelled))
 		{
 			//it changed. send email
 			$level_changed = true;

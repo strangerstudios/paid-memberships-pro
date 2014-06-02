@@ -136,7 +136,7 @@ function pmpro_report_memberships_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';		
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';		
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
 		$date_function = 'DAY';
 	}
 	elseif($period == "monthly")
@@ -149,6 +149,7 @@ function pmpro_report_memberships_page()
 	{
 		$startdate = '1960-01-01';	//all time
 		$date_function = 'YEAR';
+		$enddate = date('Y-m-d');
 	}
 	
 	//testing or live data
@@ -201,6 +202,7 @@ function pmpro_report_memberships_page()
 				{
 					if( $date->date == $i ) {
 						$cols[$i]->signups = $date->signups;
+						$cols[$i]->date = $date->date;
 					}
 				}
 			}
@@ -247,16 +249,11 @@ function pmpro_report_memberships_page()
 	// Signups vs. cancellations
 	if ( $type === "signup_v_cancel" )
 	{
-		$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
-		FROM $wpdb->pmpro_memberships_users mu1
-		LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
-		mu2.modified > mu1.enddate AND
-		DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
-		WHERE mu1.status = 'inactive'
-		AND mu2.id IS NULL 
-		AND mu1.startdate >= '" . $startdate . "' 
-		AND mu1.startdate < '" . $enddate . "' ";
-		 
+		
+	$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
+			   FROM $wpdb->pmpro_memberships_users
+	mu1 WHERE mu1.status = 'cancelled' AND mu1.startdate >= '".$startdate."' AND mu1.startdate < '". $enddate. "' ";	
+		 		
 		//restrict by level
 		if(!empty($l))
 			$sqlQuery .= "AND membership_id IN(" . $l . ") ";
@@ -436,7 +433,6 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	else
 		$startdate = '';
 
-	
 	//build query
 	global $wpdb;
 
@@ -488,22 +484,14 @@ function pmpro_getCancellations($period = false, $levels = 'all')
 	*/
 	global $wpdb;
 
-	//$sqlQuery = "SELECT mu1.user_id, mu2.user_id FROM $wpdb->pmpro_memberships_users mu1 LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND mu2.status = 'inactive' AND mu2.startdate > mu1.startdate"; 
-	$sqlQuery = "SELECT COUNT(mu1.id)
-FROM $wpdb->pmpro_memberships_users mu1
-LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
-mu2.modified > mu1.enddate AND
-DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
-WHERE mu1.status = 'inactive'
-AND mu2.id IS NULL 
-AND mu1.startdate >= '" . $startdate . "' ";
- 
+	$sqlQuery = "SELECT* FROM $wpdb->pmpro_memberships_users mu1 WHERE mu1.status = 'cancelled' ";
+
 	//restrict by level
 	if(!empty($levels) && $levels != 'all')
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
-	
-	$cancellations = $wpdb->get_var($sqlQuery);
-		
+
+	$cancellations = $wpdb->get_results($sqlQuery);
+
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]) && is_array($cache[$period]))
 		$cache[$period][$levels] = $cancellations;
@@ -514,7 +502,8 @@ AND mu1.startdate >= '" . $startdate . "' ";
 	
 	set_transient("pmpro_report_memberships_cancellations", $cache, 3600*24);
 	
-	return $cancellations;
+return count($cancellations);	
+
 }
 
 //get MRR

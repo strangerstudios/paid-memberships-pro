@@ -50,7 +50,7 @@
 		$sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 	
 		if($l == "oldmembers")
-			$sqlQuery .= " AND mu.status = 'inactive' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status != 'active' AND mu2.status IS NULL ";
 		elseif($l)
 			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
 		else
@@ -76,7 +76,7 @@
 		$sqlQuery .= " WHERE mu.membership_id > 0 ";
 		
 		if($l == "oldmembers")
-			$sqlQuery .= " AND mu.status = 'inactive' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status != 'active' AND mu2.status IS NULL ";
 		elseif($l)
 			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";										
 		else
@@ -112,7 +112,7 @@
 	else
 		header("Content-Disposition: attachment; filename=members_list.csv");
 	
-	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
+	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code, status ,joined";
 	
 	if($l == "oldmembers")
 		$heading .= ",ended";
@@ -143,8 +143,9 @@
 		array("theuser", "billing_amount"),
 		array("theuser", "cycle_period"),
 		array("discount_code", "id"),
-		array("discount_code", "code")
-		//joindate and enddate are handled specifically below
+		array("discount_code", "code"),
+	    array("theuser","status")
+	    //joindate and enddate are handled specifically below
 	);
 
 	//filter
@@ -174,7 +175,7 @@
 			//get meta
 			
 			if($l == "oldmembers")
-				$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' ORDER BY mu.id DESC LIMIT 1");
+				$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.status,UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' ORDER BY mu.id DESC LIMIT 1");
 			else
 				$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' LIMIT 1");
 			
