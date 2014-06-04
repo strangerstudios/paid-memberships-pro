@@ -133,12 +133,12 @@
 					continue;
 				
 				//okay send them an email				
-				$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $e->user_id);
+				$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->user_id);
 				if($send_email)
 				{
 					//send an email
 					$pmproemail = new PMProEmail();					
-					$pmproemail->sendCreditCardExpiringEmail($euser);
+					$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 					
 					printf(__("Credit card expiring email sent to %s. ", "pmpro"), $euser->user_email);				
 				}
