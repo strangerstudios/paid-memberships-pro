@@ -78,7 +78,7 @@
 			if($last_order->gateway == "stripe")
 			{				
 				//is there a customer?
-				$last_order->Gateway->getCustomer();
+				$last_order->Gateway->getCustomer($last_order);
 				if(!empty($last_order->Gateway->customer))
 				{					
 					//find subscription with this order code
