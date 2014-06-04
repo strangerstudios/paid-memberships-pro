@@ -672,10 +672,12 @@
 				
 				$order->billing_amount = $order->PaymentAmount;
 				$order->trial_amount = 0;
+				$order->trial_limit = 0;
 				
 				global $pmpro_level;
 				$pmpro_level->billing_amount = $order->PaymentAmount;
-				$pmpro_level->trial_amount = 0;				
+				$pmpro_level->trial_amount = 0;
+				$pmpro_level->trial_limit = 0;			
 			}			
 						
 			//create a plan
