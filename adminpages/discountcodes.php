@@ -385,7 +385,7 @@
                     </tr>
 					
 					<tr>
-                        <th scope="row" valign="top"><label for="uses"><?php _ex('Uses', 'Number of uses for a discount code', 'pmpro');?>:</label></th>
+                        <th scope="row" valign="top"><label for="uses"><?php _e('Uses', 'pmpro');?>:</label></th>
                         <td>
 							<input name="uses" type="text" size="10" value="<?php if(!empty($code->uses)) echo str_replace("\"", "&quot;", stripslashes($code->uses));?>" />
 							<small class="pmpro_lite"><?php _e('Leave blank for unlimited uses.', 'pmpro');?></small>
@@ -397,7 +397,7 @@
 			
 			<?php do_action("pmpro_discount_code_after_settings"); ?>
 			
-			<h3>Which Levels Will This Code Apply To?</h3>
+			<h3><?php _e('Which Levels Will This Code Apply To?', 'pmpro'); ?></h3>
 			
 			<div class="pmpro_discount_levels">
 			<?php
