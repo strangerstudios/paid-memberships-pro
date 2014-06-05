@@ -1,15 +1,149 @@
 <?php	
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	if(!class_exists("Twocheckout"))
-		require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_twocheckout', 'init'));
+		
 	class PMProGateway_Twocheckout extends PMProGateway
 	{
 		function PMProGateway_Twocheckout($gateway = NULL)
 		{
+			if(!class_exists("Twocheckout"))
+				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
+			
 			$this->gateway = $gateway;
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure PayPal Express is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_twocheckout', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_twocheckout', 'pmpro_payment_options'));		
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_twocheckout', 'pmpro_payment_option_fields'), 10, 2);			
+		}
+		
+		/**
+		 * Make sure this gateway is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['twocheckout']))
+				$gateways['twocheckout'] = __('2Checkout', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getTwoCheckoutOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'twocheckout_apiusername',
+				'twocheckout_apipassword',
+				'twocheckout_accountnumber',
+				'twocheckout_secretword',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$twocheckout_options = PMProGateway_twocheckout::getTwoCheckoutOptions();
+			
+			//merge with others.
+			$options = array_merge($twocheckout_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for this gateway's options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('2Checkout Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="twocheckout_apiusername"><?php _e('API Username', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="twocheckout_apipassword"><?php _e('API Password', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $values['twocheckout_accountnumber']?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="twocheckout_secretword"><?php _e('Secret Word', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+			</td>
+		</tr>		
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *		
+		 */
 		function process(&$order)
 		{						
 			if(empty($order->code))

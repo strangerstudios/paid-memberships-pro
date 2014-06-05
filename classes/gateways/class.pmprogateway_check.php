@@ -1,5 +1,10 @@
-<?php	
+<?php
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_check', 'init'));
+	
 	class PMProGateway_check extends PMProGateway
 	{
 		function PMProGateway_check($gateway = NULL)
@@ -8,6 +13,100 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure Pay by Check is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_check', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);						
+		}
+		
+		/**
+		 * Make sure Check is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['check']))
+				$gateways['check'] = __('Pay by Check', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the Check gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getCheckOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'instructions',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$check_options = PMProGateway_check::getCheckOptions();
+			
+			//merge with others.
+			$options = array_merge($check_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for Check options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('Pay by Check Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="instructions"><?php _e('Instructions', 'pmpro');?></label>					
+			</th>
+			<td>
+				<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo esc_textarea($values['instructions'])?></textarea>
+				<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'pmpro');?></small></p>
+			</td>
+		</tr>	
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *
+		 */
 		function process(&$order)
 		{
 			//clean up a couple values

@@ -1,5 +1,10 @@
 <?php
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_paypalexpress', 'init'));
+	
 	class PMProGateway_paypalstandard extends PMProGateway
 	{
 		function PMProGateway_paypalstandard($gateway = NULL)
@@ -8,6 +13,146 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure PayPal Express is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_paypalstandard', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_paypalstandard', 'pmpro_payment_options'));
+			
+			/*
+				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
+				So we only load it if we haven't already.
+			*/
+			global $pmpro_payment_option_fields_for_paypal;
+			if(empty($pmpro_payment_option_fields_for_paypal))
+			{				
+				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalstandard', 'pmpro_payment_option_fields'), 10, 2);						
+				$pmpro_payment_option_fields_for_paypal = true;
+			}
+		}
+		
+		/**
+		 * Make sure this gateway is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['paypalstandard']))
+				$gateways['paypalstandard'] = __('PayPal Standard', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getPaypalOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'gateway_email',				
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$paypal_options = PMProGateway_paypalexpress::getPaypalOptions();
+			
+			//merge with others.
+			$options = array_merge($paypal_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for this gateway's options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('PayPal Settings', 'pmpro'); ?>
+			</td>
+		</tr>		
+		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'pmpro');?>
+			</td>	
+		</tr>	
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">	
+				<label for="gateway_email"><?php _e('Gateway Account Email', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="gateway_email" name="gateway_email" size="60" value="<?php echo esc_attr($values['gateway_email'])?>" />
+			</td>
+		</tr>                
+		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="apiusername"><?php _e('API Username', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="apiusername" name="apiusername" size="60" value="<?php echo esc_attr($values['apiusername'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="apipassword"><?php _e('API Password', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="apipassword" name="apipassword" size="60" value="<?php echo esc_attr($values['apipassword'])?>" />
+			</td>
+		</tr> 
+		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="apisignature"><?php _e('API Signature', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="apisignature" name="apisignature" size="60" value="<?php echo esc_attr($values['apisignature'])?>" />
+			</td>
+		</tr> 
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+			</td>
+		</tr>
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *		
+		 */
 		function process(&$order)
 		{						
 			if(empty($order->code))

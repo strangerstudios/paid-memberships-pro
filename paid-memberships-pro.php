@@ -70,8 +70,6 @@ require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortco
 //load gateway
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded by memberorder class when needed
 $pmpro_gateway = pmpro_getOption("gateway");
-if(!empty($pmpro_gateway))
-	require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_" . $pmpro_gateway . ".php");
 
 /*
 	Setup the DB and check for upgrades
@@ -115,6 +113,13 @@ $pmpro_gateways = apply_filters('pmpro_gateways',
 									'cybersource' => __('Cybersource', 'pmpro')														
 							    )
 							);
+
+//load all gateways in the classes/gateways/ directory
+foreach($pmpro_gateways as $gateway => $label)
+{
+	if(!empty($gateway) && file_exists(PMPRO_DIR . "/classes/gateways/class.pmprogateway_" . $gateway . ".php"))
+		require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_" . $gateway . ".php");
+}
 
 //when checking levels for users, we save the info here for caching. each key is a user id for level object for that user.
 global $all_membership_levels;

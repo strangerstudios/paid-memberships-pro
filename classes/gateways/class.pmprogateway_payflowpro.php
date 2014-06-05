@@ -1,5 +1,10 @@
 <?php
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_payflowpro', 'init'));
+	
 	class PMProGateway_payflowpro extends PMProGateway
 	{
 		function PMProGateway_payflowpro($gateway = NULL)
@@ -8,6 +13,134 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure Payflow Pro/PayPal Pro is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_payflowpro', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_payflowpro', 'pmpro_payment_options'));
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_payflowpro', 'pmpro_payment_option_fields'), 10, 2);						
+		}
+		
+		/**
+		 * Make sure this gateway is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['payflowpro']))
+				$gateways['payflowpro'] = __('Payflow Pro/PayPal Pro', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getPayflowProOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'payflow_partner',
+				'payflow_vendor',
+				'payflow_user',
+				'payflow_pwd',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$payflowpro_options = PMProGateway_payflowpro::getPayflowProOptions();
+			
+			//merge with others.
+			$options = array_merge($payflowpro_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for this gateway's options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('Payflow Pro Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+		    <th scope="row" valign="top">	
+				<label for="payflow_partner"><?php _e('Partner', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="payflow_partner" name="payflow_partner" size="60" value="<?php echo esc_attr($values['payflow_partner'])?>" />
+			</td>
+	    </tr>
+	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+		    <th scope="row" valign="top">	
+				<label for="payflow_vendor"><?php _e('Vendor', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="payflow_vendor" name="payflow_vendor" size="60" value="<?php echo esc_attr($values['payflow_vendor'])?>" />
+			</td>
+	    </tr>
+	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+		    <th scope="row" valign="top">	
+				<label for="payflow_user"><?php _e('User', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="payflow_user" name="payflow_user" size="60" value="<?php echo esc_attr($values['payflow_user'])?>" />
+			</td>
+	    </tr>
+	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+		    <th scope="row" valign="top">	
+				<label for="payflow_pwd"><?php _e('Password', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="password" id="payflow_pwd" name="payflow_pwd" size="60" value="<?php echo esc_attr($values['payflow_pwd'])?>" />
+			</td>
+	    </tr>
+		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with Payflow Pro/PayPal Pro, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+			</td>
+		</tr>
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *		
+		 */
 		function process(&$order)
 		{
 			if(floatval($order->InitialPayment) == 0)

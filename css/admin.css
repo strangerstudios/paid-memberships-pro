@@ -1,8 +1,11 @@
+/* icon */
 #wp-admin-bar-paid-memberships-pro .ab-item .ab-icon:before {
     font-family: "dashicons";
     content: "\f307";
 }
+.pmpro_admin tr td .dashicons {padding-top: 5px; }
 
+/* header/etc */
 .pmpro_admin {background: url(../images/Paid-Memberships-Pro_watermark.png) bottom right no-repeat !important; padding: 1em 0 70px 0; }
 
 .pmpro_admin .pmpro_banner h2 {float: left; }
@@ -22,16 +25,21 @@
 .pmpro_admin #editorcontainer #description {width: 100%; height: 180px; }
 .pmpro_admin .widefat {margin-top: 1em; }
 
-.ssp_description #description {width: 100%;}
+/* checkboxes */
 .checkbox_box {width: 300px; background: #FFFFFF; border: 1px solid #CCC;}
 .checkbox_box div {border-bottom: 1px solid #CCC; padding: 3px;}
 .checkbox_box .clickable {cursor: pointer;}
 .checkbox_box .clickable:hover {background: #FFC;}
-.top0em {margin-top: 0;}
 
-.pmpro_admin tr td .dashicons {padding-top: 5px; }
+/* levels */
 tr.pmpro_gray td {color: #AAA;}
 tr td.level_name a {font-size: 115%; font-weight: bold; }
+
+/* settings */
+tr.pmpro_settings_divider td {padding: 5px; margin: 0; color: #555; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC;}
+tr.pmpro_settings_divider td:before {content: "- ";}
+tr.pmpro_settings_divider td:after {content: " -";}
+
 /* messages */
 .pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
 
@@ -96,6 +104,8 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 .pmpro_pad20 {padding: 20px !important;}
 .pmpro_red {color: #CC0000;}
 .pmpro_green {color: #00AA00;}
+.ssp_description #description {width: 100%;}
+.top0em {margin-top: 0;}
 
 /* reports */
 .pmpro_reports-holder { }

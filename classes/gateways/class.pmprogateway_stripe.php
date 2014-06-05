@@ -1,10 +1,6 @@
 <?php	
 	//include pmprogateway
-	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	
-	//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
-	if(!class_exists("Stripe"))
-		require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+	require_once(dirname(__FILE__) . "/class.pmprogateway.php");		
 	
 	//load classes init method
 	add_action('init', array('PMProGateway_stripe', 'init'));
@@ -28,10 +24,24 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
+			$this->loadStripeLibrary();			
 			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
 			
 			return $this->gateway;
 		}										
+		
+		/**
+		 * Load the Stripe API library.
+		 *		 
+		 * @since 2.0
+		 * Moved into a method in version 2.0 so we only load it when needed.
+		 */
+		function loadStripeLibrary()
+		{
+			//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
+			if(!class_exists("Stripe"))
+				require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+		}
 		
 		/**
 		 * Run on WP init
@@ -40,8 +50,121 @@
 		 */
 		static function init()
 		{			
+			//make sure Stripe is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_stripe', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_stripe', 'pmpro_payment_options'));
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_stripe', 'pmpro_payment_option_fields'), 10, 2);
+			
+			//add some fields to edit user page (Updates)
 			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
-			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));						
+			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));
+		}
+		
+		/**
+		 * Make sure Stripe is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['stripe']))
+				$gateways['stripe'] = __('Stripe', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the Stripe gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getStripeOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'stripe_secretkey',
+				'stripe_publishablekey',
+				'stripe_billingaddress',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate',
+				'accepted_credit_cards'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$stripe_options = PMProGateway_stripe::getStripeOptions();
+			
+			//merge with others.
+			$options = array_merge($stripe_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for Stripe options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>				
+			<td colspan="2">
+				<?php _e('Stripe Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_secretkey"><?php _e('Secret Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_publishablekey"><?php _e('Publishable Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60" value="<?php echo esc_attr($values['stripe_publishablekey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<select id="stripe_billingaddress" name="stripe_billingaddress">
+					<option value="0" <?php if(empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+					<option value="1" <?php if(!empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>						
+				</select>
+				<small><?php _e("Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'pmpro');?></small>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
+			</td>
+		</tr>		
+		<?php
 		}
 		
 		/**

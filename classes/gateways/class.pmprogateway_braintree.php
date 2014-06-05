@@ -1,5 +1,10 @@
 <?php	
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_braintree', 'init'));
+	
 	if(!class_exists("Braintree"))
 		require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
 	class PMProGateway_braintree extends PMProGateway
@@ -22,6 +27,140 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure Braintree Payments is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_braintree', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_braintree', 'pmpro_payment_options'));
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_braintree', 'pmpro_payment_option_fields'), 10, 2);						
+		}
+		
+		/**
+		 * Make sure this gateway is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['braintree']))
+				$gateways['braintree'] = __('Braintree Payments', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getBraintreeOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'braintree_merchantid',
+				'braintree_publickey',
+				'braintree_privatekey',
+				'braintree_encryptionkey',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$braintree_options = PMProGateway_braintree::getBraintreeOptions();
+			
+			//merge with others.
+			$options = array_merge($braintree_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for this gateway's options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('Braintree Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_merchantid" name="braintree_merchantid" size="60" value="<?php echo esc_attr($values['braintree_merchantid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_publickey"><?php _e('Public Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_publickey" name="braintree_publickey" size="60" value="<?php echo esc_attr($values['braintree_publickey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_privatekey"><?php _e('Private Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_privatekey" name="braintree_privatekey" size="60" value="<?php echo esc_attr($values['braintree_privatekey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>					
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p>
+					<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'pmpro');?> 
+					<pre><?php 
+						//echo admin_url("admin-ajax.php") . "?action=braintree_webhook";
+						echo PMPRO_URL . "/services/braintree-webhook.php";
+					?></pre>
+				</p>
+			</td>
+		</tr>
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *		
+		 */
 		function process(&$order)
 		{			
 			//check for initial payment

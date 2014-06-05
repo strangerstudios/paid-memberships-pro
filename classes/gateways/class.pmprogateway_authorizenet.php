@@ -1,5 +1,10 @@
 <?php
+	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	
+	//load classes init method
+	add_action('init', array('PMProGateway_authorizenet', 'init'));
+	
 	class PMProGateway_authorizenet extends PMProGateway
 	{
 		function PMProGateway_authorizenet($gateway = NULL)
@@ -8,6 +13,116 @@
 			return $this->gateway;
 		}										
 		
+		/**
+		 * Run on WP init
+		 *		 
+		 * @since 2.0
+		 */
+		static function init()
+		{			
+			//make sure Authorize.net is a gateway option
+			add_filter('pmpro_gateways', array('PMProGateway_authorizenet', 'pmpro_gateways'));
+			
+			//add fields to payment settings
+			add_filter('pmpro_payment_options', array('PMProGateway_authorizenet', 'pmpro_payment_options'));
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);						
+		}
+		
+		/**
+		 * Make sure this gateway is in the gateways list
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_gateways($gateways)
+		{
+			if(empty($gateways['authorizenet']))
+				$gateways['authorizenet'] = __('Authorize.net', 'pmpro');
+		
+			return $gateways;
+		}
+		
+		/**
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *		 
+		 * @since 2.0
+		 */
+		static function getAuthorizeNetOptions()
+		{			
+			$options = array(
+				'sslseal',
+				'nuclear_HTTPS',
+				'gateway_environment',
+				'loginname',
+				'transactionkey',
+				'currency',
+				'use_ssl',
+				'tax_state',
+				'tax_rate'
+			);
+			
+			return $options;
+		}
+		
+		/**
+		 * Set payment options for payment settings page.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_options($options)
+		{			
+			//get stripe options
+			$authorizenet_options = PMProGateway_authorizenet::getAuthorizeNetOptions();
+			
+			//merge with others.
+			$options = array_merge($authorizenet_options, $options);
+			
+			return $options;
+		}
+		
+		/**
+		 * Display fields for this gateway's options.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_payment_option_fields($values, $gateway)
+		{
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('Authorize.net Settings', 'pmpro'); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="loginname"><?php _e('Login Name', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="loginname" name="loginname" size="60" value="<?php echo esc_attr($values['loginname'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="transactionkey"><?php _e('Transaction Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" id="transactionkey" name="transactionkey" size="60" value="<?php echo esc_attr($values['transactionkey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('Silent Post URL', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre></p>
+			</td>
+		</tr>
+		<?php
+		}
+		
+		/**
+		 * Process checkout.
+		 *		
+		 */
 		function process(&$order)
 		{
 			//check for initial payment
