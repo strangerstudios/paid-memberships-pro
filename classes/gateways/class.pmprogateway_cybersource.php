@@ -49,7 +49,7 @@
 		 *		 
 		 * @since 2.0
 		 */
-		static function getCyberSourceOptions()
+		static function getGatewayOptions()
 		{			
 			$options = array(
 				'sslseal',
@@ -60,7 +60,8 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'accepted_credit_cards'
 			);
 			
 			return $options;
@@ -74,7 +75,7 @@
 		static function pmpro_payment_options($options)
 		{			
 			//get stripe options
-			$cybersource_options = PMProGateway_cybersource::getCyberSourceOptions();
+			$cybersource_options = PMProGateway_cybersource::getGatewayOptions();
 			
 			//merge with others.
 			$options = array_merge($cybersource_options, $options);

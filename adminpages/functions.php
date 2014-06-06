@@ -217,3 +217,42 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 	
 	return true;
 }
+
+/**
+ * Get the gateway-related classes for fields on the payment settings page.
+ *
+ * @param string $field The name of the field to check.
+ * @param bool $force If true, it will rebuild the cached results.
+ * 
+ * @since  2.0
+ */
+function pmpro_getClassesForPaymentSettingsField($field, $force = false)
+{
+	global $pmpro_gateways, $pmpro_gateway_options;
+		
+	//build array of gateways and options
+	if(!isset($pmpro_gateway_options) || $force)
+	{
+		$pmpro_gateway_options = array();
+		
+		foreach($pmpro_gateways as $gateway => $label)
+		{
+			//get options
+			if(class_exists('PMProGateway_' . $gateway) && method_exists('PMProGateway_' . $gateway, 'getGatewayOptions'))
+			{
+				$pmpro_gateway_options[$gateway] = call_user_func(array('PMProGateway_' . $gateway, 'getGatewayOptions'));
+			}			
+		}
+	}
+		
+	//now check where this field shows up
+	$rgateways = array();
+	foreach($pmpro_gateway_options as $gateway => $options)
+	{
+		if(in_array($field, $options))
+			$rgateways[] = "gateway_" . $gateway;
+	}
+		
+	//return space separated string
+	return implode(" ", $rgateways);
+}

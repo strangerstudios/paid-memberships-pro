@@ -56,7 +56,7 @@
 		 *		 
 		 * @since 2.0
 		 */
-		static function getPaypalOptions()
+		static function getGatewayOptions()
 		{			
 			$options = array(
 				'sslseal',
@@ -69,7 +69,8 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'accepted_credit_cards'
 			);
 			
 			return $options;
@@ -83,7 +84,7 @@
 		static function pmpro_payment_options($options)
 		{			
 			//get stripe options
-			$paypal_options = PMProGateway_paypal::getPaypalOptions();
+			$paypal_options = PMProGateway_paypal::getGatewayOptions();
 			
 			//merge with others.
 			$options = array_merge($paypal_options, $options);

@@ -49,7 +49,7 @@
 		 *		 
 		 * @since 2.0
 		 */
-		static function getTwoCheckoutOptions()
+		static function getGatewayOptions()
 		{			
 			$options = array(
 				'sslseal',
@@ -76,7 +76,7 @@
 		static function pmpro_payment_options($options)
 		{			
 			//get stripe options
-			$twocheckout_options = PMProGateway_twocheckout::getTwoCheckoutOptions();
+			$twocheckout_options = PMProGateway_twocheckout::getGatewayOptions();
 			
 			//merge with others.
 			$options = array_merge($twocheckout_options, $options);
