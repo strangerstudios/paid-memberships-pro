@@ -614,6 +614,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		 //Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
 		 if ($level['cycle_period'] == '') $level['cycle_period'] = 0;
 		 
+		 if(!isset($level['status']) || !in_array($level['status'], array('active', 'inactive')))
+			$level['status'] = 'active';
+		 
 		 $sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, status, startdate, enddate)
 					VALUES('" . $level['user_id'] . "',
 					'" . $level['membership_id'] . "',
