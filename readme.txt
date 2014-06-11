@@ -15,7 +15,7 @@ Set up unlimited membership levels and provide restricted access to pages, posts
 Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
 = Integrate with The Most Popular Payment Gateways. =
-Stripe, Authorize.net, Braintree Payments, and PayPal (Standard, Express, Website Payments Pro, Payflow, & Advanced)
+Stripe, Authorize.net, Braintree Payments, and PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow)
 
 = Works with Any Theme You Want. =
 Your Existing Theme or a Popular Free or Premium Third-Party Theme.
