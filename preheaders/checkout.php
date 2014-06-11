@@ -539,9 +539,7 @@
 						//$gateway = pmpro_getOption("gateway");										
 						$morder->gateway = $gateway;
 						$morder->setGateway();
-						
-						$morder = apply_filters("pmpro_custom_order_modification", $morder );
-										
+															
 						//setup level var
 						$morder->getMembershipLevel();
 						$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
