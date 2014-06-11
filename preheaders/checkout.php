@@ -115,100 +115,8 @@
 	if(!$besecure && !empty($_REQUEST['submit-checkout']) && is_ssl())
 		$besecure = true;	//be secure anyway since we're already checking out
 	
-	//code for stripe (unless the level is free)
-	if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
-	{
-		//stripe js library
-		wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), NULL);
-		
-		//stripe js code for checkout
-		function pmpro_stripe_javascript()
-		{
-			global $pmpro_gateway, $pmpro_level;
-		?>
-		<script type="text/javascript">
-			// this identifies your website in the createToken call below			
-			Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-			
-			var pmpro_require_billing = true;			
-			
-			jQuery(document).ready(function() {
-				jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
-								
-				//double check in case a discount code made the level free				
-				if(pmpro_require_billing)
-				{
-					Stripe.createToken({
-						number: jQuery('#AccountNumber').val(),
-						cvc: jQuery('#CVV').val(),
-						exp_month: jQuery('#ExpirationMonth').val(),
-						exp_year: jQuery('#ExpirationYear').val(),
-						name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
-						<?php
-							$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
-							if(!empty($pmpro_stripe_verify_address))
-							{
-							?>
-							,address_line1: jQuery('#baddress1').val(),
-							address_line2: jQuery('#baddress2').val(),
-							address_city: jQuery('#bcity').val(),					
-							address_state: jQuery('#bstate').val(),					
-							address_zip: jQuery('#bzipcode').val(),							
-							address_country: jQuery('#bcountry').val()
-						<?php
-							}
-						?>					
-					}, stripeResponseHandler);
-
-					// prevent the form from submitting with the default action
-					return false;
-				}
-				else
-					return true;	//not using Stripe anymore
-				});
-			});
-
-			function stripeResponseHandler(status, response) {
-				if (response.error) {
-					// re-enable the submit button
-                    jQuery('.pmpro_btn-submit-checkout').removeAttr("disabled");
-
-					//hide processing message
-					jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-					
-					// show the errors on the form
-					alert(response.error.message);
-					jQuery(".payment-errors").text(response.error.message);
-				} else {
-					var form$ = jQuery("#pmpro_form, .pmpro_form");					
-					// token contains id, last4, and card type
-					var token = response['id'];					
-					// insert the token into the form so it gets submitted to the server
-					form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-										
-					//insert fields for other card fields
-					form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
-					form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-					form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
-					form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");							
-					
-					// and submit
-					form$.get(0).submit();
-				}
-			}
-		</script>
-		<?php
-		}
-		add_action("wp_head", "pmpro_stripe_javascript");
-		
-		//don't require the CVV
-		function pmpro_stripe_dont_require_CVV($fields)
-		{
-			unset($fields['CVV']);			
-			return $fields;
-		}
-		add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
-	}
+	//action to run extra code for gateways/etc
+	do_action('pmpro_checkout_preheader');
 	
 	//code for Braintree
 	if($gateway == "braintree")
@@ -367,13 +275,7 @@
 	if(isset($_REQUEST['tos']))
 		$tos = $_REQUEST['tos'];		
 	else
-		$tos = "";
-	
-	//for stripe, load up token values
-	if(isset($_REQUEST['stripeToken']))
-	{
-		$stripeToken = $_REQUEST['stripeToken'];				
-	}
+		$tos = "";		
 	
 	//for Braintree, load up values
 	if(isset($_REQUEST['number']) && isset($_REQUEST['expiration_date']) && isset($_REQUEST['cvv']))
@@ -432,29 +334,10 @@
 			$password = pmpro_getDiscountCode() . pmpro_getDiscountCode();	//using two random discount codes
 			$password2 = $password;
 		}	
-				
+		
+		//TODO: for 2.0 This should check for requirebillingfields or something similar
 		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "twocheckout")
-		{									
-			//if using stripe lite, remove some fields from the required array
-			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
-			if($pmpro_stripe_lite && $gateway == "stripe")
-			{
-				//some fields to remove
-				$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
-				
-				//if a user is logged in, don't require bemail either				
-				if(!empty($current_user->user_email))
-				{
-					$remove[] = 'bemail';
-					$bemail = $current_user->user_email;
-					$bconfirmemail = $bemail;
-				}
-				
-				//remove the fields
-				foreach($remove as $field)
-					unset($pmpro_required_billing_fields[$field]);
-			}
-			
+		{		
 			//filter							
 			foreach($pmpro_required_billing_fields as $key => $field)
 			{
@@ -624,11 +507,7 @@
 						$morder->ExpirationDate = $ExpirationMonth . $ExpirationYear;
 						$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
 						$morder->CVV2 = $CVV;												
-						
-						//stripeToken
-						if(isset($stripeToken))
-							$morder->stripeToken = $stripeToken;
-						
+																	
 						//Braintree values
 						if(isset($braintree_number))
 						{
@@ -645,22 +524,7 @@
 						$morder->FirstName = $bfirstname;
 						$morder->LastName = $blastname;						
 						$morder->Address1 = $baddress1;
-						$morder->Address2 = $baddress2;						
-						
-						//stripe lite code to get name from other sources if available
-						if(!empty($pmpro_stripe_lite) && empty($morder->FirstName) && empty($morder->LastName))
-						{
-							if(!empty($current_user->ID))
-							{									
-								$morder->FirstName = get_user_meta($current_user->ID, "first_name", true);
-								$morder->LastName = get_user_meta($current_user->ID, "last_name", true);
-							}
-							elseif(!empty($_REQUEST['first_name']) && !empty($_REQUEST['last_name']))
-							{
-								$morder->FirstName = $_REQUEST['first_name'];
-								$morder->LastName = $_REQUEST['last_name'];
-							}
-						}
+						$morder->Address2 = $baddress2;												
 						
 						//other values
 						$morder->billing = new stdClass();
@@ -683,7 +547,10 @@
 						//tax
 						$morder->subtotal = $morder->InitialPayment;
 						$morder->getTax();						
-													
+						
+						//filter for order, since v2.0
+						$morder = apply_filters("pmpro_checkout_order", $morder);
+						
 						if($gateway == "paypalexpress")
 						{
 							$morder->payment_type = "PayPal Express";
@@ -1003,19 +870,10 @@
 				}
 						
 				//show the confirmation
-				$ordersaved = true;
-				
-				//for Stripe, let's save the customer id in user meta
-				if($gateway == "stripe")
-				{
-					if(!empty($morder->Gateway->customer->id))
-					{
-						update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
-					}
-				}
+				$ordersaved = true;								
 								
 				//hook
-				do_action("pmpro_after_checkout", $user_id);						
+				do_action("pmpro_after_checkout", $user_id, $morder);	//added $morder param in v2.0						
 				
 				//setup some values for the emails
 				if(!empty($morder))

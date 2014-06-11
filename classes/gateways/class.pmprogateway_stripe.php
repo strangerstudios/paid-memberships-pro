@@ -60,6 +60,11 @@
 			//add some fields to edit user page (Updates)
 			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
 			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));
+			
+			//code to add at checkout
+			add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));			
+			add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
+			add_filter('pmpro_after_checkout', array('PMProGateway_stripe', 'pmpro_after_checkout'), 10, 2);
 		}
 		
 		/**
@@ -165,6 +170,160 @@
 			</td>
 		</tr>		
 		<?php
+		}
+		
+		/**
+		 * Code added to checkout preheader.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_preheader()
+		{			
+			global $gateway, $pmpro_level;
+			
+			if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
+			{
+				//stripe js library
+				wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), NULL);
+				
+				//stripe js code for checkout
+				function pmpro_stripe_javascript()
+				{
+					global $pmpro_gateway, $pmpro_level;
+				?>
+				<script type="text/javascript">
+					// this identifies your website in the createToken call below			
+					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
+					
+					var pmpro_require_billing = true;			
+					
+					jQuery(document).ready(function() {
+						jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
+										
+						//double check in case a discount code made the level free				
+						if(pmpro_require_billing)
+						{
+							Stripe.createToken({
+								number: jQuery('#AccountNumber').val(),
+								cvc: jQuery('#CVV').val(),
+								exp_month: jQuery('#ExpirationMonth').val(),
+								exp_year: jQuery('#ExpirationYear').val(),
+								name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
+								<?php
+									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
+									if(!empty($pmpro_stripe_verify_address))
+									{
+									?>
+									,address_line1: jQuery('#baddress1').val(),
+									address_line2: jQuery('#baddress2').val(),
+									address_city: jQuery('#bcity').val(),					
+									address_state: jQuery('#bstate').val(),					
+									address_zip: jQuery('#bzipcode').val(),							
+									address_country: jQuery('#bcountry').val()
+								<?php
+									}
+								?>					
+							}, stripeResponseHandler);
+
+							// prevent the form from submitting with the default action
+							return false;
+						}
+						else
+							return true;	//not using Stripe anymore
+						});
+					});
+
+					function stripeResponseHandler(status, response) {
+						if (response.error) {
+							// re-enable the submit button
+							jQuery('.pmpro_btn-submit-checkout').removeAttr("disabled");
+
+							//hide processing message
+							jQuery('#pmpro_processing_message').css('visibility', 'hidden');
+							
+							// show the errors on the form
+							alert(response.error.message);
+							jQuery(".payment-errors").text(response.error.message);
+						} else {
+							var form$ = jQuery("#pmpro_form, .pmpro_form");					
+							// token contains id, last4, and card type
+							var token = response['id'];					
+							// insert the token into the form so it gets submitted to the server
+							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+												
+							//insert fields for other card fields
+							form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
+							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
+							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");							
+							
+							// and submit
+							form$.get(0).submit();
+						}
+					}
+				</script>
+				<?php
+				}
+				add_action("wp_head", "pmpro_stripe_javascript");
+				
+				//don't require the CVV
+				function pmpro_stripe_dont_require_CVV($fields)
+				{
+					unset($fields['CVV']);			
+					return $fields;
+				}
+				add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
+			}
+		}
+		
+		/**
+		 * Code added to checkout preheader.
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_order($morder)
+		{
+			//load up token values
+			if(isset($_REQUEST['stripeToken']))
+			{
+				$morder->stripeToken = $_REQUEST['stripeToken'];
+			}
+		
+			//stripe lite code to get name from other sources if available
+			global $pmpro_stripe_lite, $current_user;
+			if(!empty($pmpro_stripe_lite) && empty($morder->FirstName) && empty($morder->LastName))
+			{
+				if(!empty($current_user->ID))
+				{									
+					$morder->FirstName = get_user_meta($current_user->ID, "first_name", true);
+					$morder->LastName = get_user_meta($current_user->ID, "last_name", true);
+				}
+				elseif(!empty($_REQUEST['first_name']) && !empty($_REQUEST['last_name']))
+				{
+					$morder->FirstName = $_REQUEST['first_name'];
+					$morder->LastName = $_REQUEST['last_name'];
+				}
+			}
+		
+			return $morder;
+		}
+		
+		/**
+		 * Code to run after checkout
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_after_checkout($user_id, $morder)		
+		{
+			global $gateway;
+						
+			if($gateway == "stripe")
+			{
+				if(!empty($morder) && !empty($morer->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				{
+					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
+				}
+			}
 		}
 		
 		/**
