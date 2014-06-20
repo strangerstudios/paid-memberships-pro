@@ -36,6 +36,20 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);						
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
+			
+			//code to add at checkout if Braintree is the current gateway
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "paypalexpress")
+			{				
+				add_filter('pmpro_include_billing_address_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
+				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
+				add_filter('pmpro_checkout_confirmed', array('PMProGateway_paypalexpress', 'pmpro_checkout_confirmed'));
+				add_action('pmpro_checkout_before_processing', array('PMProGateway_paypalexpress', 'pmpro_checkout_before_processing'));
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
+				add_action('pmpro_checkout_after_form', array('PMProGateway_paypalexpress', 'pmpro_checkout_after_form'));
+			}
 		}
 		
 		/**
@@ -153,10 +167,197 @@
 		}
 		
 		/**
-		 * Process checkout.
-		 *		
+		 * Remove required billing fields
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_required_billing_fields($fields)
+		{
+			unset($fields['bfirstname']);
+			unset($fields['blastname']);
+			unset($fields['baddress1']);
+			unset($fields['bcity']);
+			unset($fields['bstate']);
+			unset($fields['bzipcode']);
+			unset($fields['bphone']);
+			unset($fields['bemail']);
+			unset($fields['bcountry']);
+			unset($fields['CardType']);
+			unset($fields['AccountNumber']);
+			unset($fields['ExpirationMonth']);
+			unset($fields['ExpirationYear']);
+			unset($fields['CVV']);
+			
+			return $fields;
+		}
+		
+		/**
+		 * Save session vars before processing
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_before_processing()
+		{
+			global $current_user, $gateway;
+			
+			//save user fields for PayPal Express			
+			if(!$current_user->ID)
+			{
+				$_SESSION['pmpro_signup_username'] = $username;
+				$_SESSION['pmpro_signup_password'] = $password;
+				$_SESSION['pmpro_signup_email'] = $bemail;							
+			}
+			
+			//can use this hook to save some other variables to the session
+			do_action("pmpro_paypalexpress_session_vars");
+		}
+		
+		/**
+		 * Review and Confirmation code.
+		 *
+		 * @since 2.0		 
+		 */
+		static function pmpro_checkout_confirmed($pmpro_confirmed)
+		{
+			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token;
+						
+			//PayPal Express Call Backs
+			if(!empty($_REQUEST['review']))
+			{	
+				if(!empty($_REQUEST['PayerID']))
+					$_SESSION['payer_id'] = $_REQUEST['PayerID'];
+				if(!empty($_REQUEST['paymentAmount']))
+					$_SESSION['paymentAmount'] = $_REQUEST['paymentAmount'];
+				if(!empty($_REQUEST['currencyCodeType']))
+					$_SESSION['currCodeType'] = $_REQUEST['currencyCodeType'];
+				if(!empty($_REQUEST['paymentType']))
+					$_SESSION['paymentType'] = $_REQUEST['paymentType'];
+				
+				$morder = new MemberOrder();
+				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
+				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;				
+				if($morder->Token)
+				{
+					if($morder->Gateway->getExpressCheckoutDetails($morder))
+					{
+						$pmpro_review = true;
+					}
+					else
+					{
+						$pmpro_msg = $morder->error;
+						$pmpro_msgt = "pmpro_error";
+					}		
+				}
+				else
+				{
+					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msgt = "pmpro_error";
+				}
+			}
+			elseif(!empty($_REQUEST['confirm']))
+			{		
+				$morder = new MemberOrder();
+				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
+				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;	
+				if($morder->Token)
+				{		
+					//setup values
+					$morder->membership_id = $pmpro_level->id;
+					$morder->membership_name = $pmpro_level->name;
+					$morder->discount_code = $discount_code;
+					$morder->InitialPayment = $pmpro_level->initial_payment;
+					$morder->PaymentAmount = $pmpro_level->billing_amount;
+					$morder->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+					$morder->BillingPeriod = $pmpro_level->cycle_period;
+					$morder->BillingFrequency = $pmpro_level->cycle_number;
+					$morder->Email = $bemail;
+					
+					//$gateway = pmpro_getOption("gateway");																	
+					
+					//setup level var
+					$morder->getMembershipLevel();			
+					$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
+					
+					//tax
+					$morder->subtotal = $morder->InitialPayment;
+					$morder->getTax();				
+					if($pmpro_level->billing_limit)
+						$morder->TotalBillingCycles = $pmpro_level->billing_limit;
+				
+					if(pmpro_isLevelTrial($pmpro_level))
+					{
+						$morder->TrialBillingPeriod = $pmpro_level->cycle_period;
+						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
+						$morder->TrialBillingCycles = $pmpro_level->trial_limit;
+						$morder->TrialAmount = $pmpro_level->trial_amount;
+					}
+								
+					if($morder->confirm())
+					{						
+						$pmpro_confirmed = true;											
+					}
+					else
+					{								
+						$pmpro_msg = $morder->error;
+						$pmpro_msgt = "pmpro_error";
+					}
+				}
+				else
+				{
+					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msgt = "pmpro_error";
+				}
+			}
+			
+			return $pmpro_confirmed;
+		}
+		
+		/**
+		 * Swap in user/pass/etc from session
+		 *
+		 * @since 2.0		 
+		 */
+		static function pmpro_checkout_new_user_array($new_user_array)
+		{
+			global $current_user;
+			
+			if(!$current_user->ID)
+			{
+				//reload the user fields			
+				$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
+				$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];				
+				$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+				
+				//unset the user fields in session
+				unset($_SESSION['pmpro_signup_username']);
+				unset($_SESSION['pmpro_signup_password']);
+				unset($_SESSION['pmpro_signup_email']);
+			}
+			
+			return $new_user_array;
+		}
+		
+		/**
+		 * Process at checkout
+		 *
+		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
+		{
+			$order->payment_type = "PayPal Express";
+			$order->cardtype = "";
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);							
+			
+			return $order->Gateway->setExpressCheckout($order);
+		}
+		
+		/**
+		 * Process charge or subscription after confirmation.
+		 *
+		 * @since 2.0
+		 */
+		function confirm(&$order)
 		{				
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
@@ -167,7 +368,70 @@
 			else
 				return $this->charge($order);	
 		}
-						
+		
+		/**
+		 * Swap in our submit buttons.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_default_submit_button($show)
+		{
+			global $gateway, $pmpro_requirebilling;
+			
+			//show our submit buttons
+			?>
+			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
+			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="image" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+			</span>
+			<?php } ?>
+			
+			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />				
+			</span>
+			<?php
+		
+			//don't show the default
+			return false;
+		}
+		
+		/**
+		 * Scripts for checkout page.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_after_form()
+		{
+		?>
+		<script>	
+			//choosing payment method
+			jQuery('input[name=gateway]').click(function() {		
+				if(jQuery(this).val() == 'paypal')
+				{
+					jQuery('#pmpro_paypalexpress_checkout').hide();
+					jQuery('#pmpro_billing_address_fields').show();
+					jQuery('#pmpro_payment_information_fields').show();			
+					jQuery('#pmpro_submit_span').show();
+				}
+				else
+				{			
+					jQuery('#pmpro_billing_address_fields').hide();
+					jQuery('#pmpro_payment_information_fields').hide();			
+					jQuery('#pmpro_submit_span').hide();
+					jQuery('#pmpro_paypalexpress_checkout').show();
+				}
+			});
+			
+			//select the radio button if the label is clicked on
+			jQuery('a.pmpro_radio').click(function() {
+				jQuery(this).prev().click();
+			});
+		</script>
+		<?php
+		}
+		
 		//PayPal Express, this is run first to authorize from PayPal
 		function setExpressCheckout(&$order)
 		{			

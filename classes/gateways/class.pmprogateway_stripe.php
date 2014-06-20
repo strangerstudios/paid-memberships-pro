@@ -61,10 +61,20 @@
 			add_action('pmpro_after_membership_level_profile_fields', array('PMProGateway_stripe', 'user_profile_fields'));
 			add_action('profile_update', array('PMProGateway_stripe', 'user_profile_fields_save'));
 			
-			//code to add at checkout
-			add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));			
-			add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
-			add_filter('pmpro_after_checkout', array('PMProGateway_stripe', 'pmpro_after_checkout'), 10, 2);
+			//old global RE showing billing address or not
+			global $pmpro_stripe_lite;
+			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
+			
+			//code to add at checkout if Stripe is the current gateway
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "stripe")
+			{
+				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));			
+				add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
+				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
+				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
+				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
+			}
 		}
 		
 		/**
@@ -277,7 +287,7 @@
 		}
 		
 		/**
-		 * Code added to checkout preheader.
+		 * Filtering orders at checkout.
 		 *		 
 		 * @since 2.0
 		 */
@@ -324,6 +334,134 @@
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
 			}
+		}
+				
+		/**
+		 * Check settings if billing address should be shown.
+		 * @since 2.0
+		 */
+		static function pmpro_include_billing_address_fields($include)
+		{
+			//check settings RE showing billing address
+			if(!pmpro_getOption("stripe_billingaddress"))
+				$include = false;
+				
+			return $include;
+		}
+		
+		/**
+		 * Use our own payment fields at checkout. (Remove the name attributes.)
+		 * @since 2.0
+		 */
+		static function pmpro_include_payment_information_fields($include)
+		{			
+			//global vars
+			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+			
+			//get accepted credit cards
+			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
+			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);	
+			
+			//include ours
+			?>
+			<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
+			<thead>
+				<tr>
+					<th><span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span><?php _e('Payment Information', 'pmpro');?></th>
+				</tr>
+			</thead>
+			<tbody>                    
+				<tr valign="top">		
+					<td>	
+						<?php
+							$sslseal = pmpro_getOption("sslseal");
+							if($sslseal)
+							{
+							?>
+								<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
+							<?php
+							}
+						?>
+						<?php 
+							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
+							if($pmpro_include_cardtype_field) 
+							{
+							?>
+							<div class="pmpro_payment-card-type">
+								<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
+								<select id="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
+									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
+										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
+									<?php } ?>												
+								</select> 
+							</div>
+						<?php 
+							} 
+						?>
+					
+						<div class="pmpro_payment-account-number">
+							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
+							<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" /> 
+						</div>
+					
+						<div class="pmpro_payment-expiration">
+							<label for="ExpirationMonth"><?php _e('Expiration Date', 'pmpro');?></label>
+							<select id="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
+								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
+								<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
+								<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
+								<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
+								<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
+								<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
+								<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
+								<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
+								<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
+								<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
+								<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
+								<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
+							</select>/<select id="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
+								<?php
+									for($i = date("Y"); $i < date("Y") + 10; $i++)
+									{
+								?>
+									<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
+								<?php
+									}
+								?>
+							</select> 					
+						</div>
+					
+						<?php
+							$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
+							if($pmpro_show_cvv)
+							{
+						?>
+						<div class="pmpro_payment-cvv">
+							<label for="CVV"><?php _ex('CVV', 'Credit card security code, CVV/CCV/CVV2', 'pmpro');?></label>
+							<input class="input" id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _ex("what's this?", 'link to CVV help', 'pmpro');?></a>)</small>
+						</div>
+						<?php
+							}
+						?>
+						
+						<?php if($pmpro_show_discount_code) { ?>
+						<div class="pmpro_payment-discount-code">
+							<label for="discount_code"><?php _e('Discount Code', 'pmpro');?></label>
+							<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
+							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'pmpro');?>" />
+							<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
+						</div>
+						<?php } ?>
+						
+					</td>			
+				</tr>
+			</tbody>
+			</table>
+			<?php
+			
+			//don't include the default
+			return false;
 		}
 		
 		/**

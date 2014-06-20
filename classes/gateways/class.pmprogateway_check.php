@@ -25,7 +25,16 @@
 			
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
-			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);						
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);
+
+			//code to add at checkout if Braintree is the current gateway
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "check")
+			{
+				add_filter('pmpro_include_billing_address_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_required_billing_fields', array('PMProGateway_check', 'pmpro_required_billing_fields'));
+			}
 		}
 		
 		/**
@@ -101,6 +110,31 @@
 			</td>
 		</tr>	
 		<?php
+		}
+		
+		/**
+		 * Remove required billing fields
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_required_billing_fields($fields)
+		{
+			unset($fields['bfirstname']);
+			unset($fields['blastname']);
+			unset($fields['baddress1']);
+			unset($fields['bcity']);
+			unset($fields['bstate']);
+			unset($fields['bzipcode']);
+			unset($fields['bphone']);
+			unset($fields['bemail']);
+			unset($fields['bcountry']);
+			unset($fields['CardType']);
+			unset($fields['AccountNumber']);
+			unset($fields['ExpirationMonth']);
+			unset($fields['ExpirationYear']);
+			unset($fields['CVV']);
+			
+			return $fields;
 		}
 		
 		/**

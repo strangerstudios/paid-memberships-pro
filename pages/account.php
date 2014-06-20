@@ -21,6 +21,10 @@
 					</tr>
 				</thead>
 				<tbody>
+					<?php
+						//TODO: v2.0 will loop through levels here
+						$level = $current_user->membership_level;
+					?>
 					<tr>
 						<td class="pmpro_account-membership-levelname">
 							<?php echo $current_user->membership_level->name?>
@@ -40,29 +44,7 @@
 							</div> <!-- end pmpro_actionlinks -->
 						</td>
 						<td class="pmpro_account-membership-levelfee">
-							<p><?php echo $pmpro_currency_symbol?><?php echo $current_user->membership_level->billing_amount?>
-							<?php if($current_user->membership_level->cycle_number > 1) { ?>
-								per <?php echo $current_user->membership_level->cycle_number?> <?php echo sornot($current_user->membership_level->cycle_period,$current_user->membership_level->cycle_number)?>
-							<?php } elseif($current_user->membership_level->cycle_number == 1) { ?>
-								per <?php echo $current_user->membership_level->cycle_period?>
-							<?php } ?>
-							<?php if($current_user->membership_level->billing_limit) { ?>
-								<div><strong><?php _e("Duration", "pmpro");?>:</strong> <?php echo $current_user->membership_level->billing_limit.' '.sornot($current_user->membership_level->cycle_period,$current_user->membership_level->billing_limit)?></div>
-							<?php } ?>						
-							<?php 
-								if($current_user->membership_level->trial_limit == 1) 
-								{ 
-									?>
-									<div><?php printf(__("Your first payment will cost %s.", "pmpro"), $pmpro_currency_symbol . $current_user->membership_level->trial_amount); ?></div>
-									<?php
-								}
-								elseif(!empty($current_user->membership_level->trial_limit)) 
-								{
-									?>
-									<div><?php printf(__("Your first %d payments will cost %s.", "pmpro"), $current_user->membership_level->trial_limit, $pmpro_currency_symbol . $current_user->membership_level->trial_amount); ?></div>
-									<?php
-								}
-							?>
+							<p><?php echo pmpro_getLevelCost($level, true, true);?></p>
 						</td>
 						<td class="pmpro_account-membership-expiration">
 						<?php 

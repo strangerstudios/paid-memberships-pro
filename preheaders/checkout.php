@@ -1,5 +1,5 @@
 <?php
-	global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version;	
+	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version;	
 	
 	//this var stores fields with errors so we can make them red on the frontend
 	$pmpro_error_fields = array();
@@ -90,18 +90,12 @@
 	global $wpdb, $current_user, $pmpro_requirebilling;	
 	//unless we're submitting a form, let's try to figure out if https should be used
 	
-	if(!pmpro_isLevelFree($pmpro_level) && $gateway != "check")
+	if(!pmpro_isLevelFree($pmpro_level))
 	{
 		//require billing and ssl
 		$pagetitle = __("Checkout: Payment Information", 'pmpro');
 		$pmpro_requirebilling = true;
-		$besecure = pmpro_getOption("use_ssl");
-		/*
-		if($gateway != "paypalexpress" || (!empty($_REQUEST['gateway']) && $_REQUEST['gateway'] != "paypalexpress"))
-			$besecure = true;			
-		else
-			$besecure = false;				
-		*/
+		$besecure = pmpro_getOption("use_ssl");		
 	}
 	else
 	{
@@ -116,20 +110,7 @@
 		$besecure = true;	//be secure anyway since we're already checking out
 	
 	//action to run extra code for gateways/etc
-	do_action('pmpro_checkout_preheader');
-	
-	//code for Braintree
-	if($gateway == "braintree")
-	{
-		//don't require the CVV, but look for cvv (lowercase) that braintree sends
-		function pmpro_braintree_dont_require_CVV($fields)
-		{
-			unset($fields['CVV']);	
-			$fields['cvv'] = true;
-			return $fields;
-		}
-		add_filter("pmpro_required_billing_fields", "pmpro_braintree_dont_require_CVV");
-	}
+	do_action('pmpro_checkout_preheader');		
 		
 	//get all levels in case we need them
 	global $pmpro_levels;
@@ -276,15 +257,7 @@
 		$tos = $_REQUEST['tos'];		
 	else
 		$tos = "";		
-	
-	//for Braintree, load up values
-	if(isset($_REQUEST['number']) && isset($_REQUEST['expiration_date']) && isset($_REQUEST['cvv']))
-	{
-		$braintree_number = $_REQUEST['number'];
-		$braintree_expiration_date = $_REQUEST['expiration_date'];
-		$braintree_cvv = $_REQUEST['cvv'];
-	}
-	
+		
 	//_x stuff in case they clicked on the image button with their mouse
 	if(isset($_REQUEST['submit-checkout']))
 		$submit = $_REQUEST['submit-checkout'];
@@ -322,6 +295,9 @@
 	);
 	$pmpro_required_user_fields = apply_filters("pmpro_required_user_fields", $pmpro_required_user_fields);
 	
+	//pmpro_confirmed is set to true later if payment goes through
+	$pmpro_confirmed = false;
+	
 	//check their fields if they clicked continue
 	if($submit && $pmpro_msgt != "pmpro_error")
 	{		
@@ -335,8 +311,8 @@
 			$password2 = $password;
 		}	
 		
-		//TODO: for 2.0 This should check for requirebillingfields or something similar
-		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "twocheckout")
+		//check billing fields
+		if($pmpro_requirebilling)
 		{		
 			//filter							
 			foreach($pmpro_required_billing_fields as $key => $field)
@@ -460,23 +436,11 @@
 				
 				//no errors yet
 				if($pmpro_msgt != "pmpro_error")
-				{				
-					//save user fields for PayPal Express
-					if($gateway == "paypalexpress")
-					{
-						if(!$current_user->ID)
-						{
-							$_SESSION['pmpro_signup_username'] = $username;
-							$_SESSION['pmpro_signup_password'] = $password;
-							$_SESSION['pmpro_signup_email'] = $bemail;							
-						}
-						
-						//can use this hook to save some other variables to the session
-						do_action("pmpro_paypalexpress_session_vars");							
-					}
+				{					
+					do_action('pmpro_checkout_before_processing');										
 					
 					//special check here now for the "check" gateway
-					if($pmpro_requirebilling || ($gateway == "check" && !pmpro_isLevelFree($pmpro_level)))
+					if($pmpro_requirebilling)
 					{
 						$morder = new MemberOrder();			
 						$morder->membership_id = $pmpro_level->id;
@@ -506,16 +470,7 @@
 						$morder->expirationyear = $ExpirationYear;
 						$morder->ExpirationDate = $ExpirationMonth . $ExpirationYear;
 						$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
-						$morder->CVV2 = $CVV;												
-																	
-						//Braintree values
-						if(isset($braintree_number))
-						{
-							$morder->braintree = new stdClass();
-							$morder->braintree->number = $braintree_number;
-							$morder->braintree->expiration_date = $braintree_expiration_date;
-							$morder->braintree->cvv = $braintree_cvv;
-						}
+						$morder->CVV2 = $CVV;							
 						
 						//not saving email in order table, but the sites need it
 						$morder->Email = $bemail;
@@ -551,18 +506,7 @@
 						//filter for order, since v2.0
 						$morder = apply_filters("pmpro_checkout_order", $morder);
 						
-						if($gateway == "paypalexpress")
-						{
-							$morder->payment_type = "PayPal Express";
-							$morder->cardtype = "";
-							$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
-							$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);							
-							$pmpro_processed = $morder->Gateway->setExpressCheckout($morder);
-						}
-						else
-						{
-							$pmpro_processed = $morder->process();
-						}
+						$pmpro_processed = $morder->process();
 													
 						if(!empty($pmpro_processed))
 						{
@@ -587,114 +531,17 @@
 				}													
 			}
 		}	//endif($pmpro_continue_registration)		
-	}				
-		
-	//PayPal Express Call Backs
-	if(!empty($_REQUEST['review']))
-	{	
-		if(!empty($_REQUEST['PayerID']))
-			$_SESSION['payer_id'] = $_REQUEST['PayerID'];
-		if(!empty($_REQUEST['paymentAmount']))
-			$_SESSION['paymentAmount'] = $_REQUEST['paymentAmount'];
-		if(!empty($_REQUEST['currencyCodeType']))
-			$_SESSION['currCodeType'] = $_REQUEST['currencyCodeType'];
-		if(!empty($_REQUEST['paymentType']))
-			$_SESSION['paymentType'] = $_REQUEST['paymentType'];
-		
-		$morder = new MemberOrder();
-		$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
-		$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;				
-		if($morder->Token)
-		{
-			if($morder->Gateway->getExpressCheckoutDetails($morder))
-			{
-				$pmpro_review = true;
-			}
-			else
-			{
-				$pmpro_msg = $morder->error;
-				$pmpro_msgt = "pmpro_error";
-			}		
-		}
-		else
-		{
-			$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
-			$pmpro_msgt = "pmpro_error";
-		}
 	}
-	elseif(!empty($_REQUEST['confirm']))
-	{		
-		$morder = new MemberOrder();
-		$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
-		$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;	
-		if($morder->Token)
-		{		
-			//setup values
-			$morder->membership_id = $pmpro_level->id;
-			$morder->membership_name = $pmpro_level->name;
-			$morder->discount_code = $discount_code;
-			$morder->InitialPayment = $pmpro_level->initial_payment;
-			$morder->PaymentAmount = $pmpro_level->billing_amount;
-			$morder->ProfileStartDate = date("Y-m-d") . "T0:0:0";
-			$morder->BillingPeriod = $pmpro_level->cycle_period;
-			$morder->BillingFrequency = $pmpro_level->cycle_number;
-			$morder->Email = $bemail;
-			
-			//$gateway = pmpro_getOption("gateway");																	
-			
-			//setup level var
-			$morder->getMembershipLevel();			
-			$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
-			
-			//tax
-			$morder->subtotal = $morder->InitialPayment;
-			$morder->getTax();				
-			if($pmpro_level->billing_limit)
-				$morder->TotalBillingCycles = $pmpro_level->billing_limit;
-		
-			if(pmpro_isLevelTrial($pmpro_level))
-			{
-				$morder->TrialBillingPeriod = $pmpro_level->cycle_period;
-				$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
-				$morder->TrialBillingCycles = $pmpro_level->trial_limit;
-				$morder->TrialAmount = $pmpro_level->trial_amount;
-			}
-						
-			if($morder->process())
-			{						
-				$submit = true;
-				$pmpro_confirmed = true;
-			
-				if(!$current_user->ID)
-				{
-					//reload the user fields			
-					$username = $_SESSION['pmpro_signup_username'];
-					$password = $_SESSION['pmpro_signup_password'];
-					$password2 = $password;
-					$bemail = $_SESSION['pmpro_signup_email'];
-					
-					//unset the user fields in session
-					unset($_SESSION['pmpro_signup_username']);
-					unset($_SESSION['pmpro_signup_password']);
-					unset($_SESSION['pmpro_signup_email']);
-				}
-			}
-			else
-			{								
-				$pmpro_msg = $morder->error;
-				$pmpro_msgt = "pmpro_error";
-			}
-		}
-		else
-		{
-			$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
-			$pmpro_msgt = "pmpro_error";
-		}
-	}
+
+	//hook to check payment confirmation or replace it
+	$pmpro_confirmed = apply_filters('pmpro_checkout_confirmed', $pmpro_confirmed);			
 	
 	//if payment was confirmed create/update the user.
 	if(!empty($pmpro_confirmed))
 	{
+		//just in case this hasn't been set yet
+		$submit = true;
+		
 		//do we need to create a user account?
 		if(!$current_user->ID)
 		{
@@ -716,13 +563,16 @@
 				$last_name = $blastname;
 						
 			//insert user
-			$user_id = wp_insert_user(array(
-							"user_login" => $username,							
-							"user_pass" => $password,
-							"user_email" => $bemail,
-							"first_name" => $first_name,
-							"last_name" => $last_name)
-							);
+			$new_user_array = apply_filters('pmpro_checkout_new_user_array', array(
+																				"user_login" => $username,							
+																				"user_pass" => $password,
+																				"user_email" => $bemail,
+																				"first_name" => $first_name,
+																				"last_name" => $last_name)
+																				);
+							
+			$user_id = wp_insert_user($new_user_array);
+			
 			if (!$user_id) {
 				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro");
 				$pmpro_msgt = "pmpro_error";
@@ -730,17 +580,17 @@
 			
 				//check pmpro_wp_new_user_notification filter before sending the default WP email
 				if(apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id))
-					wp_new_user_notification($user_id, $password);								
+					wp_new_user_notification($user_id, $new_user_array['user_pass']);								
 		
-				$wpuser = new WP_User(0, $username);
+				$wpuser = new WP_User(0, $new_user_array['user_login']);
 		
 				//make the user a subscriber
 				$wpuser->set_role(get_option('default_role', 'subscriber'));
 									
 				//okay, log them in to WP							
 				$creds = array();
-				$creds['user_login'] = $username;
-				$creds['user_password'] = $password;
+				$creds['user_login'] = $new_user_array['user_login'];
+				$creds['user_password'] = $new_user_array['user_pass'];
 				$creds['remember'] = true;
 				$user = wp_signon( $creds, false );																	
 			}
@@ -749,36 +599,8 @@
 			$user_id = $current_user->ID;	
 		
 		if($user_id)
-		{
-			//save user id and send PayPal standard customers to PayPal now
-			if($gateway == "paypalstandard" && !empty($morder))
-			{
-				$morder->user_id = $user_id;				
-				$morder->saveOrder();
-				
-				//save discount code use
-				if(!empty($discount_code_id))
-					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
-				
-				do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
-				
-				$morder->Gateway->sendToPayPal($morder);
-			}
-
-			//save user id and send Twocheckout customers to Twocheckout now
-			if($gateway == "twocheckout" && !empty($morder))
-			{
-				$morder->user_id = $user_id;				
-				$morder->saveOrder();
-				
-				//save discount code use
-				if(!empty($discount_code_id))
-					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
-				
-				do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
-				
-				$morder->Gateway->sendToTwocheckout($morder);
-			}
+		{			
+			do_action('pmpro_checkout_before_change_membership_level', $user_id, $morder);
 			
 			//calculate the end date
 			if(!empty($pmpro_level->expiration_number))

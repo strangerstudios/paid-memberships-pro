@@ -36,6 +36,14 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypal', 'pmpro_payment_option_fields'), 10, 2);						
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
+			
+			//code to add at checkout if Braintree is the current gateway
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "paypal")
+			{				
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));
+				add_action('pmpro_checkout_after_form', array('PMProGateway_paypal', 'pmpro_checkout_after_form'));
+			}
 		}
 		
 		/**
@@ -150,6 +158,69 @@
 				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
 			</td>
 		</tr>
+		<?php
+		}
+		
+		/**
+		 * Swap in our submit buttons.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_default_submit_button($show)
+		{
+			global $gateway, $pmpro_requirebilling;
+			
+			//show our submit buttons
+			?>
+			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
+			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="image" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+			</span>
+			<?php } ?>
+			
+			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />				
+			</span>
+			<?php
+		
+			//don't show the default
+			return false;
+		}
+		
+		/**
+		 * Scripts for checkout page.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_after_form()
+		{
+		?>
+		<script>	
+			//choosing payment method
+			jQuery('input[name=gateway]').click(function() {		
+				if(jQuery(this).val() == 'paypal')
+				{
+					jQuery('#pmpro_paypalexpress_checkout').hide();
+					jQuery('#pmpro_billing_address_fields').show();
+					jQuery('#pmpro_payment_information_fields').show();			
+					jQuery('#pmpro_submit_span').show();
+				}
+				else
+				{			
+					jQuery('#pmpro_billing_address_fields').hide();
+					jQuery('#pmpro_payment_information_fields').hide();			
+					jQuery('#pmpro_submit_span').hide();
+					jQuery('#pmpro_paypalexpress_checkout').show();
+				}
+			});
+			
+			//select the radio button if the label is clicked on
+			jQuery('a.pmpro_radio').click(function() {
+				jQuery(this).prev().click();
+			});
+		</script>
 		<?php
 		}
 		

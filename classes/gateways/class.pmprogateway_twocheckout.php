@@ -28,7 +28,18 @@
 			
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_twocheckout', 'pmpro_payment_options'));		
-			add_filter('pmpro_payment_option_fields', array('PMProGateway_twocheckout', 'pmpro_payment_option_fields'), 10, 2);			
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_twocheckout', 'pmpro_payment_option_fields'), 10, 2);
+
+			//code to add at checkout if Braintree is the current gateway
+			$gateway = pmpro_getOption("gateway");
+			if($gateway == "twocheckout")
+			{				
+				add_filter('pmpro_include_billing_address_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_required_billing_fields', array('PMProGateway_twocheckout', 'pmpro_required_billing_fields'));
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_twocheckout', 'pmpro_checkout_default_submit_button'));
+				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_twocheckout', 'pmpro_checkout_before_change_membership_level'), 10, 2);
+			}
 		}
 		
 		/**
@@ -138,6 +149,73 @@
 			</td>
 		</tr>		
 		<?php
+		}
+		
+		/**
+		 * Remove required billing fields
+		 *		 
+		 * @since 2.0
+		 */
+		static function pmpro_required_billing_fields($fields)
+		{
+			unset($fields['bfirstname']);
+			unset($fields['blastname']);
+			unset($fields['baddress1']);
+			unset($fields['bcity']);
+			unset($fields['bstate']);
+			unset($fields['bzipcode']);
+			unset($fields['bphone']);
+			unset($fields['bemail']);
+			unset($fields['bcountry']);
+			unset($fields['CardType']);
+			unset($fields['AccountNumber']);
+			unset($fields['ExpirationMonth']);
+			unset($fields['ExpirationYear']);
+			unset($fields['CVV']);
+			
+			return $fields;
+		}
+		
+		/**
+		 * Swap in our submit buttons.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_default_submit_button($show)
+		{
+			global $gateway, $pmpro_requirebilling;
+			
+			//show our submit buttons
+			?>			
+			<span id="pmpro_submit_span">
+				<input type="hidden" name="submit-checkout" value="1" />		
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />		
+			</span>
+			<?php
+		
+			//don't show the default
+			return false;
+		}
+		
+		/**
+		 * Instead of change membership levels, send users to 2Checkout to pay.
+		 *
+		 * @since 2.0
+		 */
+		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
+		{
+			global $discount_code_id;
+			
+			$morder->user_id = $user_id;				
+			$morder->saveOrder();
+			
+			//save discount code use
+			if(!empty($discount_code_id))
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
+			
+			do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
+			
+			$morder->Gateway->sendToTwocheckout($morder);
 		}
 		
 		/**
