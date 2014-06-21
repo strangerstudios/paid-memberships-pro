@@ -532,9 +532,15 @@
 			}
 		}	//endif($pmpro_continue_registration)		
 	}
-
-	//hook to check payment confirmation or replace it
-	$pmpro_confirmed = apply_filters('pmpro_checkout_confirmed', $pmpro_confirmed);			
+	
+	//make sure we have at least an empty morder here
+	if(empty($morder))
+		$morder = new MemberOrder();
+	
+	//Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
+	$pmpro_confirmed = apply_filters('pmpro_checkout_confirmed', $pmpro_confirmed, $morder);					
+	if(is_array($pmpro_confirmed))
+		extract($pmpro_confirmed);
 	
 	//if payment was confirmed create/update the user.
 	if(!empty($pmpro_confirmed))

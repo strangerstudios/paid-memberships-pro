@@ -1,6 +1,9 @@
 <?php
 	class MemberOrder
 	{
+		/**
+		 * Constructor
+		 */
 		function MemberOrder($id = NULL)
 		{			
 			//setup the gateway			
@@ -18,6 +21,9 @@
 				return true;	//blank constructor
 		}	
 		
+		/**
+		 * Retrieve a member ordr from the DB by ID
+		 */
 		function getMemberOrderByID($id)
 		{
 			global $wpdb;
@@ -99,6 +105,12 @@
 				return false;	//didn't find it in the DB
 		}
 		
+		/**
+		 * Setup the Gateway class to use with this order.
+		 *
+		 * @param string $gateway Name/label for the gateway to set.
+		 *
+		 */
 		function setGateway($gateway = NULL)
 		{
 			//set the gateway property
@@ -125,6 +137,14 @@
 			return $this->Gateway;
 		}
 		
+		/**
+		 * Get the most recent order for a user.
+		 * 
+		 * @param int $user_id ID of user to find order for.
+		 * @param string $status Limit search to only orders with this status. Defaults to "success".
+		 * @param id $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 *
+		 */
 		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL)
 		{
 			global $current_user, $wpdb;
@@ -181,9 +201,9 @@
 				return false;
 		}
 		
-		/*
-			Returns the last order using the given subscription_transaction_id.
-		*/
+		/**
+		 * Returns the last order using the given subscription_transaction_id.
+		 */		
 		function getLastMemberOrderBySubscriptionTransactionID($subscription_transaction_id)
 		{
 			//did they pass a sub id?
@@ -199,6 +219,9 @@
 				return false;
 		}
 		
+		/**
+		 * Returns the last order using the given paypal token.
+		 */	
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;
@@ -209,6 +232,12 @@
 				return false;
 		}
 		
+		/**
+		 * Get a discount code object for the code used in this order.
+		 * 
+		 * @param bool $force If true, it will query the database again.
+		 *
+		 */	
 		function getDiscountCode($force = false)
 		{
 			if(!empty($this->discount_code) && !$force)
@@ -220,6 +249,9 @@
 			return $this->discount_code;
 		}
 		
+		/**
+		 * Get a user object for the user associated with this order.
+		 */	
 		function getUser()
 		{
 			global $wpdb;
@@ -232,6 +264,12 @@
 			return $this->user;						
 		}
 		
+		/**
+		 * Get a membership level object for the level associated with this order.
+		 * 
+		 * @param bool $force If true, it will query the database again.
+		 *
+		 */	
 		function getMembershipLevel($force = false)
 		{
 			global $wpdb;
@@ -265,6 +303,9 @@
 			return $this->membership_level;	
 		}
 		
+		/**
+		 * Apply tax rules for the price given.
+		 */	
 		function getTaxForPrice($price)
 		{
 			//get options
@@ -301,6 +342,9 @@
 			return $tax;
 		}
 		
+		/**
+		 * Get the tax amount for this order.
+		 */	
 		function getTax($force = false)
 		{
 			if(!empty($this->tax) && !$force)
@@ -312,6 +356,9 @@
 			return $this->tax;
 		}
 		
+		/**
+		 * Change the timestamp of an order by passing in year, month, day, time		 
+		 */	
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
 			if(empty($this->id))
@@ -331,6 +378,9 @@
 				return false;
 		}
 		
+		/**
+		 * Save/update the values of the order in the database.
+		 */	
 		function saveOrder()
 		{			
 			global $current_user, $wpdb;
@@ -502,7 +552,10 @@
 				return false;
 			}
 		}
-				
+		
+		/**
+		 * Get a random code to use as the order code.
+		 */			
 		function getRandomCode()
 		{
 			global $wpdb;
@@ -520,6 +573,9 @@
 			return strtoupper($code);
 		}
 		
+		/**
+		 * Update the status of the order in the database.
+		 */	
 		function updateStatus($newstatus)
 		{
 			global $wpdb;
@@ -535,11 +591,27 @@
 				return false;
 		}
 		
+		/**
+		 * Call the process step of the gateway class.
+		 */
 		function process()
 		{
 			return $this->Gateway->process($this);						
 		}
 		
+		/**
+		 * For offsite gateways with a confirm step.
+		 *
+		 * @since 2.0
+		 */
+		function confirm()
+		{
+			return $this->Gateway->confirm($this);						
+		}
+		
+		/**
+		 * Cancel an order and call the cancel step of the gateway class if needed.
+		 */
 		function cancel()
 		{			
 			//only need to cancel on the gateway if there is a subscription id
@@ -575,21 +647,33 @@
 			}
 		}
 		
+		/**
+		 * Call the update method of the gateway class.
+		 */
 		function updateBilling()
 		{
 			return $this->Gateway->update($this);						
 		}									
 		
+		/**
+		 * Call the getSubscriptionStatus method of the gateway class.
+		 */
 		function getGatewaySubscriptionStatus()
 		{
 			return $this->Gateway->getSubscriptionStatus($this);
 		}
 		
+		/**
+		 * Call the getTransactionStatus method of the gateway class.
+		 */
 		function getGatewayTransactionStatus()
 		{
 			return $this->Gateway->getTransactionStatus($this);
 		}
 		
+		/**
+		 * Delete an order and associated data.
+		 */
 		function deleteMe()
 		{
 			if(empty($this->id))

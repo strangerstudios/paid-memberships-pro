@@ -219,7 +219,7 @@
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
-			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token;
+			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 						
 			//PayPal Express Call Backs
 			if(!empty($_REQUEST['review']))
@@ -271,9 +271,7 @@
 					$morder->BillingPeriod = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
-					
-					//$gateway = pmpro_getOption("gateway");																	
-					
+										
 					//setup level var
 					$morder->getMembershipLevel();			
 					$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
@@ -291,7 +289,7 @@
 						$morder->TrialBillingCycles = $pmpro_level->trial_limit;
 						$morder->TrialAmount = $pmpro_level->trial_amount;
 					}
-								
+										
 					if($morder->confirm())
 					{						
 						$pmpro_confirmed = true;											
@@ -309,7 +307,10 @@
 				}
 			}
 			
-			return $pmpro_confirmed;
+			if(!empty($morder))
+				return array("pmpro_confirmed"=>$pmpro_confirmed, "morder"=>$morder);
+			else
+				return $pmpro_confirmed;
 		}
 		
 		/**
@@ -349,7 +350,7 @@
 			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);							
 			
-			return $order->Gateway->setExpressCheckout($order);
+			return $this->setExpressCheckout($order);
 		}
 		
 		/**
@@ -685,7 +686,7 @@
 				
 				//update order
 				$order->saveOrder();					
-				
+								
 				return true;				
 			} else  {				
 				$order->status = "error";
