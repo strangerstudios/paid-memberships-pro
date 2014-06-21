@@ -3,7 +3,7 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
 	//load classes init method
-	add_action('init', array('PMProGateway_paypalexpress', 'init'));
+	add_action('init', array('PMProGateway_paypalstandard', 'init'));
 	
 	class PMProGateway_paypalstandard extends PMProGateway
 	{
