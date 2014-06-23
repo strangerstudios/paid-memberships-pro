@@ -206,6 +206,10 @@
 		{
 			global $discount_code_id;
 			
+			//if no order, no need to pay
+			if(empty($morder))
+				return;
+			
 			$morder->user_id = $user_id;				
 			$morder->saveOrder();
 			

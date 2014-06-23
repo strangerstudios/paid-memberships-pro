@@ -533,9 +533,9 @@
 		}	//endif($pmpro_continue_registration)		
 	}
 	
-	//make sure we have at least an empty morder here
+	//make sure we have at least an empty morder here to avoid a warning
 	if(empty($morder))
-		$morder = new MemberOrder();
+		$morder = false;
 	
 	//Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 	$pmpro_confirmed = apply_filters('pmpro_checkout_confirmed', $pmpro_confirmed, $morder);					
