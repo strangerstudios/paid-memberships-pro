@@ -67,7 +67,10 @@
 		$morder->PaymentAmount = $transaction->amount;
 		$morder->payment_transaction_id = $transaction->id;
 		$morder->subscription_transaction_id = $webhookNotification->subscription->id;
-			
+
+		$morder->gateway = $old_order->gateway;
+		$morder->gateway_environment = $old_order->gateway_environment;
+		
 		$morder->FirstName = $transaction->billing_details->first_name;
 		$morder->LastName = $transaction->billing_details->last_name;
 		$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");		

@@ -384,6 +384,9 @@
 			$morder->LastName = $_POST['customer_last_name'];
 			$morder->Email = $_POST['customer_email'];
 			
+			$morder->gateway = $last_order->gateway;
+			$morder->gateway_environment = $last_order->gateway_environment;
+			
 			//save
 			$morder->saveOrder();
 			$morder->getMemberOrderByID( $morder->id );

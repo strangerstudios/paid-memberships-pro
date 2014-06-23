@@ -64,6 +64,9 @@
 				$morder->payment_transaction_id = $fields['x_trans_id'];
 				$morder->subscription_transaction_id = $fields['x_subscription_id'];
 				
+				$morder->gateway = $old_order->gateway;
+				$morder->gateway_environment = $old_order->gateway_environment;
+				
 				$morder->FirstName = $fields['x_first_name'];
 				$morder->LastName = $fields['x_last_name'];
 				$morder->Email = $fields['x_email'];			
@@ -102,7 +105,7 @@
 		elseif($fields['x_response_code'] == 2 || $fields['x_response_code'] == 3)
 		{
 			// Suspend the user's account
-				//But we can't suspend the account, maybe a future feature
+			//But we can't suspend the account, maybe a future feature
 
 			do_action("pmpro_subscription_payment_failed", $old_order);	
 

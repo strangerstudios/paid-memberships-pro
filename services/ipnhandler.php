@@ -594,6 +594,8 @@
 			$morder->membership_id = $last_order->membership_id;			
 			$morder->payment_transaction_id = $txn_id;
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
+			$morder->gateway = $last_order->gateway;
+			$morder->gateway_environment = $last_order->gateway_environment;
 			
 			//set amount based on which PayPal type
 			if($last_order->gateway == "paypal")

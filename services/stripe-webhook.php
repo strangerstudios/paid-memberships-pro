@@ -89,7 +89,10 @@
 				$morder->InitialPayment = $invoice->amount / 100;	//not the initial payment, but the class is expecting that
 				$morder->PaymentAmount = $invoice->amount / 100;
 				$morder->payment_transaction_id = $invoice->id;
-				$morder->subscription_transaction_id = $invoice->customer;
+				$morder->subscription_transaction_id = $invoice->customer;					
+				
+				$morder->gateway = $old_order->gateway;
+				$morder->gateway_environment = $old_order->gateway_environment;
 				
 				$morder->FirstName = $old_order->FirstName;
 				$morder->LastName = $old_order->LastName;
@@ -100,7 +103,7 @@
 				//$morder->CountryCode = $old_order->billing->city;
 				$morder->Zip = $old_order->billing->zip;
 				$morder->PhoneNumber = $old_order->billing->phone;	
-				
+								
 				$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
 				$morder->billing->street = $old_order->billing->street;
 				$morder->billing->city = $old_order->billing->city;
