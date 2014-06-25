@@ -65,6 +65,11 @@
 			global $pmpro_stripe_lite;
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			
+			//updates cron
+			add_action('pmpro_activation', array('PMProGateway_stripe', 'pmpro_activation'));
+			add_action('pmpro_deactivation', array('PMProGateway_stripe', 'pmpro_deactivation'));
+			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
+			
 			//code to add at checkout if Stripe is the current gateway
 			$gateway = pmpro_getOption("gateway");
 			if($gateway == "stripe")
@@ -733,7 +738,7 @@
 					$update_order->BillingFrequency = $update['cycle_number'];
 					
 					//update subscription
-					$update_order->Gateway->subscribe($update_order);
+					$update_order->Gateway->subscribe($update_order, false);
 					
 					//update membership
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
@@ -766,6 +771,133 @@
 			
 			//save date of next on-date update to make it easier to query for these in cron job
 			update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
+		}
+				
+		/**
+		 * Cron activation for subscription updates.
+		 *		
+		 * @since 2.0
+		 */
+		static function pmpro_activation()
+		{
+			wp_schedule_event(time(), 'daily', 'pmpro_cron_stripe_subscription_updates');
+		}
+		
+		/**
+		 * Cron deactivation for subscription updates.
+		 *		
+		 * @since 2.0
+		 */
+		static function pmpro_deactivation()
+		{
+			wp_clear_scheduled_hook('pmpro_cron_stripe_subscription_updates');
+		}
+		
+		/**
+		 * Cron job for subscription updates.
+		 *		
+		 * @since 2.0
+		 */
+		static function pmpro_cron_stripe_subscription_updates()
+		{
+			global $wpdb;
+
+			//get all updates for today (or before today)
+			$sqlQuery = "SELECT * 
+						 FROM $wpdb->usermeta 
+						 WHERE meta_key = 'pmpro_stripe_next_on_date_update' 
+							AND meta_value IS NOT NULL 
+							AND meta_value < '" . date("Y-m-d", strtotime("+1 day")) . "'";		
+			$updates = $wpdb->get_results($sqlQuery);
+					
+			if(!empty($updates))
+			{								
+				//loop through
+				foreach($updates as $update)
+				{						
+					//pull values from update
+					$user_id = $update->user_id;
+									
+					$user = get_userdata($user_id);
+					$user_updates = $user->pmpro_stripe_updates;
+					$next_on_date_update = "";		
+									
+					//loop through updates looking for updates happening today or earlier
+					foreach($user_updates as $key => $update)
+					{				
+						if($update['when'] == 'date' &&
+							$update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] <= date("Y-m-d")
+						)
+						{
+							//get level for user
+							$user_level = pmpro_getMembershipLevelForUser($user_id);
+							
+							//get current plan at Stripe to get payment date
+							$last_order = new MemberOrder();
+							$last_order->getLastMemberOrder($user_id);
+							$last_order->setGateway('stripe');
+							$last_order->Gateway->getCustomer();
+																	
+							if(!empty($last_order->Gateway->customer))
+							{
+								//find the first subscription
+								if(!empty($last_order->Gateway->customer->subscriptions['data'][0]))
+								{
+									$first_sub = $last_order->Gateway->customer->subscriptions['data'][0]->__toArray();
+									$end_timestamp = $first_sub['current_period_end'];
+								}
+							}
+							
+							//if we didn't get an end date, let's set one one cycle out
+							$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period']);
+												
+							//build order object
+							$update_order = new MemberOrder();
+							$update_order->setGateway('stripe');
+							$update_order->user_id = $user_id;
+							$update_order->membership_id = $user_level->id;
+							$update_order->membership_name = $user_level->name;
+							$update_order->InitialPayment = 0;
+							$update_order->PaymentAmount = $update['billing_amount'];
+							$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
+							$update_order->BillingPeriod = $update['cycle_period'];
+							$update_order->BillingFrequency = $update['cycle_number'];
+							
+							//update subscription
+							$update_order->Gateway->subscribe($update_order, false);
+													
+							//update membership
+							$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users 
+											SET billing_amount = '" . esc_sql($update['billing_amount']) . "', 
+												cycle_number = '" . esc_sql($update['cycle_number']) . "', 
+												cycle_period = '" . esc_sql($update['cycle_period']) . "' 
+											WHERE user_id = '" . esc_sql($user_id) . "' 
+												AND membership_id = '" . esc_sql($last_order->membership_id) . "' 
+												AND status = 'active' 
+											LIMIT 1";
+															
+							$wpdb->query($sqlQuery);
+													
+							//remove update from list
+							unset($user_updates[$key]);									
+						}
+						elseif($update['when'] == 'date')
+						{
+							//this is an on date update for the future, update the next on date update
+							if(!empty($next_on_date_update))
+								$next_on_date_update = min($next_on_date_update, $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day']);
+							else
+								$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
+						}
+					}
+					
+					//save updates in case we removed some
+					update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
+					
+					//save date of next on-date update to make it easier to query for these in cron job
+					update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
+				}
+			}
 		}
 		
 		/**
@@ -998,7 +1130,7 @@
 		 *		
 		 * @since 1.4
 		 */
-		function subscribe(&$order)
+		function subscribe(&$order, $checkout = true)
 		{
 			//create a code for the order
 			if(empty($order->code))
@@ -1042,7 +1174,7 @@
 
 			//convert back to days
 			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
-						
+			
 			//for free trials, just push the start date of the subscription back
 			if(!empty($order->TrialBillingCycles) && $order->TrialAmount == 0)
 			{
@@ -1054,31 +1186,20 @@
 				elseif($order->BillingPeriod == "Week")
 					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
 				else
-					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
+					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
 			}
 			elseif(!empty($order->TrialBillingCycles))
 			{
 				/*
 					Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
-				*/
-				//figure out the user
-				if(!empty($order->user_id))
-					$user_id = $order->user_id;
-				else
-				{
-					global $current_user;
-					$user_id = $current_user->ID;
-				}
-				
-				//add the update first (we're overwriting any other updates already on file)
+				*/				
 				$user_updates = array();
 				$user_updates[] = array(
 					'when' => 'payment',
 					'billing_amount' => $order->PaymentAmount,
 					'cycle_period' => $order->BillingPeriod,
 					'cycle_number' => $order->BillingFrequency
-				);
-				update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
+				);				
 				
 				//now amount to equal the trial #s				
 				$amount = $order->TrialAmount;
@@ -1145,6 +1266,27 @@
 			//if we got this far, we're all good						
 			$order->status = "success";		
 			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too			
+			
+			//save updates if this is at checkout
+			if($checkout)
+			{
+				//figure out the user
+				if(!empty($order->user_id))
+					$user_id = $order->user_id;
+				else
+				{
+					global $current_user;
+					$user_id = $current_user->ID;
+				}
+				
+				//empty out updates unless set above
+				if(empty($user_updates))
+					$user_updates = array();
+					
+				//update user meta
+				update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
+			}
+			
 			return true;
 		}	
 		
@@ -1231,5 +1373,5 @@
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}						
-		}	
+		}						
 	}

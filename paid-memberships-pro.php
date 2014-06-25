@@ -136,8 +136,7 @@ function pmpro_activation()
 	//schedule crons
 	wp_schedule_event(time(), 'daily', 'pmpro_cron_expiration_warnings');
 	//wp_schedule_event(time(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');
-	wp_schedule_event(time(), 'daily', 'pmpro_cron_subscription_updates');
+	wp_schedule_event(time(), 'daily', 'pmpro_cron_expire_memberships');	
 	wp_schedule_event(time(), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');	
 
 	//add caps to admin role
@@ -155,7 +154,9 @@ function pmpro_activation()
 	$role->add_cap( 'pmpro_reports' );
 	$role->add_cap( 'pmpro_orders' );
 	$role->add_cap( 'pmpro_orderscsv' );
-	$role->add_cap( 'pmpro_discountcodes' );	
+	$role->add_cap( 'pmpro_discountcodes' );
+
+	do_action('pmpro_activation');
 }
 function pmpro_deactivation()
 {
@@ -163,8 +164,7 @@ function pmpro_deactivation()
 	wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
-	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');   
-	wp_clear_shceduled_hook('pmpro_cron_subscription_updates');
+	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');   	
 	
 	//remove caps from admin role
 	$role = get_role( 'administrator' );
@@ -182,6 +182,8 @@ function pmpro_deactivation()
 	$role->remove_cap( 'pmpro_orders' );
 	$role->remove_cap( 'pmpro_orderscsv' );
 	$role->remove_cap( 'pmpro_discountcodes' );
+	
+	do_action('pmpro_deactivation');
 }
 register_activation_hook(__FILE__, 'pmpro_activation');
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');
