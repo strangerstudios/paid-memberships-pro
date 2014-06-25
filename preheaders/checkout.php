@@ -579,7 +579,7 @@
 							
 			$user_id = wp_insert_user($new_user_array);
 			
-			if (!$user_id) {
+			if (!$user_id || is_wp_error($user_id)) {								
 				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro");
 				$pmpro_msgt = "pmpro_error";
 			} else {
@@ -604,7 +604,7 @@
 		else
 			$user_id = $current_user->ID;	
 		
-		if($user_id)
+		if($user_id && !is_wp_error($user_id))
 		{			
 			do_action('pmpro_checkout_before_change_membership_level', $user_id, $morder);
 			

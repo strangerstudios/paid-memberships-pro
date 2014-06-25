@@ -203,6 +203,21 @@
 			//save user fields for PayPal Express			
 			if(!$current_user->ID)
 			{
+				//get values from post
+				if(isset($_REQUEST['username']))
+					$username = trim($_REQUEST['username']);
+				else
+					$username = "";
+				if(isset($_REQUEST['password']))
+					$password = $_REQUEST['password'];
+				else
+					$password = "";
+				if(isset($_REQUEST['bemail']))
+					$bemail = $_REQUEST['bemail'];				
+				else
+					$bemail = "";
+				
+				//save to session
 				$_SESSION['pmpro_signup_username'] = $username;
 				$_SESSION['pmpro_signup_password'] = $password;
 				$_SESSION['pmpro_signup_email'] = $bemail;							
@@ -334,7 +349,7 @@
 				unset($_SESSION['pmpro_signup_password']);
 				unset($_SESSION['pmpro_signup_email']);
 			}
-			
+						
 			return $new_user_array;
 		}
 		
@@ -657,7 +672,7 @@
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
 			
 			//if billing cycles are defined						
-			if($order->TotalBillingCycles)
+			if(!empty($order->TotalBillingCycles))
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 			
 			//if a trial period is defined

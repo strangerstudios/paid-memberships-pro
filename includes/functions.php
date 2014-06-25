@@ -463,10 +463,12 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 		$user_id = $current_user->ID;
 		$membership_levels = $current_user->membership_levels;
 	}
-	else //get membership levels for given user
+	elseif(is_numeric($user_id)) //get membership levels for given user
 	{
 		$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
 	}
+	else
+		return false;	//invalid user_id
 			
 	if($levels === "0" || $levels === 0) //if 0 was passed, return true if they have no level and false if they have any
 	{
@@ -1300,7 +1302,7 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 	{
 		return false;
 	}
-
+	
 	global $wpdb;
 	return $wpdb->get_results("SELECT
 								l.id AS ID,
