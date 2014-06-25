@@ -16,7 +16,7 @@
 	{
 		/**
 		 * Stripe Class Constructor
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function PMProGateway_stripe($gateway = NULL)
@@ -32,7 +32,7 @@
 		
 		/**
 		 * Load the Stripe API library.
-		 *		 
+		 *		
 		 * @since 2.0
 		 * Moved into a method in version 2.0 so we only load it when needed.
 		 */
@@ -45,7 +45,7 @@
 		
 		/**
 		 * Run on WP init
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function init()
@@ -79,7 +79,7 @@
 		
 		/**
 		 * Make sure Stripe is in the gateways list
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_gateways($gateways)
@@ -92,7 +92,7 @@
 		
 		/**
 		 * Get a list of payment options that the Stripe gateway needs/supports.
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function getGatewayOptions()
@@ -116,7 +116,7 @@
 		
 		/**
 		 * Set payment options for payment settings page.
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_payment_options($options)
@@ -132,7 +132,7 @@
 		
 		/**
 		 * Display fields for Stripe options.
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
@@ -184,7 +184,7 @@
 		
 		/**
 		 * Code added to checkout preheader.
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_checkout_preheader()
@@ -288,7 +288,7 @@
 		
 		/**
 		 * Filtering orders at checkout.
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_checkout_order($morder)
@@ -320,7 +320,7 @@
 		
 		/**
 		 * Code to run after checkout
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function pmpro_after_checkout($user_id, $morder)		
@@ -371,7 +371,7 @@
 					<th><span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span><?php _e('Payment Information', 'pmpro');?></th>
 				</tr>
 			</thead>
-			<tbody>                    
+			<tbody>
 				<tr valign="top">		
 					<td>	
 						<?php
@@ -383,9 +383,9 @@
 							<?php
 							}
 						?>
-						<?php 
+						<?php
 							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
-							if($pmpro_include_cardtype_field) 
+							if($pmpro_include_cardtype_field)
 							{
 							?>
 							<div class="pmpro_payment-card-type">
@@ -394,15 +394,15 @@
 									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 									<?php } ?>												
-								</select> 
+								</select>
 							</div>
-						<?php 
-							} 
+						<?php
+							}
 						?>
 					
 						<div class="pmpro_payment-account-number">
 							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
-							<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" /> 
+							<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
 						</div>
 					
 						<div class="pmpro_payment-expiration">
@@ -466,7 +466,7 @@
 		
 		/**
 		 * Fields shown on edit user page
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function user_profile_fields($user)
@@ -519,8 +519,8 @@
 			?>
 			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
 			<p>
-				<?php 
-					if(empty($_REQUEST['user_id'])) 
+				<?php
+					if(empty($_REQUEST['user_id']))
 						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes.", 'pmpro');
 					else
 						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'pmpro');
@@ -568,7 +568,7 @@
 									<input name="updates_date_year[]" type="text" size="4" value="<?php if(!empty($update['date_year'])) echo esc_attr($update['date_year']);?>" />
 								</span>
 								<span class="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
-									<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="<?php echo esc_attr($update['billing_amount']);?>" /> 
+									<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="<?php echo esc_attr($update['billing_amount']);?>" />
 									<small><?php _e('per', 'pmpro');?></small>
 									<input name="updates_cycle_number[]" type="text" size="5" value="<?php echo esc_attr($update['cycle_number']);?>" />
 									<select name="updates_cycle_period[]">
@@ -652,7 +652,7 @@
 		
 		/**
 		 * Process fields from the edit user page
-		 *		 
+		 *		
 		 * @since 2.0
 		 */
 		static function user_profile_fields_save($user_id)
@@ -736,13 +736,13 @@
 					$update_order->Gateway->subscribe($update_order);
 					
 					//update membership
-					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users 
-									SET billing_amount = '" . esc_sql($update['billing_amount']) . "', 
-										cycle_number = '" . esc_sql($update['cycle_number']) . "', 
-										cycle_period = '" . esc_sql($update['cycle_period']) . "' 
-									WHERE user_id = '" . esc_sql($user_id) . "' 
-										AND membership_id = '" . esc_sql($last_order->membership_id) . "' 
-										AND status = 'active' 
+					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
+									SET billing_amount = '" . esc_sql($update['billing_amount']) . "',
+										cycle_number = '" . esc_sql($update['cycle_number']) . "',
+										cycle_period = '" . esc_sql($update['cycle_period']) . "'
+									WHERE user_id = '" . esc_sql($user_id) . "'
+										AND membership_id = '" . esc_sql($last_order->membership_id) . "'
+										AND status = 'active'
 									LIMIT 1";
 													
 					$wpdb->query($sqlQuery);
@@ -770,7 +770,7 @@
 		
 		/**
 		 * Process checkout and decide if a charge and or subscribe is needed
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function process(&$order)
@@ -817,7 +817,7 @@
 		
 		/**
 		 * Make a one-time charge with Stripe
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function charge(&$order)
@@ -844,7 +844,7 @@
 			
 			//charge
 			try
-			{ 
+			{
 				$response = Stripe_Charge::create(array(
 				  "amount" => $amount * 100, # amount in cents, again
 				  "currency" => strtolower(pmpro_getOption("currency")),
@@ -881,7 +881,7 @@
 				
 		/**
 		 * Get a Stripe customer object.
-		 *		 
+		 *		
 		 * If $this->customer is set, it returns it.
 		 * It first checks if the order has a subscription_transaction_id. If so, that's the customer id.
 		 * If not, it checks for a user_id on the order and searches for a customer id in the user meta.
@@ -923,7 +923,7 @@
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
-				try 
+				try
 				{
 					$this->customer = Stripe_Customer::retrieve($customer_id);
 					
@@ -945,7 +945,7 @@
 					
 					return $this->customer;
 				}
-				catch (Exception $e) 
+				catch (Exception $e)
 				{
 					//assume no customer found					
 				}
@@ -995,7 +995,7 @@
 		
 		/**
 		 * Create a new subscription with Stripe
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function subscribe(&$order)
@@ -1150,7 +1150,7 @@
 		
 		/**
 		 * Helper method to update the customer info via getCustomer
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function update(&$order)
@@ -1170,7 +1170,7 @@
 		
 		/**
 		 * Cancel a subscription at Stripe
-		 *		 
+		 *		
 		 * @since 1.4
 		 */
 		function cancel(&$order)
@@ -1201,7 +1201,7 @@
 						if($sub->data[0]->plan->id == $order->code)
 						{
 							//found it, cancel it
-							try 
+							try
 							{								
 								$this->customer->subscriptions->retrieve($sub->data[0]->id)->cancel();
 								break;
