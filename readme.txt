@@ -108,6 +108,10 @@ Not sure? You can find out by doing a bit a research.
 * Users can now have multiple membership levels at the same time. For more information: TBA
 * Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
 
+= 1.7.12 =
+* Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
+* Fixed check for subscription_transaction_id in readonly fields array.
+
 = 1.7.11 =
 * Added "Filter searches and archives?" setting to advanced settings tab. If you had "Show excerpts to non-members?" set to No before, then this will be set to Yes after upgrade. But now you can show excerpts on single post pages while still hiding restricted content from searches and archives.
 
