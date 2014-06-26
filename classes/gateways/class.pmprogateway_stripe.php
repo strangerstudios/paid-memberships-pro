@@ -1139,6 +1139,15 @@
 			//filter order before subscription. use with care.
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
 			
+			//figure out the user
+			if(!empty($order->user_id))
+				$user_id = $order->user_id;
+			else
+			{
+				global $current_user;
+				$user_id = $current_user->ID;
+			}
+			
 			//setup customer
 			$this->getCustomer($order);
 			if(empty($this->customer))
@@ -1193,8 +1202,8 @@
 				/*
 					Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
 				*/				
-				$user_updates = array();
-				$user_updates[] = array(
+				$new_user_updates = array();
+				$new_user_updates[] = array(
 					'when' => 'payment',
 					'billing_amount' => $order->PaymentAmount,
 					'cycle_period' => $order->BillingPeriod,
@@ -1243,6 +1252,10 @@
 				return false;
 			}
 			
+			//before subscribing, let's clear out the updates so we don't trigger any during sub
+			$old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
+			update_user_meta($user_id, "pmpro_stripe_updates", array());
+			
 			//subscribe to the plan
 			try
 			{				
@@ -1252,6 +1265,9 @@
 			{
 				//try to delete the plan
 				$plan->delete();
+				
+				//give the user any old updates back
+				update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
 				
 				//return error
 				$order->error = __("Error subscribing customer to plan with Stripe:", "pmpro") . $e->getMessage();
@@ -1267,24 +1283,20 @@
 			$order->status = "success";		
 			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too			
 			
-			//save updates if this is at checkout
+			//save new updates if this is at checkout
 			if($checkout)
-			{
-				//figure out the user
-				if(!empty($order->user_id))
-					$user_id = $order->user_id;
-				else
-				{
-					global $current_user;
-					$user_id = $current_user->ID;
-				}
-				
+			{				
 				//empty out updates unless set above
-				if(empty($user_updates))
-					$user_updates = array();
+				if(empty($new_user_updates))
+					$new_user_updates = array();
 					
 				//update user meta
-				update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
+				update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
+			}
+			else
+			{
+				//give them their old updates back
+				update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
 			}
 			
 			return true;

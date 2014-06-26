@@ -28,7 +28,8 @@
 		$post_event = json_decode($body);
 			
 		//get the id
-		$event_id = $post_event->id;
+		if(!empty($post_event))
+			$event_id = $post_event->id;
 	}
 	else
 	{
@@ -36,17 +37,20 @@
 	}
 		
 	//get the event through the API now
-	try
+	if(!empty($event_id))
 	{
-		$event = Stripe_Event::retrieve($event_id);		
-	}
-	catch(Exception $e)
-	{
-		$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
-		pmpro_stripeWebhookExit();
-		//$event = $post_event;			//for testing you may want to assume that the passed in event is legit
-	}
-		
+		try
+		{
+			$event = Stripe_Event::retrieve($event_id);		
+		}
+		catch(Exception $e)
+		{
+			$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
+			pmpro_stripeWebhookExit();
+			//$event = $post_event;			//for testing you may want to assume that the passed in event is legit
+		}
+	}	
+	
 	global $wpdb;
 		
 	//real event?
@@ -283,7 +287,10 @@
 	}
 	else
 	{
-		$logstr .= "Could not find an event with ID #" . $event_id;
+		if(!empty($event_id))
+			$logstr .= "Could not find an event with ID #" . $event_id;
+		else
+			$logstr .= "No event ID given.";
 		pmpro_stripeWebhookExit();
 	}
 
