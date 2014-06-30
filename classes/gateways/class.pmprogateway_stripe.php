@@ -1213,21 +1213,7 @@
 				//now amount to equal the trial #s				
 				$amount = $order->TrialAmount;
 				$amount_tax = $order->getTaxForPrice($amount);			
-				$amount = round((float)$amount + (float)$amount_tax, 2);
-				
-				//update order numbers so entry in invoice and pmpro_memberships_users is correct				
-				$order->PaymentAmount = $order->TrialAmount;
-				$order->TrialAmount = 0;
-				$order->TrialBillingCycles = 0;
-				
-				$order->billing_amount = $order->PaymentAmount;
-				$order->trial_amount = 0;
-				$order->trial_limit = 0;
-				
-				global $pmpro_level;
-				$pmpro_level->billing_amount = $order->PaymentAmount;
-				$pmpro_level->trial_amount = 0;
-				$pmpro_level->trial_limit = 0;			
+				$amount = round((float)$amount + (float)$amount_tax, 2);				
 			}			
 						
 			//create a plan
