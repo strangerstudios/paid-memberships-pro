@@ -80,6 +80,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		}
 		elseif(!empty($myuser->ID))
 		{
+			$myuser->membership_level = pmpro_getMembershipLevelForUser($myuser->ID);
 			if(!empty($myuser->membership_level->ID) && in_array($myuser->membership_level->ID, $post_membership_levels_ids))
 			{
 				//the users membership id is one that will grant access
