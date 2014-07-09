@@ -204,7 +204,7 @@
 				//stripe js code for checkout
 				function pmpro_stripe_javascript()
 				{
-					global $pmpro_gateway, $pmpro_level;
+					global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
 				?>
 				<script type="text/javascript">
 					// this identifies your website in the createToken call below			
@@ -225,7 +225,7 @@
 								exp_year: jQuery('#ExpirationYear').val(),
 								name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
 								<?php
-									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
+									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", !$pmpro_stripe_lite);
 									if(!empty($pmpro_stripe_verify_address))
 									{
 									?>
