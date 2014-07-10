@@ -106,6 +106,7 @@ Not sure? You can find out by doing a bit a research.
 * Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
 * Making sure that $myuser->membership_level is set in pmpro_has_membership_access().
 * Added Norwegian locale files. (Thanks, Maritk)
+* Fixed error where "undefined" was being passed to Stripe for the name.
 
 = 1.7.11 =
 * Added "Filter searches and archives?" setting to advanced settings tab. If you had "Show excerpts to non-members?" set to No before, then this will be set to Yes after upgrade. But now you can show excerpts on single post pages while still hiding restricted content from searches and archives.
