@@ -218,14 +218,14 @@
 						//double check in case a discount code made the level free				
 						if(pmpro_require_billing)
 						{
-							Stripe.createToken({
+							//build array for creating token
+							var args = {
 								number: jQuery('#AccountNumber').val(),
 								cvc: jQuery('#CVV').val(),
 								exp_month: jQuery('#ExpirationMonth').val(),
-								exp_year: jQuery('#ExpirationYear').val(),
-								name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())					
+								exp_year: jQuery('#ExpirationYear').val()
 								<?php
-									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", !$pmpro_stripe_lite);
+									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
 									if(!empty($pmpro_stripe_verify_address))
 									{
 									?>
@@ -237,8 +237,14 @@
 									address_country: jQuery('#bcountry').val()
 								<?php
 									}
-								?>					
-							}, stripeResponseHandler);
+								?>	
+							};
+							
+							if(jQuery('#bfirstname') && jQuery('#blastname'))
+								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
+																
+							//create token
+							Stripe.createToken(args, stripeResponseHandler);
 
 							// prevent the form from submitting with the default action
 							return false;
