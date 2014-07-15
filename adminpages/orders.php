@@ -497,7 +497,7 @@
 							if(!empty($order->timestamp))
 								$timestamp = $order->timestamp;
 							else
-								$timestamp = time();
+								$timestamp = current_time('timestamp');
 							
 							$year = date("Y", $timestamp);
 							$month = date("n", $timestamp);

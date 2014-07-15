@@ -482,7 +482,7 @@
 									   '" . $this->gateway_environment . "', 
 									   '" . esc_sql($this->payment_transaction_id) . "',
 									   '" . esc_sql($this->subscription_transaction_id) . "',
-									   now(),
+									   '" . current_time('mysql') . "',
 									   '" . esc_sql($this->affiliate_id) . "',
 									   '" . esc_sql($this->affiliate_subid) . "',
 									    '" . esc_sql($this->notes) . "'
@@ -509,7 +509,7 @@
 			
 			while(empty($code))
 			{
-				$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
+				$scramble = md5(AUTH_KEY . current_time('timestamp') . SECURE_AUTH_KEY);
 				$code = substr($scramble, 0, 10);
 				$code = apply_filters("pmpro_random_code", $code, $this);	//filter				
 				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");				
