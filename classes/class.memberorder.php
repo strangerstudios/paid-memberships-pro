@@ -278,7 +278,7 @@
 			if($tax_state && $tax_rate)
 			{
 				//we have values, is this order in the tax state?
-				if(trim(strtoupper($this->billing->state)) == trim(strtoupper($tax_state)))
+				if(!empty($this->billing) && trim(strtoupper($this->billing->state)) == trim(strtoupper($tax_state)))
 				{															
 					//return value, pass through filter
 					$tax = round((float)$price * (float)$tax_rate, 2);					
