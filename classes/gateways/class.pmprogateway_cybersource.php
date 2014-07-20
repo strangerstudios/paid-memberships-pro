@@ -297,6 +297,8 @@
 		
 		function authorize(&$order)
 		{
+			global $pmpro_currency;
+			
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 						
@@ -353,7 +355,7 @@
 
 			//currency
 			$purchaseTotals = new stdClass();
-			$purchaseTotals->currency = pmpro_getOption("currency");
+			$purchaseTotals->currency = $pmpro_currency;
 			$request->purchaseTotals = $purchaseTotals;
 
 			//item/price
@@ -429,6 +431,8 @@
 		
 		function charge(&$order)
 		{
+			global $pmpro_currency;
+			
 			//get a code
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -496,7 +500,7 @@
 
 			//currency
 			$purchaseTotals = new stdClass();
-			$purchaseTotals->currency = pmpro_getOption("currency");
+			$purchaseTotals->currency = $pmpro_currency;
 			$request->purchaseTotals = $purchaseTotals;
 
 			//item/price
@@ -530,6 +534,8 @@
 		
 		function subscribe(&$order)
 		{
+			global $currency;
+			
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -692,7 +698,7 @@
 
 			//currency
 			$purchaseTotals = new stdClass();
-			$purchaseTotals->currency = pmpro_getOption("currency");
+			$purchaseTotals->currency = $pmpro_currency;
 			$request->purchaseTotals = $purchaseTotals;			
 			
 			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
