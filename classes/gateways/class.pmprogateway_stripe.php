@@ -58,6 +58,8 @@
 		
 		function charge(&$order)
 		{
+			global $pmpro_currency;
+			
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -83,7 +85,7 @@
 			{ 
 				$response = Stripe_Charge::create(array(
 				  "amount" => $amount * 100, # amount in cents, again
-				  "currency" => strtolower(pmpro_getOption("currency")),
+				  "currency" => $pmpro_currency,
 				  "customer" => $this->customer->id,
 				  "description" => "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")"
 				  )
@@ -227,6 +229,8 @@
 		
 		function subscribe(&$order)
 		{
+			global $pmpro_currency;
+			
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -293,7 +297,7 @@
                     "interval" => strtolower($order->BillingPeriod),
                     "trial_period_days" => $trial_period_days,
                     "name" => $order->membership_name . " for order " . $order->code,
-                    "currency" => strtolower(pmpro_getOption("currency")),
+                    "currency" => strtolower($pmpro_currency),
                     "id" => $order->code
                 );
 
