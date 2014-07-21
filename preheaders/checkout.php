@@ -439,7 +439,7 @@
 			$password2 = $password;
 		}	
 				
-		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "twocheckout")
+		if($pmpro_requirebilling && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "twocheckout" && $gateway != "payfast")
 		{									
 			//if using stripe lite, remove some fields from the required array
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
@@ -904,6 +904,19 @@
 				$morder->Gateway->sendToPayPal($morder);
 			}
 
+            if($gateway == "payfast" && !empty( $morder ) )
+            {
+                $morder->user_id = $user_id;                
+                $morder->saveOrder();
+
+                //save discount code use
+                if(!empty($discount_code_id))
+                    $wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())"); 
+                
+                //do_action("pmpro_before_send_to_paypal_standard", $user_id, $morder);
+                
+                $morder->Gateway->sendToPayFast($morder);
+            }
 			//save user id and send Twocheckout customers to Twocheckout now
 			if($gateway == "twocheckout" && !empty($morder))
 			{
