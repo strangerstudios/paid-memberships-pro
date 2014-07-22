@@ -478,7 +478,7 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 		if(empty($membership_levels))
 		{
 			//user has no levels just check if 0 was sent in one of the levels
-			if(in_array(0, $levels) || in_array("0", $levels))
+			if(in_array(0, $levels, true) || in_array("0", $levels))
 				$return = true;					
 		}
 		else
