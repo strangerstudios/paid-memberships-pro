@@ -107,6 +107,7 @@ Not sure? You can find out by doing a bit a research.
 * Added a pmpro_after_membership_level_profile_fields hook after the "Membership Level" field dropdown on the edit profile page.
 * Users can now have multiple membership levels at the same time. For more information: TBA
 * Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
+* All gateways use the $pmpro_currency global instead of getting the value via pmpro_getOption.
 
 = 1.7.12 =
 * Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
