@@ -66,7 +66,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		else
 		{
 			//how many days has this user been a member?
-			$now = time();
+			$now = current_time('timestamp');
 			$days = ($now - $startdate)/3600/24;
 						
 			if($days < intval($delay))				

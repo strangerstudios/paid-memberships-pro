@@ -120,7 +120,7 @@
 					{
 						//someone is trying to push the start date back
 						$adjusted_psd_time = strtotime($adjusted_psd);
-						$seconds_til_psd = $adjusted_psd_time - time();
+						$seconds_til_psd = $adjusted_psd_time - current_time('timestamp');
 						$days_til_psd = floor($seconds_til_psd/(60*60*24));
 						
 						//push back trial one by days_til_psd

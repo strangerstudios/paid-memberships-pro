@@ -577,7 +577,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		if(!empty($old_levels))
 		{			
 			foreach($old_levels as $old_level) {
-				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;				
+				$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='inactive', `enddate`='" . current_time('mysql') . "' WHERE `id`=".$old_level->subscription_id;
 				if(!$wpdb->query($sql))
 				{
 					$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
@@ -605,10 +605,10 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 		if(is_array($level))
 		{
 			//make sure the dates are in good formats				
-			if($level['startdate'] != "NOW()" && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
+			if($level['startdate'] != current_time('mysql') && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
 				$level['startdate'] = "'" . $level['startdate'] . "'";
 							
-			if($level['enddate'] != "NOW()" && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
+			if($level['enddate'] != current_time('mysql') && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
 				$level['enddate'] = "'" . $level['enddate'] . "'";
 										
 		 //Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
@@ -648,7 +648,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL)
 			    '0',
 			    '0',
 			    '0',
-			    NOW(),
+			    '" . current_time('mysql') . "',
                 	    '0000-00-00 00:00:00'
                 	    )";
 
@@ -1078,7 +1078,7 @@ function pmpro_getDiscountCode($seed = NULL)
 	
 	while(empty($code))
 	{
-		$scramble = md5(AUTH_KEY . time() . $seed . SECURE_AUTH_KEY);		
+		$scramble = md5(AUTH_KEY . current_time('timestamp') . $seed . SECURE_AUTH_KEY);
 		$code = substr($scramble, 0, 10);
 		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '$code' LIMIT 1");				
 		if($check || is_numeric($code))
@@ -1516,7 +1516,7 @@ if(!function_exists("pmpro_getMemberDays"))
 				$pmpro_member_days[$user_id][$level_id] = 0;
 			else
 			{			
-				$now = time();
+				$now = current_time('timestamp');
 				$days = ($now - $startdate)/3600/24;
 					
 				$pmpro_member_days[$user_id][$level_id] = $days;
