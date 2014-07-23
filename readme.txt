@@ -114,6 +114,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed check for subscription_transaction_id in readonly fields array.
 * Making sure that $myuser->membership_level is set in pmpro_has_membership_access().
 * Added Norwegian locale files. (Thanks, Maritk)
+* Added Turkish locale files. (Thanks, yasinkuyu on GitHub.)
 * Fixed error where "undefined" was being passed to Stripe for the name.
 * Fixed error with setting enddates on the edit user page for users with multiple "active" memberships.
 * "Renew" link will show up on levels page only if the user has the level and it is not recurring and has an enddate.
