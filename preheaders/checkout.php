@@ -694,7 +694,7 @@
 						{
 							$morder->payment_type = "PayPal Express";
 							$morder->cardtype = "";
-							$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod)) . "T0:0:0";
+							$morder->ProfileStartDate = date("Y-m-d", strtotime("+ " . $morder->BillingFrequency . " " . $morder->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 							$morder->ProfileStartDate = apply_filters("pmpro_profile_start_date", $morder->ProfileStartDate, $morder);							
 							$pmpro_processed = $morder->Gateway->setExpressCheckout($morder);
 						}
@@ -922,7 +922,7 @@
 			//calculate the end date
 			if(!empty($pmpro_level->expiration_number))
 			{
-				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period)) . "'";
+				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time("timestamp"))) . "'";
 			}
 			else
 			{

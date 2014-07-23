@@ -114,12 +114,12 @@
 				else
 				{
 					//we can try to work in any change in ProfileStartDate
-					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					$adjusted_psd = apply_filters("pmpro_profile_start_date", $psd, $order);
 					if($psd != $adjusted_psd)
 					{
 						//someone is trying to push the start date back
-						$adjusted_psd_time = strtotime($adjusted_psd);
+						$adjusted_psd_time = strtotime($adjusted_psd, current_time("timestamp"));
 						$seconds_til_psd = $adjusted_psd_time - current_time('timestamp');
 						$days_til_psd = floor($seconds_til_psd/(60*60*24));
 						

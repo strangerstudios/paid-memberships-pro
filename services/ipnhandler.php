@@ -431,7 +431,7 @@
 		//fix expiration date		
 		if(!empty($morder->membership_level->expiration_number))
 		{
-			$enddate = "'" . date("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period)) . "'";
+			$enddate = "'" . date("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time("timestamp"))) . "'";
 		}
 		else
 		{

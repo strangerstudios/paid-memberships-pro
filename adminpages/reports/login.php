@@ -182,7 +182,7 @@ function pmpro_report_login_page()
 								<?php echo $theuser->display_name;?>
 							</td>
 							<td><?php echo $auser->membership?></td>												
-							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
+							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered, current_time("timestamp")))?></td>
 							<td>
 								<?php 									
 									if($auser->enddate) 
