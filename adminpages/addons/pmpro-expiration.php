@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Set Expiration Dates',
-		'version' => '.1',
+		'version' => '.1.1',
 		'widget' => 'pmpro_addon_pmpro_expiration_widget',
 		'enabled' => function_exists('pmprosed_pmpro_checkout_level')
 	)

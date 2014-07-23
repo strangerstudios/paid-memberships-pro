@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('repo', array(
 		'title' => 'PMPro Email Templates',
-		'version' => '.3',
+		'version' => '.5.2',
 		'widget' => 'pmpro_addon_email_templates_widget',
 		'enabled' => function_exists('pmproet_scripts')
 	)

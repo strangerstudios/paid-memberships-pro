@@ -293,7 +293,7 @@
 			
 			//paypal profile stuff
 			$nvpStr = "";			
-			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax;			
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
@@ -313,7 +313,7 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
-			$this->nvpStr = $nvpStr;
+			$this->nvpStr = $nvpStr;						
 			$this->httpParsedResponseAr = $this->PPHttpPost('S', $nvpStr);
 												
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
@@ -353,7 +353,7 @@
 			
 			//paypal profile stuff
 			$nvpStr = "&ACTION=A";			
-			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax;			
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			

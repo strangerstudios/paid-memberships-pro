@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 3.9
-Stable tag: 1.7.11
+Tested up to: 3.9.1
+Stable tag: 1.7.12
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 * Fixed error with setting enddates on the edit user page for users with multiple "active" memberships.
 * "Renew" link will show up on levels page only if the user has the level and it is not recurring and has an enddate.
 * Stripe gateway is using $pmpro_currency global instead of getting value via pmpro_getOption, so it can be overridden via code like https://gist.github.com/strangerstudios/8806443
+* Payflow Pro gateway is now passing the currency code to the API for non-US currencies. (Thanks
 
 = 1.7.11 =
 * Added "Filter searches and archives?" setting to advanced settings tab. If you had "Show excerpts to non-members?" set to No before, then this will be set to Yes after upgrade. But now you can show excerpts on single post pages while still hiding restricted content from searches and archives.
