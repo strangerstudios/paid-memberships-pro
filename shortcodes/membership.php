@@ -56,7 +56,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		$startdate = $wpdb->get_var($sqlQuery);
 		
 		//adjust start date to 12AM
-		$startdate = strtotime(date("Y-m-d", $startdate));
+		$startdate = strtotime(date("Y-m-d", $startdate, current_time("timestamp")));
 		
 		if(empty($startdate))
 		{
@@ -66,7 +66,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		else
 		{
 			//how many days has this user been a member?
-			$now = time();
+			$now = current_time('timestamp');
 			$days = ($now - $startdate)/3600/24;
 						
 			if($days < intval($delay))				

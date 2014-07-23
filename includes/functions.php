@@ -584,7 +584,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
     {
         foreach($old_levels as $old_level) {
 
-            $sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`=NOW() WHERE `id`=".$old_level->subscription_id;
+            $sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . current_time('mysql') . "' WHERE `id`=".$old_level->subscription_id;
 
             if(!$wpdb->query($sql))
             {
@@ -622,10 +622,10 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		if(is_array($level))
 		{
 			//make sure the dates are in good formats				
-			if($level['startdate'] != "NOW()" && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
+			if($level['startdate'] != current_time('mysql') && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
 				$level['startdate'] = "'" . $level['startdate'] . "'";
 							
-			if($level['enddate'] != "NOW()" && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
+			if($level['enddate'] != current_time('mysql') && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
 				$level['enddate'] = "'" . $level['enddate'] . "'";
 										
 		 //Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
@@ -665,7 +665,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			    '0',
 			    '0',
 			    '0',
-			    NOW(),
+			    '" . current_time('mysql') . "',
                 	    '0000-00-00 00:00:00'
                 	    )";
 
@@ -1096,7 +1096,7 @@ function pmpro_getDiscountCode($seed = NULL)
 	
 	while(empty($code))
 	{
-		$scramble = md5(AUTH_KEY . time() . $seed . SECURE_AUTH_KEY);		
+		$scramble = md5(AUTH_KEY . current_time('timestamp') . $seed . SECURE_AUTH_KEY);
 		$code = substr($scramble, 0, 10);
 		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '$code' LIMIT 1");				
 		if($check || is_numeric($code))
@@ -1133,11 +1133,11 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 	}
 
 	//fix the date timestamps
-	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
-	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));		
+	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts, current_time("timestamp")));
+	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires, current_time("timestamp")));
 
 	//today
-	$today = strtotime(date("m/d/Y 00:00:00"));		
+	$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
 
 	//has this code started yet?
 	if(!empty($dbcode->starts) && $dbcode->starts > $today)
@@ -1361,7 +1361,7 @@ function pmpro_getLevel($level)
 	{
 		global $wpdb;
 		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . $level . "' LIMIT 1");
-		$level_id = $level->ID;
+		$level_id = $level_obj->id;
 		$pmpro_levels[$level_id] = $level_obj;
 		return $pmpro_levels[$level_id];
 	}
@@ -1534,7 +1534,7 @@ if(!function_exists("pmpro_getMemberDays"))
 				$pmpro_member_days[$user_id][$level_id] = 0;
 			else
 			{			
-				$now = time();
+				$now = current_time('timestamp');
 				$days = ($now - $startdate)/3600/24;
 					
 				$pmpro_member_days[$user_id][$level_id] = $days;

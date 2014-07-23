@@ -109,7 +109,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
@@ -229,8 +229,8 @@ function pmpro_membership_level_profile_fields_update()
 	if(!empty($_REQUEST['expires']))
 	{
 		//update the expiration date
-		$expiration_date = intval($_REQUEST['expires_year']) . "-" . intval($_REQUEST['expires_month']) . "-" . intval($_REQUEST['expires_day']);
-		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
+		$expiration_date = intval($_REQUEST['expires_year']) . "-" . str_pad(intval($_REQUEST['expires_month']), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day']), 2, "0", STR_PAD_LEFT);
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";		
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
 	}
@@ -243,7 +243,7 @@ function pmpro_membership_level_profile_fields_update()
 		if(empty($blank))
 		{		
 			//null out the expiration
-			$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
 			if($wpdb->query($sqlQuery))
 				$expiration_changed = true;
 		}

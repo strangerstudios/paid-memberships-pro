@@ -348,13 +348,13 @@
 				else
 				{
 					//we can try to work in any change in ProfileStartDate
-					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					$adjusted_psd = apply_filters("pmpro_profile_start_date", $psd, $order);
 					if($psd != $adjusted_psd)
 					{
 						//someone is trying to push the start date back
-						$adjusted_psd_time = strtotime($adjusted_psd);
-						$seconds_til_psd = $adjusted_psd_time - time();
+						$adjusted_psd_time = strtotime($adjusted_psd, current_time("timestamp"));
+						$seconds_til_psd = $adjusted_psd_time - current_time('timestamp');
 						$days_til_psd = floor($seconds_til_psd/(60*60*24));
 						
 						//push back trial one by days_til_psd
@@ -378,9 +378,20 @@
 				if(!empty($order->TotalBillingCycles))
 				{
 					if(!empty($trial_amount))
-						$paypal_args['srt'] = intval($order->TotalBillingCycles) - 1;	//subtract 1 for the trial period
+					{
+						
+						$srt = intval($order->TotalBillingCycles) - 1;	//subtract one for the trial period					
+					}
 					else
-						$paypal_args['srt'] = intval($order->TotalBillingCycles);
+					{
+						$srt = intval($order->TotalBillingCycles);						
+					}
+					
+					//srt must be at least 2 or the subscription is not "recurring" according to paypal
+					if($srt > 1)
+						$paypal_args['srt'] = $srt;
+					else
+						$paypal_args['src'] = '0';
 				}
 				else
 					$paypal_args['srt'] = '0';	//indefinite subscription
@@ -428,7 +439,7 @@
 			//redirect to paypal			
 			$paypal_url .= $nvpStr;			
 			
-			//die($paypal_url);
+			//wp_die(str_replace("&", "<br />", $paypal_url));
 			
 			wp_redirect($paypal_url);
 			exit;

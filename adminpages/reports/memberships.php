@@ -479,7 +479,7 @@ function pmpro_getCancellations($period = false, $levels = 'all')
 	else
 		$startdate = '';
 
-		$startdate_plus_one = strtotime( $startdate . + ' + 1 day' );
+		$startdate_plus_one = strtotime( $startdate . + ' + 1 day', current_time("timestamp") );
 
 	/*
 		build query. 

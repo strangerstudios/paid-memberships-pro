@@ -112,6 +112,12 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.12 =
 * Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
 * Fixed check for subscription_transaction_id in readonly fields array.
+* Making sure that $myuser->membership_level is set in pmpro_has_membership_access().
+* Added Norwegian locale files. (Thanks, Maritk)
+* Fixed error where "undefined" was being passed to Stripe for the name.
+* Fixed error with setting enddates on the edit user page for users with multiple "active" memberships.
+* "Renew" link will show up on levels page only if the user has the level and it is not recurring and has an enddate.
+* Stripe gateway is using $pmpro_currency global instead of getting value via pmpro_getOption, so it can be overridden via code like https://gist.github.com/strangerstudios/8806443
 
 = 1.7.11 =
 * Added "Filter searches and archives?" setting to advanced settings tab. If you had "Show excerpts to non-members?" set to No before, then this will be set to Yes after upgrade. But now you can show excerpts on single post pages while still hiding restricted content from searches and archives.
