@@ -1115,11 +1115,11 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 	}
 
 	//fix the date timestamps
-	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
-	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));		
+	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts, current_time("timestamp")));
+	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires, current_time("timestamp")));
 
 	//today
-	$today = strtotime(date("m/d/Y 00:00:00"));		
+	$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
 
 	//has this code started yet?
 	if(!empty($dbcode->starts) && $dbcode->starts > $today)

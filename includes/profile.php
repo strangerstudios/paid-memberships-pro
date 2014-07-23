@@ -130,7 +130,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>

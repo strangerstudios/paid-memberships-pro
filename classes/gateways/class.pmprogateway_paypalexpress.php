@@ -12,7 +12,7 @@
 		{				
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+				$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 				return $this->subscribe($order);				
 			}
@@ -47,7 +47,7 @@
 			//paypal profile stuff
 			$nvpStr = "";
 			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency;
-			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate) > 0)
+			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate, current_time("timestamp")) > 0)
 				$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;			
 			if(!empty($order->BillingFrequency))
 				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";

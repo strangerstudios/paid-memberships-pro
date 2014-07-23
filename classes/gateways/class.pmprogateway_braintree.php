@@ -296,13 +296,13 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 				
 			//convert to a profile start date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";			
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						

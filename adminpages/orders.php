@@ -508,7 +508,7 @@
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $year))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
@@ -813,26 +813,26 @@
 		{	
 			if($predefined_date == "Last Month")
 			{
-				$start_date = date("Y-m-d", strtotime("first day of last month"));
-				$end_date   = date("Y-m-d", strtotime("last day of last month"));					
+				$start_date = date("Y-m-d", strtotime("first day of last month", current_time("timestamp")));
+				$end_date   = date("Y-m-d", strtotime("last day of last month", current_time("timestamp")));
 			}
 			elseif($predefined_date == "This Month")
 			{
-				$start_date = date("Y-m-d", strtotime("first day of this month"));
-				$end_date   = date("Y-m-d", strtotime("last day of this month"));	
+				$start_date = date("Y-m-d", strtotime("first day of this month", current_time("timestamp")));
+				$end_date   = date("Y-m-d", strtotime("last day of this month", current_time("timestamp")));
 			}
 			elseif($predefined_date == "This Year")
 			{
 				$year = date('Y');
-				$start_date = date("Y-m-d", strtotime("first day of January $year"));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
 			}
 			
 			elseif($predefined_date == "Last Year")
 			{
 				$year = date('Y') - 1;
-				$start_date = date("Y-m-d", strtotime("first day of January $year"));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year"));	
+				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
 			}
 		
 			//add times to dates

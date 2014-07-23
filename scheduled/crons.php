@@ -87,7 +87,7 @@
 	{
 		global $wpdb;
 		
-		$next_month_date = date("Y-m-01", strtotime("+2 months"));
+		$next_month_date = date("Y-m-01", strtotime("+2 months", current_time("timestamp")));
 		
 		$sqlQuery = "SELECT mu.user_id
 						FROM  $wpdb->pmpro_memberships_users mu

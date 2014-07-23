@@ -36,8 +36,8 @@
 		$uses = $_POST['uses'];
 		
 		//fix up dates		
-		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year));
-		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year));
+		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, current_time("timestamp")));
+		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, current_time("timestamp")));
 		
 		//updating or new?
 		if($saveid > 0)
@@ -356,7 +356,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>
@@ -374,7 +374,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>

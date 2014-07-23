@@ -691,7 +691,7 @@
 				"cycle_period" => $user->membership_level->cycle_period, 
 				"trial_amount" => $pmpro_currency_symbol . $user->membership_level->trial_amount, 
 				"trial_limit" => $user->membership_level->trial_limit,
-				"trial_end" => date(get_option('date_format'), strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period))
+				"trial_end" => date(get_option('date_format'), strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period, current_time("timestamp")))
 			);			
 			
 			return $this->sendEmail();
