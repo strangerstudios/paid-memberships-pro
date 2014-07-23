@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2014-05-20 23:24+0000\n"
+"POT-Creation-Date: 2014-07-23 17:09-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
@@ -120,7 +120,8 @@ msgid "User Forum"
 msgstr ""
 
 #: adminpages/admin_header.php:149 adminpages/membershiplevels.php:498
-#: adminpages/pagesettings.php:69 includes/adminpages.php:107
+#: adminpages/pagesettings.php:69 includes/adminpages.php:64
+#: includes/adminpages.php:65 includes/adminpages.php:107
 #: adminpages/admin_header.php:128 adminpages/admin_header.php:149
 #: adminpages/membershiplevels.php:490 adminpages/membershiplevels.php:496
 #: adminpages/membershiplevels.php:498 adminpages/pagesettings.php:69
@@ -1518,9 +1519,9 @@ msgstr ""
 #: adminpages/orders.php:904 includes/init.php:217 includes/profile.php:27
 #: pages/checkout.php:33 pages/confirmation.php:47 pages/confirmation.php:64
 #: pages/confirmation.php:105 pages/invoice.php:28 pages/invoice.php:51
-#: adminpages/orders.php:601 adminpages/orders.php:904 includes/profile.php:25
-#: includes/profile.php:27 pages/checkout.php:33 pages/checkout.php:34
-#: pages/confirmation.php:46 pages/confirmation.php:47
+#: adminpages/orders.php:601 adminpages/orders.php:904 includes/init.php:217
+#: includes/profile.php:25 includes/profile.php:27 pages/checkout.php:33
+#: pages/checkout.php:34 pages/confirmation.php:46 pages/confirmation.php:47
 #: pages/confirmation.php:62 pages/confirmation.php:64
 #: pages/confirmation.php:103 pages/confirmation.php:105 pages/invoice.php:27
 #: pages/invoice.php:28 pages/invoice.php:49 pages/invoice.php:51
@@ -2447,7 +2448,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:410
 #: classes/gateways/class.pmprogateway_braintree.php:417
-#: classes/gateways/class.pmprogateway_stripe.php:396
+#: classes/gateways/class.pmprogateway_stripe.php:402
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:398
 #: classes/gateways/class.pmprogateway_braintree.php:410
@@ -2475,7 +2476,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypal.php:385
 #: classes/gateways/class.pmprogateway_paypalexpress.php:305
-#: classes/gateways/class.pmprogateway_paypalstandard.php:220
+#: classes/gateways/class.pmprogateway_paypalstandard.php:231
 #: classes/gateways/class.pmprogateway_paypal.php:385
 #: classes/gateways/class.pmprogateway_paypalexpress.php:301
 #: classes/gateways/class.pmprogateway_paypalexpress.php:305
@@ -2486,14 +2487,14 @@ msgid ""
 "to make sure you are not charged going forward."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:199
+#: classes/gateways/class.pmprogateway_stripe.php:201
 #: classes/gateways/class.pmprogateway_stripe.php:190
 #: classes/gateways/class.pmprogateway_stripe.php:192
 #: classes/gateways/class.pmprogateway_stripe.php:199
 msgid "Error creating customer record with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:302
+#: classes/gateways/class.pmprogateway_stripe.php:308
 #: classes/gateways/class.pmprogateway_stripe.php:278
 #: classes/gateways/class.pmprogateway_stripe.php:279
 #: classes/gateways/class.pmprogateway_stripe.php:286
@@ -2501,7 +2502,7 @@ msgstr ""
 msgid "Error creating plan with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:318
+#: classes/gateways/class.pmprogateway_stripe.php:324
 #: classes/gateways/class.pmprogateway_stripe.php:294
 #: classes/gateways/class.pmprogateway_stripe.php:295
 #: classes/gateways/class.pmprogateway_stripe.php:302
@@ -2509,7 +2510,7 @@ msgstr ""
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:383
+#: classes/gateways/class.pmprogateway_stripe.php:389
 #: classes/gateways/class.pmprogateway_stripe.php:383
 msgid "Could not cancel old subscription."
 msgstr ""
@@ -2901,8 +2902,8 @@ msgstr ""
 msgid "Please specify a level id."
 msgstr ""
 
-#: includes/init.php:232 includes/profile.php:39 includes/profile.php:37
-#: includes/profile.php:39
+#: includes/init.php:232 includes/profile.php:39 includes/init.php:232
+#: includes/profile.php:37 includes/profile.php:39
 msgid "None"
 msgstr ""
 
@@ -3460,7 +3461,7 @@ msgstr ""
 msgid "&larr; Return to Home"
 msgstr ""
 
-#: preheaders/account.php:7 preheaders/levels.php:19 preheaders/account.php:7
+#: preheaders/account.php:9 preheaders/levels.php:21 preheaders/account.php:7
 #: preheaders/levels.php:19
 msgid "Your membership status has been updated - Thank you!"
 msgstr ""
@@ -3472,39 +3473,39 @@ msgid ""
 "moments."
 msgstr ""
 
-#: preheaders/billing.php:279 preheaders/checkout.php:482
+#: preheaders/billing.php:265 preheaders/checkout.php:458
 #: preheaders/billing.php:258 preheaders/billing.php:279
 #: preheaders/checkout.php:464 preheaders/checkout.php:481
 #: preheaders/checkout.php:482
 msgid "Please complete all required fields."
 msgstr ""
 
-#: preheaders/billing.php:284 preheaders/checkout.php:492
+#: preheaders/billing.php:268 preheaders/checkout.php:466
 #: preheaders/billing.php:263 preheaders/billing.php:284
 #: preheaders/checkout.php:474 preheaders/checkout.php:491
 #: preheaders/checkout.php:492
 msgid "Your email addresses do not match. Please try again."
 msgstr ""
 
-#: preheaders/billing.php:289 preheaders/checkout.php:498
+#: preheaders/billing.php:271 preheaders/checkout.php:471
 #: preheaders/billing.php:268 preheaders/billing.php:289
 #: preheaders/checkout.php:480 preheaders/checkout.php:497
 #: preheaders/checkout.php:498
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr ""
 
-#: preheaders/billing.php:295 preheaders/billing.php:274
+#: preheaders/billing.php:275 preheaders/billing.php:274
 #: preheaders/billing.php:295
 msgid "All good!"
 msgstr ""
 
-#: preheaders/billing.php:370 preheaders/billing.php:340
+#: preheaders/billing.php:345 preheaders/billing.php:340
 #: preheaders/billing.php:370
 #, php-format
 msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 msgstr ""
 
-#: preheaders/billing.php:378 preheaders/billing.php:347
+#: preheaders/billing.php:351 preheaders/billing.php:347
 #: preheaders/billing.php:378 preheaders/billing.php:380
 msgid "Error updating billing information."
 msgstr ""
@@ -3513,71 +3514,71 @@ msgstr ""
 msgid "Your membership has been cancelled."
 msgstr ""
 
-#: preheaders/checkout.php:28 preheaders/checkout.php:509
+#: preheaders/checkout.php:30 preheaders/checkout.php:480
 #: preheaders/checkout.php:28 preheaders/checkout.php:491
 #: preheaders/checkout.php:508 preheaders/checkout.php:509
 msgid "Invalid gateway."
 msgstr ""
 
-#: preheaders/checkout.php:96 preheaders/checkout.php:96
+#: preheaders/checkout.php:88 preheaders/checkout.php:96
 msgid "Checkout: Payment Information"
 msgstr ""
 
-#: preheaders/checkout.php:109 preheaders/checkout.php:109
+#: preheaders/checkout.php:99 preheaders/checkout.php:109
 msgid "Setup Your Account"
 msgstr ""
 
-#: preheaders/checkout.php:486 preheaders/checkout.php:468
+#: preheaders/checkout.php:461 preheaders/checkout.php:468
 #: preheaders/checkout.php:485 preheaders/checkout.php:486
 msgid "Your passwords do not match. Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:504 preheaders/checkout.php:486
+#: preheaders/checkout.php:476 preheaders/checkout.php:486
 #: preheaders/checkout.php:503 preheaders/checkout.php:504
 #, php-format
 msgid "Please check the box to agree to the %s."
 msgstr ""
 
-#: preheaders/checkout.php:513 preheaders/checkout.php:495
+#: preheaders/checkout.php:483 preheaders/checkout.php:495
 #: preheaders/checkout.php:512 preheaders/checkout.php:513
 msgid "Are you a spammer?"
 msgstr ""
 
-#: preheaders/checkout.php:536 preheaders/checkout.php:518
+#: preheaders/checkout.php:503 preheaders/checkout.php:518
 #: preheaders/checkout.php:535 preheaders/checkout.php:536
 msgid "That username is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:542 preheaders/checkout.php:524
+#: preheaders/checkout.php:508 preheaders/checkout.php:524
 #: preheaders/checkout.php:541 preheaders/checkout.php:542
 msgid "That email address is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:562 preheaders/checkout.php:544
+#: preheaders/checkout.php:525 preheaders/checkout.php:544
 #: preheaders/checkout.php:561 preheaders/checkout.php:562
 #, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:702 preheaders/checkout.php:683
+#: preheaders/checkout.php:647 preheaders/checkout.php:683
 #: preheaders/checkout.php:701 preheaders/checkout.php:702
 msgid "Payment accepted."
 msgstr ""
 
-#: preheaders/checkout.php:710 preheaders/checkout.php:691
+#: preheaders/checkout.php:653 preheaders/checkout.php:691
 #: preheaders/checkout.php:709 preheaders/checkout.php:710
 msgid ""
 "Unknown error generating account. Please contact us to setup your membership."
 msgstr ""
 
-#: preheaders/checkout.php:754 preheaders/checkout.php:823
+#: preheaders/checkout.php:690 preheaders/checkout.php:750
 #: preheaders/checkout.php:735 preheaders/checkout.php:753
 #: preheaders/checkout.php:754 preheaders/checkout.php:803
 #: preheaders/checkout.php:822 preheaders/checkout.php:823
 msgid "The PayPal Token was lost."
 msgstr ""
 
-#: preheaders/checkout.php:860 preheaders/checkout.php:825
+#: preheaders/checkout.php:785 preheaders/checkout.php:825
 #: preheaders/checkout.php:844 preheaders/checkout.php:859
 #: preheaders/checkout.php:860
 msgid ""
@@ -3585,7 +3586,7 @@ msgid ""
 "Please contact us."
 msgstr ""
 
-#: preheaders/checkout.php:1046 preheaders/checkout.php:983
+#: preheaders/checkout.php:953 preheaders/checkout.php:983
 #: preheaders/checkout.php:1030 preheaders/checkout.php:1045
 #: preheaders/checkout.php:1046
 msgid ""
@@ -3594,7 +3595,7 @@ msgid ""
 "submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:1051 preheaders/checkout.php:988
+#: preheaders/checkout.php:956 preheaders/checkout.php:988
 #: preheaders/checkout.php:1035 preheaders/checkout.php:1050
 #: preheaders/checkout.php:1051
 msgid ""
@@ -3603,7 +3604,7 @@ msgid ""
 "this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:1064 preheaders/checkout.php:1001
+#: preheaders/checkout.php:967 preheaders/checkout.php:1001
 #: preheaders/checkout.php:1048 preheaders/checkout.php:1063
 #: preheaders/checkout.php:1064
 #, php-format
@@ -3612,7 +3613,7 @@ msgid ""
 "be processed."
 msgstr ""
 
-#: preheaders/checkout.php:1066 preheaders/checkout.php:1003
+#: preheaders/checkout.php:969 preheaders/checkout.php:1003
 #: preheaders/checkout.php:1050 preheaders/checkout.php:1065
 #: preheaders/checkout.php:1066
 msgid "A Payment Gateway must be setup before any payments will be processed."
