@@ -7,7 +7,7 @@ pmpro_add_addon('recommended', array(
 		'title' => 'Theme My Login',
 		'widget' => 'pmpro_addon_tml_widget',
 		'enabled' => class_exists('Theme_My_Login'),
-		'version' => '6.3.9'
+		'version' => '6.3.10'
 	)
 );
 

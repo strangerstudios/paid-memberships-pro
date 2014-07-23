@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro Infusionsoft Integration',
-		'version' => '1.0',
+		'version' => '1.2',
 		'widget' => 'pmpro_addon_pmpro_infusionsoft_widget',
 		'enabled' => function_exists('pmprois_init')
 	)

@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('github', array(
 		'title' => 'PMPro Network Subsite Helper',
-		'version' => '.1',
+		'version' => '.2',
 		'widget' => 'pmpro_addon_pmpro_network_subsite_widget',
 		'enabled' => function_exists('pmpron_subsite_activated_plugin')
 	)
