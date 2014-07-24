@@ -119,17 +119,23 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 function pmpro_search_filter($query)
 {
     global $current_user, $wpdb, $pmpro_pages;
-	
+			
     //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search)
     {
         $query->set('post__not_in', $pmpro_pages ); // id of page or post
-    }
+    }		
 		
     //hide member pages from non-members (make sure they aren't hidden from members)    
-	if(!$query->is_admin && !$query->is_singular)
-    {
-        //get page ids that are in my levels
+	if(!$query->is_admin && 
+	   !$query->is_singular && 
+	   (
+		empty($query->query_vars['post_type']) || 
+		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
+	   )
+	)
+    {		
+		//get page ids that are in my levels
         $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
         $my_pages = array();
 
