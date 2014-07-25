@@ -37,6 +37,9 @@
 	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");			
 	$recurring_payment_id = pmpro_getParam("recurring_payment_id", "POST");
+
+    if(empty($subscr_id))
+        $subscr_id = $recurring_payment_id;
 	
 	//check the receiver_email	
 	if(!pmpro_ipnCheckReceiverEmail(array(strtolower($receiver_email), strtolower($business_email))))
