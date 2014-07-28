@@ -225,7 +225,7 @@
 								exp_month: jQuery('#ExpirationMonth').val(),
 								exp_year: jQuery('#ExpirationYear').val()
 								<?php
-									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
+									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
 									if(!empty($pmpro_stripe_verify_address))
 									{
 									?>
