@@ -2,7 +2,8 @@
 
 global $current_user, $pmpro_invoice;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
 if (!is_user_logged_in()) {
     wp_redirect(pmpro_url("account"));
