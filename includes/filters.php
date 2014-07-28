@@ -19,7 +19,7 @@ function pmpro_checkout_level_extend_memberships($level)
 		$expiration_date = $current_user->membership_level->enddate;
 
 		//calculate days left
-		$todays_date = time();
+		$todays_date = current_time('timestamp');
 		$time_left = $expiration_date - $todays_date;
 
 		//time left?
@@ -62,7 +62,7 @@ function pmpro_ipnhandler_level_extend_memberships($level, $user_id)
 		$expiration_date = $user_level->enddate;
 
 		//calculate days left
-		$todays_date = time();
+		$todays_date = current_time('timestamp');
 		$time_left = $expiration_date - $todays_date;
 
 		//time left?

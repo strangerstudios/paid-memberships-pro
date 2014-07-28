@@ -5,7 +5,7 @@
 */
 pmpro_add_addon('thirdparty', array(
 		'title' => 'PMPro WooCommerce',
-		'version' => '1.1',
+		'version' => '1.2.2',
 		'widget' => 'pmpro_addon_pmpro_woocommerce_widget',
 		'enabled' => function_exists('pmprowoo_add_membership_from_order')
 	)

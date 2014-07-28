@@ -213,7 +213,7 @@
 									-
 								<?php } ?>
 							</td>						
-							<td><?php echo date(get_option("date_format"), strtotime($theuser->user_registered))?></td>
+							<td><?php echo date(get_option("date_format"), strtotime($theuser->user_registered, current_time("timestamp")))?></td>
 							<td>
 								<?php 
 									if($auser->enddate) 

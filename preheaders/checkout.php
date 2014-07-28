@@ -611,7 +611,7 @@
 			//calculate the end date
 			if(!empty($pmpro_level->expiration_number))
 			{
-				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period)) . "'";
+				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time("timestamp"))) . "'";
 			}
 			else
 			{
@@ -625,7 +625,7 @@
 				$discount_code_id = "";
 			
 			//set the start date to NOW() but allow filters
-			$startdate = apply_filters("pmpro_checkout_start_date", "NOW()", $user_id, $pmpro_level);
+			$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time("mysql") . "'", $user_id, $pmpro_level);
 			
 			$custom_level = array(
 				'user_id' => $user_id,
@@ -675,7 +675,7 @@
 					else
 						$code_order_id = "";
 						
-					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval($code_order_id) . "', now())");										
+					$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval($code_order_id) . "', '" . current_time("mysql") . "'))");										
 				}
 			
 				//save billing info ect, as user meta																		

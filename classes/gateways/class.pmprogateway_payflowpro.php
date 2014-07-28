@@ -151,7 +151,7 @@
 				if($authorization_id)
 				{
 					$this->void($order, $authorization_id);											
-					$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+					$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
@@ -170,7 +170,7 @@
 					//setup recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{							
@@ -293,7 +293,7 @@
 			
 			//paypal profile stuff
 			$nvpStr = "";			
-			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax;			
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;			
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
@@ -313,7 +313,7 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
-			$this->nvpStr = $nvpStr;
+			$this->nvpStr = $nvpStr;						
 			$this->httpParsedResponseAr = $this->PPHttpPost('S', $nvpStr);
 												
 			if("0" == strtoupper($this->httpParsedResponseAr["RESULT"])) {
@@ -353,7 +353,7 @@
 			
 			//paypal profile stuff
 			$nvpStr = "&ACTION=A";			
-			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax;			
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 			
@@ -387,13 +387,13 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 				
 			//convert to a profile start date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";			
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate)) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						
@@ -410,7 +410,7 @@
 			}			
 			
 			//convert back into a date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day")) . "T0:0:0";
+			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//start date
 			$nvpStr .= "&START=" . date("mdY", strtotime($order->ProfileStartDate));

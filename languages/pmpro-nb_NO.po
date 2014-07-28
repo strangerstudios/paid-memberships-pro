@@ -1,0 +1,3279 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Paid Memberships Pro v1.7.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2014-06-28 10:10:53+0000\n"
+"Last-Translator: admin <marit.kolle@getmail.no>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: Norwegian (Bokmål)\n"
+"X-Poedit-Country: NORWAY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: adminpages/addons.php:5
+#: adminpages/advancedsettings.php:5
+#: adminpages/discountcodes.php:5
+#: adminpages/emailsettings.php:5
+#: adminpages/membershiplevels.php:5
+#: adminpages/memberslist-csv.php:5
+#: adminpages/memberslist.php:5
+#: adminpages/orders-csv.php:5
+#: adminpages/orders.php:5
+#: adminpages/pagesettings.php:5
+#: adminpages/paymentsettings.php:5
+#@ pmpro
+msgid "You do not have permissions to perform this action."
+msgstr "Du har ikke tillatelse til å utføre dette."
+
+#: adminpages/addons.php:79
+#@ pmpro
+msgid "Enabled"
+msgstr "Aktiv"
+
+#: adminpages/addons.php:79
+#@ pmpro
+msgid "Disabled"
+msgstr "Ikke aktiv"
+
+#: adminpages/admin_header.php:25
+#@ pmpro
+msgid "Add a membership level to get started."
+msgstr "Legg til et medlemskap for å starte."
+
+#: adminpages/admin_header.php:27
+#@ pmpro
+msgid "Setup the membership pages"
+msgstr "Oppsett for medlemskap-sidene"
+
+#: adminpages/admin_header.php:29
+#@ pmpro
+msgid "Setup your SSL certificate and payment gateway"
+msgstr "Oppsett for SSL sertifikat og betalingsmåte"
+
+#: adminpages/admin_header.php:38
+#@ pmpro
+msgid "The billing details for some of your membership levels is not supported by Stripe."
+msgstr "Faktureringsdetaljene for noen av dine medlemskapsnivåer er ikke støttet av Stripe."
+
+#: adminpages/admin_header.php:46
+#@ pmpro
+msgid "The billing details for this level are not supported by Stripe. Please review the notes in the Billing Details section below."
+msgstr "Faktureringsdetaljene for dette nivået er ikke støttet av Stripe. Les igjennom informasjonen i Faktureringsdetaljene under."
+
+#: adminpages/admin_header.php:50
+#: adminpages/admin_header.php:70
+#: adminpages/admin_header.php:90
+#: adminpages/admin_header.php:111
+#@ pmpro
+msgid "The levels with issues are highlighted below."
+msgstr "Nivåene med feil er markert under."
+
+#: adminpages/admin_header.php:52
+#: adminpages/admin_header.php:72
+#: adminpages/admin_header.php:92
+#: adminpages/admin_header.php:113
+#@ pmpro
+msgid "Please edit your levels"
+msgstr "Rediger nivåene dine under"
+
+#: adminpages/admin_header.php:58
+#@ pmpro
+msgid "The billing details for some of your membership levels is not supported by Payflow."
+msgstr "Faktureringsdetaljene for noen av dine medlemskapsnivåer er ikke støttet av Payflow."
+
+#: adminpages/admin_header.php:66
+#@ pmpro
+msgid "The billing details for this level are not supported by Payflow. Please review the notes in the Billing Details section below."
+msgstr "Faktureringsdetaljene for dette nivået er ikke støttet av Payflow. Les igjennom informasjonen i Faktureringsdetaljene under."
+
+#: adminpages/admin_header.php:78
+#@ pmpro
+msgid "The billing details for some of your membership levels is not supported by Braintree."
+msgstr "Faktureringsdetaljene for noen av dine medlemskapsnivåer er ikke støttet av Braintree."
+
+#: adminpages/admin_header.php:86
+#@ pmpro
+msgid "The billing details for this level are not supported by Braintree. Please review the notes in the Billing Details section below."
+msgstr "Faktureringsdetaljene for dette nivået er ikke støttet av Braintree. Les igjennom informasjonen i Faktureringsdetaljene under."
+
+#: adminpages/admin_header.php:98
+#@ pmpro
+msgid "The billing details for some of your membership levels is not supported by TwoCheckout."
+msgstr "Faktureringsdetaljene for noen av dine medlemskapsnivåer er ikke støttet av TwoCheckout."
+
+#: adminpages/admin_header.php:107
+#@ pmpro
+msgid "The billing details for this level are not supported by 2Checkout. Please review the notes in the Billing Details section below."
+msgstr "Faktureringsdetaljene for dette nivået er ikke støttet av 2Checkout. Les igjennom informasjonen i Faktureringsdetaljene under."
+
+#: adminpages/admin_header.php:127
+#@ pmpro
+msgid "Plugin Support"
+msgstr "Plugin Support"
+
+#: adminpages/admin_header.php:127
+#@ pmpro
+msgid "User Forum"
+msgstr "Brukerforum"
+
+#: adminpages/admin_header.php:149
+#: adminpages/membershiplevels.php:496
+#: includes/adminpages.php:44
+#@ pmpro
+msgid "Membership Levels"
+msgstr "Medlemskapsnivå"
+
+#: adminpages/admin_header.php:150
+#: adminpages/pagesettings.php:92
+#@ pmpro
+msgid "Pages"
+msgstr "Sider"
+
+#: adminpages/admin_header.php:151
+#@ pmpro
+msgid "Payment Gateway &amp; SSL"
+msgstr "Betalingsmåter &amp; SSL"
+
+#: adminpages/admin_header.php:152
+#: adminpages/memberslist.php:148
+#: pages/account.php:52
+#@ pmpro
+msgid "Email"
+msgstr "Epost"
+
+#: adminpages/admin_header.php:153
+#@ pmpro
+msgid "Advanced"
+msgstr "Avansert"
+
+#: adminpages/admin_header.php:154
+#: includes/adminpages.php:14
+#: includes/adminpages.php:69
+#@ pmpro
+msgid "Add Ons"
+msgstr "Add Ons"
+
+#: adminpages/advancedsettings.php:35
+#@ pmpro
+msgid "Your advanced settings have been updated."
+msgstr "Dine avanserte innstillinger har blitt oppdatert."
+
+#: adminpages/advancedsettings.php:79
+#: includes/adminpages.php:13
+#: includes/adminpages.php:64
+#@ pmpro
+msgid "Advanced Settings"
+msgstr "Avanserte innstillinger"
+
+#: adminpages/advancedsettings.php:85
+#@ pmpro
+msgid "Message for Logged-in Non-members"
+msgstr "Melding til innloggede ikke-medlemmer"
+
+#: adminpages/advancedsettings.php:89
+#@ pmpro
+msgid "This message replaces the post content for non-members. Available variables"
+msgstr "Denne meldingen erstatter innholdet i innleggene for ikke-medlemmer. Tilgjengelige variabler"
+
+#: adminpages/advancedsettings.php:94
+#@ pmpro
+msgid "Message for Logged-out Users"
+msgstr "Melding til utloggede brukere"
+
+#: adminpages/advancedsettings.php:98
+#@ pmpro
+msgid "This message replaces the post content for logged-out visitors."
+msgstr "Denne meldingen erstatter innholdet i innleggene for utloggede besøkende"
+
+#: adminpages/advancedsettings.php:103
+#@ pmpro
+msgid "Message for RSS Feed"
+msgstr "Melding for RSS Feed"
+
+#: adminpages/advancedsettings.php:107
+#@ pmpro
+msgid "This message replaces the post content in RSS feeds."
+msgstr "Denne meldingen erstatter innholdet i innleggene i RSS Feeden"
+
+#: adminpages/advancedsettings.php:113
+#@ pmpro
+msgid "Show Excerpts to Non-Members?"
+msgstr "Viser utdrag for ikke-medlemmer?"
+
+#: adminpages/advancedsettings.php:117
+#@ pmpro
+msgid "No - Hide excerpts."
+msgstr "Nei - Skjul utdragene."
+
+#: adminpages/advancedsettings.php:118
+#@ pmpro
+msgid "Yes - Show excerpts."
+msgstr "Ja - Vis utdragene."
+
+#: adminpages/advancedsettings.php:128
+#: adminpages/advancedsettings.php:187
+#: adminpages/advancedsettings.php:199
+#: adminpages/membershiplevels.php:569
+#: adminpages/paymentsettings.php:434
+#: adminpages/paymentsettings.php:459
+#: includes/profile.php:123
+#@ pmpro
+msgid "No"
+msgstr "Nei"
+
+#: adminpages/advancedsettings.php:129
+#@ pmpro
+msgid "Hide Ads From All Members"
+msgstr "Skjul reklamen for alle medlemmer"
+
+#: adminpages/advancedsettings.php:130
+#@ pmpro
+msgid "Hide Ads From Certain Members"
+msgstr "Skjul reklamen for visse medlemmer"
+
+#: adminpages/advancedsettings.php:137
+#@ pmpro
+msgid "Ads from the following plugins will be automatically turned off"
+msgstr "Reklamer fra følgende Plugins vil automatisk slås av"
+
+#: adminpages/advancedsettings.php:138
+#@ pmpro
+msgid "To hide ads in your template code, use code like the following"
+msgstr "For å skjule reklamer i template-koden, bruk kode som i det følgende"
+
+#: adminpages/advancedsettings.php:149
+#@ pmpro
+msgid "Choose Levels to Hide Ads From"
+msgstr "Velg nivåer for å skjule reklamer fra"
+
+#: adminpages/advancedsettings.php:183
+#@ pmpro
+msgid "Redirect all traffic from registration page to /susbcription/?"
+msgstr "Omdiriger all trafikk fra registreringssiden til /abonnement/?"
+
+#: adminpages/advancedsettings.php:183
+#@ pmpro
+msgid "multisite only"
+msgstr "kun for multisite"
+
+#: adminpages/advancedsettings.php:188
+#: adminpages/membershiplevels.php:569
+#: adminpages/paymentsettings.php:435
+#: adminpages/paymentsettings.php:460
+#: includes/profile.php:124
+#@ pmpro
+msgid "Yes"
+msgstr "Ja"
+
+#: adminpages/advancedsettings.php:195
+#@ pmpro
+msgid "Use reCAPTCHA?"
+msgstr "Bruk reCAPTCHA?"
+
+#: adminpages/advancedsettings.php:200
+#@ pmpro
+msgid "Yes - Free memberships only."
+msgstr "Ja - Kun for gratis medlemskap."
+
+#: adminpages/advancedsettings.php:201
+#@ pmpro
+msgid "Yes - All memberships."
+msgstr "Ja - Alle medlemskap."
+
+#: adminpages/advancedsettings.php:203
+#@ pmpro
+msgid "A free reCAPTCHA key is required."
+msgstr "Det trengs en gratis reCAPTCHA nøkkel"
+
+#: adminpages/advancedsettings.php:203
+#@ pmpro
+msgid "Click here to signup for reCAPTCHA"
+msgstr "Klikk her for å registrere deg for reCAPTCHA"
+
+#: adminpages/advancedsettings.php:209
+#@ pmpro
+msgid "reCAPTCHA Public Key"
+msgstr "reCAPTCHA Offentlig nøkkel"
+
+#: adminpages/advancedsettings.php:212
+#@ pmpro
+msgid "reCAPTCHA Private Key"
+msgstr "reCAPTCHA Privat nøkkel"
+
+#: adminpages/advancedsettings.php:218
+#@ pmpro
+msgid "Require Terms of Service on signups?"
+msgstr "Er det krav til Brukerbetingelser ved registrering?"
+
+#: adminpages/advancedsettings.php:225
+#@ pmpro
+msgid "If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above."
+msgstr "Hvis ja, så lag en egen Wordpress-side som inneholder Brukerbetingelsene og tilknytt siden ved å bruke dropdown-menyen over."
+
+#: adminpages/advancedsettings.php:284
+#: adminpages/pagesettings.php:223
+#: adminpages/paymentsettings.php:532
+#@ pmpro
+msgid "Save Settings"
+msgstr "Lagre innstillingene"
+
+#: adminpages/discountcodes.php:48
+#@ pmpro
+msgid "Discount code updated successfully."
+msgstr "Rabattkoden er oppdatert."
+
+#: adminpages/discountcodes.php:55
+#@ pmpro
+msgid "Error updating discount code. That code may already be in use."
+msgstr "Feil ved oppdatering av rabattkoden. Koden kan allerede være i bruk."
+
+#: adminpages/discountcodes.php:64
+#@ pmpro
+msgid "Discount code added successfully."
+msgstr "Rabattkoden er lagt til."
+
+#: adminpages/discountcodes.php:71
+#@ pmpro
+msgid "Error adding discount code. That code may already be in use."
+msgstr "Feil ved innlegging av rabattkoden. Koden kan allerede være i bruk."
+
+#: adminpages/discountcodes.php:196
+#, php-format
+#@ pmpro
+msgid "Error saving values for the %s level."
+msgstr "Feil ved lagring av verdier for %s nivået."
+
+#: adminpages/discountcodes.php:204
+#@ pmpro
+msgid "There were errors updating the level values: "
+msgstr "Det oppsto feil ved oppdatering av nivå-verdiene:"
+
+#: adminpages/discountcodes.php:234
+#, php-format
+#@ pmpro
+msgid "Code %s deleted successfully."
+msgstr "Kode % ble slettet."
+
+#: adminpages/discountcodes.php:239
+#@ pmpro
+msgid "Error deleting discount code. The code was only partially deleted. Please try again."
+msgstr "Det oppsto feil ved sletting av rabattkoden. Koden ble bare delvis slettet. Prøv igjen."
+
+#: adminpages/discountcodes.php:245
+#@ pmpro
+msgid "Error deleting code. Please try again."
+msgstr "Feil ved sletting av koden. Prøv igjen."
+
+#: adminpages/discountcodes.php:251
+#@ pmpro
+msgid "Code not found."
+msgstr "Koden ble ikke funnet."
+
+#: adminpages/discountcodes.php:264
+#@ pmpro
+msgid "Edit Discount Code"
+msgstr "Rediger rabattkoden"
+
+#: adminpages/discountcodes.php:266
+#: adminpages/discountcodes.php:526
+#@ pmpro
+msgid "Add New Discount Code"
+msgstr "Legg til ny rabattkode"
+
+#: adminpages/discountcodes.php:306
+#: adminpages/discountcodes.php:547
+#: adminpages/membershiplevels.php:284
+#: adminpages/membershiplevels.php:511
+#: adminpages/memberslist.php:144
+#: adminpages/orders.php:597
+#: adminpages/reports/login.php:140
+#@ pmpro
+msgid "ID"
+msgstr "ID"
+
+#: adminpages/discountcodes.php:307
+#: adminpages/orders.php:211
+#@ pmpro
+msgid "This will be generated when you save."
+msgstr "Dette vil bli generert når du lagrer."
+
+#: adminpages/discountcodes.php:311
+#: adminpages/discountcodes.php:548
+#: adminpages/orders.php:215
+#: adminpages/orders.php:598
+#@ pmpro
+msgid "Code"
+msgstr "Kode"
+
+#: adminpages/discountcodes.php:349
+#@ pmpro
+msgid "Start Date"
+msgstr "Startdato"
+
+#: adminpages/discountcodes.php:367
+#: pages/billing.php:249
+#: pages/checkout.php:535
+#@ pmpro
+msgid "Expiration Date"
+msgstr "Utløpsdato"
+
+#: adminpages/discountcodes.php:385
+#@ pmpro
+msgid "Uses"
+msgstr "Ganger å bruke"
+
+#: adminpages/discountcodes.php:388
+#@ pmpro
+msgid "Leave blank for unlimited uses."
+msgstr "La stå åpen for ubegrenset bruk."
+
+#: adminpages/discountcodes.php:427
+#: adminpages/membershiplevels.php:337
+#: adminpages/membershiplevels.php:513
+#: pages/levels.php:14
+#@ pmpro
+msgid "Initial Payment"
+msgstr "Pris"
+
+#: adminpages/discountcodes.php:428
+#: adminpages/membershiplevels.php:338
+#@ pmpro
+msgid "The initial amount collected at registration."
+msgstr "Den første summen innbetales ved registrering."
+
+#: adminpages/discountcodes.php:432
+#: adminpages/membershiplevels.php:342
+#@ pmpro
+msgid "Recurring Subscription"
+msgstr "Abonnement"
+
+#: adminpages/discountcodes.php:433
+#: adminpages/membershiplevels.php:343
+#@ pmpro
+msgid "Check if this level has a recurring subscription payment."
+msgstr "Sjekk om dette nivået har betaling for abonnement."
+
+#: adminpages/discountcodes.php:437
+#: adminpages/membershiplevels.php:347
+#@ pmpro
+msgid "Billing Amount"
+msgstr "Faktureringsbeløp"
+
+#: adminpages/discountcodes.php:451
+#: adminpages/membershiplevels.php:362
+#@ pmpro
+msgid "The amount to be billed one cycle after the initial payment."
+msgstr "Beløpet som skal faktureres en syklus etter første betaling."
+
+#: adminpages/discountcodes.php:456
+#: adminpages/membershiplevels.php:380
+#@ pmpro
+msgid "Billing Cycle Limit"
+msgstr "Grense for faktureringssyklus"
+
+#: adminpages/discountcodes.php:459
+#: adminpages/membershiplevels.php:384
+#@ pmpro
+msgid "The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite."
+msgstr ""
+
+#: adminpages/discountcodes.php:464
+#: adminpages/membershiplevels.php:393
+#@ pmpro
+msgid "Custom Trial"
+msgstr ""
+
+#: adminpages/discountcodes.php:465
+#: adminpages/membershiplevels.php:395
+#@ pmpro
+msgid "Check to add a custom trial period."
+msgstr ""
+
+#: adminpages/discountcodes.php:469
+#: adminpages/membershiplevels.php:404
+#@ pmpro
+msgid "Trial Billing Amount"
+msgstr ""
+
+#: adminpages/discountcodes.php:472
+#: adminpages/membershiplevels.php:407
+#@ pmpro
+msgid "for the first"
+msgstr ""
+
+#: adminpages/discountcodes.php:474
+#: adminpages/membershiplevels.php:409
+#@ pmpro
+msgid "subscription payments"
+msgstr ""
+
+#: adminpages/discountcodes.php:479
+#: adminpages/membershiplevels.php:437
+#@ pmpro
+msgid "Membership Expiration"
+msgstr ""
+
+#: adminpages/discountcodes.php:480
+#: adminpages/membershiplevels.php:438
+#@ pmpro
+msgid "Check this to set when membership access expires."
+msgstr ""
+
+#: adminpages/discountcodes.php:484
+#: adminpages/membershiplevels.php:442
+#@ pmpro
+msgid "Expires In"
+msgstr ""
+
+#: adminpages/discountcodes.php:497
+#: adminpages/membershiplevels.php:455
+#@ pmpro
+msgid "Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires."
+msgstr ""
+
+#: adminpages/discountcodes.php:525
+#@ pmpro
+msgid "Memberships Discount Codes"
+msgstr ""
+
+#: adminpages/discountcodes.php:535
+#@ pmpro
+msgid "Search Discount Codes"
+msgstr ""
+
+#: adminpages/discountcodes.php:538
+#@ pmpro
+msgid "Search"
+msgstr ""
+
+#: adminpages/discountcodes.php:549
+#@ pmpro
+msgid "Starts"
+msgstr ""
+
+#: adminpages/discountcodes.php:550
+#: adminpages/memberslist.php:159
+#: adminpages/reports/login.php:145
+#: includes/profile.php:120
+#@ pmpro
+msgid "Expires"
+msgstr ""
+
+#: adminpages/discountcodes.php:552
+#@ pmpro
+msgid "Levels"
+msgstr "Nivåer"
+
+#: adminpages/discountcodes.php:570
+#@ pmpro
+msgid "Discount codes allow you to offer your memberships at discounted prices to select customers."
+msgstr ""
+
+#: adminpages/discountcodes.php:570
+#@ pmpro
+msgid "Create your first discount code now"
+msgstr ""
+
+#: adminpages/discountcodes.php:614
+#: adminpages/membershiplevels.php:570
+#: adminpages/orders.php:658
+#@ pmpro
+msgid "edit"
+msgstr ""
+
+#: adminpages/discountcodes.php:617
+#, php-format
+#@ pmpro
+msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
+msgstr ""
+
+#: adminpages/discountcodes.php:617
+#: adminpages/membershiplevels.php:572
+#: adminpages/orders.php:664
+#@ pmpro
+msgid "delete"
+msgstr ""
+
+#: adminpages/emailsettings.php:60
+#: includes/adminpages.php:12
+#: includes/adminpages.php:59
+#@ pmpro
+msgid "Email Settings"
+msgstr "Epost innstillinger"
+
+#: adminpages/emailsettings.php:61
+#@ pmpro
+msgid "By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below."
+msgstr ""
+
+#: adminpages/emailsettings.php:63
+#@ pmpro
+msgid "To modify the appearance of system generated emails, add the files <em>email_header.html</em> and <em>email_footer.html</em> to your theme's directory. This will modify both the WordPress default messages as well as messages generated by Paid Memberships Pro. <a title=\"Paid Memberships Pro - Member Communications\" target=\"_blank\" href=\"http://www.paidmembershipspro.com/documentation/member-communications/\">Click here to learn more about Paid Memberships Pro emails</a>."
+msgstr ""
+
+#: adminpages/emailsettings.php:69
+#@ pmpro
+msgid "From Email"
+msgstr ""
+
+#: adminpages/emailsettings.php:77
+#@ pmpro
+msgid "From Name"
+msgstr ""
+
+#: adminpages/emailsettings.php:86
+#@ pmpro
+msgid "Send the site admin emails"
+msgstr ""
+
+#: adminpages/emailsettings.php:92
+#@ pmpro
+msgid "Checkout"
+msgstr "Sjekk ut"
+
+#: adminpages/emailsettings.php:96
+#@ pmpro
+msgid "when a member checks out."
+msgstr ""
+
+#: adminpages/emailsettings.php:101
+#@ pmpro
+msgid "Admin Changes"
+msgstr ""
+
+#: adminpages/emailsettings.php:105
+#@ pmpro
+msgid "when an admin changes a user's membership level through the dashboard."
+msgstr ""
+
+#: adminpages/emailsettings.php:110
+#@ pmpro
+msgid "Cancellation"
+msgstr ""
+
+#: adminpages/emailsettings.php:114
+#@ pmpro
+msgid "when a user cancels his or her account."
+msgstr ""
+
+#: adminpages/emailsettings.php:119
+#@ pmpro
+msgid "Bill Updates"
+msgstr ""
+
+#: adminpages/emailsettings.php:123
+#@ pmpro
+msgid "when a user updates his or her billing information."
+msgstr ""
+
+#: adminpages/emailsettings.php:129
+#@ pmpro
+msgid "Send members emails"
+msgstr ""
+
+#: adminpages/emailsettings.php:135
+#@ pmpro
+msgid "New Users"
+msgstr ""
+
+#: adminpages/emailsettings.php:139
+#@ pmpro
+msgid "Default WP notification email. (Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.)"
+msgstr ""
+
+#: adminpages/membershiplevels.php:118
+#@ pmpro
+msgid "Membership level updated successfully."
+msgstr ""
+
+#: adminpages/membershiplevels.php:124
+#@ pmpro
+msgid "Error updating membership level."
+msgstr ""
+
+#: adminpages/membershiplevels.php:141
+#@ pmpro
+msgid "Membership level added successfully."
+msgstr ""
+
+#: adminpages/membershiplevels.php:146
+#@ pmpro
+msgid "Error adding membership level."
+msgstr ""
+
+#: adminpages/membershiplevels.php:179
+#, php-format
+#@ pmpro
+msgid "There was an error canceling the subscription for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active."
+msgstr ""
+
+#: adminpages/membershiplevels.php:182
+#@ pmpro
+msgid "Last Invoice"
+msgstr "Siste faktura"
+
+#: adminpages/membershiplevels.php:196
+#@ pmpro
+msgid "Membership level deleted successfully."
+msgstr ""
+
+#: adminpages/membershiplevels.php:201
+#: adminpages/membershiplevels.php:207
+#@ pmpro
+msgid "Error deleting membership level."
+msgstr ""
+
+#: adminpages/membershiplevels.php:222
+#@ pmpro
+msgid "Edit Membership Level"
+msgstr ""
+
+#: adminpages/membershiplevels.php:224
+#@ pmpro
+msgid "Add New Membership Level"
+msgstr "Legg til nytt medlemskap"
+
+#: adminpages/membershiplevels.php:291
+#: adminpages/membershiplevels.php:512
+#: adminpages/reports/login.php:142
+#@ pmpro
+msgid "Name"
+msgstr "Navn"
+
+#: adminpages/membershiplevels.php:296
+#@ pmpro
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: adminpages/membershiplevels.php:314
+#@ pmpro
+msgid "Confirmation Message"
+msgstr "Bekreftelse"
+
+#: adminpages/membershiplevels.php:333
+#@ pmpro
+msgid "Billing Details"
+msgstr "Fakturadetaljer"
+
+#: adminpages/membershiplevels.php:349
+#@ pmpro
+msgid "per"
+msgstr ""
+
+#: adminpages/membershiplevels.php:353
+#@ pmpro
+msgid "Day(s)"
+msgstr ""
+
+#: adminpages/membershiplevels.php:353
+#@ pmpro
+msgid "Week(s)"
+msgstr ""
+
+#: adminpages/membershiplevels.php:353
+#@ pmpro
+msgid "Month(s)"
+msgstr ""
+
+#: adminpages/membershiplevels.php:353
+#@ pmpro
+msgid "Year(s)"
+msgstr ""
+
+#: adminpages/membershiplevels.php:364
+#@ pmpro
+msgid "Stripe integration currently only supports billing periods of \"Week\", \"Month\" or \"Year\"."
+msgstr ""
+
+#: adminpages/membershiplevels.php:366
+#@ pmpro
+msgid "Braintree integration currently only supports billing periods of \"Month\" or \"Year\"."
+msgstr ""
+
+#: adminpages/membershiplevels.php:368
+#@ pmpro
+msgid "Payflow integration currently only supports billing frequencies of 1 and billing periods of \"Week\", \"Month\" or \"Year\"."
+msgstr ""
+
+#: adminpages/membershiplevels.php:372
+#: adminpages/membershiplevels.php:374
+#: adminpages/paymentsettings.php:174
+#: adminpages/paymentsettings.php:179
+#@ pmpro
+msgid "Note"
+msgstr ""
+
+#: adminpages/membershiplevels.php:372
+#@ pmpro
+msgid "After saving this level, make note of the ID and create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to <em>pmpro_#</em>, where # is the level ID."
+msgstr ""
+
+#: adminpages/membershiplevels.php:374
+#@ pmpro
+msgid "You will need to create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to"
+msgstr ""
+
+#: adminpages/membershiplevels.php:386
+#@ pmpro
+msgid "Stripe integration currently does not support billing limits. You can still set an expiration date below."
+msgstr ""
+
+#: adminpages/membershiplevels.php:398
+#@ pmpro
+msgid "2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount."
+msgstr ""
+
+#: adminpages/membershiplevels.php:412
+#@ pmpro
+msgid "Stripe integration currently does not support trial amounts greater than $0."
+msgstr ""
+
+#: adminpages/membershiplevels.php:416
+#@ pmpro
+msgid "Braintree integration currently does not support trial amounts greater than $0."
+msgstr ""
+
+#: adminpages/membershiplevels.php:420
+#@ pmpro
+msgid "Payflow integration currently does not support trial amounts greater than $0."
+msgstr ""
+
+#: adminpages/membershiplevels.php:428
+#@ pmpro
+msgid "Other Settings"
+msgstr ""
+
+#: adminpages/membershiplevels.php:432
+#@ pmpro
+msgid "Disable New Signups"
+msgstr ""
+
+#: adminpages/membershiplevels.php:433
+#@ pmpro
+msgid "Check to hide this level from the membership levels page and disable registration."
+msgstr ""
+
+#: adminpages/membershiplevels.php:463
+#@ pmpro
+msgid "Content Settings"
+msgstr ""
+
+#: adminpages/membershiplevels.php:467
+#@ pmpro
+msgid "Categories"
+msgstr ""
+
+#: adminpages/membershiplevels.php:496
+#@ pmpro
+msgid "Add New Level"
+msgstr ""
+
+#: adminpages/membershiplevels.php:499
+#: adminpages/membershiplevels.php:502
+#@ pmpro
+msgid "Search Levels"
+msgstr ""
+
+#: adminpages/membershiplevels.php:514
+#@ pmpro
+msgid "Billing Cycle"
+msgstr ""
+
+#: adminpages/membershiplevels.php:515
+#@ pmpro
+msgid "Trial Cycle"
+msgstr ""
+
+#: adminpages/membershiplevels.php:516
+#: pages/confirmation.php:83
+#: pages/invoice.php:70
+#@ pmpro
+msgid "Expiration"
+msgstr ""
+
+#: adminpages/membershiplevels.php:517
+#@ pmpro
+msgid "Allow Signups"
+msgstr ""
+
+#: adminpages/membershiplevels.php:540
+#@ pmpro
+msgid "FREE"
+msgstr ""
+
+#: adminpages/membershiplevels.php:549
+#@ pmpro
+msgid "every"
+msgstr ""
+
+#: adminpages/membershiplevels.php:551
+#: adminpages/membershiplevels.php:559
+#@ pmpro
+msgid "for"
+msgstr ""
+
+#: adminpages/membershiplevels.php:566
+#@ pmpro
+msgid "After"
+msgstr ""
+
+#: adminpages/membershiplevels.php:571
+#: adminpages/orders.php:661
+#@ pmpro
+msgid "copy"
+msgstr ""
+
+#: adminpages/membershiplevels.php:572
+#, php-format
+#@ pmpro
+msgid "Are you sure you want to delete membership level %s? All subscriptions will be cancelled."
+msgstr ""
+
+#: adminpages/memberslist.php:25
+#: includes/adminpages.php:15
+#: includes/adminpages.php:74
+#@ pmpro
+msgid "Members List"
+msgstr ""
+
+#: adminpages/memberslist.php:26
+#: adminpages/orders.php:522
+#@ pmpro
+msgid "Export to CSV"
+msgstr ""
+
+#: adminpages/memberslist.php:30
+#@ pmpro
+msgid "Show"
+msgstr ""
+
+#: adminpages/memberslist.php:32
+#: adminpages/reports/login.php:67
+#: adminpages/reports/memberships.php:317
+#: adminpages/reports/sales.php:216
+#@ pmpro
+msgid "All Levels"
+msgstr ""
+
+#: adminpages/memberslist.php:42
+#@ pmpro
+msgid "Old Members"
+msgstr ""
+
+#: adminpages/memberslist.php:47
+#: adminpages/memberslist.php:50
+#@ pmpro
+msgid "Search Members"
+msgstr ""
+
+#: adminpages/memberslist.php:136
+#, php-format
+#@ pmpro
+msgid "%d members found."
+msgstr ""
+
+#: adminpages/memberslist.php:145
+#: pages/account.php:51
+#: pages/checkout.php:171
+#@ pmpro
+msgid "Username"
+msgstr "Brukernavn"
+
+#: adminpages/memberslist.php:146
+#@ pmpro
+msgid "First&nbsp;Name"
+msgstr "For&nbsp;navn"
+
+#: adminpages/memberslist.php:147
+#@ pmpro
+msgid "Last&nbsp;Name"
+msgstr "Etter&nbsp;navn"
+
+#: adminpages/memberslist.php:150
+#: pages/account.php:90
+#: pages/billing.php:58
+#: pages/checkout.php:325
+#: pages/confirmation.php:61
+#: pages/invoice.php:48
+#@ pmpro
+msgid "Billing Address"
+msgstr "Adresse"
+
+#: adminpages/memberslist.php:151
+#: adminpages/pagesettings.php:51
+#: adminpages/reports/login.php:143
+#: classes/gateways/class.pmprogateway_authorizenet.php:187
+#@ pmpro
+msgid "Membership"
+msgstr "Medlemskap"
+
+#: adminpages/memberslist.php:152
+#@ pmpro
+msgid "Fee"
+msgstr ""
+
+#: adminpages/memberslist.php:153
+#: adminpages/reports/login.php:144
+#@ pmpro
+msgid "Joined"
+msgstr ""
+
+#: adminpages/memberslist.php:157
+#@ pmpro
+msgid "Ended"
+msgstr ""
+
+#: adminpages/memberslist.php:212
+#@ pmpro
+msgid "Never"
+msgstr ""
+
+#: adminpages/memberslist.php:223
+#: adminpages/reports/login.php:210
+#@ pmpro
+msgid "No members found."
+msgstr ""
+
+#: adminpages/memberslist.php:223
+#: adminpages/reports/login.php:210
+#@ pmpro
+msgid "Search all levels"
+msgstr ""
+
+#: adminpages/orders.php:26
+#@ pmpro
+msgid "Order deleted successfully."
+msgstr ""
+
+#: adminpages/orders.php:31
+#@ pmpro
+msgid "Error deleting order."
+msgstr ""
+
+#: adminpages/orders.php:119
+#@ pmpro
+msgid "Order saved successfully."
+msgstr ""
+
+#: adminpages/orders.php:124
+#@ pmpro
+msgid "Error updating order timestamp."
+msgstr ""
+
+#: adminpages/orders.php:130
+#@ pmpro
+msgid "Error saving order."
+msgstr ""
+
+#: adminpages/orders.php:195
+#@ pmpro
+msgid "Order"
+msgstr ""
+
+#: adminpages/orders.php:197
+#@ pmpro
+msgid "New Order"
+msgstr ""
+
+#: adminpages/orders.php:220
+#@ pmpro
+msgid "Randomly generated for you."
+msgstr ""
+
+#: adminpages/orders.php:225
+#@ pmpro
+msgid "User ID"
+msgstr "Bruker ID"
+
+#: adminpages/orders.php:234
+#@ pmpro
+msgid "Membership Level ID"
+msgstr ""
+
+#: adminpages/orders.php:243
+#@ pmpro
+msgid "Billing Name"
+msgstr "Navn"
+
+#: adminpages/orders.php:251
+#@ pmpro
+msgid "Billing Street"
+msgstr "Gate"
+
+#: adminpages/orders.php:258
+#@ pmpro
+msgid "Billing City"
+msgstr "By"
+
+#: adminpages/orders.php:265
+#@ pmpro
+msgid "Billing State"
+msgstr "Fylke for regninger"
+
+#: adminpages/orders.php:272
+#@ pmpro
+msgid "Billing Postal Code"
+msgstr "Postnummer for regning"
+
+#: adminpages/orders.php:279
+#@ pmpro
+msgid "Billing Country"
+msgstr "Land"
+
+#: adminpages/orders.php:287
+#@ pmpro
+msgid "Billing Phone"
+msgstr "Telefon"
+
+#: adminpages/orders.php:296
+#@ pmpro
+msgid "Sub Total"
+msgstr "Totalbeløp"
+
+#: adminpages/orders.php:304
+#: pages/invoice.php:80
+#@ pmpro
+msgid "Tax"
+msgstr ""
+
+#: adminpages/orders.php:312
+#@ pmpro
+msgid "Coupon Amount"
+msgstr ""
+
+#: adminpages/orders.php:320
+#: adminpages/orders.php:602
+#: pages/invoice.php:84
+#@ pmpro
+msgid "Total"
+msgstr ""
+
+#: adminpages/orders.php:325
+#@ pmpro
+msgid "Should be subtotal + tax - couponamount."
+msgstr ""
+
+#: adminpages/orders.php:330
+#@ pmpro
+msgid "Payment Type"
+msgstr "Betalingstype"
+
+#: adminpages/orders.php:335
+#@ pmpro
+msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
+msgstr ""
+
+#: adminpages/orders.php:339
+#: pages/billing.php:234
+#: pages/checkout.php:520
+#@ pmpro
+msgid "Card Type"
+msgstr "Kort type"
+
+#: adminpages/orders.php:344
+#@ pmpro
+msgid "e.g. Visa, MasterCard, AMEX, etc"
+msgstr ""
+
+#: adminpages/orders.php:348
+#: adminpages/paymentsettings.php:352
+#@ pmpro
+msgid "Account Number"
+msgstr ""
+
+#: adminpages/orders.php:353
+#@ pmpro
+msgid "Obscure all but last 4 digits."
+msgstr ""
+
+#: adminpages/orders.php:358
+#@ pmpro
+msgid "Expiration Month"
+msgstr "Utløpsmåned"
+
+#: adminpages/orders.php:365
+#@ pmpro
+msgid "Expiration Year"
+msgstr "Utløpsår"
+
+#: adminpages/orders.php:373
+#: adminpages/orders.php:606
+#@ pmpro
+msgid "Status"
+msgstr ""
+
+#: adminpages/orders.php:394
+#: adminpages/orders.php:604
+#@ pmpro
+msgid "Gateway"
+msgstr ""
+
+#: adminpages/orders.php:398
+#@ pmpro
+msgid "Testing Only"
+msgstr ""
+
+#: adminpages/orders.php:399
+#: adminpages/paymentsettings.php:159
+#@ pmpro
+msgid "Pay by Check"
+msgstr ""
+
+#: adminpages/orders.php:411
+#: adminpages/paymentsettings.php:184
+#@ pmpro
+msgid "Gateway Environment"
+msgstr ""
+
+#: adminpages/orders.php:415
+#: adminpages/paymentsettings.php:188
+#@ pmpro
+msgid "Sandbox/Testing"
+msgstr ""
+
+#: adminpages/orders.php:416
+#: adminpages/paymentsettings.php:189
+#@ pmpro
+msgid "Live/Production"
+msgstr ""
+
+#: adminpages/orders.php:423
+#@ pmpro
+msgid "Payment Transaction ID"
+msgstr ""
+
+#: adminpages/orders.php:428
+#@ pmpro
+msgid "Generated by the gateway. Useful to cross reference orders."
+msgstr ""
+
+#: adminpages/orders.php:432
+#@ pmpro
+msgid "Subscription Transaction ID"
+msgstr ""
+
+#: adminpages/orders.php:437
+#@ pmpro
+msgid "Generated by the gateway. Useful to cross reference subscriptions."
+msgstr ""
+
+#: adminpages/orders.php:442
+#: adminpages/orders.php:607
+#: pages/invoice.php:107
+#@ pmpro
+msgid "Date"
+msgstr ""
+
+#: adminpages/orders.php:477
+#@ pmpro
+msgid "Affiliate ID"
+msgstr ""
+
+#: adminpages/orders.php:485
+#@ pmpro
+msgid "Affiliate SubID"
+msgstr ""
+
+#: adminpages/orders.php:495
+#@ pmpro
+msgid "Notes"
+msgstr ""
+
+#: adminpages/orders.php:510
+#@ pmpro
+msgid "Save Order"
+msgstr ""
+
+#: adminpages/orders.php:511
+#: pages/billing.php:295
+#@ pmpro
+msgid "Cancel"
+msgstr ""
+
+#: adminpages/orders.php:520
+#: includes/adminpages.php:17
+#: includes/adminpages.php:84
+#@ pmpro
+msgid "Orders"
+msgstr ""
+
+#: adminpages/orders.php:521
+#@ pmpro
+msgid "Add New Order"
+msgstr ""
+
+#: adminpages/orders.php:535
+#: adminpages/orders.php:538
+#@ pmpro
+msgid "Search Orders"
+msgstr ""
+
+#: adminpages/orders.php:590
+#, php-format
+#@ pmpro
+msgid "%d orders found."
+msgstr ""
+
+#: adminpages/orders.php:599
+#: adminpages/paymentsettings.php:220
+#: adminpages/reports/login.php:141
+#@ pmpro
+msgid "User"
+msgstr ""
+
+#: adminpages/orders.php:601
+#: includes/profile.php:27
+#: pages/checkout.php:33
+#: pages/confirmation.php:47
+#: pages/confirmation.php:64
+#: pages/confirmation.php:105
+#: pages/invoice.php:28
+#: pages/invoice.php:51
+#@ pmpro
+msgid "Membership Level"
+msgstr "Type medlemskap"
+
+#: adminpages/orders.php:603
+#: adminpages/orders.php:651
+#@ pmpro
+msgid "Payment"
+msgstr "Betaling"
+
+#: adminpages/orders.php:605
+#@ pmpro
+msgid "Transaction IDs"
+msgstr ""
+
+#: adminpages/orders.php:630
+#@ pmpro
+msgid "deleted"
+msgstr ""
+
+#: adminpages/orders.php:653
+#@ pmpro
+msgid "Subscription"
+msgstr ""
+
+#: adminpages/orders.php:664
+#, php-format
+#@ pmpro
+msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
+msgstr ""
+
+#: adminpages/orders.php:674
+#@ pmpro
+msgid "No orders found."
+msgstr ""
+
+#: adminpages/pagesettings.php:83
+#@ pmpro
+msgid "The following pages have been created for you"
+msgstr ""
+
+#: adminpages/pagesettings.php:98
+#@ pmpro
+msgid "Manage the WordPress pages assigned to each required Paid Memberships Pro page."
+msgstr ""
+
+#: adminpages/pagesettings.php:104
+#@ pmpro
+msgid "Assign the WordPress pages for each required Paid Memberships Pro page or"
+msgstr ""
+
+#: adminpages/pagesettings.php:104
+#@ pmpro
+msgid "click here to let us generate them for you"
+msgstr ""
+
+#: adminpages/pagesettings.php:112
+#@ pmpro
+msgid "Account Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:119
+#: adminpages/pagesettings.php:134
+#: adminpages/pagesettings.php:149
+#: adminpages/pagesettings.php:165
+#: adminpages/pagesettings.php:181
+#: adminpages/pagesettings.php:197
+#: adminpages/pagesettings.php:213
+#@ pmpro
+msgid "edit page"
+msgstr ""
+
+#: adminpages/pagesettings.php:121
+#: adminpages/pagesettings.php:136
+#: adminpages/pagesettings.php:151
+#: adminpages/pagesettings.php:167
+#: adminpages/pagesettings.php:183
+#: adminpages/pagesettings.php:199
+#: adminpages/pagesettings.php:215
+#@ pmpro
+msgid "view page"
+msgstr ""
+
+#: adminpages/pagesettings.php:123
+#: adminpages/pagesettings.php:138
+#: adminpages/pagesettings.php:153
+#: adminpages/pagesettings.php:169
+#: adminpages/pagesettings.php:185
+#: adminpages/pagesettings.php:201
+#: adminpages/pagesettings.php:217
+#@ pmpro
+msgid "Include the shortcode"
+msgstr ""
+
+#: adminpages/pagesettings.php:127
+#@ pmpro
+msgid "Billing Information Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:142
+#@ pmpro
+msgid "Cancel Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:158
+#@ pmpro
+msgid "Checkout Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:174
+#@ pmpro
+msgid "Confirmation Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:190
+#@ pmpro
+msgid "Invoice Page"
+msgstr "Fakturaside"
+
+#: adminpages/pagesettings.php:206
+#@ pmpro
+msgid "Levels Page"
+msgstr ""
+
+#: adminpages/paymentsettings.php:77
+#@ pmpro
+msgid "Your payment settings have been updated."
+msgstr ""
+
+#: adminpages/paymentsettings.php:146
+#: adminpages/paymentsettings.php:154
+#@ pmpro
+msgid "Payment Gateway"
+msgstr ""
+
+#: adminpages/paymentsettings.php:146
+#@ pmpro
+msgid "SSL Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:174
+#@ pmpro
+msgid "This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>"
+msgstr ""
+
+#: adminpages/paymentsettings.php:179
+#@ pmpro
+msgid "We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/\">More information on why can be found here.</a>"
+msgstr ""
+
+#: adminpages/paymentsettings.php:204
+#@ pmpro
+msgid "Partner"
+msgstr ""
+
+#: adminpages/paymentsettings.php:212
+#@ pmpro
+msgid "Vendor"
+msgstr ""
+
+#: adminpages/paymentsettings.php:228
+#: pages/checkout.php:180
+#@ pmpro
+msgid "Password"
+msgstr "Passord"
+
+#: adminpages/paymentsettings.php:236
+#@ pmpro
+msgid "Gateway Account Email"
+msgstr ""
+
+#: adminpages/paymentsettings.php:244
+#: adminpages/paymentsettings.php:336
+#@ pmpro
+msgid "API Username"
+msgstr ""
+
+#: adminpages/paymentsettings.php:252
+#: adminpages/paymentsettings.php:344
+#@ pmpro
+msgid "API Password"
+msgstr ""
+
+#: adminpages/paymentsettings.php:260
+#@ pmpro
+msgid "API Signature"
+msgstr ""
+
+#: adminpages/paymentsettings.php:269
+#@ pmpro
+msgid "Login Name"
+msgstr ""
+
+#: adminpages/paymentsettings.php:277
+#@ pmpro
+msgid "Transaction Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:286
+#@ pmpro
+msgid "Secret Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:294
+#@ pmpro
+msgid "Publishable Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:303
+#: adminpages/paymentsettings.php:369
+#@ pmpro
+msgid "Merchant ID"
+msgstr ""
+
+#: adminpages/paymentsettings.php:311
+#@ pmpro
+msgid "Public Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:319
+#@ pmpro
+msgid "Private Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:327
+#@ pmpro
+msgid "Client-Side Encryption Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:360
+#@ pmpro
+msgid "Secret Word"
+msgstr ""
+
+#: adminpages/paymentsettings.php:377
+#@ pmpro
+msgid "Transaction Security Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:386
+#@ pmpro
+msgid "Currency"
+msgstr "Valuta"
+
+#: adminpages/paymentsettings.php:406
+#@ pmpro
+msgid "Accepted Credit Card Types"
+msgstr ""
+
+#: adminpages/paymentsettings.php:420
+#@ pmpro
+msgid "Instructions"
+msgstr ""
+
+#: adminpages/paymentsettings.php:424
+#@ pmpro
+msgid "Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages."
+msgstr ""
+
+#: adminpages/paymentsettings.php:430
+#@ pmpro
+msgid "Show Billing Address Fields"
+msgstr ""
+
+#: adminpages/paymentsettings.php:437
+#@ pmpro
+msgid "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>"
+msgstr ""
+
+#: adminpages/paymentsettings.php:443
+#@ pmpro
+msgid "Sales Tax"
+msgstr ""
+
+#: adminpages/paymentsettings.php:443
+#: pages/billing.php:78
+#@ pmpro
+msgid "optional"
+msgstr ""
+
+#: adminpages/paymentsettings.php:446
+#@ pmpro
+msgid "Tax State"
+msgstr ""
+
+#: adminpages/paymentsettings.php:447
+#@ pmpro
+msgid "abbreviation, e.g. \"PA\""
+msgstr ""
+
+#: adminpages/paymentsettings.php:449
+#@ pmpro
+msgid "decimal, e.g. \"0.06\""
+msgstr ""
+
+#: adminpages/paymentsettings.php:450
+#@ pmpro
+msgid "US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/\">pmpro_tax filter</a>."
+msgstr ""
+
+#: adminpages/paymentsettings.php:455
+#@ pmpro
+msgid "Force SSL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:461
+#@ pmpro
+msgid "Yes (with JavaScript redirects)"
+msgstr ""
+
+#: adminpages/paymentsettings.php:468
+#@ pmpro
+msgid "SSL Seal Code"
+msgstr ""
+
+#: adminpages/paymentsettings.php:477
+#@ pmpro
+msgid "HTTPS Nuclear Option"
+msgstr ""
+
+#: adminpages/paymentsettings.php:480
+#@ pmpro
+msgid "Use the \"Nuclear Option\" to use secure (HTTPS) URLs on your secure pages. Check this if you are using SSL and have warnings on your checkout pages."
+msgstr ""
+
+#: adminpages/paymentsettings.php:485
+#@ pmpro
+msgid "IPN Handler URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:488
+#@ pmpro
+msgid "To fully integrate with PayPal, be sure to set your IPN Handler URL to "
+msgstr ""
+
+#: adminpages/paymentsettings.php:493
+#@ pmpro
+msgid "TwoCheckout INS URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:496
+#@ pmpro
+msgid "To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL "
+msgstr ""
+
+#: adminpages/paymentsettings.php:501
+#@ pmpro
+msgid "Silent Post URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:504
+#@ pmpro
+msgid "To fully integrate with Authorize.net, be sure to set your Silent Post URL to"
+msgstr ""
+
+#: adminpages/paymentsettings.php:509
+#: adminpages/paymentsettings.php:517
+#@ pmpro
+msgid "Web Hook URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:512
+#@ pmpro
+msgid "To fully integrate with Stripe, be sure to set your Web Hook URL to"
+msgstr ""
+
+#: adminpages/paymentsettings.php:521
+#@ pmpro
+msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
+msgstr ""
+
+#: adminpages/reports/login.php:16
+#@ pmpro
+msgid "Visits, Views, and Logins"
+msgstr ""
+
+#: adminpages/reports/login.php:26
+#@ pmpro
+msgid "Visits Today"
+msgstr ""
+
+#: adminpages/reports/login.php:27
+#: adminpages/reports/login.php:147
+#@ pmpro
+msgid "Visits This Month"
+msgstr ""
+
+#: adminpages/reports/login.php:28
+#@ pmpro
+msgid "Visits All Time"
+msgstr ""
+
+#: adminpages/reports/login.php:31
+#@ pmpro
+msgid "Views Today"
+msgstr ""
+
+#: adminpages/reports/login.php:32
+#: adminpages/reports/login.php:149
+#@ pmpro
+msgid "Views This Month"
+msgstr ""
+
+#: adminpages/reports/login.php:33
+#@ pmpro
+msgid "Views All Time"
+msgstr ""
+
+#: adminpages/reports/login.php:36
+#@ pmpro
+msgid "Logins Today"
+msgstr ""
+
+#: adminpages/reports/login.php:37
+#: adminpages/reports/login.php:152
+#@ pmpro
+msgid "Logins This Month"
+msgstr ""
+
+#: adminpages/reports/login.php:38
+#@ pmpro
+msgid "Logins All Time"
+msgstr ""
+
+#: adminpages/reports/login.php:61
+#@ pmpro
+msgid "Visits, Views, and Logins Report"
+msgstr ""
+
+#: adminpages/reports/login.php:66
+#@ pmpro
+msgid "All Users"
+msgstr ""
+
+#: adminpages/reports/login.php:146
+#@ pmpro
+msgid "Last Visit"
+msgstr ""
+
+#: adminpages/reports/login.php:148
+#@ pmpro
+msgid "Total Visits"
+msgstr ""
+
+#: adminpages/reports/login.php:150
+#@ pmpro
+msgid "Total Views"
+msgstr ""
+
+#: adminpages/reports/login.php:151
+#@ pmpro
+msgid "Last Login"
+msgstr ""
+
+#: adminpages/reports/login.php:153
+#@ pmpro
+msgid "Total Logins"
+msgstr ""
+
+#: adminpages/reports/memberships.php:18
+#: adminpages/reports/memberships.php:288
+#@ pmpro
+msgid "Membership Stats"
+msgstr ""
+
+#: adminpages/reports/memberships.php:294
+#: adminpages/reports/sales.php:195
+#@ pmpro
+msgid "Daily"
+msgstr ""
+
+#: adminpages/reports/memberships.php:295
+#: adminpages/reports/sales.php:196
+#@ pmpro
+msgid "Monthly"
+msgstr ""
+
+#: adminpages/reports/memberships.php:296
+#: adminpages/reports/sales.php:197
+#@ pmpro
+msgid "Annual"
+msgstr ""
+
+#: adminpages/reports/memberships.php:299
+#@ pmpro
+msgid "Signups vs. Cancellations"
+msgstr ""
+
+#: adminpages/reports/memberships.php:331
+#: adminpages/reports/sales.php:230
+#@ pmpro
+msgid "Generate Report"
+msgstr ""
+
+#: adminpages/reports/sales.php:18
+#@ pmpro
+msgid "Sales and Revenue (Testing/Sandbox)"
+msgstr ""
+
+#: adminpages/reports/sales.php:20
+#: adminpages/reports/sales.php:189
+#@ pmpro
+msgid "Sales and Revenue"
+msgstr ""
+
+#: adminpages/reports/sales.php:200
+#@ pmpro
+msgid "Revenue"
+msgstr ""
+
+#: adminpages/reports/sales.php:201
+#@ pmpro
+msgid "Sales"
+msgstr ""
+
+#: adminpages/reports.php:37
+#@ pmpro
+msgid "Details"
+msgstr ""
+
+#: classes/class.memberorder.php:553
+#, php-format
+#@ pmpro
+msgid "There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active."
+msgstr ""
+
+#: classes/class.pmproemail.php:37
+#, php-format
+#@ pmpro
+msgid "An Email From %s"
+msgstr "En epost fra %s"
+
+#: classes/class.pmproemail.php:122
+#, php-format
+#@ pmpro
+msgid "Your membership at %s has been CANCELLED"
+msgstr ""
+
+#: classes/class.pmproemail.php:144
+#, php-format
+#@ pmpro
+msgid "Membership for %s at %s has been CANCELLED"
+msgstr ""
+
+#: classes/class.pmproemail.php:175
+#, php-format
+#@ pmpro
+msgid "Your membership confirmation for %s"
+msgstr "Bekreftelse på medlemskap i %s"
+
+#: classes/class.pmproemail.php:228
+#: classes/class.pmproemail.php:237
+#: classes/class.pmproemail.php:246
+#: classes/class.pmproemail.php:325
+#: classes/class.pmproemail.php:334
+#: classes/class.pmproemail.php:645
+#: pages/checkout.php:66
+#: pages/checkout.php:76
+#: pages/checkout.php:576
+#: pages/confirmation.php:52
+#: pages/invoice.php:33
+#@ pmpro
+msgid "Discount Code"
+msgstr ""
+
+#: classes/class.pmproemail.php:253
+#: classes/class.pmproemail.php:346
+#: classes/class.pmproemail.php:651
+#, php-format
+#@ pmpro
+msgid "This membership will expire on %s."
+msgstr ""
+
+#: classes/class.pmproemail.php:275
+#, php-format
+#@ pmpro
+msgid "Member Checkout for %s at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:363
+#, php-format
+#@ pmpro
+msgid "Your billing information has been udpated at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:416
+#, php-format
+#@ pmpro
+msgid "Billing information has been udpated for %s at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:464
+#, php-format
+#@ pmpro
+msgid "Membership Payment Failed at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:510
+#, php-format
+#@ pmpro
+msgid "Membership Payment Failed For %s at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:557
+#, php-format
+#@ pmpro
+msgid "Credit Card on File Expiring Soon at %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:605
+#, php-format
+#@ pmpro
+msgid "INVOICE for %s membership"
+msgstr ""
+
+#: classes/class.pmproemail.php:676
+#, php-format
+#@ pmpro
+msgid "Your trial at %s is ending soon"
+msgstr ""
+
+#: classes/class.pmproemail.php:710
+#, php-format
+#@ pmpro
+msgid "Your membership at %s has ended"
+msgstr ""
+
+#: classes/class.pmproemail.php:735
+#, php-format
+#@ pmpro
+msgid "Your membership at %s will end soon"
+msgstr ""
+
+#: classes/class.pmproemail.php:755
+#, php-format
+#@ pmpro
+msgid "Your membership at %s has been changed"
+msgstr "Medlemskapet ditt ved %s er endret"
+
+#: classes/class.pmproemail.php:759
+#, php-format
+#@ pmpro
+msgid "The new level is %s."
+msgstr ""
+
+#: classes/class.pmproemail.php:761
+#@ pmpro
+msgid "Your membership has been cancelled"
+msgstr "Medlemskapet ditt er kansellert"
+
+#: classes/class.pmproemail.php:765
+#: classes/class.pmproemail.php:803
+#, php-format
+#@ pmpro
+msgid "This membership will expire on %s"
+msgstr ""
+
+#: classes/class.pmproemail.php:769
+#: classes/class.pmproemail.php:807
+#@ pmpro
+msgid "This membership does not expire"
+msgstr ""
+
+#: classes/class.pmproemail.php:793
+#, php-format
+#@ pmpro
+msgid "Membership for %s at %s has been changed"
+msgstr "Medlemskapet for %s ved %s er endret"
+
+#: classes/class.pmproemail.php:797
+#, php-format
+#@ pmpro
+msgid "The new level is %s. This membership is free"
+msgstr ""
+
+#: classes/class.pmproemail.php:799
+#@ pmpro
+msgid "membership has been cancelled"
+msgstr "medlemskapet er kansellert"
+
+#: classes/gateways/class.pmprogateway.php:55
+#: classes/gateways/class.pmprogateway_authorizenet.php:55
+#: classes/gateways/class.pmprogateway_check.php:60
+#: classes/gateways/class.pmprogateway_cybersource.php:57
+#: classes/gateways/class.pmprogateway_payflowpro.php:27
+#: classes/gateways/class.pmprogateway_paypal.php:27
+#@ pmpro
+msgid "Unknown error: Authorization failed."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway.php:106
+#: classes/gateways/class.pmprogateway.php:111
+#: classes/gateways/class.pmprogateway.php:129
+#: classes/gateways/class.pmprogateway_authorizenet.php:106
+#: classes/gateways/class.pmprogateway_authorizenet.php:111
+#: classes/gateways/class.pmprogateway_authorizenet.php:128
+#: classes/gateways/class.pmprogateway_check.php:111
+#: classes/gateways/class.pmprogateway_check.php:116
+#: classes/gateways/class.pmprogateway_check.php:134
+#: classes/gateways/class.pmprogateway_cybersource.php:108
+#: classes/gateways/class.pmprogateway_cybersource.php:113
+#: classes/gateways/class.pmprogateway_cybersource.php:131
+#: classes/gateways/class.pmprogateway_payflowpro.php:50
+#: classes/gateways/class.pmprogateway_payflowpro.php:55
+#: classes/gateways/class.pmprogateway_paypal.php:50
+#@ pmpro
+msgid "Unknown error: Payment failed."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway.php:113
+#: classes/gateways/class.pmprogateway_authorizenet.php:112
+#: classes/gateways/class.pmprogateway_check.php:118
+#: classes/gateways/class.pmprogateway_cybersource.php:115
+#@ pmpro
+msgid "A partial payment was made that we could not void. Please contact the site owner immediately to correct this."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_authorizenet.php:787
+#: classes/gateways/class.pmprogateway_authorizenet.php:788
+#@ pmpro
+msgid "Could not connect to Authorize.net"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:61
+#: classes/gateways/class.pmprogateway_stripe.php:53
+#@ pmpro
+msgid "Unknown error: Initial payment failed."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:120
+#@ pmpro
+msgid "Error during settlement:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:129
+#@ pmpro
+msgid "Error during charge:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:198
+#@ pmpro
+msgid "Failed to update customer."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:246
+#@ pmpro
+msgid "Failed to create customer."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:253
+#@ pmpro
+msgid "Error creating customer record with Braintree:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:344
+#@ pmpro
+msgid "Error subscribing customer to plan with Braintree:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:359
+#@ pmpro
+msgid "Failed to subscribe with Braintree:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:397
+#: classes/gateways/class.pmprogateway_braintree.php:410
+#: classes/gateways/class.pmprogateway_braintree.php:417
+#: classes/gateways/class.pmprogateway_stripe.php:344
+#: classes/gateways/class.pmprogateway_stripe.php:354
+#@ pmpro
+msgid "Could not find the subscription."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_payflowpro.php:57
+#: classes/gateways/class.pmprogateway_paypal.php:57
+#@ pmpro
+msgid "A partial payment was made that we could not refund. Please contact the site owner immediately to correct this."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:192
+#@ pmpro
+msgid "Error creating customer record with Stripe:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:279
+#@ pmpro
+msgid "Error creating plan with Stripe:"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:295
+#@ pmpro
+msgid "Error subscribing customer to plan with Stripe:"
+msgstr ""
+
+#: includes/adminpages.php:9
+#: includes/adminpages.php:39
+#@ pmpro
+msgid "Memberships"
+msgstr "Medlemskap"
+
+#: includes/adminpages.php:10
+#: includes/adminpages.php:49
+#@ pmpro
+msgid "Page Settings"
+msgstr ""
+
+#: includes/adminpages.php:11
+#: includes/adminpages.php:54
+#@ pmpro
+msgid "Payment Settings"
+msgstr ""
+
+#: includes/adminpages.php:16
+#: includes/adminpages.php:79
+#@ pmpro
+msgid "Reports"
+msgstr ""
+
+#: includes/adminpages.php:18
+#: includes/adminpages.php:89
+#@ pmpro
+msgid "Discount Codes"
+msgstr ""
+
+#: includes/currencies.php:7
+#: includes/currencies.php:44
+#@ pmpro
+msgid "US Dollars (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:8
+#: includes/currencies.php:47
+#@ pmpro
+msgid "Euros (&euro;)"
+msgstr ""
+
+#: includes/currencies.php:9
+#: includes/currencies.php:46
+#@ pmpro
+msgid "Pounds Sterling (&pound;)"
+msgstr ""
+
+#: includes/currencies.php:10
+#@ pmpro
+msgid "Australian Dollars (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:11
+#@ pmpro
+msgid "Brazilian Real (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:12
+#: includes/currencies.php:45
+#@ pmpro
+msgid "Canadian Dollars (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:13
+#@ pmpro
+msgid "Chinese Yuan"
+msgstr ""
+
+#: includes/currencies.php:14
+#@ pmpro
+msgid "Czech Koruna"
+msgstr ""
+
+#: includes/currencies.php:15
+#@ pmpro
+msgid "Danish Krone"
+msgstr ""
+
+#: includes/currencies.php:16
+#@ pmpro
+msgid "Hong Kong Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:17
+#@ pmpro
+msgid "Hungarian Forint"
+msgstr ""
+
+#: includes/currencies.php:18
+#@ pmpro
+msgid "Indian Rupee"
+msgstr ""
+
+#: includes/currencies.php:19
+#@ pmpro
+msgid "Indonesia Rupiah"
+msgstr ""
+
+#: includes/currencies.php:20
+#@ pmpro
+msgid "Israeli Shekel"
+msgstr ""
+
+#: includes/currencies.php:21
+#@ pmpro
+msgid "Japanese Yen (&yen;)"
+msgstr ""
+
+#: includes/currencies.php:22
+#@ pmpro
+msgid "Malaysian Ringgits"
+msgstr ""
+
+#: includes/currencies.php:23
+#@ pmpro
+msgid "Mexican Peso (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:24
+#@ pmpro
+msgid "New Zealand Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:25
+#@ pmpro
+msgid "Norwegian Krone"
+msgstr "Norske kroner"
+
+#: includes/currencies.php:26
+#@ pmpro
+msgid "Philippine Pesos"
+msgstr ""
+
+#: includes/currencies.php:27
+#@ pmpro
+msgid "Polish Zloty"
+msgstr ""
+
+#: includes/currencies.php:28
+#@ pmpro
+msgid "Singapore Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:29
+#@ pmpro
+msgid "South African Rand"
+msgstr ""
+
+#: includes/currencies.php:30
+#@ pmpro
+msgid "South Korean Won"
+msgstr ""
+
+#: includes/currencies.php:31
+#@ pmpro
+msgid "Swedish Krona"
+msgstr ""
+
+#: includes/currencies.php:32
+#@ pmpro
+msgid "Swiss Franc"
+msgstr ""
+
+#: includes/currencies.php:33
+#@ pmpro
+msgid "Taiwan New Dollars"
+msgstr ""
+
+#: includes/currencies.php:34
+#@ pmpro
+msgid "Thai Baht"
+msgstr ""
+
+#: includes/currencies.php:35
+#@ pmpro
+msgid "Turkish Lira"
+msgstr ""
+
+#: includes/currencies.php:36
+#@ pmpro
+msgid "Vietnamese Dong"
+msgstr ""
+
+#: includes/functions.php:201
+#, php-format
+#@ pmpro
+msgid "The price for membership is <strong>%s</strong> now"
+msgstr "Prisen for medlemskapet er <strong>%s</strong> nå"
+
+#: includes/functions.php:210
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.
+msgid " and then <strong>%s per %s for %d more %s</strong>."
+msgstr ""
+
+#: includes/functions.php:214
+#, php-format
+#@ Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.
+msgid " and then <strong>%s every %d %s for %d more %s</strong>."
+msgstr ""
+
+#: includes/functions.php:219
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 after 2 months.
+msgid " and then <strong>%s after %d %s</strong>."
+msgstr ""
+
+#: includes/functions.php:225
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 every month.
+msgid " and then <strong>%s per %s</strong>."
+msgstr ""
+
+#: includes/functions.php:229
+#, php-format
+#@ Recurring payment in cost text generation. E.g., $5 every 2 months.
+msgid " and then <strong>%s every %d %s</strong>."
+msgstr ""
+
+#: includes/functions.php:246
+#: pages/levels.php:82
+#@ pmpro
+msgid "After your initial payment, your first payment is Free."
+msgstr ""
+
+#: includes/functions.php:250
+#: pages/levels.php:86
+#, php-format
+#@ pmpro
+msgid "After your initial payment, your first %d payments are Free."
+msgstr ""
+
+#: includes/functions.php:257
+#: pages/levels.php:93
+#, php-format
+#@ pmpro
+msgid "After your initial payment, your first payment will cost %s."
+msgstr ""
+
+#: includes/functions.php:261
+#: pages/levels.php:97
+#, php-format
+#@ pmpro
+msgid "After your initial payment, your first %d payments will cost %s."
+msgstr ""
+
+#: includes/functions.php:272
+#, php-format
+#@ pmpro
+msgid "Customers in %s will be charged %s%% tax."
+msgstr ""
+
+#: includes/functions.php:286
+#, php-format
+#@ pmpro
+msgid "Membership expires after %d %s."
+msgstr ""
+
+#: includes/functions.php:522
+#@ pmpro
+msgid "User ID not found."
+msgstr ""
+
+#: includes/functions.php:539
+#@ pmpro
+msgid "Invalid level."
+msgstr ""
+
+#: includes/functions.php:550
+#@ pmpro
+msgid "not changing?"
+msgstr ""
+
+#: includes/functions.php:567
+#: includes/functions.php:614
+#: includes/functions.php:623
+#@ pmpro
+msgid "Error interacting with database"
+msgstr ""
+
+#: includes/functions.php:664
+#: includes/functions.php:703
+#@ pmpro
+msgid "Membership level not found."
+msgstr ""
+
+#: includes/functions.php:1085
+#@ pmpro
+msgid "The discount code could not be found."
+msgstr ""
+
+#: includes/functions.php:1101
+#, php-format
+#@ pmpro
+msgid "This discount code goes into effect on %s."
+msgstr ""
+
+#: includes/functions.php:1110
+#, php-format
+#@ pmpro
+msgid "This discount code expired on %s."
+msgstr ""
+
+#: includes/functions.php:1122
+#@ pmpro
+msgid "This discount code is no longer valid."
+msgstr ""
+
+#: includes/functions.php:1137
+#@ pmpro
+msgid "This discount code does not apply to this membership level."
+msgstr ""
+
+#: includes/functions.php:1145
+#@ pmpro
+msgid "This discount code is okay."
+msgstr ""
+
+#: includes/functions.php:1169
+#@ pmpro
+msgid "and"
+msgstr ""
+
+#: includes/functions.php:1354
+#@ pmpro
+msgid "Sign Up for !!name!! Now"
+msgstr ""
+
+#: includes/functions.php:1360
+#@ pmpro
+msgid "Please specify a level id."
+msgstr ""
+
+#: includes/localization.php:23
+#@ pmpro
+msgid "Day"
+msgid_plural "Days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/localization.php:25
+#@ pmpro
+msgid "Week"
+msgid_plural "Weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/localization.php:27
+#@ pmpro
+msgid "Month"
+msgid_plural "Months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/localization.php:29
+#@ pmpro
+msgid "Year"
+msgid_plural "Years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/metaboxes.php:38
+#@ pmpro
+msgid "This post is already protected for this level because it is within a category that requires membership."
+msgstr ""
+
+#: includes/metaboxes.php:99
+#: includes/metaboxes.php:100
+#@ pmpro
+msgid "Require Membership"
+msgstr ""
+
+#: includes/profile.php:36
+#@ pmpro
+msgid "Current Level"
+msgstr ""
+
+#: includes/profile.php:39
+#@ pmpro
+msgid "None"
+msgstr "Ingen"
+
+#: includes/profile.php:84
+#@ pmpro
+msgid "User is not paying."
+msgstr ""
+
+#: pages/account.php:10
+#@ pmpro
+msgid "Your membership is <strong>active</strong>."
+msgstr "Medlemskapet ditt er <strong>aktivt</strong>."
+
+#: pages/account.php:12
+#: pages/billing.php:16
+#: pages/levels.php:13
+#@ pmpro
+msgid "Level"
+msgstr "Kurs"
+
+#: pages/account.php:14
+#: pages/billing.php:18
+#@ pmpro
+msgid "Membership Fee"
+msgstr "Pris på medlemskap"
+
+#: pages/account.php:25
+#: pages/billing.php:29
+#@ pmpro
+msgid "Duration"
+msgstr ""
+
+#: pages/account.php:29
+#: pages/confirmation.php:49
+#: pages/invoice.php:30
+#@ pmpro
+msgid "Membership Expires"
+msgstr ""
+
+#: pages/account.php:34
+#, php-format
+#@ pmpro
+msgid "Your first payment will cost %s."
+msgstr ""
+
+#: pages/account.php:38
+#, php-format
+#@ pmpro
+msgid "Your first %d payments will cost %s."
+msgstr ""
+
+#: pages/account.php:46
+#@ pmpro
+msgid "My Account"
+msgstr "Min konto"
+
+#: pages/account.php:55
+#@ pmpro
+msgid "Edit Profile"
+msgstr "Rediger profil"
+
+#: pages/account.php:56
+#@ pmpro
+msgid "Change Password"
+msgstr "Endre passord"
+
+#: pages/account.php:87
+#@ pmpro
+msgid "Billing Information"
+msgstr "Fakturainformasjon"
+
+#: pages/account.php:105
+#: pages/confirmation.php:63
+#: pages/invoice.php:50
+#@ pmpro
+msgid "Payment Method"
+msgstr "Betalingsinformasjon"
+
+#: pages/account.php:114
+#@ pmpro
+msgid "Edit Billing Information"
+msgstr ""
+
+#: pages/account.php:125
+#@ pmpro
+msgid "Past Invoices"
+msgstr "Siste faktura"
+
+#: pages/account.php:140
+#@ pmpro
+msgid "View All Invoices"
+msgstr "Se alle fakturaer"
+
+#: pages/account.php:146
+#@ pmpro
+msgid "Member Links"
+msgstr "Medlemslinker"
+
+#: pages/account.php:152
+#@ pmpro
+msgid "Update Billing Information"
+msgstr ""
+
+#: pages/account.php:155
+#@ pmpro
+msgid "Change Membership Level"
+msgstr ""
+
+#: pages/account.php:157
+#@ pmpro
+msgid "Cancel Membership"
+msgstr "Kanseller medlemskap"
+
+#: pages/billing.php:14
+#, php-format
+#@ pmpro
+msgid "Logged in as <strong>%s</strong>."
+msgstr "Logget inn som <strong>%s</strong>."
+
+#: pages/billing.php:14
+#@ pmpro
+msgid "logout"
+msgstr "Logg ut"
+
+#: pages/billing.php:39
+#@ pmpro
+msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
+msgstr ""
+
+#: pages/billing.php:65
+#: pages/checkout.php:332
+#@ pmpro
+msgid "First Name"
+msgstr "Fornavn"
+
+#: pages/billing.php:69
+#: pages/checkout.php:336
+#@ pmpro
+msgid "Last Name"
+msgstr "Etternavn"
+
+#: pages/billing.php:73
+#: pages/checkout.php:340
+#@ pmpro
+msgid "Address 1"
+msgstr "Adresse 1"
+
+#: pages/billing.php:77
+#: pages/checkout.php:344
+#@ pmpro
+msgid "Address 2"
+msgstr "Adresse 2"
+
+#: pages/billing.php:87
+#: pages/checkout.php:354
+#@ pmpro
+msgid "City"
+msgstr "By"
+
+#: pages/billing.php:91
+#: pages/checkout.php:358
+#@ pmpro
+msgid "State"
+msgstr "Fylke"
+
+#: pages/billing.php:95
+#: pages/checkout.php:362
+#@ pmpro
+msgid "Postal Code"
+msgstr "Postnummer"
+
+#: pages/billing.php:104
+#: pages/checkout.php:371
+#@ pmpro
+msgid "City, State Zip"
+msgstr ""
+
+#: pages/billing.php:157
+#: pages/checkout.php:424
+#@ pmpro
+msgid "Country"
+msgstr "Land"
+
+#: pages/billing.php:182
+#: pages/checkout.php:449
+#@ pmpro
+msgid "Phone"
+msgstr "Telefon"
+
+#: pages/billing.php:193
+#: pages/checkout.php:207
+#: pages/checkout.php:463
+#@ pmpro
+msgid "E-mail Address"
+msgstr "E-post-adresse"
+
+#: pages/billing.php:197
+#: pages/checkout.php:472
+#@ pmpro
+msgid "Confirm E-mail"
+msgstr "Bekreft e-post-adresse"
+
+#: pages/billing.php:217
+#, php-format
+#@ pmpro
+msgid "We accept %s"
+msgstr ""
+
+#: pages/billing.php:217
+#@ pmpro
+msgid "Credit Card Information"
+msgstr "Kredittkortinformasjon"
+
+#: pages/billing.php:244
+#: pages/checkout.php:530
+#@ pmpro
+msgid "Card Number"
+msgstr "Kortnummer"
+
+#: pages/billing.php:281
+#: pages/checkout.php:567
+#@ pmpro
+msgid "CVV"
+msgstr ""
+
+#: pages/billing.php:282
+#: pages/checkout.php:568
+#@ pmpro
+msgid "what's this?"
+msgstr ""
+
+#: pages/billing.php:294
+#@ pmpro
+msgid "Update"
+msgstr "Oppdater"
+
+#: pages/billing.php:309
+#@ pmpro
+msgid "This subscription is not recurring. So you don't need to update your billing information."
+msgstr ""
+
+#: pages/cancel.php:14
+#@ pmpro
+msgid "Are you sure you want to cancel your membership?"
+msgstr "Er du sikker på at du vil kansellere medlemskapet ditt?"
+
+#: pages/cancel.php:17
+#@ pmpro
+msgid "Yes, cancel my account"
+msgstr "Ja, kanseller kontoen min"
+
+#: pages/cancel.php:19
+#@ pmpro
+msgid "No, keep my account"
+msgstr "Nei, behold kontoen min"
+
+#: pages/cancel.php:22
+#@ pmpro
+msgid "Click here to go to the home page."
+msgstr "Klikk her for å gå til hjemmesiden."
+
+#: pages/checkout.php:26
+#@ pmpro
+msgid "Almost done. Review the membership information and pricing below then <strong>click the \"Complete Payment\" button</strong> to finish your order."
+msgstr "Nå er alt nesten klart. Les igjennom informasjonen under om medlemskapet ditt, og <strong>klikk så på \"Fullfør betaling\" knappen</strong> for å fullføre bestillingen."
+
+#: pages/checkout.php:33
+#@ pmpro
+msgid "change"
+msgstr ""
+
+#: pages/checkout.php:41
+#, php-format
+#@ pmpro
+msgid "You have selected the <strong>%s</strong> membership level."
+msgstr "Du har valgt <strong>%s</strong>."
+
+#: pages/checkout.php:51
+#, php-format
+#@ pmpro
+msgid "<p class=\"pmpro_level_discount_applied\">The <strong>%s</strong> code has been applied to your order.</p>"
+msgstr ""
+
+#: pages/checkout.php:62
+#: services/applydiscountcode.php:75
+#@ pmpro
+msgid "Click here to change your discount code"
+msgstr ""
+
+#: pages/checkout.php:64
+#@ pmpro
+msgid "Do you have a discount code?"
+msgstr ""
+
+#: pages/checkout.php:64
+#@ pmpro
+msgid "Click here to enter your discount code"
+msgstr ""
+
+#: pages/checkout.php:78
+#: pages/checkout.php:578
+#@ pmpro
+msgid "Apply"
+msgstr ""
+
+#: pages/checkout.php:163
+#@ pmpro
+msgid "Already have an account?"
+msgstr "Har du allerede en konto?"
+
+#: pages/checkout.php:163
+#@ pmpro
+msgid "Log in here"
+msgstr "Logg inn her"
+
+#: pages/checkout.php:163
+#@ pmpro
+msgid "Account Information"
+msgstr "Kontoinformasjon"
+
+#: pages/checkout.php:189
+#@ pmpro
+msgid "Confirm Password"
+msgstr "Bekreft passord"
+
+#: pages/checkout.php:216
+#@ pmpro
+msgid "Confirm E-mail Address"
+msgstr "Bekreft e-post-adresse"
+
+#: pages/checkout.php:235
+#@ pmpro
+msgid "Full Name"
+msgstr "Fullt navn"
+
+#: pages/checkout.php:236
+#@ pmpro
+msgid "LEAVE THIS BLANK"
+msgstr ""
+
+#: pages/checkout.php:260
+#, php-format
+#@ pmpro
+msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
+msgstr "Du er nå logget inn som <strong>%s</strong>. Hvis du ønsker å logge deg på med en annen konto, <a href=\"%s\">logg ut nå</a>."
+
+#: pages/checkout.php:288
+#, php-format
+#@ pmpro
+msgid "I agree to the %s"
+msgstr "Jeg har lest og aksepterer de angitte %s"
+
+#: pages/checkout.php:303
+#@ pmpro
+msgid "Choose your Payment Method"
+msgstr "Velg betalingsmetode"
+
+#: pages/checkout.php:311
+#@ pmpro
+msgid "Check Out with a Credit Card Here"
+msgstr ""
+
+#: pages/checkout.php:313
+#: pages/checkout.php:685
+#@ pmpro
+msgid "Check Out with PayPal"
+msgstr "Sjekk ut med Paypal"
+
+#: pages/checkout.php:503
+#, php-format
+#@ pmpro
+msgid "We Accept %s"
+msgstr ""
+
+#: pages/checkout.php:503
+#@ pmpro
+msgid "Payment Information"
+msgstr "Betalingsinformasjon"
+
+#: pages/checkout.php:677
+#@ pmpro
+msgid "Complete Payment"
+msgstr "Fullfør betaling"
+
+#: pages/checkout.php:691
+#@ pmpro
+msgid "Submit and Pay with 2CheckOut"
+msgstr ""
+
+#: pages/checkout.php:691
+#@ pmpro
+msgid "Submit and Check Out"
+msgstr ""
+
+#: pages/checkout.php:691
+#@ pmpro
+msgid "Submit and Confirm"
+msgstr ""
+
+#: pages/checkout.php:697
+#@ pmpro
+msgid "Processing..."
+msgstr "Prosesserer.."
+
+#: pages/confirmation.php:12
+#@ pmpro
+msgid "Your payment has been submitted. Your membership will be activated shortly."
+msgstr "Betalingen din er gjennomført. Medlemskapet ditt vil snart bli aktivert."
+
+#: pages/confirmation.php:14
+#, php-format
+#@ pmpro
+msgid "Thank you for your membership to %s. Your %s membership is now active."
+msgstr "Tusen takk for påmeldingen din til  %s. Ditt medlemskap ved %s er nå aktivt."
+
+#: pages/confirmation.php:28
+#, php-format
+#@ pmpro
+msgid "Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s."
+msgstr "Under finner du detaljer om medlemskontoen din og en kvittering for betaling. Det er også sendt en e-post med en kopi av fakturaen til %s."
+
+#: pages/confirmation.php:41
+#: pages/invoice.php:22
+#, php-format
+#@ pmpro
+msgid "Invoice #%s on %s"
+msgstr "Faktura #%s for %s"
+
+#: pages/confirmation.php:43
+#@ pmpro
+msgid "Print"
+msgstr "Skriv ut"
+
+#: pages/confirmation.php:46
+#: pages/confirmation.php:104
+#: pages/invoice.php:27
+#@ pmpro
+msgid "Account"
+msgstr "Konto"
+
+#: pages/confirmation.php:65
+#: pages/invoice.php:52
+#: pages/invoice.php:109
+#@ pmpro
+msgid "Total Billed"
+msgstr "Totalpris"
+
+#: pages/confirmation.php:82
+#: pages/invoice.php:69
+#@ credit card type {ending in} xxxx
+msgid "ending in"
+msgstr ""
+
+#: pages/confirmation.php:97
+#, php-format
+#@ pmpro
+msgid "Below are details about your membership account. A welcome email with has been sent to %s."
+msgstr "Under finner du detaljer om medlemskontoen din. En e-post med har blitt sendt til %s."
+
+#: pages/confirmation.php:105
+#@ pmpro
+msgid "Pending"
+msgstr "Ventende"
+
+#: pages/confirmation.php:113
+#: pages/invoice.php:141
+#@ pmpro
+msgid "View Your Membership Account &rarr;"
+msgstr "Se kontoen for medlemskapet ditt &rarr;"
+
+#: pages/confirmation.php:115
+#@ pmpro
+msgid "If your account is not activated within a few minutes, please contact the site owner."
+msgstr "Hvis kontoen din ikke aktiveres i løpet av et par minutter, så ta kontakt med Syskolen."
+
+#: pages/invoice.php:79
+#@ pmpro
+msgid "Subtotal"
+msgstr ""
+
+#: pages/invoice.php:82
+#@ pmpro
+msgid "Coupon"
+msgstr ""
+
+#: pages/invoice.php:108
+#@ pmpro
+msgid "Invoice #"
+msgstr "Faktura #"
+
+#: pages/invoice.php:122
+#@ pmpro
+msgid "View Invoice"
+msgstr "Se på faktura"
+
+#: pages/invoice.php:134
+#@ pmpro
+msgid "No invoices found."
+msgstr "Ingen fakturaer funnet"
+
+#: pages/invoice.php:145
+#@ pmpro
+msgid "&larr; View All Invoices"
+msgstr "&larr; Se alle fakturaer"
+
+#: pages/levels.php:15
+#@ pmpro
+msgid "Subscription Information"
+msgstr "Kursinformasjon"
+
+#: pages/levels.php:33
+#@ pmpro
+msgid "--"
+msgstr ""
+
+#: pages/levels.php:43
+#@ pmpro
+msgid "Free"
+msgstr ""
+
+#: pages/levels.php:51
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 every month for 2 more payments.
+msgid "%s per %s for %d more %s."
+msgstr ""
+
+#: pages/levels.php:55
+#, php-format
+#@ Recurring payment in cost text generation. E.g., $5 every 2 months for 2 more payments.
+msgid "%s every %d %s for %d more %s."
+msgstr ""
+
+#: pages/levels.php:60
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 after 2 months.
+msgid "%s after %d %s."
+msgstr ""
+
+#: pages/levels.php:66
+#, php-format
+#@ Recurring payment in cost text generation. E.g. $5 every month.
+msgid "%s per %s."
+msgstr ""
+
+#: pages/levels.php:70
+#, php-format
+#@ Recurring payment in cost text generation. E.g., $5 every 2 months.
+msgid "%s every %d %s."
+msgstr ""
+
+#: pages/levels.php:113
+#: pages/levels.php:115
+#@ Choose a level from levels page
+msgid "Select"
+msgstr ""
+
+#: pages/levels.php:123
+#@ Clickign to renew from levels page
+msgid "Renew"
+msgstr ""
+
+#: pages/levels.php:129
+#@ pmpro
+msgid "Your&nbsp;Level"
+msgstr "Ditt&nbsp;Medlemskap"
+
+#: pages/levels.php:145
+#@ pmpro
+msgid "&larr; Return to Your Account"
+msgstr "&larr; Gå tilbake til din konto"
+
+#: pages/levels.php:147
+#@ pmpro
+msgid "&larr; Return to Home"
+msgstr "&larr; Gå til hjemmesiden"
+
+#: preheaders/account.php:7
+#: preheaders/levels.php:19
+#@ pmpro
+msgid "Your membership status has been updated - Thank you!"
+msgstr ""
+
+#: preheaders/account.php:11
+#: preheaders/levels.php:23
+#@ pmpro
+msgid "Sorry, your request could not be completed - please try again in a few moments."
+msgstr ""
+
+#: preheaders/billing.php:258
+#: preheaders/checkout.php:482
+#@ pmpro
+msgid "Please complete all required fields."
+msgstr "Fyll ut alle påkrevde felt."
+
+#: preheaders/billing.php:263
+#: preheaders/checkout.php:492
+#@ pmpro
+msgid "Your email addresses do not match. Please try again."
+msgstr "E-post-adressene dine stemmer ikke overens. Prøv igjen."
+
+#: preheaders/billing.php:268
+#: preheaders/checkout.php:498
+#@ pmpro
+msgid "The email address entered is in an invalid format. Please try again."
+msgstr "E-post-adressen er i et ugyldig format. Prøv igjen."
+
+#: preheaders/billing.php:274
+#@ pmpro
+msgid "All good!"
+msgstr "Alt bra!"
+
+#: preheaders/billing.php:340
+#, php-format
+#@ pmpro
+msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
+msgstr "Informasjonen er oppdatert. <a href=\"%s\">&laquo; gå tilbake til kontoen</a>"
+
+#: preheaders/billing.php:347
+#@ pmpro
+msgid "Error updating billing information."
+msgstr ""
+
+#: preheaders/cancel.php:24
+#@ pmpro
+msgid "Your membership has been cancelled."
+msgstr "Medlemskapet ditt er blitt kansellert."
+
+#: preheaders/checkout.php:28
+#: preheaders/checkout.php:509
+#@ pmpro
+msgid "Invalid gateway."
+msgstr ""
+
+#: preheaders/checkout.php:96
+#@ pmpro
+msgid "Checkout: Payment Information"
+msgstr ""
+
+#: preheaders/checkout.php:109
+#@ pmpro
+msgid "Setup Your Account"
+msgstr ""
+
+#: preheaders/checkout.php:486
+#@ pmpro
+msgid "Your passwords do not match. Please try again."
+msgstr "Passordene stemmer ikke overens. Prøv igjen."
+
+#: preheaders/checkout.php:504
+#, php-format
+#@ pmpro
+msgid "Please check the box to agree to the %s."
+msgstr "Huk av i boksen for å godta %s."
+
+#: preheaders/checkout.php:513
+#@ pmpro
+msgid "Are you a spammer?"
+msgstr ""
+
+#: preheaders/checkout.php:536
+#@ pmpro
+msgid "That username is already taken. Please try another."
+msgstr "Brukernavnet er opptatt. Prøv et annet."
+
+#: preheaders/checkout.php:542
+#@ pmpro
+msgid "That email address is already taken. Please try another."
+msgstr "Denne e-post-adressen er allerede registrert. Bruk en annen adresse."
+
+#: preheaders/checkout.php:562
+#, php-format
+#@ pmpro
+msgid "reCAPTCHA failed. (%s) Please try again."
+msgstr ""
+
+#: preheaders/checkout.php:702
+#@ pmpro
+msgid "Payment accepted."
+msgstr "Betaling er akseptert."
+
+#: preheaders/checkout.php:710
+#@ pmpro
+msgid "Unknown error generating account. Please contact us to setup your membership."
+msgstr "Det skjedde en ukjent feil når kontoen din skulle genereres. Ta kontakt med oss for å registrere medlemskapet ditt."
+
+#: preheaders/checkout.php:754
+#: preheaders/checkout.php:823
+#@ pmpro
+msgid "The PayPal Token was lost."
+msgstr ""
+
+#: preheaders/checkout.php:860
+#@ pmpro
+msgid "Your payment was accepted, but there was an error setting up your account. Please contact us."
+msgstr "Betalingen din er akseptert, men det skjedde en feil ved etablering av kontoen din. Ta kontakt med oss."
+
+#: preheaders/checkout.php:1046
+#@ pmpro
+msgid "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
+msgstr ""
+
+#: preheaders/checkout.php:1051
+#@ pmpro
+msgid "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
+msgstr ""
+
+#: preheaders/checkout.php:1064
+#, php-format
+#@ pmpro
+msgid "You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will be processed."
+msgstr ""
+
+#: preheaders/checkout.php:1066
+#@ pmpro
+msgid "A Payment Gateway must be setup before any payments will be processed."
+msgstr ""
+
+#: scheduled/crons.php:31
+#, php-format
+#@ pmpro
+msgid "Membership expired email sent to %s. "
+msgstr ""
+
+#: scheduled/crons.php:74
+#, php-format
+#@ pmpro
+msgid "Membership expiring email sent to %s. "
+msgstr ""
+
+#: scheduled/crons.php:143
+#, php-format
+#@ pmpro
+msgid "Credit card expiring email sent to %s. "
+msgstr ""
+
+#: scheduled/crons.php:196
+#, php-format
+#@ pmpro
+msgid "Trial ending email sent to %s. "
+msgstr ""
+
+#: services/applydiscountcode.php:64
+#, php-format
+#@ pmpro
+msgid "The %s code has been applied to your order. "
+msgstr ""
+
+#: services/applydiscountcode.php:83
+#, php-format
+#@ pmpro
+msgid "The <strong>%s</strong> code has been applied to your order."
+msgstr ""
+
+#: services/authnet-silent-post.php:133
+#@ pmpro
+msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net"
+msgstr ""
+
+#: services/stripe-webhook.php:176
+#, php-format
+#@ pmpro
+msgid "%s has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be."
+msgstr ""
+
