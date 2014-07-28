@@ -3,7 +3,8 @@
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 $gateway = pmpro_getOption("gateway");
 
 //need to be secure?
