@@ -2,7 +2,8 @@
 
 global $current_user, $pmpro_invoice;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
 //must be logged in
 if (empty($current_user->ID) || (empty($current_user->membership_level->ID) && pmpro_getOption("gateway") != "paypalstandard" && pmpro_getOption("gateway") != "twocheckout"))
