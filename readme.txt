@@ -103,6 +103,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.12 =
+* $pmpro_stripe_verify_address flag defaults to same value of Stripe's showbillingaddress option now.
+
+= 1.7.12 =
 * Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
 * Making sure that $myuser->membership_level is set in pmpro_has_membership_access().
 * Added Norwegian locale files. (Thanks, Maritk)
