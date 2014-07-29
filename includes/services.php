@@ -12,7 +12,7 @@ if(isset($_REQUEST['action']) && $_REQUEST['action'] == "applydiscountcode")
 		require_once(dirname(__FILE__) . "/../services/applydiscountcode.php");	
 		exit;
 	}
-	add_action("init", "pmpro_applydiscountcode_init");
+	add_action("init", "pmpro_applydiscountcode_init", 11);
 }
 function pmpro_wp_ajax_authnet_silent_post()
 {		
