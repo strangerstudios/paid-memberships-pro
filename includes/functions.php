@@ -847,6 +847,7 @@ function pmpro_getMetavalues($query)
 	global $wpdb;
 	
 	$results = $wpdb->get_results($query);
+	$r = new stdClass();
 	foreach($results as $result)
 	{
         if(!empty($r))
