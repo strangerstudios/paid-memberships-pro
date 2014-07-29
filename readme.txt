@@ -106,6 +106,7 @@ Not sure? You can find out by doing a bit a research.
 * $pmpro_stripe_verify_address flag defaults to same value of Stripe's showbillingaddress option now.
 * Changed the priority of pmpro_applydiscountcode_init hooking on init to 11 so pmpro_init() will run before and setup pmpro_currency_symbol among other things. (Thanks, semyou on GitHub.)
 * Avoiding a warning in pmpro_getMetavalues() function. (Thanks, Scott Sousa)
+* Added target="_blank" to help links on admin pages. (Thanks, AntonVrba on GitHub)
 
 = 1.7.12 =
 * Now including expiration text in text that is updated when a discount code is used. (Thanks, John Zeiger)
