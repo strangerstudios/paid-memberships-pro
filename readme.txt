@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 3.9.1
-Stable tag: 1.7.12.1
+Stable tag: 1.7.13
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,7 +102,8 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.12.1 =
+= 1.7.13 =
+* Added Danish (da_DK) translation. (Thanks, Mikael)
 * Fixed bugs with timestamps in various places (especially around trial dates) introduced in 1.7.12
 * Another fix to keep PMPro from sending "undefined undefined" as the name to Stripe when the 'don't show billing fields' option is chosen.
 * $pmpro_stripe_verify_address flag defaults to same value of Stripe's showbillingaddress option now.
