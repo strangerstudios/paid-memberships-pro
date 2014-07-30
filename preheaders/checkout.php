@@ -148,7 +148,7 @@ if ($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level)) {
                             ?>
                         };
 
-                        if (jQuery('#bfirstname') && jQuery('#blastname'))
+                        if (jQuery('#bfirstname').length && jQuery('#blastname').length)
                             args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
                         //create token

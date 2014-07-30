@@ -103,8 +103,11 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.12.1 =
+* Fixed bugs with timestamps in various places (especially around trial dates) introduced in 1.7.12
+* Another fix to keep PMPro from sending "undefined undefined" as the name to Stripe when the 'don't show billing fields' option is chosen.
 * $pmpro_stripe_verify_address flag defaults to same value of Stripe's showbillingaddress option now.
 * Changed the priority of pmpro_applydiscountcode_init hooking on init to 11 so pmpro_init() will run before and setup pmpro_currency_symbol among other things. (Thanks, semyou on GitHub.)
+* Explicitly setting $current_user->membership_level in a few places to avoid issues where current_user is overwritten between init and when we try to use it.
 * Avoiding a warning in pmpro_getMetavalues() function. (Thanks, Scott Sousa)
 * Added target="_blank" to help links on admin pages. (Thanks, AntonVrba on GitHub)
 
