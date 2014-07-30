@@ -2,7 +2,8 @@
 
 global $current_user;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
 //is there a default level to redirect to?
 if (defined("PMPRO_DEFAULT_LEVEL"))

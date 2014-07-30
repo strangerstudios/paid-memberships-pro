@@ -2,7 +2,8 @@
 
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
 if (isset($_REQUEST['msg'])) {
     if ($_REQUEST['msg'] == 1) {
