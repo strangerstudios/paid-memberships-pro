@@ -1167,6 +1167,15 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 				return false;
 		}
 	}
+
+    //allow filter
+    $pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", true, $dbcode, $level_id);
+    if(is_string($pmpro_check_discount_code || !$pmpro_check_discount_code)) {
+        if(!empty($return_errors))
+            return array(false, $pmpro_check_discount_code);
+        else
+            return false;
+    }
 	
 	//guess we're all good		
 	if(!empty($return_errors))
