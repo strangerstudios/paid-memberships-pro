@@ -67,15 +67,17 @@ function pmpro_send_html( $phpmailer ) {
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = make_clickable ($phpmailer->Body);
 
-	// Add template to message
-	if(file_exists(TEMPLATEPATH . "/email_header.html"))
-	{
-		$phpmailer->Body = file_get_contents(TEMPLATEPATH . "/email_header.html") . "\n" . $phpmailer->Body;
-	}
-	if(file_exists(TEMPLATEPATH . "/email_footer.html"))
-	{
-		$phpmailer->Body = $phpmailer->Body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
-	}
+	// Add header to message if found
+	if(file_exists(get_stylesheet_directory() . "/email_header.html"))
+		$phpmailer->Body = file_get_contents(get_stylesheet_directory() . "/email_header.html") . "\n" . $phpmailer->Body;
+	elseif(file_exists(get_template_directory() . "/email_header.html"))
+		$phpmailer->Body = file_get_contents(get_template_directory() . "/email_header.html") . "\n" . $phpmailer->Body;
+	
+	// Add footer to message if found
+	if(file_exists(get_stylesheet_directory() . "/email_footer.html"))
+		$phpmailer->Body = $phpmailer->Body . "\n" . file_get_contents(get_stylesheet_directory() . "/email_footer.html");
+	elseif(file_exists(get_template_directory() . "/email_footer.html"))
+		$phpmailer->Body =  $phpmailer->Body . "\n" . file_get_contents(get_template_directory() . "/email_footer.html");
 
 	// Replace variables in email
 	global $current_user;
