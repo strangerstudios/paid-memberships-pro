@@ -60,9 +60,15 @@
 		}		
 	}
 		
-	//otherwise show it
+	//get mimetype
 	$mimetype = new pmpro_mimetype();       		
-	header("Content-type: " . $mimetype->getType($filename)); 	
+	$file_mimetype = $mimetype->getType($filename);
+	
+	//in case we want to do something else with the file
+	do_action("pmpro_getfile_before_readfile", $filename, $file_mimetype);
+	
+	//show the file
+	header("Content-type: " . $file_mimetype); 	
 	readfile($filename);
 	exit;
 ?>
