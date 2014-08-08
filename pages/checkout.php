@@ -463,10 +463,6 @@
 	<?php } ?>
 	
 	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
-
-    <script>
-        dfasfd
-    </script>
 	
 	<?php
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
