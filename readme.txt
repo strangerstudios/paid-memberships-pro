@@ -106,7 +106,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)
 * BUG/ENHANCEMENT: Now checking the child and parent theme for email_header.html and email_footer.html files to use for emails. The child theme is checked first.
 * ENHANCEMENT: Added pmpro_getfile_before_readfile hook (passes $filename and $mimetype params) in getfile.php
-* BUG/ENHANCEMENT: getMembershipLevel method of MemberOrder can now handle when discount_code property is an object. Also, the IPN Handler will now try to get the discount code for the order to correctly update the users pmpro_memberships_users entry.
+* BUG/ENHANCEMENT: getMembershipLevel method of MemberOrder can now handle when discount_code property is an object. Also, the IPN Handler and 2Checkout handler will now try to get the discount code for the order to correctly update the users pmpro_memberships_users entry.
 
 = 1.7.13.1 =
 * Fixed bug introduced in 1.7.12 where discount code uses were not being tracked.
