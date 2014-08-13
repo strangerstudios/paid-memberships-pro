@@ -774,5 +774,5 @@
 </script>
 <script>
     //add javascriptok hidden field to checkout
-    //jQuery("input[name=submit-checkout]").after("<input type=hidden name=javascriptok value=1 />");
+    jQuery("input[name=submit-checkout]").after("<input type=hidden name=javascriptok value=1 />");
 </script>
