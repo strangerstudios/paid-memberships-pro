@@ -121,18 +121,19 @@ function pmpro_search_filter($query)
     global $current_user, $wpdb, $pmpro_pages;
 			
     //hide pmpro pages from search results
-    if(!$query->is_admin && $query->is_search)
+    if(!$query->is_admin && $query->is_search && empty($query->query['post_parent']))
     {
-        $query->set('post__not_in', $pmpro_pages ); // id of page or post
-    }		
-		
+        $query->set('post__not_in', $pmpro_pages ); // id of page or post		
+    }
+	
     //hide member pages from non-members (make sure they aren't hidden from members)    
 	if(!$query->is_admin && 
 	   !$query->is_singular && 
+	   empty($query->query['post_parent']) &&
 	   (
 		empty($query->query_vars['post_type']) || 
 		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
-	   )
+	   )	   
 	)
     {		
 		//get page ids that are in my levels
