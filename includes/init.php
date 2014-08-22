@@ -209,6 +209,7 @@ function pmpro_set_current_user()
 	do_action("pmpro_after_set_current_user");
 }
 add_action('set_current_user', 'pmpro_set_current_user');
+add_action('init', 'pmpro_set_current_user');
 
 /*
  * Add Membership Level to Users page in WordPress dashboard.
