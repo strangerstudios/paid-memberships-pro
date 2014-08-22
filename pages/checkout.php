@@ -462,7 +462,7 @@
 	</table>                   
 	<?php } ?>
 	
-	<?php do_action("pmpro_checkout_after_billing_fields"); ?>		
+	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
 	
 	<?php
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
@@ -771,4 +771,8 @@
 	    }
 	});
 -->
+</script>
+<script>
+    //add javascriptok hidden field to checkout
+    jQuery("input[name=submit-checkout]").after("<input type=hidden name=javascriptok value=1 />");
 </script>
