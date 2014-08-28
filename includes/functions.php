@@ -1094,94 +1094,94 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 {
 	global $wpdb;
 	
+	$error = false;
+	
 	//no code, no code
-	if(empty($code))
-	{
-		if($return_errors)
-			return array(false, "No code was given to check.");
-		else
-			return false;
-	}
+	if(empty($code))	
+		$error = __("No code was given to check.", "pmpro");
 		
-	//get code from db
-	$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
-			
-	//did we find it?
-	if(empty($dbcode->id))
+	//get code from db	
+	if(!$error)
 	{
-		if($return_errors)
-			return array(false, __("The discount code could not be found.", "pmpro"));
-		else
-			return false;
-	}
-
-	//fix the date timestamps
-	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
-	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));
-
-	//today
-	$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
-
-	//has this code started yet?
-	if(!empty($dbcode->starts) && $dbcode->starts > $today)
-	{
-		if($return_errors)
-			return array(false, sprintf(__("This discount code goes into effect on %s.", "pmpro"), date(get_option('date_format'), $dbcode->starts)));
-		else
-			return false;
+		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
+				
+		//did we find it?
+		if(empty($dbcode->id))	
+			$error = __("The discount code could not be found.", "pmpro");
 	}
 	
-	//has this code expired?
-	if(!empty($dbcode->expires) && $dbcode->expires < $today)
+	//check if the code has started
+	if(!$error)
 	{
-		if($return_errors)
-			return array(false, sprintf(__("This discount code expired on %s.", "pmpro"), date(get_option('date_format'), $dbcode->expires)));
-		else
-			return false;
+		//fix the date timestamps
+		$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
+		$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));
+
+		//today
+		$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
+
+		//has this code started yet?
+		if(!empty($dbcode->starts) && $dbcode->starts > $today)		
+			$error = sprintf(__("This discount code goes into effect on %s.", "pmpro"), date(get_option('date_format'), $dbcode->starts));			
+	}
+	
+	//check if the code is expired
+	if(!$error)
+	{		
+		if(!empty($dbcode->expires) && $dbcode->expires < $today)
+			$error = sprintf(__("This discount code expired on %s.", "pmpro"), date(get_option('date_format'), $dbcode->expires));			
 	}
 	
 	//have we run out of uses?
-	if($dbcode->uses > 0)
+	if(!$error)
 	{
-		$used = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'");
-		if($used >= $dbcode->uses)
+		if($dbcode->uses > 0)
 		{
-			if($return_errors)
-				return array(false, __("This discount code is no longer valid.", "pmpro"));
-			else
-				return false;
+			$used = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'");
+			if($used >= $dbcode->uses)
+				$error = __("This discount code is no longer valid.", "pmpro");				
 		}
 	}
 	
 	//if a level was passed check if this code applies		
-	$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);		
-	if(!empty($level_id) && $pmpro_check_discount_code_levels)
+	if(!$error)
 	{
-		$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
-		
-		if(empty($code_level))
+		$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);		
+		if(!empty($level_id) && $pmpro_check_discount_code_levels)
 		{
-			if(!empty($return_errors))
-				return array(false, __("This discount code does not apply to this membership level.", "pmpro"));
-			else
-				return false;
+			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
+			
+			if(empty($code_level))
+				$error = __("This discount code does not apply to this membership level.", "pmpro");				
 		}
 	}
-
-    //allow filter
-    $pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", true, $dbcode, $level_id);
-    if(is_string($pmpro_check_discount_code || !$pmpro_check_discount_code)) {
-        if(!empty($return_errors))
-            return array(false, $pmpro_check_discount_code);
-        else
-            return false;
-    }
-	
-	//guess we're all good		
-	if(!empty($return_errors))
-		return array(true, __("This discount code is okay.", "pmpro"));
+		
+	//allow filter
+	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", !$error, $dbcode, $level_id, $code);
+	if(is_string($pmpro_check_discount_code))	
+		$error = $pmpro_check_discount_code;	//string returned, this is an error		
+	elseif(!$pmpro_check_discount_code && !$error)
+		$error = true;							//no error before, but filter returned error
+	elseif($pmpro_check_discount_code)
+		$error = false;							//filter is true, so error false
+		
+	//return
+	if($error)
+	{
+		//there was an error
+		if(!empty($return_errors))
+			return array(false, $error);
+		else
+			return false;
+	}
 	else
-		return true;
+	{
+		//guess we're all good	
+		if(!empty($return_errors))
+			return array(true, __("This discount code is okay.", "pmpro"));
+		else
+			return true;
+	}
 }
 
 function pmpro_no_quotes($s, $quotes = array("'", '"'))

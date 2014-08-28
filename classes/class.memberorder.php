@@ -217,6 +217,9 @@
 			global $wpdb;
 			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
 			
+			//filter @since v1.7.14
+			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
+			
 			return $this->discount_code;
 		}
 		
