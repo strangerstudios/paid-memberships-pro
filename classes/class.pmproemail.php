@@ -183,7 +183,7 @@
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => pmpro_url("account"),
+								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,0								
 							);						
@@ -283,7 +283,7 @@
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => pmpro_url("account"),
+								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,0								
 							);						
@@ -384,7 +384,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("account")
+								"login_link" => wp_login_url(pmpro_url("account"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -485,7 +485,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -531,7 +531,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -578,7 +578,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -629,9 +629,9 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("account"),
-								"invoice_link" => pmpro_url("invoice", "?invoice=" . $invoice->code)
-							);
+								"login_link" => wp_login_url(pmpro_url("account")),
+								"invoice_link" => wp_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
+							));
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
 																 "", //address 2

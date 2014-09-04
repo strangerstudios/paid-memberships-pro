@@ -54,7 +54,7 @@ add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
 //redirect from default login pages to PMPro
 function pmpro_login_head()
-{
+{		
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	
 	if((pmpro_is_login_page() || is_page("login") ||
@@ -140,3 +140,19 @@ function pmpro_login_head()
 }
 add_action('wp', 'pmpro_login_head');
 add_action('login_init', 'pmpro_login_head');
+
+/*
+	If a redirect_to value is passed into /login/ and you are logged in already, just redirect there
+	
+	@since 1.7.14
+*/
+function pmpro_redirect_to_logged_in()
+{	
+	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in())
+	{
+		wp_redirect($_REQUEST['redirect_to']);
+		exit;
+	}
+}
+add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
+add_action("login_init", "pmpro_redirect_to_logged_in", 5);
