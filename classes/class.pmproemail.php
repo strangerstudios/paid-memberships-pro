@@ -44,6 +44,8 @@
 						
 			$this->headers = array("Content-Type: text/html");
 			
+			$this->attachments = NULL;
+			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "pmpro");
 			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
@@ -98,8 +100,9 @@
 			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
-						
-			if(wp_mail($this->email,$this->subject,$this->body,$this->headers))
+			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+			
+			if(wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments))
 			{
 				return true;
 			}
