@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.7.14
+Stable tag: 1.7.14.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.14 =
+* BUG: Fixed warning in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
+
 = 1.7.14 =
 * BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)
 * BUG/ENHANCEMENT: Now checking the child and parent theme for email_header.html and email_footer.html files to use for emails. The child theme is checked first.

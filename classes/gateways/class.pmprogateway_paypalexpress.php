@@ -102,9 +102,8 @@
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "token";				
-				$order->paypal_token = urldecode($this->httpParsedResponseAr['TOKEN']);
-				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
-												
+				$order->paypal_token = urldecode($this->httpParsedResponseAr['TOKEN']);				
+								
 				//update order
 				$order->saveOrder();							
 							
@@ -197,7 +196,7 @@
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {			
 				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['TRANSACTIONID']);								
 				$order->status = "success";				
-				
+
 				//update order
 				$order->saveOrder();	
 				
@@ -244,7 +243,7 @@
 			$nvpStr .= "&DESC=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
 			
 			//if billing cycles are defined						
-			if($order->TotalBillingCycles)
+			if(!empty($order->TotalBillingCycles))
 				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 			
 			//if a trial period is defined
