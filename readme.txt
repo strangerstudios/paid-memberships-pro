@@ -102,8 +102,10 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.14 =
-* BUG: Fixed warning in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
+= 1.7.14.1 =
+* BUG: Fixed warnings in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
+* BUG: Fixed issue where new users who checked out with Braintree weren't having their customerid's saved, which led to subscription syncronization issues if they checked out again or updated their billing.
+* BUG: Fixed warnings in the membership-billing page.
 
 = 1.7.14 =
 * BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)

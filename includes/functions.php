@@ -1555,14 +1555,21 @@ function pmpro_getClassForField($field)
 {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
 	$classes = array();
-
+	
 	//error on this field?
-	if(in_array($field, $pmpro_error_fields))
+	if(!empty($pmpro_error_fields) && in_array($field, $pmpro_error_fields))
 	{
 		$classes[] = "pmpro_error";
 	}		
 	
-	$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
+	if(is_array($pmpro_required_billing_fields) && is_array($pmpro_required_user_fields))	
+		$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
+	elseif(is_array($pmpro_required_billing_fields))
+		$required_fields = array_keys($pmpro_required_billing_fields);
+	elseif(is_array($pmpro_required_user_fields))
+		$required_fields = array_keys($pmpro_required_user_fields);
+	else
+		$required_fields = array();
 	
 	//required?
 	if(in_array($field, $required_fields))

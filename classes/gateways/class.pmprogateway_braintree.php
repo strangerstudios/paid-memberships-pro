@@ -162,7 +162,7 @@
 			{			
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);	
 			}
-					
+						
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
@@ -190,7 +190,7 @@
 						);
 						
 						if($response->success)
-						{
+						{							
 							$this->customer = $response->customer;
 						}
 						else
@@ -200,12 +200,12 @@
 							return false;
 						}
 					}
-					
+										
 					return $this->customer;
 				} 
 				catch (Exception $e) 
 				{
-					//assume no customer found							
+					//assume no customer found					
 				}
 			}
 						
@@ -236,7 +236,7 @@
 							)
 						)
 					));
-					
+										
 					if($result->success)
 					{
 						$this->customer = $result->customer;
@@ -254,8 +254,17 @@
 					$order->shorterror = $order->error;
 					return false;
 				}
-				
-				update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);					
+								
+				//if we have no user id, we need to set the customer id after the user is created
+				if(empty($user_id))
+				{
+					global $pmpro_braintree_customerid;
+					$pmpro_braintree_customerid = $this->customer->id;
+					add_action('user_register', array('PMProGateway_braintree','user_register'));
+				}
+				else
+					update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);
+					
 				return $this->customer;
 			}
 			
@@ -365,8 +374,8 @@
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
-			$this->getCustomer($order);
-			
+			$this->getCustomer($order, true);
+						
 			if(!empty($this->customer) && empty($order->error))
 			{
 				return true;
@@ -418,5 +427,17 @@
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}						
-		}	
+		}
+
+		/*
+			Save Braintree customer id after the user is registered.
+		*/
+		static function user_register($user_id)
+		{
+			global $pmpro_braintree_customerid;
+			if(!empty($pmpro_braintree_customerid))
+			{
+				update_user_meta($user_id, 'pmpro_braintree_customerid', $pmpro_braintree_customerid);
+			}
+		}
 	}
