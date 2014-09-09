@@ -108,6 +108,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed warnings in the membership-billing page.
 * BUG: Fixed false positive "There are JavaScript errors on the page. Please contact the webmaster." errors.
 * BUG: Fixed issue where users on some sites running 1.7.14 could not logout.
+* OTHER: Changed the CSS class of the checkout button generated via [checkout_button] shortcode or pmpro_getCheckoutButton() function from "btn btn-primary" to "pmpro_btn" to match other buttons generated with PMPro.
 
 = 1.7.14 =
 * BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)
