@@ -148,7 +148,7 @@ add_action('login_init', 'pmpro_login_head');
 */
 function pmpro_redirect_to_logged_in()
 {	
-	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in())
+	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login'))
 	{
 		wp_redirect($_REQUEST['redirect_to']);
 		exit;

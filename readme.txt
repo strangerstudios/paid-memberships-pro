@@ -106,6 +106,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed warnings in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
 * BUG: Fixed issue where new users who checked out with Braintree weren't having their customerid's saved, which led to subscription syncronization issues if they checked out again or updated their billing.
 * BUG: Fixed warnings in the membership-billing page.
+* BUG: Fixed false positive "There are JavaScript errors on the page. Please contact the webmaster." errors.
+* BUG: Fixed issue where users on some sites running 1.7.14 could not logout.
 
 = 1.7.14 =
 * BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)

@@ -8,6 +8,8 @@
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
+	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />		
+	
 	<?php if($pmpro_msg) 
 		{
 	?>
@@ -774,5 +776,5 @@
 </script>
 <script>
     //add javascriptok hidden field to checkout
-    jQuery("input[name=submit-checkout]").after("<input type=hidden name=javascriptok value=1 />");
+    jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 </script>
