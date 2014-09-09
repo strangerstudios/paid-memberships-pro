@@ -1395,7 +1395,7 @@ function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL
 		$button_text = __("Sign Up for !!name!! Now", "pmpro");
 		
 	if(empty($classes))
-		$classes = "btn btn-primary";
+		$classes = "pmpro_btn";
 		
 	if(empty($level_id))
 		$r = __("Please specify a level id.", "pmpro");
