@@ -461,8 +461,7 @@ if ($submit && $pmpro_msgt != "pmpro_error") {
         }
     }
 
-    if (!empty($pmpro_error_fields)) {
-        d($pmpro_error_fields);
+    if (!empty($pmpro_error_fields)) {        
 		pmpro_setMessage(__("Please complete all required fields.", "pmpro"), "pmpro_error");
     }
     if (!empty($password) && $password != $password2) {
