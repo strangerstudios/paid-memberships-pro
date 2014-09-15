@@ -336,7 +336,7 @@ function pmpro_next_payment($user_id = NULL, $order_status = "success")
 	//get current membership level
 	$level = pmpro_getMembershipLevelForUser($user_id);		
 	
-	if(!empty($order) && !empty($level) && !empty($level->cycle_number))
+	if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
 	{					
 		//last payment date
 		$lastdate = date("Y-m-d", $order->timestamp);

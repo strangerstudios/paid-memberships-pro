@@ -727,17 +727,22 @@
 		function cancel(&$order)
 		{
 			//define variables to send					
-			$subscriptionId = $order->subscription_transaction_id;
+			if(!empty($order->subscription_transaction_id))
+				$subscriptionId = $order->subscription_transaction_id;
+			else
+				$subscriptionId = "";
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
 		
-			$gateway_environment = $order->gateway_environment;
-			if(empty($gateway_environment))
-				$gateway_environment = pmpro_getOption("gateway_environment");
+			if(!empty($order->gateway_environment))
+				$gateway_environment = $order->gateway_environment;
+			else
+				$gateway_environment = pmpro_getOption("gateway_environment");			
+			
 			if($gateway_environment == "live")
-					$host = "api.authorize.net";		
-				else
-					$host = "apitest.authorize.net";		
+				$host = "api.authorize.net";		
+			else
+				$host = "apitest.authorize.net";		
 			
 			$path = "/xml/v1/request.api";
 		
@@ -789,6 +794,78 @@
 				return false;				
 			}
 		}	
+		
+		function getSubscriptionStatus(&$order)
+		{			
+			//define variables to send					
+			if(!empty($order->subscription_transaction_id))
+				$subscriptionId = $order->subscription_transaction_id;
+			else
+				$subscriptionId = "";
+			$loginname = pmpro_getOption("loginname");
+			$transactionkey = pmpro_getOption("transactionkey");
+		
+			if(!empty($order->gateway_environment))
+				$gateway_environment = $order->gateway_environment;
+			else
+				$gateway_environment = pmpro_getOption("gateway_environment");			
+			
+			if($gateway_environment == "live")
+				$host = "api.authorize.net";		
+			else
+				$host = "apitest.authorize.net";	
+			
+			$path = "/xml/v1/request.api";
+		
+			if(!$subscriptionId || !$loginname || !$transactionkey)
+				return false;
+		
+			//build xml to post
+			$content =
+					"<?xml version=\"1.0\" encoding=\"utf-8\"?>".
+					"<ARBGetSubscriptionStatusRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
+					"<merchantAuthentication>".
+					"<name>" . $loginname . "</name>".
+					"<transactionKey>" . $transactionkey . "</transactionKey>".
+					"</merchantAuthentication>" .
+					"<subscriptionId>" . $subscriptionId . "</subscriptionId>".
+					"</ARBGetSubscriptionStatusRequest>";
+				
+			//send the xml via curl
+			$response = $this->send_request_via_curl($host,$path,$content);
+				
+			//if curl is unavilable you can try using fsockopen
+			/*
+			$response = send_request_via_fsockopen($host,$path,$content);
+			*/
+						
+			//if the connection and send worked $response holds the return from Authorize.net
+			if($response)
+			{								
+				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);								
+				
+				$status = $this->substring_between($response,'<status>','</status>');
+				
+				if($resultCode == "Ok" || $code == "Ok")
+				{
+					return $status;
+				}
+				else
+				{					
+					$order->status = "error";
+					$order->errorcode = $resultCode;
+					$order->error = $message;
+					$order->shorterror = $text;
+				}
+			} 
+			else  
+			{								
+				$order->status = "error";
+				$order->errorcode = $resultCode;
+				$order->error = $message;
+				$order->shorterror = $text;
+			}
+		}		
 		
 		//Authorize.net Function
 		//function to send xml request via fsockopen
