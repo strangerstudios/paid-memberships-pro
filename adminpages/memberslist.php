@@ -197,7 +197,7 @@
 								<?php } ?>
 								<?php if((float)$auser->initial_payment > 0 && (float)$auser->billing_amount > 0) { ?>+<br /><?php } ?>
 								<?php if((float)$auser->billing_amount > 0) { ?>
-									<?php echo $pmpro_currency_symbol; ?><?php echo $auser->billing_amount?>/<?php echo $auser->cycle_period?>
+									<?php echo $pmpro_currency_symbol; ?><?php echo $auser->billing_amount?>/<?php if($auser->cycle_number > 1) { echo $auser->cycle_number . " " . $auser->cycle_period . "s"; } else { echo $auser->cycle_period; } ?>
 								<?php } ?>
 								<?php if((float)$auser->initial_payment <= 0 && (float)$auser->billing_amount <= 0) { ?>
 									-
