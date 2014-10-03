@@ -103,6 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.7.14.3 =
+* BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges.  (Thanks, Antonv and Thomas Sjolshagen)
 * BUG: Fixed issue where pmpro_next_payment() would return a 0 timestamp instead of false when there is no previous order. (Thanks, Thomas Sjolshagen)
 * ENAHNCEMENT: Added getSubscriptionStatus() to Authorize.net gateway class. Also fixed up some of the logic around checking the gateway environment.
 * BUG: Now urlencoding the API Username and Password sent through the PayPal APIs in case your values have + or other special characters in them. (Thanks, mrschmiddy)

@@ -300,7 +300,7 @@
                     "currency" => strtolower($pmpro_currency),
                     "id" => $order->code
                 );
-
+				
 				$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
 			}
 			catch (Exception $e)
@@ -312,8 +312,38 @@
 			
 			//subscribe to the plan
 			try
-			{				
-				$this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));
+			{								
+				$response = $this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));
+				
+				//if we updated an existing subscription, we need to add days from current billing period to the trial_period_days				
+				$current_period_start = $response->current_period_start;
+				$now = current_time('timestamp');							
+				if(date("Y-m-d", $current_period_start) != date("Y-m-d", $now))
+				{
+					//current period start is not right now, let's calculate different and push back the "trial"
+					$current_period_days = ceil(($now - $current_period_start)/3600/24);					
+					if($current_period_days > 0)
+					{						
+						//delete the old plan
+						$plan->delete();
+						
+						//create a new one
+						$plan = array(
+							"amount" => $amount * 100,
+							"interval_count" => $order->BillingFrequency,
+							"interval" => strtolower($order->BillingPeriod),
+							"trial_period_days" => $current_period_days + $trial_period_days,	//adding current period days
+							"name" => $order->membership_name . " for order " . $order->code,
+							"currency" => strtolower($pmpro_currency),
+							"id" => $order->code
+						);
+						
+						$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
+																		
+						//update subscription
+						$response = $this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));							
+					}
+				}				
 			}
 			catch (Exception $e)
 			{
