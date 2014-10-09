@@ -108,6 +108,7 @@ Not sure? You can find out by doing a bit a research.
 * ENAHNCEMENT: Added getSubscriptionStatus() to Authorize.net gateway class. Also fixed up some of the logic around checking the gateway environment.
 * BUG: Now urlencoding the API Username and Password sent through the PayPal APIs in case your values have + or other special characters in them. (Thanks, mrschmiddy)
 * BUG: Now showing cycle number in the Fee column of the members list. E.g. a level that is $10 every 3 months will now show up as $10.00 + $10.00/3 Months.
+* BUG: Fixed bug where user first_name and last_name were being overwritten by PayPal values when using PayPal Standard.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
