@@ -110,6 +110,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Now showing cycle number in the Fee column of the members list. E.g. a level that is $10 every 3 months will now show up as $10.00 + $10.00/3 Months.
 * BUG: Fixed bug where user first_name and last_name were being overwritten by PayPal values when using PayPal Standard.
 * ENHANCEMENT: Added PMPRO_CRON_LIMIT constant, which can be used to limit the number of records processed by each scheduled cron job. This can for example, keep your server from going over PHP time limits or email limits. Use define('PMPRO_CRON_LIMIT', 100); to set the limit to 100.
+* BUG: Discount code AJAX calls now going through admin-ajax.php, fixing issues where the Themed Profiles module of Theme My Login would block those calls. (Thanks, Tony)
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
