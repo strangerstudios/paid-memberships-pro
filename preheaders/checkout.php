@@ -1,5 +1,4 @@
 <?php
-
 global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
 
 if($current_user->ID)
@@ -80,6 +79,9 @@ if (empty($pmpro_level->id)) {
     wp_redirect(pmpro_url("levels"));
     exit(0);
 }
+
+//enqueue some scripts
+wp_enqueue_script('jquery.creditCardValidator', plugins_url('/js/jquery.creditCardValidator.js' , dirname(__FILE__ )), array( 'jquery' ));
 
 global $wpdb, $current_user, $pmpro_requirebilling;
 //unless we're submitting a form, let's try to figure out if https should be used
@@ -181,7 +183,7 @@ if ($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level)) {
                     form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
                     //insert fields for other card fields
-                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+                    //form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
                     form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
                     form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");

@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.7.14.3
+Stable tag: 1.7.15
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,7 +102,7 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.14.3 =
+= 1.7.15 =
 * BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges.  (Thanks, Antonv and Thomas Sjolshagen)
 * BUG: Fixed issue where pmpro_next_payment() would return a 0 timestamp instead of false when there is no previous order. (Thanks, Thomas Sjolshagen)
 * ENAHNCEMENT: Added getSubscriptionStatus() to Authorize.net gateway class. Also fixed up some of the logic around checking the gateway environment.
@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where user first_name and last_name were being overwritten by PayPal values when using PayPal Standard.
 * ENHANCEMENT: Added PMPRO_CRON_LIMIT constant, which can be used to limit the number of records processed by each scheduled cron job. This can for example, keep your server from going over PHP time limits or email limits. Use define('PMPRO_CRON_LIMIT', 100); to set the limit to 100.
 * BUG: Discount code AJAX calls now going through admin-ajax.php, fixing issues where the Themed Profiles module of Theme My Login would block those calls. (Thanks, Tony)
+* ENHANCEMENT: Removed the "CardType" field at checkout and now using the jquery.creditCardValidator script to determine the card type on form submit.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)

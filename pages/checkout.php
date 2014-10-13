@@ -489,17 +489,28 @@
 						<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
 					<?php
 					}
-				?>
-				<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
-				<div class="pmpro_payment-card-type">
-					<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
-					<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?> class=" <?php echo pmpro_getClassForField("CardType");?>">
-						<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-							<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
-						<?php } ?>												
-					</select> 
-				</div>
-				<?php } ?>
+				?>				
+				<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+				<script>
+					jQuery(document).ready(function() {												
+							jQuery('#AccountNumber').validateCreditCard(function(result) {								
+								var cardtypenames = {
+									"amex":"American Express",
+									"diners_club_carte_blanche":"Diners Club Carte Blanche",
+									"diners_club_international":"Diners Club International",
+									"discover":"Discover",
+									"jcb":"JCB",
+									"laser":"Laser",
+									"maestro":"Maestro",
+									"mastercard":"Mastercard",
+									"visa":"Visa",
+									"visa_electron":"Visa Electron"
+								}
+																
+								jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+							});						
+					});
+				</script>
 			
 				<div class="pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
