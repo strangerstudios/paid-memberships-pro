@@ -506,8 +506,11 @@
 									"visa":"Visa",
 									"visa_electron":"Visa Electron"
 								}
-																
-								jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+								
+								if(result.card_type)
+									jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+								else
+									jQuery('#CardType').val('Unknown Card Type');
 							});						
 					});
 				</script>
