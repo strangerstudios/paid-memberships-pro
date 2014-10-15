@@ -5,7 +5,7 @@
 //add the fields
 function pmpro_membership_level_profile_fields($user)
 {
-	global $current_user, $pmpro_currency_symbol;
+	global $current_user;
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -64,7 +64,7 @@ function pmpro_membership_level_profile_fields($user)
 					{
 					?>
 						<?php if($membership_values->billing_amount > 0) { ?>
-							at <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->billing_amount?>
+							at <?php echo pmpro_formatPrice($membership_values->billing_amount);?>
 							<?php if($membership_values->cycle_number > 1) { ?>
 								per <?php echo $membership_values->cycle_number?> <?php echo sornot($membership_values->cycle_period,$membership_values->cycle_number)?>
 							<?php } elseif($membership_values->cycle_number == 1) { ?>
@@ -75,7 +75,7 @@ function pmpro_membership_level_profile_fields($user)
 						<?php if($membership_values->billing_limit) { ?> for <?php echo $membership_values->billing_limit.' '.sornot($membership_values->cycle_period,$membership_values->billing_limit)?><?php } ?>.
 
 						<?php if($membership_values->trial_limit) { ?>
-							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost <?php echo $pmpro_currency_symbol;?><?php echo $membership_values->trial_amount?>.
+							The first <?php echo $membership_values->trial_limit?> <?php echo sornot("payments",$membership_values->trial_limit)?> will cost <?php echo pmpro_formatPrice($membership_values->trial_amount);?>.
 						<?php } ?>
 					<?php
 					}

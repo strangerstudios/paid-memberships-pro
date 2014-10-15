@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels, $pmpro_currency_symbol;
+	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels;
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	if($current_user->membership_level->ID)
@@ -15,11 +15,11 @@
 				<?php
 					$level = $current_user->membership_level;
 					if($current_user->membership_level->cycle_number > 1) {
-						printf(__('%s every %d %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+						printf(__('%s every %d %s.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 					} elseif($current_user->membership_level->cycle_number == 1) {
-						printf(__('%s per %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+						printf(__('%s per %s.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
 					} else { 
-						echo $pmpro_currency_symbol, $current_user->membership_level->billing_amount;
+						echo pmpro_formatPrice($current_user->membership_level->billing_amount);
 					}
 				?>
 				</li>
@@ -35,11 +35,11 @@
 			
 			<?php if($current_user->membership_level->trial_limit == 1) 
 			{ 
-				printf(__("Your first payment will cost %s.", "pmpro"), $pmpro_currency_symbol . $current_user->membership_level->trial_amount);
+				printf(__("Your first payment will cost %s.", "pmpro"), pmpro_formatPrice($current_user->membership_level->trial_amount));
 			}
 			elseif(!empty($current_user->membership_level->trial_limit)) 
 			{
-				printf(__("Your first %d payments will cost %s.", "pmpro"), $current_user->membership_level->trial_limit, $pmpro_currency_symbol . $current_user->membership_level->trial_amount);
+				printf(__("Your first %d payments will cost %s.", "pmpro"), $current_user->membership_level->trial_limit, pmpro_formatPrice($current_user->membership_level->trial_amount));
 			}
 			?>
 			</ul>
@@ -135,7 +135,7 @@
 						if($count++ > 5)
 							break;
 						?>
-						<li><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?> (<?php echo $pmpro_currency_symbol?><?php echo $invoice->total?>)</a></li>
+						<li><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?> (<?php echo pmpro_formatPrice($invoice->total)?>)</a></li>
 						<?php
 					}
 				?>

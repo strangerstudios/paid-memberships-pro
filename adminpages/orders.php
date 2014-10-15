@@ -6,7 +6,7 @@
 	}	
 	
 	//vars
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb;
 	if(isset($_REQUEST['s']))
 		$s = $_REQUEST['s'];
 	else
@@ -935,7 +935,7 @@
 							</td>						
 							<?php do_action("pmpro_orders_extra_cols_body", $order);?>
 							<td><?php echo $order->membership_id;?></td>
-							<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
+							<td><?php echo pmpro_formatPrice($order->total);?></td>
 							<td>
 								<?php if(!empty($order->payment_type)) echo $order->payment_type . "<br />";?>
 								<?php if(!empty($order->accountnumber)) { ?>

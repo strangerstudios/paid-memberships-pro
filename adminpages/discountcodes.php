@@ -428,7 +428,18 @@
 						<tbody>
 							<tr>
 								<th scope="row" valign="top"><label for="initial_payment"><?php _e('Initial Payment', 'pmpro');?>:</label></th>
-								<td><?php echo $pmpro_currency_symbol?><input name="initial_payment[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small><?php _e('The initial amount collected at registration.', 'pmpro');?></small></td>
+								<td>
+									<?php
+									if(pmpro_getCurrencyPosition() == "left")
+										echo $pmpro_currency_symbol;
+									?>
+									<input name="initial_payment[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> 
+									<?php
+									if(pmpro_getCurrencyPosition() == "right")
+										echo $pmpro_currency_symbol;
+									?>
+									<small><?php _e('The initial amount collected at registration.', 'pmpro');?></small>
+								</td>
 							</tr>
 							
 							<tr>
@@ -439,7 +450,16 @@
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Amount', 'pmpro');?>:</label></th>
 								<td>
-									<?php echo $pmpro_currency_symbol?><input name="billing_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small>per</small>
+									<?php
+									if(pmpro_getCurrencyPosition() == "left")
+										echo $pmpro_currency_symbol;
+									?>
+									<input name="billing_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> 
+									<?php
+									if(pmpro_getCurrencyPosition() == "right")
+										echo $pmpro_currency_symbol;
+									?>
+									<small>per</small>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 									<select name="cycle_period[]" onchange="updateCyclePeriod();">
 									  <?php
@@ -471,7 +491,15 @@
 							<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
 								<th scope="row" valign="top"><label for="trial_amount"><?php _e('Trial Billing Amount', 'pmpro');?>:</label></th>
 								<td>
-									<?php echo $pmpro_currency_symbol?><input name="trial_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+									<?php
+									if(pmpro_getCurrencyPosition() == "left")
+										echo $pmpro_currency_symbol;
+									?>
+									<input name="trial_amount[]" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+									<?php
+									if(pmpro_getCurrencyPosition() == "right")
+										echo $pmpro_currency_symbol;
+									?>
 									<small><?php _e('for the first', 'pmpro');?></small>
 									<input name="trial_limit[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
 									<small><?php _e('subscription payments', 'pmpro');?>.</small>																			

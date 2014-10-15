@@ -1,5 +1,5 @@
 <?php 
-	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user, $pmpro_currency_symbol;
+	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
 	
 	if($pmpro_msg)
 	{
@@ -76,17 +76,17 @@
 					<td align="center">
 						<?php if($pmpro_invoice->total != '0.00') { ?>
 							<?php if(!empty($pmpro_invoice->tax)) { ?>
-								<?php _e('Subtotal', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->subtotal, 2);?><br />
-								<?php _e('Tax', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->tax, 2);?><br />
+								<?php _e('Subtotal', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
+								<?php _e('Tax', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
 								<?php if(!empty($pmpro_invoice->couponamount)) { ?>
-									<?php _e('Coupon', 'pmpro');?>: (<?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->couponamount, 2);?>)<br />
+									<?php _e('Coupon', 'pmpro');?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
 								<?php } ?>
-								<strong><?php _e('Total', 'pmpro');?>: <?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->total, 2)?></strong>
+								<strong><?php _e('Total', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
 							<?php } else { ?>
-								<?php echo $pmpro_currency_symbol?><?php echo number_format($pmpro_invoice->total, 2)?>
+								<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
 							<?php } ?>						
 						<?php } else { ?>
-							<small class="pmpro_grey"><?php echo $pmpro_currency_symbol?>0</small>
+							<small class="pmpro_grey"><?php echo pmpro_formatPrice(0);?></small>
 						<?php } ?>		
 					</td>
 				</tr>
@@ -118,7 +118,7 @@
 					<tr>
 						<td><?php echo date(get_option("date_format"), $invoice->timestamp)?></td>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo $invoice->code; ?></a></td>
-						<td><?php echo $pmpro_currency_symbol?><?php echo $invoice->total?></td>					
+						<td><?php echo pmpro_formatPrice($invoice->total);?></td>					
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php _e('View Invoice', 'pmpro'); ?></a></td>
 					</tr>
 					<?php

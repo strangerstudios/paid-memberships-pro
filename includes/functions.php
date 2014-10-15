@@ -198,12 +198,11 @@ function pmpro_isLevelExpiring(&$level)
 
 function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
-	global $pmpro_currency_symbol;
 	//initial payment
 	if(!$short)
-		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
 	else
-		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
 			
 	//recurring part
 	if($level->billing_amount != '0.00')
@@ -212,36 +211,36 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{			
 			if($level->cycle_number == '1')
 			{
-				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}				
 			else
 			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}
 		}
 		elseif($level->billing_limit == 1)
 		{
-			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 		}
 		else
 		{
 			if( $level->billing_amount === $level->initial_payment ) {
 				if($level->cycle_number == '1')
 				{
-					$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+					$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
 				}
 				else
 				{
-					$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
+					$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
 				}
 			} else {
 				if($level->cycle_number == '1')
 				{
-					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
 				}
 				else
 				{
-					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 				}
 			}
 		}
@@ -270,11 +269,11 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{
 			if($level->trial_limit == '1')
 			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), pmpro_formatPrice($level->trial_amount));
 			}
 			else
 			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, pmpro_formatPrice($level->trial_amount));
 			}
 		}
 	}
@@ -1746,4 +1745,51 @@ function pmpro_is_ready()
 		return true;
 	else
 		return false;
+}
+
+/**
+ * Format a price per the currency settings.
+ *
+ * @since  1.7.15
+ */
+function pmpro_formatPrice($price)
+{
+	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
+	
+	//start with the price formatted with two decimals
+	$formatted = number_format($price, 2);
+	
+	//settings stored in array?
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
+	{
+		//which side is the symbol on?
+		if(!empty($pmpro_currencies[$pmpro_currency]['position']) && $pmpro_currencies[$pmpro_currency]['position']== 'left')
+			$formatted = $pmpro_currency_symbol . $formatted;
+		else
+			$formatted = $formatted . $pmpro_currency_symbol;
+			
+		//commas or periods?
+		if(!empty($pmpro_currencies[$pmpro_currency]['separator']) && $pmpro_currencies[$pmpro_currency]['separator'])
+			$formatted = str_replace(array(".",","), $pmpro_currencies[$pmpro_currency]['separator'], $formatted);
+	}
+	else
+		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left
+	
+	//filter
+	return apply_filters('pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol);
+}
+
+/**
+ * Which side does the currency symbol go on?
+ *
+ * @since  1.7.15
+ */
+function pmpro_getCurrencyPosition()
+{
+	global $pmpro_currency, $pmpro_currencies;
+	
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]) && !empty($pmpro_currencies[$pmpro_currency]['position']))
+		return $pmpro_currencies[$pmpro_currency]['position'];
+	else
+		return "left";
 }

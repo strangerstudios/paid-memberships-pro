@@ -337,7 +337,17 @@
 			<tbody>
 				<tr>
 					<th scope="row" valign="top"><label for="initial_payment"><?php _e('Initial Payment', 'pmpro');?>:</label></th>
-					<td><?php echo $pmpro_currency_symbol?><input name="initial_payment" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> <small><?php _e('The initial amount collected at registration.', 'pmpro');?></small></td>
+					<td>
+						<?php
+						if(pmpro_getCurrencyPosition() == "left")
+							echo $pmpro_currency_symbol;
+						?>
+						<input name="initial_payment" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->initial_payment))?>" /> 
+						<?php
+						if(pmpro_getCurrencyPosition() == "right")
+							echo $pmpro_currency_symbol;
+						?>
+						<small><?php _e('The initial amount collected at registration.', 'pmpro');?></small></td>
 				</tr>
 				
 				<tr>
@@ -348,7 +358,16 @@
 				<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Billing Amount', 'pmpro');?>:</label></th>
 					<td>
-						<?php echo $pmpro_currency_symbol?><input name="billing_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> <small><?php _e('per', 'pmpro');?></small>
+						<?php
+						if(pmpro_getCurrencyPosition() == "left")
+							echo $pmpro_currency_symbol;
+						?>
+						<input name="billing_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->billing_amount))?>" /> 
+						<?php
+						if(pmpro_getCurrencyPosition() == "right")
+							echo $pmpro_currency_symbol;
+						?>
+						<small><?php _e('per', 'pmpro');?></small>
 						<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 						<select id="cycle_period" name="cycle_period">
 						  <?php
@@ -405,7 +424,15 @@
 				<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
 					<th scope="row" valign="top"><label for="trial_amount"><?php _e('Trial Billing Amount', 'pmpro');?>:</label></th>
 					<td>
-						<?php echo $pmpro_currency_symbol?><input name="trial_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+						<?php
+						if(pmpro_getCurrencyPosition() == "left")
+							echo $pmpro_currency_symbol;
+						?>
+						<input name="trial_amount" type="text" size="20" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_amount))?>" />
+						<?php
+						if(pmpro_getCurrencyPosition() == "right")
+							echo $pmpro_currency_symbol;
+						?>
 						<small><?php _e('for the first', 'pmpro');?></small>
 						<input name="trial_limit" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
 						<small><?php _e('subscription payments', 'pmpro');?>.</small>	
@@ -541,14 +568,14 @@
 				<?php if(pmpro_isLevelFree($level)) { ?>
 					<?php _e('FREE', 'pmpro');?>
 				<?php } else { ?>
-					<?php echo $pmpro_currency_symbol?><?php echo $level->initial_payment?>
+					<?php echo pmpro_formatPrice($level->initial_payment);?>
 				<?php } ?>
 			</td>
 			<td>
 				<?php if(!pmpro_isLevelRecurring($level)) { ?>
 					--
 				<?php } else { ?>						
-					<?php echo $pmpro_currency_symbol?><?php echo $level->billing_amount?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.pmpro_translate_billing_period($level->cycle_period,$level->cycle_number)?>
+					<?php echo pmpro_formatPrice($level->billing_amount);?> <?php _e('every', 'pmpro');?> <?php echo $level->cycle_number.' '.pmpro_translate_billing_period($level->cycle_period,$level->cycle_number)?>
 					
 					<?php if($level->billing_limit) { ?>(<?php _e('for', 'pmpro');?> <?php echo $level->billing_limit?> <?php echo sornot($level->cycle_period,$level->billing_limit)?>)<?php } ?>
 					
@@ -558,7 +585,7 @@
 				<?php if(!pmpro_isLevelTrial($level)) { ?>
 					--
 				<?php } else { ?>		
-					<?php echo $pmpro_currency_symbol?><?php echo $level->trial_amount?> <?php _e('for', 'pmpro');?> <?php echo $level->trial_limit?> <?php echo sornot("payment",$level->trial_limit)?>
+					<?php echo pmpro_formatPrice($level->trial_amount);?> <?php _e('for', 'pmpro');?> <?php echo $level->trial_limit?> <?php echo sornot("payment",$level->trial_limit)?>
 				<?php } ?>
 			</td>
 			<td>
