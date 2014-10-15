@@ -17,8 +17,8 @@
 				),
 			'AUD' => __('Australian Dollars (&#36;)', 'pmpro'),
 			'BRL' => array(
-				'name' => __('Brazilian Real (&#36;)', 'pmpro'),
-				'symbol' => '&#36;',
+				'name' => __('Brazilian Real (R&#36;)', 'pmpro'),
+				'symbol' => 'R&#36;',
 				'position' => 'right'
 				),
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),

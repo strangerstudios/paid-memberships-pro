@@ -89,15 +89,7 @@ function pmpro_init()
 	}
 
 	//figure out what symbol to show for currency
-	if(in_array($pmpro_currency, array("USD", "AUD", "BRL", "CAD", "HKD", "MXN", "NZD", "SGD")))
-		$pmpro_currency_symbol = "&#36;";
-	elseif($pmpro_currency == "EUR")
-		$pmpro_currency_symbol = "&euro;";
-	elseif($pmpro_currency == "GBP")
-		$pmpro_currency_symbol = "&pound;";
-	elseif($pmpro_currency == "JPY")
-		$pmpro_currency_symbol = "&yen;";
-	elseif(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
 		$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
 	elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
 		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);	
