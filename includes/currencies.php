@@ -19,7 +19,7 @@
 			'BRL' => array(
 				'name' => __('Brazilian Real (R&#36;)', 'pmpro'),
 				'symbol' => 'R&#36;',
-				'position' => 'right'
+				'position' => 'left'
 				),
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),
 			'CNY' => __('Chinese Yuan', 'pmpro'),
