@@ -114,6 +114,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Discount code AJAX calls now going through admin-ajax.php, fixing issues where the Themed Profiles module of Theme My Login would block those calls. (Thanks, Tony)
 * ENHANCEMENT: Removed the "CardType" field at checkout and now using the jquery.creditCardValidator script to determine the card type on form submit.
 * BUG: No longer setting $order->subtotal and invoice total to the billing amount (vs the initial price) for recurring payments with Cybersource, PayPal Standard, PayPal Express or Twocheckout. (Thanks, Joce Nunes)
+* ENHANCEMENT: The search filter will no longer filter out a post that is in a category blocked by one membership level if the user also has access to that content through another category.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
