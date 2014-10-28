@@ -59,7 +59,13 @@ if(empty($email_member_notification))
 	Adds template files and changes content type to html if using PHPMailer directly.
 */
 function pmpro_send_html( $phpmailer ) {
-		
+	
+	//check if we should wpautop later
+	if($phpmailer->Body == strip_tags($phpmailer->Body))
+		$wpautop = true;
+	else
+		$wpautop = false;
+	
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
 	// Clean < and > around text links in WP 3.1
@@ -94,6 +100,9 @@ function pmpro_send_html( $phpmailer ) {
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
 	}
 
+	if($wpautop)
+		$phpmailer->Body = wpautop($phpmailer->Body);
+	
 	do_action("pmpro_after_phpmailer_init", $phpmailer);
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }
