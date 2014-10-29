@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: The search filter will no longer filter out a post that is in a category blocked by one membership level if the user also has access to that content through another category.
 * BUG/ENHANCEMENT: Running email body through wpautop if it doesn't look like HTML.
 * ENHANCEMENT: Added pmpro_getfile_before_error hook in getfile.php.
+* ENHANCEMENT: Added pmpro_ipn_check_receiver_email filter if you want to change how the email is checked in the IPN log.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
