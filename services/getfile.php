@@ -52,6 +52,8 @@
 		{
 			if(!pmpro_has_membership_access($file_post_parent))
 			{
+				do_action("pmpro_getfile_before_error", $filename, $file_post_parent);
+				
 				//nope				
 				header('HTTP/1.1 503 Service Unavailable', true, 503);
 				echo "HTTP/1.1 503 Service Unavailable";
