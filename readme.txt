@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.15 =
 * BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges.  (Thanks, Antonv and Thomas Sjolshagen)
+* BUG: Fixed issue with Braintree integration where the billing address associated with a credit card was not being updated via the update billing page. (Thanks, Keith Abramo)
 * BUG: Fixed issue where pmpro_next_payment() would return a 0 timestamp instead of false when there is no previous order. (Thanks, Thomas Sjolshagen)
 * ENHANCEMENT: Added pmpro_formatPrice() and pmpro_getCurrencyPosition() functions. Now using them to render prices with formatting. You can use the pmpro_format_price filter or pmpro_currecies filter to adjust the formatting of prices to support currency symbols after the price or to use commas instead of periods for separators.
 * ENAHNCEMENT: Added getSubscriptionStatus() to Authorize.net gateway class. Also fixed up some of the logic around checking the gateway environment.

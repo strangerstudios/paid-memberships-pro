@@ -170,12 +170,11 @@
 				{
 					$this->customer = Braintree_Customer::find($customer_id);
 										
-					//update the customer description and card
+					//update the customer address, description and card
 					if(!empty($order->accountnumber))
-					{
-						$response = Braintree_Customer::update(
-						  $customer_id,
-						  array(
+					{						
+						//put data in array for Braintree API calls
+						$update_array = array(
 							'firstName' => $order->FirstName,
 							'lastName' => $order->LastName,
 							'creditCard' => array(
@@ -185,13 +184,37 @@
 								'options' => array(
 									'updateExistingToken' => $this->customer->creditCards[0]->token
 								)
-							 )
-						  )
+							)
 						);
-						
+												
+						//address too?
+						if(!empty($order->billing))
+							//make sure Address2 is set
+							if(!isset($order->Address2))
+								$order->Address2 = '';
+							
+							//add billing address to array
+							$update_array['creditCard']['billingAddress'] = array(								
+								'firstName' => $order->FirstName,
+								'lastName' => $order->LastName,
+								'streetAddress' => $order->Address1,
+								'extendedAddress' => $order->Address2,
+								'locality' => $order->billing->city,
+								'region' => $order->billing->state,
+								'postalCode' => $order->billing->zip,
+								'countryCodeAlpha2' => $order->billing->country,
+								'options' => array(
+									'updateExisting' => true
+								)
+							);
+												
+						//update
+						$response = Braintree_Customer::update($customer_id, $update_array);
+												
 						if($response->success)
 						{							
 							$this->customer = $response->customer;
+							return $this->customer;
 						}
 						else
 						{
@@ -207,7 +230,7 @@
 				{
 					//assume no customer found					
 				}
-			}
+			}			
 						
 			//no customer id, create one
 			if(!empty($order->accountnumber))
