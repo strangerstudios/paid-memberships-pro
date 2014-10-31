@@ -203,7 +203,7 @@ function pmpro_report_sales_page()
 		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
-				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
 			<?php } ?>
 		</select>
 		<select id="year" name="year">
@@ -231,7 +231,7 @@ function pmpro_report_sales_page()
 	</div>
 	
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
-	
+		
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -273,7 +273,7 @@ function pmpro_report_sales_page()
 			var data = google.visualization.arrayToDataTable([
 			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>'],
 			  <?php foreach($cols as $date => $value) { ?>
-				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$date)); else echo $date;?>', <?php echo $value;?>],
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>],
 			  <?php } ?>
 			]);
 

@@ -613,7 +613,7 @@
 			
 			<select id="start-month" name="start-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($start_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+					<option value="<?php echo $i;?>" <?php selected($start_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
 				<?php } ?>
 			</select>
 			
@@ -625,7 +625,7 @@
 
 			<select id="end-month" name="end-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($end_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+					<option value="<?php echo $i;?>" <?php selected($end_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i,2));?></option>
 				<?php } ?>
 			</select>
 			

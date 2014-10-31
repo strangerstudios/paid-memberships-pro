@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG/ENHANCEMENT: Running email body through wpautop if it doesn't look like HTML.
 * ENHANCEMENT: Added pmpro_getfile_before_error hook in getfile.php.
 * ENHANCEMENT: Added pmpro_ipn_check_receiver_email filter if you want to change how the email is checked in the IPN log.
+* BUG: Fixed bug where reports would show duplicate month labels on the last day of the month.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
