@@ -3,7 +3,7 @@ global $post, $gateway, $wpdb, $besecure, $discount_code, $pmpro_level, $pmpro_l
 
 if($current_user->ID)
     $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
-
+	
 //this var stores fields with errors so we can make them red on the frontend
 $pmpro_error_fields = array();
 
@@ -813,6 +813,11 @@ if (!empty($pmpro_confirmed)) {
             $creds['user_password'] = $password;
             $creds['remember'] = true;
             $user = wp_signon($creds, false);
+			
+			//setting some cookies
+			wp_set_current_user($user_id, $username);
+			
+			wp_set_auth_cookie($user_id, true, is_ssl());
         }
     } else
         $user_id = $current_user->ID;
