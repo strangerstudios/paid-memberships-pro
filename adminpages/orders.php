@@ -425,7 +425,7 @@
 						<?php if(in_array("status", $read_only_fields) && $order_id > 0) { echo $order->status; } else { ?>
 						<?php
 							$statuses = array();
-							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded");
+							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded", "pending");
 							$used_statuses = $wpdb->get_col("SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders");
 							$statuses = array_unique(array_merge($default_statuses, $used_statuses));
 							asort($statuses);

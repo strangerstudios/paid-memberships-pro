@@ -121,6 +121,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added pmpro_ipn_check_receiver_email filter if you want to change how the email is checked in the IPN log.
 * BUG: Fixed bug where reports would show duplicate month labels on the last day of the month.
 * BUG: Fixed some issues with logging in at checkout, especially when using FORCE_SSL_ADMIN. (Thanks, Wimans)
+* ENHANCEMENT: Added "pending" as a default status for orders available on the edit order page in the dashboard.
 
 = 1.7.14.2 =
 * BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
