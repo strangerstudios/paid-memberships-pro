@@ -104,7 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.7.15 =
 * SECURITY FIX: The /services/getfile.php script has been disabled by default. You must set the PMPRO_GETFILE_ENABLED constant to true or 1 to allow the script to run. Additionally, the script will strip ../ and /. type strings out of the URI when looking for files to get and will not read any files using the extensions set via the pmpro_getfile_extension_blacklist filter. By default inc, php, php3, php4, php5, phps, and phtml file types are not allowed. (Thanks, Kacper Szurek)
-* BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges.  (Thanks, Antonv and Thomas Sjolshagen)
+* BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges. Now deleting the old Stripe subscription and any related open invoices and creating a new subscription instead of just updating the old subscription. (Thanks, Antonv and Thomas Sjolshagen)
 * BUG: Fixed issue with Braintree integration where the billing address associated with a credit card was not being updated via the update billing page. (Thanks, Keith Abramo)
 * BUG: Fixed issue where pmpro_next_payment() would return a 0 timestamp instead of false when there is no previous order. (Thanks, Thomas Sjolshagen)
 * ENHANCEMENT: Added pmpro_formatPrice() and pmpro_getCurrencyPosition() functions. Now using them to render prices with formatting. You can use the pmpro_format_price filter or pmpro_currecies filter to adjust the formatting of prices to support currency symbols after the price or to use commas instead of periods for separators.
