@@ -1,12 +1,23 @@
 <?php
 	global $isapage;
-	$isapage = true;
-		
+	$isapage = true;		
+	
 	//in case the file is loaded directly
 	if(!function_exists("get_userdata"))
 	{
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	}		
+	
+	//this script must be enabled to run
+	if(!defined('PMPRO_GETFILE_ENABLED') || !PMPRO_GETFILE_ENABLED)
+		die("The getfile script is not enabled.");
+	
+	//prevent loops when redirecting to .php files
+	if(!empty($_REQUEST['noloop']))
+	{
+		status_header( 500 );
+		die("This file cannot be loaded through the get file script.");
 	}
 	
 	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
@@ -17,6 +28,13 @@
 	if($uri[0] == "/")
 		$uri = substr($uri, 1, strlen($uri) - 1);
 	
+	/*
+		Remove ../-like strings from the URI.
+		Actually removes any combination of two or more ., /, and \.
+		This will prevent traversal attacks and loading hidden files.
+	*/
+	$uri = preg_replace("/[\.\/\\\\]{2,}/", "", $uri);
+		
 	//if WP is installed in a subdirectory, that directory(s) will be in both the PATH and URI
 	$home_url_parts = explode("/", str_replace("//", "", home_url()));	
 	if(count($home_url_parts) > 1)
@@ -69,8 +87,40 @@
 	//in case we want to do something else with the file
 	do_action("pmpro_getfile_before_readfile", $filename, $file_mimetype);
 	
-	//show the file
+	//if file is not found, die
+	if(!file_exists($filename))
+	{
+		status_header( 404 );
+        nocache_headers();        
+        die("File not found.");
+	}
+	
+	//if blacklistsed file type, redirect to it instead
+	$basename = basename($filename);
+	$parts = explode('.', $basename);
+	$ext = strtolower($parts[count($parts)-1]);
+	
+	//build blacklist and allow for filtering
+	$blacklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
+	$blacklist = apply_filters("pmpro_getfile_extension_blacklist", $blacklist);
+	
+	//check
+	if(in_array($ext, $blacklist))
+	{		
+		//add a noloop param to avoid infinite loops
+		$uri = add_query_arg("noloop", 1, $uri);
+		
+		//guess scheme and add host back to uri
+		if(is_ssl())
+			$uri = "https://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
+		else
+			$uri = "http://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
+				
+		wp_redirect($uri);
+		exit;
+	}
+		
+	//okay show the file
 	header("Content-type: " . $file_mimetype); 	
 	readfile($filename);
 	exit;
-?>
