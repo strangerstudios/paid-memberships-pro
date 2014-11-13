@@ -817,7 +817,7 @@ if (!empty($pmpro_confirmed)) {
 			//setting some cookies
 			wp_set_current_user($user_id, $username);
 			
-			wp_set_auth_cookie($user_id, true, is_ssl());
+			wp_set_auth_cookie($user_id, true, (force_ssl_login() || force_ssl_admin()));
         }
     } else
         $user_id = $current_user->ID;
