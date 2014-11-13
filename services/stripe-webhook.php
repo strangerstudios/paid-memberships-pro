@@ -185,7 +185,7 @@
 		elseif($event->type == "customer.subscription.deleted")
 		{						
 			//for one of our users? if they still have a membership, notify the admin			
-			$user = getUserFromCustomerEvent($event, "success");
+			$user = getUserFromCustomerEvent($event, "success", true);
 			if(!empty($user->ID))
 			{				
 				do_action("pmpro_stripe_subscription_deleted", $user->ID);	
@@ -225,7 +225,7 @@
 		$customer_id = $event->data->object->customer;
 		
 		//look up the order
-		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' LIMIT 1");
+		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($customer_id) . "' LIMIT 1");
 		
 		if(!empty($user_id))
 			return get_userdata($user_id);
@@ -233,7 +233,7 @@
 			return false;
 	}
 	
-	function getUserFromCustomerEvent($event, $status = false)
+	function getUserFromCustomerEvent($event, $status = false, $checkplan = true)
 	{
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
@@ -241,13 +241,16 @@
 		global $wpdb;
 		
 		$customer_id = $event->data->object->customer;
-		
-		//look up the order
-		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $customer_id . "' ";
-		if($status)
-			$sqlQuery .= " AND status='" . $status . "' ";
-		$sqlQuery .= " LIMIT 1";
+		$plan_id = $event->data->object->plan->id;
 				
+		//look up the order
+		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($customer_id) . "' ";		
+		if($status)
+			$sqlQuery .= " AND status='" . esc_sql($status) . "' ";
+		if($checkplan)
+			$sqlQuery .= " AND code='" . esc_sql($plan_id) . "' ";
+		$sqlQuery .= " LIMIT 1";
+						
 		$user_id = $wpdb->get_var($sqlQuery);
 				
 		if(!empty($user_id))

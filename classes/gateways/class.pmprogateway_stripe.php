@@ -310,40 +310,13 @@
 				return false;
 			}
 			
+			//cancel old subscription
+			$this->cancel($order, false);			
+			
 			//subscribe to the plan
 			try
-			{								
-				$response = $this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));
-				
-				//if we updated an existing subscription, we need to add days from current billing period to the trial_period_days				
-				$current_period_start = $response->current_period_start;
-				$now = current_time('timestamp');							
-				if(date("Y-m-d", $current_period_start) != date("Y-m-d", $now))
-				{
-					//current period start is not right now, let's calculate different and push back the "trial"
-					$current_period_days = ceil(($now - $current_period_start)/3600/24);					
-					if($current_period_days > 0)
-					{						
-						//delete the old plan
-						$plan->delete();
-						
-						//create a new one
-						$plan = array(
-							"amount" => $amount * 100,
-							"interval_count" => $order->BillingFrequency,
-							"interval" => strtolower($order->BillingPeriod),
-							"trial_period_days" => $current_period_days + $trial_period_days,	//adding current period days
-							"name" => $order->membership_name . " for order " . $order->code,
-							"currency" => strtolower($pmpro_currency),
-							"id" => $order->code
-						);
-						
-						$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
-																		
-						//update subscription
-						$response = $this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));							
-					}
-				}				
+			{
+				$this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));						
 			}
 			catch (Exception $e)
 			{
@@ -357,7 +330,7 @@
 			}
 			
 			//delete the plan
-			$plan = Stripe_Plan::retrieve($plan['id']);
+			$plan = Stripe_Plan::retrieve($order->code);
 			$plan->delete();		
 
 			//if we got this far, we're all good						
@@ -381,10 +354,11 @@
 			}
 		}
 		
-		function cancel(&$order)
+		function cancel(&$order, $update_status = true)
 		{
 			//no matter what happens below, we're going to cancel the order in our system
-			$order->updateStatus("cancelled");
+			if($update_status)
+				$order->updateStatus("cancelled");
 		
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
@@ -397,7 +371,11 @@
 			{
 				//find subscription with this order code
 				$subscriptions = $this->customer->subscriptions->all();												
-				
+								
+				//get open invoices
+				$invoices = $this->customer->invoices();
+				$invoices = $invoices->all();
+								
 				if(!empty($subscriptions))
 				{
 					//in case only one is returned
@@ -410,8 +388,24 @@
 						{
 							//found it, cancel it
 							try 
-							{								
-								$this->customer->subscriptions->retrieve($sub->data[0]->id)->cancel();
+							{
+								//find any open invoices for this subscription and forgive them
+								if(!empty($invoices))
+								{
+									foreach($invoices->data as $invoice)
+									{										
+										if(!$invoice->closed && $invoice->subscription == $sub->data[0]->id)
+										{
+											$invoice->closed = true;
+											$invoice->forgiven = true;
+											$invoice->save();
+										}
+									}
+								}	
+								
+								//cancel
+								$this->customer->subscriptions->retrieve($sub->data[0]->id)->cancel();							
+								
 								break;
 							}
 							catch(Exception $e)
@@ -423,7 +417,7 @@
 							}
 						}
 					}
-				}															
+				}
 				
 				return true;
 			}
