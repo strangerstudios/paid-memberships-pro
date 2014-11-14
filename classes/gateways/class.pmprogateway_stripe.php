@@ -243,6 +243,9 @@
 			if(empty($this->customer))
 				return false;	//error retrieving customer
 			
+			//set subscription id to custom id
+			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too
+			
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);			
@@ -309,14 +312,14 @@
 				$order->shorterror = $order->error;
 				return false;
 			}
-			
-			//cancel old subscription
-			$this->cancel($order, false);			
-			
+						
+			if(empty($order->subscription_transaction_id) && !empty($this->customer['id']))
+				$order->subscription_transaction_id = $this->customer['id'];					
+					
 			//subscribe to the plan
 			try
 			{
-				$this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));						
+				$this->customer->subscriptions->create(array("plan" => $order->code));
 			}
 			catch (Exception $e)
 			{
@@ -334,8 +337,7 @@
 			$plan->delete();		
 
 			//if we got this far, we're all good						
-			$order->status = "success";		
-			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too			
+			$order->status = "success";							
 			return true;
 		}	
 		
@@ -359,14 +361,14 @@
 			//no matter what happens below, we're going to cancel the order in our system
 			if($update_status)
 				$order->updateStatus("cancelled");
-		
+					
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
 			//find the customer
 			$this->getCustomer($order);									
-			
+						
 			if(!empty($this->customer))
 			{
 				//find subscription with this order code
@@ -377,26 +379,21 @@
 				$invoices = $invoices->all();
 								
 				if(!empty($subscriptions))
-				{
-					//in case only one is returned
-					if(!is_array($subscriptions))
-						$subscriptions = array($subscriptions);
-				
-					foreach($subscriptions as $sub)
+				{					
+					foreach($subscriptions->data as $sub)
 					{						
-						if($sub->data[0]->plan->id == $order->code)
+						if($sub->plan->id == $order->code)
 						{
 							//found it, cancel it
 							try 
-							{
+							{								
 								//find any open invoices for this subscription and forgive them
 								if(!empty($invoices))
 								{
 									foreach($invoices->data as $invoice)
 									{										
-										if(!$invoice->closed && $invoice->subscription == $sub->data[0]->id)
-										{
-											$invoice->closed = true;
+										if(!$invoice->closed && $invoice->subscription == $sub->id)
+										{											
 											$invoice->forgiven = true;
 											$invoice->save();
 										}
@@ -404,7 +401,7 @@
 								}	
 								
 								//cancel
-								$this->customer->subscriptions->retrieve($sub->data[0]->id)->cancel();							
+								$r = $sub->cancel();								
 								
 								break;
 							}

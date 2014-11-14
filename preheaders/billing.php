@@ -43,13 +43,12 @@ if ($gateway == "stripe") {
             jQuery(document).ready(function () {
                 jQuery(".pmpro_form").submit(function (event) {
 
-                    Stripe.createToken({
+					//build array for creating token
+                    var args = {
                         number: jQuery('#AccountNumber').val(),
                         cvc: jQuery('#CVV').val(),
                         exp_month: jQuery('#ExpirationMonth').val(),
-                        exp_year: jQuery('#ExpirationYear').val(),
-                        name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())
-
+                        exp_year: jQuery('#ExpirationYear').val()                       
                         <?php
                             $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
                             if(!empty($pmpro_stripe_verify_address))
@@ -63,8 +62,13 @@ if ($gateway == "stripe") {
                         <?php
                             }
                         ?>
-
-                    }, stripeResponseHandler);
+					};
+					
+					if (jQuery('#bfirstname').length && jQuery('#blastname').length)
+                            args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
+					
+					//create token
+					Stripe.createToken(args, stripeResponseHandler);
 
                     // prevent the form from submitting with the default action
                     return false;
