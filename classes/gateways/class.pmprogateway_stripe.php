@@ -394,7 +394,7 @@
 									{										
 										if(!$invoice->closed && $invoice->subscription == $sub->id)
 										{											
-											$invoice->forgiven = true;
+											$invoice->closed = true;
 											$invoice->save();
 										}
 									}
