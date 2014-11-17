@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.7.15
+Stable tag: 1.7.15.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,10 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.15.1 =
+* BUG: Fixed issue where "complete all required fields" was being shown when using Stripe. They are calling the CardType "brand" in their return object, not "type".
+* Avoiding some warnings.
+
 = 1.7.15 =
 * SECURITY FIX: The /services/getfile.php script has been disabled by default. You must set the PMPRO_GETFILE_ENABLED constant to true or 1 to allow the script to run. Additionally, the script will strip ../ and /. type strings out of the URI when looking for files to get and will not read any files using the extensions set via the pmpro_getfile_extension_blacklist filter. By default inc, php, php3, php4, php5, phps, and phtml file types are not allowed. (Thanks, Kacper Szurek)
 * BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges. Now deleting the old Stripe subscription and any related open invoices and creating a new subscription instead of just updating the old subscription. (Thanks, Antonv and Thomas Sjolshagen)

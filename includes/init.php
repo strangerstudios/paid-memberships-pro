@@ -104,7 +104,11 @@ function pmpro_wp()
 	if(!is_admin())
 	{
 		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
-				
+		
+		//no pages yet?
+		if(empty($pmpro_pages))
+			return;
+		
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
 		{						

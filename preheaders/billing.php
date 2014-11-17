@@ -91,7 +91,7 @@ if ($gateway == "stripe") {
                     form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
                     //insert fields for other card fields
-                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
                     form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationMonth' value='" + response['card']['exp_month'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");

@@ -184,9 +184,9 @@ if ($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level)) {
 
                     //insert fields for other card fields
                     if(jQuery('#CardType').length)
-						jQuery('#CardType').val(response['card']['type']);
+						jQuery('#CardType').val(response['card']['brand']);
 					else
-						form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+						form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
                     form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
                     form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
