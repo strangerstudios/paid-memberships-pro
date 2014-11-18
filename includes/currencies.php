@@ -13,7 +13,7 @@
 			'GBP' => array(
 				'name' => __('Pounds Sterling (&pound;)', 'pmpro'),
 				'symbol' => '&pound;',
-				'position' => 'right'
+				'position' => 'left'
 				),
 			'AUD' => __('Australian Dollars (&#36;)', 'pmpro'),
 			'BRL' => array(
