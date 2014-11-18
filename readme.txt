@@ -105,7 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.7.15.1 =
 * BUG: Fixed issue where "complete all required fields" was being shown when using Stripe. They are calling the CardType "brand" in their return object, not "type".
 * BUG: Removed code from includes/notifications.php that was deleting the transient used to keep PMPro installs from hitting the PMPro server too often.
-* ENHANCEMENT: Added the "pmpro_checkout_signon_scheme" filter so you can tell PMPro to login over http or https in case other plugins (like WordPress MU Domain Mapping) conflict with what should be chosen here.
+* ENHANCEMENT: Added the "pmpro_checkout_signon_secure" filter so you can tell PMPro to login over http or https in case other plugins (like WordPress MU Domain Mapping) conflict with what should be chosen here.
 * Avoiding some warnings.
 
 = 1.7.15 =
