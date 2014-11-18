@@ -814,10 +814,9 @@ if (!empty($pmpro_confirmed)) {
             $creds['remember'] = true;
             $user = wp_signon($creds, false);
 			
-			//setting some cookies
-			wp_set_current_user($user_id, $username);
-			
-			wp_set_auth_cookie($user_id, true, (force_ssl_login() || force_ssl_admin()));
+	    //setting some cookies
+	    wp_set_current_user($user_id, $username);
+	    wp_set_auth_cookie($user_id, true, apply_filters('pmpro_checkout_signon_scheme', (force_ssl_login() || force_ssl_admin())));
         }
     } else
         $user_id = $current_user->ID;
