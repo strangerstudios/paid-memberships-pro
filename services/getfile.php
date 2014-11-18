@@ -124,3 +124,4 @@
 	header("Content-type: " . $file_mimetype); 	
 	readfile($filename);
 	exit;
+?>
