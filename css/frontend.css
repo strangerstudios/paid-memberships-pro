@@ -83,7 +83,7 @@ form.pmpro_form #pmpro_processing_message {margin: 5px 0 0 10px; font-style: ita
 ----------------------------------------------------*/
 .pmpro_message {background-color: #d9edf7; margin: .5em 0; padding: 10px 15px; color: #31708f; font-size: 14px; font-weight: 400; line-height: 1.5em; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; border: 1px solid #bce8f1; }
 
-.pmpro_success {background-color: #dff0d8; color: #3c763d; border-color: #bce8f1; }
+.pmpro_success {background-color: #dff0d8; color: #3c763d; border-color: #d6e9c6; }
 .pmpro_error {background-color: #f2dede; color: #a94442; border-color: #ebccd1; }
 .pmpro_alert {background-color: #fcf8e3; color: #8a6d3b; border-color: #faebcc;}
 
