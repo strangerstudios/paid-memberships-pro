@@ -183,7 +183,7 @@ if ($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level)) {
                     form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
                     //insert fields for other card fields
-                    if(jQuery('#CardType').length)
+                    if(jQuery('#CardType[name=CardType]').length)
 						jQuery('#CardType').val(response['card']['brand']);
 					else
 						form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
@@ -466,7 +466,7 @@ if ($submit && $pmpro_msgt != "pmpro_error") {
         }
     }
 
-    if (!empty($pmpro_error_fields)) {        
+    if (!empty($pmpro_error_fields)) {		
 		pmpro_setMessage(__("Please complete all required fields.", "pmpro"), "pmpro_error");
     }
     if (!empty($password) && $password != $password2) {
