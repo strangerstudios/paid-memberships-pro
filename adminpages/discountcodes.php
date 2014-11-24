@@ -65,6 +65,7 @@
 				$pmpro_msgt = "success";
 				$saved = true;
 				$edit = $wpdb->insert_id;
+				//$saveid = $edit;
 			}
 			else
 			{				

@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.7.15.3 = 
+* BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
+
 = 1.7.15.2 =
 * BUG: Stripe JS looks for a field with id AND name = CardType now so the new checkout code is compatible with older checkout templates and will avoid "complete all fields" errors.
 * BUG: Removed the urlencode wrappers on the Payflow API calls. Payflow seems to expect the values to be NOT encoded.
