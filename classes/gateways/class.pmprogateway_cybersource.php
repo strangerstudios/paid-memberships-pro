@@ -564,8 +564,7 @@
 			*/
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);
-			$order->subtotal = $amount;
+			$amount_tax = $order->getTaxForPrice($amount);			
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
 			/*
@@ -590,7 +589,7 @@
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						

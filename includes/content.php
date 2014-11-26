@@ -121,19 +121,22 @@ function pmpro_search_filter($query)
     global $current_user, $wpdb, $pmpro_pages;
 			
     //hide pmpro pages from search results
-    if(!$query->is_admin && $query->is_search)
+    if(!$query->is_admin && $query->is_search && empty($query->query['post_parent']))
     {
         if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now			
 			$query->set('post__not_in', $pmpro_pages );
+
+		$query->set('post__not_in', $pmpro_pages ); // id of page or post		
     }
-		
+
     //hide member pages from non-members (make sure they aren't hidden from members)    
 	if(!$query->is_admin && 
 	   !$query->is_singular && 
+	   empty($query->query['post_parent']) &&
 	   (
 		empty($query->query_vars['post_type']) || 
 		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
-	   )
+	   )	   
 	)
     {		
 		//get page ids that are in my levels
@@ -163,26 +166,32 @@ function pmpro_search_filter($query)
 		}
 				
         //get categories that are filtered by level, but not my level
-        $my_cats = array();
+        global $pmpro_my_cats;
+		$pmpro_my_cats = array();
 
         if($levels) {
             foreach($levels as $key => $level) {
                 $member_cats = pmpro_getMembershipCategories($level->id);
-                $my_cats = array_unique(array_merge($my_cats, $member_cats));
+                $pmpro_my_cats = array_unique(array_merge($pmpro_my_cats, $member_cats));
             }
         }
-
+		
         //get hidden cats
-        if(!empty($my_cats))
-			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $my_cats) . ")";
+        if(!empty($pmpro_my_cats))
+			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $pmpro_my_cats) . ")";
 		else
 			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
 					
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-
+				
         //make this work
         if($hidden_cat_ids)
+		{			
             $query->set('category__not_in', $hidden_cat_ids);
+						
+			//filter so posts in this member's categories are allowed
+			add_action('posts_where', 'pmpro_posts_where_unhide_cats');
+		}
     }
 
     return $query;
@@ -190,7 +199,33 @@ function pmpro_search_filter($query)
 $filterqueries = pmpro_getOption("filterqueries");
 if(!empty($filterqueries))
     add_filter( 'pre_get_posts', 'pmpro_search_filter' );
-    
+  
+/*
+ * Find taxonomy filters and make sure member categories are not hidden from members.
+ * @since 1.7.15
+*/
+function pmpro_posts_where_unhide_cats($where)
+{
+	global $pmpro_my_cats, $wpdb;
+		
+	//if we have member cats, make sure they are allowed in taxonomy queries
+	if(!empty($where) && !empty($pmpro_my_cats))
+	{
+		$pattern = "/$wpdb->posts.ID NOT IN \(\s*SELECT object_id\s*FROM dev_term_relationships\s*WHERE term_taxonomy_id IN \((.*)\)\s*\)/";
+		$replacement = $wpdb->posts . '.ID NOT IN (
+						SELECT tr1.object_id
+						FROM ' . $wpdb->term_relationships . ' tr1
+							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode($pmpro_my_cats) . ') 
+						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';	
+		$where = preg_replace($pattern, $replacement, $where);
+	}
+			
+	//remove filter for next query
+	remove_action('posts_where', 'pmpro_posts_where_unhide_cats');
+		
+	return $where;
+}
+  
 function pmpro_membership_content_filter($content, $skipcheck = false)
 {	
 	global $post, $current_user;

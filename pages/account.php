@@ -1,5 +1,5 @@
 <?php
-	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels, $pmpro_currency_symbol;
+	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels;
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	if($current_user->membership_level->ID)
@@ -10,8 +10,8 @@
 		?>	
 	<div id="pmpro_account">		
 		<div id="pmpro_account-membership" class="pmpro_box">
-
-		<h3><?php _e("My Memberships", "pmpro");?></h3>
+			
+			<h3><?php _e("My Memberships", "pmpro");?></h3>
 			<table width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
@@ -31,9 +31,11 @@
 							<div class="pmpro_actionlinks">
 								<?php do_action("pmpro_member_action_links_before"); ?>
 								<a href="<?php echo pmpro_url("checkout", "?level=" . $current_user->membership_level->id, "https")?>"><?php _e("Renew", "pmpro");?></a>
+								
 								<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
 									<a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Info", "pmpro"); ?></a>
 								<?php } ?>
+								
 								<?php 
 									//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 									if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
@@ -98,7 +100,7 @@
 					{ 
 						if($count++ > 4)
 							break;
-						
+
 						//get an member order object
 						$invoice_id = $invoice->id;
 						$invoice = new MemberOrder;
@@ -108,10 +110,10 @@
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
 							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?></td>
 							<td><?php echo $invoice->membership_level->name?></td>
-							<td><?php echo $pmpro_currency_symbol?><?php echo $invoice->total?></td>
+							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
 						</tr>
 						<?php 
-					} 
+					}
 				?>
 				</tbody>
 			</table>						

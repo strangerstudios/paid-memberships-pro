@@ -1,5 +1,5 @@
 <?php 
-	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol;
+	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 	
 	if($pmpro_msg)
 	{
@@ -86,7 +86,7 @@
 					<?php } ?>
 				</td>
 				<td><?php echo $pmpro_invoice->membership_level->name?></td>					
-				<td><?php if($pmpro_invoice->total) echo $pmpro_currency_symbol . number_format($pmpro_invoice->total, 2); else echo "---";?></td>
+				<td><?php if($pmpro_invoice->total) echo pmpro_formatPrice($pmpro_invoice->total); else echo "---";?></td>
 			</tr>
 		</tbody>
 	</table>		

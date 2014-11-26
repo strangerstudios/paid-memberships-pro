@@ -1,5 +1,5 @@
 <?php 				
-	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_currency_symbol, $show_paypal_link;
+	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 	
 	$gateway = pmpro_getOption("gateway");
@@ -19,11 +19,11 @@
 				<?php
 					$level = $current_user->membership_level;
 					if($current_user->membership_level->cycle_number > 1) {
-						printf(__('%s every %d %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+						printf(__('%s every %d %s.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 					} elseif($current_user->membership_level->cycle_number == 1) {
-						printf(__('%s per %s.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+						printf(__('%s per %s.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
 					} else {
-						echo $pmpro_currency_symbol, $current_user->membership_level->billing_amount;
+						echo pmpro_formatPrice($current_user->membership_level->billing_amount);
 					}
 				?>
 			</li>

@@ -198,13 +198,12 @@ function pmpro_isLevelExpiring(&$level)
 
 function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
-	global $pmpro_currency_symbol;
 	//initial payment
 	if(!$short)
-		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
+		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
 	else
-		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2));
-		
+		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
+
 	//recurring part
 	if($level->billing_amount != '0.00')
 	{
@@ -212,16 +211,16 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{			
 			if($level->cycle_number == '1')
 			{
-				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}				
 			else
 			{ 
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
 			}
 		}
 		elseif($level->billing_limit == 1)
 		{
-			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 		}
 		else
 		{
@@ -229,25 +228,25 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 				if($level->cycle_number == '1')
 				{
 					if(!$short)
-						$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
 					else
-						$r = sprintf(__('<strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('<strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
 				}
 				else
 				{
 					if(!$short)
-						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
 					else
-						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . number_format($level->initial_payment, 2), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
 				}
 			} else {
 				if($level->cycle_number == '1')
 				{
-					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, pmpro_translate_billing_period($level->cycle_period));
+					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
 				}
 				else
 				{
-					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), $pmpro_currency_symbol . $level->billing_amount, $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 				}
 			}
 		}
@@ -276,11 +275,11 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 		{
 			if($level->trial_limit == '1')
 			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), pmpro_formatPrice($level->trial_amount));
 			}
 			else
 			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, $pmpro_currency_symbol . $level->trial_amount);
+				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, pmpro_formatPrice($level->trial_amount));
 			}
 		}
 	}
@@ -342,7 +341,7 @@ function pmpro_next_payment($user_id = NULL, $order_status = "success")
 	//get current membership level
 	$level = pmpro_getMembershipLevelForUser($user_id);		
 	
-	if(!empty($order) && !empty($level) && !empty($level->cycle_number))
+	if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
 	{					
 		//last payment date
 		$lastdate = date("Y-m-d", $order->timestamp);
@@ -1112,85 +1111,94 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 {
 	global $wpdb;
 	
+	$error = false;
+	
 	//no code, no code
-	if(empty($code))
-	{
-		if($return_errors)
-			return array(false, "No code was given to check.");
-		else
-			return false;
-	}
+	if(empty($code))	
+		$error = __("No code was given to check.", "pmpro");
 		
-	//get code from db
-	$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
-			
-	//did we find it?
-	if(empty($dbcode->id))
+	//get code from db	
+	if(!$error)
 	{
-		if($return_errors)
-			return array(false, __("The discount code could not be found.", "pmpro"));
-		else
-			return false;
-	}
-
-	//fix the date timestamps
-	$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts, current_time("timestamp")));
-	$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires, current_time("timestamp")));
-
-	//today
-	$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
-
-	//has this code started yet?
-	if(!empty($dbcode->starts) && $dbcode->starts > $today)
-	{
-		if($return_errors)
-			return array(false, sprintf(__("This discount code goes into effect on %s.", "pmpro"), date(get_option('date_format'), $dbcode->starts)));
-		else
-			return false;
+		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
+				
+		//did we find it?
+		if(empty($dbcode->id))	
+			$error = __("The discount code could not be found.", "pmpro");
 	}
 	
-	//has this code expired?
-	if(!empty($dbcode->expires) && $dbcode->expires < $today)
+	//check if the code has started
+	if(!$error)
 	{
-		if($return_errors)
-			return array(false, sprintf(__("This discount code expired on %s.", "pmpro"), date(get_option('date_format'), $dbcode->expires)));
-		else
-			return false;
+		//fix the date timestamps
+		$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
+		$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));
+
+		//today
+		$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
+
+		//has this code started yet?
+		if(!empty($dbcode->starts) && $dbcode->starts > $today)		
+			$error = sprintf(__("This discount code goes into effect on %s.", "pmpro"), date(get_option('date_format'), $dbcode->starts));			
+	}
+	
+	//check if the code is expired
+	if(!$error)
+	{		
+		if(!empty($dbcode->expires) && $dbcode->expires < $today)
+			$error = sprintf(__("This discount code expired on %s.", "pmpro"), date(get_option('date_format'), $dbcode->expires));			
 	}
 	
 	//have we run out of uses?
-	if($dbcode->uses > 0)
+	if(!$error)
 	{
-		$used = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'");
-		if($used >= $dbcode->uses)
+		if($dbcode->uses > 0)
 		{
-			if($return_errors)
-				return array(false, __("This discount code is no longer valid.", "pmpro"));
-			else
-				return false;
+			$used = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'");
+			if($used >= $dbcode->uses)
+				$error = __("This discount code is no longer valid.", "pmpro");				
 		}
 	}
 	
 	//if a level was passed check if this code applies		
-	$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);		
-	if(!empty($level_id) && $pmpro_check_discount_code_levels)
+	if(!$error)
 	{
-		$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
-		
-		if(empty($code_level))
+		$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);		
+		if(!empty($level_id) && $pmpro_check_discount_code_levels)
 		{
-			if(!empty($return_errors))
-				return array(false, __("This discount code does not apply to this membership level.", "pmpro"));
-			else
-				return false;
+			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
+			
+			if(empty($code_level))
+				$error = __("This discount code does not apply to this membership level.", "pmpro");				
 		}
 	}
-	
-	//guess we're all good		
-	if(!empty($return_errors))
-		return array(true, __("This discount code is okay.", "pmpro"));
+		
+	//allow filter
+	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", !$error, $dbcode, $level_id, $code);
+	if(is_string($pmpro_check_discount_code))	
+		$error = $pmpro_check_discount_code;	//string returned, this is an error		
+	elseif(!$pmpro_check_discount_code && !$error)
+		$error = true;							//no error before, but filter returned error
+	elseif($pmpro_check_discount_code)
+		$error = false;							//filter is true, so error false
+		
+	//return
+	if($error)
+	{
+		//there was an error
+		if(!empty($return_errors))
+			return array(false, $error);
+		else
+			return false;
+	}
 	else
-		return true;
+	{
+		//guess we're all good	
+		if(!empty($return_errors))
+			return array(true, __("This discount code is okay.", "pmpro"));
+		else
+			return true;
+	}
 }
 
 function pmpro_no_quotes($s, $quotes = array("'", '"'))
@@ -1404,7 +1412,7 @@ function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL
 		$button_text = __("Sign Up for !!name!! Now", "pmpro");
 		
 	if(empty($classes))
-		$classes = "btn btn-primary";
+		$classes = "pmpro_btn";
 		
 	if(empty($level_id))
 		$r = __("Please specify a level id.", "pmpro");
@@ -1564,14 +1572,21 @@ function pmpro_getClassForField($field)
 {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
 	$classes = array();
-
+	
 	//error on this field?
-	if(in_array($field, $pmpro_error_fields))
+	if(!empty($pmpro_error_fields) && in_array($field, $pmpro_error_fields))
 	{
 		$classes[] = "pmpro_error";
 	}		
 	
-	$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
+	if(is_array($pmpro_required_billing_fields) && is_array($pmpro_required_user_fields))	
+		$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
+	elseif(is_array($pmpro_required_billing_fields))
+		$required_fields = array_keys($pmpro_required_billing_fields);
+	elseif(is_array($pmpro_required_user_fields))
+		$required_fields = array_keys($pmpro_required_user_fields);
+	else
+		$required_fields = array();
 	
 	//required?
 	if(in_array($field, $required_fields))
@@ -1748,4 +1763,51 @@ function pmpro_is_ready()
 		return true;
 	else
 		return false;
+}
+
+/**
+ * Format a price per the currency settings.
+ *
+ * @since  1.7.15
+ */
+function pmpro_formatPrice($price)
+{
+	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
+	
+	//start with the price formatted with two decimals
+	$formatted = number_format($price, 2);
+	
+	//settings stored in array?
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
+	{
+		//which side is the symbol on?
+		if(!empty($pmpro_currencies[$pmpro_currency]['position']) && $pmpro_currencies[$pmpro_currency]['position']== 'left')
+			$formatted = $pmpro_currency_symbol . $formatted;
+		else
+			$formatted = $formatted . $pmpro_currency_symbol;
+			
+		//commas or periods?
+		if(!empty($pmpro_currencies[$pmpro_currency]['separator']) && $pmpro_currencies[$pmpro_currency]['separator'])
+			$formatted = str_replace(array(".",","), $pmpro_currencies[$pmpro_currency]['separator'], $formatted);
+	}
+	else
+		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left
+	
+	//filter
+	return apply_filters('pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol);
+}
+
+/**
+ * Which side does the currency symbol go on?
+ *
+ * @since  1.7.15
+ */
+function pmpro_getCurrencyPosition()
+{
+	global $pmpro_currency, $pmpro_currencies;
+	
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]) && !empty($pmpro_currencies[$pmpro_currency]['position']))
+		return $pmpro_currencies[$pmpro_currency]['position'];
+	else
+		return "left";
 }

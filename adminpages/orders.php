@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb;
 	if(isset($_REQUEST['s']))
 		$s = $_REQUEST['s'];
 	else
@@ -425,7 +425,7 @@
 						<?php if(in_array("status", $read_only_fields) && $order_id > 0) { echo $order->status; } else { ?>
 						<?php
 							$statuses = array();
-							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded");
+							$default_statuses = array("", "success", "cancelled", "review", "token", "refunded", "pending");
 							$used_statuses = $wpdb->get_col("SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders");
 							$statuses = array_unique(array_merge($default_statuses, $used_statuses));
 							asort($statuses);
@@ -613,7 +613,7 @@
 
 			<select id="start-month" name="start-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($start_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+					<option value="<?php echo $i;?>" <?php selected($start_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
 				<?php } ?>
 			</select>
 
@@ -625,7 +625,7 @@
 
 			<select id="end-month" name="end-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($end_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+					<option value="<?php echo $i;?>" <?php selected($end_month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i,2));?></option>
 				<?php } ?>
 			</select>
 
@@ -935,7 +935,7 @@
 							</td>
 							<?php do_action("pmpro_orders_extra_cols_body", $order);?>
 							<td><?php echo $order->membership_id;?></td>
-							<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
+							<td><?php echo pmpro_formatPrice($order->total);?></td>
 							<td>
 								<?php if(!empty($order->payment_type)) echo $order->payment_type . "<br />";?>
 								<?php if(!empty($order->accountnumber)) { ?>

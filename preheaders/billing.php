@@ -3,7 +3,8 @@
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if($current_user->ID)
+    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 $gateway = pmpro_getOption("gateway");
 
 //need to be secure?
@@ -42,13 +43,12 @@ if ($gateway == "stripe") {
             jQuery(document).ready(function () {
                 jQuery(".pmpro_form").submit(function (event) {
 
-                    Stripe.createToken({
+					//build array for creating token
+                    var args = {
                         number: jQuery('#AccountNumber').val(),
                         cvc: jQuery('#CVV').val(),
                         exp_month: jQuery('#ExpirationMonth').val(),
-                        exp_year: jQuery('#ExpirationYear').val(),
-                        name: jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val())
-
+                        exp_year: jQuery('#ExpirationYear').val()                       
                         <?php
                             $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
                             if(!empty($pmpro_stripe_verify_address))
@@ -62,8 +62,13 @@ if ($gateway == "stripe") {
                         <?php
                             }
                         ?>
-
-                    }, stripeResponseHandler);
+					};
+					
+					if (jQuery('#bfirstname').length && jQuery('#blastname').length)
+                            args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
+					
+					//create token
+					Stripe.createToken(args, stripeResponseHandler);
 
                     // prevent the form from submitting with the default action
                     return false;
@@ -86,7 +91,7 @@ if ($gateway == "stripe") {
                     form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
                     //insert fields for other card fields
-                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
                     form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationMonth' value='" + response['card']['exp_month'] + "'/>");
                     form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");

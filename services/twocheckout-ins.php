@@ -239,10 +239,14 @@
 			$enddate = "NULL";
 		}
 		
-		//get discount code		(NOTE: but discount_code isn't set here. How to handle discount codes for 2checkout?)
-		$use_discount_code = true;		//assume yes
-		if(!empty($discount_code) && !empty($use_discount_code))
-			$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+		//get discount code
+		$morder->getDiscountCode();
+		if(!empty($morder->discount_code))
+		{		
+			//update membership level
+			$morder->getMembershipLevel(true);
+			$discount_code_id = $morder->discount_code->id;
+		}
 		else
 			$discount_code_id = "";
 		

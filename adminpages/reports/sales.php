@@ -32,7 +32,7 @@ add_action("init", "pmpro_report_sales_init");
 //widget
 function pmpro_report_sales_widget()
 {
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb;
 ?>
 <style>
 	#pmpro_report_sales div {text-align: center;}
@@ -42,22 +42,22 @@ function pmpro_report_sales_widget()
 	<div style="width: 25%; float: left;">	
 		<em><?php echo pmpro_getSales("all time");?></em>	
 		<label>All Time</label>
-		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("all time"), 2);?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></em>		
 	</div>
 	<div style="width: 25%; float: left;">	
 		<em><?php echo pmpro_getSales("this year");?></em>
 		<label>This Year</label>
-		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("this year"), 2);?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></em>		
 	</div>
 	<div style="width: 25%; float: left;">	
 		<em><?php echo pmpro_getSales("this month");?></em>
 		<label>This Month</label>
-		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("this month"), 2);?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></em>		
 	</div>
 	<div style="width: 25%; float: left;">
 		<em><?php echo pmpro_getSales("today");?></em>
 		<label>Today</label>
-		<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getRevenue("today"), 2);?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></em>		
 	</div>	
 	<div class="clear"></div>
 </span>
@@ -66,7 +66,7 @@ function pmpro_report_sales_widget()
 
 function pmpro_report_sales_page()
 {
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
 	
 	//get values from form
 	if(isset($_REQUEST['type']))
@@ -139,7 +139,7 @@ function pmpro_report_sales_page()
 	$cols = array();				
 	if($period == "daily")
 	{
-		$lastday = date("t", $startdate);
+		$lastday = date("t", strtotime($startdate, current_time("timestamp")));
 	
 		for($i = 1; $i <= $lastday; $i++)
 		{
@@ -203,7 +203,7 @@ function pmpro_report_sales_page()
 		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
-				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
 			<?php } ?>
 		</select>
 		<select id="year" name="year">
@@ -231,7 +231,7 @@ function pmpro_report_sales_page()
 	</div>
 	
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
-	
+		
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -273,7 +273,7 @@ function pmpro_report_sales_page()
 			var data = google.visualization.arrayToDataTable([
 			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>'],
 			  <?php foreach($cols as $date => $value) { ?>
-				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$date)); else echo $date;?>', <?php echo $value;?>],
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>],
 			  <?php } ?>
 			]);
 
@@ -283,10 +283,19 @@ function pmpro_report_sales_page()
 			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},			  
 			};
 			
-			<?php if($type != "sales") { ?>
-			var formatter = new google.visualization.NumberFormat({prefix: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
-			formatter.format(data, 1);
-			<?php } ?>
+			<?php 
+				if($type != "sales") 
+				{					
+					if(pmpro_getCurrencyPosition() == "right")
+						$position = "suffix";
+					else
+						$position = "prefix";				
+					?>
+					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
+					formatter.format(data, 1);
+					<?php
+				}
+			?>
 
 			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
 			chart.draw(data, options);

@@ -5,10 +5,22 @@
 	
 	$pmpro_currencies = array( 
 			'USD' => __('US Dollars (&#36;)', 'pmpro'),
-			'EUR' => __('Euros (&euro;)', 'pmpro'),
-			'GBP' => __('Pounds Sterling (&pound;)', 'pmpro'),
+			'EUR' => array(
+				'name' => __('Euros (&euro;)', 'pmpro'),
+				'symbol' => '&euro;',
+				'position' => 'right'
+				),				
+			'GBP' => array(
+				'name' => __('Pounds Sterling (&pound;)', 'pmpro'),
+				'symbol' => '&pound;',
+				'position' => 'left'
+				),
 			'AUD' => __('Australian Dollars (&#36;)', 'pmpro'),
-			'BRL' => __('Brazilian Real (&#36;)', 'pmpro'),
+			'BRL' => array(
+				'name' => __('Brazilian Real (R&#36;)', 'pmpro'),
+				'symbol' => 'R&#36;',
+				'position' => 'left'
+				),
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),
 			'CNY' => __('Chinese Yuan', 'pmpro'),
 			'CZK' => __('Czech Koruna', 'pmpro'),
@@ -18,14 +30,22 @@
 			'INR' => __('Indian Rupee', 'pmpro'),
 			'IDR' => __('Indonesia Rupiah', 'pmpro'),
 			'ILS' => __('Israeli Shekel', 'pmpro'),
-			'JPY' => __('Japanese Yen (&yen;)', 'pmpro'),
+			'JPY' => array(
+				'name' => __('Japanese Yen (&yen;)', 'pmpro'),
+				'symbol' => '&yen;',
+				'position' => 'right'
+				),
 			'MYR' => __('Malaysian Ringgits', 'pmpro'),
 			'MXN' => __('Mexican Peso (&#36;)', 'pmpro'),
 			'NZD' => __('New Zealand Dollar (&#36;)', 'pmpro'),
 			'NOK' => __('Norwegian Krone', 'pmpro'),
 			'PHP' => __('Philippine Pesos', 'pmpro'),
 			'PLN' => __('Polish Zloty', 'pmpro'),
-			'SGD' => __('Singapore Dollar (&#36;)', 'pmpro'),
+			'SGD' => array(
+				'name' => __('Singapore Dollar (&#36;)', 'pmpro'),
+				'symbol' => '&#36;',
+				'position' => 'right'
+				),
 			'ZAR' => __('South African Rand', 'pmpro'),
 			'KRW' => __('South Korean Won', 'pmpro'),
 			'SEK' => __('Swedish Krona', 'pmpro'),

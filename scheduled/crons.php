@@ -8,13 +8,16 @@ function pmpro_cron_expire_memberships()
 	global $wpdb;
 			
 	//make sure we only run once a day
-	$today = date("Y-m-d");
+	$today = date("Y-m-d", current_time("timestamp"));
 	
 	//look for memberships that expired before today
 	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . $today . "' ORDER BY mu.enddate";
 					
 	$expired = $wpdb->get_results($sqlQuery);
-			
+	
+	if(defined('PMPRO_CRON_LIMIT'))
+		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
+	
 	foreach($expired as $e)
 	{						
 		//remove their membership
@@ -27,8 +30,8 @@ function pmpro_cron_expire_memberships()
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);		
 			$pmproemail->sendMembershipExpiredEmail($euser);
-			
-			printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);				
+		
+			printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);
 		}
 	}
 }
@@ -42,7 +45,7 @@ function pmpro_cron_expiration_warnings()
 	global $wpdb;
 	
 	//make sure we only run once a day
-	$today = date("Y-m-d 00:00:00");
+	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
 	
 	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
 			
@@ -57,8 +60,11 @@ function pmpro_cron_expiration_warnings()
 	AND mu.enddate <> '0000-00-00 00:00:00' 
 	AND DATE_SUB(mu.enddate, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "' 
 	AND (um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "') 
-	ORDER BY mu.enddate";
-
+	ORDER BY mu.enddate";	
+	
+	if(defined('PMPRO_CRON_LIMIT'))
+		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
+	
 	$expiring_soon = $wpdb->get_results($sqlQuery);
 			
 	foreach($expiring_soon as $e)
@@ -102,6 +108,9 @@ function pmpro_cron_credit_card_expiring_warnings()
 						AND CONCAT(um2.meta_value, '-', um1.meta_value, '-01') < '" . $next_month_date . "'
 						AND (um3.meta_value IS NULL OR CONCAT(um2.meta_value, '-', um1.meta_value, '-01') <> um3.meta_value)
 				";
+				
+	if(defined('PMPRO_CRON_LIMIT'))
+		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
 		
 	$cc_expiring_user_ids = $wpdb->get_col($sqlQuery);
 			
@@ -134,6 +143,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 			
 			//okay send them an email				
 			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->user_id);
+
 			if($send_email)
 			{
 				//send an email
@@ -161,7 +171,7 @@ function pmpro_cron_trial_ending_warnings()
 	global $wpdb;
 			
 	//make sure we only run once a day
-	$today = date("Y-m-d 00:00:00");
+	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
 	
 	$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);
 	

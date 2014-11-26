@@ -1,11 +1,13 @@
 <?php		
-	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_currency_symbol, $pmpro_show_discount_code, $pmpro_error_fields;
-	global $discount_code, $discount_code_id, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;	
+	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
+	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;		
 ?>
 <div id="pmpro_level-<?php echo $pmpro_level->id; ?>">
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
+	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />		
+	
 	<?php if($pmpro_msg) 
 		{
 	?>
@@ -121,7 +123,7 @@
 				jQuery('#other_discount_code_button').attr('disabled', 'disabled');				
 				
 				jQuery.ajax({
-					url: '<?php echo admin_url()?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
+					url: '<?php echo admin_url('admin-ajax.php')?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
 					error: function(xml){
@@ -464,7 +466,7 @@
 	</table>                   
 	<?php } ?>
 	
-	<?php do_action("pmpro_checkout_after_billing_fields"); ?>		
+	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
 	
 	<?php
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
@@ -489,14 +491,14 @@
 					<?php
 						$sslseal = pmpro_getOption("sslseal");
 						if($sslseal)
-						{
+						{				
 						?>
 							<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
 						<?php
 						}
 					?>
 					<?php 
-						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
+						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
 						if($pmpro_include_cardtype_field) 
 						{
 						?>
@@ -510,7 +512,36 @@
 						</div>
 					<?php 
 						} 
-					?>
+						else
+						{
+						?>
+						<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+						<script>
+							jQuery(document).ready(function() {												
+									jQuery('#AccountNumber').validateCreditCard(function(result) {								
+										var cardtypenames = {
+											"amex":"American Express",
+											"diners_club_carte_blanche":"Diners Club Carte Blanche",
+											"diners_club_international":"Diners Club International",
+											"discover":"Discover",
+											"jcb":"JCB",
+											"laser":"Laser",
+											"maestro":"Maestro",
+											"mastercard":"Mastercard",
+											"visa":"Visa",
+											"visa_electron":"Visa Electron"
+										}
+										
+										if(result.card_type)
+											jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+										else
+											jQuery('#CardType').val('Unknown Card Type');
+									});						
+							});
+						</script>
+						<?php
+						}
+					?>					
 				
 					<div class="pmpro_payment-account-number">
 						<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
@@ -586,7 +617,7 @@
 				jQuery('#discount_code_button').attr('disabled', 'disabled');
 				
 				jQuery.ajax({
-					url: '<?php echo admin_url()?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
+					url: '<?php echo admin_url('admin-ajax.php')?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
 					dataType: 'html',
 					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 					error: function(xml){
@@ -733,4 +764,8 @@
 	    }
 	});
 -->
+</script>
+<script>
+    //add javascriptok hidden field to checkout
+    jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 </script>

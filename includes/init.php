@@ -68,7 +68,7 @@ function pmpro_init()
 		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
 	}
 	
-	global $pmpro_pages, $pmpro_ready, $pmpro_currency, $pmpro_currency_symbol;
+	global $pmpro_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
 	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
@@ -89,16 +89,12 @@ function pmpro_init()
 	}
 
 	//figure out what symbol to show for currency
-	if(in_array($pmpro_currency, array("USD", "AUD", "BRL", "CAD", "HKD", "MXN", "NZD", "SGD")))
-		$pmpro_currency_symbol = "&#36;";
-	elseif($pmpro_currency == "EUR")
-		$pmpro_currency_symbol = "&euro;";
-	elseif($pmpro_currency == "GBP")
-		$pmpro_currency_symbol = "&pound;";
-	elseif($pmpro_currency == "JPY")
-		$pmpro_currency_symbol = "&yen;";
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
+		$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
+	elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
+		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);	
 	else
-		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code			
+		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code	
 }
 add_action("init", "pmpro_init");
 
@@ -108,7 +104,11 @@ function pmpro_wp()
 	if(!is_admin())
 	{
 		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
-				
+		
+		//no pages yet?
+		if(empty($pmpro_pages))
+			return;
+		
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
 		{						
@@ -209,6 +209,7 @@ function pmpro_set_current_user()
 	do_action("pmpro_after_set_current_user");
 }
 add_action('set_current_user', 'pmpro_set_current_user');
+add_action('init', 'pmpro_set_current_user');
 
 /*
  * Add Membership Level to Users page in WordPress dashboard.

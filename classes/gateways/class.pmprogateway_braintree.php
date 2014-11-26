@@ -507,7 +507,7 @@
 			{			
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);	
 			}
-					
+						
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
@@ -515,12 +515,11 @@
 				{
 					$this->customer = Braintree_Customer::find($customer_id);
 										
-					//update the customer description and card
+					//update the customer address, description and card
 					if(!empty($order->accountnumber))
-					{
-						$response = Braintree_Customer::update(
-						  $customer_id,
-						  array(
+					{						
+						//put data in array for Braintree API calls
+						$update_array = array(
 							'firstName' => $order->FirstName,
 							'lastName' => $order->LastName,
 							'creditCard' => array(
@@ -530,13 +529,37 @@
 								'options' => array(
 									'updateExistingToken' => $this->customer->creditCards[0]->token
 								)
-							 )
-						  )
+							)
 						);
-						
+												
+						//address too?
+						if(!empty($order->billing))
+							//make sure Address2 is set
+							if(!isset($order->Address2))
+								$order->Address2 = '';
+							
+							//add billing address to array
+							$update_array['creditCard']['billingAddress'] = array(								
+								'firstName' => $order->FirstName,
+								'lastName' => $order->LastName,
+								'streetAddress' => $order->Address1,
+								'extendedAddress' => $order->Address2,
+								'locality' => $order->billing->city,
+								'region' => $order->billing->state,
+								'postalCode' => $order->billing->zip,
+								'countryCodeAlpha2' => $order->billing->country,
+								'options' => array(
+									'updateExisting' => true
+								)
+							);
+												
+						//update
+						$response = Braintree_Customer::update($customer_id, $update_array);
+												
 						if($response->success)
-						{
+						{							
 							$this->customer = $response->customer;
+							return $this->customer;
 						}
 						else
 						{
@@ -545,14 +568,14 @@
 							return false;
 						}
 					}
-					
+										
 					return $this->customer;
 				} 
 				catch (Exception $e) 
 				{
-					//assume no customer found							
+					//assume no customer found					
 				}
-			}
+			}			
 						
 			//no customer id, create one
 			if(!empty($order->accountnumber))
@@ -581,7 +604,7 @@
 							)
 						)
 					));
-					
+										
 					if($result->success)
 					{
 						$this->customer = $result->customer;
@@ -599,8 +622,17 @@
 					$order->shorterror = $order->error;
 					return false;
 				}
-				
-				update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);					
+								
+				//if we have no user id, we need to set the customer id after the user is created
+				if(empty($user_id))
+				{
+					global $pmpro_braintree_customerid;
+					$pmpro_braintree_customerid = $this->customer->id;
+					add_action('user_register', array('PMProGateway_braintree','user_register'));
+				}
+				else
+					update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);
+					
 				return $this->customer;
 			}
 			
@@ -710,8 +742,8 @@
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
-			$this->getCustomer($order);
-			
+			$this->getCustomer($order, true);
+						
 			if(!empty($this->customer) && empty($order->error))
 			{
 				return true;
@@ -763,5 +795,17 @@
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}						
-		}	
+		}
+
+		/*
+			Save Braintree customer id after the user is registered.
+		*/
+		static function user_register($user_id)
+		{
+			global $pmpro_braintree_customerid;
+			if(!empty($pmpro_braintree_customerid))
+			{
+				update_user_meta($user_id, 'pmpro_braintree_customerid', $pmpro_braintree_customerid);
+			}
+		}
 	}

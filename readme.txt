@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 3.9.1
-Stable tag: 1.7.12.1
+Tested up to: 4.0.1
+Stable tag: 1.7.15.2
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -109,9 +109,73 @@ Not sure? You can find out by doing a bit a research.
 * Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
 * All gateways use the $pmpro_currency global instead of getting the value via pmpro_getOption.
 
-= 1.7.12.1 =
+= 1.7.15.3 = 
+* BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
+
+= 1.7.15.2 =
+* BUG: Stripe JS looks for a field with id AND name = CardType now so the new checkout code is compatible with older checkout templates and will avoid "complete all fields" errors.
+* BUG: Removed the urlencode wrappers on the Payflow API calls. Payflow seems to expect the values to be NOT encoded.
+* BUG: No longer running email content through wpautop if there is already HTML in an included header or footer for the email. (Thanks, Erik Bertrand)
+
+= 1.7.15.1 =
+* BUG: Fixed issue where "complete all required fields" was being shown when using Stripe. They are calling the CardType "brand" in their return object, not "type".
+* BUG: Removed code from includes/notifications.php that was deleting the transient used to keep PMPro installs from hitting the PMPro server too often.
+* ENHANCEMENT: Added the "pmpro_checkout_signon_secure" filter so you can tell PMPro to login over http or https in case other plugins (like WordPress MU Domain Mapping) conflict with what should be chosen here.
+* Avoiding some warnings.
+
+= 1.7.15 =
+* SECURITY FIX: The /services/getfile.php script has been disabled by default. You must set the PMPRO_GETFILE_ENABLED constant to true or 1 to allow the script to run. Additionally, the script will strip ../ and /. type strings out of the URI when looking for files to get and will not read any files using the extensions set via the pmpro_getfile_extension_blacklist filter. By default inc, php, php3, php4, php5, phps, and phtml file types are not allowed. (Thanks, Kacper Szurek)
+* BUG: Fixed issue with Stripe integration where existing members checking out for new recurring subscriptions would receive extra charges. Now deleting the old Stripe subscription and any related open invoices and creating a new subscription instead of just updating the old subscription. (Thanks, Antonv and Thomas Sjolshagen)
+* BUG: Fixed issue with Braintree integration where the billing address associated with a credit card was not being updated via the update billing page. (Thanks, Keith Abramo)
+* BUG: Fixed issue where pmpro_next_payment() would return a 0 timestamp instead of false when there is no previous order. (Thanks, Thomas Sjolshagen)
+* ENHANCEMENT: Added pmpro_formatPrice() and pmpro_getCurrencyPosition() functions. Now using them to render prices with formatting. You can use the pmpro_format_price filter or pmpro_currecies filter to adjust the formatting of prices to support currency symbols after the price or to use commas instead of periods for separators.
+* ENAHNCEMENT: Added getSubscriptionStatus() to Authorize.net gateway class. Also fixed up some of the logic around checking the gateway environment.
+* BUG: Now urlencoding the API Username and Password sent through the PayPal APIs in case your values have + or other special characters in them. (Thanks, mrschmiddy)
+* BUG: Now showing cycle number in the Fee column of the members list. E.g. a level that is $10 every 3 months will now show up as $10.00 + $10.00/3 Months.
+* BUG: Fixed bug where user first_name and last_name were being overwritten by PayPal values when using PayPal Standard.
+* ENHANCEMENT: Added PMPRO_CRON_LIMIT constant, which can be used to limit the number of records processed by each scheduled cron job. This can for example, keep your server from going over PHP time limits or email limits. Use define('PMPRO_CRON_LIMIT', 100); to set the limit to 100.
+* BUG: Discount code AJAX calls now going through admin-ajax.php, fixing issues where the Themed Profiles module of Theme My Login would block those calls. (Thanks, Tony)
+* ENHANCEMENT: Removed the "CardType" field at checkout and now using the jquery.creditCardValidator script to determine the card type on form submit.
+* BUG: No longer setting $order->subtotal and invoice total to the billing amount (vs the initial price) for recurring payments with Cybersource, PayPal Standard, PayPal Express or Twocheckout. (Thanks, Joce Nunes)
+* ENHANCEMENT: The search filter will no longer filter out a post that is in a category blocked by one membership level if the user also has access to that content through another category.
+* BUG/ENHANCEMENT: Running email body through wpautop if it doesn't look like HTML.
+* ENHANCEMENT: Added pmpro_getfile_before_error hook in getfile.php.
+* ENHANCEMENT: Added pmpro_ipn_check_receiver_email filter if you want to change how the email is checked in the IPN log.
+* BUG: Fixed bug where reports would show duplicate month labels on the last day of the month.
+* BUG: Fixed some issues with logging in at checkout, especially when using FORCE_SSL_ADMIN. (Thanks, Wimans)
+* ENHANCEMENT: Added "pending" as a default status for orders available on the edit order page in the dashboard.
+
+= 1.7.14.2 =
+* BUG: Removed the debug call to d($...) that was left in preheaders/checkout.php and would show up when checkout forms were submitted with empty fields. (Thanks, Nicolas)
+
+= 1.7.14.1 =
+* BUG: Fixed warnings in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
+* BUG: Fixed issue where new users who checked out with Braintree weren't having their customerid's saved, which led to subscription syncronization issues if they checked out again or updated their billing.
+* BUG: Fixed warnings in the membership-billing page.
+* BUG: Fixed false positive "There are JavaScript errors on the page. Please contact the webmaster." errors.
+* BUG: Fixed issue where users on some sites running 1.7.14 could not logout.
+* OTHER: Changed the CSS class of the checkout button generated via [checkout_button] shortcode or pmpro_getCheckoutButton() function from "btn btn-primary" to "pmpro_btn" to match other buttons generated with PMPro.
+
+= 1.7.14 =
+* BUG: Fixed bug where level cost would sometimes have incorrect pluralization of months/weeks/etc. (Thanks, Kevin Ackerman)
+* BUG/ENHANCEMENT: Now checking the child and parent theme for email_header.html and email_footer.html files to use for emails. The child theme is checked first.
+* ENHANCEMENT: Added pmpro_getfile_before_readfile hook (passes $filename and $mimetype params) in getfile.php
+* BUG/ENHANCEMENT: getMembershipLevel method of MemberOrder can now handle when discount_code property is an object. Also, the IPN Handler and 2Checkout handler will now try to get the discount code for the order to correctly update the users pmpro_memberships_users entry.
+* BUG: Removed extra class attribute from CVV field that interfered with the required * JS code and some other CSS/JS-related things. (Thanks, catapult)
+* ENHANCEMENT: Added code to redirect to the redirect_url if you pass a redirect_url to the login page and the user is already logged in. Updated the links in email confirmations to use login links with redirects instead of direct links.
+* EHANCEMENT: Added pmpro_email_attachments filter, which can be used to add attachments to PMPro emails that are sent out. E.g., https://gist.github.com/strangerstudios/c4e771dca8723613bce3
+
+= 1.7.13.1 =
+* Fixed bug introduced in 1.7.12 where discount code uses were not being tracked.
+* Added pmpro_check_discount_code filter so you can do your own checks on discount codes.
+
+= 1.7.13 =
+* Added Danish (da_DK) translation. (Thanks, Mikael)
+* Fixed bugs with timestamps in various places (especially around trial dates) introduced in 1.7.12
+* Another fix to keep PMPro from sending "undefined undefined" as the name to Stripe when the 'don't show billing fields' option is chosen.
 * $pmpro_stripe_verify_address flag defaults to same value of Stripe's showbillingaddress option now.
 * Changed the priority of pmpro_applydiscountcode_init hooking on init to 11 so pmpro_init() will run before and setup pmpro_currency_symbol among other things. (Thanks, semyou on GitHub.)
+* Explicitly setting $current_user->membership_level in a few places to avoid issues where current_user is overwritten between init and when we try to use it.
 * Avoiding a warning in pmpro_getMetavalues() function. (Thanks, Scott Sousa)
 * Added target="_blank" to help links on admin pages. (Thanks, AntonVrba on GitHub)
 

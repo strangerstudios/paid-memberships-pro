@@ -44,6 +44,8 @@
 						
 			$this->headers = array("Content-Type: text/html");
 			
+			$this->attachments = NULL;
+			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "pmpro");
 			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
@@ -98,8 +100,9 @@
 			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
-						
-			if(wp_mail($this->email,$this->subject,$this->body,$this->headers))
+			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+			
+			if(wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments))
 			{
 				return true;
 			}
@@ -164,7 +167,7 @@
 		
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user, $pmpro_currency_symbol;
+			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -183,7 +186,7 @@
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => pmpro_url("account"),
+								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,0								
 							);						
@@ -202,7 +205,7 @@
 				else
 					$this->template = "checkout_paid";
 				$this->data["invoice_id"] = $invoice->code;
-				$this->data["invoice_total"] = $pmpro_currency_symbol . number_format($invoice->total, 2);
+				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date(get_option('date_format'), $invoice->timestamp);
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
@@ -259,7 +262,7 @@
 		
 		function sendCheckoutAdminEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user, $pmpro_currency_symbol;
+			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -283,7 +286,7 @@
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => pmpro_url("account"),
+								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,0								
 							);						
@@ -299,7 +302,7 @@
 				else
 					$this->template = "checkout_paid_admin";
 				$this->data["invoice_id"] = $invoice->code;
-				$this->data["invoice_total"] = $pmpro_currency_symbol . number_format($invoice->total, 2);
+				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date(get_option('date_format'), $invoice->timestamp);
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
@@ -384,7 +387,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("account")
+								"login_link" => wp_login_url(pmpro_url("account"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -485,7 +488,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -531,7 +534,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -578,7 +581,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("billing")
+								"login_link" => wp_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -594,7 +597,7 @@
 		
 		function sendInvoiceEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user, $pmpro_currency_symbol;
+			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -616,7 +619,7 @@
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->code,
-								"invoice_total" => $pmpro_currency_symbol . number_format($invoice->total, 2),
+								"invoice_total" => pmpro_formatPrice($invoice->total),
 								"invoice_date" => date(get_option('date_format'), $invoice->timestamp),								
 								"billing_name" => $invoice->billing->name,
 								"billing_street" => $invoice->billing->street,
@@ -629,9 +632,9 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => pmpro_url("account"),
-								"invoice_link" => pmpro_url("invoice", "?invoice=" . $invoice->code)
-							);
+								"login_link" => wp_login_url(pmpro_url("account")),
+								"invoice_link" => wp_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
+							));
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
 																 "", //address 2
@@ -657,7 +660,7 @@
 		
 		function sendTrialEndingEmail($user = NULL)
 		{
-			global $current_user, $wpdb, $pmpro_currency_symbol;
+			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
 			
@@ -686,12 +689,12 @@
 				"login_link" => wp_login_url(), 
 				"display_name" => $user->display_name, 
 				"user_email" => $user->user_email, 
-				"billing_amount" => $pmpro_currency_symbol . $user->membership_level->billing_amount, 
+				"billing_amount" => pmpro_formatPrice($user->membership_level->billing_amount), 
 				"cycle_number" => $user->membership_level->cycle_number, 
 				"cycle_period" => $user->membership_level->cycle_period, 
-				"trial_amount" => $pmpro_currency_symbol . $user->membership_level->trial_amount, 
+				"trial_amount" => pmpro_formatPrice($user->membership_level->trial_amount), 
 				"trial_limit" => $user->membership_level->trial_limit,
-				"trial_end" => date(get_option('date_format'), strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period, current_time("timestamp")))
+				"trial_end" => date(get_option('date_format'), strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period), current_time("timestamp"))
 			);			
 			
 			return $this->sendEmail();

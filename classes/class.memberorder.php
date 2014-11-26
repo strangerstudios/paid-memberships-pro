@@ -244,6 +244,9 @@
 			global $wpdb;
 			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
 
+			//filter @since v1.7.14
+			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
+			
 			return $this->discount_code;
 		}
 
@@ -288,7 +291,13 @@
 			//okay, do I have a discount code to check? (if there is no membership_level->membership_id value, that means there was no entry in memberships_users)
 			if(!empty($this->discount_code) && empty($this->membership_level->membership_id))
 			{
-				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $this->discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";
+				if(!empty($this->discount_code->code))
+					$discount_code = $this->discount_code->code;
+				else
+					$discount_code = $this->discount_code;
+				
+				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";
+				
 				$this->membership_level = $wpdb->get_row($sqlQuery);
 			}
 

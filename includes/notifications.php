@@ -5,9 +5,7 @@
 function pmpro_notifications()
 {
 	if(current_user_can("manage_options"))
-	{			
-		delete_transient("pmpro_notification_" . PMPRO_VERSION);
-		
+	{		
 		$pmpro_notification = get_transient("pmpro_notification_" . PMPRO_VERSION);
 		if(empty($pmpro_notification))
 		{

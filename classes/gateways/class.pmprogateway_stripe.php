@@ -395,7 +395,7 @@
 							}
 						?>
 						<?php
-							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
+							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
 							if($pmpro_include_cardtype_field)
 							{
 							?>
@@ -408,6 +408,35 @@
 								</select>
 							</div>
 						<?php
+							}
+							else
+							{
+							?>
+							<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+							<script>
+								jQuery(document).ready(function() {												
+										jQuery('#AccountNumber').validateCreditCard(function(result) {								
+											var cardtypenames = {
+												"amex":"American Express",
+												"diners_club_carte_blanche":"Diners Club Carte Blanche",
+												"diners_club_international":"Diners Club International",
+												"discover":"Discover",
+												"jcb":"JCB",
+												"laser":"Laser",
+												"maestro":"Maestro",
+												"mastercard":"Mastercard",
+												"visa":"Visa",
+												"visa_electron":"Visa Electron"
+											}
+											
+											if(result.card_type)
+												jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+											else
+												jQuery('#CardType').val('Unknown Card Type');
+										});						
+								});
+							</script>
+							<?php
 							}
 						?>
 					
@@ -1163,6 +1192,9 @@
 			if(empty($this->customer))
 				return false;	//error retrieving customer
 			
+			//set subscription id to custom id
+			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too
+			
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);			
@@ -1239,7 +1271,7 @@
                     "id" => $order->code
                 );
 
-				$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
+				$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));				
 			}
 			catch (Exception $e)
 			{
@@ -1252,10 +1284,13 @@
 			$old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
 			update_user_meta($user_id, "pmpro_stripe_updates", array());
 			
+			if(empty($order->subscription_transaction_id) && !empty($this->customer['id']))
+				$order->subscription_transaction_id = $this->customer['id'];
+				
 			//subscribe to the plan
 			try
-			{				
-				$this->customer->updateSubscription(array("prorate" => false, "plan" => $order->code));
+			{
+				$this->customer->subscriptions->create(array("plan" => $order->code));
 			}
 			catch (Exception $e)
 			{
@@ -1272,7 +1307,7 @@
 			}
 			
 			//delete the plan
-			$plan = Stripe_Plan::retrieve($plan['id']);
+			$plan = Stripe_Plan::retrieve($order->code);
 			$plan->delete();		
 
 			//if we got this far, we're all good						
@@ -1323,37 +1358,53 @@
 		 *		
 		 * @since 1.4
 		 */
-		function cancel(&$order)
+		function cancel(&$order, $update_status = true)
 		{
 			//no matter what happens below, we're going to cancel the order in our system
-			$order->updateStatus("cancelled");
-		
+			if($update_status)
+				$order->updateStatus("cancelled");
+					
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
 			//find the customer
 			$this->getCustomer($order);									
-			
+						
 			if(!empty($this->customer))
 			{
 				//find subscription with this order code
 				$subscriptions = $this->customer->subscriptions->all();												
-				
+								
+				//get open invoices
+				$invoices = $this->customer->invoices();
+				$invoices = $invoices->all();
+								
 				if(!empty($subscriptions))
-				{
-					//in case only one is returned
-					if(!is_array($subscriptions))
-						$subscriptions = array($subscriptions);
-				
-					foreach($subscriptions as $sub)
+				{					
+					foreach($subscriptions->data as $sub)
 					{						
-						if($sub->data[0]->plan->id == $order->code)
+						if($sub->plan->id == $order->code)
 						{
 							//found it, cancel it
 							try
 							{								
-								$this->customer->subscriptions->retrieve($sub->data[0]->id)->cancel();
+								//find any open invoices for this subscription and forgive them
+								if(!empty($invoices))
+								{
+									foreach($invoices->data as $invoice)
+									{										
+										if(!$invoice->closed && $invoice->subscription == $sub->id)
+										{											
+											$invoice->closed = true;
+											$invoice->save();
+										}
+									}
+								}	
+								
+								//cancel
+								$r = $sub->cancel();								
+								
 								break;
 							}
 							catch(Exception $e)
@@ -1365,7 +1416,7 @@
 							}
 						}
 					}
-				}															
+				}
 				
 				/*
 					Clear updates for this user. (But not if checking out, we would have already done that.)

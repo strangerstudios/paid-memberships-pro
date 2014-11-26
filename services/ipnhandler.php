@@ -15,7 +15,7 @@
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to ipnlog.txt
-	
+		
 	//validate?
 	if(!pmpro_ipnValidate())
 	{
@@ -31,12 +31,14 @@
 	$item_number = pmpro_getParam("item_number", "POST");
 	$payment_status = pmpro_getParam("payment_status", "POST");
 	$payment_amount = pmpro_getParam("payment_amount", "POST");
-	$payment_currency = pmpro_getParam("payment_currency", "POST");
-	$txn_id = pmpro_getParam("txn_id", "POST");
+	$payment_currency = pmpro_getParam("payment_currency", "POST");	
 	$receiver_email = pmpro_getParam("receiver_email", "POST");	
 	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");			
 	$recurring_payment_id = pmpro_getParam("recurring_payment_id", "POST");
+
+    if(empty($subscr_id))
+        $subscr_id = $recurring_payment_id;
 	
 	//check the receiver_email	
 	if(!pmpro_ipnCheckReceiverEmail(array(strtolower($receiver_email), strtolower($business_email))))
@@ -411,13 +413,32 @@
 		
 		if(!in_array(strtolower(pmpro_getOption('gateway_email')), $email))
 		{			
-			//not yours					
-			ipnlog("ERROR: receiver_email (" . $_POST['receiver_email'] . ") did not match (" . pmpro_getOption('gateway_email') . ")");			
-			//email them			
-			return false;
+			$r = false;
 		}		
 		else
+			$r = true;
+		
+		$r = apply_filters('pmpro_ipn_check_receiver_email', $r, $email);
+		
+		if($r)
 			return true;
+		else
+		{
+			if(!empty($_POST['receiver_email']))
+				$receiver_email = $_POST['receiver_email'];
+			else
+				$receiver_email = "N/A";
+				
+			if(!empty($_POST['business']))
+				$business = $_POST['business'];
+			else
+				$business = "N/A";
+			
+			//not yours					
+			ipnlog("ERROR: receiver_email (" . $receiver_email . ") and business email (" . $business . ") did not match (" . pmpro_getOption('gateway_email') . ")");			
+			return false;
+		}
+			
 	}	
 	
 	/*
@@ -427,7 +448,7 @@
 	{
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id);
-					
+				
 		//fix expiration date		
 		if(!empty($morder->membership_level->expiration_number))
 		{
@@ -438,13 +459,17 @@
 			$enddate = "NULL";
 		}
 		
-		//get discount code		(NOTE: but discount_code isn't set here. How to handle discount codes for PayPal Standard?)
-		$use_discount_code = true;		//assume yes
-		if(!empty($discount_code) && !empty($use_discount_code))
-			$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+		//get discount code
+		$morder->getDiscountCode();
+		if(!empty($morder->discount_code))
+		{		
+			//update membership level
+			$morder->getMembershipLevel(true);
+			$discount_code_id = $morder->discount_code->id;
+		}
 		else
 			$discount_code_id = "";
-		
+				
 		//set the start date to current_time('timestamp') but allow filters
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
 		
@@ -462,7 +487,7 @@
 			'trial_limit' => $morder->membership_level->trial_limit,
 			'startdate' => $startdate,
 			'enddate' => $enddate);
-
+		
 		global $pmpro_error;
 		if(!empty($pmpro_error))
 		{
@@ -492,13 +517,13 @@
 			if(!empty($_POST['first_name']))
 			{
 				$old_firstname = get_user_meta($morder->user_id, "first_name", true);
-				if(!empty($old_firstname))
+				if(empty($old_firstname))
 					update_user_meta($morder->user_id, "first_name", $_POST['first_name']);
 			}
 			if(!empty($_POST['last_name']))
 			{
 				$old_lastname = get_user_meta($morder->user_id, "last_name", true);
-				if(!empty($old_lastname))
+				if(empty($old_lastname))
 					update_user_meta($morder->user_id, "last_name", $_POST['last_name']);
 			}
 												

@@ -158,6 +158,8 @@
 						global $pmpro_currencies;
 						foreach($pmpro_currencies as $ccode => $cdescription)
 						{
+							if(is_array($cdescription))
+								$cdescription = $cdescription['name'];
 						?>
 						<option value="<?php echo $ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
 						<?php

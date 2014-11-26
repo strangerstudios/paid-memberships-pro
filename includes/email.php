@@ -59,7 +59,10 @@ if(empty($email_member_notification))
 	Adds template files and changes content type to html if using PHPMailer directly.
 */
 function pmpro_send_html( $phpmailer ) {
-		
+	
+	//to check if we should wpautop later
+	$original_body = $phpmailer->Body;
+	
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
 	// Clean < and > around text links in WP 3.1
@@ -67,16 +70,28 @@ function pmpro_send_html( $phpmailer ) {
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = make_clickable ($phpmailer->Body);
 
-	// Add template to message
-	if(file_exists(TEMPLATEPATH . "/email_header.html"))
-	{
-		$phpmailer->Body = file_get_contents(TEMPLATEPATH . "/email_header.html") . "\n" . $phpmailer->Body;
-	}
-	if(file_exists(TEMPLATEPATH . "/email_footer.html"))
-	{
-		$phpmailer->Body = $phpmailer->Body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
-	}
-
+	// Get header for message if found
+	if(file_exists(get_stylesheet_directory() . "/email_header.html"))
+		$header = file_get_contents(get_stylesheet_directory() . "/email_header.html");
+	elseif(file_exists(get_template_directory() . "/email_header.html"))
+		$header = file_get_contents(get_template_directory() . "/email_header.html");
+	else
+		$header = "";
+	
+	// Get footer for message if found
+	if(file_exists(get_stylesheet_directory() . "/email_footer.html"))
+		$footer = file_get_contents(get_stylesheet_directory() . "/email_footer.html");
+	elseif(file_exists(get_template_directory() . "/email_footer.html"))
+		$footer =  file_get_contents(get_template_directory() . "/email_footer.html");
+	else
+		$footer = "";
+	
+	// Add header/footer to the email
+	if(!empty($header))
+		$phpmailer->Body = $header . "\n" . $phpmailer->Body;
+	if(!empty($footer))
+		$phpmailer->Body = $phpmailer->Body . "\n" . $footer;
+	
 	// Replace variables in email
 	global $current_user;
 	$data = array(
@@ -92,6 +107,13 @@ function pmpro_send_html( $phpmailer ) {
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
 	}
 
+	// If there is no HTML, run through wpautop
+	if($original_body == strip_tags($original_body) &&
+		$header == strip_tags($header) &&
+		$footer == strip_tags($footer)
+	)
+		$phpmailer->Body = wpautop($phpmailer->Body);
+	
 	do_action("pmpro_after_phpmailer_init", $phpmailer);
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }

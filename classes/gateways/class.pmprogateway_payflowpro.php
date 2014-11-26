@@ -393,7 +393,7 @@
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						
@@ -551,6 +551,7 @@
 		
 			// NVPRequest for submitting to server
 			$nvpreq = "TRXTYPE=" . $methodName_ . "&TENDER=C&PARTNER=" . $PARTNER . "&VENDOR=" . $VENDOR . "&USER=" . $USER . "&PWD=" . $PWD . "&VERBOSITY=medium" . $nvpStr_;
+			//$nvpreq = "TRXTYPE=" . urlencode($methodName_) . "&TENDER=C&PARTNER=" . urlencode($PARTNER) . "&VENDOR=" . urlencode($VENDOR) . "&USER=" . urlencode($USER) . "&PWD=" . urlencode($PWD) . "&VERBOSITY=medium" . $nvpStr_;
 										
 			// setting the nvpreq as POST FIELD to curl
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);

@@ -1,5 +1,5 @@
 <?php 
-global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $pmpro_currency_symbol;
+global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user;
 if($pmpro_msg)
 {
 ?>

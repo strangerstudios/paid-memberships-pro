@@ -86,7 +86,7 @@ function pmpro_report_memberships_widget() {
 		<label class="section-label"><?php _e('Other Stats', 'pmpro');?>:</label>
 		<div style="width: 33%; float: left;">	
 			<label><?php _e('Monthly Recurring Revenue (MRR)', 'pmpro');?></label>
-			<em><?php echo $pmpro_currency_symbol . $pmpro_mrr = number_format(pmpro_getMRR( 'all time' ), 2); ?></em>		
+			<em><?php echo pmpro_formatPrice(pmpro_getMRR( 'all time' )); ?></em>		
 		</div>
 		<div style="width: 33%; float: left;">	
 			<label><?php _e('Cancellation Rate', 'pmpro');?></label>
@@ -94,7 +94,7 @@ function pmpro_report_memberships_widget() {
 		</div>
 		<div style="width: 33%; float: left;">	
 			<label><?php _e('Lifetime Value (LTV)', 'pmpro');?></label>
-			<em><?php echo $pmpro_currency_symbol . number_format(pmpro_getLTV('all time' ), 2); ?></em>		
+			<em><?php echo pmpro_formatPrice(pmpro_getLTV('all time')); ?></em>		
 		</div>
 		<div class="clear"></div>
 	</span>
@@ -189,7 +189,7 @@ function pmpro_report_memberships_page()
 	$cols = array();				
 	if($period == "daily")
 	{
-		$lastday = date("t", $startdate);
+		$lastday = date("t", strtotime($startdate, current_time("timestamp")));
 	
 		for($i = 1; $i <= $lastday; $i++)
 		{
@@ -304,7 +304,7 @@ function pmpro_report_memberships_page()
 			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i));?></option>
+					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
 				<?php } ?>
 			</select>
 			<select id="year" name="year">
@@ -376,14 +376,14 @@ function pmpro_report_memberships_page()
 			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
 			  ['<?php echo $date_function;?>', 'Signups', 'Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
 			<?php if ( $type === "mrr_ltv" ) : // Signups vs. cancellations ?>
 			  ['<?php echo $date_function;?>', 'MRR', 'LTV'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo (($mrr = $value->total / $value->months) && $mrr != 0) ? $mrr : 0; ?>, <?php echo pmpro_getLTV($period, NULL, $mrr ); ?>],
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo (($mrr = $value->total / $value->months) && $mrr != 0) ? $mrr : 0; ?>, <?php echo pmpro_getLTV($period, NULL, $mrr ); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 			]);
@@ -397,9 +397,18 @@ function pmpro_report_memberships_page()
 			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
 				var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
 			<?php elseif ( $type === "mrr_ltv" ) : // MRR & LTV ?>
-				var formatter = new google.visualization.NumberFormat({prefix: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
+				
+				<?php
+					//prefix or suffix?
+					if(pmpro_getCurrencyPosition() == "right")
+						$position = "suffix";
+					else
+						$position = "prefix";
+				?>
+				
+				var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 				formatter.format(data, 2);
-				var formatter = new google.visualization.NumberFormat({prefix: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
+				var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 				formatter.format(data, 1);
 
 				var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
