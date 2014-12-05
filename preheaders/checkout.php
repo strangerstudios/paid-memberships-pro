@@ -231,7 +231,7 @@
 	else
 		$discount_code = "";
 	if (isset($_REQUEST['username']))
-		$username = sanitize_username($_REQUEST['username']);
+		$username = sanitize_user($_REQUEST['username']);
 	else
 		$username = "";
 	if (isset($_REQUEST['password']))

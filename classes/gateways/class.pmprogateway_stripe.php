@@ -199,7 +199,7 @@
 			if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
 			{
 				//stripe js library
-				wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), NULL);
+				wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
 				
 				//stripe js code for checkout
 				function pmpro_stripe_javascript()
@@ -240,7 +240,7 @@
 								?>	
 							};
 							
-							if(jQuery('#bfirstname') && jQuery('#blastname'))
+							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 																
 							//create token
@@ -273,7 +273,10 @@
 							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 												
 							//insert fields for other card fields
-							form$.append("<input type='hidden' name='CardType' value='" + response['card']['type'] + "'/>");
+							if(jQuery('#CardType[name=CardType]').length)
+								jQuery('#CardType').val(response['card']['brand']);
+							else
+								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
 							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
 							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
 							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");							
@@ -538,15 +541,7 @@
 			if($last_order->gateway == "stripe")
 			{				
 				//is there a customer?
-				$last_order->Gateway->getCustomer($last_order);
-				if(!empty($last_order->Gateway->customer))
-				{					
-					//find subscription with this order code
-					$subscriptions = $last_order->Gateway->customer->subscriptions->all();						
-					
-					if(!empty($subscriptions))
-						$sub = true;
-				}				
+				$sub = $last_order->Gateway->getSubscription($last_order);								
 			}			
 			
 			if(empty($sub))
@@ -745,20 +740,32 @@
 					$last_order = new MemberOrder();
 					$last_order->getLastMemberOrder($user_id);
 					$last_order->setGateway('stripe');
-					$last_order->Gateway->getCustomer();
-															
-					if(!empty($last_order->Gateway->customer))
-					{
-						//find the first subscription
-						if(!empty($last_order->Gateway->customer->subscriptions['data'][0]))
+					$last_order->Gateway->getCustomer($last_order);
+
+					$subscription = $last_order->Gateway->getSubscription($last_order);
+										
+					if(!empty($subscription))
+					{						
+						$end_timestamp = $subscription->current_period_end;
+							
+						//cancel the old subscription						
+						if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription))
 						{
-							$first_sub = $last_order->Gateway->customer->subscriptions['data'][0]->__toArray();
-							$end_timestamp = $first_sub['current_period_end'];
+							//throw error and halt save
+							function pmpro_stripe_user_profile_fields_save_error($errors, $update, $user) 
+							{
+								$errors->add('pmpro_stripe_updates',__('Could not cancel the old subscription. Updates have not been processed.', 'pmpro'));
+							}
+							add_filter('user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3);
+							
+							//stop processing updates
+							return;
 						}
 					}
-					
+										
 					//if we didn't get an end date, let's set one one cycle out
-					$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period']);
+					if(empty($end_timestamp))
+						$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period'], current_time('timestamp'));
 										
 					//build order object
 					$update_order = new MemberOrder();
@@ -770,7 +777,10 @@
 					$update_order->PaymentAmount = $update['billing_amount'];
 					$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
 					$update_order->BillingPeriod = $update['cycle_period'];
-					$update_order->BillingFrequency = $update['cycle_number'];
+					$update_order->BillingFrequency = $update['cycle_number'];									
+					
+					//need filter to reset ProfileStartDate
+					add_filter('pmpro_profile_start_date', create_function('$startdate, $order', 'return "' . $update_order->ProfileStartDate . 'T0:0:0";'), 10, 2);
 					
 					//update subscription
 					$update_order->Gateway->subscribe($update_order, false);
@@ -779,14 +789,19 @@
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
 									SET billing_amount = '" . esc_sql($update['billing_amount']) . "',
 										cycle_number = '" . esc_sql($update['cycle_number']) . "',
-										cycle_period = '" . esc_sql($update['cycle_period']) . "'
+										cycle_period = '" . esc_sql($update['cycle_period']) . "',
+										trial_amount = '',
+										trial_limit = ''
 									WHERE user_id = '" . esc_sql($user_id) . "'
 										AND membership_id = '" . esc_sql($last_order->membership_id) . "'
 										AND status = 'active'
 									LIMIT 1";
 													
 					$wpdb->query($sqlQuery);
-										
+					
+					//save order so we know which plan to look for at stripe (order code = plan id)
+					$update_order->saveOrder();
+					
 					continue;
 				}
 				elseif($update['when'] == 'date')
@@ -871,7 +886,7 @@
 							$last_order = new MemberOrder();
 							$last_order->getLastMemberOrder($user_id);
 							$last_order->setGateway('stripe');
-							$last_order->Gateway->getCustomer();
+							$last_order->Gateway->getCustomer($last_order);
 																	
 							if(!empty($last_order->Gateway->customer))
 							{
@@ -1163,6 +1178,48 @@
 		}
 		
 		/**
+		 * Get a Stripe subscription from a PMPro order
+		 *		
+		 * @since 1.8
+		 */
+		function getSubscription(&$order)		
+		{
+			global $wpdb;
+						
+			//no order?
+			if(empty($order) || empty($order->code))
+				return false;
+			
+			$this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
+									
+			//no customer?
+			if(empty($this->customer))
+				return false;
+			
+			//find subscription with this order code
+			$subscriptions = $this->customer->subscriptions->all();			
+			
+			//no subscriptions
+			if(empty($subscriptions) || empty($subscriptions->data))
+				return false;
+						
+			//we really want to test against the order codes of all orders with the same subscription_transaction_id (customer id)
+			$codes = $wpdb->get_col("SELECT code FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $order->user_id . "' AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' AND status NOT IN('refunded', 'review', 'token', 'error')");
+			
+			//find the one for this order
+			foreach($subscriptions->data as $sub)
+			{				
+				if(in_array($sub->plan->id, $codes))
+				{
+					return $sub;
+				}
+			}
+			
+			//didn't find anything yet			
+			return false;
+		}
+		
+		/**
 		 * Create a new subscription with Stripe
 		 *		
 		 * @since 1.4
@@ -1221,8 +1278,8 @@
 			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
-
+			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);						
+			
 			//convert back to days
 			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time("timestamp")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
@@ -1243,6 +1300,8 @@
 			{
 				/*
 					Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
+					
+					This will force TrialBillingCycles > 1 to act as if they were 1
 				*/				
 				$new_user_updates = array();
 				$new_user_updates[] = array(
@@ -1252,10 +1311,10 @@
 					'cycle_number' => $order->BillingFrequency
 				);				
 				
-				//now amount to equal the trial #s				
+				//now amount to equal the trial #s
 				$amount = $order->TrialAmount;
-				$amount_tax = $order->getTaxForPrice($amount);			
-				$amount = round((float)$amount + (float)$amount_tax, 2);				
+				$amount_tax = $order->getTaxForPrice($amount);
+				$amount = round((float)$amount + (float)$amount_tax, 2);
 			}			
 						
 			//create a plan
@@ -1370,53 +1429,26 @@
 			
 			//find the customer
 			$this->getCustomer($order);									
-						
+											
 			if(!empty($this->customer))
 			{
 				//find subscription with this order code
-				$subscriptions = $this->customer->subscriptions->all();												
-								
-				//get open invoices
-				$invoices = $this->customer->invoices();
-				$invoices = $invoices->all();
-								
-				if(!empty($subscriptions))
-				{					
-					foreach($subscriptions->data as $sub)
-					{						
-						if($sub->plan->id == $order->code)
-						{
-							//found it, cancel it
-							try
-							{								
-								//find any open invoices for this subscription and forgive them
-								if(!empty($invoices))
-								{
-									foreach($invoices->data as $invoice)
-									{										
-										if(!$invoice->closed && $invoice->subscription == $sub->id)
-										{											
-											$invoice->closed = true;
-											$invoice->save();
-										}
-									}
-								}	
-								
-								//cancel
-								$r = $sub->cancel();								
-								
-								break;
-							}
-							catch(Exception $e)
-							{								
-								$order->error = __("Could not cancel old subscription.", "pmpro");
-								$order->shorterror = $order->error;
-																
-								return false;
-							}
-						}
+				$subscription = $this->getSubscription($order);												
+
+				if(!empty($subscription))
+				{				
+					if($this->cancelSubscriptionAtGateway($subscription))
+					{
+						//we're okay, going to return true later
 					}
-				}
+					else
+					{
+						$order->error = __("Could not cancel old subscription.", "pmpro");
+						$order->shorterror = $order->error;
+						
+						return false;											
+					}					
+				}				
 				
 				/*
 					Clear updates for this user. (But not if checking out, we would have already done that.)
@@ -1428,9 +1460,67 @@
 			}
 			else
 			{
-				$order->error = __("Could not find the subscription.", "pmpro");
+				$order->error = __("Could not find the customer.", "pmpro");
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}						
-		}						
+		}							
+	
+		/**
+		 * Helper method to cancel a subscription at Stripe and also clear up any upaid invoices.
+		 *		
+		 * @since 1.8
+		 */
+		function cancelSubscriptionAtGateway($subscription)
+		{
+			//need a valid sub
+			if(empty($subscription->id))
+				return false;
+		
+			//make sure we get the customer for this subscription
+			$order = new MemberOrder();
+			$order->getLastMemberOrderBySubscriptionTransactionID($subscription->id);			
+			
+			//no order?
+			if(empty($order))
+			{
+				//lets cancel anyway, but this is suspicious
+				$r = $subscription->cancel();
+								
+				return true;
+			}
+			
+			//okay have an order, so get customer so we can cancel invoices too
+			$this->getCustomer($order);
+			
+			//get open invoices
+			$invoices = $this->customer->invoices();
+			$invoices = $invoices->all();
+										
+			//found it, cancel it
+			try
+			{								
+				//find any open invoices for this subscription and forgive them
+				if(!empty($invoices))
+				{
+					foreach($invoices->data as $invoice)
+					{										
+						if(!$invoice->closed && $invoice->subscription == $subscription->id)
+						{											
+							$invoice->closed = true;
+							$invoice->save();
+						}
+					}
+				}	
+								
+				//cancel
+				$r = $subscription->cancel();
+				
+				return true;
+			}
+			catch(Exception $e)
+			{			
+				return false;
+			}
+		}
 	}
