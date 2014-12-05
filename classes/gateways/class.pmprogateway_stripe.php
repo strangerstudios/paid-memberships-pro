@@ -1340,8 +1340,11 @@
 			}
 			
 			//before subscribing, let's clear out the updates so we don't trigger any during sub
-			$old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
-			update_user_meta($user_id, "pmpro_stripe_updates", array());
+			if(!empty($user_id))
+			{				
+				$old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
+				update_user_meta($user_id, "pmpro_stripe_updates", array());	
+			}			
 			
 			if(empty($order->subscription_transaction_id) && !empty($this->customer['id']))
 				$order->subscription_transaction_id = $this->customer['id'];
@@ -1357,7 +1360,8 @@
 				$plan->delete();
 				
 				//give the user any old updates back
-				update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
+				if(!empty($user_id))
+					update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
 				
 				//return error
 				$order->error = __("Error subscribing customer to plan with Stripe:", "pmpro") . $e->getMessage();
@@ -1381,7 +1385,20 @@
 					$new_user_updates = array();
 					
 				//update user meta
-				update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
+				if(!empty($user_id))				
+					update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
+				else
+				{
+					//need to remember the user updates to save later
+					global $pmpro_stripe_updates;
+					$pmpro_stripe_updates = $new_user_updates;
+					function pmpro_user_register_stripe_updates($user_id)
+					{
+						global $pmpro_stripe_updates;
+						update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
+					}
+					add_action("user_register", "pmpro_user_register_stripe_updates");
+				}
 			}
 			else
 			{
