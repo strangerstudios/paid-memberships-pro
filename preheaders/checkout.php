@@ -554,7 +554,7 @@
 				if (apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id))
 					wp_new_user_notification($user_id, $new_user_array['user_pass']);								
 		
-				$wpuser = new WP_User(0, $new_user_array['user_login']);
+				$wpuser = get_userdata($user_id);
 		
 				//make the user a subscriber
 				$wpuser->set_role(get_option('default_role', 'subscriber'));
