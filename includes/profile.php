@@ -192,6 +192,15 @@ function pmpro_membership_level_profile_fields($user)
 	do_action("pmpro_after_membership_level_profile_fields", $user);	
 }
 
+/*
+	When applied, previous subscriptions won't be cancelled when changing membership levels.
+	Use a function here instead of __return_false so we can easily turn add and remove it.
+*/
+function pmpro_cancel_previous_subscriptions_false()
+{
+	return false;
+}
+
 //save the fields on update
 function pmpro_membership_level_profile_fields_update()
 {
@@ -218,11 +227,20 @@ function pmpro_membership_level_profile_fields_update()
         else
             $changed_or_cancelled = 'admin_changed';
 
+		//if the cancel at gateway box is not checked, don't cancel 
+		if(empty($_REQUEST['cancel_subscription']))
+			add_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
+				
+		//do the change
         if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID, $changed_or_cancelled))
         {
             //it changed. send email
             $level_changed = true;
         }
+		
+		//remove filter after ward		
+		if(empty($_REQUEST['cancel_subscription']))
+			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
     }
 	
 	//expiration change

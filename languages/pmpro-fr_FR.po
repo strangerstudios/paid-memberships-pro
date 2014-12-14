@@ -181,6 +181,18 @@ msgstr ""
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "Le prix pour l'adhésion est de <strong>%s</strong>."
 
+#: includes/functions.php:230 includes/functions.php:229
+#: includes/functions.php:231
+#, php-format
+msgid "The price for membership is <strong>%s per %s</strong>."
+msgstr "Le prix pour l'adhésion est de <strong>%s par %s</strong>."
+
+#: includes/functions.php:234 includes/functions.php:233
+#: includes/functions.php:235
+#, php-format
+msgid "The price for membership is <strong>%s every %d %s</strong>."
+msgstr "Le prix pour l'adhésion est de <strong>%s chaque %d</strong>."
+
 #: includes/functions.php:169
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
@@ -2087,6 +2099,10 @@ msgstr "Éditer information de facturation."
 #: pages/account.php:125
 msgid "Past Invoices"
 msgstr "Factures antérieures"
+
+#: pages/levels.php:14 pages/levels.php:14
+msgid "Price"
+msgstr "Prix"
 
 #: pages/account.php:140
 msgid "View All Invoices"

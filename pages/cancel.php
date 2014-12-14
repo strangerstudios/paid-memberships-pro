@@ -1,6 +1,10 @@
 <?php 
 	global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user;
-	$level = $_REQUEST['level'];
+	
+	if(isset($_REQUEST['level']))
+		$level = $_REQUEST['level'];
+	else
+		$level = false;
 ?>
 <div id="pmpro_cancel">		
 	<?php

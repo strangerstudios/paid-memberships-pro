@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.0.1
-Stable tag: 1.7.15.2
+Stable tag: 1.7.15.3
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
+* BUG: Using get_userdata in checkout code for better multisite support when setting default role of new users.
 
 = 1.7.15.2 =
 * BUG: Stripe JS looks for a field with id AND name = CardType now so the new checkout code is compatible with older checkout templates and will avoid "complete all fields" errors.
