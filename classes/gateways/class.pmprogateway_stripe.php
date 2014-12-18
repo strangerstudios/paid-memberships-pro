@@ -73,8 +73,8 @@
 			$amount = round((float)$order->subtotal + (float)$tax, 2);
 						
 			//create a customer
-			$this->getCustomer($order);
-			if(empty($this->customer))
+			$result = $this->getCustomer($order);
+			if(empty($result))
 			{				
 				//failed to create customer
 				return false;
@@ -157,34 +157,44 @@
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
-				try 
+				try
 				{
 					$this->customer = Stripe_Customer::retrieve($customer_id);
-					
-					//update the customer description and card
-					if(!empty($order->stripeToken))
-					{
-						$name = trim($order->FirstName . " " . $order->LastName);
-
-						if (empty($name))
-						{
-							$name = trim($current_user->first_name . " " . $current_user->last_name);
-						}
-
-						$this->customer->description = $name . " (" . $order->Email . ")";
-						$this->customer->email = $order->Email;
-						$this->customer->card = $order->stripeToken;
-						$this->customer->save();
-					}
-					
-					return $this->customer;
 				}
 				catch (Exception $e) 
 				{
-					//assume no customer found					
+					//assume no customer found
 				}
 			}
-			
+
+            //update the customer description and card
+            if(!empty($this->customer))
+            {
+                if (!empty($order->stripeToken))
+                {
+                    $name = trim($order->FirstName . " " . $order->LastName);
+
+                    if (empty($name))
+                        $name = trim($current_user->first_name . " " . $current_user->last_name);
+
+                    $this->customer->description = $name . " (" . $order->Email . ")";
+                    $this->customer->email = $order->Email;
+                    $this->customer->card = $order->stripeToken;
+
+                    try
+                    {
+                        $this->customer->save();
+                        return $this->customer;
+                    }
+                    catch (Exception $e)
+                    {
+                        $order->error = __("Error updating customer record with Stripe:", "pmpro") . " " . $e->getMessage();
+                        $order->shorterror = $order->error;
+                        return false;
+                    }
+                }
+            }
+
 			//no customer id, create one
 			if(!empty($order->stripeToken))
 			{
@@ -239,8 +249,8 @@
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
 			
 			//setup customer
-			$this->getCustomer($order);
-			if(empty($this->customer))
+			$result = $this->getCustomer($order);
+			if(empty($result))
 				return false;	//error retrieving customer
 			
 			//set subscription id to custom id
@@ -344,9 +354,8 @@
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
-			$this->getCustomer($order);
-			
-			if(!empty($this->customer))
+			$result = $this->getCustomer($order);
+			if(!empty($result))
 			{
 				return true;
 			}			

@@ -102,7 +102,8 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 1.7.15.3 = 
+= 1.7.15.3 =
+* BUG: Now properly handling checkout and billing update of declined cards with Stripe.
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
 
 = 1.7.15.2 =
