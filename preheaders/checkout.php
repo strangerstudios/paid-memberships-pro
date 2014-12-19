@@ -82,7 +82,10 @@
 	{
 		wp_redirect(pmpro_url("levels"));
 		exit(0);
-	}		
+	}
+	
+	//enqueue some scripts
+	wp_enqueue_script('jquery.creditCardValidator', plugins_url('/js/jquery.creditCardValidator.js' , dirname(__FILE__ )), array( 'jquery' ));	
 		
 	global $wpdb, $current_user, $pmpro_requirebilling;	
 	//unless we're submitting a form, let's try to figure out if https should be used
