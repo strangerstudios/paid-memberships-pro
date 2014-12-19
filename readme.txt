@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8 =
+* ENHANCEMENT: Changing South African Rand (ZAR) to use the symbol R to the left of prices. (Thanks, Rasada)
+
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
 * BUG: Using get_userdata in checkout code for better multisite support when setting default role of new users.
