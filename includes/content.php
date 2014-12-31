@@ -6,7 +6,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 {
 	global $post, $wpdb, $current_user;
 	//use globals if no values supplied
-	if(!$post_id)
+	if(!$post_id && !empty($post))
 		$post_id = $post->ID;
 	if(!$user_id)
 		$user_id = $current_user->ID;
