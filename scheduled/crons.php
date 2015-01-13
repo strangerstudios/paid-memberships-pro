@@ -23,6 +23,8 @@
 			//remove their membership
 			pmpro_changeMembershipLevel(false, $e->user_id);
 			
+			do_action("pmpro_membership_has_expired", $e->user_id, $e->membership_id );
+			
 			$send_email = apply_filters("pmpro_send_expiration_email", true, $e->user_id);
 			if($send_email)
 			{
