@@ -227,11 +227,17 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 			if( $level->billing_amount === $level->initial_payment ) {
 				if($level->cycle_number == '1')
 				{
-					$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
+					if(!$short)
+						$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
+					else
+						$r = sprintf(__('<strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
 				}
 				else
 				{
-					$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
+					if(!$short)
+						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
+					else
+						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
 				}
 			} else {
 				if($level->cycle_number == '1')
