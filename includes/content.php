@@ -31,6 +31,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	{
 		$mypost = get_post($mypost->post_parent);
 	}
+        
+        // Allow plugins and themes to find the protected post        
+        $mypost = apply_filters( 'pmpro_get_mypost', $mypost );
 
 	if($mypost->post_type == "post")
 	{
