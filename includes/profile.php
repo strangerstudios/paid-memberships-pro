@@ -40,9 +40,8 @@ function pmpro_membership_level_profile_fields($user)
 				<?php
 					foreach($levels as $level)
 					{
-						$current_level = ($user->membership_level->ID == $level->id);
 				?>
-					<option value="<?php echo $level->id?>" <?php if($current_level) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+					<option value="<?php echo $level->id?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->name?></option>
 				<?php
 					}
 				?>
