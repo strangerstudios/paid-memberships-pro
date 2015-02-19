@@ -30,7 +30,7 @@
 	<thead>
 		<tr>
 			<th>
-				<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_thead-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _ex('change', 'change membership level link', 'pmpro');?></a></span><?php } ?><?php _e('Membership Level', 'pmpro');?>
+				<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_thead-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _e('change', 'pmpro');?></a></span><?php } ?><?php _e('Membership Level', 'pmpro');?>
 			</th>						
 		</tr>
 	</thead>
@@ -497,6 +497,7 @@
 						<?php
 						}
 					?>
+					
 					<?php 
 						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
 						if($pmpro_include_cardtype_field) 
@@ -510,7 +511,7 @@
 								<?php } ?>												
 							</select> 
 						</div>
-					<?php 
+						<?php 
 						} 
 						else
 						{
@@ -541,7 +542,7 @@
 						</script>
 						<?php
 						}
-					?>					
+					?>
 				
 					<div class="pmpro_payment-account-number">
 						<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>

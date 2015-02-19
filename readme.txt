@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.0.1
-Stable tag: 1.7.15.3
+Tested up to: 4.1.1
+Stable tag: 1.8
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,12 +102,17 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
-= 2.0 =
-* Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
-* Added a pmpro_after_membership_level_profile_fields hook after the "Membership Level" field dropdown on the edit profile page.
-* Users can now have multiple membership levels at the same time. For more information: TBA
-* Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
-* All gateways use the $pmpro_currency global instead of getting the value via pmpro_getOption.
+
+= 1.8 =
+* ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
+* ENHANCEMENT: Added a pmpro_after_membership_level_profile_fields hook after the "Membership Level" field dropdown on the edit profile page.
+* ENHANCEMENT: Added new statuses for orders when cancelled. cancelled = cancelled by user on cancel page or via gateway, cancelled_admin = cancelled by an admin, expired = cancelled via expiration script, level_change = user upgraded/downgraded to a different level.
+* ENHANCEMENT: All gateways use the $pmpro_currency global instead of getting the value via pmpro_getOption.
+* ENHANCEMENT: Changing South African Rand (ZAR) to use the symbol R to the left of prices. (Thanks, Rasada)
+* BUG: Fixed some translation issues on the checkout page and in level cost text. (Thanks, Jenkisan)
+* ENHANCEMENT: Added plural forms of Day, Week, Month, Year to es_ES translation. Other translation files will need to as well.
+* BUG: Fixed bug where the $short parameter of pmpro_getLevelCost wasn't shortening the output in some cases. (Thanks, Kimberly Coleman)
+* BUG: Fixed warning in membership dropdown on edit user/profile page. (Thanks, Thomas Sjolshagen)
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.

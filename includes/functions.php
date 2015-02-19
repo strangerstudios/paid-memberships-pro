@@ -235,9 +235,9 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 				else
 				{
 					if(!$short)
-						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
 					else
-						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period) );
+						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
 				}
 			} else {
 				if($level->cycle_number == '1')

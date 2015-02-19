@@ -46,7 +46,11 @@
 				'symbol' => '&#36;',
 				'position' => 'right'
 				),
-			'ZAR' => __('South African Rand', 'pmpro'),
+			'ZAR' => array(
+				'name' => __('South African Rand (R)', 'pmpro'),
+				'symbol' => 'R ',
+				'position' => 'left'
+			),			
 			'KRW' => __('South Korean Won', 'pmpro'),
 			'SEK' => __('Swedish Krona', 'pmpro'),
 			'CHF' => __('Swiss Franc', 'pmpro'),

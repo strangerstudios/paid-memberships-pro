@@ -2,7 +2,7 @@
 /*
 	Expiring Memberships		
 */
-add_action("pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships");		
+add_action("pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships");
 function pmpro_cron_expire_memberships()
 {
 	global $wpdb;
@@ -12,16 +12,20 @@ function pmpro_cron_expire_memberships()
 	
 	//look for memberships that expired before today
 	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . $today . "' ORDER BY mu.enddate";
-					
-	$expired = $wpdb->get_results($sqlQuery);
 	
 	if(defined('PMPRO_CRON_LIMIT'))
 		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
 	
+	$expired = $wpdb->get_results($sqlQuery);
+			
 	foreach($expired as $e)
 	{						
+		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );
+		
 		//remove their membership
 		pmpro_changeMembershipLevel(false, $e->user_id, 'expired');
+		
+		do_action("pmpro_membership_post_membership_expiry", $e->user_id, $e->membership_id );
 		
 		$send_email = apply_filters("pmpro_send_expiration_email", true, $e->user_id);
 		if($send_email)
@@ -30,11 +34,11 @@ function pmpro_cron_expire_memberships()
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);		
 			$pmproemail->sendMembershipExpiredEmail($euser);
-		
-			printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);
-		}
+			
+			printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);				
+		}		
 	}
-}
+}		
 
 /*
 	Expiration Warning Emails

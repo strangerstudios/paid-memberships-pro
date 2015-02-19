@@ -297,17 +297,33 @@ msgstr "Por favor especifica un id de nivel."
 msgid "Day"
 msgstr "Día"
 
+#: includes/localization.php:23
+msgid "Days"
+msgstr "Días"
+
 #: includes/localization.php:25
 msgid "Week"
 msgstr "Semana"
+
+#: includes/localization.php:25
+msgid "Weeks"
+msgstr "Semanas"
 
 #: includes/localization.php:27
 msgid "Month"
 msgstr "Mes"
 
+#: includes/localization.php:27
+msgid "Months"
+msgstr "Meses"
+
 #: includes/localization.php:29
 msgid "Year"
 msgstr "Año"
+
+#: includes/localization.php:29
+msgid "Years"
+msgstr "Años"
 
 #: includes/metaboxes.php:38
 msgid ""
