@@ -113,6 +113,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added plural forms of Day, Week, Month, Year to es_ES translation. Other translation files will need to as well.
 * BUG: Fixed bug where the $short parameter of pmpro_getLevelCost wasn't shortening the output in some cases. (Thanks, Kimberly Coleman)
 * BUG: Fixed warning in membership dropdown on edit user/profile page. (Thanks, Thomas Sjolshagen)
+* ENHANCEMENT: Added German (de_DE) translation files. (Thanks, Cedros)
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
