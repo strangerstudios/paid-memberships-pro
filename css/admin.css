@@ -106,6 +106,7 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 .pmpro_green {color: #00AA00;}
 .ssp_description #description {width: 100%;}
 .top0em {margin-top: 0;}
+h2.nav-tab-wrapper {margin-bottom: 1em; }
 
 /* reports */
 .pmpro_reports-holder { }

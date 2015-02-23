@@ -609,7 +609,7 @@
 					foreach($codes as $code)
 					{
 					?>
-					<tr>
+					<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 						<td><?php echo $code->id?></td>
 						<td>
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>

@@ -145,12 +145,12 @@
 		if(in_array($view, $settings_tabs))
 		{
 	?>
-	<h3 class="nav-tab-wrapper">
+	<h2 class="nav-tab-wrapper">
 		<a href="admin.php?page=pmpro-membershiplevels" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Membership Levels', 'pmpro');?></a>
 		<a href="admin.php?page=pmpro-pagesettings" class="nav-tab<?php if($view == 'pmpro-pagesettings') { ?> nav-tab-active<?php } ?>"><?php _e('Pages', 'pmpro');?></a>
 		<a href="admin.php?page=pmpro-paymentsettings" class="nav-tab<?php if($view == 'pmpro-paymentsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Payment Gateway &amp; SSL', 'pmpro');?></a>
 		<a href="admin.php?page=pmpro-emailsettings" class="nav-tab<?php if($view == 'pmpro-emailsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Email', 'pmpro');?></a>
 		<a href="admin.php?page=pmpro-advancedsettings" class="nav-tab<?php if($view == 'pmpro-advancedsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Advanced', 'pmpro');?></a>	
 		<a href="admin.php?page=pmpro-addons" class="nav-tab<?php if($view == 'pmpro-addons') { ?> nav-tab-active<?php } ?>"><?php _e('Add Ons', 'pmpro');?></a>	
-	</h3>
+	</h2>
 	<?php } ?>
