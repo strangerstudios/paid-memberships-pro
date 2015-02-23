@@ -440,7 +440,7 @@ function pmpro_upgrade_1()
 	
 	$parsed = parse_url(home_url()); 
 	$hostname = $parsed['host'];
-	$hostparts = split("\.", $hostname);				
+	$hostparts = explode(".", $hostname);
 	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];		
 	$from_email = "wordpress@" . $email_domain;
 	pmpro_setOption("from_email", $from_email);
