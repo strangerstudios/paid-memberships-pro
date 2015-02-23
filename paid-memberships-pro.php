@@ -100,6 +100,7 @@ define("SITEURL", $urlparts[1]);
 define("SECUREURL", str_replace("http://", "https://", get_bloginfo("wpurl")));
 define("PMPRO_URL", WP_PLUGIN_URL . "/paid-memberships-pro");
 define("PMPRO_DOMAIN", pmpro_getDomainFromURL(site_url()));
+define("PAYPAL_BN_CODE", "PaidMembershipsPro_SP");
 
 /*
 	Globals
