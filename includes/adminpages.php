@@ -224,3 +224,45 @@ function pmpro_orders()
 {
 	require_once(PMPRO_DIR . "/adminpages/orders.php");
 }
+
+
+/*
+Function to add links to the plugin action links
+*/
+function pmpro_add_action_links($links) {
+	
+	//array of all caps in the menu
+	$pmpro_caps = pmpro_getPMProCaps();
+	
+	//the top level menu links to the first page they have access to
+	foreach($pmpro_caps as $cap)
+	{
+		if(current_user_can($cap))
+		{
+			$top_menu_page = str_replace("_", "-", $cap);
+			break;
+		}
+	}
+	
+	$new_links = array(
+		'<a href="' . get_admin_url(NULL, 'admin.php?page=' . $top_menu_page) . '">Settings</a>',
+	);
+	return array_merge($new_links, $links);
+}
+add_filter('plugin_action_links_' . plugin_basename(PMPRO_DIR . "/paid-memberships-pro.php"), 'pmpro_add_action_links');
+
+/*
+Function to add links to the plugin row meta
+*/
+function pmpro_plugin_row_meta($links, $file) {
+	if(strpos($file, 'paid-memberships-pro.php') !== false)
+	{
+		$new_links = array(
+			'<a href="' . esc_url( apply_filters( 'pmpro_docs_url', 'http://paidmembershipspro.com/documentation/' ) ) . '" title="' . esc_attr( __( 'View PMPro Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url( apply_filters( 'pmpro_support_url', 'http://paidmembershipspro.com/support/' ) ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+		);
+		$links = array_merge($links, $new_links);
+	}
+	return $links;
+}
+add_filter('plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2);
