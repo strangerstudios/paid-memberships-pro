@@ -114,6 +114,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where the $short parameter of pmpro_getLevelCost wasn't shortening the output in some cases. (Thanks, Kimberly Coleman)
 * BUG: Fixed warning in membership dropdown on edit user/profile page. (Thanks, Thomas Sjolshagen)
 * ENHANCEMENT: Added German (de_DE) translation files. (Thanks, Cedros)
+* ENHANCEMENT: Added settings links to plugins page.
+* BUG: Fixed bug in Safari for iOS where checkout submission would fail after choosing "Not Now" when prompted to save the card.
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
