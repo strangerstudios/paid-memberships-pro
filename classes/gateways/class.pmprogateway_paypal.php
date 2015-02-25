@@ -644,7 +644,7 @@
 			curl_setopt($ch, CURLOPT_POST, 1);
 		
 			// NVPRequest for submitting to server
-			$nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&BUTTONSOURCE=" . urlencode(PaidMembershipsPro_SP) . $nvpStr_;
+			$nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&BUTTONSOURCE=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
 					
 			// setting the nvpreq as POST FIELD to curl
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);
