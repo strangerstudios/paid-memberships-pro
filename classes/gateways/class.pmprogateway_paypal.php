@@ -155,7 +155,7 @@
 				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<p><?php _e('This URL is passed to PayPal for all new charges and subscriptions. You SHOULD NOT set this in your PayPal account settings.', 'pmpro');?><pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
 			</td>
 		</tr>
 		<?php

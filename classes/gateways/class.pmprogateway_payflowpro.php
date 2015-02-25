@@ -129,10 +129,13 @@
 	    </tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
+				<label><?php _e('IPN Handler', 'pmpro');?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with Payflow Pro/PayPal Pro, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<p><?php 
+					$addon_url = "http://www.paidmembershipspro.com/add-ons/plugins-on-github/payflow-recurring-orders-addon/";
+					printf(__('Payflow does not use IPN. To sync recurring subscriptions, please see <a target="_blank" href="%s">this addon</a>.', 'pmpro'), $addon_url);?>
+				</p>
 			</td>
 		</tr>
 		<?php
