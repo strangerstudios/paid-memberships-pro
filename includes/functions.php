@@ -1811,3 +1811,34 @@ function pmpro_getCurrencyPosition()
 	else
 		return "left";
 }
+
+/*
+ * What gateway should we be using?
+ *
+ * @since 1.8
+ */
+function pmpro_getGateway()
+{	
+	//grab from param or options
+	if (!empty($_REQUEST['gateway']))
+		$gateway = $_REQUEST['gateway'];		//gateway passed as param
+	elseif (!empty($_REQUEST['review']))
+		$gateway = "paypalexpress";				//if review param assume paypalexpress
+	else
+		$gateway = pmpro_getOption("gateway");  //get from options
+		
+	//set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
+	if(pmpro_getOption("gateway", true) == "paypal")
+		$valid_gateways = apply_filters("pmpro_valid_gateways", array("paypal", "paypalexpress"));
+	else
+		$valid_gateways = apply_filters("pmpro_valid_gateways", array(pmpro_getOption("gateway", true)));
+	
+	//make sure it's valid	
+	if(!in_array($gateway, $valid_gateways))
+		$gateway = false;
+	
+	//filter for good measure
+	$gateway = apply_filters('pmpro_get_gateway', $gateway, $valid_gateways);
+	
+	return $gateway;
+}

@@ -42,7 +42,7 @@
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_braintree', 'pmpro_payment_option_fields'), 10, 2);
 
 			//code to add at checkout if Braintree is the current gateway
-			$gateway = pmpro_getOption("gateway");
+			$gateway = pmpro_getGateway();
 			if($gateway == "braintree")
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));

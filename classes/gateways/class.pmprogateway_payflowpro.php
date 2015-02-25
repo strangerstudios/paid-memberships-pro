@@ -554,6 +554,7 @@
 		
 			// NVPRequest for submitting to server
 			$nvpreq = "TRXTYPE=" . $methodName_ . "&TENDER=C&PARTNER=" . $PARTNER . "&VENDOR=" . $VENDOR . "&USER=" . $USER . "&PWD=" . $PWD . "&VERBOSITY=medium" . "&BUTTONSOURCE=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
+			
 			//$nvpreq = "TRXTYPE=" . urlencode($methodName_) . "&TENDER=C&PARTNER=" . urlencode($PARTNER) . "&VENDOR=" . urlencode($VENDOR) . "&USER=" . urlencode($USER) . "&PWD=" . urlencode($PWD) . "&VERBOSITY=medium" . $nvpStr_;
 										
 			// setting the nvpreq as POST FIELD to curl

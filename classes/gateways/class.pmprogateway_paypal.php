@@ -37,8 +37,8 @@
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
 			
-			//code to add at checkout if Braintree is the current gateway
-			$gateway = pmpro_getOption("gateway");
+			//code to add at checkout
+			$gateway = pmpro_getGateway();
 			if($gateway == "paypal")
 			{				
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));

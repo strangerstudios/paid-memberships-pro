@@ -27,8 +27,8 @@
 			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);
 
-			//code to add at checkout if Braintree is the current gateway
-			$gateway = pmpro_getOption("gateway");
+			//code to add at checkout
+			$gateway = pmpro_getGateway();
 			if($gateway == "check")
 			{
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
