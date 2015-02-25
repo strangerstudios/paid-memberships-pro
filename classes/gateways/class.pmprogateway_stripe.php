@@ -271,7 +271,9 @@
 							var token = response['id'];					
 							// insert the token into the form so it gets submitted to the server
 							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-												
+							
+							console.log(response);
+							
 							//insert fields for other card fields
 							if(jQuery('#CardType[name=CardType]').length)
 								jQuery('#CardType').val(response['card']['brand']);
@@ -544,10 +546,21 @@
 				$sub = $last_order->Gateway->getSubscription($last_order);								
 			}			
 			
+			$customer_id = $user->pmpro_stripe_customerid;
+			echo "(" . $customer_id . ")";
+			
 			if(empty($sub))
 			{
 				//make sure we delete stripe updates
 				update_user_meta($user->ID, "pmpro_stripe_updates", array());
+								
+				//if the last order has a sub id, let the admin know there is no sub at Stripe
+				if(!empty($last_order) && $last_order->gateway == "stripe" && !empty($last_order->subscription_transaction_id) && strpos($last_order->subscription_transaction_id, "sub_") !== false)
+				{
+				?>
+				<p><strong>Note:</strong> Subscription <strong><?php echo $last_order->subscription_transaction_id;?></strong> could not be found at Stripe. It might have been deleted.</p>
+				<?php
+				}				
 			}
 			else			
 			{				
@@ -800,6 +813,7 @@
 					$wpdb->query($sqlQuery);
 					
 					//save order so we know which plan to look for at stripe (order code = plan id)
+					$update_order->status = "success";
 					$update_order->saveOrder();
 					
 					continue;
@@ -927,7 +941,11 @@
 											LIMIT 1";
 															
 							$wpdb->query($sqlQuery);
-													
+							
+							//save order
+							$update_order->status = "success";
+							$update_order->save();
+							
 							//remove update from list
 							unset($user_updates[$key]);									
 						}
@@ -1020,12 +1038,13 @@
 						
 			//create a customer
 			$this->getCustomer($order);
+						
 			if(empty($this->customer))
 			{				
 				//failed to create customer
 				return false;
 			}			
-			
+						
 			//charge
 			try
 			{
@@ -1084,20 +1103,25 @@
 			if(!empty($this->customer) && !$force)
 				return $this->customer;
 			
+			//figure out user_id and user
+			if(!empty($order->user_id))
+				$user_id = $order->user_id;
+			
+			//if no id passed, check the current user
+			if(empty($user_id) && !empty($current_user->ID))
+				$user_id = $current_user->ID;
+			
+			if(!empty($user_id))
+				$user = get_userdata($user_id);
+			else
+				$user = NULL;
+			
 			//transaction id?
-			if(!empty($order->subscription_transaction_id))
+			if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "cus_") !== false)
 				$customer_id = $order->subscription_transaction_id;
 			else
 			{
 				//try based on user id	
-				if(!empty($order->user_id))
-					$user_id = $order->user_id;
-			
-				//if no id passed, check the current user
-				if(empty($user_id) && !empty($current_user->ID))
-					$user_id = $current_user->ID;
-			
-				//check for a stripe customer id
 				if(!empty($user_id))
 				{			
 					$customer_id = get_user_meta($user_id, "pmpro_stripe_customerid", true);	
@@ -1115,14 +1139,27 @@
 					if(!empty($order->stripeToken))
 					{
 						$name = trim($order->FirstName . " " . $order->LastName);
-
-						if (empty($name))
+						if(empty($name) && !empty($user->ID))
 						{
-							$name = trim($current_user->first_name . " " . $current_user->last_name);
+							$name = trim($user->first_name . " " . $user->last_name);
+							
+							//still empty?
+							if(empty($name))
+								$name = $user->user_login;
 						}
+						elseif(empty($name))
+							$name = "No Name";
 
-						$this->customer->description = $name . " (" . $order->Email . ")";
-						$this->customer->email = $order->Email;
+						$email = $order->Email;
+						if(empty($email) && !empty($user->ID))
+						{
+							$email = $user->user_email;
+						}
+						else
+							$email = "No Email";
+												
+						$this->customer->description = $name . " (" . $email . ")";
+						$this->customer->email = $email;
 						$this->customer->card = $order->stripeToken;
 						$this->customer->save();
 					}
@@ -1137,7 +1174,7 @@
 			
 			//no customer id, create one
 			if(!empty($order->stripeToken))
-			{
+			{				
 				try
 				{
 					$this->customer = Stripe_Customer::create(array(
@@ -1188,21 +1225,38 @@
 						
 			//no order?
 			if(empty($order) || empty($order->code))
-				return false;
-			
+				return false;						
+						
 			$this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
 									
 			//no customer?
 			if(empty($this->customer))
 				return false;
 			
-			//find subscription with this order code
+			//is there a subscription transaction id pointing to a sub?
+			if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "sub_") !== false)
+			{
+				try
+				{
+					$sub = $this->customer->subscriptions->retrieve($order->subscription_transaction_id);
+				}
+				catch (Exception $e)
+				{
+					$order->error = __("Error creating plan with Stripe:", "pmpro") . $e->getMessage();
+					$order->shorterror = $order->error;
+					return false;
+				}
+				
+				return $sub;
+			}						
+			
+			//find subscription based on customer id and order/plan id
 			$subscriptions = $this->customer->subscriptions->all();			
 			
 			//no subscriptions
 			if(empty($subscriptions) || empty($subscriptions->data))
-				return false;
-						
+				return false;			
+			
 			//we really want to test against the order codes of all orders with the same subscription_transaction_id (customer id)
 			$codes = $wpdb->get_col("SELECT code FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $order->user_id . "' AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' AND status NOT IN('refunded', 'review', 'token', 'error')");
 			
@@ -1248,7 +1302,7 @@
 			$this->getCustomer($order);
 			if(empty($this->customer))
 				return false;	//error retrieving customer
-			
+						
 			//set subscription id to custom id
 			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too
 			
@@ -1352,7 +1406,7 @@
 			//subscribe to the plan
 			try
 			{
-				$this->customer->subscriptions->create(array("plan" => $order->code));
+				$result = $this->customer->subscriptions->create(array("plan" => $order->code));
 			}
 			catch (Exception $e)
 			{
@@ -1375,7 +1429,7 @@
 
 			//if we got this far, we're all good						
 			$order->status = "success";		
-			$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too			
+			$order->subscription_transaction_id = $result['id'];
 			
 			//save new updates if this is at checkout
 			if($checkout)
