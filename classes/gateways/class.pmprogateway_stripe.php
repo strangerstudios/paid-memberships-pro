@@ -547,7 +547,6 @@
 			}			
 			
 			$customer_id = $user->pmpro_stripe_customerid;
-			echo "(" . $customer_id . ")";
 			
 			if(empty($sub))
 			{
