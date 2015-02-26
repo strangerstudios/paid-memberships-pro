@@ -925,13 +925,31 @@
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><a href="admin.php?page=pmpro-orders&order=<?php echo $order->id?>"><?php echo $order->id;?></a></td>
 							<td><a href="admin.php?page=pmpro-orders&order=<?php echo $order->id?>"><?php echo $order->code;?></a></td>
-							<td>
+							<td class="username column-username">
 								<?php $order->getUser(); ?>
 								<?php if(!empty($order->user)) { ?>
 									<a href="user-edit.php?user_id=<?php echo $order->user->ID?>"><?php echo $order->user->user_login?></a>
 								<?php } else { ?>
 									[<?php _e('deleted', 'pmpro');?>]
 								<?php } ?>
+								<br />								
+								<?php
+									// Set up the hover actions for this user										
+									$actions = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user );
+									$action_count = count( $actions );
+									$i = 0;
+									if($action_count)
+									{
+										$out = '<div class="row-actions">';
+										foreach ( $actions as $action => $link ) {
+											++$i;
+											( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+											$out .= "<span class='$action'>$link$sep</span>";
+										}
+										$out .= '</div>';
+										echo $out;
+									}
+								?>
 							</td>
 							<?php do_action("pmpro_orders_extra_cols_body", $order);?>
 							<td><?php echo $order->membership_id;?></td>

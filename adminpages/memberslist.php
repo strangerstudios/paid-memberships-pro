@@ -181,7 +181,7 @@
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><?php echo $theuser->ID?></td>
-							<td>
+							<td class="username column-username">
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong>
 									<?php
@@ -190,6 +190,24 @@
 										echo $userlink;
 									?>									
 								</strong>
+								<br />								
+								<?php
+									// Set up the hover actions for this user										
+									$actions = apply_filters( 'pmpro_memberslist_user_row_actions', array(), $theuser );
+									$action_count = count( $actions );
+									$i = 0;
+									if($action_count)
+									{
+										$out = '<div class="row-actions">';
+										foreach ( $actions as $action => $link ) {
+											++$i;
+											( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+											$out .= "<span class='$action'>$link$sep</span>";
+										}
+										$out .= '</div>';
+										echo $out;
+									}
+								?>								
 							</td>
 							<td><?php echo $theuser->first_name?></td>
 							<td><?php echo $theuser->last_name?></td>

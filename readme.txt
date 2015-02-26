@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added German (de_DE) translation files. (Thanks, Cedros)
 * ENHANCEMENT: Added settings links to plugins page.
 * BUG: Fixed bug in Safari for iOS where checkout submission would fail after choosing "Not Now" when prompted to save the card.
+* ENHANCEMENT: Added user row actions to the members list and orders list in the dashboard. Add actions using the pmpro_memberslist_user_row_actions and pmpro_orders_user_row_actions filters which work the same as the core WP user_row_actions filter.
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
