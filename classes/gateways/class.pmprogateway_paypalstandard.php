@@ -319,7 +319,8 @@
 					'return'        => pmpro_url("confirmation", "?level=" . $order->membership_level->id),
 					'notify_url'    => admin_url("admin-ajax.php") . "?action=ipnhandler",
 					'src'			=> '1',
-					'sra'			=> '1'
+					'sra'			=> '1',
+					'bn'			=> PAYPAL_BN_CODE
 				);					
 								
 				//trial?
@@ -411,7 +412,8 @@
 					'charset'       => get_bloginfo( 'charset' ), 				
 					'rm'            => '2', 
 					'return'        => pmpro_url("confirmation", "?level=" . $order->membership_level->id),
-					'notify_url'    => admin_url("admin-ajax.php") . "?action=ipnhandler"
+					'notify_url'    => admin_url("admin-ajax.php") . "?action=ipnhandler",
+					'bn'			=> PAYPAL_BN_CODE
 				 );	
 			}						
 			
