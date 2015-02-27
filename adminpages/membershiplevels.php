@@ -454,37 +454,7 @@
 									 
 			</tbody>
 		</table>
-		
-		<h3 class="topborder"><?php _e('Group', 'pmpro');?></h3>
-		<table class="form-table">
-			<tbody>
-				<tr>
-					<th scope="row" valign="top"><label for="level_group"><?php _e('Level Group', 'pmpro');?>:</label></th>
-					<td><select name="level_group">
-						<option value="Default"><?php _e('Default','pmpro'); ?></option>
-						</select> <small><?php _e('Use groups to organize levels that are downgrades/upgrades.', 'pmpro');?></small>
-						<p><a href="javascript:void(0);" id="level_group_add"><?php _e('Add New','pmpro'); ?></a>					
-						<input style="display: none;" id="level_group_new" name="level_group_new" type="text" size="20"placeholder="Enter New Group Name" /></p>
-						<script>
-							jQuery(document).ready(function () {
-								jQuery('#level_group_add').click( function() { 
-									jQuery('#level_group_new').show();
-									jQuery('#level_group_add').hide();
-								});
-							});
-						</script>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row" valign="top"><label for="level_group_action"><?php _e('When a Member Checks out for This Level', 'pmpro');?>:</label></th>
-					<td><select name="level_group_action">
-						<option value=""><?php _e('Remove all other levels (Super Level)', 'pmpro');?></option>
-						<option value=""><?php _e('Remove all other levels in the same group (Grouped Level)', 'pmpro');?></option>
-						<option value=""><?php _e('Do not remove any other levels (Standalone Level)', 'pmpro');?></option>
-					</select></td>
-				</tr>
-			</tbody>
-		</table>
+				
 		<h3 class="topborder"><?php _e('Other Settings', 'pmpro');?></h3>
 		<table class="form-table">
 			<tbody>
@@ -590,7 +560,7 @@
 		?>
 		<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
-			<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a><p><small><?php _e('Group','pmpro'); ?>: Group Name | <?php _e('Type','pmpro'); ?>: Standalone</small></p></td>
+			<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a></td>
 			<td>
 				<?php if(pmpro_isLevelFree($level)) { ?>
 					<?php _e('FREE', 'pmpro');?>
