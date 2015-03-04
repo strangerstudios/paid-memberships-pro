@@ -622,6 +622,11 @@
 			$morder->gateway = $last_order->gateway;
 			$morder->gateway_environment = $last_order->gateway_environment;
 			
+			// Payment Status
+			$morder->status = 'success'; // We have confirmed that and thats the reason we are here.
+			// Payment Type.
+			$morder->payment_type = $last_order->payment_type;
+			
 			//set amount based on which PayPal type
 			if($last_order->gateway == "paypal")
 			{
