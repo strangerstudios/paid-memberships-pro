@@ -483,35 +483,59 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 		{
 			$levels = array($levels);
 		}
-
+				
 		if(empty($membership_levels))
-		{
-			//user has no levels just check if 0 was sent in one of the levels
-			if(in_array(0, $levels) || in_array("0", $levels))
+		{			
+			//user has no levels just check if 0, L, or -L was sent in one of the levels
+			if(in_array(0, $levels, true) || in_array("0", $levels))
 				$return = true;
+			elseif(in_array("L", $levels) || in_array("l", $levels))
+				$return = (!empty($user_id) && $user_id == $current_user->ID);
+			elseif(in_array("-L", $levels) || in_array("-l", $levels))
+				$return = (empty($user_id) || $user_id != $current_user->ID);		
 		}
 		else
-		{
+		{			
 			foreach($levels as $level)
-			{
-				$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
-				if(empty($level_obj)){continue;} //invalid level
-				$found_level = false;
-				foreach($membership_levels as $membership_level)
+			{				
+				if(strtoupper($level) == "L")
+				{					
+					//checking if user is logged in
+					if(!empty($user_id) && $user_id == $current_user->ID)
+						$return = true;
+				}
+				elseif(strtoupper($level) == "-L")
+				{					
+					//checking if user is logged out
+					if(empty($user_id) || $user_id != $current_user->ID)
+						$return = true;
+				}
+				elseif($level == "0")
 				{
-					if($membership_level->id == $level_obj->id) //found a match
+					continue;	//user with levels so not a "non-member"
+				}
+				else
+				{
+					//checking a level id
+					$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
+					if(empty($level_obj)){continue;} //invalid level
+					$found_level = false;
+					foreach($membership_levels as $membership_level)
 					{
-						$found_level = true;
+						if($membership_level->id == $level_obj->id) //found a match
+						{
+							$found_level = true;
+						}
 					}
-				}
-
-				if(is_numeric($level) and intval($level) < 0 and !$found_level) //checking for the absence of this level
-				{
-					$return = true;
-				}
-				else if($found_level) //checking for the presence of this level
-				{
-					$return = true;
+										
+					if(is_numeric($level) && intval($level) < 0 && !$found_level) //checking for the absence of this level and they don't have it
+					{
+						$return = true;
+					}					
+					elseif(is_numeric($level) && intval($level) > 0 && $found_level) //checking for the presence of this level and they have it
+					{					
+						$return = true;
+					}
 				}
 			}
 		}

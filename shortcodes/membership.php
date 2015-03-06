@@ -11,9 +11,14 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 
 	extract(shortcode_atts(array(
 		'level' => NULL,
+		'levels' => NULL,
 		'delay' => NULL
 	), $atts));
 
+	//if levels is used instead of level
+	if(!empty($levels) && empty($level))
+		$level = $levels;
+	
 	global $wpdb, $current_user;
 
 	//guilty until proven innocent :)
@@ -46,7 +51,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 
 	//is there a delay?
 	if($hasaccess && !empty($delay))
-	{
+	{		
 		//okay, this post requires membership. start by getting the user's startdate
 		if(!empty($levels))
 			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
