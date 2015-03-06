@@ -610,7 +610,7 @@
 		/**
 		 * For offsite gateways with a confirm step.
 		 *
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		function confirm()
 		{
