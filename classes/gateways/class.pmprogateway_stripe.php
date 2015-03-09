@@ -1036,9 +1036,9 @@
 			$amount = round((float)$order->subtotal + (float)$tax, 2);
 						
 			//create a customer
-			$this->getCustomer($order);
+			$result = $this->getCustomer($order);
 						
-			if(empty($this->customer))
+			if(empty($result))
 			{				
 				//failed to create customer
 				return false;
@@ -1127,6 +1127,27 @@
 				}
 			}			
 			
+			//get name and email values from order in case we update
+			$name = trim($order->FirstName . " " . $order->LastName);
+			if(empty($name) && !empty($user->ID))
+			{
+				$name = trim($user->first_name . " " . $user->last_name);
+				
+				//still empty?
+				if(empty($name))
+					$name = $user->user_login;
+			}
+			elseif(empty($name))
+				$name = "No Name";
+
+			$email = $order->Email;						
+			if(empty($email) && !empty($user->ID))
+			{
+				$email = $user->user_email;
+			}
+			elseif(empty($email))
+				$email = "No Email";
+						
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
@@ -1136,27 +1157,7 @@
 					
 					//update the customer description and card
 					if(!empty($order->stripeToken))
-					{
-						$name = trim($order->FirstName . " " . $order->LastName);
-						if(empty($name) && !empty($user->ID))
-						{
-							$name = trim($user->first_name . " " . $user->last_name);
-							
-							//still empty?
-							if(empty($name))
-								$name = $user->user_login;
-						}
-						elseif(empty($name))
-							$name = "No Name";
-
-						$email = $order->Email;
-						if(empty($email) && !empty($user->ID))
-						{
-							$email = $user->user_email;
-						}
-						else
-							$email = "No Email";
-												
+					{												
 						$this->customer->description = $name . " (" . $email . ")";
 						$this->customer->email = $email;
 						$this->customer->card = $order->stripeToken;
@@ -1226,10 +1227,10 @@
 			if(empty($order) || empty($order->code))
 				return false;						
 						
-			$this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
+			$result = $this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
 									
 			//no customer?
-			if(empty($this->customer))
+			if(empty($result))
 				return false;
 			
 			//is there a subscription transaction id pointing to a sub?
@@ -1298,8 +1299,8 @@
 			}
 			
 			//setup customer
-			$this->getCustomer($order);
-			if(empty($this->customer))
+			$result = $this->getCustomer($order);
+			if(empty($result))
 				return false;	//error retrieving customer
 						
 			//set subscription id to custom id
@@ -1470,9 +1471,9 @@
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
-			$this->getCustomer($order);
+			$result = $this->getCustomer($order);
 			
-			if(!empty($this->customer))
+			if(!empty($result))
 			{
 				return true;
 			}			
@@ -1498,9 +1499,9 @@
 				return false;
 			
 			//find the customer
-			$this->getCustomer($order);									
+			$result = $this->getCustomer($order);									
 											
-			if(!empty($this->customer))
+			if(!empty($result))
 			{
 				//find subscription with this order code
 				$subscription = $this->getSubscription($order);												
