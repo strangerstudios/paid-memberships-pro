@@ -1,7 +1,7 @@
 function askfirst(text, url)
 {
 	var answer = confirm (text);
-	
+
 	if (answer)
 		window.location=url;
 }
@@ -10,7 +10,7 @@ function askfirst(text, url)
 function getTimestamp()
 {
 	var t = new Date();
-	var r = "" + t.getFullYear() + t.getMonth() + t.getDate() + t.getHours() + t.getMinutes() + t.getSeconds(); 
+	var r = "" + t.getFullYear() + t.getMonth() + t.getDate() + t.getHours() + t.getMinutes() + t.getSeconds();
 
 	return(r);
 }

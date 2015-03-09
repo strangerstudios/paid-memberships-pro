@@ -14,9 +14,9 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_affiliates_widget($addon)
 {
 ?>
-<div class="info">							
+<div class="info">
 	<p>Lightweight Affiliate system. Create affiliate accounts and codes; tracks checkouts by affiliate account.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-affiliates/blob/master/readme.txt" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-affiliates/pmpro-affiliates.php")) { ?>
@@ -24,7 +24,7 @@ function pmpro_addon_pmpro_affiliates_widget($addon)
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-affiliates.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

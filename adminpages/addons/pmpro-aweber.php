@@ -15,9 +15,9 @@ function pmpro_addon_pmpro_aweber_widget($addon)
 {
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-aweber.gif" />
-<div class="info">							
+<div class="info">
 	<p>Integrate User Registrations with AWeber. Adds members to lists based on their membership level. (Note: works without PMPro as well.)</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="<?php echo admin_url("plugins.php");?>" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-aweber/pmpro-aweber.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_pmpro_aweber_widget($addon)
 		<?php } else { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=pmpro-aweber'), 'install-plugin_pmpro-aweber'); ?>" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

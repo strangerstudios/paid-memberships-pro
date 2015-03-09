@@ -33,7 +33,7 @@ add_action('delete_category', 'pmpro_delete_category');
 //deleting a post? remove any level associations
 function pmpro_delete_post($post_id = NULL)
 {
-	global $wpdb;		
+	global $wpdb;
 	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_pages WHERE page_id = '" . $post_id . "'";
 	$wpdb->query($sqlQuery);
 }

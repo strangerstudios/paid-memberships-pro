@@ -1,23 +1,23 @@
-<?php 
+<?php
 	global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user;
-	
+
 	if(isset($_REQUEST['level']))
 		$level = $_REQUEST['level'];
 	else
 		$level = false;
 ?>
-<div id="pmpro_cancel">		
+<div id="pmpro_cancel">
 	<?php
-		if($pmpro_msg) 
+		if($pmpro_msg)
 		{
 			?>
 			<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 			<?php
 		}
 	?>
-	<?php 
-		if(!$pmpro_confirm) 
-		{ 
+	<?php
+		if(!$pmpro_confirm)
+		{
 			if($level)
 			{
 				if($level == "all")
@@ -32,7 +32,7 @@
 					<p><?php printf(__('Are you sure you want to cancel your %s membership?', 'pmpro'), $current_user->membership_level->name); ?></p>
 					<?php
 				}
-			?>			
+			?>
 			<div class="pmpro_actionlinks">
 				<a class="pmpro_btn pmpro_yeslink yeslink" href="<?php echo pmpro_url("cancel", "?confirm=true")?>"><?php _e('Yes, cancel my account', 'pmpro');?></a>
 				<a class="pmpro_btn pmpro_cancel pmpro_nolink nolink" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep my account', 'pmpro');?></a>
@@ -41,8 +41,8 @@
 			}
 			else
 			{
-				if($current_user->membership_level->ID) 
-				{ 
+				if($current_user->membership_level->ID)
+				{
 					?>
 					<hr />
 					<h3><?php _e("My Memberships", "pmpro");?></h3>
@@ -60,8 +60,8 @@
 									<?php echo $current_user->membership_level->name?>
 								</td>
 								<td class="pmpro_cancel-membership-expiration">
-								<?php 
-									if($current_user->membership_level->enddate) 
+								<?php
+									if($current_user->membership_level->enddate)
 										echo date(get_option('date_format'), $current_user->membership_level->enddate);
 									else
 										echo "---";
@@ -72,7 +72,7 @@
 								</td>
 							</tr>
 						</tbody>
-					</table>				
+					</table>
 					<div class="pmpro_actionlinks">
 						<a href="<?php echo pmpro_url("cancel", "?level=all"); ?>"><?php _e("Cancel All Memberships", "pmpro");?></a>
 					</div>
@@ -80,11 +80,11 @@
 				}
 			}
 		}
-		else 
-		{ 
+		else
+		{
 			?>
 			<p><a href="<?php echo get_home_url()?>"><?php _e('Click here to go to the home page.', 'pmpro');?></a></p>
-			<?php 
-		} 
-	?>		
+			<?php
+		}
+	?>
 </div> <!-- end pmpro_cancel -->

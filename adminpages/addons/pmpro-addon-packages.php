@@ -14,9 +14,9 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_addon_packages_widget($addon)
 {
 ?>
-<div class="info">							
+<div class="info">
 	<p>Sell access to individual pages or posts for a flat fee. This is a workaround if you would like to allow multiple membership levels per user.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-addon-packages/blob/master/readme.txt" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-addon-packages/pmpro-addon-packages.php")) { ?>
@@ -24,7 +24,7 @@ function pmpro_addon_pmpro_addon_packages_widget($addon)
 		<?php } else { ?>
 			<a href="https://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-addon-packages.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

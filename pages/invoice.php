@@ -1,25 +1,25 @@
-<?php 
+<?php
 	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
-	
+
 	if($pmpro_msg)
 	{
 	?>
 	<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 	<?php
 	}
-?>	
+?>
 
-<?php 
-	if($pmpro_invoice) 
-	{ 
+<?php
+	if($pmpro_invoice)
+	{
 		?>
 		<?php
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
 		?>
-		
+
 		<h3>
-			<?php printf(__('Invoice #%s on %s', 'pmpro'), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>	
+			<?php printf(__('Invoice #%s on %s', 'pmpro'), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>
 		</h3>
 		<a class="pmpro_a-print" href="javascript:window.print()">Print</a>
 		<ul>
@@ -34,13 +34,13 @@
 			<?php } ?>
 			<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 		</ul>
-		
+
 		<?php
-			//check instructions		
+			//check instructions
 			if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
 				echo wpautop(pmpro_getOption("instructions"));
 		?>
-			
+
 		<table id="pmpro_invoice_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -57,9 +57,9 @@
 					<?php if(!empty($pmpro_invoice->billing->name)) { ?>
 					<td>
 						<?php echo $pmpro_invoice->billing->name?><br />
-						<?php echo $pmpro_invoice->billing->street?><br />						
+						<?php echo $pmpro_invoice->billing->street?><br />
 						<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-							<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />												
+							<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />
 						<?php } ?>
 						<?php echo formatPhone($pmpro_invoice->billing->phone)?>
 					</td>
@@ -72,7 +72,7 @@
 							<?php echo $pmpro_invoice->payment_type?>
 						<?php } ?>
 					</td>
-					<td><?php echo $pmpro_invoice->membership_level->name?></td>					
+					<td><?php echo $pmpro_invoice->membership_level->name?></td>
 					<td align="center">
 						<?php if($pmpro_invoice->total != '0.00') { ?>
 							<?php if(!empty($pmpro_invoice->tax)) { ?>
@@ -84,19 +84,19 @@
 								<strong><?php _e('Total', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
 							<?php } else { ?>
 								<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
-							<?php } ?>						
+							<?php } ?>
 						<?php } else { ?>
 							<small class="pmpro_grey"><?php echo pmpro_formatPrice(0);?></small>
-						<?php } ?>		
+						<?php } ?>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<?php 
-	} 
-	else 
+		<?php
+	}
+	else
 	{
-		//Show all invoices for user if no invoice ID is passed	
+		//Show all invoices for user if no invoice ID is passed
 		$invoices = $wpdb->get_results("SELECT o.*, UNIX_TIMESTAMP(o.timestamp) as timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' ORDER BY timestamp DESC");
 		if($invoices)
 		{
@@ -107,19 +107,19 @@
 					<th><?php _e('Date', 'pmpro'); ?></th>
 					<th><?php _e('Invoice #', 'pmpro'); ?></th>
 					<th><?php _e('Level', 'pmpro'); ?></th>
-					<th><?php _e('Total Billed', 'pmpro'); ?></th>					
+					<th><?php _e('Total Billed', 'pmpro'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php
 				foreach($invoices as $invoice)
-				{ 
+				{
 					?>
 					<tr>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?></a></td>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo $invoice->code; ?></a></td>
 						<td><?php echo $invoice->membership_level_name;?></td>
-						<td><?php echo pmpro_formatPrice($invoice->total);?></td>											
+						<td><?php echo pmpro_formatPrice($invoice->total);?></td>
 					</tr>
 					<?php
 				}
@@ -134,7 +134,7 @@
 			<p><?php _e('No invoices found.', 'pmpro');?></p>
 			<?php
 		}
-	} 
+	}
 ?>
 <nav id="nav-below" class="navigation" role="navigation">
 	<div class="nav-next alignright">

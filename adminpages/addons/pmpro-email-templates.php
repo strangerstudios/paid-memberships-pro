@@ -15,9 +15,9 @@ function pmpro_addon_email_templates_widget($addon)
 {
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-email-templates.gif" />
-<div class="info">							
+<div class="info">
 	<p>Easily edit system-generated Email Templates from the WordPress admin.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="http://wordpress.org/plugins/pmpro-email-templates-addon/" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-email-templates-addon/pmpro-email-templates.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_email_templates_widget($addon)
 		<?php } else { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=pmpro-email-templates-addon'), 'install-plugin_pmpro-email-templates-addon'); ?>" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

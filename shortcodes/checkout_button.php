@@ -14,7 +14,7 @@ function pmpro_checkout_button_shortcode($atts, $content=null, $code="")
 		'text' => NULL,
 		'class' => NULL
 	), $atts));
-	
+
 	return pmpro_getCheckoutButton($level, $text, $class);
 }
 add_shortcode("pmpro_button", "pmpro_checkout_button_shortcode");

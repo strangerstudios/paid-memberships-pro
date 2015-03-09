@@ -1,16 +1,16 @@
 <?php
 	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels;
-	
+
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	if($current_user->membership_level->ID)
 	{
 		$ssorder = new MemberOrder();
 		$ssorder->getLastMemberOrder();
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");				
-		?>	
-	<div id="pmpro_account">		
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");
+		?>
+	<div id="pmpro_account">
 		<div id="pmpro_account-membership" class="pmpro_box">
-			
+
 			<h3><?php _e("My Memberships", "pmpro");?></h3>
 			<table width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
@@ -31,12 +31,12 @@
 							<div class="pmpro_actionlinks">
 								<?php do_action("pmpro_member_action_links_before"); ?>
 								<a href="<?php echo pmpro_url("checkout", "?level=" . $current_user->membership_level->id, "https")?>"><?php _e("Renew", "pmpro");?></a>
-								
+
 								<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
 									<a href="<?php echo pmpro_url("billing", "", "https")?>"><?php _e("Update Billing Info", "pmpro"); ?></a>
 								<?php } ?>
-								
-								<?php 
+
+								<?php
 									//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 									if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
 									<a href="<?php echo pmpro_url("levels")?>"><?php _e("Change", "pmpro");?></a>
@@ -49,8 +49,8 @@
 							<p><?php echo pmpro_getLevelCost($level, true, true);?></p>
 						</td>
 						<td class="pmpro_account-membership-expiration">
-						<?php 
-							if($current_user->membership_level->enddate) 
+						<?php
+							if($current_user->membership_level->enddate)
 								echo date(get_option('date_format'), $current_user->membership_level->enddate);
 							else
 								echo "---";
@@ -65,9 +65,9 @@
 			</div>
 
 		</div> <!-- end pmpro_account-membership -->
-		
-		<div id="pmpro_account-profile" class="pmpro_box">	
-			<?php get_currentuserinfo(); ?> 
+
+		<div id="pmpro_account-profile" class="pmpro_box">
+			<?php get_currentuserinfo(); ?>
 			<h3><?php _e("My Account", "pmpro");?></h3>
 			<?php if($current_user->user_firstname) { ?>
 				<p><?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?></p>
@@ -81,7 +81,7 @@
 				<a href="<?php echo admin_url('profile.php')?>"><?php _ex("Change Password", "As in 'change password'.", "pmpro");?></a>
 			</div>
 		</div> <!-- end pmpro_account-profile -->
-	
+
 		<?php if(!empty($invoices)) { ?>
 		<div id="pmpro_account-invoices" class="pmpro_box">
 			<h3><?php _e("Past Invoices", "pmpro");?></h3>
@@ -94,10 +94,10 @@
 					</tr>
 				</thead>
 				<tbody>
-				<?php 
+				<?php
 					$count = 0;
-					foreach($invoices as $invoice) 
-					{ 
+					foreach($invoices as $invoice)
+					{
 						if($count++ > 4)
 							break;
 
@@ -105,39 +105,39 @@
 						$invoice_id = $invoice->id;
 						$invoice = new MemberOrder;
 						$invoice->getMemberOrderByID($invoice_id);
-						$invoice->getMembershipLevel();						
+						$invoice->getMembershipLevel();
 						?>
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
 							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?></td>
 							<td><?php echo $invoice->membership_level->name?></td>
 							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
 						</tr>
-						<?php 
+						<?php
 					}
 				?>
 				</tbody>
-			</table>						
+			</table>
 			<?php if($count == 6) { ?>
 				<div class="pmpro_actionlinks"><a href="<?php echo pmpro_url("invoice"); ?>"><?php _e("View All Invoices", "pmpro");?></a></div>
 			<?php } ?>
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
-		
+
 		<?php if(has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom')) { ?>
 		<div id="pmpro_account-links" class="pmpro_box">
 			<h3><?php _e("Member Links", "pmpro");?></h3>
 			<ul>
-				<?php 
+				<?php
 					do_action("pmpro_member_links_top");
 				?>
-				
-				<?php 
+
+				<?php
 					do_action("pmpro_member_links_bottom");
 				?>
 			</ul>
-		</div> <!-- end pmpro_account-links -->		
+		</div> <!-- end pmpro_account-links -->
 		<?php } ?>
-	</div> <!-- end pmpro_account -->		
+	</div> <!-- end pmpro_account -->
 	<?php
 	}
 ?>

@@ -20,7 +20,7 @@ function pmpro_page_meta()
 				<?php
 					echo $level->name;
 					//Check which categories are protected for this level
-					$protectedcategories = $wpdb->get_col("SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id");	
+					$protectedcategories = $wpdb->get_col("SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id");
 					//See if this post is in any of the level's protected categories
 					if(in_category($protectedcategories, $post->id))
 					{
@@ -47,7 +47,7 @@ function pmpro_page_save($post_id)
 
 	if(empty($post_id))
 		return false;
-	
+
 	if (!empty($_POST['pmpro_noncename']) && !wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename(__FILE__) )) {
 		return $post_id;
 	}
@@ -69,14 +69,14 @@ function pmpro_page_save($post_id)
 			return $post_id;
 	}
 
-	// OK, we're authenticated: we need to find and save the data	
+	// OK, we're authenticated: we need to find and save the data
 	if(isset($_POST['pmpro_noncename']))
 	{
 		if(!empty($_POST['page_levels']))
 			$mydata = $_POST['page_levels'];
 		else
 			$mydata = NULL;
-	
+
 		//remove all memberships for this page
 		$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
 
@@ -86,7 +86,7 @@ function pmpro_page_save($post_id)
 			foreach($mydata as $level)
 				$wpdb->query("INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval($level) . "', '" . intval($post_id) . "')");
 		}
-	
+
 		return $mydata;
 	}
 	else

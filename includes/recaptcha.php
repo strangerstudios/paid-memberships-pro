@@ -4,19 +4,19 @@ function pmpro_init_recaptcha()
 	//don't load in admin
 	if(is_admin())
 		return;
-	
+
 	//use recaptcha?
 	global $recaptcha;
 	$recaptcha = pmpro_getOption("recaptcha");
 	if($recaptcha)
 	{
 		global $recaptcha_publickey, $recaptcha_privatekey;
-		
+
 		if(!class_exists("ReCaptcha"))
 		{
 			require_once(PMPRO_DIR . "/includes/lib/recaptchalib.php");
 		}
-		
+
 		if(!function_exists('recaptcha_get_html'))
 		{
 			function recaptcha_get_html ($pubkey, $error = null, $use_ssl = false)
@@ -29,7 +29,7 @@ function pmpro_init_recaptcha()
 				}
 				else
 					$lang = "en";
-					
+
 				//filter
 				$lang = apply_filters('pmpro_recaptcha_lang', $lang);
 				?>
@@ -37,10 +37,10 @@ function pmpro_init_recaptcha()
 				<script type="text/javascript"
 					src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang;?>">
 				</script>
-				<?php				
+				<?php
 			}
 		}
-		
+
 		$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
 		$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
 	}

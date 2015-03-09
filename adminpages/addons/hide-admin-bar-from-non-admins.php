@@ -14,9 +14,9 @@ pmpro_add_addon('repo', array(
 function pmpro_addon_hide_admin_bar_from_non_admins_widget($addon)
 {
 ?>
-<div class="info">							
+<div class="info">
 	<p>Perfect for sites where there is only one admin who needs access to the dashboard and the admin bar. When activated only administrators will see the admin bar.</p>
-	<div class="actions">							
+	<div class="actions">
 		<form method="post" name="component-actions" action="">
 			<?php if($addon['enabled']) { ?>
 				<a href="<?php echo admin_url("plugins.php");?>" class="button">Enabled</a>
@@ -26,7 +26,7 @@ function pmpro_addon_hide_admin_bar_from_non_admins_widget($addon)
 				<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=hide-admin-bar-from-non-admins'), 'install-plugin_hide-admin-bar-from-non-admins'); ?>" class="button button-primary">Download</a>
 			<?php } ?>
 		</form>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

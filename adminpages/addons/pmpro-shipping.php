@@ -15,9 +15,9 @@ function pmpro_addon_pmpro_shipping_widget($addon)
 {
 ?>
 <?php /* <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-shipping.jpg" /> */ ?>
-<div class="info">							
+<div class="info">
 	<p>Adds shipping fields to the checkout page, confirmation page, confirmation emails, member's list and edit user profile pages.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-shipping/" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-shipping/pmpro-shipping.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_pmpro_shipping_widget($addon)
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-shipping.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

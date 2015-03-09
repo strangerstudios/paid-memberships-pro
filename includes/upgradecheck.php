@@ -5,63 +5,63 @@
 function pmpro_checkForUpgrades()
 {
 	$pmpro_db_version = pmpro_getOption("db_version");
-	
+
 	//if we can't find the DB tables, reset db_version to 0
 	global $wpdb, $table_prefix;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $table_prefix . 'pmpro_membership_levels';
-	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");	
-	if(!$table_exists)		
+	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
+	if(!$table_exists)
 		$pmpro_db_version = 0;
-	
+
 	if(!$pmpro_db_version)
-		$pmpro_db_version = pmpro_upgrade_1();	
-	
+		$pmpro_db_version = pmpro_upgrade_1();
+
 	if($pmpro_db_version < 1.115)
-		$pmpro_db_version = pmpro_upgrade_1_1_15();		
-	
+		$pmpro_db_version = pmpro_upgrade_1_1_15();
+
 	if($pmpro_db_version < 1.23)
-		$pmpro_db_version = pmpro_upgrade_1_2_3();	
-	
+		$pmpro_db_version = pmpro_upgrade_1_2_3();
+
 	if($pmpro_db_version < 1.318)
 		$pmpro_db_version = pmpro_upgrade_1_3_18();
-	
+
 	if($pmpro_db_version < 1.4)
 		$pmpro_db_version = pmpro_upgrade_1_4();
-		
+
 	if($pmpro_db_version < 1.42)
 		$pmpro_db_version = pmpro_upgrade_1_4_2();
-		
+
 	if($pmpro_db_version < 1.48)
 		$pmpro_db_version = pmpro_upgrade_1_4_8();
 
 	if($pmpro_db_version < 1.5)
 		$pmpro_db_version = pmpro_upgrade_1_5();
-		
+
 	if($pmpro_db_version < 1.59)
 		$pmpro_db_version = pmpro_upgrade_1_5_9();
-		
+
 	if($pmpro_db_version < 1.6)
 		$pmpro_db_version = pmpro_upgrade_1_6();
-	
+
 	//fix for fresh 1.7 installs
 	if($pmpro_db_version == 1.7)
 	{
 		//check if we have an id column in the memberships_users table
 		$wpdb->pmpro_memberships_users = $table_prefix . 'pmpro_memberships_users';
-		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");		
+		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
-		{			
+		{
 			//redo 1.5 fix
 			pmpro_upgrade_1_5();
 		}
-		
+
 		pmpro_db_delta();
-		
+
 		pmpro_setOption("db_version", "1.703");
 		$pmpro_db_version = 1.703;
 	}
-		
+
 	//updates from this point on should be like this if DB only
 	if($pmpro_db_version < 1.71)
 	{
@@ -69,31 +69,31 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.71");
 		$pmpro_db_version = 1.71;
 	}
-	
+
 	if($pmpro_db_version < 1.72)
-	{		
+	{
 		//schedule the credit card expiring cron
 		wp_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
-		
+
 		pmpro_setOption("db_version", "1.72");
 		$pmpro_db_version = 1.72;
 	}
-	
+
 	/*
 		1.7.3
 		- default Stripe Billing Fields to true
 		- unless Stripe Lite is activated, then deactivate Stripe Lite and set Stripe Billing Fields to false
 	*/
-	
+
 	if($pmpro_db_version < 1.79)
 	{
 		//need to register caps for menu
 		pmpro_activation();
-		
+
 		pmpro_setOption("db_version", "1.79");
 		$pmpro_db_version = 1.79;
 	}
-	
+
 	//set default filter_queries setting
 	if($pmpro_db_version < 1.791)
 	{
@@ -101,7 +101,7 @@ function pmpro_checkForUpgrades()
 			pmpro_setOption("filterqueries", 1);
 		else
 			pmpro_SetOption("filterqueries", 0);
-			
+
 		pmpro_setOption("db_version", "1.791");
 		$pmpro_db_version = 1.791;
 	}
@@ -120,11 +120,11 @@ function pmpro_upgrade_1_6()
 	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-	
+
 	//add notes column to orders
 	$sqlQuery = "ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `notes` TEXT NOT NULL";
 	$wpdb->query($sqlQuery);
-	
+
 	pmpro_setOption("db_version", "1.6");
 	return 1.6;
 }
@@ -138,7 +138,7 @@ function pmpro_upgrade_1_5_9()
 	//fix firstpayment statuses
 	$sqlQuery = "UPDATE " . $wpdb->pmpro_membership_orders . " SET status = 'success' WHERE status = 'firstpayment'";
 	$wpdb->query($sqlQuery);
-	
+
 	pmpro_setOption("db_version", "1.59");
 	return 1.59;
 }
@@ -172,19 +172,19 @@ function pmpro_upgrade_1_5()
 function pmpro_upgrade_1_4_8()
 {
 	/*
-		Adding a billing_country field to the orders table.		
+		Adding a billing_country field to the orders table.
 	*/
-	
+
 	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-	
+
 	//billing_country
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `billing_country` VARCHAR( 128 ) NOT NULL AFTER  `billing_zip`
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	pmpro_setOption("db_version", "1.48");
 	return 1.48;
 }
@@ -201,7 +201,7 @@ function pmpro_upgrade_1_4_2()
 		pmpro_setOption("use_ssl", 1);
 	else
 		pmpro_setOption("use_ssl", 0);
-		
+
 	pmpro_setOption("db_version", "1.42");
 	return 1.42;
 }
@@ -211,13 +211,13 @@ function pmpro_upgrade_1_4()
 	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	
+
 	//confirmation message
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `confirmation` LONGTEXT NOT NULL AFTER  `description`
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	pmpro_setOption("db_version", "1.4");
 	return 1.4;
 }
@@ -230,7 +230,7 @@ function pmpro_upgrade_1_3_18()
 	pmpro_setOption("email_admin_cancels", "1");
 	pmpro_setOption("email_admin_billing", "1");
 
-	pmpro_setOption("db_version", "1.318");	
+	pmpro_setOption("db_version", "1.318");
 	return 1.318;
 }
 
@@ -245,41 +245,41 @@ function pmpro_upgrade_1_2_3()
 	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';	
-	
+	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
+
 	//expiration number and period for levels
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
 ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	//expiration number and period for discount code levels
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_discount_codes_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
 ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
-	$wpdb->query($sqlQuery);		
-	
+	$wpdb->query($sqlQuery);
+
 	//end date for members
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `enddate` DATETIME NULL AFTER  `startdate`
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `enddate` )
 	";
 	$wpdb->query($sqlQuery);
-	
-	pmpro_setOption("db_version", "1.23");	
+
+	pmpro_setOption("db_version", "1.23");
 	return 1.23;
 }
 
 function pmpro_upgrade_1_1_15()
-{	
+{
 	/*
-		DB table setup	
+		DB table setup
 	*/
 	global $wpdb;
 	$wpdb->hide_errors();
@@ -290,77 +290,77 @@ function pmpro_upgrade_1_1_15()
 	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';	
-	
+	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
+
 	/*
-		Changing some id columns to unsigned.			
+		Changing some id columns to unsigned.
 	*/
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `category_id`  `category_id` INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `page_id`  `page_id` INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `user_id`  `user_id`  INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `user_id`  `user_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `code_id` INT UNSIGNED NOT NULL AFTER  `membership_id` ;
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `code_id` )
 	";
-	$wpdb->query($sqlQuery);		
-	
+	$wpdb->query($sqlQuery);
+
 	/*
 		New tables for discount codes
 	*/
-	
+
 	//wp_pmpro_discount_codes
-	$sqlQuery = "		
+	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes . "` (
 		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
@@ -373,10 +373,10 @@ function pmpro_upgrade_1_1_15()
 		  KEY `expires` (`expires`)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 	";
-	$wpdb->query($sqlQuery);	
+	$wpdb->query($sqlQuery);
 
 	//wp_pmpro_discount_codes_levels
-	$sqlQuery = "		
+	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
 		  `code_id` int(11) unsigned NOT NULL,
 		  `level_id` int(11) unsigned  NOT NULL,
@@ -391,10 +391,10 @@ function pmpro_upgrade_1_1_15()
 		  KEY `initial_payment` (`initial_payment`)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 	";
-	$wpdb->query($sqlQuery);	
+	$wpdb->query($sqlQuery);
 
 	//wp_pmpro_discount_codes_uses
-	$sqlQuery = "		
+	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (
 		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `code_id` int(10) unsigned NOT NULL,
@@ -407,58 +407,58 @@ function pmpro_upgrade_1_1_15()
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
 	";
 	$wpdb->query($sqlQuery);
-	
+
 	pmpro_setOption("db_version", "1.115");
-	
+
 	//do the next update
 	return pmpro_upgrade_1_2_2();
 }
 
 function pmpro_upgrade_1()
-{		
+{
 	/*
 		default options
 	*/
 	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Register</a>', 'pmpro' ), wp_login_url() . "?action=register" );
 	pmpro_setOption("nonmembertext", $nonmembertext);
-	
+
 	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Register</a>', 'pmpro' ), wp_login_url(), wp_login_url() . "?action=register" );
 	'?action=register">Register</a>';
 	pmpro_setOption("notloggedintext", $notloggedintext);
-	
+
 	$rsstext = __( "This content is for !!levels!! members only. Visit the site and log in/register to read.", 'pmpro' );
 	pmpro_setOption("rsstext", $rsstext);
-	
+
 	$gateway_environment = "sandbox";
 	pmpro_setOption("gateway_environment", $gateway_environment);
-	
+
 	$pmpro_currency = "USD";
 	pmpro_setOption("currency", $pmpro_currency);
-	
+
 	$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
-	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);		
-	
-	$parsed = parse_url(home_url()); 
+	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
+
+	$parsed = parse_url(home_url());
 	$hostname = $parsed['host'];
 	$hostparts = explode(".", $hostname);
-	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];		
+	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];
 	$from_email = "wordpress@" . $email_domain;
 	pmpro_setOption("from_email", $from_email);
-	
+
 	$from_name = "WordPress";
-	pmpro_setOption("from_name", $from_name);		
-	
+	pmpro_setOption("from_name", $from_name);
+
 	//setting new email settings defaults
 	pmpro_setOption("email_admin_checkout", "1");
 	pmpro_setOption("email_admin_changes", "1");
 	pmpro_setOption("email_admin_cancels", "1");
 	pmpro_setOption("email_admin_billing", "1");
-	
-	pmpro_setOption("tospage", "");			
-	
+
+	pmpro_setOption("tospage", "");
+
 	//db update
-	pmpro_db_delta();	
-	
+	pmpro_db_delta();
+
 	//update version and return
 	pmpro_setOption("db_version", "1.702");		//no need to run other updates
 	return 1.702;
@@ -467,7 +467,7 @@ function pmpro_upgrade_1()
 function pmpro_db_delta()
 {
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	
+
 	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
@@ -477,8 +477,8 @@ function pmpro_db_delta()
 	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';	
-	
+	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
+
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levels . "` (
@@ -503,7 +503,7 @@ function pmpro_db_delta()
 		);
 	";
 	dbDelta($sqlQuery);
-	
+
 	//wp_pmpro_membership_orders
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_orders . "` (
@@ -556,7 +556,7 @@ function pmpro_db_delta()
 		);
 	";
 	dbDelta($sqlQuery);
-	
+
 	//wp_pmpro_memberships_categories
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_categories . "` (
@@ -568,7 +568,7 @@ function pmpro_db_delta()
 		);
 	";
 	dbDelta($sqlQuery);
-	
+
 	//wp_pmpro_memberships_pages
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_pages . "` (
@@ -580,7 +580,7 @@ function pmpro_db_delta()
 		);
 	";
 	dbDelta($sqlQuery);
-	
+
 	//wp_pmpro_memberships_users
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_users . "` (
@@ -608,10 +608,10 @@ function pmpro_db_delta()
 		   KEY `status` (`status`)
 		);
 	";
-	dbDelta($sqlQuery);		
-	
+	dbDelta($sqlQuery);
+
 	//wp_pmpro_discount_codes
-	$sqlQuery = "		
+	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes . "` (
 		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
@@ -624,10 +624,10 @@ function pmpro_db_delta()
 		  KEY `expires` (`expires`)
 		);
 	";
-	dbDelta($sqlQuery);	
+	dbDelta($sqlQuery);
 
 	//wp_pmpro_discount_codes_levels
-	$sqlQuery = "		
+	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
 		  `code_id` int(11) unsigned NOT NULL,
 		  `level_id` int(11) unsigned NOT NULL,
@@ -644,11 +644,11 @@ function pmpro_db_delta()
 		  KEY `initial_payment` (`initial_payment`)
 		);
 	";
-	dbDelta($sqlQuery);	
+	dbDelta($sqlQuery);
 
 	//wp_pmpro_discount_codes_uses
-	$sqlQuery = "		
-		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (		  
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (
 		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `code_id` int(10) unsigned NOT NULL,
 		  `user_id` int(10) unsigned NOT NULL,
