@@ -348,7 +348,7 @@
 			}					
 		}
 		
-		function void(&$order, $authorization_id)
+		function void(&$order, $authorization_id = null)
 		{
 			if(empty($authorization_id))
 				return false;
