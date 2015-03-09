@@ -16,7 +16,7 @@
 		/**
 		 * Run on WP init
 		 *		 
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function init()
 		{			
@@ -49,7 +49,7 @@
 		/**
 		 * Make sure this gateway is in the gateways list
 		 *		 
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
 		{
@@ -62,7 +62,7 @@
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *		 
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function getGatewayOptions()
 		{			
@@ -87,7 +87,7 @@
 		/**
 		 * Set payment options for payment settings page.
 		 *		 
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
 		{			
@@ -103,7 +103,7 @@
 		/**
 		 * Display fields for this gateway's options.
 		 *		 
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
@@ -164,7 +164,7 @@
 		/**
 		 * Swap in our submit buttons.
 		 *
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_checkout_default_submit_button($show)
 		{
@@ -192,7 +192,7 @@
 		/**
 		 * Scripts for checkout page.
 		 *
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_checkout_after_form()
 		{
@@ -348,7 +348,7 @@
 			}					
 		}
 		
-		function void(&$order, $authorization_id)
+		function void(&$order, $authorization_id = null)
 		{
 			if(empty($authorization_id))
 				return false;

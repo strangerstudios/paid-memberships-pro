@@ -33,7 +33,7 @@
 		/**
 		 * Load the Stripe API library.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 * Moved into a method in version 2.0 so we only load it when needed.
 		 */
 		function loadStripeLibrary()
@@ -46,7 +46,7 @@
 		/**
 		 * Run on WP init
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function init()
 		{			
@@ -85,7 +85,7 @@
 		/**
 		 * Make sure Stripe is in the gateways list
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
 		{
@@ -98,7 +98,7 @@
 		/**
 		 * Get a list of payment options that the Stripe gateway needs/supports.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function getGatewayOptions()
 		{			
@@ -122,7 +122,7 @@
 		/**
 		 * Set payment options for payment settings page.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
 		{			
@@ -138,7 +138,7 @@
 		/**
 		 * Display fields for Stripe options.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
@@ -190,7 +190,7 @@
 		/**
 		 * Code added to checkout preheader.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_checkout_preheader()
 		{			
@@ -305,7 +305,7 @@
 		/**
 		 * Filtering orders at checkout.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_checkout_order($morder)
 		{
@@ -337,7 +337,7 @@
 		/**
 		 * Code to run after checkout
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_after_checkout($user_id, $morder)		
 		{
@@ -354,7 +354,7 @@
 				
 		/**
 		 * Check settings if billing address should be shown.
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_include_billing_address_fields($include)
 		{
@@ -367,7 +367,7 @@
 		
 		/**
 		 * Use our own payment fields at checkout. (Remove the name attributes.)
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_include_payment_information_fields($include)
 		{			
@@ -512,7 +512,7 @@
 		/**
 		 * Fields shown on edit user page
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function user_profile_fields($user)
 		{
@@ -700,7 +700,7 @@
 		/**
 		 * Process fields from the edit user page
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function user_profile_fields_save($user_id)
 		{
@@ -839,7 +839,7 @@
 		/**
 		 * Cron activation for subscription updates.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_activation()
 		{
@@ -849,7 +849,7 @@
 		/**
 		 * Cron deactivation for subscription updates.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_deactivation()
 		{
@@ -859,7 +859,7 @@
 		/**
 		 * Cron job for subscription updates.
 		 *		
-		 * @since 2.0
+		 * @since 1.8
 		 */
 		static function pmpro_cron_stripe_subscription_updates()
 		{
@@ -1036,9 +1036,9 @@
 			$amount = round((float)$order->subtotal + (float)$tax, 2);
 						
 			//create a customer
-			$this->getCustomer($order);
+			$result = $this->getCustomer($order);
 						
-			if(empty($this->customer))
+			if(empty($result))
 			{				
 				//failed to create customer
 				return false;
@@ -1127,6 +1127,27 @@
 				}
 			}			
 			
+			//get name and email values from order in case we update
+			$name = trim($order->FirstName . " " . $order->LastName);
+			if(empty($name) && !empty($user->ID))
+			{
+				$name = trim($user->first_name . " " . $user->last_name);
+				
+				//still empty?
+				if(empty($name))
+					$name = $user->user_login;
+			}
+			elseif(empty($name))
+				$name = "No Name";
+
+			$email = $order->Email;						
+			if(empty($email) && !empty($user->ID))
+			{
+				$email = $user->user_email;
+			}
+			elseif(empty($email))
+				$email = "No Email";
+						
 			//check for an existing stripe customer
 			if(!empty($customer_id))
 			{
@@ -1136,27 +1157,7 @@
 					
 					//update the customer description and card
 					if(!empty($order->stripeToken))
-					{
-						$name = trim($order->FirstName . " " . $order->LastName);
-						if(empty($name) && !empty($user->ID))
-						{
-							$name = trim($user->first_name . " " . $user->last_name);
-							
-							//still empty?
-							if(empty($name))
-								$name = $user->user_login;
-						}
-						elseif(empty($name))
-							$name = "No Name";
-
-						$email = $order->Email;
-						if(empty($email) && !empty($user->ID))
-						{
-							$email = $user->user_email;
-						}
-						else
-							$email = "No Email";
-												
+					{												
 						$this->customer->description = $name . " (" . $email . ")";
 						$this->customer->email = $email;
 						$this->customer->card = $order->stripeToken;
@@ -1226,10 +1227,10 @@
 			if(empty($order) || empty($order->code))
 				return false;						
 						
-			$this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
+			$result = $this->getCustomer($order, true);	//force so we don't get a cached sub for someone else
 									
 			//no customer?
-			if(empty($this->customer))
+			if(empty($result))
 				return false;
 			
 			//is there a subscription transaction id pointing to a sub?
@@ -1298,8 +1299,8 @@
 			}
 			
 			//setup customer
-			$this->getCustomer($order);
-			if(empty($this->customer))
+			$result = $this->getCustomer($order);
+			if(empty($result))
 				return false;	//error retrieving customer
 						
 			//set subscription id to custom id
@@ -1470,9 +1471,9 @@
 		function update(&$order)
 		{
 			//we just have to run getCustomer which will look for the customer and update it with the new token
-			$this->getCustomer($order);
+			$result = $this->getCustomer($order);
 			
-			if(!empty($this->customer))
+			if(!empty($result))
 			{
 				return true;
 			}			
@@ -1498,9 +1499,9 @@
 				return false;
 			
 			//find the customer
-			$this->getCustomer($order);									
+			$result = $this->getCustomer($order);									
 											
-			if(!empty($this->customer))
+			if(!empty($result))
 			{
 				//find subscription with this order code
 				$subscription = $this->getSubscription($order);												

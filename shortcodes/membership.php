@@ -11,14 +11,19 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 
 	extract(shortcode_atts(array(
 		'level' => NULL,
+		'levels' => NULL,
 		'delay' => NULL
 	), $atts));
 
+	//if levels is used instead of level
+	if(!empty($levels) && empty($level))
+		$level = $levels;
+	
 	global $wpdb, $current_user;
 
 	//guilty until proven innocent :)
 	$hasaccess = false;
-	
+
 	//does the user have the level specified?
 	if(!empty($level) || $level === "0")
 	{
@@ -46,18 +51,18 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 
 	//is there a delay?
 	if($hasaccess && !empty($delay))
-	{
+	{		
 		//okay, this post requires membership. start by getting the user's startdate
 		if(!empty($levels))
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
 		else
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";		
-		
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
+
 		$startdate = $wpdb->get_var($sqlQuery);
-		
+
 		//adjust start date to 12AM
 		$startdate = strtotime(date("Y-m-d", $startdate));
-		
+
 		if(empty($startdate))
 		{
 			//user doesn't have an active membership level
@@ -68,16 +73,16 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 			//how many days has this user been a member?
 			$now = current_time('timestamp');
 			$days = ($now - $startdate)/3600/24;
-						
-			if($days < intval($delay))				
+
+			if($days < intval($delay))
 				$hasaccess = false;	//they haven't been around long enough yet
 		}
 	}
-	
+
 	//to show or not to show
-	if($hasaccess)	
+	if($hasaccess)
 		return do_shortcode($content);	//show content
-	else	
+	else
 		return "";	//just hide it
 }
 add_shortcode("membership", "pmpro_shortcode_membership");

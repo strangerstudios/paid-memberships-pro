@@ -38,12 +38,10 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				foreach($levels as $level)
 				{
 					/*
-						Stripe currently does not support:
-						* Trial Amounts > 0.								
-						* Billing Limits.										
+						Stripe currently does not support:				
+						* Billing Limits.					
 					*/
-					if($level->trial_amount > 0 ||
-					   $level->billing_limit > 0)
+					if($level->billing_limit > 0)
 					{
 						return false;
 					}
