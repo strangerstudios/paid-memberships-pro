@@ -10,7 +10,7 @@ The easiest way to GET PAID with your WordPress site. Flexible content control b
 == Description ==
 Set up unlimited membership levels and provide restricted access to pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more. Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
 
-[youtube http://www.youtube.com/watch?v=YBYM7rDL2as]
+[youtube http://www.youtube.com/watch?v=33nORRIZaQk]
 
 Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
@@ -24,17 +24,17 @@ Your Existing Theme or a Popular Free or Premium Third-Party Theme.
 Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
 
 = Easy-to-Use Admin Pages and Settings. =
-1. Membership Access by Page/Post/Category.
-2. Members List with CSV Export
-3. Easy Payment Gateway Setup with testing mode.
-4. Ever expanding list of Membership Reports
-5. Membership Discounts with customizable price rules.
+1. Membership access by Page/Post/Category
+2. Members list with CSV export
+3. Easy payment gateway setup
+4. Ever expanding list of membership reports
+5. Membership discounts with customizable price rules
 
 = Control the User-Experience from Start to Finish. =
 Your members can update their billing information or cancel their account directly on your site. Any active subscription will be cancelled at the payment gateway for you.
 
 = Integrate with Top Third Party Tools. =
-PMPro integrates with Mailchimp, Infusionsoft, Post Affiliate Pro, and many more popular third party tools.
+PMPro integrates with Mailchimp, Constant Contact, AWeber, KISSMetrics, Infusionsoft, WP Courseware, LearnDash, Post Affiliate Pro, bbPress, WooCommerce, and many more popular third party tools.
 
 = Free Add-ons to Customize and Extend PMPro. =
 Extensions, sister plugins, and other bits of code to customize your implementation and help you integrate with 3rd party services or other plugins. All open source and available for free under the GPL v2 license.
@@ -114,6 +114,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where the $short parameter of pmpro_getLevelCost wasn't shortening the output in some cases. (Thanks, Kimberly Coleman)
 * BUG: Fixed warning in membership dropdown on edit user/profile page. (Thanks, Thomas Sjolshagen)
 * ENHANCEMENT: Added German (de_DE) translation files. (Thanks, Cedros)
+* ENHANCEMENT: Added Dutch (nl_NL) translation files. (Thanks, Het Verzamelteam)
 * ENHANCEMENT: Added settings links to plugins page.
 * BUG: Fixed bug in Safari for iOS where checkout submission would fail after choosing "Not Now" when prompted to save the card.
 * ENHANCEMENT: Added user row actions to the members list and orders list in the dashboard. Add actions using the pmpro_memberslist_user_row_actions and pmpro_orders_user_row_actions filters which work the same as the core WP user_row_actions filter.
