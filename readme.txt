@@ -68,7 +68,7 @@ The plugin will walk you through initial setup - basic steps are outlined below.
 Please visit [our premium support site at http://www.paidmembershipspro.com](http://www.paidmembershipspro.com) for more documentation and our support forums.
 
 = I found a bug in the plugin. =
-Please post it in the [WordPress support forum](http://wordpress.org/tags/paid-memberships-pro?forum_id=10) and we'll fix it right away. Thanks for helping. 
+Please post it in the [WordPress support forum](http://wordpress.org/tags/paid-memberships-pro?forum_id=10) and we'll fix it right away. Thanks for helping.
 
 = My site is broken or blank or not letting me log in after activating Paid Memberships Pro =
 This is typically caused by a conflict with another plugin that is trying to redirect around the login/register pages or trying to redirect from HTTP to HTTPS, etc.
@@ -101,7 +101,7 @@ Not sure? You can find out by doing a bit a research.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
-== Changelog == 
+== Changelog ==
 
 = 1.8 =
 * ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
@@ -120,7 +120,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issues with the membership shortcode and pmpro_hasMembershipLevel function.
 * ENHANCEMENT: Can now use L or -L to check if a user is logged in (L) or not (-L) in the membership shortcode or pmpro_hasMembershipLevel function.
 
-= 1.7.15.3 = 
+= 1.7.15.3 =
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
 * BUG: Using get_userdata in checkout code for better multisite support when setting default role of new users.
 
@@ -353,7 +353,7 @@ Not sure? You can find out by doing a bit a research.
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
 * Added language files for es_ES, es_CL, and es_PE. Thanks, Javier Monorové (zillionsk8 on GitHub).
 * Added language files for fr_FR. Thanks, Jérémy De la casa.
-* NOTE: Language files may not be complete. The get involved, join us on GitHub. 
+* NOTE: Language files may not be complete. The get involved, join us on GitHub.
 * Added Cybersource and 2Checkout gateways in beta.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
 * Added a new report showing signups vs. cancellations, monthly recurring revenue, and lifetime value.
@@ -631,7 +631,7 @@ Not sure? You can find out by doing a bit a research.
 * Added stripslashes() to membership description output on the checkout page.
 * The pmpro_getLevel() function may return the wrong level on the levels, checkout, or account page where another $pmpro_levels array was setup. (The array pmpro_getLevel uses used the level id as the array keys. The older $pmpro_levels used 0-n.) To fix this, I added a pmpro_getAllLevels($include_hidden = false) function and now use that function on the levels, checkout, and account pages. The function queries the database for all levels and then puts them into an array where the level ids are the keys.
 * Fix for !!billing_country!! in emails. (Somehow a previous fix for this got overwritten. My bad.)
-* Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is 
+* Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is
 useful for determining if/what discount code was applied to the level when processing it in hooks.
 * Added pmpro_getDomainFromURL() and using that to set PMPRO_URL.
 * New hooks when orders are added/updated: pmpro_update_order (before update), pmpro_updated_order (after update), pmpro_add_order (before add), pmpro_added_order (after add). (Thanks, zookatron!)
@@ -748,7 +748,7 @@ useful for determining if/what discount code was applied to the level when proce
 
 = 1.3.16 =
 * Moved the SSL Seal box lower on the payment settings page.
-* Made dashboard menu and admin bar menus consistent. 
+* Made dashboard menu and admin bar menus consistent.
 * Fixed bug with selecting categories when adding a new level.
 * Fixed bug where the user was sometimes redirected to the add level page after adding a level.
 

@@ -14,9 +14,9 @@ pmpro_add_addon('github', array(
 function pmpro_addon_pmpro_user_pages_widget($addon)
 {
 ?>
-<div class="info">				
+<div class="info">
 	<p>Creates a unique page for each Member after checkout, giving the Admin access to write customized content for each specific member.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-user-pages/blob/master/readme.txt" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-user-pages/pmpro-user-pages.php")) { ?>
@@ -24,7 +24,7 @@ function pmpro_addon_pmpro_user_pages_widget($addon)
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-user-pages.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

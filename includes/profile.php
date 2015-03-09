@@ -66,29 +66,29 @@ function pmpro_membership_level_profile_fields($user)
 		</tr>
 		<?php
 		}
-		
+
 		$show_expiration = true;
 		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
 		if($show_expiration)
-		{					
+		{
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			$end_date = !empty($user->membership_level->enddate);
-			
+
 			//some vars for the dates
-			$current_day = date("j");			
+			$current_day = date("j");
 			if($end_date)
 				$selected_expires_day = date("j", $user->membership_level->enddate);
 			else
 				$selected_expires_day = $current_day;
-				
-			$current_month = date("M");			
+
+			$current_month = date("M");
 			if($end_date)
 				$selected_expires_month = date("m", $user->membership_level->enddate);
 			else
 				$selected_expires_month = date("m");
-				
-			$current_year = date("Y");									
+
+			$current_year = date("Y");
 			if($end_date)
 				$selected_expires_year = date("Y", $user->membership_level->enddate);
 			else
@@ -104,7 +104,7 @@ function pmpro_membership_level_profile_fields($user)
 				<span id="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
 					on
 					<select name="expires_month">
-						<?php																
+						<?php
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
@@ -188,7 +188,7 @@ function pmpro_membership_level_profile_fields($user)
         });
     </script>
 <?php
-	do_action("pmpro_after_membership_level_profile_fields", $user);	
+	do_action("pmpro_after_membership_level_profile_fields", $user);
 }
 
 /*
@@ -206,8 +206,8 @@ function pmpro_membership_level_profile_fields_update()
 	//get the user id
 	global $wpdb, $current_user, $user_ID;
 	get_currentuserinfo();
-	
-	if(!empty($_REQUEST['user_id'])) 
+
+	if(!empty($_REQUEST['user_id']))
 		$user_ID = $_REQUEST['user_id'];
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
@@ -226,28 +226,28 @@ function pmpro_membership_level_profile_fields_update()
         else
             $changed_or_cancelled = 'admin_changed';
 
-		//if the cancel at gateway box is not checked, don't cancel 
+		//if the cancel at gateway box is not checked, don't cancel
 		if(empty($_REQUEST['cancel_subscription']))
 			add_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
-				
+
 		//do the change
         if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID, $changed_or_cancelled))
         {
             //it changed. send email
             $level_changed = true;
         }
-		
-		//remove filter after ward		
+
+		//remove filter after ward
 		if(empty($_REQUEST['cancel_subscription']))
 			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
     }
-	
+
 	//expiration change
 	if(!empty($_REQUEST['expires']))
 	{
 		//update the expiration date
 		$expiration_date = intval($_REQUEST['expires_year']) . "-" . str_pad(intval($_REQUEST['expires_month']), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day']), 2, "0", STR_PAD_LEFT);
-		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";		
+		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
 	}
@@ -256,16 +256,16 @@ function pmpro_membership_level_profile_fields_update()
 		//already blank? have to check for null or '0000-00-00 00:00:00' or '' here.
 		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE (enddate IS NULL OR enddate = '' OR enddate = '0000-00-00 00:00:00') AND status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
 		$blank = $wpdb->get_var($sqlQuery);
-		
+
 		if(empty($blank))
-		{		
+		{
 			//null out the expiration
 			$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
 			if($wpdb->query($sqlQuery))
 				$expiration_changed = true;
 		}
 	}
-	
+
 	//send email
     if(!empty($_REQUEST['send_admin_change_email']))
 	{
@@ -274,7 +274,7 @@ function pmpro_membership_level_profile_fields_update()
 		if(!empty($expiration_changed))
 			$pmproemail->expiration_changed = true;
 		$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
-		
+
 		//email to admin
 		$pmproemail = new PMProEmail();
 		if(!empty($expiration_changed))

@@ -15,9 +15,9 @@ function pmpro_addon_pmpro_network_widget($addon)
 {
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-network.gif" />
-<div class="info">							
+<div class="info">
 	<p>Allow users to checkout for a membership to create a site on your WordPress multisite network.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-network/blob/master/readme.txt" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-network/pmpro-network.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_pmpro_network_widget($addon)
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-network.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

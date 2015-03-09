@@ -5,7 +5,7 @@
 $pmpro_reports_dir = dirname(__FILE__) . "/../adminpages/reports/";
 $cwd = getcwd();
 chdir($pmpro_reports_dir);
-foreach (glob("*.php") as $filename) 
+foreach (glob("*.php") as $filename)
 {
 	require_once($filename);
 }
@@ -19,7 +19,7 @@ if(is_dir($pmpro_reports_theme_dir))
 {
 	$cwd = getcwd();
 	chdir($pmpro_reports_theme_dir);
-	foreach (glob("*.php") as $filename) 
+	foreach (glob("*.php") as $filename)
 	{
 		require_once($filename);
 	}

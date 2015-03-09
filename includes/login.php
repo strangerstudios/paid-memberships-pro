@@ -11,7 +11,7 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 		if(pmpro_isAdmin($user->ID))
 		{
 			//admins go to dashboard
-			$redirect_to = get_bloginfo("url") . "/wp-admin/";			
+			$redirect_to = get_bloginfo("url") . "/wp-admin/";
 		}
 		elseif(strpos($redirect_to, "checkout") !== false)
 		{
@@ -19,7 +19,7 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 		}
 		elseif($wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1"))
 		{
-			//if logged in and a member, send to wherever they were going			
+			//if logged in and a member, send to wherever they were going
 		}
 		else
 		{
@@ -29,13 +29,13 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 	}
 	else
 	{
-		//not logging in (login form) so return what was given		
+		//not logging in (login form) so return what was given
 	}
-	
+
 	//let's strip the https if force_ssl_login is set, but force_ssl_admin is not
 	if(force_ssl_login() && !force_ssl_admin())
 		$redirect_to = str_replace("https:", "http:", $redirect_to);
-	
+
 	return apply_filters("pmpro_login_redirect_url", $redirect_to, $request, $user);
 }
 add_filter('login_redirect','pmpro_login_redirect', 10, 3);
@@ -54,9 +54,9 @@ add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
 //redirect from default login pages to PMPro
 function pmpro_login_head()
-{		
+{
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
-	
+
 	if((pmpro_is_login_page() || is_page("login") ||
 		class_exists("Theme_My_Login") && defined('Theme_My_Login::version') && version_compare(Theme_My_Login::version, "6.3") >= 0 && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login"))
 		)
@@ -64,13 +64,13 @@ function pmpro_login_head()
 	)
 	{
 		//redirect registration page to levels page
-		if( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || 
+		if( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" ||
 			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	||
-			!is_admin() && class_exists("Theme_My_Login") && defined('Theme_My_Login::version') && version_compare(Theme_My_Login::version, "6.3") >= 0 && Theme_My_Login::is_tml_page("register")	
+			!is_admin() && class_exists("Theme_My_Login") && defined('Theme_My_Login::version') && version_compare(Theme_My_Login::version, "6.3") >= 0 && Theme_My_Login::is_tml_page("register")
 		)
 		{
 			//redirect to levels page unless filter is set.
-			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));						
+			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));
 			if(!empty($link))
 			{
 				wp_redirect($link);
@@ -85,7 +85,7 @@ function pmpro_login_head()
 		{
 			//check for the login page id and redirect there if we're not there already
 			global $post;
-						
+
 			if(!empty($GLOBALS['theme_my_login']) && is_array($GLOBALS['theme_my_login']->options))
 			{
 				//an older version of TML stores it this way
@@ -124,14 +124,14 @@ function pmpro_login_head()
 						wp_redirect($link);
 						exit;
 					}
-				}				
+				}
 			}
 
 			//make sure users are only getting to the profile when logged in
 			global $current_user;
 			if(!empty($_REQUEST['action']) && $_REQUEST['action'] == "profile" && !$current_user->ID)
 			{
-				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);								
+				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);
 				wp_redirect($link);
 				exit;
 			}
@@ -143,11 +143,11 @@ add_action('login_init', 'pmpro_login_head');
 
 /*
 	If a redirect_to value is passed into /login/ and you are logged in already, just redirect there
-	
+
 	@since 1.7.14
 */
 function pmpro_redirect_to_logged_in()
-{	
+{
 	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login') && empty($_REQUEST['reauth']))
 	{
 		wp_redirect($_REQUEST['redirect_to']);

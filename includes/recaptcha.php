@@ -4,7 +4,7 @@ function pmpro_init_recaptcha()
 	//don't load in admin
 	if(is_admin())
 		return;
-	
+
 	//use recaptcha?
 	global $recaptcha;
 	$recaptcha = pmpro_getOption("recaptcha");

@@ -14,9 +14,9 @@ pmpro_add_addon('recommended', array(
 function pmpro_addon_tml_widget($addon)
 {
 ?>
-<div class="info">							
+<div class="info">
 	<p>This plugin themes the WordPress login, registration and forgot password pages according to your current theme. By <a href="http://www.jfarthing.com/" target="_blank">Jeff Farthing</a></p>
-	<div class="actions">							
+	<div class="actions">
 		<form method="post" name="component-actions" action="">
 			<?php if($addon['enabled']) { ?>
 				<a href="<?php echo admin_url("plugins.php");?>" class="button">Enabled</a>
@@ -26,7 +26,7 @@ function pmpro_addon_tml_widget($addon)
 				<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=theme-my-login'), 'install-plugin_theme-my-login'); ?>" class="button button-primary">Download</a>
 			<?php } ?>
 		</form>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

@@ -15,9 +15,9 @@ function pmpro_addon_wp_bouncer_widget($addon)
 {
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/wp-bouncer.gif" />
-<div class="info">							
+<div class="info">
 	<p>Make sure users are only logged in from one computer or device at a time.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="http://wordpress.org/plugins/wp-bouncer/" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../wp-bouncer/wp-bouncer.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_wp_bouncer_widget($addon)
 		<?php } else { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=wp-bouncer'), 'install-plugin_wp-bouncer'); ?>" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

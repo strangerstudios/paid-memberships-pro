@@ -119,26 +119,26 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 function pmpro_search_filter($query)
 {
     global $current_user, $wpdb, $pmpro_pages;
-			
+
     //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search && empty($query->query['post_parent']))
     {
-        if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now			
+        if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now
 			$query->set('post__not_in', $pmpro_pages );
 
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post		
+		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
-    //hide member pages from non-members (make sure they aren't hidden from members)    
-	if(!$query->is_admin && 
-	   !$query->is_singular && 
+    //hide member pages from non-members (make sure they aren't hidden from members)
+	if(!$query->is_admin &&
+	   !$query->is_singular &&
 	   empty($query->query['post_parent']) &&
 	   (
-		empty($query->query_vars['post_type']) || 
+		empty($query->query_vars['post_type']) ||
 		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
-	   )	   
+	   )
 	)
-    {		
+    {
 		//get page ids that are in my levels
         $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
         $my_pages = array();
@@ -157,14 +157,14 @@ function pmpro_search_filter($query)
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
 		else
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
-        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));						
-		
+        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
+
         if($hidden_page_ids)
 		{
-			if(empty($query->query_vars['post_parent']))			//avoiding post_parent queries for now				
+			if(empty($query->query_vars['post_parent']))			//avoiding post_parent queries for now
 				$query->set('post__not_in', $hidden_page_ids);
 		}
-				
+
         //get categories that are filtered by level, but not my level
         global $pmpro_my_cats;
 		$pmpro_my_cats = array();
@@ -175,20 +175,20 @@ function pmpro_search_filter($query)
                 $pmpro_my_cats = array_unique(array_merge($pmpro_my_cats, $member_cats));
             }
         }
-		
+
         //get hidden cats
         if(!empty($pmpro_my_cats))
 			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', $pmpro_my_cats) . ")";
 		else
 			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
-					
+
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-				
+
         //make this work
         if($hidden_cat_ids)
-		{			
+		{
             $query->set('category__not_in', $hidden_cat_ids);
-						
+
 			//filter so posts in this member's categories are allowed
 			add_action('posts_where', 'pmpro_posts_where_unhide_cats');
 		}
@@ -199,7 +199,7 @@ function pmpro_search_filter($query)
 $filterqueries = pmpro_getOption("filterqueries");
 if(!empty($filterqueries))
     add_filter( 'pre_get_posts', 'pmpro_search_filter' );
-  
+
 /*
  * Find taxonomy filters and make sure member categories are not hidden from members.
  * @since 1.7.15
@@ -207,7 +207,7 @@ if(!empty($filterqueries))
 function pmpro_posts_where_unhide_cats($where)
 {
 	global $pmpro_my_cats, $wpdb;
-		
+
 	//if we have member cats, make sure they are allowed in taxonomy queries
 	if(!empty($where) && !empty($pmpro_my_cats))
 	{
@@ -215,19 +215,19 @@ function pmpro_posts_where_unhide_cats($where)
 		$replacement = $wpdb->posts . '.ID NOT IN (
 						SELECT tr1.object_id
 						FROM ' . $wpdb->term_relationships . ' tr1
-							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode($pmpro_my_cats) . ') 
-						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';	
+							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode($pmpro_my_cats) . ')
+						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';
 		$where = preg_replace($pattern, $replacement, $where);
 	}
-			
+
 	//remove filter for next query
 	remove_action('posts_where', 'pmpro_posts_where_unhide_cats');
-		
+
 	return $where;
 }
-  
+
 function pmpro_membership_content_filter($content, $skipcheck = false)
-{	
+{
 	global $post, $current_user;
 
 	if(!$skipcheck)
@@ -251,16 +251,16 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 	{
 		//if show excerpts is set, return just the excerpt
 		if(pmpro_getOption("showexcerpts"))
-		{			
+		{
 			//show excerpt
 			global $post;
 			if($post->post_excerpt)
-			{								
+			{
 				//defined exerpt
 				$content = wpautop($post->post_excerpt);
 			}
 			elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false)
-			{				
+			{
 				//more tag
 				$pos = strpos($content, "<span id=\"more-" . $post->ID . "\"></span>");
 				$content = wpautop(substr($content, 0, $pos));
@@ -337,21 +337,21 @@ add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
 	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the ecerpt.
 */
 function pmpro_membership_excerpt_filter($content, $skipcheck = false)
-{		
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
+{
+	remove_filter('the_content', 'pmpro_membership_content_filter', 5);
 	$content = pmpro_membership_content_filter($content, $skipcheck);
 	add_filter('the_content', 'pmpro_membership_content_filter', 5);
-	
+
 	return $content;
 }
 function pmpro_membership_get_excerpt_filter_start($content, $skipcheck = false)
-{	
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
+{
+	remove_filter('the_content', 'pmpro_membership_content_filter', 5);
 	return $content;
 }
 function pmpro_membership_get_excerpt_filter_end($content, $skipcheck = false)
-{	
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);		
+{
+	add_filter('the_content', 'pmpro_membership_content_filter', 5);
 	return $content;
 }
 add_filter('the_excerpt', 'pmpro_membership_excerpt_filter', 15);

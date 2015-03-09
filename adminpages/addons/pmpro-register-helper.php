@@ -15,9 +15,9 @@ function pmpro_addon_pmpro_register_helper_widget($addon)
 {
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-register-helper.gif" />
-<div class="info">							
+<div class="info">
 	<p>Add additional meta fields to your PMPro checkout page and/or "Your Profile" pages. Support for text, select, multi-select, textarea, hidden, and custom HTML. Loop into existing checkout/profile field sections or add new ones.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-register-helper/blob/master/readme.txt" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-register-helper/pmpro-register-helper.php")) { ?>
@@ -25,7 +25,7 @@ function pmpro_addon_pmpro_register_helper_widget($addon)
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-register-helper.zip" class="button button-primary">Download</a>
 		<?php } ?>
-	</div>						
+	</div>
 </div> <!-- end info -->
 <?php
 }

@@ -3,11 +3,11 @@
 	PMPro Report
 	Title: Sales
 	Slug: sales
-	
+
 	For each report, add a line like:
 	global $pmpro_reports;
 	$pmpro_reports['slug'] = 'Title';
-	
+
 	For each report, also write two functions:
 	* pmpro_report_{slug}_widget()   to show up on the report homepage.
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
@@ -28,7 +28,7 @@ function pmpro_report_sales_init()
 	}
 }
 add_action("init", "pmpro_report_sales_init");
-	
+
 //widget
 function pmpro_report_sales_widget()
 {
@@ -36,29 +36,29 @@ function pmpro_report_sales_widget()
 ?>
 <style>
 	#pmpro_report_sales div {text-align: center;}
-	#pmpro_report_sales em {display: block; font-style: normal; font-size: 2em; margin: 5px;}	
+	#pmpro_report_sales em {display: block; font-style: normal; font-size: 2em; margin: 5px;}
 </style>
 <span id="#pmpro_report_sales">
-	<div style="width: 25%; float: left;">	
-		<em><?php echo pmpro_getSales("all time");?></em>	
+	<div style="width: 25%; float: left;">
+		<em><?php echo pmpro_getSales("all time");?></em>
 		<label>All Time</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></em>
 	</div>
-	<div style="width: 25%; float: left;">	
+	<div style="width: 25%; float: left;">
 		<em><?php echo pmpro_getSales("this year");?></em>
 		<label>This Year</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></em>
 	</div>
-	<div style="width: 25%; float: left;">	
+	<div style="width: 25%; float: left;">
 		<em><?php echo pmpro_getSales("this month");?></em>
 		<label>This Month</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></em>		
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></em>
 	</div>
 	<div style="width: 25%; float: left;">
 		<em><?php echo pmpro_getSales("today");?></em>
 		<label>Today</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></em>		
-	</div>	
+		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></em>
+	</div>
 	<div class="clear"></div>
 </span>
 <?php
@@ -67,44 +67,44 @@ function pmpro_report_sales_widget()
 function pmpro_report_sales_page()
 {
 	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
-	
+
 	//get values from form
 	if(isset($_REQUEST['type']))
 		$type = sanitize_text_field($_REQUEST['type']);
 	else
 		$type = "revenue";
-	
+
 	if($type == "sales")
 		$type_function = "COUNT";
 	else
 		$type_function = "SUM";
-	
+
 	if(isset($_REQUEST['period']))
 		$period = sanitize_text_field($_REQUEST['period']);
 	else
 		$period = "daily";
-		
+
 	if(isset($_REQUEST['month']))
 		$month = intval($_REQUEST['month']);
 	else
 		$month = date("n");
-	
+
 	$thisyear = date("Y");
 	if(isset($_REQUEST['year']))
 		$year = intval($_REQUEST['year']);
 	else
 		$year = $thisyear;
-		
+
 	if(isset($_REQUEST['level']))
 		$l = intval($_REQUEST['level']);
 	else
 		$l = "";
-	
+
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
 	{
-		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';		
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';		
+		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
 		$date_function = 'DAY';
 	}
 	elseif($period == "monthly")
@@ -118,29 +118,29 @@ function pmpro_report_sales_page()
 		$startdate = '1960-01-01';	//all time
 		$date_function = 'YEAR';
 	}
-	
+
 	//testing or live data
 	$gateway_environment = pmpro_getOption("gateway_environment");
-	
+
 	//get data
 	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE timestamp >= '" . $startdate . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
-	
+
 	if(!empty($enddate))
 		$sqlQuery .= "AND timestamp < '" . $enddate . "' ";
-	
+
 	if(!empty($l))
 		$sqlQuery .= "AND membership_id IN(" . $l . ") ";
-	
+
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
-		
-	$dates = $wpdb->get_results($sqlQuery);		
-		
+
+	$dates = $wpdb->get_results($sqlQuery);
+
 	//fill in blanks in dates
-	$cols = array();				
+	$cols = array();
 	if($period == "daily")
 	{
 		$lastday = date("t", strtotime($startdate, current_time("timestamp")));
-	
+
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = 0;
@@ -152,7 +152,7 @@ function pmpro_report_sales_page()
 		}
 	}
 	elseif($period == "monthly")
-	{		
+	{
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = 0;
@@ -173,7 +173,7 @@ function pmpro_report_sales_page()
 			$min = min($min, $date->date);
 			$max = max($max, $date->date);
 		}
-		
+
 		for($i = $min; $i <= $max; $i++)
 		{
 			foreach($dates as $date)
@@ -182,13 +182,13 @@ function pmpro_report_sales_page()
 					$cols[$i] = $date->value;
 			}
 		}
-	}	
+	}
 	?>
-	<form id="posts-filter" method="get" action="">		
+	<form id="posts-filter" method="get" action="">
 	<h2>
 		<?php _e('Sales and Revenue', 'pmpro');?>
 	</h2>
-	
+
 	<div class="tablenav top">
 		<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
 		<select id="period" name="period">
@@ -224,14 +224,14 @@ function pmpro_report_sales_page()
 				}
 			?>
 		</select>
-		
-		<input type="hidden" name="page" value="pmpro-reports" />		
-		<input type="hidden" name="report" value="sales" />	
+
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
 	</div>
-	
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
-		
+
+	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
+
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -239,7 +239,7 @@ function pmpro_report_sales_page()
 				pmpro_ShowMonthOrYear();
 			});
 		});
-		
+
 		function pmpro_ShowMonthOrYear()
 		{
 			var period = jQuery('#period').val();
@@ -262,14 +262,14 @@ function pmpro_report_sales_page()
 				jQuery('#year').hide();
 			}
 		}
-		
+
 		pmpro_ShowMonthOrYear();
-		
+
 		//draw the chart
 		google.load("visualization", "1", {packages:["corechart"]});
 		google.setOnLoadCallback(drawChart);
-		function drawChart() {			
-			
+		function drawChart() {
+
 			var data = google.visualization.arrayToDataTable([
 			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>'],
 			  <?php foreach($cols as $date => $value) { ?>
@@ -277,19 +277,19 @@ function pmpro_report_sales_page()
 			  <?php } ?>
 			]);
 
-			var options = {			 
+			var options = {
 			  colors: ['#51a351', '#387038'],
 			  hAxis: {title: '<?php echo $date_function;?>', titleTextStyle: {color: 'black'}, maxAlternation: 1},
-			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},			  
+			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},
 			};
-			
-			<?php 
-				if($type != "sales") 
-				{					
+
+			<?php
+				if($type != "sales")
+				{
 					if(pmpro_getCurrencyPosition() == "right")
 						$position = "suffix";
 					else
-						$position = "prefix";				
+						$position = "prefix";
 					?>
 					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 					formatter.format(data, 1);
@@ -301,7 +301,7 @@ function pmpro_report_sales_page()
 			chart.draw(data, options);
 		}
 	</script>
-	
+
 	</form>
 	<?php
 }
@@ -317,7 +317,7 @@ function pmpro_getSales($period, $levels = NULL)
 	$cache = get_transient("pmpro_report_sales");
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
 		return $cache[$period][$levels];
-		
+
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
 		$startdate = date("Y-m-d");
@@ -327,19 +327,19 @@ function pmpro_getSales($period, $levels = NULL)
 		$startdate = date("Y") . "-01-01";
 	else
 		$startdate = "";
-	
+
 	$gateway_environment = pmpro_getOption("gateway_environment");
-	
+
 	//build query
 	global $wpdb;
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
-	
+
 	//restrict by level
 	if(!empty($levels))
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
-	
+
 	$sales = $wpdb->get_var($sqlQuery);
-	
+
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]))
 		$cache[$period][$levels] = $sales;
@@ -347,9 +347,9 @@ function pmpro_getSales($period, $levels = NULL)
 		$cache[$period] = array($levels => $sales);
 	else
 		$cache = array($period => array($levels => $sales));
-	
+
 	set_transient("pmpro_report_sales", $cache, 3600*24);
-	
+
 	return $sales;
 }
 
@@ -359,8 +359,8 @@ function pmpro_getRevenue($period, $levels = NULL)
 	//check for a transient
 	$cache = get_transient("pmpro_report_revenue");
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];	
-		
+		return $cache[$period][$levels];
+
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
 		$startdate = date("Y-m-d");
@@ -370,19 +370,19 @@ function pmpro_getRevenue($period, $levels = NULL)
 		$startdate = date("Y") . "-01-01";
 	else
 		$startdate = "";
-	
+
 	$gateway_environment = pmpro_getOption("gateway_environment");
-	
+
 	//build query
 	global $wpdb;
 	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
-	
+
 	//restrict by level
 	if(!empty($levels))
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
-		
+
 	$revenue = $wpdb->get_var($sqlQuery);
-	
+
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]))
 		$cache[$period][$levels] = $revenue;
@@ -390,9 +390,9 @@ function pmpro_getRevenue($period, $levels = NULL)
 		$cache[$period] = array($levels => $revenue);
 	else
 		$cache = array($period => array($levels => $revenue));
-	
+
 	set_transient("pmpro_report_revenue", $cache, 3600*24);
-	
+
 	return $revenue;
 }
 

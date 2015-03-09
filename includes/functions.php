@@ -483,29 +483,29 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 		{
 			$levels = array($levels);
 		}
-				
+
 		if(empty($membership_levels))
-		{			
+		{
 			//user has no levels just check if 0, L, or -L was sent in one of the levels
 			if(in_array(0, $levels, true) || in_array("0", $levels))
 				$return = true;
 			elseif(in_array("L", $levels) || in_array("l", $levels))
 				$return = (!empty($user_id) && $user_id == $current_user->ID);
 			elseif(in_array("-L", $levels) || in_array("-l", $levels))
-				$return = (empty($user_id) || $user_id != $current_user->ID);		
+				$return = (empty($user_id) || $user_id != $current_user->ID);
 		}
 		else
-		{			
+		{
 			foreach($levels as $level)
-			{				
+			{
 				if(strtoupper($level) == "L")
-				{					
+				{
 					//checking if user is logged in
 					if(!empty($user_id) && $user_id == $current_user->ID)
 						$return = true;
 				}
 				elseif(strtoupper($level) == "-L")
-				{					
+				{
 					//checking if user is logged out
 					if(empty($user_id) || $user_id != $current_user->ID)
 						$return = true;
@@ -527,13 +527,13 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 							$found_level = true;
 						}
 					}
-										
+
 					if(is_numeric($level) && intval($level) < 0 && !$found_level) //checking for the absence of this level and they don't have it
 					{
 						$return = true;
-					}					
+					}
 					elseif(is_numeric($level) && intval($level) > 0 && $found_level) //checking for the presence of this level and they have it
-					{					
+					{
 						$return = true;
 					}
 				}

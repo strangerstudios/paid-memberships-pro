@@ -1,7 +1,7 @@
 <?php
 /*
 	Taken from: http://code.google.com/p/php-name-parser/
-	
+
 	Changed function names to avoid conflicts.
 */
 
@@ -16,9 +16,9 @@ if(!function_exists("pnp_split_full_name"))
 	function pnp_split_full_name($full_name) {
 		if(empty($full_name))
 			return "";
-			
+
 		$fname = $lname = $initials = NULL;
-		
+
 		$full_name = trim($full_name);
 		// split into words
 		$unfiltered_name_parts = explode(" ",$full_name);
@@ -48,7 +48,7 @@ if(!function_exists("pnp_split_full_name"))
 			// is it a middle initial or part of their first name?
 			// if we start off with an initial, we'll call it the first name
 			if (pnp_is_initial($word)) {
-				// is the initial the first word?  
+				// is the initial the first word?
 				if ($i == $start) {
 					// if so, do a look-ahead to see if they go by their middle name
 					// for ex: "R. Jason Smith" => "Jason Smith" & "R." is stored as an initial
@@ -63,7 +63,7 @@ if(!function_exists("pnp_split_full_name"))
 				}
 			} else {
 				$fname .= " ".pnp_fix_case($word);
-			}  
+			}
 		}
 
 		// check that we have more than 1 word in our string

@@ -1,39 +1,39 @@
-<?php	
+<?php
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	
+
 	//load classes init method
 	add_action('init', array('PMProGateway_twocheckout', 'init'));
-		
+
 	class PMProGateway_Twocheckout extends PMProGateway
 	{
 		function PMProGateway_Twocheckout($gateway = NULL)
 		{
 			if(!class_exists("Twocheckout"))
 				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
-			
+
 			$this->gateway = $gateway;
 			return $this->gateway;
-		}										
-		
+		}
+
 		/**
 		 * Run on WP init
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function init()
-		{			
+		{
 			//make sure PayPal Express is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_twocheckout', 'pmpro_gateways'));
-			
+
 			//add fields to payment settings
-			add_filter('pmpro_payment_options', array('PMProGateway_twocheckout', 'pmpro_payment_options'));		
+			add_filter('pmpro_payment_options', array('PMProGateway_twocheckout', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_twocheckout', 'pmpro_payment_option_fields'), 10, 2);
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "twocheckout")
-			{				
+			{
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_twocheckout', 'pmpro_required_billing_fields'));
@@ -41,27 +41,27 @@
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_twocheckout', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
-		
+
 		/**
 		 * Make sure this gateway is in the gateways list
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['twocheckout']))
 				$gateways['twocheckout'] = __('2Checkout', 'pmpro');
-		
+
 			return $gateways;
 		}
-		
+
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function getGatewayOptions()
-		{			
+		{
 			$options = array(
 				'sslseal',
 				'nuclear_HTTPS',
@@ -75,29 +75,29 @@
 				'tax_state',
 				'tax_rate'
 			);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Set payment options for payment settings page.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{			
+		{
 			//get stripe options
 			$twocheckout_options = PMProGateway_twocheckout::getGatewayOptions();
-			
+
 			//merge with others.
 			$options = array_merge($twocheckout_options, $options);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Display fields for this gateway's options.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
@@ -147,13 +147,13 @@
 			<td>
 				<p><?php _e('To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
 			</td>
-		</tr>		
+		</tr>
 		<?php
 		}
-		
+
 		/**
 		 * Remove required billing fields
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_required_billing_fields($fields)
@@ -172,10 +172,10 @@
 			unset($fields['ExpirationMonth']);
 			unset($fields['ExpirationYear']);
 			unset($fields['CVV']);
-			
+
 			return $fields;
 		}
-		
+
 		/**
 		 * Swap in our submit buttons.
 		 *
@@ -184,19 +184,19 @@
 		static function pmpro_checkout_default_submit_button($show)
 		{
 			global $gateway, $pmpro_requirebilling;
-			
+
 			//show our submit buttons
-			?>			
+			?>
 			<span id="pmpro_submit_span">
-				<input type="hidden" name="submit-checkout" value="1" />		
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />		
+				<input type="hidden" name="submit-checkout" value="1" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />
 			</span>
 			<?php
-		
+
 			//don't show the default
 			return false;
 		}
-		
+
 		/**
 		 * Instead of change membership levels, send users to 2Checkout to pay.
 		 *
@@ -205,47 +205,47 @@
 		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 		{
 			global $discount_code_id;
-			
+
 			//if no order, no need to pay
 			if(empty($morder))
 				return;
-			
-			$morder->user_id = $user_id;				
+
+			$morder->user_id = $user_id;
 			$morder->saveOrder();
-			
+
 			//save discount code use
 			if(!empty($discount_code_id))
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");	
-			
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
+
 			do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
-			
+
 			$morder->Gateway->sendToTwocheckout($morder);
 		}
-		
+
 		/**
 		 * Process checkout.
-		 *		
+		 *
 		 */
 		function process(&$order)
-		{						
+		{
 			if(empty($order->code))
-				$order->code = $order->getRandomCode();			
-			
+				$order->code = $order->getRandomCode();
+
 			//clean up a couple values
 			$order->payment_type = "2CheckOut";
 			$order->CardType = "";
 			$order->cardtype = "";
-			
+
 			//just save, the user will go to 2checkout to pay
-			$order->status = "review";														
+			$order->status = "review";
 			$order->saveOrder();
 
-			return true;			
+			return true;
 		}
-		
+
 		function sendToTwocheckout(&$order)
-		{						
-			global $pmpro_currency;			
+		{
+			global $pmpro_currency;
 			// Set up credentials
 			Twocheckout::setCredentials( pmpro_getOption("twocheckout_apiusername"), pmpro_getOption("twocheckout_apipassword") );
 
@@ -271,10 +271,10 @@
 
 			//taxes on the amount (NOT CURRENTLY USED)
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);			
-			$amount = round((float)$amount + (float)$amount_tax, 2);	
-			
-			// Recurring membership			
+			$amount_tax = $order->getTaxForPrice($amount);
+			$amount = round((float)$amount + (float)$amount_tax, 2);
+
+			// Recurring membership
 			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
 				$tco_args['li_0_startup_fee'] = number_format($initial_payment - $amount, 2);		//negative amount for lower initial payments
 				$recurring_payment = $order->membership_level->billing_amount;
@@ -298,7 +298,7 @@
 			$environment = pmpro_getOption("gateway_environment");
 			if("sandbox" === $environment || "beta-sandbox" === $environment)
 				$tco_args['demo'] = 'Y';
-			
+
 			// Trial?
 			//li_#_startup_fee	Any start up fees for the product or service. Can be negative to provide discounted first installment pricing, but cannot equal or surpass the product price.
 			if(!empty($order->TrialBillingPeriod)) {
@@ -306,8 +306,8 @@
 				$trial_tax = $order->getTaxForPrice($trial_amount);
 				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
 				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
-			}				
-			
+			}
+
 			$ptpStr = '';
 			foreach( $tco_args as $key => $value ) {
 				reset( $tco_args ); // Used to verify whether or not we're on the first argument
@@ -315,19 +315,19 @@
 			}
 
 			//anything modders might add
-			$additional_parameters = apply_filters( 'pmpro_twocheckout_return_url_parameters', array() );									
+			$additional_parameters = apply_filters( 'pmpro_twocheckout_return_url_parameters', array() );
 			if( ! empty( $additional_parameters ) )
-				foreach( $additional_parameters as $key => $value )				
+				foreach( $additional_parameters as $key => $value )
 					$ptpStr .= "&" . urlencode($key) . "=" . urlencode($value);
 
 			$ptpStr = apply_filters( 'pmpro_twocheckout_ptpstr', $ptpStr, $order );
-						
+
 			//echo str_replace("&", "&<br />", $ptpStr);
 			//exit;
-			
-			//redirect to 2checkout			
+
+			//redirect to 2checkout
 			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
-			
+
 			//echo $tco_url;
 			//die();
 			wp_redirect( $tco_url );
@@ -342,7 +342,7 @@
 
 				// Successfully cancelled
 				if (isset($result['response_code']) && $result['response_code'] === 'OK') {
-					$order->updateStatus("cancelled");	
+					$order->updateStatus("cancelled");
 					return true;
 				}
 				// Failed
@@ -350,7 +350,7 @@
 					$order->status = "error";
 					$order->errorcode = $result->getCode();
 					$order->error = $result->getMessage();
-									
+
 					return false;
 				}
 			}

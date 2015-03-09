@@ -2,14 +2,14 @@
 	//thanks jigoshop
 	global $pmpro_currencies, $pmpro_default_currency;
 	$pmpro_default_currency = apply_filters("pmpro_default_currency", "USD");
-	
-	$pmpro_currencies = array( 
+
+	$pmpro_currencies = array(
 			'USD' => __('US Dollars (&#36;)', 'pmpro'),
 			'EUR' => array(
 				'name' => __('Euros (&euro;)', 'pmpro'),
 				'symbol' => '&euro;',
 				'position' => 'right'
-				),				
+				),
 			'GBP' => array(
 				'name' => __('Pounds Sterling (&pound;)', 'pmpro'),
 				'symbol' => '&pound;',
@@ -50,7 +50,7 @@
 				'name' => __('South African Rand (R)', 'pmpro'),
 				'symbol' => 'R ',
 				'position' => 'left'
-			),			
+			),
 			'KRW' => __('South Korean Won', 'pmpro'),
 			'SEK' => __('Swedish Krona', 'pmpro'),
 			'CHF' => __('Swiss Franc', 'pmpro'),
@@ -59,13 +59,13 @@
 			'TRY' => __('Turkish Lira', 'pmpro'),
 			'VND' => __('Vietnamese Dong', 'pmpro')
 			);
-	
+
 	$pmpro_currencies = apply_filters("pmpro_currencies", $pmpro_currencies);
-	
+
 	//stripe only supports a few (not using this anymore since 1.7.4)
 	global $pmpro_stripe_currencies;
 	$pmpro_stripe_currencies = array(
-			'USD' => __('US Dollars (&#36;)', 'pmpro'),			
+			'USD' => __('US Dollars (&#36;)', 'pmpro'),
 			'CAD' => __('Canadian Dollars (&#36;)', 'pmpro'),
 			'GBP' => __('Pounds Sterling (&pound;)', 'pmpro'),
 			'EUR' => __('Euros (&euro;)', 'pmpro')

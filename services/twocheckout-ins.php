@@ -1,12 +1,12 @@
 <?php
 	define('PMPRO_INS_DEBUG', false);
-	
-	//in case the file is loaded directly	
+
+	//in case the file is loaded directly
 	if(!defined("WP_USE_THEMES"))
 	{
 		global $isapage;
 		$isapage = true;
-		
+
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
@@ -14,16 +14,16 @@
 	// Require TwoCheckout class
 	if(!class_exists("Twocheckout"))
 		require_once(PMPRO_DIR . "/includes/lib/Twocheckout/Twocheckout.php");
-		
+
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
 	//validate?
 	if( false || ! pmpro_twocheckoutValidate() ) {
-		
+
 		inslog("(!!FAILED VALIDATION!!)");
-		
+
 		//validation failed
 		pmpro_twocheckoutExit();
 	}
@@ -43,44 +43,44 @@
 	$fraud_status = pmpro_getParam( 'fraud_status', 'REQUEST' ); // Check fraud status?
 	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'REQUEST' ); // Price paid by customer in seller currency code
 	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST' );
-	
+
 	// No message = return processing
 	if( empty($message_type) ) {
 		//initial payment, get the order
 		$morder = new MemberOrder( $order_id );
 		$morder->getMembershipLevel();
 		$morder->getUser();
-		
+
 		inslog("NO MESSAGE: ORDER: " . var_export($morder, true) . "\n---\n");
-		
+
 		//update membership
 		if (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
 		}
 		else {
-			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
-		}	
-		
+			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
+		}
+
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
-	
+
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
 	if( $message_type == 'ORDER_CREATED' ) {
 		//initial payment, get the order
 		$morder = new MemberOrder( $order_id );
 		$morder->getMembershipLevel();
 		$morder->getUser();
-		
+
 		inslog("ORDER_CREATED: ORDER: " . var_export($morder, true) . "\n---\n");
-		
+
 		//update membership
 		if (pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
 		}
 		else {
-			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
-		}	
-		
+			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
+		}
+
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
 
@@ -89,17 +89,17 @@
 		//is this a first payment?
 		$last_subscr_order = new MemberOrder();
 		if( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $txn_id ) == false) {
-			//first payment, get order			
-			$morder = new MemberOrder( $order_id );												
+			//first payment, get order
+			$morder = new MemberOrder( $order_id );
 			$morder->getMembershipLevel();
 			$morder->getUser();
 
 			//update membership
-			if( pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {									
-				inslog( "Checkout processed (" . $morder->code . ") success!" );		
+			if( pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
+				inslog( "Checkout processed (" . $morder->code . ") success!" );
 			}
 			else {
-				inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
+				inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 			}
 		}
 		else {
@@ -119,7 +119,7 @@
 		pmpro_twocheckoutExit();
 	}
 
-	
+
 	/*
 	// Recurring Payment Stopped (recurring stopped and recurring is true)
 	if( $message_type == 'RECURRING_STOPPED' && $recurring ) {
@@ -133,13 +133,13 @@
 			inslog( "Recurring stopped for order (" . $morder->code . ")!" );
 		}
 		else {
-			inslog( "Recurring NOT stopped for order (" . $morder->code . ")!" );		
-		}	
-		
+			inslog( "Recurring NOT stopped for order (" . $morder->code . ")!" );
+		}
+
 		pmpro_twocheckoutExit();
 	}
 
-	
+
 	// Recurring Payment Restarted (recurring restarted and recurring is true)
 	if( $message_type == 'RECURRING_RESTART' && $recurring ) {
 		//initial payment, get the order
@@ -152,27 +152,27 @@
 			inslog( "Recurring restarted for order (" . $morder->code . ")!" );
 		}
 		else {
-			inslog( "Recurring NOT restarted for order (" . $morder->code . ")!" );		
-		}	
-		
+			inslog( "Recurring NOT restarted for order (" . $morder->code . ")!" );
+		}
+
 		pmpro_twocheckoutExit();
 	}
 	*/
-	
+
 	//Other
 	//if we got here, this is a different kind of txn
-	inslog("No recurring payment id or item number. message_type = " . $message_type);	
-	pmpro_twocheckoutExit();	
-	
+	inslog("No recurring payment id or item number. message_type = " . $message_type);
+	pmpro_twocheckoutExit();
+
 	/*
 		Add message to inslog string
 	*/
 	function inslog( $s )
-	{		
-		global $logstr;		
+	{
+		global $logstr;
 		$logstr .= "\t" . $s . "\n";
 	}
-	
+
 	/*
 		Output inslog and exit;
 	*/
@@ -180,21 +180,21 @@
 	{
 		global $logstr;
 		//echo $logstr;
-	
-		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
-			
+
+		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
+
 		//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
 		if(PMPRO_INS_DEBUG)
 		{
 			echo $logstr;
-			$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
+			$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);
 		}
-		
+
 		if(!empty($redirect))
 			wp_redirect($redirect);
-		
+
 		exit;
 	}
 
@@ -205,31 +205,31 @@
 		$params = array();
 		foreach ( $_REQUEST as $k => $v )
 			$params[$k] = $v;
-		
+
 		//2Checkout uses an order number of 1 in the hash for demo orders for some reason
 		if(($params['demo'] == 'Y'))
 			$params['order_number'] = 1;
-		
+
 		//is this a return call or notification
 		if(empty($params['message_type']))
 			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
-		else		
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );				
-		
+		else
+			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+
 		return $check['response_code'] === 'Success';
 	}
-	
+
 	/*
 		Change the membership level. We also update the membership order to include filtered valus.
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
 		$recurring = pmpro_getParam( 'recurring', 'POST' );
-		
+
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_inshandler_level", $morder->membership_level, $morder->user_id);
-					
-		//fix expiration date		
+
+		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
 			$enddate = "'" . date("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time("timestamp"))) . "'";
@@ -238,21 +238,21 @@
 		{
 			$enddate = "NULL";
 		}
-		
+
 		//get discount code
 		$morder->getDiscountCode();
 		if(!empty($morder->discount_code))
-		{		
+		{
 			//update membership level
 			$morder->getMembershipLevel(true);
 			$discount_code_id = $morder->discount_code->id;
 		}
 		else
 			$discount_code_id = "";
-		
+
 		//set the start date to current_time('mysql') but allow filters
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
-		
+
 		//custom level to change user to
 		$custom_level = array(
 			'user_id' => $morder->user_id,
@@ -272,11 +272,11 @@
 		if(!empty($pmpro_error))
 		{
 			echo $pmpro_error;
-			inslog($pmpro_error);				
+			inslog($pmpro_error);
 		}
-		
+
 		if( pmpro_changeMembershipLevel($custom_level, $morder->user_id) !== false ) {
-			//update order status and transaction ids					
+			//update order status and transaction ids
 			$morder->status = "success";
 			$morder->payment_transaction_id = $txn_id;
 			if( $recurring )
@@ -284,13 +284,13 @@
 			else
 				$morder->subscription_transaction_id = '';
 			$morder->saveOrder();
-			
+
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
 				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time('mysql') . "')");
-			}									
-		
+			}
+
 			//save first and last name fields
 			if(!empty($_POST['first_name']))
 			{
@@ -304,103 +304,103 @@
 				if(!empty($old_lastname))
 					update_user_meta($morder->user_id, "last_name", $_POST['last_name']);
 			}
-												
+
 			//hook
-			do_action("pmpro_after_checkout", $morder->user_id);						
-		
+			do_action("pmpro_after_checkout", $morder->user_id);
+
 			//setup some values for the emails
 			if(!empty($morder))
-				$invoice = new MemberOrder($morder->id);						
+				$invoice = new MemberOrder($morder->id);
 			else
 				$invoice = NULL;
-		
+
 			inslog("CHANGEMEMBERSHIPLEVEL: ORDER: " . var_export($morder, true) . "\n---\n");
-		
-			$user = get_userdata($morder->user_id);					
+
+			$user = get_userdata($morder->user_id);
 			if(empty($user))
 				return false;
-				
+
 			$user->membership_level = $morder->membership_level;		//make sure they have the right level info
-		
+
 			//send email to member
-			$pmproemail = new PMProEmail();				
+			$pmproemail = new PMProEmail();
 			$pmproemail->sendCheckoutEmail($user, $invoice);
-										
+
 			//send email to admin
 			$pmproemail = new PMProEmail();
 			$pmproemail->sendCheckoutAdminEmail($user, $invoice);
-			
+
 			return true;
 		}
 		else
 			return false;
 	}
-	
+
 	/*
 		Send an email RE a failed payment.
 		$last_order passed in is the previous order for this subscription.
 	*/
-	function pmpro_insFailedPayment( $last_order ) {		
-		//hook to do other stuff when payments fail		
-		do_action("pmpro_subscription_payment_failed", $last_order);							
-	
-		//create a blank order for the email			
+	function pmpro_insFailedPayment( $last_order ) {
+		//hook to do other stuff when payments fail
+		do_action("pmpro_subscription_payment_failed", $last_order);
+
+		//create a blank order for the email
 		$morder = new MemberOrder();
 		$morder->user_id = $last_order->user_id;
-				
-		// Email the user and ask them to update their credit card information			
-		$pmproemail = new PMProEmail();				
+
+		// Email the user and ask them to update their credit card information
+		$pmproemail = new PMProEmail();
 		$pmproemail->sendBillingFailureEmail($user, $morder);
-	
+
 		// Email admin so they are aware of the failure
-		$pmproemail = new PMProEmail();				
-		$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $morder);	
-	
-		inslog("Payment failed. Emails sent to " . $user->user_email . " and " . get_bloginfo("admin_email") . ".");	
-		
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendBillingFailureAdminEmail(get_bloginfo("admin_email"), $morder);
+
+		inslog("Payment failed. Emails sent to " . $user->user_email . " and " . get_bloginfo("admin_email") . ".");
+
 		return true;
 	}
-	
+
 	/*
 		Save a new order from IPN info.
 		$last_order passed in is the previous order for this subscription.
 	*/
 	function pmpro_insSaveOrder( $txn_id, $last_order ) {
 		global $wpdb;
-			
+
 		//check that txn_id has not been previously processed
 		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
-		
-		if( empty( $old_txn ) ) {	
+
+		if( empty( $old_txn ) ) {
 			//hook for successful subscription payments
 			do_action("pmpro_subscription_payment_completed");
-															
+
 			//save order
 			$morder = new MemberOrder();
 			$morder->user_id = $last_order->user_id;
-			$morder->membership_id = $last_order->membership_id;			
+			$morder->membership_id = $last_order->membership_id;
 			$morder->payment_transaction_id = $txn_id;
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
 			$morder->InitialPayment = $_POST['item_list_amount_1'];	//not the initial payment, but the class is expecting that
 			$morder->PaymentAmount = $_POST['item_list_amount_1'];
-			
+
 			$morder->FirstName = $_POST['customer_first_name'];
 			$morder->LastName = $_POST['customer_last_name'];
 			$morder->Email = $_POST['customer_email'];
-			
+
 			$morder->gateway = $last_order->gateway;
 			$morder->gateway_environment = $last_order->gateway_environment;
-			
+
 			//save
 			$morder->saveOrder();
 			$morder->getMemberOrderByID( $morder->id );
-							
-			//email the user their invoice				
-			$pmproemail = new PMProEmail();				
-			$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );	
-			
+
+			//email the user their invoice
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
+
 			inslog( "New order (" . $morder->code . ") created." );
-			
+
 			return true;
 		}
 		else {
@@ -408,8 +408,8 @@
 			return false;
 		}
 	}
-	
-	
+
+
 	/*
 		Cancel a subscription and send an email RE a recurring.
 		$morder passed in is the previous order for this subscription.
@@ -417,10 +417,10 @@
 	function pmpro_insRecurringStopped( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments stop
-		do_action("pmpro_subscription_recuring_stopped", $last_order);							
-	
+		do_action("pmpro_subscription_recuring_stopped", $last_order);
+
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
-		if( $worked === true ) {			
+		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			//$pmpro_msgt = "pmpro_success";
 
@@ -432,40 +432,40 @@
 			$myemail = new PMProEmail();
 			$myemail->sendCancelAdminEmail( $morder->user, $morder->membership_level->id );
 
-			inslog("Subscription cancelled due to 'recurring stopped' INS notification.");	
-		
+			inslog("Subscription cancelled due to 'recurring stopped' INS notification.");
+
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-	
-	
+
+
 	/*
 		Restart a subscription and send an email RE a recurring.
 		$morder passed in is the previous order for this subscription.
 	*/
 	function pmpro_insRecurringRestarted( $morder ) {
 		global $pmpro_error;
-		//hook to do other stuff when payments restart	
-		do_action("pmpro_subscription_recuring_restarted", $last_order);							
-	
+		//hook to do other stuff when payments restart
+		do_action("pmpro_subscription_recuring_restarted", $last_order);
+
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
-		if( $worked === true ) {			
+		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member
-			$pmproemail = new PMProEmail();				
+			$pmproemail = new PMProEmail();
 			$pmproemail->sendCheckoutEmail( $morder->user, $morder );
 
 			//send email to admin
 			$pmproemail = new PMProEmail();
 			$pmproemail->sendCheckoutAdminEmail( $morder->user, $morder );
 
-			inslog("Subscription restarted due to 'recurring restarted' INS notification.");	
-		
+			inslog("Subscription restarted due to 'recurring restarted' INS notification.");
+
 			return true;
 		}
 		else {

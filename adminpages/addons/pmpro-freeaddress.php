@@ -16,15 +16,15 @@ function pmpro_addon_pmpro_freerequire_widget($addon)
 ?>
 <div class="info">
 	<p>Require name/address for free Membership Level checkout.</p>
-	<div class="actions">							
+	<div class="actions">
 		<?php if($addon['enabled']) { ?>
 			<a href="https://github.com/strangerstudios/pmpro-address-for-free-levels" class="button">Enabled</a>
 		<?php } elseif(file_exists(dirname(__FILE__) . "/../../../pmpro-address-for-free-levels/pmpro-address-for-free-levels.php")) { ?>
 			<a href="<?php echo wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=pmpro-address-for-free-levels/pmpro-address-for-free-levels.php'), 'activate-plugin_pmpro-address-for-free-levels/pmpro-address-for-free-levels.php')?>" class="button button-primary">Activate</a>
 		<?php } else { ?>
 			<a href="http://www.paidmembershipspro.com/wp-content/uploads/plugins/pmpro-address-for-free-levels.zip" class="button button-primary">Download</a>
-		<?php } ?>				
-	</div>						
+		<?php } ?>
+	</div>
 </div> <!-- end info -->
 <?php
 }

@@ -36,7 +36,7 @@ function pmpro_init()
 		}
 	}
 	else
-	{		
+	{
 		$frontend_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css")) {
 			$frontend_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/frontend.css";
@@ -49,7 +49,7 @@ function pmpro_init()
 				$frontend_css_rtl = get_template_directory_uri() . "/paid-memberships-pro/css/frontend-rtl.css";
 			}
 		} else {
-			$frontend_css = plugins_url('css/frontend.css',dirname(__FILE__) );	
+			$frontend_css = plugins_url('css/frontend.css',dirname(__FILE__) );
 			if( is_rtl() ) {
 				$frontend_css_rtl = plugins_url('css/frontend-rtl.css',dirname(__FILE__) );
 			}
@@ -58,7 +58,7 @@ function pmpro_init()
 		if( $frontend_css_rtl ) {
 			wp_enqueue_style('pmpro_frontend_rtl', $frontend_css_rtl, array(), PMPRO_VERSION, "screen");
 		}
-		
+
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/print.css"))
 			$print_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/print.css";
 		elseif(file_exists(get_template_directory() . "/paid-memberships-pro/print.css"))
@@ -67,7 +67,7 @@ function pmpro_init()
 			$print_css = plugins_url('css/print.css',dirname(__FILE__) );
 		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
 	}
-	
+
 	global $pmpro_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -92,9 +92,9 @@ function pmpro_init()
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
 		$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
 	elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
-		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);	
+		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);
 	else
-		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code	
+		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code
 }
 add_action("init", "pmpro_init");
 
@@ -103,23 +103,23 @@ function pmpro_wp()
 {
 	if(!is_admin())
 	{
-		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
-		
+		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;
+
 		//no pages yet?
 		if(empty($pmpro_pages))
 			return;
-		
+
 		//run the appropriate preheader function
 		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
-		{						
+		{
 			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false)
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
-				
+
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
-				
+
 				//shortcode
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
@@ -129,7 +129,7 @@ function pmpro_wp()
 						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
 					else
 						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
-					
+
 					$temp_content = ob_get_contents();
 					ob_end_clean();
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
@@ -137,7 +137,7 @@ function pmpro_wp()
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
 				break;	//only the first page found gets a shortcode replacement
 			}
-		}				
+		}
 	}
 }
 add_action("wp", "pmpro_wp", 1);
@@ -148,7 +148,7 @@ add_action("wp", "pmpro_wp", 1);
 function pmpro_body_class($classes)
 {
 	global $pmpro_body_classes;
-	
+
 	if(is_array($pmpro_body_classes))
 		$classes = array_merge($pmpro_body_classes, $classes);
 
@@ -187,7 +187,7 @@ function pmpro_set_current_user()
 			$ezCount = 100;
 			$urCount = 100;
 		}
-		
+
 		//disable ads in Easy Adsense (newer versions)
 		if(class_exists("EzAdSense"))
 		{
