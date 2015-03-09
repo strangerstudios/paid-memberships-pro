@@ -16,7 +16,7 @@ function pmpro_addon_pmpro_woocommerce_widget($addon)
 ?>
 <img class="addon-thumb" src="<?php echo PMPRO_URL?>/adminpages/addons/images/pmpro-woocommerce.gif" />
 <div class="info">							
-	<p>Use WooCommerce to purchase membership or set members-only product pricing.</p>
+	<p>Use <a href="http://www.woothemes.com/woocommerce/">WooCommerce</a> to purchase membership levels or set members-only product pricing.</p>
 	<div class="actions">							
 		<?php if($addon['enabled']) { ?>
 			<a href="<?php echo admin_url("plugins.php");?>" class="button">Enabled</a>
