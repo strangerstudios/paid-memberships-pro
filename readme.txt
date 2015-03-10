@@ -121,6 +121,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issues with the membership shortcode and pmpro_hasMembershipLevel function.
 * ENHANCEMENT: Can now use L or -L to check if a user is logged in (L) or not (-L) in the membership shortcode or pmpro_hasMembershipLevel function.
 * ENHANCEMENT: Updated to the new version of Google's ReCaptcha.
+* BUG: Fixed issue with quotes and other special characters in membership level names, descriptions, and confirmations. (Thanks, Marcelo Hinojosa)
 
 = 1.7.15.3 = 
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
