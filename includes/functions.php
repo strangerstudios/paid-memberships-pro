@@ -1804,15 +1804,17 @@ function pmpro_formatPrice($price)
 	//settings stored in array?
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
 	{
+		$formatted = number_format($price,
+			(isset($pmpro_currencies[$pmpro_currency]['decimals']) ? (int)$pmpro_currencies[$pmpro_currency]['decimals'] : 2),
+			$pmpro_currencies[$pmpro_currency]['decimal_separator'],
+			$pmpro_currencies[$pmpro_currency]['thousands_separator']
+		);
+		
 		//which side is the symbol on?
 		if(!empty($pmpro_currencies[$pmpro_currency]['position']) && $pmpro_currencies[$pmpro_currency]['position']== 'left')
 			$formatted = $pmpro_currency_symbol . $formatted;
 		else
 			$formatted = $formatted . $pmpro_currency_symbol;
-
-		//commas or periods?
-		if(!empty($pmpro_currencies[$pmpro_currency]['separator']) && $pmpro_currencies[$pmpro_currency]['separator'])
-			$formatted = str_replace(array(".",","), $pmpro_currencies[$pmpro_currency]['separator'], $formatted);
 	}
 	else
 		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left
