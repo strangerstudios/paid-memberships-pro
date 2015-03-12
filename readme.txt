@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 1.8
+Stable tag: 1.8.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,8 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.1 =
+* BUG: Fixed typos in pmpro_memberslist_csv and pmpro_orderscsv capabilities. (Thanks, Arnaud Devic)
 
 = 1.8 =
 * ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
