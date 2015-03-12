@@ -34,7 +34,7 @@
 		 * Load the Stripe API library.
 		 *		
 		 * @since 1.8
-		 * Moved into a method in version 2.0 so we only load it when needed.
+		 * Moved into a method in version 1.8 so we only load it when needed.
 		 */
 		function loadStripeLibrary()
 		{
