@@ -422,6 +422,7 @@ if(!function_exists("formatPhone"))
 
 function pmpro_showRequiresMembershipMessage()
 {
+	//TODO $current_user $post_membership_levels_names are undefined variables
 	//get the correct message
 	if(is_feed())
 	{
@@ -1804,6 +1805,7 @@ function pmpro_formatPrice($price)
 	//settings stored in array?
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
 	{
+		//format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format($price,
 			(isset($pmpro_currencies[$pmpro_currency]['decimals']) ? (int)$pmpro_currencies[$pmpro_currency]['decimals'] : 2),
 			$pmpro_currencies[$pmpro_currency]['decimal_separator'],
