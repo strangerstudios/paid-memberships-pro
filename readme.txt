@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.1 =
 * BUG: Fixed typos in pmpro_memberslist_csv and pmpro_orderscsv capabilities. (Thanks, Arnaud Devic)
 * BUG: Only loading the Braintree API when using it now.
+* BUG: Fixed fatal error that would occur at checkout if PayPal Standard were used with a discount code. (Thanks, John Zeiger)
 
 = 1.8 =
 * ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
