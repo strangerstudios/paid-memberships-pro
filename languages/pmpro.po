@@ -5,8 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2015-02-28 13:48-0500\n"
-"POT-Creation-Date: 2015-03-10 11:13-0400\n"
+"POT-Creation-Date: 2015-03-17 09:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
@@ -500,7 +499,7 @@ msgid "Start Date"
 msgstr ""
 
 #: adminpages/discountcodes.php:371
-#: classes/gateways/class.pmprogateway_braintree.php:308
+#: classes/gateways/class.pmprogateway_braintree.php:321
 #: classes/gateways/class.pmprogateway_stripe.php:454 pages/billing.php:253
 #: pages/checkout.php:553 adminpages/discountcodes.php:367
 #: adminpages/discountcodes.php:370 adminpages/discountcodes.php:371
@@ -1429,7 +1428,7 @@ msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr ""
 
 #: adminpages/orders.php:389
-#: classes/gateways/class.pmprogateway_braintree.php:291
+#: classes/gateways/class.pmprogateway_braintree.php:304
 #: classes/gateways/class.pmprogateway_stripe.php:408 pages/billing.php:238
 #: pages/checkout.php:507 adminpages/orders.php:339 adminpages/orders.php:389
 #: classes/gateways/class.pmprogateway_braintree.php:291
@@ -2156,7 +2155,7 @@ msgstr ""
 #: classes/class.pmproemail.php:231 classes/class.pmproemail.php:240
 #: classes/class.pmproemail.php:249 classes/class.pmproemail.php:328
 #: classes/class.pmproemail.php:337 classes/class.pmproemail.php:648
-#: classes/gateways/class.pmprogateway_braintree.php:349
+#: classes/gateways/class.pmprogateway_braintree.php:362
 #: classes/gateways/class.pmprogateway_stripe.php:495 pages/checkout.php:66
 #: pages/checkout.php:76 pages/checkout.php:594 pages/confirmation.php:52
 #: pages/invoice.php:33 classes/class.pmproemail.php:216
@@ -2453,19 +2452,19 @@ msgstr ""
 msgid "Could not connect to Authorize.net"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:63
+#: classes/gateways/class.pmprogateway_braintree.php:76
 #: paid-memberships-pro.php:123
 #: classes/gateways/class.pmprogateway_braintree.php:63
 #: paid-memberships-pro.php:123
 msgid "Braintree Payments"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:119
+#: classes/gateways/class.pmprogateway_braintree.php:132
 #: classes/gateways/class.pmprogateway_braintree.php:119
 msgid "Braintree Settings"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:124
+#: classes/gateways/class.pmprogateway_braintree.php:137
 #: classes/gateways/class.pmprogateway_cybersource.php:106
 #: adminpages/paymentsettings.php:294 adminpages/paymentsettings.php:298
 #: adminpages/paymentsettings.php:303 adminpages/paymentsettings.php:364
@@ -2475,28 +2474,28 @@ msgstr ""
 msgid "Merchant ID"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:132
+#: classes/gateways/class.pmprogateway_braintree.php:145
 #: adminpages/paymentsettings.php:302 adminpages/paymentsettings.php:306
 #: adminpages/paymentsettings.php:311
 #: classes/gateways/class.pmprogateway_braintree.php:132
 msgid "Public Key"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:140
+#: classes/gateways/class.pmprogateway_braintree.php:153
 #: adminpages/paymentsettings.php:310 adminpages/paymentsettings.php:314
 #: adminpages/paymentsettings.php:319
 #: classes/gateways/class.pmprogateway_braintree.php:140
 msgid "Private Key"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:148
+#: classes/gateways/class.pmprogateway_braintree.php:161
 #: adminpages/paymentsettings.php:318 adminpages/paymentsettings.php:322
 #: adminpages/paymentsettings.php:327
 #: classes/gateways/class.pmprogateway_braintree.php:148
 msgid "Client-Side Encryption Key"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:156
+#: classes/gateways/class.pmprogateway_braintree.php:169
 #: classes/gateways/class.pmprogateway_stripe.php:181
 #: adminpages/paymentsettings.php:462 adminpages/paymentsettings.php:470
 #: adminpages/paymentsettings.php:503 adminpages/paymentsettings.php:509
@@ -2507,14 +2506,14 @@ msgstr ""
 msgid "Web Hook URL"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:160
+#: classes/gateways/class.pmprogateway_braintree.php:173
 #: adminpages/paymentsettings.php:474 adminpages/paymentsettings.php:515
 #: adminpages/paymentsettings.php:521 adminpages/paymentsettings.php:523
 #: classes/gateways/class.pmprogateway_braintree.php:160
 msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:270
+#: classes/gateways/class.pmprogateway_braintree.php:283
 #: classes/gateways/class.pmprogateway_stripe.php:387 pages/checkout.php:485
 #: classes/gateways/class.pmprogateway_braintree.php:270
 #: classes/gateways/class.pmprogateway_stripe.php:387 pages/checkout.php:476
@@ -2523,7 +2522,7 @@ msgstr ""
 msgid "Payment Information"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:270
+#: classes/gateways/class.pmprogateway_braintree.php:283
 #: classes/gateways/class.pmprogateway_stripe.php:387 pages/checkout.php:485
 #: classes/gateways/class.pmprogateway_braintree.php:270
 #: classes/gateways/class.pmprogateway_stripe.php:387 pages/checkout.php:476
@@ -2533,7 +2532,7 @@ msgstr ""
 msgid "We Accept %s"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:303
+#: classes/gateways/class.pmprogateway_braintree.php:316
 #: classes/gateways/class.pmprogateway_stripe.php:449 pages/billing.php:248
 #: pages/checkout.php:548
 #: classes/gateways/class.pmprogateway_braintree.php:303
@@ -2543,7 +2542,7 @@ msgstr ""
 msgid "Card Number"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:340
+#: classes/gateways/class.pmprogateway_braintree.php:353
 #: classes/gateways/class.pmprogateway_stripe.php:486 pages/billing.php:285
 #: pages/checkout.php:585
 #: classes/gateways/class.pmprogateway_braintree.php:340
@@ -2553,7 +2552,7 @@ msgstr ""
 msgid "CVV"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:341
+#: classes/gateways/class.pmprogateway_braintree.php:354
 #: classes/gateways/class.pmprogateway_stripe.php:487 pages/billing.php:286
 #: pages/checkout.php:586
 #: classes/gateways/class.pmprogateway_braintree.php:341
@@ -2563,7 +2562,7 @@ msgstr ""
 msgid "what's this?"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:351
+#: classes/gateways/class.pmprogateway_braintree.php:364
 #: classes/gateways/class.pmprogateway_stripe.php:497 pages/checkout.php:78
 #: pages/checkout.php:596
 #: classes/gateways/class.pmprogateway_braintree.php:351
@@ -2574,7 +2573,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:406
+#: classes/gateways/class.pmprogateway_braintree.php:419
 #: classes/gateways/class.pmprogateway_stripe.php:1011
 #: classes/gateways/class.pmprogateway_braintree.php:61
 #: classes/gateways/class.pmprogateway_braintree.php:406
@@ -2583,40 +2582,40 @@ msgstr ""
 msgid "Unknown error: Initial payment failed."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:465
+#: classes/gateways/class.pmprogateway_braintree.php:478
 #: classes/gateways/class.pmprogateway_braintree.php:120
 #: classes/gateways/class.pmprogateway_braintree.php:465
 msgid "Error during settlement:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:474
+#: classes/gateways/class.pmprogateway_braintree.php:487
 #: classes/gateways/class.pmprogateway_braintree.php:129
 #: classes/gateways/class.pmprogateway_braintree.php:474
 msgid "Error during charge:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:566
+#: classes/gateways/class.pmprogateway_braintree.php:579
 #: classes/gateways/class.pmprogateway_braintree.php:198
 #: classes/gateways/class.pmprogateway_braintree.php:221
 #: classes/gateways/class.pmprogateway_braintree.php:566
 msgid "Failed to update customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:614
+#: classes/gateways/class.pmprogateway_braintree.php:627
 #: classes/gateways/class.pmprogateway_braintree.php:246
 #: classes/gateways/class.pmprogateway_braintree.php:269
 #: classes/gateways/class.pmprogateway_braintree.php:614
 msgid "Failed to create customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:621
+#: classes/gateways/class.pmprogateway_braintree.php:634
 #: classes/gateways/class.pmprogateway_braintree.php:253
 #: classes/gateways/class.pmprogateway_braintree.php:276
 #: classes/gateways/class.pmprogateway_braintree.php:621
 msgid "Error creating customer record with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:721
+#: classes/gateways/class.pmprogateway_braintree.php:734
 #: classes/gateways/class.pmprogateway_braintree.php:344
 #: classes/gateways/class.pmprogateway_braintree.php:345
 #: classes/gateways/class.pmprogateway_braintree.php:376
@@ -2624,7 +2623,7 @@ msgstr ""
 msgid "Error subscribing customer to plan with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:736
+#: classes/gateways/class.pmprogateway_braintree.php:749
 #: classes/gateways/class.pmprogateway_braintree.php:359
 #: classes/gateways/class.pmprogateway_braintree.php:360
 #: classes/gateways/class.pmprogateway_braintree.php:391
@@ -2632,9 +2631,9 @@ msgstr ""
 msgid "Failed to subscribe with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:774
 #: classes/gateways/class.pmprogateway_braintree.php:787
-#: classes/gateways/class.pmprogateway_braintree.php:794
+#: classes/gateways/class.pmprogateway_braintree.php:800
+#: classes/gateways/class.pmprogateway_braintree.php:807
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:398
 #: classes/gateways/class.pmprogateway_braintree.php:410
@@ -3051,6 +3050,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:199
 #: classes/gateways/class.pmprogateway_stripe.php:201
 #: classes/gateways/class.pmprogateway_stripe.php:1187
+#: classes/gateways/class.pmprogateway_stripe.php:1188
 msgid "Error creating customer record with Stripe:"
 msgstr ""
 
@@ -3063,11 +3063,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:308
 #: classes/gateways/class.pmprogateway_stripe.php:311
 #: classes/gateways/class.pmprogateway_stripe.php:1244
+#: classes/gateways/class.pmprogateway_stripe.php:1245
 #: classes/gateways/class.pmprogateway_stripe.php:1390
+#: classes/gateways/class.pmprogateway_stripe.php:1391
 msgid "Error creating plan with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:1421
+#: classes/gateways/class.pmprogateway_stripe.php:1422
 #: classes/gateways/class.pmprogateway_stripe.php:294
 #: classes/gateways/class.pmprogateway_stripe.php:295
 #: classes/gateways/class.pmprogateway_stripe.php:302
@@ -3075,19 +3077,22 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:324
 #: classes/gateways/class.pmprogateway_stripe.php:330
 #: classes/gateways/class.pmprogateway_stripe.php:1420
+#: classes/gateways/class.pmprogateway_stripe.php:1421
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:1517
+#: classes/gateways/class.pmprogateway_stripe.php:1518
 #: classes/gateways/class.pmprogateway_stripe.php:383
 #: classes/gateways/class.pmprogateway_stripe.php:389
 #: classes/gateways/class.pmprogateway_stripe.php:410
 #: classes/gateways/class.pmprogateway_stripe.php:1516
+#: classes/gateways/class.pmprogateway_stripe.php:1517
 msgid "Could not cancel old subscription."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:1534
+#: classes/gateways/class.pmprogateway_stripe.php:1535
 #: classes/gateways/class.pmprogateway_stripe.php:1533
+#: classes/gateways/class.pmprogateway_stripe.php:1534
 msgid "Could not find the customer."
 msgstr ""
 
@@ -3183,21 +3188,21 @@ msgstr ""
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: includes/currencies.php:7 includes/currencies.php:68
+#: includes/currencies.php:7 includes/currencies.php:75
 #: includes/currencies.php:7 includes/currencies.php:37
 #: includes/currencies.php:44 includes/currencies.php:64
 #: includes/currencies.php:68
 msgid "US Dollars (&#36;)"
 msgstr ""
 
-#: includes/currencies.php:9 includes/currencies.php:71
+#: includes/currencies.php:9 includes/currencies.php:78
 #: includes/currencies.php:8 includes/currencies.php:9
 #: includes/currencies.php:40 includes/currencies.php:47
 #: includes/currencies.php:67 includes/currencies.php:71
 msgid "Euros (&euro;)"
 msgstr ""
 
-#: includes/currencies.php:14 includes/currencies.php:70
+#: includes/currencies.php:14 includes/currencies.php:77
 #: includes/currencies.php:9 includes/currencies.php:14
 #: includes/currencies.php:39 includes/currencies.php:46
 #: includes/currencies.php:66 includes/currencies.php:70
@@ -3213,7 +3218,7 @@ msgstr ""
 msgid "Brazilian Real (R&#36;)"
 msgstr ""
 
-#: includes/currencies.php:24 includes/currencies.php:69
+#: includes/currencies.php:24 includes/currencies.php:76
 #: includes/currencies.php:12 includes/currencies.php:24
 #: includes/currencies.php:38 includes/currencies.php:45
 #: includes/currencies.php:65 includes/currencies.php:69
@@ -3225,120 +3230,120 @@ msgstr ""
 msgid "Chinese Yuan"
 msgstr ""
 
-#: includes/currencies.php:26 includes/currencies.php:13
+#: includes/currencies.php:27 includes/currencies.php:13
 #: includes/currencies.php:14 includes/currencies.php:26
 msgid "Czech Koruna"
 msgstr ""
 
-#: includes/currencies.php:27 includes/currencies.php:14
+#: includes/currencies.php:34 includes/currencies.php:14
 #: includes/currencies.php:15 includes/currencies.php:27
 msgid "Danish Krone"
 msgstr ""
 
-#: includes/currencies.php:28 includes/currencies.php:15
+#: includes/currencies.php:35 includes/currencies.php:15
 #: includes/currencies.php:16 includes/currencies.php:28
 msgid "Hong Kong Dollar (&#36;)"
 msgstr ""
 
-#: includes/currencies.php:29 includes/currencies.php:16
+#: includes/currencies.php:36 includes/currencies.php:16
 #: includes/currencies.php:17 includes/currencies.php:29
 msgid "Hungarian Forint"
 msgstr ""
 
-#: includes/currencies.php:30 includes/currencies.php:18
+#: includes/currencies.php:37 includes/currencies.php:18
 #: includes/currencies.php:30
 msgid "Indian Rupee"
 msgstr ""
 
-#: includes/currencies.php:31 includes/currencies.php:19
+#: includes/currencies.php:38 includes/currencies.php:19
 #: includes/currencies.php:31
 msgid "Indonesia Rupiah"
 msgstr ""
 
-#: includes/currencies.php:32 includes/currencies.php:17
+#: includes/currencies.php:39 includes/currencies.php:17
 #: includes/currencies.php:20 includes/currencies.php:32
 msgid "Israeli Shekel"
 msgstr ""
 
-#: includes/currencies.php:34 includes/currencies.php:18
+#: includes/currencies.php:41 includes/currencies.php:18
 #: includes/currencies.php:21 includes/currencies.php:34
 msgid "Japanese Yen (&yen;)"
 msgstr ""
 
-#: includes/currencies.php:38 includes/currencies.php:19
+#: includes/currencies.php:45 includes/currencies.php:19
 #: includes/currencies.php:22 includes/currencies.php:38
 msgid "Malaysian Ringgits"
 msgstr ""
 
-#: includes/currencies.php:39 includes/currencies.php:20
+#: includes/currencies.php:46 includes/currencies.php:20
 #: includes/currencies.php:23 includes/currencies.php:39
 msgid "Mexican Peso (&#36;)"
 msgstr ""
 
-#: includes/currencies.php:40 includes/currencies.php:21
+#: includes/currencies.php:47 includes/currencies.php:21
 #: includes/currencies.php:24 includes/currencies.php:40
 msgid "New Zealand Dollar (&#36;)"
 msgstr ""
 
-#: includes/currencies.php:41 includes/currencies.php:22
+#: includes/currencies.php:48 includes/currencies.php:22
 #: includes/currencies.php:25 includes/currencies.php:41
 msgid "Norwegian Krone"
 msgstr ""
 
-#: includes/currencies.php:42 includes/currencies.php:23
+#: includes/currencies.php:49 includes/currencies.php:23
 #: includes/currencies.php:26 includes/currencies.php:42
 msgid "Philippine Pesos"
 msgstr ""
 
-#: includes/currencies.php:43 includes/currencies.php:24
+#: includes/currencies.php:50 includes/currencies.php:24
 #: includes/currencies.php:27 includes/currencies.php:43
 msgid "Polish Zloty"
 msgstr ""
 
-#: includes/currencies.php:45 includes/currencies.php:25
+#: includes/currencies.php:52 includes/currencies.php:25
 #: includes/currencies.php:28 includes/currencies.php:45
 msgid "Singapore Dollar (&#36;)"
 msgstr ""
 
-#: includes/currencies.php:50 includes/currencies.php:50
+#: includes/currencies.php:57 includes/currencies.php:50
 msgid "South African Rand (R)"
 msgstr ""
 
-#: includes/currencies.php:54 includes/currencies.php:30
+#: includes/currencies.php:61 includes/currencies.php:30
 #: includes/currencies.php:50 includes/currencies.php:54
 msgid "South Korean Won"
 msgstr ""
 
-#: includes/currencies.php:55 includes/currencies.php:26
+#: includes/currencies.php:62 includes/currencies.php:26
 #: includes/currencies.php:31 includes/currencies.php:51
 #: includes/currencies.php:55
 msgid "Swedish Krona"
 msgstr ""
 
-#: includes/currencies.php:56 includes/currencies.php:27
+#: includes/currencies.php:63 includes/currencies.php:27
 #: includes/currencies.php:32 includes/currencies.php:52
 #: includes/currencies.php:56
 msgid "Swiss Franc"
 msgstr ""
 
-#: includes/currencies.php:57 includes/currencies.php:28
+#: includes/currencies.php:64 includes/currencies.php:28
 #: includes/currencies.php:33 includes/currencies.php:53
 #: includes/currencies.php:57
 msgid "Taiwan New Dollars"
 msgstr ""
 
-#: includes/currencies.php:58 includes/currencies.php:29
+#: includes/currencies.php:65 includes/currencies.php:29
 #: includes/currencies.php:34 includes/currencies.php:54
 #: includes/currencies.php:58
 msgid "Thai Baht"
 msgstr ""
 
-#: includes/currencies.php:59 includes/currencies.php:35
+#: includes/currencies.php:66 includes/currencies.php:35
 #: includes/currencies.php:55 includes/currencies.php:59
 msgid "Turkish Lira"
 msgstr ""
 
-#: includes/currencies.php:60 includes/currencies.php:36
+#: includes/currencies.php:67 includes/currencies.php:36
 #: includes/currencies.php:56 includes/currencies.php:60
 msgid "Vietnamese Dong"
 msgstr ""
@@ -3463,29 +3468,32 @@ msgstr ""
 msgid "Membership expires after %d %s."
 msgstr ""
 
-#: includes/functions.php:569 includes/functions.php:491
+#: includes/functions.php:570 includes/functions.php:491
 #: includes/functions.php:514 includes/functions.php:525
 #: includes/functions.php:536 includes/functions.php:537
 #: includes/functions.php:538 includes/functions.php:545
+#: includes/functions.php:569
 msgid "User ID not found."
 msgstr ""
 
-#: includes/functions.php:586 includes/functions.php:508
+#: includes/functions.php:587 includes/functions.php:508
 #: includes/functions.php:531 includes/functions.php:542
 #: includes/functions.php:553 includes/functions.php:554
 #: includes/functions.php:555 includes/functions.php:562
+#: includes/functions.php:586
 msgid "Invalid level."
 msgstr ""
 
-#: includes/functions.php:597 includes/functions.php:520
+#: includes/functions.php:598 includes/functions.php:520
 #: includes/functions.php:542 includes/functions.php:553
 #: includes/functions.php:564 includes/functions.php:565
 #: includes/functions.php:566 includes/functions.php:573
+#: includes/functions.php:597
 msgid "not changing?"
 msgstr ""
 
-#: includes/functions.php:614 includes/functions.php:673
-#: includes/functions.php:697 includes/functions.php:537
+#: includes/functions.php:615 includes/functions.php:674
+#: includes/functions.php:698 includes/functions.php:537
 #: includes/functions.php:559 includes/functions.php:570
 #: includes/functions.php:581 includes/functions.php:582
 #: includes/functions.php:583 includes/functions.php:590
@@ -3496,11 +3504,11 @@ msgstr ""
 #: includes/functions.php:633 includes/functions.php:637
 #: includes/functions.php:640 includes/functions.php:649
 #: includes/functions.php:656 includes/functions.php:657
-#: includes/functions.php:673
+#: includes/functions.php:673 includes/functions.php:697
 msgid "Error interacting with database"
 msgstr ""
 
-#: includes/functions.php:738 includes/functions.php:777
+#: includes/functions.php:739 includes/functions.php:778
 #: includes/functions.php:629 includes/functions.php:651
 #: includes/functions.php:667 includes/functions.php:668
 #: includes/functions.php:678 includes/functions.php:681
@@ -3508,91 +3516,97 @@ msgstr ""
 #: includes/functions.php:698 includes/functions.php:706
 #: includes/functions.php:714 includes/functions.php:717
 #: includes/functions.php:720 includes/functions.php:736
-#: includes/functions.php:737 includes/functions.php:753
+#: includes/functions.php:737 includes/functions.php:738
+#: includes/functions.php:753 includes/functions.php:777
 msgid "Membership level not found."
 msgstr ""
 
-#: includes/functions.php:1142 includes/functions.php:1100
+#: includes/functions.php:1143 includes/functions.php:1100
 #: includes/functions.php:1101 includes/functions.php:1118
+#: includes/functions.php:1142
 msgid "No code was given to check."
 msgstr ""
 
-#: includes/functions.php:1151 includes/functions.php:1050
+#: includes/functions.php:1152 includes/functions.php:1050
 #: includes/functions.php:1072 includes/functions.php:1088
 #: includes/functions.php:1099 includes/functions.php:1102
 #: includes/functions.php:1109 includes/functions.php:1110
 #: includes/functions.php:1112 includes/functions.php:1113
-#: includes/functions.php:1127
+#: includes/functions.php:1127 includes/functions.php:1151
 msgid "The discount code could not be found."
 msgstr ""
 
-#: includes/functions.php:1166 includes/functions.php:1066
+#: includes/functions.php:1167 includes/functions.php:1066
 #: includes/functions.php:1088 includes/functions.php:1104
 #: includes/functions.php:1115 includes/functions.php:1118
 #: includes/functions.php:1124 includes/functions.php:1125
 #: includes/functions.php:1128 includes/functions.php:1129
-#: includes/functions.php:1142
+#: includes/functions.php:1142 includes/functions.php:1166
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
 
-#: includes/functions.php:1173 includes/functions.php:1075
+#: includes/functions.php:1174 includes/functions.php:1075
 #: includes/functions.php:1097 includes/functions.php:1113
 #: includes/functions.php:1124 includes/functions.php:1127
 #: includes/functions.php:1131 includes/functions.php:1132
 #: includes/functions.php:1137 includes/functions.php:1138
-#: includes/functions.php:1149
+#: includes/functions.php:1149 includes/functions.php:1173
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
 
-#: includes/functions.php:1183 includes/functions.php:1087
+#: includes/functions.php:1184 includes/functions.php:1087
 #: includes/functions.php:1109 includes/functions.php:1125
 #: includes/functions.php:1136 includes/functions.php:1139
 #: includes/functions.php:1141 includes/functions.php:1142
 #: includes/functions.php:1149 includes/functions.php:1150
-#: includes/functions.php:1159
+#: includes/functions.php:1159 includes/functions.php:1183
 msgid "This discount code is no longer valid."
 msgstr ""
 
-#: includes/functions.php:1196 includes/functions.php:1102
+#: includes/functions.php:1197 includes/functions.php:1102
 #: includes/functions.php:1124 includes/functions.php:1140
 #: includes/functions.php:1151 includes/functions.php:1154
 #: includes/functions.php:1155 includes/functions.php:1164
 #: includes/functions.php:1165 includes/functions.php:1172
+#: includes/functions.php:1196
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
-#: includes/functions.php:1222 includes/functions.php:1110
+#: includes/functions.php:1223 includes/functions.php:1110
 #: includes/functions.php:1132 includes/functions.php:1148
 #: includes/functions.php:1159 includes/functions.php:1162
 #: includes/functions.php:1172 includes/functions.php:1180
 #: includes/functions.php:1181 includes/functions.php:1182
-#: includes/functions.php:1198
+#: includes/functions.php:1198 includes/functions.php:1222
 msgid "This discount code is okay."
 msgstr ""
 
-#: includes/functions.php:1247 includes/functions.php:1134
+#: includes/functions.php:1248 includes/functions.php:1134
 #: includes/functions.php:1156 includes/functions.php:1172
 #: includes/functions.php:1183 includes/functions.php:1186
 #: includes/functions.php:1196 includes/functions.php:1205
 #: includes/functions.php:1206 includes/functions.php:1223
+#: includes/functions.php:1247
 msgid "and"
 msgstr ""
 
-#: includes/functions.php:1436 includes/functions.php:1319
+#: includes/functions.php:1437 includes/functions.php:1319
 #: includes/functions.php:1341 includes/functions.php:1361
 #: includes/functions.php:1372 includes/functions.php:1375
 #: includes/functions.php:1385 includes/functions.php:1394
 #: includes/functions.php:1395 includes/functions.php:1412
+#: includes/functions.php:1436
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
-#: includes/functions.php:1442 includes/functions.php:1325
+#: includes/functions.php:1443 includes/functions.php:1325
 #: includes/functions.php:1347 includes/functions.php:1367
 #: includes/functions.php:1378 includes/functions.php:1381
 #: includes/functions.php:1391 includes/functions.php:1400
 #: includes/functions.php:1401 includes/functions.php:1418
+#: includes/functions.php:1442
 msgid "Please specify a level id."
 msgstr ""
 
@@ -3925,7 +3939,7 @@ msgid ""
 "been applied to your order.</p>"
 msgstr ""
 
-#: pages/checkout.php:62 services/applydiscountcode.php:78
+#: pages/checkout.php:62 services/applydiscountcode.php:89
 #: pages/checkout.php:62 pages/checkout.php:63 pages/checkout.php:64
 #: services/applydiscountcode.php:74 services/applydiscountcode.php:75
 #: services/applydiscountcode.php:78
@@ -4036,6 +4050,7 @@ msgid "Invoice #%s on %s"
 msgstr ""
 
 #: pages/confirmation.php:43 pages/invoice.php:24 pages/confirmation.php:43
+#: pages/invoice.php:24
 msgid "Print"
 msgstr ""
 
@@ -4286,77 +4301,80 @@ msgstr ""
 msgid "That email address is already taken. Please try another."
 msgstr ""
 
-#: preheaders/checkout.php:397 preheaders/checkout.php:399
-#: preheaders/checkout.php:525 preheaders/checkout.php:532
-#: preheaders/checkout.php:537 preheaders/checkout.php:544
-#: preheaders/checkout.php:561 preheaders/checkout.php:562
+#: preheaders/checkout.php:397 preheaders/checkout.php:397
+#: preheaders/checkout.php:399 preheaders/checkout.php:525
+#: preheaders/checkout.php:532 preheaders/checkout.php:537
+#: preheaders/checkout.php:544 preheaders/checkout.php:561
+#: preheaders/checkout.php:562
 #, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr ""
 
-#: preheaders/checkout.php:482 preheaders/checkout.php:484
-#: preheaders/checkout.php:647 preheaders/checkout.php:654
-#: preheaders/checkout.php:659 preheaders/checkout.php:683
-#: preheaders/checkout.php:701 preheaders/checkout.php:702
+#: preheaders/checkout.php:482 preheaders/checkout.php:482
+#: preheaders/checkout.php:484 preheaders/checkout.php:647
+#: preheaders/checkout.php:654 preheaders/checkout.php:659
+#: preheaders/checkout.php:683 preheaders/checkout.php:701
+#: preheaders/checkout.php:702
 msgid "Payment accepted."
 msgstr ""
 
-#: preheaders/checkout.php:490 preheaders/checkout.php:492
-#: preheaders/checkout.php:653 preheaders/checkout.php:660
-#: preheaders/checkout.php:665 preheaders/checkout.php:691
-#: preheaders/checkout.php:709 preheaders/checkout.php:710
+#: preheaders/checkout.php:490 preheaders/checkout.php:490
+#: preheaders/checkout.php:492 preheaders/checkout.php:653
+#: preheaders/checkout.php:660 preheaders/checkout.php:665
+#: preheaders/checkout.php:691 preheaders/checkout.php:709
+#: preheaders/checkout.php:710
 msgid ""
 "Unknown error generating account. Please contact us to setup your membership."
 msgstr ""
 
-#: preheaders/checkout.php:550 preheaders/checkout.php:552
-#: preheaders/checkout.php:785 preheaders/checkout.php:792
-#: preheaders/checkout.php:797 preheaders/checkout.php:825
-#: preheaders/checkout.php:844 preheaders/checkout.php:859
-#: preheaders/checkout.php:860
+#: preheaders/checkout.php:550 preheaders/checkout.php:550
+#: preheaders/checkout.php:552 preheaders/checkout.php:785
+#: preheaders/checkout.php:792 preheaders/checkout.php:797
+#: preheaders/checkout.php:825 preheaders/checkout.php:844
+#: preheaders/checkout.php:859 preheaders/checkout.php:860
 msgid ""
 "Your payment was accepted, but there was an error setting up your account. "
 "Please contact us."
 msgstr ""
 
-#: preheaders/checkout.php:691 preheaders/checkout.php:693
-#: preheaders/checkout.php:953 preheaders/checkout.php:960
-#: preheaders/checkout.php:970 preheaders/checkout.php:983
-#: preheaders/checkout.php:1030 preheaders/checkout.php:1045
-#: preheaders/checkout.php:1046
+#: preheaders/checkout.php:691 preheaders/checkout.php:691
+#: preheaders/checkout.php:693 preheaders/checkout.php:953
+#: preheaders/checkout.php:960 preheaders/checkout.php:970
+#: preheaders/checkout.php:983 preheaders/checkout.php:1030
+#: preheaders/checkout.php:1045 preheaders/checkout.php:1046
 msgid ""
 "IMPORTANT: Something went wrong during membership creation. Your credit card "
 "authorized, but we cancelled the order immediately. You should not try to "
 "submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:694 preheaders/checkout.php:696
-#: preheaders/checkout.php:956 preheaders/checkout.php:963
-#: preheaders/checkout.php:973 preheaders/checkout.php:988
-#: preheaders/checkout.php:1035 preheaders/checkout.php:1050
-#: preheaders/checkout.php:1051
+#: preheaders/checkout.php:694 preheaders/checkout.php:694
+#: preheaders/checkout.php:696 preheaders/checkout.php:956
+#: preheaders/checkout.php:963 preheaders/checkout.php:973
+#: preheaders/checkout.php:988 preheaders/checkout.php:1035
+#: preheaders/checkout.php:1050 preheaders/checkout.php:1051
 msgid ""
 "IMPORTANT: Something went wrong during membership creation. Your credit card "
 "was charged, but we couldn't assign your membership. You should not submit "
 "this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:705 preheaders/checkout.php:707
-#: preheaders/checkout.php:967 preheaders/checkout.php:974
-#: preheaders/checkout.php:984 preheaders/checkout.php:1001
-#: preheaders/checkout.php:1048 preheaders/checkout.php:1063
-#: preheaders/checkout.php:1064
+#: preheaders/checkout.php:705 preheaders/checkout.php:705
+#: preheaders/checkout.php:707 preheaders/checkout.php:967
+#: preheaders/checkout.php:974 preheaders/checkout.php:984
+#: preheaders/checkout.php:1001 preheaders/checkout.php:1048
+#: preheaders/checkout.php:1063 preheaders/checkout.php:1064
 #, php-format
 msgid ""
 "You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
 
-#: preheaders/checkout.php:707 preheaders/checkout.php:709
-#: preheaders/checkout.php:969 preheaders/checkout.php:976
-#: preheaders/checkout.php:986 preheaders/checkout.php:1003
-#: preheaders/checkout.php:1050 preheaders/checkout.php:1065
-#: preheaders/checkout.php:1066
+#: preheaders/checkout.php:707 preheaders/checkout.php:707
+#: preheaders/checkout.php:709 preheaders/checkout.php:969
+#: preheaders/checkout.php:976 preheaders/checkout.php:986
+#: preheaders/checkout.php:1003 preheaders/checkout.php:1050
+#: preheaders/checkout.php:1065 preheaders/checkout.php:1066
 msgid "A Payment Gateway must be setup before any payments will be processed."
 msgstr ""
 
@@ -4390,7 +4408,7 @@ msgstr ""
 msgid "The %s code has been applied to your order. "
 msgstr ""
 
-#: services/applydiscountcode.php:86 services/applydiscountcode.php:82
+#: services/applydiscountcode.php:97 services/applydiscountcode.php:82
 #: services/applydiscountcode.php:83 services/applydiscountcode.php:86
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
