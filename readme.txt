@@ -109,6 +109,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issue where discount codes would not work if billing address fields were hidden. (e.g. paying by PayPal or check)
 * BUG: Fixed issue with the logic around sending emails when admin's change a member's level or expiration date. Admins will always get an email. Members will only get an email if the checkbox is checked.
 * ENHANCEMENT: No longer showing check instructions at checkout if the level is free.
+* ENHANCEMENT: Added pmpro_stripe_create_subscription filter. (Thanks, nickd32 on GitHub)
+* ENHANCEMENT: Added Czech (cs_CZ) language files and support for using decimals as separators. (Thanks, Martin "shr3k" Kokeš on GitHub)
 
 = 1.8 =
 * ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
