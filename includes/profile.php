@@ -144,14 +144,29 @@ function pmpro_membership_level_profile_fields($user)
 </table>
     <script>
         jQuery(document).ready(function() {
-            var $membership_level_select = jQuery("[name=membership_level]");
-            var old_level = $membership_level_select.val();
-            var current_level_cost = jQuery("#current_level_cost").text();
+            //vars for fields
+			var $membership_level_select = jQuery("[name=membership_level]");
+            var $expires_select = jQuery("[name=expires]");
+			var $expires_month_select = jQuery("[name=expires_month]");
+			var $expires_day_text = jQuery("[name=expires_day]");
+			var $expires_year_text = jQuery("[name=expires_year]");
+			
+			//note old data to check for changes
+			var old_level = $membership_level_select.val();
+            var old_expires = $expires_select.val();
+			var old_expires_month = $expires_month_select.val();
+			var old_expires_day = $expires_day_text.val();
+			var old_expires_year = $expires_year_text.val();
+						
+			var current_level_cost = jQuery("#current_level_cost").text();
 
-            jQuery(".more_level_options").hide();
+            //hide by default
+			jQuery(".more_level_options").hide();
 
-            $membership_level_select.change(function() {
-                if(jQuery(this).val() == 0) {
+			function pmpro_checkForLevelChangeInProfile()
+			{
+				//cancelling sub or not
+				if($membership_level_select.val() == 0) {
                     jQuery("#cancel_subscription").attr('checked', true);
                     jQuery("#current_level_cost").text("Not paying.");
                 }
@@ -159,20 +174,43 @@ function pmpro_membership_level_profile_fields($user)
                     jQuery("#cancel_subscription").attr('checked', false);
                     jQuery("#current_level_cost").text(current_level_cost);
                 }
-
-                if(jQuery(this).val() != old_level)
+				
+				//did level or expiration change?
+                if(
+					$membership_level_select.val() != old_level ||
+					$expires_select.val() != old_expires ||
+					$expires_month_select.val() != old_expires_month ||
+					$expires_day_text.val() != old_expires_day ||
+					$expires_year_text.val() != old_expires_year
+				)
                 {
                     jQuery(".more_level_options").show();
-                    jQuery("#cancel_description").show();
+                    jQuery("#cancel_description").show();					
                 }
                 else
                 {
                     jQuery(".more_level_options").hide();
-                    jQuery("#cancel_description").hide();
-
+                    jQuery("#cancel_description").hide();					
                 }
+			}
+			
+			//run check when fields change
+            $membership_level_select.change(function() {
+                pmpro_checkForLevelChangeInProfile();
             });
-
+			$expires_select.change(function() {
+                pmpro_checkForLevelChangeInProfile();
+            });
+			$expires_month_select.change(function() {
+                pmpro_checkForLevelChangeInProfile();
+            });
+			$expires_day_text.change(function() {
+                pmpro_checkForLevelChangeInProfile();
+            });
+			$expires_year_text.change(function() {
+                pmpro_checkForLevelChangeInProfile();
+            });			
+			
             jQuery("#cancel_subscription").change(function() {
                 if(jQuery(this).attr('checked') == 'checked')
                 {
@@ -266,6 +304,12 @@ function pmpro_membership_level_profile_fields_update()
 		}
 	}
 	
+	//email to admin
+	$pmproemail = new PMProEmail();
+	if(!empty($expiration_changed))
+		$pmproemail->expiration_changed = true;
+	$pmproemail->sendAdminChangeAdminEmail(get_userdata($user_ID));
+	
 	//send email
     if(!empty($_REQUEST['send_admin_change_email']))
 	{
@@ -273,13 +317,7 @@ function pmpro_membership_level_profile_fields_update()
 		$pmproemail = new PMProEmail();
 		if(!empty($expiration_changed))
 			$pmproemail->expiration_changed = true;
-		$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
-		
-		//email to admin
-		$pmproemail = new PMProEmail();
-		if(!empty($expiration_changed))
-			$pmproemail->expiration_changed = true;
-		$pmproemail->sendAdminChangeAdminEmail(get_userdata($user_ID));
+		$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));	
 	}
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );

@@ -148,3 +148,11 @@ function pmpro_required_billing_fields_stripe_lite($fields)
 	//ship it!
 	return $fields;
 }
+
+//copy other discount code to discount code if latter is not set
+if(empty($_REQUEST['discount_code']) && !empty($_REQUEST['other_discount_code']))
+{
+	$_REQUEST['discount_code'] = $_REQUEST['other_discount_code'];
+	$_POST['discount_code'] = $_POST['other_discount_code'];
+	$_GET['discount_code'] = $_GET['other_discount_code'];
+}
