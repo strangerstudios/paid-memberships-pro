@@ -646,7 +646,7 @@
 	</script>
 	
 	<?php
-		if($gateway == "check")
+		if($gateway == "check" && !pmpro_isLevelFree($pmpro_level))
 		{
 			$instructions = pmpro_getOption("instructions");			
 			echo '<div class="pmpro_check_instructions">' . wpautop($instructions) . '</div>';
