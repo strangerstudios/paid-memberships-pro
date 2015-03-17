@@ -106,6 +106,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed typos in pmpro_memberslist_csv and pmpro_orderscsv capabilities. (Thanks, Arnaud Devic)
 * BUG: Only loading the Braintree API when using it now.
 * BUG: Fixed fatal error that would occur at checkout if PayPal Standard were used with a discount code. (Thanks, John Zeiger)
+* BUG: Fixed issue where discount codes would not work if billing address fields were hidden. (e.g. paying by PayPal or check)
+* BUG: Fixed issue with the logic around sending emails when admin's change a member's level or expiration date. Admins will always get an email. Members will only get an email if the checkbox is checked.
 
 = 1.8 =
 * ENHANCEMENT: Payment gateway classes updated so all settings and checkout fields are processed via the gateway class file. This will make it easier to maintain, update, and add new gateways.
