@@ -81,7 +81,6 @@ require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalexpress.php
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalstandard.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_twocheckout.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_gourl.php");
 
 /*
 	Setup the DB and check for upgrades

@@ -70,8 +70,8 @@ if (!defined('GOURLPMP'))
 		public static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['gourl']))
-				$gateways["gourl"] = __('GoUrl Bitcoin/Altcoin', GOURLPMP);
-				// $gateways = array_slice($gateways, 0, 1) + array("gourl" => __('GoUrl Bitcoin/Altcoin', GOURLPMP)) + array_slice($gateways, 1);
+				// $gateways["gourl"] = __('GoUrl Bitcoin/Altcoin', GOURLPMP);
+				$gateways = array_slice($gateways, 0, 1) + array("gourl" => __('GoUrl Bitcoin/Altcoin', GOURLPMP)) + array_slice($gateways, 1);
 		
 			return $gateways;
 		}
