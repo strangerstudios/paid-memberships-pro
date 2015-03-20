@@ -870,9 +870,10 @@
 						 FROM $wpdb->usermeta
 						 WHERE meta_key = 'pmpro_stripe_next_on_date_update'
 							AND meta_value IS NOT NULL
+							AND meta_value <> ''
 							AND meta_value < '" . date("Y-m-d", strtotime("+1 day")) . "'";
 			$updates = $wpdb->get_results($sqlQuery);
-
+			
 			if(!empty($updates))
 			{
 				//loop through
@@ -882,6 +883,16 @@
 					$user_id = $update->user_id;
 
 					$user = get_userdata($user_id);
+					
+					//if user is missing, delete the update info and continue
+					if(empty($user) || empty($user->ID))
+					{						
+						delete_user_meta($user_id, "pmpro_stripe_updates");
+						delete_user_meta($user_id, "pmpro_stripe_next_on_date_update");
+					
+						continue;
+					}
+					
 					$user_updates = $user->pmpro_stripe_updates;
 					$next_on_date_update = "";
 
