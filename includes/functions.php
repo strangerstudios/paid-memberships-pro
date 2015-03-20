@@ -537,6 +537,8 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 					{					
 						$return = true;
 					}
+					elseif(!is_numeric($level))	//if a level name was passed
+						$return = $found_level;
 				}
 			}
 		}

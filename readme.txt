@@ -102,6 +102,10 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.2 =
+* BUG: Fixed issue where calls to pmpro_hasMembershipLevel() using level names wasn't working. (Thanks, Scott Slone)
+* BUG: Fixed issue with memberslistcsv capabilities. (Thanks, Arnaud Devic)
+
 = 1.8.1 =
 * BUG: Fixed typos in pmpro_memberslist_csv and pmpro_orderscsv capabilities. (Thanks, Arnaud Devic)
 * BUG: Only loading the Braintree API when using it now.
