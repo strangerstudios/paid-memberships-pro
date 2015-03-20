@@ -185,7 +185,7 @@ function pmpro_deactivation()
 	$role->remove_cap( 'pmpro_advancedsettings' );
 	$role->remove_cap( 'pmpro_addons' );
 	$role->remove_cap( 'pmpro_memberslist' );
-	$role->remove_cap( 'pmpro_membersliscsv' );
+	$role->remove_cap( 'pmpro_memberslistcsv' );
 	$role->remove_cap( 'pmpro_reports' );
 	$role->remove_cap( 'pmpro_orders' );
 	$role->remove_cap( 'pmpro_orderscsv' );
