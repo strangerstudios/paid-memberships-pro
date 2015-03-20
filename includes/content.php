@@ -301,6 +301,21 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 		if(empty($post_membership_levels_names))
 			$post_membership_levels_names = array();
 
+        //hide levels which don't allow signups by default
+        if(!apply_filters("pmpro_membership_content_filter_disallowed_levels", false, $post_membership_levels_ids, $post_membership_levels_names))
+        {
+            foreach($post_membership_levels_ids as $key=>$id)
+            {
+                //does this level allow registrations?
+                $level_obj = pmpro_getLevel($id);
+                if(!$level_obj->allow_signups)
+                {
+                    unset($post_membership_levels_ids[$key]);
+                    unset($post_membership_levels_names[$key]);
+                }
+            }
+        }
+
 		$pmpro_content_message_pre = '<div class="pmpro_content_message">';
 		$pmpro_content_message_post = '</div>';
 
