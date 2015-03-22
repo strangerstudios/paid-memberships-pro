@@ -894,78 +894,81 @@
 					}
 					
 					$user_updates = $user->pmpro_stripe_updates;
-					$next_on_date_update = "";
-
+					$next_on_date_update = "";					
+					
 					//loop through updates looking for updates happening today or earlier
-					foreach($user_updates as $key => $update)
+					if(!empty($user_updates))
 					{
-						if($update['when'] == 'date' &&
-							$update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] <= date("Y-m-d")
-						)
+						foreach($user_updates as $key => $update)
 						{
-							//get level for user
-							$user_level = pmpro_getMembershipLevelForUser($user_id);
-
-							//get current plan at Stripe to get payment date
-							$last_order = new MemberOrder();
-							$last_order->getLastMemberOrder($user_id);
-							$last_order->setGateway('stripe');
-							$last_order->Gateway->getCustomer($last_order);
-
-							if(!empty($last_order->Gateway->customer))
+							if($update['when'] == 'date' &&
+								$update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] <= date("Y-m-d")
+							)
 							{
-								//find the first subscription
-								if(!empty($last_order->Gateway->customer->subscriptions['data'][0]))
+								//get level for user
+								$user_level = pmpro_getMembershipLevelForUser($user_id);
+
+								//get current plan at Stripe to get payment date
+								$last_order = new MemberOrder();
+								$last_order->getLastMemberOrder($user_id);
+								$last_order->setGateway('stripe');
+								$last_order->Gateway->getCustomer($last_order);
+
+								if(!empty($last_order->Gateway->customer))
 								{
-									$first_sub = $last_order->Gateway->customer->subscriptions['data'][0]->__toArray();
-									$end_timestamp = $first_sub['current_period_end'];
+									//find the first subscription
+									if(!empty($last_order->Gateway->customer->subscriptions['data'][0]))
+									{
+										$first_sub = $last_order->Gateway->customer->subscriptions['data'][0]->__toArray();
+										$end_timestamp = $first_sub['current_period_end'];
+									}
 								}
+
+								//if we didn't get an end date, let's set one one cycle out
+								$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period']);
+
+								//build order object
+								$update_order = new MemberOrder();
+								$update_order->setGateway('stripe');
+								$update_order->user_id = $user_id;
+								$update_order->membership_id = $user_level->id;
+								$update_order->membership_name = $user_level->name;
+								$update_order->InitialPayment = 0;
+								$update_order->PaymentAmount = $update['billing_amount'];
+								$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
+								$update_order->BillingPeriod = $update['cycle_period'];
+								$update_order->BillingFrequency = $update['cycle_number'];
+
+								//update subscription
+								$update_order->Gateway->subscribe($update_order, false);
+
+								//update membership
+								$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
+												SET billing_amount = '" . esc_sql($update['billing_amount']) . "',
+													cycle_number = '" . esc_sql($update['cycle_number']) . "',
+													cycle_period = '" . esc_sql($update['cycle_period']) . "'
+												WHERE user_id = '" . esc_sql($user_id) . "'
+													AND membership_id = '" . esc_sql($last_order->membership_id) . "'
+													AND status = 'active'
+												LIMIT 1";
+
+								$wpdb->query($sqlQuery);
+
+								//save order
+								$update_order->status = "success";
+								$update_order->save();
+
+								//remove update from list
+								unset($user_updates[$key]);
 							}
-
-							//if we didn't get an end date, let's set one one cycle out
-							$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period']);
-
-							//build order object
-							$update_order = new MemberOrder();
-							$update_order->setGateway('stripe');
-							$update_order->user_id = $user_id;
-							$update_order->membership_id = $user_level->id;
-							$update_order->membership_name = $user_level->name;
-							$update_order->InitialPayment = 0;
-							$update_order->PaymentAmount = $update['billing_amount'];
-							$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
-							$update_order->BillingPeriod = $update['cycle_period'];
-							$update_order->BillingFrequency = $update['cycle_number'];
-
-							//update subscription
-							$update_order->Gateway->subscribe($update_order, false);
-
-							//update membership
-							$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
-											SET billing_amount = '" . esc_sql($update['billing_amount']) . "',
-												cycle_number = '" . esc_sql($update['cycle_number']) . "',
-												cycle_period = '" . esc_sql($update['cycle_period']) . "'
-											WHERE user_id = '" . esc_sql($user_id) . "'
-												AND membership_id = '" . esc_sql($last_order->membership_id) . "'
-												AND status = 'active'
-											LIMIT 1";
-
-							$wpdb->query($sqlQuery);
-
-							//save order
-							$update_order->status = "success";
-							$update_order->save();
-
-							//remove update from list
-							unset($user_updates[$key]);
-						}
-						elseif($update['when'] == 'date')
-						{
-							//this is an on date update for the future, update the next on date update
-							if(!empty($next_on_date_update))
-								$next_on_date_update = min($next_on_date_update, $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day']);
-							else
-								$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
+							elseif($update['when'] == 'date')
+							{
+								//this is an on date update for the future, update the next on date update
+								if(!empty($next_on_date_update))
+									$next_on_date_update = min($next_on_date_update, $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day']);
+								else
+									$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
+							}
 						}
 					}
 
