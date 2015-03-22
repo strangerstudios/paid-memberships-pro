@@ -8,7 +8,7 @@
 	//vars
 	global $wpdb;
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = trim($_REQUEST['s']);
 	else
 		$s = "";
 	
