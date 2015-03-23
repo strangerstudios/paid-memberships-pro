@@ -50,9 +50,9 @@ function pmpro_membership_level_profile_fields($user)
                 <?php
                 $membership_values = pmpro_getMembershipLevelForUser($user->ID);
                 if(empty($membership_values) || pmpro_isLevelFree($membership_values))
-                {
-                    echo "Not paying.";
-                }
+                { ?>
+                    <?php _e("Not paying.", "pmpro"); ?>
+                <?php }
                 else
                 {
                     //we tweak the initial payment here so the text here effectively shows the recurring amount
