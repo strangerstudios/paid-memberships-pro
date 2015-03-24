@@ -1263,6 +1263,10 @@
 
 				return $sub;
 			}
+			
+			//no subscriptions object in customer
+			if(empty($this->customer->subscriptions))
+				return false;
 
 			//find subscription based on customer id and order/plan id
 			$subscriptions = $this->customer->subscriptions->all();
