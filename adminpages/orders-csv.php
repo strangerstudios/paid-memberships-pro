@@ -65,12 +65,12 @@
 	
 	//some vars for the search
 	if(!empty($_REQUEST['pn']))
-		$pn = $_REQUEST['pn'];
+		$pn = intval($_REQUEST['pn']);
 	else
 		$pn = 1;
 	
 	if(!empty($_REQUEST['limit']))
-		$limit = $_REQUEST['limit'];
+		$limit = intval($_REQUEST['limit']);
 	else
 		$limit = false;
 		
@@ -129,15 +129,15 @@
 		$start_date =  $start_date . " 00:00:00";
 		$end_date =  $end_date . " 23:59:59";
 	
-		$condition = "timestamp BETWEEN '".$start_date."' AND '".$end_date."'";
+		$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
 	}			
 	elseif($filter == "within-a-level")
 	{
-		$condition = "membership_id = $l";
+		$condition = "membership_id = " . esc_sql($l);
 	}			
 	elseif($filter == "within-a-status")
 	{
-		$condition = "status = '$status' ";
+		$condition = "status = '" . esc_sql($status) . "' ";
 	}		
 	
 	//string search
