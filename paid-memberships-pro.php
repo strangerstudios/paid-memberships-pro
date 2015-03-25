@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.8.2
+Version: 1.8.2.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -13,7 +13,7 @@ Author URI: http://www.strangerstudios.com
 */
 
 //version constant
-define("PMPRO_VERSION", "1.8.2");
+define("PMPRO_VERSION", "1.8.2.1");
 
 //if the session has been started yet, start it (ignore if running from command line)
 if(defined('STDIN') )
