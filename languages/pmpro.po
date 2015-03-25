@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2015-03-25 10:17-0400\n"
+"POT-Creation-Date: 2015-03-25 14:50-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
@@ -2272,10 +2272,10 @@ msgstr ""
 msgid "Your membership at %s has been changed"
 msgstr ""
 
-#: classes/class.pmproemail.php:762 classes/class.pmproemail.php:759
-#: classes/class.pmproemail.php:762
+#: classes/class.pmproemail.php:762 classes/class.pmproemail.php:800
+#: classes/class.pmproemail.php:759 classes/class.pmproemail.php:762
 #, php-format
-msgid "The new level is %s."
+msgid "The new level is %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:764 classes/class.pmproemail.php:647
@@ -2306,14 +2306,6 @@ msgstr ""
 #: classes/class.pmproemail.php:796
 #, php-format
 msgid "Membership for %s at %s has been changed"
-msgstr ""
-
-#: classes/class.pmproemail.php:800 classes/class.pmproemail.php:645
-#: classes/class.pmproemail.php:683 classes/class.pmproemail.php:694
-#: classes/class.pmproemail.php:732 classes/class.pmproemail.php:797
-#: classes/class.pmproemail.php:800
-#, php-format
-msgid "The new level is %s. This membership is free"
 msgstr ""
 
 #: classes/class.pmproemail.php:802 classes/class.pmproemail.php:799
@@ -2597,6 +2589,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:419
 #: classes/gateways/class.pmprogateway_stripe.php:53
 #: classes/gateways/class.pmprogateway_stripe.php:1011
+#: classes/gateways/class.pmprogateway_stripe.php:1025
 msgid "Unknown error: Initial payment failed."
 msgstr ""
 
@@ -3078,6 +3071,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:201
 #: classes/gateways/class.pmprogateway_stripe.php:1187
 #: classes/gateways/class.pmprogateway_stripe.php:1188
+#: classes/gateways/class.pmprogateway_stripe.php:1202
 msgid "Error creating customer record with Stripe:"
 msgstr ""
 
@@ -3091,8 +3085,10 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:311
 #: classes/gateways/class.pmprogateway_stripe.php:1244
 #: classes/gateways/class.pmprogateway_stripe.php:1245
+#: classes/gateways/class.pmprogateway_stripe.php:1259
 #: classes/gateways/class.pmprogateway_stripe.php:1390
 #: classes/gateways/class.pmprogateway_stripe.php:1391
+#: classes/gateways/class.pmprogateway_stripe.php:1409
 msgid "Error creating plan with Stripe:"
 msgstr ""
 
@@ -3106,6 +3102,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1420
 #: classes/gateways/class.pmprogateway_stripe.php:1421
 #: classes/gateways/class.pmprogateway_stripe.php:1422
+#: classes/gateways/class.pmprogateway_stripe.php:1440
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr ""
 
@@ -3116,6 +3113,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1516
 #: classes/gateways/class.pmprogateway_stripe.php:1517
 #: classes/gateways/class.pmprogateway_stripe.php:1518
+#: classes/gateways/class.pmprogateway_stripe.php:1536
 msgid "Could not cancel old subscription."
 msgstr ""
 
@@ -3123,6 +3121,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1533
 #: classes/gateways/class.pmprogateway_stripe.php:1534
 #: classes/gateways/class.pmprogateway_stripe.php:1535
+#: classes/gateways/class.pmprogateway_stripe.php:1553
 msgid "Could not find the customer."
 msgstr ""
 
@@ -3401,12 +3400,14 @@ msgstr ""
 #: includes/functions.php:207 includes/functions.php:160
 #: includes/functions.php:196 includes/functions.php:202
 #: includes/functions.php:203 includes/functions.php:204
+#: includes/functions.php:207
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr ""
 
 #: includes/functions.php:209 includes/functions.php:204
 #: includes/functions.php:205 includes/functions.php:206
+#: includes/functions.php:209
 #, php-format
 msgid "<strong>%s</strong> now"
 msgstr ""
@@ -3414,6 +3415,7 @@ msgstr ""
 #: includes/functions.php:218 includes/functions.php:169
 #: includes/functions.php:205 includes/functions.php:213
 #: includes/functions.php:214 includes/functions.php:215
+#: includes/functions.php:218
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
 msgstr ""
@@ -3421,6 +3423,7 @@ msgstr ""
 #: includes/functions.php:222 includes/functions.php:173
 #: includes/functions.php:209 includes/functions.php:217
 #: includes/functions.php:218 includes/functions.php:219
+#: includes/functions.php:222
 #, php-format
 msgid " and then <strong>%s every %d %s for %d more %s</strong>."
 msgstr ""
@@ -3428,29 +3431,33 @@ msgstr ""
 #: includes/functions.php:227 includes/functions.php:178
 #: includes/functions.php:214 includes/functions.php:222
 #: includes/functions.php:223 includes/functions.php:224
+#: includes/functions.php:227
 #, php-format
 msgid " and then <strong>%s after %d %s</strong>."
 msgstr ""
 
 #: includes/functions.php:235 includes/functions.php:229
 #: includes/functions.php:230 includes/functions.php:231
+#: includes/functions.php:235
 #, php-format
 msgid "The price for membership is <strong>%s per %s</strong>."
 msgstr ""
 
 #: includes/functions.php:237 includes/functions.php:233
+#: includes/functions.php:237
 #, php-format
 msgid "<strong>%s per %s</strong>."
 msgstr ""
 
 #: includes/functions.php:242 includes/functions.php:233
 #: includes/functions.php:234 includes/functions.php:235
-#: includes/functions.php:238
+#: includes/functions.php:238 includes/functions.php:242
 #, php-format
 msgid "The price for membership is <strong>%s every %d %s</strong>."
 msgstr ""
 
 #: includes/functions.php:244 includes/functions.php:240
+#: includes/functions.php:244
 #, php-format
 msgid "<strong>%s every %d %s</strong>."
 msgstr ""
@@ -3459,6 +3466,7 @@ msgstr ""
 #: includes/functions.php:220 includes/functions.php:228
 #: includes/functions.php:238 includes/functions.php:239
 #: includes/functions.php:240 includes/functions.php:245
+#: includes/functions.php:249
 #, php-format
 msgid " and then <strong>%s per %s</strong>."
 msgstr ""
@@ -3467,6 +3475,7 @@ msgstr ""
 #: includes/functions.php:224 includes/functions.php:232
 #: includes/functions.php:242 includes/functions.php:243
 #: includes/functions.php:244 includes/functions.php:249
+#: includes/functions.php:253
 #, php-format
 msgid " and then <strong>%s every %d %s</strong>."
 msgstr ""
@@ -3474,14 +3483,16 @@ msgstr ""
 #: includes/functions.php:271 includes/functions.php:202
 #: includes/functions.php:238 includes/functions.php:249
 #: includes/functions.php:260 includes/functions.php:261
-#: includes/functions.php:262 includes/functions.php:267 pages/levels.php:82
+#: includes/functions.php:262 includes/functions.php:267
+#: includes/functions.php:271 pages/levels.php:82
 msgid "After your initial payment, your first payment is Free."
 msgstr ""
 
 #: includes/functions.php:275 includes/functions.php:206
 #: includes/functions.php:242 includes/functions.php:253
 #: includes/functions.php:264 includes/functions.php:265
-#: includes/functions.php:266 includes/functions.php:271 pages/levels.php:86
+#: includes/functions.php:266 includes/functions.php:271
+#: includes/functions.php:275 pages/levels.php:86
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr ""
@@ -3489,7 +3500,8 @@ msgstr ""
 #: includes/functions.php:282 includes/functions.php:213
 #: includes/functions.php:249 includes/functions.php:260
 #: includes/functions.php:271 includes/functions.php:272
-#: includes/functions.php:273 includes/functions.php:278 pages/levels.php:93
+#: includes/functions.php:273 includes/functions.php:278
+#: includes/functions.php:282 pages/levels.php:93
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr ""
@@ -3497,7 +3509,8 @@ msgstr ""
 #: includes/functions.php:286 includes/functions.php:217
 #: includes/functions.php:253 includes/functions.php:264
 #: includes/functions.php:275 includes/functions.php:276
-#: includes/functions.php:277 includes/functions.php:282 pages/levels.php:97
+#: includes/functions.php:277 includes/functions.php:282
+#: includes/functions.php:286 pages/levels.php:97
 #, php-format
 msgid "After your initial payment, your first %d payments will cost %s."
 msgstr ""
@@ -3506,6 +3519,7 @@ msgstr ""
 #: includes/functions.php:264 includes/functions.php:275
 #: includes/functions.php:286 includes/functions.php:287
 #: includes/functions.php:288 includes/functions.php:293
+#: includes/functions.php:297
 #, php-format
 msgid "Customers in %s will be charged %s%% tax."
 msgstr ""
@@ -3514,6 +3528,7 @@ msgstr ""
 #: includes/functions.php:278 includes/functions.php:289
 #: includes/functions.php:300 includes/functions.php:301
 #: includes/functions.php:302 includes/functions.php:307
+#: includes/functions.php:311
 #, php-format
 msgid "Membership expires after %d %s."
 msgstr ""
@@ -3523,6 +3538,7 @@ msgstr ""
 #: includes/functions.php:536 includes/functions.php:537
 #: includes/functions.php:538 includes/functions.php:545
 #: includes/functions.php:569 includes/functions.php:570
+#: includes/functions.php:576
 msgid "User ID not found."
 msgstr ""
 
@@ -3531,6 +3547,7 @@ msgstr ""
 #: includes/functions.php:553 includes/functions.php:554
 #: includes/functions.php:555 includes/functions.php:562
 #: includes/functions.php:586 includes/functions.php:587
+#: includes/functions.php:596
 msgid "Invalid level."
 msgstr ""
 
@@ -3539,6 +3556,7 @@ msgstr ""
 #: includes/functions.php:564 includes/functions.php:565
 #: includes/functions.php:566 includes/functions.php:573
 #: includes/functions.php:597 includes/functions.php:598
+#: includes/functions.php:607
 msgid "not changing?"
 msgstr ""
 
@@ -3549,14 +3567,15 @@ msgstr ""
 #: includes/functions.php:583 includes/functions.php:590
 #: includes/functions.php:592 includes/functions.php:605
 #: includes/functions.php:614 includes/functions.php:615
-#: includes/functions.php:617 includes/functions.php:626
-#: includes/functions.php:628 includes/functions.php:631
-#: includes/functions.php:632 includes/functions.php:633
-#: includes/functions.php:637 includes/functions.php:640
-#: includes/functions.php:649 includes/functions.php:656
-#: includes/functions.php:657 includes/functions.php:673
-#: includes/functions.php:674 includes/functions.php:697
-#: includes/functions.php:698
+#: includes/functions.php:617 includes/functions.php:624
+#: includes/functions.php:626 includes/functions.php:628
+#: includes/functions.php:631 includes/functions.php:632
+#: includes/functions.php:633 includes/functions.php:637
+#: includes/functions.php:640 includes/functions.php:649
+#: includes/functions.php:656 includes/functions.php:657
+#: includes/functions.php:673 includes/functions.php:674
+#: includes/functions.php:683 includes/functions.php:697
+#: includes/functions.php:698 includes/functions.php:707
 msgid "Error interacting with database"
 msgstr ""
 
@@ -3569,14 +3588,16 @@ msgstr ""
 #: includes/functions.php:714 includes/functions.php:717
 #: includes/functions.php:720 includes/functions.php:736
 #: includes/functions.php:737 includes/functions.php:738
-#: includes/functions.php:739 includes/functions.php:753
-#: includes/functions.php:777 includes/functions.php:778
+#: includes/functions.php:739 includes/functions.php:748
+#: includes/functions.php:753 includes/functions.php:777
+#: includes/functions.php:778 includes/functions.php:787
 msgid "Membership level not found."
 msgstr ""
 
 #: includes/functions.php:1157 includes/functions.php:1100
 #: includes/functions.php:1101 includes/functions.php:1118
 #: includes/functions.php:1142 includes/functions.php:1143
+#: includes/functions.php:1157
 msgid "No code was given to check."
 msgstr ""
 
@@ -3586,7 +3607,7 @@ msgstr ""
 #: includes/functions.php:1109 includes/functions.php:1110
 #: includes/functions.php:1112 includes/functions.php:1113
 #: includes/functions.php:1127 includes/functions.php:1151
-#: includes/functions.php:1152
+#: includes/functions.php:1152 includes/functions.php:1166
 msgid "The discount code could not be found."
 msgstr ""
 
@@ -3596,7 +3617,7 @@ msgstr ""
 #: includes/functions.php:1124 includes/functions.php:1125
 #: includes/functions.php:1128 includes/functions.php:1129
 #: includes/functions.php:1142 includes/functions.php:1166
-#: includes/functions.php:1167
+#: includes/functions.php:1167 includes/functions.php:1181
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
@@ -3607,7 +3628,7 @@ msgstr ""
 #: includes/functions.php:1131 includes/functions.php:1132
 #: includes/functions.php:1137 includes/functions.php:1138
 #: includes/functions.php:1149 includes/functions.php:1173
-#: includes/functions.php:1174
+#: includes/functions.php:1174 includes/functions.php:1188
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
@@ -3618,7 +3639,7 @@ msgstr ""
 #: includes/functions.php:1141 includes/functions.php:1142
 #: includes/functions.php:1149 includes/functions.php:1150
 #: includes/functions.php:1159 includes/functions.php:1183
-#: includes/functions.php:1184
+#: includes/functions.php:1184 includes/functions.php:1198
 msgid "This discount code is no longer valid."
 msgstr ""
 
@@ -3628,6 +3649,7 @@ msgstr ""
 #: includes/functions.php:1155 includes/functions.php:1164
 #: includes/functions.php:1165 includes/functions.php:1172
 #: includes/functions.php:1196 includes/functions.php:1197
+#: includes/functions.php:1211
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
@@ -3637,7 +3659,7 @@ msgstr ""
 #: includes/functions.php:1172 includes/functions.php:1180
 #: includes/functions.php:1181 includes/functions.php:1182
 #: includes/functions.php:1198 includes/functions.php:1222
-#: includes/functions.php:1223
+#: includes/functions.php:1223 includes/functions.php:1237
 msgid "This discount code is okay."
 msgstr ""
 
@@ -3647,6 +3669,7 @@ msgstr ""
 #: includes/functions.php:1196 includes/functions.php:1205
 #: includes/functions.php:1206 includes/functions.php:1223
 #: includes/functions.php:1247 includes/functions.php:1248
+#: includes/functions.php:1262
 msgid "and"
 msgstr ""
 
@@ -3656,6 +3679,7 @@ msgstr ""
 #: includes/functions.php:1385 includes/functions.php:1394
 #: includes/functions.php:1395 includes/functions.php:1412
 #: includes/functions.php:1436 includes/functions.php:1437
+#: includes/functions.php:1457
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
@@ -3665,6 +3689,7 @@ msgstr ""
 #: includes/functions.php:1391 includes/functions.php:1400
 #: includes/functions.php:1401 includes/functions.php:1418
 #: includes/functions.php:1442 includes/functions.php:1443
+#: includes/functions.php:1463
 msgid "Please specify a level id."
 msgstr ""
 
@@ -3725,7 +3750,7 @@ msgstr ""
 msgid "Current Level"
 msgstr ""
 
-#: includes/profile.php:54
+#: includes/profile.php:54 includes/profile.php:54
 msgid "Not paying."
 msgstr ""
 
