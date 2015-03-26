@@ -1,5 +1,8 @@
 <?php
 /**
+ *
+ * Note: The class names have been prefixed with pmpro_ to avoid conflicts with other plugins.
+ *
  * This is a PHP library that handles calling reCAPTCHA.
  *    - Documentation and latest version
  *          https://developers.google.com/recaptcha/docs/php
@@ -33,13 +36,13 @@
 /**
  * A ReCaptchaResponse is returned from checkAnswer().
  */
-class ReCaptchaResponse
+class pmpro_ReCaptchaResponse
 {
     public $success;
     public $errorCodes;
 }
 
-class ReCaptcha
+class pmpro_ReCaptcha
 {
     private static $_signupUrl = "https://www.google.com/recaptcha/admin";
     private static $_siteVerifyUrl =
@@ -52,7 +55,7 @@ class ReCaptcha
      *
      * @param string $secret shared secret between site and ReCAPTCHA server.
      */
-    function ReCaptcha($secret)
+    function pmpro_ReCaptcha($secret)
     {
         if ($secret == null || $secret == "") {
             die("To use reCAPTCHA you must get an API key from <a href='"
@@ -108,7 +111,7 @@ class ReCaptcha
     {
         // Discard empty solution submissions
         if ($response == null || strlen($response) == 0) {
-            $recaptchaResponse = new ReCaptchaResponse();
+            $recaptchaResponse = new pmpro_ReCaptchaResponse();
             $recaptchaResponse->success = false;
             $recaptchaResponse->errorCodes = 'missing-input';
             return $recaptchaResponse;
@@ -124,7 +127,7 @@ class ReCaptcha
             )
         );
         $answers = json_decode($getResponse, true);
-        $recaptchaResponse = new ReCaptchaResponse();
+        $recaptchaResponse = new pmpro_ReCaptchaResponse();
 				
         if (trim($answers['success']) == true) {
             $recaptchaResponse->success = true;

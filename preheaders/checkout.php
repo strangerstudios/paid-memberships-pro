@@ -390,11 +390,30 @@
 				global $recaptcha;
 				if (!$skip_account_fields && ($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level)))) {
 					global $recaptcha_privatekey;					
-					$reCaptcha = new ReCaptcha($recaptcha_privatekey);					
-					$resp = $reCaptcha->verifyResponse($_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"]);
+										
+					if(isset($_POST["recaptcha_challenge_field"]))
+					{
+						//using older recaptcha lib
+						$resp = recaptcha_check_answer($recaptcha_privatekey,
+							$_SERVER["REMOTE_ADDR"],
+							$_POST["recaptcha_challenge_field"],
+							$_POST["recaptcha_response_field"]);
+
+						$recaptcha_valid = $resp->is_valid;
+						$recaptcha_errors = $resp->error;
+					}
+					else
+					{
+						//using newer recaptcha lib
+						$reCaptcha = new pmpro_ReCaptcha($recaptcha_privatekey);
+						$resp = $reCaptcha->verifyResponse($_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"]);
+						
+						$recaptcha_valid = $resp->success;
+						$recaptcha_errors = $resp->errorCodes;
+					}
 											
-					if (!$resp->success) {
-						$pmpro_msg = sprintf(__("reCAPTCHA failed. (%s) Please try again.", "pmpro"), $resp->errorCodes);
+					if (!$recaptcha_valid) {
+						$pmpro_msg = sprintf(__("reCAPTCHA failed. (%s) Please try again.", "pmpro"), $recaptcha_errors);
 						$pmpro_msgt = "pmpro_error";
 					} else {
 						// Your code here to handle a successful verification
