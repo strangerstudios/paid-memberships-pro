@@ -1832,8 +1832,8 @@ function pmpro_formatPrice($price)
 		//format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format($price,
 			(isset($pmpro_currencies[$pmpro_currency]['decimals']) ? (int)$pmpro_currencies[$pmpro_currency]['decimals'] : 2),
-			$pmpro_currencies[$pmpro_currency]['decimal_separator'],
-			$pmpro_currencies[$pmpro_currency]['thousands_separator']
+			(isset($pmpro_currencies[$pmpro_currency]['decimal_separator']) ? $pmpro_currencies[$pmpro_currency]['decimal_separator'] : '.'),
+			(isset($pmpro_currencies[$pmpro_currency]['thousands_separator']) ? $pmpro_currencies[$pmpro_currency]['thousands_separator'] : ',')
 		);
 		
 		//which side is the symbol on?
