@@ -1083,6 +1083,7 @@
 				//successful charge
 				$order->payment_transaction_id = $response["id"];
 				$order->updateStatus("success");
+				$order->saveOrder();
 				return true;
 			}
 			else
