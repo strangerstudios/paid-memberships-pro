@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.3 =
+* BUG: No longer showing the number of visits/views/logins "this month" when the user hasn't visited in over a month. (Thanks, Kenneth)
+
 = 1.8.2.2 =
 * BUG: Fixed conflicts when other plugins with older Recaptcha libraries are also activated. Prefixed our copy of the Recaptcha library and functions with pmpro_ and added code to handle cases where an older version of recaptch is used at checkout.
 * BUG: Fixed warnings in pmpro_formatPrice. (Thanks, Andrea Carraro)

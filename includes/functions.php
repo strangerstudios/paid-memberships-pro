@@ -1894,3 +1894,25 @@ function pmpro_getGateway()
 
 	return $gateway;
 }
+
+/*
+ * Does the date provided fall in this month.
+ * Used in logins/visits/views report.
+ *
+ * @since 1.8.3
+ */
+function pmpro_isDateThisMonth($str)
+{
+	$now = current_time('timestamp');
+	$this_month = intval(date("n", $now));
+	$this_year = intval(date("Y", $now));
+
+	$date = strtotime($str, $now);
+	$date_month = intval(date("n", $date));
+	$date_year = intval(date("Y", $date));
+
+	if($date_month === $this_month && $date_year === $this_year)
+		return true;
+	else
+		return false;
+}

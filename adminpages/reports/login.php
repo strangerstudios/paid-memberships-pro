@@ -192,13 +192,13 @@ function pmpro_report_login_page()
 								?>
 							</td>
 							<td><?php if(!empty($visits['last'])) echo $visits['last'];?></td>
-							<td><?php if(!empty($visits['month'])) echo $visits['month'];?></td>
+							<td><?php if(!empty($visits['month']) && pmpro_isDateThisMonth($visits['last'])) echo $visits['month'];?></td>
 							<td><?php if(!empty($visits['alltime'])) echo $visits['alltime'];?></td>							
-							<td><?php if(!empty($visits['month'])) echo $views['month'];?></td>
-							<td><?php if(!empty($visits['alltime'])) echo $views['alltime'];?></td>
-							<td><?php if(!empty($visits['last'])) echo $logins['last'];?></td>
-							<td><?php if(!empty($visits['month'])) echo $logins['month'];?></td>
-							<td><?php if(!empty($visits['alltime'])) echo $logins['alltime'];?></td>
+							<td><?php if(!empty($views['month']) && pmpro_isDateThisMonth($views['last'])) echo $views['month'];?></td>
+							<td><?php if(!empty($views['alltime'])) echo $views['alltime'];?></td>
+							<td><?php if(!empty($logins['last'])) echo $logins['last'];?></td>
+							<td><?php if(!empty($logins['month']) && pmpro_isDateThisMonth($logins['last'])) echo $logins['month'];?></td>
+							<td><?php if(!empty($logins['alltime'])) echo $logins['alltime'];?></td>
 						</tr>
 					<?php
 				}
