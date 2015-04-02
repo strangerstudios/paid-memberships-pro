@@ -1905,8 +1905,8 @@ msgstr "Tu membresía en %s ha cambiado"
 
 #: classes/class.pmproemail.php:645 classes/class.pmproemail.php:683
 #, php-format
-msgid "The new level is %s. This membership is free"
-msgstr "El nuevo nivel es %s. Esta membresa es gratuita"
+msgid "The new level is %s"
+msgstr "El nuevo nivel es %s"
 
 #: classes/class.pmproemail.php:647
 msgid "Your membership has been cancelled"

@@ -8,7 +8,7 @@
 	//vars
 	global $wpdb;
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = trim($_REQUEST['s']);
 	else
 		$s = "";
 	
@@ -54,12 +54,12 @@
 	<?php 
 		//some vars for the search
 		if(isset($_REQUEST['pn']))
-			$pn = $_REQUEST['pn'];
+			$pn = intval($_REQUEST['pn']);
 		else
 			$pn = 1;
 			
 		if(isset($_REQUEST['limit']))
-			$limit = $_REQUEST['limit'];
+			$limit = intval($_REQUEST['limit']);
 		else
 			$limit = 15;
 		
@@ -73,7 +73,7 @@
 			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 			
-			$sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";				
+			$sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";				
 		
 			if($l == "oldmembers")
 				$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
@@ -82,7 +82,7 @@
 			elseif($l == "cancelled")
 				$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 			elseif($l)
-				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";					
+				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";					
 			else
 				$sqlQuery .= " AND mu.status = 'active' ";			
 			
@@ -111,7 +111,7 @@
 			elseif($l == "cancelled")
 				$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 			elseif($l)
-				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";
+				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
 			else
 				$sqlQuery .= " AND mu.status = 'active' ";
 			$sqlQuery .= "GROUP BY u.ID ";

@@ -1,6 +1,6 @@
 <?php	
 	//only admins can get this
-	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslist_csv")))
+	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslistcsv")))
 	{
 		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
@@ -20,12 +20,12 @@
 	
 	//some vars for the search
 	if(!empty($_REQUEST['pn']))
-		$pn = $_REQUEST['pn'];
+		$pn = intval($_REQUEST['pn']);
 	else
 		$pn = 1;
 	
 	if(!empty($_REQUEST['limit']))
-		$limit = $_REQUEST['limit'];
+		$limit = intval($_REQUEST['limit']);
 	else
 		$limit = false;
 		
@@ -47,7 +47,7 @@
         if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
             $sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 
-        $sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+        $sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 
         if($l == "oldmembers")
             $sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
@@ -56,7 +56,7 @@
         elseif($l == "cancelled")
             $sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
         elseif($l)
-            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";
+            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
         else
             $sqlQuery .= " AND mu.status = 'active' ";
 
@@ -86,7 +86,7 @@
         elseif($l == "cancelled")
             $sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
         elseif($l)
-            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . $l . "' ";
+            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
         else
             $sqlQuery .= " AND mu.status = 'active' ";
         $sqlQuery .= "GROUP BY u.ID ";

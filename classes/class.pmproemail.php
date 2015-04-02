@@ -759,7 +759,7 @@
 			$this->template = "admin_change";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			if($user->membership_level->ID)
-				$this->data["membership_change"] = sprintf(__("The new level is %s.", "pmpro"), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
 			else
 				$this->data["membership_change"] = __("Your membership has been cancelled", "pmpro");
 			
@@ -797,7 +797,7 @@
 			$this->template = "admin_change_admin";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
 			if($user->membership_level->ID)
-				$this->data["membership_change"] = sprintf(__("The new level is %s. This membership is free", "pmpro"), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
 			else
 				$this->data["membership_change"] = __("Membership has been cancelled", "pmpro");
 			

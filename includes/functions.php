@@ -116,6 +116,10 @@ function pmpro_setOption($s, $v = NULL)
 function pmpro_get_slug($post_id)
 {
 	global $pmpro_slugs, $wpdb;
+	
+	//make sure post id is int for security
+	$post_id = intval($post_id);
+	
 	if(!$pmpro_slugs[$post_id])
 		$pmpro_slugs[$post_id] = $wpdb->get_var("SELECT post_name FROM $wpdb->posts WHERE ID = '" . $post_id . "' LIMIT 1");
 
@@ -422,6 +426,7 @@ if(!function_exists("formatPhone"))
 
 function pmpro_showRequiresMembershipMessage()
 {
+	//TODO $current_user $post_membership_levels_names are undefined variables
 	//get the correct message
 	if(is_feed())
 	{
@@ -536,6 +541,8 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 					{					
 						$return = true;
 					}
+					elseif(!is_numeric($level))	//if a level name was passed
+						$return = $found_level;
 				}
 			}
 		}
@@ -570,6 +577,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		return false;
 	}
 
+	//make sure user id is int for security
+	$user_id = intval($user_id);
+	
 	if(empty($level)) //cancelling membership
 	{
 		$level = 0;
@@ -807,6 +817,8 @@ function pmpro_updateMembershipCategories($level, $categories)
 */
 function pmpro_getMembershipCategories($level_id)
 {
+	$level_id = intval($level_id);
+	
 	global $wpdb;
 	$categories = $wpdb->get_col("SELECT c.category_id
 										FROM {$wpdb->pmpro_memberships_categories} AS c
@@ -1001,9 +1013,9 @@ function pmpro_calculateInitialPaymentRevenue($s = NULL, $l = NULL)
 	{
 		$user_ids_query = "SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
 		if($s)
-			$user_ids_query .= "AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%$" . esc_sql(s) . "%') ";
 		if($l)
-			$user_ids_query .= "AND mu.membership_id = '$l' ";
+			$user_ids_query .= "AND mu.membership_id = '" . esc_sql($l) . "' ";
 	}
 
 	//query to sum initial payments
@@ -1025,9 +1037,9 @@ function pmpro_calculateRecurringRevenue($s, $l)
 	{
 		$user_ids_query = "AND user_id IN(SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
 		if($s)
-			$user_ids_query .= "AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 		if($l)
-			$user_ids_query .= "AND mu.membership_id = '$l' ";
+			$user_ids_query .= "AND mu.membership_id = '" . esc_sql($l) . "' ";
 		$user_ids_query .= ")";
 	}
 	else
@@ -1076,7 +1088,7 @@ function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
 	}
 
 	//is it taken?
-	$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . $username . "' LIMIT 1");
+	$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
 
 	if(!$taken)
 		return $username;
@@ -1103,7 +1115,7 @@ function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
 		}
 
 		//taken?
-		$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . $username . "' LIMIT 1");
+		$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
 
 		//increment the number
 		$count++;
@@ -1122,7 +1134,7 @@ function pmpro_getDiscountCode($seed = NULL)
 	{
 		$scramble = md5(AUTH_KEY . current_time('timestamp') . $seed . SECURE_AUTH_KEY);
 		$code = substr($scramble, 0, 10);
-		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '$code' LIMIT 1");
+		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($code) . "' LIMIT 1");
 		if($check || is_numeric($code))
 			$code = NULL;
 	}
@@ -1137,6 +1149,9 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 
 	$error = false;
 
+	//make sure level id is int for security
+	$level_id = intval($level_id);
+	
 	//no code, no code
 	if(empty($code))
 		$error = __("No code was given to check.", "pmpro");
@@ -1144,7 +1159,7 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 	//get code from db
 	if(!$error)
 	{
-		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . $code . "' LIMIT 1");
+		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql($code) . "' LIMIT 1");
 
 		//did we find it?
 		if(empty($dbcode->id))
@@ -1279,6 +1294,9 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 		return false;
 	}
 
+	//make sure user id is int for security
+	$user_id = intval($user_id);
+	
 	global $all_membership_levels;
 
 	if(isset($all_membership_levels[$user_id]) && !$force)
@@ -1336,6 +1354,9 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 		return false;
 	}
 
+	//make sure user id is int for security
+	$user_id = intval($user_id);
+	
 	global $wpdb;
 	return $wpdb->get_results("SELECT
 								l.id AS ID,
@@ -1393,7 +1414,7 @@ function pmpro_getLevel($level)
 	else
 	{
 		global $wpdb;
-		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . $level . "' LIMIT 1");
+		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");
 		$level_id = $level_obj->id;
 		$pmpro_levels[$level_id] = $level_obj;
 		return $pmpro_levels[$level_id];
@@ -1525,6 +1546,10 @@ if(!function_exists("pmpro_getMemberStartdate"))
 			$user_id = $current_user->ID;
 		}
 
+		//make sure user and level id are int for security
+		$user_id = intval($user_id);
+		$level_id = intval($level_id);
+		
 		global $pmpro_startdates;	//for cache
 		if(empty($pmpro_startdates[$user_id][$level_id]))
 		{
@@ -1804,15 +1829,18 @@ function pmpro_formatPrice($price)
 	//settings stored in array?
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
 	{
+		//format number do decimals, with decimal_separator and thousands_separator
+		$formatted = number_format($price,
+			(isset($pmpro_currencies[$pmpro_currency]['decimals']) ? (int)$pmpro_currencies[$pmpro_currency]['decimals'] : 2),
+			(isset($pmpro_currencies[$pmpro_currency]['decimal_separator']) ? $pmpro_currencies[$pmpro_currency]['decimal_separator'] : '.'),
+			(isset($pmpro_currencies[$pmpro_currency]['thousands_separator']) ? $pmpro_currencies[$pmpro_currency]['thousands_separator'] : ',')
+		);
+		
 		//which side is the symbol on?
 		if(!empty($pmpro_currencies[$pmpro_currency]['position']) && $pmpro_currencies[$pmpro_currency]['position']== 'left')
 			$formatted = $pmpro_currency_symbol . $formatted;
 		else
 			$formatted = $formatted . $pmpro_currency_symbol;
-
-		//commas or periods?
-		if(!empty($pmpro_currencies[$pmpro_currency]['separator']) && $pmpro_currencies[$pmpro_currency]['separator'])
-			$formatted = str_replace(array(".",","), $pmpro_currencies[$pmpro_currency]['separator'], $formatted);
 	}
 	else
 		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left

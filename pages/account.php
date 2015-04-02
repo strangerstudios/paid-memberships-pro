@@ -78,7 +78,7 @@
 			</ul>
 			<div class="pmpro_actionlinks">
 				<a href="<?php echo admin_url('profile.php')?>"><?php _e("Edit Profile", "pmpro");?></a>
-				<a href="<?php echo admin_url('profile.php')?>"><?php _ex("Change Password", "As in 'change password'.", "pmpro");?></a>
+				<a href="<?php echo admin_url('profile.php')?>"><?php _e('Change Password', 'pmpro');?></a>
 			</div>
 		</div> <!-- end pmpro_account-profile -->
 	

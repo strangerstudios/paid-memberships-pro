@@ -3,16 +3,16 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
 	//load classes init method
-	add_action('init', array('PMProGateway_braintree', 'init'));
+	add_action('init', array('PMProGateway_braintree', 'init'));	
 	
-	if(!class_exists("Braintree"))
-		require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
 	class PMProGateway_braintree extends PMProGateway
 	{
 		function PMProGateway_braintree($gateway = NULL)
-		{
+		{			
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
+			
+			$this->loadBraintreeLibrary();		
 			
 			//convert to braintree nomenclature
 			$environment = $this->gateway_environment;
@@ -26,6 +26,19 @@
 			
 			return $this->gateway;
 		}										
+		
+		/**
+		 * Load the Braintree API library.
+		 *		
+		 * @since 1.8.1
+		 * Moved into a method in version 1.8.1 so we only load it when needed.
+		 */
+		function loadBraintreeLibrary()
+		{
+			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
+			if(!class_exists("Braintree"))
+				require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
+		}		
 		
 		/**
 		 * Run on WP init
