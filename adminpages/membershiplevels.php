@@ -554,7 +554,9 @@
 			$sqlQuery .= "ORDER BY id ASC";
 			
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
-						
+			
+			$count = 0; // Bugfix for issue #198
+			
 			foreach($levels as $level)
 			{			
 		?>
