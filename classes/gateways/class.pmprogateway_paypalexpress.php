@@ -564,6 +564,8 @@
 		{			
 			$nvpStr="&TOKEN=".$order->Token;
 			
+			$nvpStr = apply_filters("pmpro_get_express_checkout_details_nvpstr", $nvpStr, $order);
+			
 			/* Make the API call and store the results in an array.  If the
 			call was a success, show the authorization details, and provide
 			an action to complete the payment.  If failed, show the error
@@ -616,6 +618,9 @@
 			$nvpStr .= "&NOSHIPPING=1";
 			
 			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";								
+			
+			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
+			
 			$order->nvpStr = $nvpStr;
 						
 			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
@@ -685,6 +690,8 @@
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 			
+			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
+			
 			$this->nvpStr = $nvpStr;						
 			
 			///echo str_replace("&", "&<br />", $nvpStr);
@@ -717,6 +724,8 @@
 			$nvpStr = "";			
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");						
 			
+			$nvpStr = apply_filters("pmpro_manage_recurring_payments_profile_status_nvpstr", $nvpStr, $order);
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
 						
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) 
@@ -743,7 +752,9 @@
 			//paypal profile stuff
 			$nvpStr = "";			
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);						
-						
+			
+			$nvpStr = apply_filters("pmpro_get_recurring_payments_profile_details_nvpstr", $nvpStr, $order);
+			
 			$this->httpParsedResponseAr = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);						
 											
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) 

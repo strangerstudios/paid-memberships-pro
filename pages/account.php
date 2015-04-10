@@ -73,8 +73,10 @@
 				<p><?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?></p>
 			<?php } ?>
 			<ul>
+				<?php do_action('pmpro_account_bullets_top');?>
 				<li><strong><?php _e("Username", "pmpro");?>:</strong> <?php echo $current_user->user_login?></li>
 				<li><strong><?php _e("Email", "pmpro");?>:</strong> <?php echo $current_user->user_email?></li>
+				<?php do_action('pmpro_account_bullets_bottom');?>
 			</ul>
 			<div class="pmpro_actionlinks">
 				<a href="<?php echo admin_url('profile.php')?>"><?php _e("Edit Profile", "pmpro");?></a>
