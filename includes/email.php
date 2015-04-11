@@ -11,7 +11,7 @@ function pmpro_wp_mail_from_name($from_name)
 	{	
 		$pmpro_from_name = pmpro_getOption("from_name");
 		if ($pmpro_from_name)
-			$from_name = $pmpro_from_name;
+			$from_name = stripslashes($pmpro_from_name);
 	}
 	
 	return $from_name;

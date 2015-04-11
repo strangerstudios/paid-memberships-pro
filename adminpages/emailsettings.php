@@ -78,7 +78,7 @@
 					<label for="from_email"><?php _e('From Email', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="from_email" size="60" value="<?php echo $from_email?>" />
+					<input type="text" name="from_email" size="60" value="<?php echo esc_attr($from_email);?>" />
 				</td>
 			</tr>
 			<tr>
@@ -86,7 +86,7 @@
 					<label for="from_name"><?php _e('From Name', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<input type="text" name="from_name" size="60" value="<?php echo $from_name?>" />
+					<input type="text" name="from_name" size="60" value="<?php echo esc_attr($from_name);?>" />
 				</td>
 			</tr>
 			<tr>
