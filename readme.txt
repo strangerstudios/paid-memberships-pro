@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.3 =
 * BUG: No longer showing the number of visits/views/logins "this month" when the user hasn't visited in over a month. (Thanks, Kenneth)
 * BUG: Fix for email from names with apostrophes and quotes in them.
+* BUG: Using current_time() and escaping form values better in logins report.
 * ENHANCEMENT: Added pmpro_account_bullets_top and pmpro_account_bullets_bottom hooks to add content to the accounts page.
 * ENHANCEMENT: Added pmpro_get_recurring_payments_profile_details_nvpstr, pmpro_manage_recurring_payments_profile_status_nvpstr, pmpro_create_recurring_payments_profile_nvpstr, pmpro_do_express_checkout_payment_nvpstr, and pmpro_get_express_checkout_details_nvpstr hooks to filter specific nvp strings in the PayPal Express integration.
 

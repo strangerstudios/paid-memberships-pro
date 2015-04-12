@@ -18,9 +18,10 @@ $pmpro_reports['login'] = __('Visits, Views, and Logins', 'pmpro');
 function pmpro_report_login_widget()
 {
 	global $wpdb;
-	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
-	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));
-	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d"), "alltime"=>0, "month"=>0, "thismonth"=>date("n")));	
+	$now = current_time('timestamp');
+	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));
+	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));
+	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));	
 ?>
 <div style="width: 33%; float: left;">
 	<p><?php _e('Visits Today', 'pmpro')?>: <?php echo $visits['today'];?></p>
@@ -44,6 +45,7 @@ function pmpro_report_login_widget()
 function pmpro_report_login_page()
 {
 	global $wpdb;
+	$now = current_time('timestamp');
 	
 	//vars
 	if(!empty($_REQUEST['s']))
@@ -52,7 +54,7 @@ function pmpro_report_login_page()
 		$s = "";
 		
 	if(!empty($_REQUEST['l']))
-		$l = $_REQUEST['l'];
+		$l = intval($_REQUEST['l']);
 	else
 		$l = "";
 ?>
@@ -81,18 +83,18 @@ function pmpro_report_login_page()
 		<label class="hidden" for="post-search-input"><?php _ex('Search', 'Search form label', 'pmpro')?> <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
-		<input id="post-search-input" type="text" value="<?php echo $s?>" name="s"/>
+		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
 		<input class="button" type="submit" value="Search Members"/>
 	</p>
 	<?php 
 		//some vars for the search					
 		if(isset($_REQUEST['pn']))
-			$pn = $_REQUEST['pn'];
+			$pn = intval($_REQUEST['pn']);
 		else
 			$pn = 1;
 			
 		if(isset($_REQUEST['limit']))
-			$limit = $_REQUEST['limit'];
+			$limit = intval($_REQUEST['limit']);
 		else
 			$limit = 15;
 		
@@ -101,7 +103,7 @@ function pmpro_report_login_page()
 					
 		if($s)
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 		
 			if($l == "all")
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
@@ -207,7 +209,7 @@ function pmpro_report_login_page()
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php _e('No members found.', 'pmpro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo $s?>"><?php _e('Search all levels', 'pmpro')?></a>.<?php } ?></p></td>
+					<td colspan="9"><p><?php _e('No members found.', 'pmpro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php _e('Search all levels', 'pmpro')?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}
@@ -241,6 +243,8 @@ function pmpro_report_login_wp_visits()
 	if(!empty($_COOKIE['pmpro_visit']))
 		return;
 	
+	$now = current_time('timestamp');
+	
 	//set cookie, then track
 	setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false);	
 	
@@ -255,7 +259,7 @@ function pmpro_report_login_wp_visits()
 		//track logins for user
 		$visits['last'] = date(get_option("date_format"));
 		$visits['alltime']++;
-		$thismonth = date("n");
+		$thismonth = date("n", $now);
 		if($thismonth == $visits['thismonth'])
 			$visits['month']++;
 		else
@@ -274,7 +278,7 @@ function pmpro_report_login_wp_visits()
 		$visits = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$visits['alltime']++;
-	$thisdate = date("Y-d-m");
+	$thisdate = date("Y-d-m", $now);
 	if($thisdate == $visits['thisdate'])
 		$visits['today']++;
 	else
@@ -311,6 +315,8 @@ function pmpro_report_login_wp_views()
 		return;
 	
 	global $current_user;
+	$now = current_time('timestamp');
+	
 	//track for user
 	if(!empty($current_user->ID))
 	{		
@@ -319,9 +325,9 @@ function pmpro_report_login_wp_views()
 			$views = array("last"=>"N/A", "month"=>0, "alltime"=>0);
 				
 		//track logins for user
-		$views['last'] = date(get_option("date_format"));
+		$views['last'] = date(get_option("date_format"), $now);
 		$views['alltime']++;
-		$thismonth = date("n");
+		$thismonth = date("n", $now);
 		if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 			$views['month']++;
 		else
@@ -340,7 +346,7 @@ function pmpro_report_login_wp_views()
 		$views = array("today"=>0, "thisdate"=> NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$views['alltime']++;
-	$thisdate = date("Y-d-m");
+	$thisdate = date("Y-d-m", $now);
 	if($thisdate == $views['thisdate'])
 		$views['today']++;
 	else
@@ -348,7 +354,7 @@ function pmpro_report_login_wp_views()
 		$views['today'] = 1;
 		$views['thisdate'] = $thisdate;
 	}
-	$thismonth = date("n");
+	$thismonth = date("n", $now);
 	if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 		$views['month']++;
 	else
@@ -364,6 +370,8 @@ add_action("wp", "pmpro_report_login_wp_views");
 //track logins
 function pmpro_report_login_wp_login($user_login)
 {
+	$now = current_time('timestamp');
+	
 	//get user data
 	$user = get_user_by("login", $user_login);	
 	$logins = $user->pmpro_logins;
@@ -371,9 +379,9 @@ function pmpro_report_login_wp_login($user_login)
 		$logins = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 		
 	//track logins for user
-	$logins['last'] = date(get_option("date_format"));
+	$logins['last'] = date(get_option("date_format"), $now);
 	$logins['alltime']++;
-	$thismonth = date("n");
+	$thismonth = date("n", $now);
 	if($thismonth == $logins['thismonth'])
 		$logins['month']++;
 	else
@@ -391,7 +399,7 @@ function pmpro_report_login_wp_login($user_login)
 		$logins = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 	
 	$logins['alltime']++;
-	$thisdate = date("Y-d-m");
+	$thisdate = date("Y-d-m", $now);
 	if($thisdate == $logins['thisdate'])
 		$logins['today']++;
 	else
