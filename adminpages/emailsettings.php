@@ -95,7 +95,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
-					<?php _e('If unchecked, all emails from "WordPress &lt;' . $default_from_email . '&gt;" will be filtered to use the above settings.', 'pmpro');?>
+					<label for="only_filter_pmpro_emails"><?php _e('If unchecked, all emails from "WordPress &lt;' . $default_from_email . '&gt;" will be filtered to use the above settings.', 'pmpro');?></label>
 				</td>
 			</tr>
 		</tbody>
@@ -122,7 +122,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="email_admin_checkout" name="email_admin_checkout" value="1" <?php if(!empty($email_admin_checkout)) { ?>checked="checked"<?php } ?> />
-					<?php _e('when a member checks out.', 'pmpro');?>
+					<label for="email_admin_checkout"><?php _e('when a member checks out.', 'pmpro');?></label>
 				</td>
 			</tr>
 			<tr>
@@ -131,7 +131,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="email_admin_changes" name="email_admin_changes" value="1" <?php if(!empty($email_admin_changes)) { ?>checked="checked"<?php } ?> />
-					<?php _e('when an admin changes a user\'s membership level through the dashboard.', 'pmpro');?>
+					<label for="email_admin_changes"><?php _e('when an admin changes a user\'s membership level through the dashboard.', 'pmpro');?></label>
 				</td>
 			</tr>
 			<tr>
@@ -140,7 +140,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="email_admin_cancels" name="email_admin_cancels" value="1" <?php if(!empty($email_admin_cancels)) { ?>checked="checked"<?php } ?> />
-					<?php _e('when a user cancels his or her account.', 'pmpro');?>
+					<label for="email_admin_cancels"><?php _e('when a user cancels his or her account.', 'pmpro');?></label>
 				</td>
 			</tr>
 			<tr>
@@ -149,7 +149,7 @@
 				</th>
 				<td>
 					<input type="checkbox" id="email_admin_billing" name="email_admin_billing" value="1" <?php if(!empty($email_admin_billing)) { ?>checked="checked"<?php } ?> />
-					<?php _e('when a user updates his or her billing information.', 'pmpro');?>
+					<label for="email_admin_billing"><?php _e('when a user updates his or her billing information.', 'pmpro');?></label>
 				</td>
 			</tr>
 		</tbody>
@@ -161,11 +161,11 @@
 		<tbody>                
 			<tr>
 				<th scope="row" valign="top">
-					<label for="email_admin_checkout"><?php _e('New Users', 'pmpro');?>:</label>
+					<label for="email_member_notification"><?php _e('New Users', 'pmpro');?>:</label>
 				</th>
 				<td>
 					<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
-					<?php _e('Default WP notification email. (Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.)', 'pmpro');?>
+					<label for="email_member_notification"><?php _e('Default WP notification email. (Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.)', 'pmpro');?></label>
 				</td>
 			</tr>
 		</tbody>

@@ -108,6 +108,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Using current_time() and escaping form values better in logins report.
 * ENHANCEMENT: Added pmpro_account_bullets_top and pmpro_account_bullets_bottom hooks to add content to the accounts page.
 * ENHANCEMENT: Added pmpro_get_recurring_payments_profile_details_nvpstr, pmpro_manage_recurring_payments_profile_status_nvpstr, pmpro_create_recurring_payments_profile_nvpstr, pmpro_do_express_checkout_payment_nvpstr, and pmpro_get_express_checkout_details_nvpstr hooks to filter specific nvp strings in the PayPal Express integration.
+* ENHANCEMENT: Added labels to checkboxes in the dashboard settings pages.
 
 = 1.8.2.2 =
 * BUG: Fixed conflicts when other plugins with older Recaptcha libraries are also activated. Prefixed our copy of the Recaptcha library and functions with pmpro_ and added code to handle cases where an older version of recaptch is used at checkout.

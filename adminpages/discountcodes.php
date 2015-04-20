@@ -422,8 +422,8 @@
 				?>
 				<div>
 					<input type="hidden" name="all_levels[]" value="<?php echo $level->id?>" />
-					<input type="checkbox" name="levels[]" value="<?php echo $level->id?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().show();	else jQuery(this).next().hide();" />
-					<?php echo $level->name?>
+					<input type="checkbox" id="levels_<?php echo $level->id;?>" name="levels[]" value="<?php echo $level->id?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().next().show();	else jQuery(this).next().next().hide();" />
+					<label for="levels_<?php echo $level->id;?>"><?php echo $level->name?></label>
 					<div class="pmpro_discount_levels_pricing level_<?php echo $level->id?>" <?php if(empty($level->checked)) { ?>style="display: none;"<?php } ?>>
 						<table class="form-table">
 						<tbody>
@@ -445,7 +445,7 @@
 							
 							<tr>
 								<th scope="row" valign="top"><label><?php _e('Recurring Subscription', 'pmpro');?>:</label></th>
-								<td><input class="recurring_checkbox" name="recurring[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) {					jQuery(this).parent().parent().siblings('.recurring_info').show(); if(!jQuery('#custom_trial_<?php echo $level->id?>').is(':checked')) jQuery(this).parent().parent().siblings('.trial_info').hide();} else					jQuery(this).parent().parent().siblings('.recurring_info').hide();" /> <small><?php _e('Check if this level has a recurring subscription payment.', 'pmpro');?></small></td>
+								<td><input class="recurring_checkbox" id="recurring_<?php echo $level->id;?>" name="recurring[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) {					jQuery(this).parent().parent().siblings('.recurring_info').show(); if(!jQuery('#custom_trial_<?php echo $level->id?>').is(':checked')) jQuery(this).parent().parent().siblings('.trial_info').hide();} else					jQuery(this).parent().parent().siblings('.recurring_info').hide();" /> <label for="recurring_<?php echo $level->id;?>"><?php _e('Check if this level has a recurring subscription payment.', 'pmpro');?></label></td>
 							</tr>
 							
 							<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
@@ -486,7 +486,7 @@
 			
 							<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
 								<th scope="row" valign="top"><label><?php _e('Custom Trial', 'pmpro');?>:</label></th>
-								<td><input id="custom_trial_<?php echo $level->id?>" name="custom_trial[]" type="checkbox" value="<?php echo $level->id?>" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) jQuery(this).parent().parent().siblings('.trial_info').show();	else jQuery(this).parent().parent().siblings('.trial_info').hide();" /> <?php _e('Check to add a custom trial period.', 'pmpro');?></td>
+								<td><input id="custom_trial_<?php echo $level->id?>" id="custom_trial_<?php echo $level->id;?>" name="custom_trial[]" type="checkbox" value="<?php echo $level->id?>" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).attr('checked')) jQuery(this).parent().parent().siblings('.trial_info').show();	else jQuery(this).parent().parent().siblings('.trial_info').hide();" /> <label for="custom_trial_<?php echo $level->id;?>"><?php _e('Check to add a custom trial period.', 'pmpro');?></label></td>
 							</tr>
 			
 							<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
@@ -509,7 +509,7 @@
 							
 							<tr>
 								<th scope="row" valign="top"><label><?php _e('Membership Expiration', 'pmpro');?>:</label></th>
-								<td><input id="expiration" name="expiration[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <?php _e('Check this to set when membership access expires.', 'pmpro');?></td>
+								<td><input id="expiration_<?php echo $level->id;?>" name="expiration[]" type="checkbox" value="<?php echo $level->id?>" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery(this).is(':checked')) { jQuery(this).parent().parent().siblings('.expiration_info').show(); } else { jQuery(this).parent().parent().siblings('.expiration_info').hide();}" /> <label for="expiration_<?php echo $level->id;?>"><?php _e('Check this to set when membership access expires.', 'pmpro');?></label></td>
 							</tr>
 							
 							<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>

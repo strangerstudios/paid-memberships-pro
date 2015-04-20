@@ -352,7 +352,7 @@
 				
 				<tr>
 					<th scope="row" valign="top"><label><?php _e('Recurring Subscription', 'pmpro');?>:</label></th>
-					<td><input id="recurring" name="recurring" type="checkbox" value="yes" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#recurring').is(':checked')) { jQuery('.recurring_info').show(); if(jQuery('#custom_trial').is(':checked')) {jQuery('.trial_info').show();} else {jQuery('.trial_info').hide();} } else { jQuery('.recurring_info').hide();}" /> <small><?php _e('Check if this level has a recurring subscription payment.', 'pmpro');?></small></td>
+					<td><input id="recurring" name="recurring" type="checkbox" value="yes" <?php if(pmpro_isLevelRecurring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#recurring').is(':checked')) { jQuery('.recurring_info').show(); if(jQuery('#custom_trial').is(':checked')) {jQuery('.trial_info').show();} else {jQuery('.trial_info').hide();} } else { jQuery('.recurring_info').hide();}" /> <label for="recurring"><?php _e('Check if this level has a recurring subscription payment.', 'pmpro');?></label></td>
 				</tr>
 				
 				<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
@@ -413,7 +413,7 @@
 				<tr class="recurring_info" <?php if (!pmpro_isLevelRecurring($level)) echo "style='display:none;'";?>>
 					<th scope="row" valign="top"><label><?php _e('Custom Trial', 'pmpro');?>:</label></th>
 					<td>
-						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="jQuery('.trial_info').toggle();" /> <?php _e('Check to add a custom trial period.', 'pmpro');?>
+						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="jQuery('.trial_info').toggle();" /> <label for="custom_trial"><?php _e('Check to add a custom trial period.', 'pmpro');?></label>
 												
 						<?php if($gateway == "twocheckout") { ?>
 							<br /><small><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'pmpro');?></strong></small>
@@ -460,12 +460,12 @@
 			<tbody>
 				<tr>
 					<th scope="row" valign="top"><label><?php _e('Disable New Signups', 'pmpro');?>:</label></th>
-					<td><input name="disable_signups" type="checkbox" value="yes" <?php if($level->id && !$level->allow_signups) { ?>checked="checked"<?php } ?> /> <?php _e('Check to hide this level from the membership levels page and disable registration.', 'pmpro');?></td>
+					<td><input id="disable_signups" name="disable_signups" type="checkbox" value="yes" <?php if($level->id && !$level->allow_signups) { ?>checked="checked"<?php } ?> /> <label for="disable_signups"><?php _e('Check to hide this level from the membership levels page and disable registration.', 'pmpro');?></label></td>
 				</tr>
 				
 				<tr>
 					<th scope="row" valign="top"><label><?php _e('Membership Expiration', 'pmpro');?>:</label></th>
-					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <?php _e('Check this to set when membership access expires.', 'pmpro');?></td>
+					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php _e('Check this to set when membership access expires.', 'pmpro');?></a></td>
 				</tr>
 				
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
@@ -502,7 +502,7 @@
 						foreach ( $categories as $cat )
 						{                               								
 							$checked = in_array( $cat->term_id, $level->categories ) ? "checked='checked'" : '';
-							echo "<li><input name='membershipcategory_{$cat->term_id}' type='checkbox' value='yes' $checked /> {$cat->name}</li>\n";
+							echo "<li><input id='membershipcategory_{$cat->term_id}' name='membershipcategory_{$cat->term_id}' type='checkbox' value='yes' $checked /> <label for='membershipcategory_{$cat->term_id}'>{$cat->name}</label></li>\n";
 						}
 						echo "</ul>";
 						?>
