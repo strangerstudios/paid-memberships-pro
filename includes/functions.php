@@ -1094,11 +1094,11 @@ function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
 		return $username;
 
 	//try the beginning of the email address
-	$emailparts = explode("@", "email");
+	$emailparts = explode("@", $email);
 	if(is_array($emailparts))
 		$email = preg_replace("/[^A-Za-z]/", "", $emailparts[0]);
 
-	if($email)
+	if(!empty($email))
 	{
 		$username = $email;
 	}
