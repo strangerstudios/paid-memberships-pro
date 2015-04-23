@@ -119,7 +119,7 @@ function pmpro_wp()
 				
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
-				
+								
 				//shortcode
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
