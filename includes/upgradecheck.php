@@ -7,9 +7,9 @@ function pmpro_checkForUpgrades()
 	$pmpro_db_version = pmpro_getOption("db_version");
 	
 	//if we can't find the DB tables, reset db_version to 0
-	global $wpdb, $table_prefix;
+	global $wpdb;
 	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $table_prefix . 'pmpro_membership_levels';
+	$wpdb->pmpro_membership_levels = $wpdb->base_prefix . 'pmpro_membership_levels';
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");	
 	if(!$table_exists)		
 		$pmpro_db_version = 0;
@@ -48,7 +48,7 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version == 1.7)
 	{
 		//check if we have an id column in the memberships_users table
-		$wpdb->pmpro_memberships_users = $table_prefix . 'pmpro_memberships_users';
+		$wpdb->pmpro_memberships_users = $wpdb->base_prefix . 'pmpro_memberships_users';
 		$col = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_memberships_users LIMIT 1");		
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
 		{			
