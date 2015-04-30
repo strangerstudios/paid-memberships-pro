@@ -141,6 +141,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['account']));
 					?>	
 					<?php if(!empty($pmpro_pages['account'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account'];?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -155,6 +156,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"billing_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['billing']));
 					?>
 					<?php if(!empty($pmpro_pages['billing'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -169,6 +171,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"cancel_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['cancel']));
 					?>	
 					<?php if(!empty($pmpro_pages['cancel'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -184,6 +187,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"checkout_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['checkout']));
 					?>
 					<?php if(!empty($pmpro_pages['checkout'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -199,6 +203,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"confirmation_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['confirmation']));
 					?>	
 					<?php if(!empty($pmpro_pages['confirmation'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -214,6 +219,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"invoice_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['invoice']));
 					?>
 					<?php if(!empty($pmpro_pages['invoice'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
@@ -229,6 +235,7 @@
 				</th>
 				<td>
 					<?php
+						wp_dropdown_pages(array("name"=>"levels_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['levels']));
 					?>
 					<?php if(!empty($pmpro_pages['levels'])) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels']?>&action=edit" class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro');?></a>
