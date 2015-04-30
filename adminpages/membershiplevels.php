@@ -511,8 +511,8 @@
 			</tbody>
 		</table>				
 		<p class="submit topborder">
-			<input name="save" type="submit" class="button-primary" value="Save Level" /> 					
-			<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
+			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'pmpro'); ?>" /> 					
+			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro'); ?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
 		</p>
 	</form>
 	</div>
