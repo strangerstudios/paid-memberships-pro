@@ -205,7 +205,7 @@
 				
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="text" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="email" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -214,7 +214,7 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail Address', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="email" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 					</div>	                        
 					<?php
@@ -438,7 +438,7 @@
 				?>
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="text" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="email" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -447,7 +447,7 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="email" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 					</div>	                        
 					<?php
@@ -748,7 +748,8 @@
 	}
 	
 	//add required to required fields
-	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> *</span>');
+	jQuery('.pmpro_required').after('<abbr class="pmpro_asterisk" title="<?php _e("Required field", "pmpro"); ?>"> *</abbr>');
+	jQuery('.pmpro_required').attr('required', true);
 	
 	//unhighlight error fields when the user edits them
 	jQuery('.pmpro_error').bind("change keyup input", function() {
