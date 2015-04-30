@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2015-04-30 18:50+0100\n"
-"PO-Revision-Date: 2015-04-30 18:55+0100\n"
+"POT-Creation-Date: 2015-04-30 19:35+0100\n"
+"PO-Revision-Date: 2015-04-30 19:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
 "Language: fr_FR\n"
@@ -127,7 +127,7 @@ msgstr ""
 
 #: adminpages/admin_header.php:127
 msgid "Plugin Support"
-msgstr "Suppor du plugin"
+msgstr "Support du plugin"
 
 #: adminpages/admin_header.php:127
 msgid "User Forum"
@@ -242,6 +242,10 @@ msgstr "Non - Masquer extraits."
 #: adminpages/advancedsettings.php:138
 msgid "Yes - Show excerpts."
 msgstr "Oui - Voir les extraits."
+
+#: adminpages/advancedsettings.php:144
+msgid "Hide Ads From Members?"
+msgstr "Masquer les publicités pour les membres?"
 
 #: adminpages/advancedsettings.php:148 adminpages/advancedsettings.php:207
 #: adminpages/advancedsettings.php:219 adminpages/membershiplevels.php:578
@@ -638,11 +642,11 @@ msgstr "De Nom"
 
 #: adminpages/emailsettings.php:94
 msgid "Only Filter PMPro Emails?"
-msgstr ""
+msgstr "Filtrer seulement les e-mails de PMPro?"
 
 #: adminpages/emailsettings.php:98
 msgid "If unchecked, all emails from \"WordPress &lt;"
-msgstr ""
+msgstr "Si décocher, tous les e-mails venant de \"WordPress &lt;"
 
 #: adminpages/emailsettings.php:115
 msgid "Send the site admin emails"
@@ -875,6 +879,15 @@ msgstr "Paramètres de contenu"
 #: adminpages/membershiplevels.php:497
 msgid "Categories"
 msgstr "Catégories"
+
+#: adminpages/membershiplevels.php:514
+msgid "Save Level"
+msgstr "Enregistrer le niveau d'adhésion"
+
+#: adminpages/membershiplevels.php:515 adminpages/orders.php:561
+#: pages/billing.php:330 pages/cancel.php:71 shortcodes/pmpro_account.php:70
+msgid "Cancel"
+msgstr "Annuler"
 
 #: adminpages/membershiplevels.php:526
 msgid "Add New Level"
@@ -1181,11 +1194,6 @@ msgstr "Remarques"
 msgid "Save Order"
 msgstr "Sauver la commande"
 
-#: adminpages/orders.php:561 pages/billing.php:330 pages/cancel.php:71
-#: shortcodes/pmpro_account.php:70
-msgid "Cancel"
-msgstr "Annuler"
-
 #: adminpages/orders.php:570 includes/adminpages.php:55
 #: includes/adminpages.php:163
 msgid "Orders"
@@ -1331,7 +1339,14 @@ msgstr "Cliquer ici pour nous laisser générer ceci pour vous."
 
 #: adminpages/pagesettings.php:140
 msgid "Account Page"
-msgstr "Page de compte."
+msgstr "Page de compte"
+
+#: adminpages/pagesettings.php:144 adminpages/pagesettings.php:159
+#: adminpages/pagesettings.php:174 adminpages/pagesettings.php:190
+#: adminpages/pagesettings.php:206 adminpages/pagesettings.php:222
+#: adminpages/pagesettings.php:238
+msgid "Choose One"
+msgstr "Choisir"
 
 #: adminpages/pagesettings.php:147 adminpages/pagesettings.php:162
 #: adminpages/pagesettings.php:177 adminpages/pagesettings.php:193
@@ -1408,6 +1423,8 @@ msgid ""
 "Not all currencies will be supported by every gateway. Please check with "
 "your gateway."
 msgstr ""
+"Toutes les devises ne sont pas supportées par chaque passerelle de paiement. "
+"Veuillez vérifier votre passerelle de paiement."
 
 #: adminpages/paymentsettings.php:174
 msgid "Accepted Credit Card Types"
@@ -2151,7 +2168,7 @@ msgstr "Clé publiable"
 
 #: classes/gateways/class.pmprogateway_stripe.php:169
 msgid "Show Billing Address Fields"
-msgstr ""
+msgstr "Afficher les champs d'adresse de facturation"
 
 #: classes/gateways/class.pmprogateway_stripe.php:176
 msgid ""
@@ -2263,7 +2280,7 @@ msgstr ""
 
 #: includes/adminpages.php:261
 msgid "View PMPro Documentation"
-msgstr ""
+msgstr "Voir la documentation PMPro"
 
 #: includes/adminpages.php:261
 msgid "Docs"
@@ -2701,7 +2718,7 @@ msgstr "Ville, Etat Zip"
 
 #: pages/billing.php:161 pages/checkout.php:401
 msgid "Country"
-msgstr "Payx"
+msgstr "Pays"
 
 #: pages/billing.php:186 pages/checkout.php:426
 msgid "Phone"
@@ -2739,7 +2756,7 @@ msgstr "Etes-vous sûr de vouloir annuler votre adhésion?"
 #: pages/cancel.php:32
 #, php-format
 msgid "Are you sure you want to cancel your %s membership?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer votre adhésion %s?"
 
 #: pages/cancel.php:37
 msgid "Yes, cancel my account"
@@ -2751,11 +2768,11 @@ msgstr "Non, garder mon compte"
 
 #: pages/cancel.php:48 shortcodes/pmpro_account.php:40
 msgid "My Memberships"
-msgstr ""
+msgstr "Mon adhésion"
 
 #: pages/cancel.php:77
 msgid "Cancel All Memberships"
-msgstr ""
+msgstr "Annuler toutes mes adhésions"
 
 #: pages/cancel.php:86
 msgid "Click here to go to the home page."
@@ -2856,6 +2873,10 @@ msgstr "Paiement complet"
 #: pages/checkout.php:714
 msgid "Processing..."
 msgstr "Traitement en cours ..."
+
+#: pages/checkout.php:751
+msgid "Required field"
+msgstr "Champ obligatoire"
 
 #: pages/confirmation.php:12
 msgid ""
@@ -3148,7 +3169,7 @@ msgstr "E-mail d'expiration d'adhésion a été envoyé à %s."
 #: scheduled/crons.php:157
 #, php-format
 msgid "Credit card expiring email sent to %s. "
-msgstr ""
+msgstr "E-mail d'expiration de la carte decrédit a été envoyé à %s."
 
 #: scheduled/crons.php:210
 #, php-format
@@ -3185,19 +3206,19 @@ msgstr ""
 
 #: shortcodes/pmpro_account.php:45
 msgid "Billing"
-msgstr ""
+msgstr "Facturation"
 
 #: shortcodes/pmpro_account.php:62
 msgid "Update Billing Info"
-msgstr ""
+msgstr "Mettre à jour les informations de facturation"
 
 #: shortcodes/pmpro_account.php:68
 msgid "Change"
-msgstr ""
+msgstr "Modifier"
 
 #: shortcodes/pmpro_account.php:90
 msgid "View all Membership Options"
-msgstr ""
+msgstr "Voir toutes les options d'adhésion"
 
 #: shortcodes/pmpro_account.php:99
 msgid "My Account"
@@ -3217,7 +3238,7 @@ msgstr "Factures antérieures"
 
 #: shortcodes/pmpro_account.php:124
 msgid "Amount"
-msgstr ""
+msgstr "Montant"
 
 #: shortcodes/pmpro_account.php:152
 msgid "View All Invoices"
