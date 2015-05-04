@@ -86,14 +86,7 @@ function pmpro_br2nl($text, $tags = "br")
 
 function pmpro_getOption($s, $force = false)
 {
-	if(isset($_REQUEST[$s]) && !$force)
-	{
-		if(!is_array($_REQUEST[$s]))
-			return trim($_REQUEST[$s]);
-		else
-			return $_REQUEST[$s];
-	}
-	elseif(get_option("pmpro_" . $s))
+	if(get_option("pmpro_" . $s))
 		return get_option("pmpro_" . $s);
 	else
 		return "";
@@ -101,9 +94,9 @@ function pmpro_getOption($s, $force = false)
 
 function pmpro_setOption($s, $v = NULL)
 {
-	//no value is given, set v to the request var
-	if($v === NULL && isset($_REQUEST[$s]))
-		$v = $_REQUEST[$s];
+	//no value is given, set v to the p var
+	if($v === NULL && isset($_POST[$s]))
+		$v = $_POST[$s];
 
 	if(is_array($v))
 		$v = implode(",", $v);

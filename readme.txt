@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.1.1
-Stable tag: 1.8.2.2
+Tested up to: 4.2.1
+Stable tag: 1.8.3
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -103,15 +103,19 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.3 =
+* SECURITY PATCH: The pmpro_getOption function has been updated to not set values from $_REQUEST when available. This allowed malicious users to override PMPro settings on single page loads allowing them to inject text into pages and do other "bad things". (Thanks, Charles Hill)
+* SECURITY PATCH: Many calls to pmpro_getOption("gateway") were changed to use pmpro_getGateway which specifically allowed for overriding that one value via a request parameter (the validity of the gateway is double checked).
 * BUG: No longer showing the number of visits/views/logins "this month" when the user hasn't visited in over a month. (Thanks, Kenneth)
 * BUG: Fix for email from names with apostrophes and quotes in them.
 * BUG: Using current_time() and escaping form values better in logins report.
 * BUG: Fixed issue in pmpro_generateUsername() when checking for duplicates. (Thanks, Ruslan)
+* BUG: Fixed issue where $user var wasn't set for emails sent out in the Braintree webhook script. (Thanks, Charles Hill)
 * ENHANCEMENT: Added pmpro_account_bullets_top and pmpro_account_bullets_bottom hooks to add content to the accounts page.
 * ENHANCEMENT: Added pmpro_get_recurring_payments_profile_details_nvpstr, pmpro_manage_recurring_payments_profile_status_nvpstr, pmpro_create_recurring_payments_profile_nvpstr, pmpro_do_express_checkout_payment_nvpstr, and pmpro_get_express_checkout_details_nvpstr hooks to filter specific nvp strings in the PayPal Express integration.
 * ENHANCEMENT: Added labels to checkboxes in the dashboard settings pages.
 * ENHANCEMENT: Can now use the [pmpro_account] shortcode on other pages/widgets/etc. Can also limit to specific sections [pmpro_account sections='memberships,profile,invoices,links'] just remove sections from that list.
 * ENHANCEMENT: Changed all uses of the global $table_prefix to use $wpdb->base_prefix to aid in compatibility when loading WordPress with other PHP code (e.g. phpBB). (Thanks, Dion)
+* ENHANCEMENT: The notification script was updated to point to notifications.paidmembershipspro.com instead of www.paidmembershipspro.com/notifications/. This allows us to keep our notification script on a different server. This script is used to insert notifications into the PMPro admin pages when important updates are available.
 
 = 1.8.2.2 =
 * BUG: Fixed conflicts when other plugins with older Recaptcha libraries are also activated. Prefixed our copy of the Recaptcha library and functions with pmpro_ and added code to handle cases where an older version of recaptch is used at checkout.

@@ -262,7 +262,7 @@ if(pmpro_displayAds())
 
             // Filter to Add More Advanced Settings for Misc Plugin Options, etc.
             if (has_action('pmpro_custom_advanced_settings')) {
-            $custom_fields = apply_filters('pmpro_custom_advanced_settings', $custom_fields);
+            $custom_fields = apply_filters('pmpro_custom_advanced_settings', array());
             foreach ($custom_fields as $field) {
             ?>
             <tr>
