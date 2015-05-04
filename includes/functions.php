@@ -33,14 +33,14 @@ function pmpro_setDBTables()
 {
 	global $wpdb;
 	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $wpdb->base_prefix . 'pmpro_membership_levels';
-	$wpdb->pmpro_memberships_users = $wpdb->base_prefix . 'pmpro_memberships_users';
-	$wpdb->pmpro_memberships_categories = $wpdb->base_prefix . 'pmpro_memberships_categories';
-	$wpdb->pmpro_memberships_pages = $wpdb->base_prefix . 'pmpro_memberships_pages';
-	$wpdb->pmpro_membership_orders = $wpdb->base_prefix . 'pmpro_membership_orders';
-	$wpdb->pmpro_discount_codes = $wpdb->base_prefix . 'pmpro_discount_codes';
-	$wpdb->pmpro_discount_codes_levels = $wpdb->base_prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->base_prefix . 'pmpro_discount_codes_uses';
+	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
+	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
+	$wpdb->pmpro_memberships_categories = $wpdb->prefix . 'pmpro_memberships_categories';
+	$wpdb->pmpro_memberships_pages = $wpdb->prefix . 'pmpro_memberships_pages';
+	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
+	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
+	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
+	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 }
 pmpro_setDBTables();
 
