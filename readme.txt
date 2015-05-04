@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.8.3.1 =
 * Changed some uses of $wpdb->base_prefix to $wpdb->prefix to fix multisite support.
+* Wrapped pmpro_isDateThisMonth in a function_exists check since some addons already have this defined.
 
 = 1.8.3 =
 * SECURITY PATCH: The pmpro_getOption function has been updated to not set values from $_REQUEST when available. This allowed malicious users to override PMPro settings on single page loads allowing them to inject text into pages and do other "bad things". (Thanks, Charles Hill)
