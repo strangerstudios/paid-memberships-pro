@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.2.1
-Stable tag: 1.8.3.1
+Stable tag: 1.8.4
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,9 +102,13 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.4 =
+* BUG: Fixed issue where custom roles had to have pmpro_membershiplevels capability to view other PMPro-related dashboard pages. (Thanks, squarelines)
+* ENHANCEMENT: Now hiding tabs in the PMPro settings if a user doesn't have access to that tab (but does have access to other tabs).
+
 = 1.8.3.1 =
-* Changed some uses of $wpdb->base_prefix to $wpdb->prefix to fix multisite support.
-* Wrapped pmpro_isDateThisMonth in a function_exists check since some addons already have this defined.
+* BUG: Changed some uses of $wpdb->base_prefix to $wpdb->prefix to fix multisite support.
+* BUG: Wrapped pmpro_isDateThisMonth in a function_exists check since some addons already have this defined.
 
 = 1.8.3 =
 * SECURITY PATCH: The pmpro_getOption function has been updated to not set values from $_REQUEST when available. This allowed malicious users to override PMPro settings on single page loads allowing them to inject text into pages and do other "bad things". (Thanks, Charles Hill)

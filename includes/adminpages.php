@@ -64,6 +64,10 @@ function pmpro_add_pages()
 			$submenu['pmpro-membershiplevels'][0][0] = __( 'Membership Levels', 'pmpro' );
 			$submenu['pmpro-membershiplevels'][0][3] = __( 'Membership Levels', 'pmpro' );
 		}
+		elseif(current_user_can($top_menu_cap))
+		{
+			unset($submenu['pmpro-membershiplevels'][0]);
+		}
 		else
 		{
 			unset($submenu['pmpro-membershiplevels']);
