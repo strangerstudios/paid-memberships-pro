@@ -103,6 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.4 =
+* ENHANCEMENT: Added the ability to order levels on the Levels page by drag and drop in the WordPress admin.
 * BUG: Fixed issue where custom roles had to have pmpro_membershiplevels capability to view other PMPro-related dashboard pages. (Thanks, squarelines)
 * ENHANCEMENT: Now hiding tabs in the PMPro settings if a user doesn't have access to that tab (but does have access to other tabs).
 
