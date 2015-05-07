@@ -68,3 +68,12 @@ function pmpro_wp_ajax_orders_csv()
 	exit;	
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
+
+function pmpro_update_level_order() {
+    fb($_REQUEST, 'request');
+    $response = pmpro_setOption('level_order');
+    echo $response;
+    fb($response, 'response');
+    exit;
+}
+add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
