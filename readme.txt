@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.2.1
+Tested up to: 4.2.2
 Stable tag: 1.8.4
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.8.4 =
 * BUG: Fixed issue where custom roles had to have pmpro_membershiplevels capability to view other PMPro-related dashboard pages. (Thanks, squarelines)
+* BUG: Fixed bug where users who checked out with the Braintree Payments gateway could checkout again using their on file credit card if an invalid credit card was entered at checkout the second time. (Thanks, patternsinthecloud)
 * ENHANCEMENT: Now hiding tabs in the PMPro settings if a user doesn't have access to that tab (but does have access to other tabs).
 
 = 1.8.3.1 =

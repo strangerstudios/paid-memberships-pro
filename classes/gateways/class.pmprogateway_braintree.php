@@ -438,7 +438,7 @@
 						
 			//create a customer
 			$this->getCustomer($order);
-			if(empty($this->customer))
+			if(empty($this->customer) || !empty($order->error))
 			{				
 				//failed to create customer
 				return false;
@@ -660,7 +660,7 @@
 			
 			//setup customer
 			$this->getCustomer($order);
-			if(empty($this->customer))
+			if(empty($this->customer) || !empty($order->error))
 				return false;	//error retrieving customer
 						
 			//figure out the amounts
