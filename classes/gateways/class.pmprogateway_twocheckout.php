@@ -204,7 +204,7 @@
 		 */
 		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 		{
-			global $discount_code_id;
+			global $wpdb, $discount_code_id;
 			
 			//if no order, no need to pay
 			if(empty($morder))
@@ -295,8 +295,11 @@
 			}
 
 			// Demo mode?
-			$environment = pmpro_getOption("gateway_environment");
-			if("sandbox" === $environment || "beta-sandbox" === $environment)
+			if(empty($order->gateway_environment))
+				$gateway_environment = pmpro_getOption("gateway_environment");
+			else
+				$gateway_environment = $order->gateway_environment;
+			if("sandbox" === $gateway_environment || "beta-sandbox" === $gateway_environment)
 				$tco_args['demo'] = 'Y';
 			
 			// Trial?
@@ -322,14 +325,18 @@
 
 			$ptpStr = apply_filters( 'pmpro_twocheckout_ptpstr', $ptpStr, $order );
 						
-			//echo str_replace("&", "&<br />", $ptpStr);
-			//exit;
+			///useful for debugging
+			///echo str_replace("&", "&<br />", $ptpStr);
+			///exit;
 			
-			//redirect to 2checkout			
-			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
+			//figure out gateway environment and URL to use			
+			if($gateway_environment == "live")
+					$host = "www.2checkout.com";		
+				else
+					$host = "sandbox.2checkout.com";	
+			$tco_url = 'https://' . $host . '/checkout/purchase' . $ptpStr;
 			
-			//echo $tco_url;
-			//die();
+			//redirect to 2checkout
 			wp_redirect( $tco_url );
 			exit;
 		}

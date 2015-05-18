@@ -19,7 +19,7 @@
 		$confirmation_message .= "\n" . stripslashes($level_message) . "\n";
 ?>	
 
-<?php if(!empty($pmpro_invoice)) { ?>		
+<?php if(!empty($pmpro_invoice) && !empty($pmpro_invoice->id)) { ?>		
 	
 	<?php
 		$pmpro_invoice->getUser();
