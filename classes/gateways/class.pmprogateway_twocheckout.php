@@ -342,26 +342,48 @@
 		}
 
 		function cancel(&$order) {
-			// If recurring, stop the recurring payment
-			if(pmpro_isLevelRecurring($order->membership_level)) {
-				$params['sale_id'] = $order->payment_transaction_id;
-				$result = Twocheckout_Sale::stop( $params ); // Stop the recurring billing
+			//no matter what happens below, we're going to cancel the order in our system
+			$order->updateStatus("cancelled");
 
-				// Successfully cancelled
-				if (isset($result['response_code']) && $result['response_code'] === 'OK') {
-					$order->updateStatus("cancelled");	
-					return true;
-				}
-				// Failed
-				else {
-					$order->status = "error";
-					$order->errorcode = $result->getCode();
-					$order->error = $result->getMessage();
-									
-					return false;
-				}
+			//require a subscription id
+			if(empty($order->subscription_transaction_id))
+				return false;
+
+			//get ready
+			Twocheckout::setCredentials( pmpro_getOption("twocheckout_apiusername"), pmpro_getOption("twocheckout_apipassword") );
+
+			//build api params
+			$params = array();
+			$params['sale_id'] = $order->subscription_transaction_id;
+			
+			// Demo mode?
+			if(empty($order->gateway_environment))
+				$gateway_environment = pmpro_getOption("gateway_environment");
+			else
+				$gateway_environment = $order->gateway_environment;
+			
+			if("sandbox" === $gateway_environment || "beta-sandbox" === $gateway_environment)
+			{
+				//Twocheckout::sandbox(true);
+				$params['demo'] = 'Y';
 			}
 
+			$result = Twocheckout_Sale::stop( $params ); // Stop the recurring billing
+
+			// Successfully cancelled
+			if (isset($result['response_code']) && $result['response_code'] === 'OK') {
+				$order->updateStatus("cancelled");	
+				return true;
+			}
+			// Failed
+			else {
+				$order->status = "error";
+				$order->errorcode = $result->getCode();
+				$order->error = $result->getMessage();
+								
+				return false;
+			}
+			
 			return $order;
 		}
 	}

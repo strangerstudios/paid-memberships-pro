@@ -44,7 +44,7 @@
 	$fraud_status = pmpro_getParam( 'fraud_status', 'REQUEST' ); // Check fraud status?
 	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'REQUEST' ); // Price paid by customer in seller currency code
 	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST' );
-	
+
 	// No message = return processing
 	if( empty($message_type) ) {
 		//initial payment, get the order
@@ -64,7 +64,7 @@
 		
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
-	
+
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
 	if( $message_type == 'ORDER_CREATED' ) {
 		//initial payment, get the order
@@ -162,7 +162,7 @@
 	
 	//Other
 	//if we got here, this is a different kind of txn
-	inslog("No recurring payment id or item number. message_type = " . $message_type);	
+	inslog("The PMPro INS handler does not process this type of message. message_type = " . $message_type);	
 	pmpro_twocheckoutExit();	
 	
 	/*
