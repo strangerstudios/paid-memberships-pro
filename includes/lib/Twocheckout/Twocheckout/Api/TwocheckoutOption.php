@@ -3,40 +3,40 @@
 class Twocheckout_Option extends Twocheckout
 {
 
-    public static function create($params=array(), $format='json')
+    public static function create($params=array())
     {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix = 'products/create_option';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix = '/api/products/create_option';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function retrieve($params=array(), $format='json')
+    public static function retrieve($params=array())
     {
         $request = new Twocheckout_Api_Requester();
         if(array_key_exists("option_id",$params)) {
-            $urlSuffix = 'products/detail_option';
+            $urlSuffix = '/api/products/detail_option';
         } else {
-            $urlSuffix = 'products/list_options';
+            $urlSuffix = '/api/products/list_options';
         }
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function update($params=array(), $format='json')
+    public static function update($params=array())
     {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix = 'products/update_option';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix = '/api/products/update_option';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function delete($params=array(), $format='json')
+    public static function delete($params=array())
     {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix = 'products/delete_option';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix = '/api/products/delete_option';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
 }

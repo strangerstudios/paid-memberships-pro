@@ -1,25 +1,25 @@
 <?php
 
-class Twocheckout_Util
+class Twocheckout_Util extends Twocheckout
 {
 
-    static function return_resp($contents, $format) {
+    static function returnResponse($contents, $format=null) {
+        $format = $format == null ? Twocheckout::$format : $format;
         switch ($format) {
             case "array":
-                $arrayObject = self::objectToArray($contents);
-                self::checkError($arrayObject);
-                return $arrayObject;
+                $response = self::objectToArray($contents);
+                self::checkError($response);
                 break;
             case "force_json":
-                $arrayObject = self::objectToJson($contents);
-                return $arrayObject;
+                $response = self::objectToJson($contents);
                 break;
             default:
-                $arrayObject = self::objectToArray($contents);
-                self::checkError($arrayObject);
-                $jsonData = json_encode($contents);
-                return json_decode($jsonData);
+                $response = self::objectToArray($contents);
+                self::checkError($response);
+                $response = json_encode($contents);
+                $response = json_decode($response);
         }
+        return $response;
     }
 
     public static function objectToArray($object)
@@ -38,7 +38,7 @@ class Twocheckout_Util
         return json_encode($object);
     }
 
-    public static function get_recurring_lineitems($saleDetail) {
+    public static function getRecurringLineitems($saleDetail) {
         $i = 0;
         $invoiceData = array();
 
@@ -66,6 +66,8 @@ class Twocheckout_Util
     {
         if (isset($contents['errors'])) {
             throw new Twocheckout_Error($contents['errors'][0]['message']);
+        } elseif (isset($contents['exception'])) {
+            throw new Twocheckout_Error($contents['exception']['errorMsg'], $contents['exception']['errorCode']);
         }
     }
 
