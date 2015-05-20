@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 1.8.4
+Stable tag: 1.8.4.1
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.4.1 =
+* BUG: Fixed issue introduced in 1.8.4 where levels wouldn't show up in the front end if they hadn't been reordered.
+
 = 1.8.4 =
 * BUG: Fixed the Stripe webhook to work on new orders that are storing the subscription id instead of the customer id in the subscription_transaction_id field. (Thanks, nickd32 on GitHub)
 * BUG: Fixed issue where the name and email address of customers was not being sent to Stripe if existing members checked out while the "show billing address" option was set to false.
