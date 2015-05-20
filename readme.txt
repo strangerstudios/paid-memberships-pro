@@ -108,6 +108,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added the ability to order levels on the Levels page by drag and drop in the WordPress admin.
 * ENHANCEMENT: Now hiding tabs in the PMPro settings if a user doesn't have access to that tab (but does have access to other tabs).
 * ENHANCEMENT: Converted all files to unix format and removed trailing whitespace. This has no functional change on the plugin, but helps developers who are contributing. (Thanks, meths on GitHub)
+* ENHANCEMENT: New Danish translation. (Thanks, Morten Stenbæk and Frederik Hermund)
 
 = 1.8.3.1 =
 * BUG: Changed some uses of $wpdb->base_prefix to $wpdb->prefix to fix multisite support.
