@@ -141,7 +141,7 @@
             </tr>
             <tr>
 				<th scope="row" valign="top">
-					<label for="hideads">Hide Ads From Members?</label>
+					<label for="hideads"><?php _e("Hide Ads From Members?", 'pmpro');?></label>
 				</th>
 				<td>
 					<select id="hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
