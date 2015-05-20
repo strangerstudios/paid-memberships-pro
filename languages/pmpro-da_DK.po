@@ -2877,7 +2877,7 @@ msgstr "Kreditkort Information"
 #: pages/billing.php:221 pages/billing.php:217
 #, php-format
 msgid "We accept %s"
-msgstr "Vi acceptere %s"
+msgstr "Vi accepterer %s"
 
 #: pages/billing.php:248 pages/checkout.php:503 pages/billing.php:244
 #: pages/checkout.php:520 pages/checkout.php:527
@@ -3025,7 +3025,7 @@ msgstr "Betalings Information"
 #: pages/checkout.php:476 pages/checkout.php:493 pages/checkout.php:500
 #, php-format
 msgid "We Accept %s"
-msgstr "Vi Acceptere %s"
+msgstr "Vi accepterer %s"
 
 #: pages/checkout.php:657 pages/checkout.php:277 pages/checkout.php:284
 #, php-format
