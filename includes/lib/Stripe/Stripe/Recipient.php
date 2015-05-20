@@ -58,7 +58,7 @@ class Stripe_Recipient extends Stripe_ApiResource
     return self::_scopedDelete($class, $params);
   }
 
-  
+
   /**
    * @param array|null $params
    *

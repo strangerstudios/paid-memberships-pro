@@ -7,4 +7,4 @@
 	require('../../../../wp-load.php');	
 
 	//this function is defined in /scheduled/crons.php
-	pmpro_cron_expiration_warnings();	
+	pmpro_cron_expiration_warnings();

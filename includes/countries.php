@@ -2,7 +2,7 @@
 	//thanks JigoShop
 	global $pmpro_countries, $pmpro_default_country;
 	$pmpro_default_country = apply_filters("pmpro_default_country", "US");
-	
+
 	$pmpro_countries = array(
 		'AD' => 'Andorra',
     	'AE' => 'United Arab Emirates',
@@ -253,7 +253,7 @@
 	  	'USAF' => 'US Armed Forces' , 
 		'VE' => 'Venezuela',
 	);
-	
+
 	asort($pmpro_countries);
-	
+
 	$pmpro_countries = apply_filters("pmpro_countries", $pmpro_countries);

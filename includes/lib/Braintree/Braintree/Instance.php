@@ -19,7 +19,7 @@ abstract class Braintree_Instance
 {
     /**
      *
-     * @param array $aAttribs 
+     * @param array $aAttribs
      */
     public function  __construct($attributes)
     {
@@ -28,7 +28,7 @@ abstract class Braintree_Instance
         }
     }
 
-    
+
     /**
      * returns private/nonexistent instance properties
      * @access public
@@ -66,5 +66,5 @@ abstract class Braintree_Instance
     {
         $this->_attributes = $attributes;
     }
-    
+
 }

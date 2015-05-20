@@ -1,53 +1,53 @@
 <?php
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	
+
 	//load classes init method
 	add_action('init', array('PMProGateway_authorizenet', 'init'));
-	
+
 	class PMProGateway_authorizenet extends PMProGateway
 	{
 		function PMProGateway_authorizenet($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;
-		}										
-		
+		}
+
 		/**
 		 * Run on WP init
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function init()
-		{			
+		{
 			//make sure Authorize.net is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_authorizenet', 'pmpro_gateways'));
-			
+
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_authorizenet', 'pmpro_payment_options'));
-			add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);						
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);
 		}
-		
+
 		/**
 		 * Make sure this gateway is in the gateways list
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['authorizenet']))
 				$gateways['authorizenet'] = __('Authorize.net', 'pmpro');
-		
+
 			return $gateways;
 		}
-		
+
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function getGatewayOptions()
-		{			
+		{
 			$options = array(
 				'sslseal',
 				'nuclear_HTTPS',
@@ -60,29 +60,29 @@
 				'tax_rate',
 				'accepted_credit_cards'
 			);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Set payment options for payment settings page.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{			
+		{
 			//get stripe options
 			$authorizenet_options = PMProGateway_authorizenet::getGatewayOptions();
-			
+
 			//merge with others.
 			$options = array_merge($authorizenet_options, $options);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Display fields for this gateway's options.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
@@ -119,10 +119,10 @@
 		</tr>
 		<?php
 		}
-		
+
 		/**
 		 * Process checkout.
-		 *		
+		 *
 		 */
 		function process(&$order)
 		{
@@ -131,17 +131,17 @@
 			{
 				//auth first, then process
 				if($this->authorize($order))
-				{						
-					$this->void($order);										
+				{
+					$this->void($order);
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
 						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
 						$order->TrialBillingPeriod = $order->BillingPeriod;
-						$order->TrialBillingFrequency = $order->BillingFrequency;													
+						$order->TrialBillingFrequency = $order->BillingFrequency;
 						$order->TrialBillingCycles = 1;
 						$order->TrialAmount = 0;
-						
+
 						//add a billing cycle to make up for the trial, if applicable
 						if(!empty($order->TotalBillingCycles))
 							$order->TotalBillingCycles++;
@@ -149,9 +149,9 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
 						$order->TrialBillingCycles++;
-						
+
 						//add a billing cycle to make up for the trial, if applicable
 						if(!empty($order->TotalBillingCycles))
 							$order->TotalBillingCycles++;
@@ -161,12 +161,12 @@
 						//add a period to the start date to account for the initial payment
 						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					}
-					
+
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
 				else
-				{					
+				{
 					if(empty($order->error))
 						$order->error = __("Unknown error: Authorization failed.", "pmpro");
 					return false;
@@ -176,19 +176,19 @@
 			{
 				//charge first payment
 				if($this->charge($order))
-				{							
+				{
 					//setup recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
-					{						
+					{
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
 							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
 							$order->TrialBillingPeriod = $order->BillingPeriod;
-							$order->TrialBillingFrequency = $order->BillingFrequency;													
+							$order->TrialBillingFrequency = $order->BillingFrequency;
 							$order->TrialBillingCycles = 1;
 							$order->TrialAmount = 0;
-							
+
 							//add a billing cycle to make up for the trial, if applicable
 							if(!empty($order->TotalBillingCycles))
 								$order->TotalBillingCycles++;
@@ -196,9 +196,9 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
 							$order->TrialBillingCycles++;
-							
+
 							//add a billing cycle to make up for the trial, if applicable
 							if(!empty($order->TotalBillingCycles))
 								$order->TotalBillingCycles++;
@@ -208,7 +208,7 @@
 							//add a period to the start date to account for the initial payment
 							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
-						
+
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{
@@ -224,66 +224,66 @@
 							else
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");								
+									$order->error = __("Unknown error: Payment failed.", "pmpro");
 								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
 							}
-														
-							return false;								
+
+							return false;
 						}
 					}
 					else
 					{
 						//only a one time charge
-						$order->status = "success";	//saved on checkout page											
+						$order->status = "success";	//saved on checkout page
 						return true;
 					}
 				}
 				else
-				{					
+				{
 					if(empty($order->error))
 						$order->error = __("Unknown error: Payment failed.", "pmpro");
-					
+
 					return false;
-				}	
-			}	
+				}
+			}
 		}
-		
+
 		function authorize(&$order)
 		{
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
-						
+
 			if(empty($order->gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			else
 				$gateway_environment = $order->gateway_environment;
 			if($gateway_environment == "live")
-					$host = "secure.authorize.net";		
+					$host = "secure.authorize.net";
 				else
-					$host = "test.authorize.net";	
-			
-			$path = "/gateway/transact.dll";												
+					$host = "test.authorize.net";
+
+			$path = "/gateway/transact.dll";
 			$post_url = "https://" . $host . $path;
 
 			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
-			
+
 			//what amount to authorize? just $1 to test
-			$amount = "1.00";		
-			
-			//combine address			
+			$amount = "1.00";
+
+			//combine address
 			$address = $order->Address1;
 			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
-				
+
 			//customer stuff
 			$customer_email = $order->Email;
 			$customer_phone = $order->billing->phone;
-			
+
 			if(!isset($order->membership_level->name))
 				$order->membership_level->name = "";
-			
+
 			$post_values = array(
-				
+
 				// the API Login ID and Transaction Key must be replaced with valid values
 				"x_login"			=> pmpro_getOption("loginname"),
 				"x_tran_key"		=> pmpro_getOption("transactionkey"),
@@ -298,7 +298,7 @@
 				"x_card_type"		=> $order->cardtype,
 				"x_card_num"		=> $order->accountnumber,
 				"x_exp_date"		=> $order->ExpirationDate,
-				
+
 				"x_amount"			=> $amount,
 				"x_description"		=> $order->membership_level->name . " " . __("Membership", "pmpro"),
 
@@ -315,17 +315,17 @@
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
 			);
-			
+
 			if(!empty($order->CVV2))
 				$post_values["x_card_code"] = $order->CVV2;
-			
+
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
 			$post_string = "";
 			foreach( $post_values as $key => $value )
 				{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
 			$post_string = rtrim( $post_string, "& " );
-						
+
 			//curl
 			$request = curl_init($post_url); // initiate curl object
 				curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
@@ -336,15 +336,15 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
-			
+
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
-						
+
 			if($response_array[0] == 1)
 			{
 				$order->payment_transaction_id = $response_array[6];
-				$order->updateStatus("authorized");					
-									
+				$order->updateStatus("authorized");
+
 				return true;
 			}
 			else
@@ -354,30 +354,30 @@
 				$order->error = $response_array[3];
 				$order->shorterror = $response_array[3];
 				return false;
-			}							
+			}
 		}
-		
+
 		function void(&$order)
 		{
 			if(empty($order->payment_transaction_id))
 				return false;
-						
+
 			if(empty($order->gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			else
 				$gateway_environment = $order->gateway_environment;
 			if($gateway_environment == "live")
-				$host = "secure.authorize.net";		
+				$host = "secure.authorize.net";
 			else
-				$host = "test.authorize.net";	
-			
-			$path = "/gateway/transact.dll";												
+				$host = "test.authorize.net";
+
+			$path = "/gateway/transact.dll";
 			$post_url = "https://" . $host . $path;
-			
+
 			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
-			
+
 			$post_values = array(
-				
+
 				// the API Login ID and Transaction Key must be replaced with valid values
 				"x_login"			=> pmpro_getOption("loginname"),
 				"x_tran_key"		=> pmpro_getOption("transactionkey"),
@@ -392,14 +392,14 @@
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
 			);
-			
+
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
 			$post_string = "";
 			foreach( $post_values as $key => $value )
 				{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
 			$post_string = rtrim( $post_string, "& " );
-						
+
 			//curl
 			$request = curl_init($post_url); // initiate curl object
 				curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
@@ -410,13 +410,13 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
-			
+
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
 			{
 				$order->payment_transaction_id = $response_array[4];
-				$order->updateStatus("voided");					
+				$order->updateStatus("voided");
 				return true;
 			}
 			else
@@ -426,50 +426,50 @@
 				$order->error = $response_array[3];
 				$order->shorterror = $response_array[3];
 				return false;
-			}		
-		}	
-		
+			}
+		}
+
 		function charge(&$order)
 		{
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
-			
+
 			if(!empty($order->gateway_environment))
 				$gateway_environment = $order->gateway_environment;
 			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
-				$host = "secure.authorize.net";		
+				$host = "secure.authorize.net";
 			else
-				$host = "test.authorize.net";	
-			
-			$path = "/gateway/transact.dll";												
+				$host = "test.authorize.net";
+
+			$path = "/gateway/transact.dll";
 			$post_url = "https://" . $host . $path;
 
 			$post_url = apply_filters("pmpro_authorizenet_post_url", $post_url, $gateway_environment);
-			
-			//what amount to charge?			
+
+			//what amount to charge?
 			$amount = $order->InitialPayment;
-						
+
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
 			$amount = round((float)$order->subtotal + (float)$tax, 2);
-			
-			//combine address			
+
+			//combine address
 			$address = $order->Address1;
 			if(!empty($order->Address2))
 				$address .= "\n" . $order->Address2;
-			
+
 			//customer stuff
 			$customer_email = $order->Email;
 			$customer_phone = $order->billing->phone;
-			
+
 			if(!isset($order->membership_level->name))
 				$order->membership_level->name = "";
-			
+
 			$post_values = array(
-				
+
 				// the API Login ID and Transaction Key must be replaced with valid values
 				"x_login"			=> pmpro_getOption("loginname"),
 				"x_tran_key"		=> pmpro_getOption("transactionkey"),
@@ -483,8 +483,8 @@
 				"x_method"			=> "CC",
 				"x_card_type"		=> $order->cardtype,
 				"x_card_num"		=> $order->accountnumber,
-				"x_exp_date"		=> $order->ExpirationDate,				
-				
+				"x_exp_date"		=> $order->ExpirationDate,
+
 				"x_amount"			=> $amount,
 				"x_tax"				=> $tax,
 				"x_description"		=> $order->membership_level->name . " Membership",
@@ -499,21 +499,21 @@
 				"x_invoice_num"		=> $order->code,
 				"x_phone"			=> $customer_phone,
 				"x_email"			=> $order->Email
-				
+
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
-			);						
-			
+			);
+
 			if(!empty($order->CVV2))
 				$post_values["x_card_code"] = $order->CVV2;
-			
+
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
 			$post_string = "";
 			foreach( $post_values as $key => $value )
 				{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
 			$post_string = rtrim( $post_string, "& " );
-						
+
 			//curl
 			$request = curl_init($post_url); // initiate curl object
 				curl_setopt($request, CURLOPT_HEADER, 0); // set to 0 to eliminate header info from response
@@ -524,13 +524,13 @@
 				// additional options may be required depending upon your server configuration
 				// you can find documentation on curl options at http://www.php.net/curl_setopt
 			curl_close ($request); // close curl object
-						
+
 			// This line takes the response and breaks it into an array using the specified delimiting character
 			$response_array = explode($post_values["x_delim_char"],$post_response);
 			if($response_array[0] == 1)
 			{
 				$order->payment_transaction_id = $response_array[6];
-				$order->updateStatus("success");					
+				$order->updateStatus("success");
 				return true;
 			}
 			else
@@ -540,38 +540,38 @@
 				$order->error = $response_array[3];
 				$order->shorterror = $response_array[3];
 				return false;
-			}						
+			}
 		}
-		
+
 		function subscribe(&$order)
 		{
 			//define variables to send
 
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
-			
+
 			//filter order before subscription. use with care.
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
-			
+
 			if(!empty($order->gateway_environment))
 				$gateway_environment = $order->gateway_environment;
 			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
-					$host = "api.authorize.net";		
+					$host = "api.authorize.net";
 				else
-					$host = "apitest.authorize.net";	
-			
+					$host = "apitest.authorize.net";
+
 			$path = "/xml/v1/request.api";
-			
+
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
-			
+
 			$amount = $order->PaymentAmount;
 			$refId = $order->code;
 			$name = $order->membership_name;
 			$length = (int)$order->BillingFrequency;
-			
+
 			if($order->BillingPeriod == "Month")
 				$unit = "months";
 			elseif($order->BillingPeriod == "Day")
@@ -588,13 +588,13 @@
 			}
 			else
 				return false;	//authorize.net only supports months and days
-				
+
 			$startDate = substr($order->ProfileStartDate, 0, 10);
 			if(!empty($order->TotalBillingCycles))
 				$totalOccurrences = (int)$order->TotalBillingCycles;
 			if(empty($totalOccurrences))
-				$totalOccurrences = 9999;	
-			if(isset($order->TrialBillingCycles))						
+				$totalOccurrences = 9999;
+			if(isset($order->TrialBillingCycles))
 				$trialOccurrences = (int)$order->TrialBillingCycles;
 			else
 				$trialOccurrences = 0;
@@ -602,26 +602,26 @@
 				$trialAmount = $order->TrialAmount;
 			else
 				$trialAmount = NULL;
-			
+
 			//taxes
 			$amount_tax = $order->getTaxForPrice($amount);
 			$trial_tax = $order->getTaxForPrice($trialAmount);
-						
+
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 			$trialAmount = round((float)$trialAmount + (float)$trial_tax, 2);
-			
+
 			//authorize.net doesn't support different periods between trial and actual
-			
+
 			if(!empty($order->TrialBillingPeriod) && $order->TrialBillingPeriod != $order->BillingPeriod)
 			{
 				echo "F";
 				return false;
 			}
-			
-			$cardNumber = $order->accountnumber;			
-			$expirationDate = $order->ExpirationDate_YdashM;						
+
+			$cardNumber = $order->accountnumber;
+			$expirationDate = $order->ExpirationDate_YdashM;
 			$cardCode = $order->CVV2;
-			
+
 			$firstName = $order->FirstName;
 			$lastName = $order->LastName;
 
@@ -632,20 +632,20 @@
 			$city = $order->billing->city;
 			$state = $order->billing->state;
 			$zip = $order->billing->zip;
-			$country = $order->billing->country;						
-			
+			$country = $order->billing->country;
+
 			//customer stuff
 			$customer_email = $order->Email;
 			if(strpos($order->billing->phone, "+") === false)
 				$customer_phone = $order->billing->phone;
 			else
 				$customer_phone = "";
-				
+
 			//make sure the phone is in an okay format
 			$customer_phone = preg_replace("/[^0-9]/", "", $customer_phone);
 			if(strlen($customer_phone) > 10)
 				$customer_phone = "";
-			
+
 			//build xml to post
 			$this->content =
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
@@ -665,9 +665,9 @@
 					"<startDate>" . $startDate . "</startDate>".
 					"<totalOccurrences>". $totalOccurrences . "</totalOccurrences>";
 			if(!empty($trialOccurrences))
-				$this->content .= 
+				$this->content .=
 					"<trialOccurrences>". $trialOccurrences . "</trialOccurrences>";
-			$this->content .= 
+			$this->content .=
 					"</paymentSchedule>".
 					"<amount>". $amount ."</amount>";
 			if(!empty($trialOccurrences))
@@ -680,7 +680,7 @@
 					"<expirationDate>" . $expirationDate . "</expirationDate>";
 			if(!empty($cardCode))
 				$this->content .= "<cardCode>" . $cardCode . "</cardCode>";
-			$this->content .=					
+			$this->content .=
 					"</creditCard>".
 					"</payment>".
 					"<order><invoiceNumber>" . substr($order->code, 0, 20) . "</invoiceNumber></order>".
@@ -695,24 +695,24 @@
 					"<city><![CDATA[" . substr($city, 0, 40) . "]]></city>".
 					"<state>". substr($state, 0, 2) . "</state>".
 					"<zip>" . substr($zip, 0, 20) . "</zip>".
-					"<country>". substr($country, 0, 60) . "</country>".					
+					"<country>". substr($country, 0, 60) . "</country>".
 					"</billTo>".
 					"</subscription>".
 					"</ARBCreateSubscriptionRequest>";
-		
+
 			//send the xml via curl
 			$this->response = $this->send_request_via_curl($host,$path,$this->content);
 			//if curl is unavilable you can try using fsockopen
 			/*
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
-						
-			if(!empty($this->response)) {				
+
+			if(!empty($this->response)) {
 				list ($refId, $resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);
 				if($resultCode == "Ok")
 				{
-					$order->status = "success";	//saved on checkout page				
-					$order->subscription_transaction_id = $subscriptionId;				
+					$order->status = "success";	//saved on checkout page
+					$order->subscription_transaction_id = $subscriptionId;
 					return true;
 				}
 				else
@@ -720,41 +720,41 @@
 					$order->status = "error";
 					$order->errorcode = $code;
 					$order->error = $text;
-					$order->shorterror = $text;									
+					$order->shorterror = $text;
 					return false;
 				}
-			} else  {				
+			} else  {
 				$order->status = "error";
 				$order->error = "Could not connect to Authorize.net";
 				$order->shorterror = "Could not connect to Authorize.net";
-				return false;				
+				return false;
 			}
-		}	
-		
+		}
+
 		function update(&$order)
 		{
-			//define variables to send					
+			//define variables to send
 			$gateway_environment = $order->gateway_environment;
 			if(empty($gateway_environment))
 				$gateway_environment = pmpro_getOption("gateway_environment");
 			if($gateway_environment == "live")
-					$host = "api.authorize.net";		
+					$host = "api.authorize.net";
 				else
-					$host = "apitest.authorize.net";	
-			
+					$host = "apitest.authorize.net";
+
 			$path = "/xml/v1/request.api";
-			
+
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
-			
+
 			//$amount = $order->PaymentAmount;
 			$refId = $order->code;
-			$subscriptionId = $order->subscription_transaction_id;			
-			
-			$cardNumber = $order->accountnumber;			
-			$expirationDate = $order->ExpirationDate_YdashM;						
+			$subscriptionId = $order->subscription_transaction_id;
+
+			$cardNumber = $order->accountnumber;
+			$expirationDate = $order->ExpirationDate_YdashM;
 			$cardCode = $order->CVV2;
-			
+
 			$firstName = $order->FirstName;
 			$lastName = $order->LastName;
 
@@ -765,14 +765,14 @@
 			$city = $order->billing->city;
 			$state = $order->billing->state;
 			$zip = $order->billing->zip;
-			$country = $order->billing->country;						
-			
+			$country = $order->billing->country;
+
 			//customer stuff
 			$customer_email = $order->Email;
 			if(strpos($order->billing->phone, "+") === false)
 				$customer_phone = $order->billing->phone;
-			
-			
+
+
 			//build xml to post
 			$this->content =
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
@@ -783,14 +783,14 @@
 					"</merchantAuthentication>".
 					"<refId>" . substr($refId, 0, 20) . "</refId>".
 					"<subscriptionId>" . $subscriptionId . "</subscriptionId>".
-					"<subscription>".																	
+					"<subscription>".
 					"<payment>".
 					"<creditCard>".
 					"<cardNumber>" . $cardNumber . "</cardNumber>".
 					"<expirationDate>" . $expirationDate . "</expirationDate>";
 			if(!empty($cardCode))
 				$this->content .= "<cardCode>" . $cardCode . "</cardCode>";
-			$this->content .= 					
+			$this->content .=
 					"</creditCard>".
 					"</payment>".
 					"<customer>".
@@ -804,24 +804,24 @@
 					"<city><![CDATA[" . substr($city, 0, 40) . "]]></city>".
 					"<state><![CDATA[". substr($state, 0, 2) . "]]></state>".
 					"<zip>" . substr($zip, 0, 20) . "</zip>".
-					"<country>". substr($country, 0, 60) . "</country>".					
+					"<country>". substr($country, 0, 60) . "</country>".
 					"</billTo>".
 					"</subscription>".
 					"</ARBUpdateSubscriptionRequest>";
-		
+
 			//send the xml via curl
 			$this->response = $this->send_request_via_curl($host,$path,$this->content);
 			//if curl is unavilable you can try using fsockopen
 			/*
 			$response = send_request_via_fsockopen($host,$path,$order->content);
 			*/
-			
-			
-			if(!empty($this->response)) {				
-				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);		
-				
+
+
+			if(!empty($this->response)) {
+				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($this->response);
+
 				if($resultCode == "Ok" || $code == "Ok")
-				{					
+				{
 					return true;
 				}
 				else
@@ -832,39 +832,39 @@
 					$order->shorterror = $text;
 					return false;
 				}
-			} else  {				
+			} else  {
 				$order->status = "error";
 				$order->error = "Could not connect to Authorize.net";
 				$order->shorterror = "Could not connect to Authorize.net";
-				return false;				
+				return false;
 			}
 		}
-		
+
 		function cancel(&$order)
 		{
-			//define variables to send					
+			//define variables to send
 			if(!empty($order->subscription_transaction_id))
 				$subscriptionId = $order->subscription_transaction_id;
 			else
 				$subscriptionId = "";
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
-		
+
 			if(!empty($order->gateway_environment))
 				$gateway_environment = $order->gateway_environment;
 			else
-				$gateway_environment = pmpro_getOption("gateway_environment");			
-			
+				$gateway_environment = pmpro_getOption("gateway_environment");
+
 			if($gateway_environment == "live")
-				$host = "api.authorize.net";		
+				$host = "api.authorize.net";
 			else
-				$host = "apitest.authorize.net";		
-			
+				$host = "apitest.authorize.net";
+
 			$path = "/xml/v1/request.api";
-		
+
 			if(!$subscriptionId || !$loginname || !$transactionkey)
 				return false;
-		
+
 			//build xml to post
 			$content =
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>".
@@ -875,22 +875,22 @@
 					"</merchantAuthentication>" .
 					"<subscriptionId>" . $subscriptionId . "</subscriptionId>".
 					"</ARBCancelSubscriptionRequest>";
-				
+
 			//send the xml via curl
 			$response = $this->send_request_via_curl($host,$path,$content);
 			//if curl is unavilable you can try using fsockopen
 			/*
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
-						
+
 			//if the connection and send worked $response holds the return from Authorize.net
 			if ($response)
-			{								
-				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);							
-								
+			{
+				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);
+
 				if($resultCode == "Ok" || $code == "Ok")
 				{
-					$order->updateStatus("cancelled");					
+					$order->updateStatus("cancelled");
 					return true;
 				}
 				else
@@ -901,41 +901,41 @@
 					$order->shorterror = $text;
 					return false;
 				}
-			} 
-			else  
-			{								
+			}
+			else
+			{
 				$order->status = "error";
 				$order->error = __("Could not connect to Authorize.net", "pmpro");
 				$order->shorterror = __("Could not connect to Authorize.net", "pmpro");
-				return false;				
+				return false;
 			}
-		}	
-		
+		}
+
 		function getSubscriptionStatus(&$order)
-		{			
-			//define variables to send					
+		{
+			//define variables to send
 			if(!empty($order->subscription_transaction_id))
 				$subscriptionId = $order->subscription_transaction_id;
 			else
 				$subscriptionId = "";
 			$loginname = pmpro_getOption("loginname");
 			$transactionkey = pmpro_getOption("transactionkey");
-		
+
 			if(!empty($order->gateway_environment))
 				$gateway_environment = $order->gateway_environment;
 			else
-				$gateway_environment = pmpro_getOption("gateway_environment");			
-			
+				$gateway_environment = pmpro_getOption("gateway_environment");
+
 			if($gateway_environment == "live")
-				$host = "api.authorize.net";		
+				$host = "api.authorize.net";
 			else
-				$host = "apitest.authorize.net";	
-			
+				$host = "apitest.authorize.net";
+
 			$path = "/xml/v1/request.api";
-		
+
 			if(!$subscriptionId || !$loginname || !$transactionkey)
 				return false;
-		
+
 			//build xml to post
 			$content =
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>".
@@ -946,43 +946,43 @@
 					"</merchantAuthentication>" .
 					"<subscriptionId>" . $subscriptionId . "</subscriptionId>".
 					"</ARBGetSubscriptionStatusRequest>";
-				
+
 			//send the xml via curl
 			$response = $this->send_request_via_curl($host,$path,$content);
-				
+
 			//if curl is unavilable you can try using fsockopen
 			/*
 			$response = send_request_via_fsockopen($host,$path,$content);
 			*/
-						
+
 			//if the connection and send worked $response holds the return from Authorize.net
 			if($response)
-			{								
-				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);								
-				
+			{
+				list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);
+
 				$status = $this->substring_between($response,'<status>','</status>');
-				
+
 				if($resultCode == "Ok" || $code == "Ok")
 				{
 					return $status;
 				}
 				else
-				{					
+				{
 					$order->status = "error";
 					$order->errorcode = $resultCode;
 					$order->error = $message;
 					$order->shorterror = $text;
 				}
-			} 
-			else  
-			{								
+			}
+			else
+			{
 				$order->status = "error";
 				$order->errorcode = $resultCode;
 				$order->error = $message;
 				$order->shorterror = $text;
 			}
-		}		
-		
+		}
+
 		//Authorize.net Function
 		//function to send xml request via fsockopen
 		function send_request_via_fsockopen($host,$path,$content)
@@ -1048,13 +1048,13 @@
 
 		//Authorize.net Function
 		//helper function for parsing response
-		function substring_between($haystack,$start,$end) 
+		function substring_between($haystack,$start,$end)
 		{
-			if (strpos($haystack,$start) === false || strpos($haystack,$end) === false) 
+			if (strpos($haystack,$start) === false || strpos($haystack,$end) === false)
 			{
 				return false;
-			} 
-			else 
+			}
+			else
 			{
 				$start_position = strpos($haystack,$start)+strlen($start);
 				$end_position = strpos($haystack,$end);
