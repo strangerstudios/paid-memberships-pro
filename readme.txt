@@ -103,8 +103,11 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.4 =
-* BUG: Fixed issue where custom roles had to have pmpro_membershiplevels capability to view other PMPro-related dashboard pages. (Thanks, squarelines)
+* BUG: Fixed the Stripe webhook to work on new orders that are storing the subscription id instead of the customer id in the subscription_transaction_id field. (Thanks, nickd32 on GitHub)
+* BUG: Fixed issue where the name and email address of customers was not being sent to Stripe if existing members checked out while the "show billing address" option was set to false.
 * BUG: Fixed bug where users who checked out with the Braintree Payments gateway could checkout again using their on file credit card if an invalid credit card was entered at checkout the second time. (Thanks, patternsinthecloud)
+* BUG: Updated the 2Checkout PHP API library and fixed some issues with 2Checkout integration.
+* BUG: Fixed issue where custom roles had to have pmpro_membershiplevels capability to view other PMPro-related dashboard pages. (Thanks, squarelines)
 * ENHANCEMENT: Added the ability to order levels on the Levels page by drag and drop in the WordPress admin.
 * ENHANCEMENT: Now hiding tabs in the PMPro settings if a user doesn't have access to that tab (but does have access to other tabs).
 * ENHANCEMENT: Converted all files to unix format and removed trailing whitespace. This has no functional change on the plugin, but helps developers who are contributing. (Thanks, meths on GitHub)
