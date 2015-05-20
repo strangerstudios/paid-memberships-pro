@@ -45,8 +45,8 @@ if(!empty($pmpro_level_order))
                 $reordered_levels[] = $pmpro_levels[$key];
         }
     }
+
+    $pmpro_levels = $reordered_levels;
 }
 
-$pmpro_levels = apply_filters("pmpro_levels_array", $reordered_levels);
-
-
+$pmpro_levels = apply_filters("pmpro_levels_array", $pmpro_levels);
