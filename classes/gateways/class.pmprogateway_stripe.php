@@ -366,14 +366,14 @@
 		}
 
 		/**
-		 * Use our own payment fields at checkout. (Remove the name attributes.)
+		 * Use our own payment fields at checkout. (Remove the name attributes.)		
 		 * @since 1.8
 		 */
 		static function pmpro_include_payment_information_fields($include)
 		{
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-
+			
 			//get accepted credit cards
 			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
@@ -1193,7 +1193,7 @@
 				try
 				{
 					$this->customer = Stripe_Customer::create(array(
-							  "description" => trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")",
+							  "description" => $name . " (" . $email . ")",
 							  "email" => $order->Email,
 							  "card" => $order->stripeToken
 							));

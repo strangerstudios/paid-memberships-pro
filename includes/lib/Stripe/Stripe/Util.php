@@ -74,7 +74,7 @@ abstract class Stripe_Util
         array_push($mapped, self::convertToStripeObject($i, $apiKey));
       return $mapped;
     } else if (is_array($resp)) {
-      if (isset($resp['object']) 
+      if (isset($resp['object'])
           && is_string($resp['object'])
           && isset($types[$resp['object']])) {
         $class = $types[$resp['object']];

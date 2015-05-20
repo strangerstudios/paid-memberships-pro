@@ -3,7 +3,7 @@
 class Stripe_ApplicationFee extends Stripe_ApiResource
 {
   /**
-   * This is a special case because the application fee endpoint has an 
+   * This is a special case because the application fee endpoint has an
    *    underscore in it. The parent `className` function strips underscores.
    *
    * @return string The name of the class.

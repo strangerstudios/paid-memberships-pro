@@ -5,11 +5,11 @@ class Twocheckout_Charge extends Twocheckout
 
     public static function form($params, $type='Checkout')
     {
-        echo '<form id="2checkout" action="https://www.2checkout.com/checkout/purchase" method="post">';
+        echo '<form id="2checkout" action="'.Twocheckout::$baseUrl.'/checkout/purchase" method="post">';
 
         foreach ($params as $key => $value)
         {
-            echo '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
+            echo '<input type="hidden" name="'.htmlspecialchars($key, ENT_QUOTES, 'UTF-8').'" value="'.htmlspecialchars($value, ENT_QUOTES, 'UTF-8').'"/>';
         }
         if ($type == 'auto') {
             echo '<input type="submit" value="Click here if you are not redirected automatically" /></form>';
@@ -22,7 +22,7 @@ class Twocheckout_Charge extends Twocheckout
 
     public static function direct($params, $type='Checkout')
     {
-        echo '<form id="2checkout" action="https://www.2checkout.com/checkout/purchase" method="post">';
+        echo '<form id="2checkout" action="'.Twocheckout::$baseUrl.'/checkout/purchase" method="post">';
 
         foreach ($params as $key => $value)
         {
@@ -43,19 +43,27 @@ class Twocheckout_Charge extends Twocheckout
             echo '</form>';
         }
 
-        echo '<script src="https://www.2checkout.com/static/checkout/javascript/direct.min.js"></script>';
+        echo '<script src="'.Twocheckout::$baseUrl.'/static/checkout/javascript/direct.min.js"></script>';
     }
 
     public static function link($params)
     {
-        $url = 'https://www.2checkout.com/checkout/purchase?'.http_build_query($params, '', '&amp;');
+        $url = Twocheckout::$baseUrl.'/checkout/purchase?'.http_build_query($params, '', '&amp;');
         return $url;
     }
 
     public static function redirect($params)
     {
-        $url = 'https://www.2checkout.com/checkout/purchase?'.http_build_query($params, '', '&amp;');
+        $url = Twocheckout::$baseUrl.'/checkout/purchase?'.http_build_query($params, '', '&amp;');
         header("Location: $url");
+    }
+
+    public static function auth($params=array())
+    {
+        $params['api'] = 'checkout';
+        $request = new Twocheckout_Api_Requester();
+        $result = $request->doCall('/checkout/api/1/'.self::$sid.'/rs/authService', $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
 }

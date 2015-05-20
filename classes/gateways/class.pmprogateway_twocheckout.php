@@ -12,6 +12,13 @@
 			if(!class_exists("Twocheckout"))
 				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
 			
+			//set API connection vars
+			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));
+			Twocheckout::privateKey(pmpro_getOption('twocheckout_privatekey'));
+			Twocheckout::username(pmpro_getOption('twocheckout_apiusername'));
+			Twocheckout::password(pmpro_getOption('twocheckout_apipassword'));
+			Twocheckout::$verifySSL = false;
+
 			$this->gateway = $gateway;
 			return $this->gateway;
 		}										
@@ -68,6 +75,7 @@
 				'gateway_environment',
 				'twocheckout_apiusername',
 				'twocheckout_apipassword',
+				'twocheckout_privatekey',
 				'twocheckout_accountnumber',
 				'twocheckout_secretword',
 				'currency',
@@ -114,6 +122,7 @@
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" />
+				<br /><small><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.');?></small>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -122,6 +131,16 @@
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
+				<br /><small><?php _e('Password for the API user created.');?></small>
+			</td>
+		</tr>
+		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="twocheckout_privatekey"><?php _e('API Private Key', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<input type="text" name="twocheckout_privatekey" size="60" value="<?php echo $values['twocheckout_privatekey']?>" />
+				<br /><small><?php _e('Go to API in 2Checkout and generate a new key pair. Paste the Private Key here.');?></small>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -130,6 +149,7 @@
 			</th>
 			<td>
 				<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $values['twocheckout_accountnumber']?>" />
+				<br /><small><?php _e('Click on the profile icon in 2Checkout to find your Account Number.');?></small>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -138,6 +158,7 @@
 			</th>
 			<td>
 				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
+				<br /><small><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.');?></small>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -145,7 +166,8 @@
 				<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+				
 			</td>
 		</tr>		
 		<?php
@@ -204,7 +226,7 @@
 		 */
 		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 		{
-			global $discount_code_id;
+			global $wpdb, $discount_code_id;
 			
 			//if no order, no need to pay
 			if(empty($morder))
@@ -246,9 +268,7 @@
 		function sendToTwocheckout(&$order)
 		{						
 			global $pmpro_currency;			
-			// Set up credentials
-			Twocheckout::setCredentials( pmpro_getOption("twocheckout_apiusername"), pmpro_getOption("twocheckout_apipassword") );
-
+			
 			$tco_args = array(
 				'sid' => pmpro_getOption("twocheckout_accountnumber"),
 				'mode' => '2CO', // will always be 2CO according to docs (@see https://www.2checkout.com/documentation/checkout/parameter-sets/pass-through-products/)
@@ -295,9 +315,17 @@
 			}
 
 			// Demo mode?
-			$environment = pmpro_getOption("gateway_environment");
-			if("sandbox" === $environment || "beta-sandbox" === $environment)
+			if(empty($order->gateway_environment))
+				$gateway_environment = pmpro_getOption("gateway_environment");
+			else
+				$gateway_environment = $order->gateway_environment;
+			if("sandbox" === $gateway_environment || "beta-sandbox" === $gateway_environment)
+			{
+				Twocheckout::sandbox(true);
 				$tco_args['demo'] = 'Y';
+			}
+			else
+				Twocheckout::sandbox(false);
 			
 			// Trial?
 			//li_#_startup_fee	Any start up fees for the product or service. Can be negative to provide discounted first installment pricing, but cannot equal or surpass the product price.
@@ -322,39 +350,64 @@
 
 			$ptpStr = apply_filters( 'pmpro_twocheckout_ptpstr', $ptpStr, $order );
 						
-			//echo str_replace("&", "&<br />", $ptpStr);
-			//exit;
+			///useful for debugging
+			///echo str_replace("&", "&<br />", $ptpStr);
+			///exit;
 			
-			//redirect to 2checkout			
-			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
+			//figure out gateway environment and URL to use			
+			if($gateway_environment == "live")
+					$host = "www.2checkout.com";		
+				else
+					$host = "sandbox.2checkout.com";	
+			$tco_url = 'https://' . $host . '/checkout/purchase' . $ptpStr;
 			
-			//echo $tco_url;
-			//die();
+			//redirect to 2checkout
 			wp_redirect( $tco_url );
 			exit;
 		}
 
 		function cancel(&$order) {
-			// If recurring, stop the recurring payment
-			if(pmpro_isLevelRecurring($order->membership_level)) {
-				$params['sale_id'] = $order->payment_transaction_id;
-				$result = Twocheckout_Sale::stop( $params ); // Stop the recurring billing
+			//no matter what happens below, we're going to cancel the order in our system
+			$order->updateStatus("cancelled");
 
-				// Successfully cancelled
-				if (isset($result['response_code']) && $result['response_code'] === 'OK') {
-					$order->updateStatus("cancelled");	
-					return true;
-				}
-				// Failed
-				else {
-					$order->status = "error";
-					$order->errorcode = $result->getCode();
-					$order->error = $result->getMessage();
-									
-					return false;
-				}
+			//require a subscription id
+			if(empty($order->subscription_transaction_id))
+				return false;
+
+			//build api params
+			$params = array();
+			$params['sale_id'] = $order->subscription_transaction_id;
+			
+			// Demo mode?
+			if(empty($order->gateway_environment))
+				$gateway_environment = pmpro_getOption("gateway_environment");
+			else
+				$gateway_environment = $order->gateway_environment;
+			
+			if("sandbox" === $gateway_environment || "beta-sandbox" === $gateway_environment)
+			{
+				Twocheckout::sandbox(true);
+				$params['demo'] = 'Y';
 			}
+			else
+				Twocheckout::sandbox(false);
 
+			$result = Twocheckout_Sale::stop( $params ); // Stop the recurring billing
+
+			// Successfully cancelled
+			if (isset($result['response_code']) && $result['response_code'] === 'OK') {
+				$order->updateStatus("cancelled");	
+				return true;
+			}
+			// Failed
+			else {
+				$order->status = "error";
+				$order->errorcode = $result->getCode();
+				$order->error = $result->getMessage();
+								
+				return false;
+			}
+			
 			return $order;
 		}
 	}

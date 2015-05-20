@@ -34,6 +34,10 @@
 /* levels */
 tr.pmpro_gray td {color: #AAA;}
 tr td.level_name a {font-size: 115%; font-weight: bold; }
+.membership-levels tr {background: #fff;}
+.membership-levels tr.alternate {background: #f9f9f9;}
+.membership-levels tr.ui-sortable-helper {border: 1px solid #2997C8;}
+tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 
 /* settings */
 tr.pmpro_settings_divider td {padding: 5px; margin: 0; color: #555; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC;}

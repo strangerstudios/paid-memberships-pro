@@ -128,7 +128,7 @@ class pmpro_ReCaptcha
         );
         $answers = json_decode($getResponse, true);
         $recaptchaResponse = new pmpro_ReCaptchaResponse();
-				
+
         if (trim($answers['success']) == true) {
             $recaptchaResponse->success = true;
         } else {

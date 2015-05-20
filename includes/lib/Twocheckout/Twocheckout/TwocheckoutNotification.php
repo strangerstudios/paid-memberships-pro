@@ -3,7 +3,7 @@
 class Twocheckout_Notification extends Twocheckout
 {
 
-    public static function check($insMessage, $secretWord, $format='json')
+    public static function check($insMessage=array(), $secretWord)
     {
         $hashSid = $insMessage['vendor_id'];
         $hashOrder = $insMessage['sale_id'];
@@ -14,7 +14,7 @@ class Twocheckout_Notification extends Twocheckout
         } else {
             $result = Twocheckout_Message::message('Success', 'Hash Matched');
         }
-        return Twocheckout_Util::return_resp($result, $format);
+        return Twocheckout_Util::returnResponse($result);
     }
 
 }

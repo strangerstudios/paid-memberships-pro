@@ -3,47 +3,50 @@
 class Twocheckout_Sale extends Twocheckout
 {
 
-    public static function retrieve($params=array(), $format='json')
+    public static function retrieve($params=array())
     {
         $request = new Twocheckout_Api_Requester();
         if(array_key_exists("sale_id",$params) || array_key_exists("invoice_id",$params)) {
-            $urlSuffix = 'sales/detail_sale';
+            $urlSuffix = '/api/sales/detail_sale';
         } else {
-            $urlSuffix = 'sales/list_sales';
+            $urlSuffix = '/api/sales/list_sales';
         }
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function refund($params=array(), $format='json') {
+    public static function refund($params=array()) {
         $request = new Twocheckout_Api_Requester();
         if(array_key_exists("lineitem_id",$params)) {
-            $urlSuffix ='sales/refund_lineitem';
-            $result = $request->do_call($urlSuffix, $params);
+            $urlSuffix ='/api/sales/refund_lineitem';
+            $result = $request->doCall($urlSuffix, $params);
         } elseif(array_key_exists("invoice_id",$params) || array_key_exists("sale_id",$params)) {
-            $urlSuffix ='sales/refund_invoice';
-            $result = $request->do_call($urlSuffix, $params);
+            $urlSuffix ='/api/sales/refund_invoice';
+            $result = $request->doCall($urlSuffix, $params);
         } else {
             $result = Twocheckout_Message::message('Error', 'You must pass a sale_id, invoice_id or lineitem_id to use this method.');
         }
-        return Twocheckout_Util::return_resp($result, $format);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function stop($params=array(), $format='json') {
+    public static function stop($params=array()) {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix ='sales/stop_lineitem_recurring';
+        $urlSuffix ='/api/sales/stop_lineitem_recurring';
         if(array_key_exists("lineitem_id",$params)) {
-            $result = $request->do_call($urlSuffix, $params);
+            $result = $request->doCall($urlSuffix, $params);
         } elseif(array_key_exists("sale_id",$params)) {
-            $result = Twocheckout_Sale::retrieve($params, 'array');
-            $lineitemData = Twocheckout_Util::get_recurring_lineitems($result);
+            $result = Twocheckout_Sale::retrieve($params);
+            if (!is_array($result)) {
+                $result = Twocheckout_Util::returnResponse($result, 'array');
+            }
+            $lineitemData = Twocheckout_Util::getRecurringLineitems($result);
             if (isset($lineitemData[0])) {
                 $i = 0;
                 $stoppedLineitems = array();
                 foreach( $lineitemData as $value )
                 {
                     $params = array('lineitem_id' => $value);
-                    $result = $request->do_call($urlSuffix, $params);
+                    $result = $request->doCall($urlSuffix, $params);
                     $result = json_decode($result, true);
                     if ($result['response_code'] == "OK") {
                         $stoppedLineitems[$i] = $value;
@@ -57,21 +60,19 @@ class Twocheckout_Sale extends Twocheckout
         } else {
             throw new Twocheckout_Error('You must pass a sale_id or lineitem_id to use this method.');
         }
-        return Twocheckout_Util::return_resp($result, $format);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function active($params=array(), $format='json') {
+    public static function active($params=array()) {
         if(array_key_exists("sale_id",$params)) {
             $result = Twocheckout_Sale::retrieve($params);
-            $array = Twocheckout_Util::return_resp($result, 'array');
-            $lineitemData = Twocheckout_Util::get_recurring_lineitems($array);
+            if (!is_array($result)) {
+                $result = Twocheckout_Util::returnResponse($result, 'array');
+            }
+            $lineitemData = Twocheckout_Util::getRecurringLineitems($result);
             if (isset($lineitemData[0])) {
                 $result = Twocheckout_Message::message('OK', $lineitemData);
-                if ($format == 'array') {
-                    return Twocheckout_Util::return_resp($result, $format);
-                } else {
-                    return Twocheckout_Util::return_resp($result, 'force_json');
-                }
+                return Twocheckout_Util::returnResponse($result);
             } else {
                 throw new Twocheckout_Error("No active recurring lineitems.");
             }
@@ -80,25 +81,25 @@ class Twocheckout_Sale extends Twocheckout
         }
     }
 
-    public static function comment($params=array(), $format='json') {
+    public static function comment($params=array()) {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix ='sales/create_comment';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix ='/api/sales/create_comment';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function ship($params=array(), $format='json') {
+    public static function ship($params=array()) {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix ='sales/mark_shipped';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix ='/api/sales/mark_shipped';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
-    public static function reauth($params=array(), $format='json') {
+    public static function reauth($params=array()) {
         $request = new Twocheckout_Api_Requester();
-        $urlSuffix ='sales/reauth';
-        $result = $request->do_call($urlSuffix, $params);
-        return Twocheckout_Util::return_resp($result, $format);
+        $urlSuffix ='/api/sales/reauth';
+        $result = $request->doCall($urlSuffix, $params);
+        return Twocheckout_Util::returnResponse($result);
     }
 
 }

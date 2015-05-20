@@ -34,6 +34,8 @@ function pmpro_init()
 		if( $admin_css_rtl ) {
 			wp_enqueue_style('pmpro_admin_rtl', $admin_css_rtl, array(), PMPRO_VERSION, "screen");
 		}
+
+        wp_enqueue_script('jquery-ui-sortable');
 	}
 	else
 	{		

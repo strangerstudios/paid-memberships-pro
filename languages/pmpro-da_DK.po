@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pmpro-dk_DA\n"
 "POT-Creation-Date: 2014-05-05 13:29-0400\n"
-"PO-Revision-Date: 2014-07-26 16:43+0100\n"
-"Last-Translator: Miscni <miscni@hotmail.com>\n"
+"PO-Revision-Date: 2014-12-08 00:20+0100\n"
+"Last-Translator: Admin Fundmentum <admin@fundmentum.com>\n"
 "Language-Team: Stranger Studios DK section <miscni@hotmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: da_DK\n"
-"X-Generator: Poedit 1.6.7\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-Bookmarks: -1,-1,215,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: adminpages/addons.php:5 adminpages/advancedsettings.php:5
@@ -40,11 +40,11 @@ msgstr "Tilføj et medlems niveau for at komme igang."
 
 #: adminpages/admin_header.php:27
 msgid "Setup the membership pages"
-msgstr "Sæt en medleys side op"
+msgstr "Opret medlemssiderne"
 
 #: adminpages/admin_header.php:29
 msgid "Setup your SSL certificate and payment gateway"
-msgstr "Sæt op din SSL certifikater og betalings gateway"
+msgstr "Opsætning af dine SSL certifikater og betalings gateway"
 
 #: adminpages/admin_header.php:38
 msgid ""
@@ -60,17 +60,17 @@ msgid ""
 "review the notes in the Billing Details section below."
 msgstr ""
 "Betalings detaljer, for dette niveau understøttes ikke af Stripe. Gennemgå "
-"venligst notater under Betalings Detaljer sektionen."
+"venligst oplysningerne under Betalings Detaljer sektionen."
 
 #: adminpages/admin_header.php:50 adminpages/admin_header.php:70
 #: adminpages/admin_header.php:90 adminpages/admin_header.php:111
 msgid "The levels with issues are highlighted below."
-msgstr "De niveaur med problemer er fremhævet nedenfor."
+msgstr "De niveaur der er problemer med er fremhævet nedenfor."
 
 #: adminpages/admin_header.php:52 adminpages/admin_header.php:72
 #: adminpages/admin_header.php:92 adminpages/admin_header.php:113
 msgid "Please edit your levels"
-msgstr "Venlig redigere dine niveaur"
+msgstr "Rediger venligst dine niveauer"
 
 #: adminpages/admin_header.php:58
 msgid ""
@@ -86,14 +86,14 @@ msgid ""
 "review the notes in the Billing Details section below."
 msgstr ""
 "Betalings detaljer for dette niveau understøttes ikke af Payflow. Gennemgå "
-"venligst notater under Betalings Detajler sektionen."
+"venligst oplysningerne under Betalings Detajler sektionen."
 
 #: adminpages/admin_header.php:78
 msgid ""
 "The billing details for some of your membership levels is not supported by "
 "Braintree."
 msgstr ""
-"Betalings detaljer for nogen af dine medlems niveaur, undersøttes ikke af "
+"Betalings detaljer for nogen af dine medlems niveauer, undersøttes ikke af "
 "Braintree."
 
 #: adminpages/admin_header.php:86
@@ -102,14 +102,14 @@ msgid ""
 "review the notes in the Billing Details section below."
 msgstr ""
 "Betalings detaljer for dette niveau understøttes ikke af Braintree. Gennemgå "
-"venligst noter I Betalings Detaljer sektion nedenfor."
+"venligst oplysningerne i Betalings Detaljer sektioner nedenfor."
 
 #: adminpages/admin_header.php:98
 msgid ""
 "The billing details for some of your membership levels is not supported by "
 "TwoCheckout."
 msgstr ""
-"Betalings detaljer for nogle af dine medlemsskab niveaur, understøttes ikke "
+"Betalings detaljer for nogle af dine medlemsskab niveauer, understøttes ikke "
 "af TwoCheckout. "
 
 #: adminpages/admin_header.php:107
@@ -118,7 +118,7 @@ msgid ""
 "review the notes in the Billing Details section below."
 msgstr ""
 "Betalings detaljer for dette niveau understøttes ikke af 2Checkout. Gennemgå "
-"venligst noter I Betalings Detaljer sektionen nedenfor."
+"venligst oplysningerne i Betalings Detaljer sektionen nedenfor."
 
 #: adminpages/admin_header.php:127 adminpages/admin_header.php:106
 msgid "Plugin Support"
@@ -134,7 +134,7 @@ msgstr "Bruger Forum"
 #: adminpages/membershiplevels.php:496 includes/adminpages.php:44
 #: includes/adminpages.php:100
 msgid "Membership Levels"
-msgstr "Medlemsskab Niveaur"
+msgstr "Medlemsskabs Niveauer"
 
 #: adminpages/admin_header.php:150 adminpages/pagesettings.php:120
 #: adminpages/admin_header.php:129 adminpages/pagesettings.php:92
@@ -149,7 +149,7 @@ msgstr "Betalings Gateway &amp; SSL"
 #: pages/account.php:56 adminpages/admin_header.php:131
 #: adminpages/memberslist.php:115 pages/account.php:52
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #: adminpages/admin_header.php:153 adminpages/admin_header.php:132
 msgid "Advanced"
@@ -164,7 +164,7 @@ msgstr "Add Ons"
 
 #: adminpages/advancedsettings.php:42 adminpages/advancedsettings.php:35
 msgid "Your advanced settings have been updated."
-msgstr "Dine advanceret indstillinger er bleven opdateret."
+msgstr "Dine advancerede indstillinger er bleven opdateret."
 
 #: adminpages/advancedsettings.php:66
 #, php-format
@@ -172,8 +172,8 @@ msgid ""
 "This content is for !!levels!! members only. <a href=\"%s\">Register here</"
 "a>."
 msgstr ""
-"Dette indhold er kun for !!levels!! medlemmer. <a href=\"%s\">Registrerer "
-"her</a>."
+"Dette indhold er kun for !!levels!! medlemmer. <a href=\"%s\">Registrer her</"
+"a>."
 
 #: adminpages/advancedsettings.php:71
 #, php-format
@@ -181,33 +181,33 @@ msgid ""
 "Please <a href=\"%s\">login</a> to view this content. (<a href=\"%s"
 "\">Register here</a>.)"
 msgstr ""
-"Vær venlig at <a href=\"%s\">Log Ind</a> for at læse dette indhold. (<a href="
-"\"%s\">Registerer her</a>.)"
+"Vær venlig at <a href=\"%s\">Logge ind</a> for at læse dette indhold. (<a "
+"href=\"%s\">Register her</a>.)"
 
 #: adminpages/advancedsettings.php:76
 msgid ""
 "This content is for members only. Visit the site and log in/register to read."
 msgstr ""
-"Dette indhold er kun for medllemmer. Besøg siden og log ind/registrerer for "
-"at læse."
+"Dette indhold er kun for medllemmer. Besøg siden og log ind/registrer for at "
+"læse."
 
 #: adminpages/advancedsettings.php:86 includes/adminpages.php:51
 #: includes/adminpages.php:135 adminpages/advancedsettings.php:79
 #: includes/adminpages.php:13 includes/adminpages.php:64
 #: includes/adminpages.php:128
 msgid "Advanced Settings"
-msgstr "Avanceret Indstillinger"
+msgstr "Avancerede Indstillinger"
 
 #: adminpages/advancedsettings.php:92 adminpages/advancedsettings.php:85
 msgid "Message for Logged-in Non-members"
-msgstr "Beskeder til logget ind ikke-medlemmer"
+msgstr "Beskeder til ikke-medlemmer som er logget ind"
 
 #: adminpages/advancedsettings.php:96 adminpages/advancedsettings.php:89
 msgid ""
 "This message replaces the post content for non-members. Available variables"
 msgstr ""
-"Denne besked erstatter dette indhold for ikke-medlemmer. Forskellige "
-"muligheder er tilgængelig"
+"Denne besked erstatter dette indlægs indhold for ikke-medlemmer. Forskellige "
+"variable er tilgængelig"
 
 #: adminpages/advancedsettings.php:101 adminpages/advancedsettings.php:94
 msgid "Message for Logged-out Users"
@@ -215,7 +215,8 @@ msgstr "Besked til brugere der er logget ud"
 
 #: adminpages/advancedsettings.php:105 adminpages/advancedsettings.php:98
 msgid "This message replaces the post content for logged-out visitors."
-msgstr "Denne besked erstatter det postet indhold for lbesøgende."
+msgstr ""
+"Denne besked erstatter dette indlægs indhold for besøgende der er logget ud."
 
 #: adminpages/advancedsettings.php:110 adminpages/advancedsettings.php:103
 msgid "Message for RSS Feed"
@@ -223,7 +224,7 @@ msgstr "Besked til RSS Feed"
 
 #: adminpages/advancedsettings.php:114 adminpages/advancedsettings.php:107
 msgid "This message replaces the post content in RSS feeds."
-msgstr "Denne besked erstatter postet indhold I RSS feeds."
+msgstr "Denne besked erstatter indlæggets indhold i RSS feeds."
 
 #: adminpages/advancedsettings.php:120 adminpages/advancedsettings.php:113
 msgid "Show Excerpts to Non-Members?"
@@ -266,7 +267,7 @@ msgstr "For at skjule reklamer i din template kode, brug følgende"
 
 #: adminpages/advancedsettings.php:156 adminpages/advancedsettings.php:149
 msgid "Choose Levels to Hide Ads From"
-msgstr "Vælg nivauer for at Skjule Reklamer Fra"
+msgstr "Vælg nivauer hvor Reklamer skal skjules"
 
 #: adminpages/advancedsettings.php:190 adminpages/advancedsettings.php:183
 msgid "Redirect all traffic from registration page to /susbcription/?"
@@ -304,7 +305,7 @@ msgstr "En gratis reCAPTCHA nøgle er påkrævet."
 
 #: adminpages/advancedsettings.php:210 adminpages/advancedsettings.php:203
 msgid "Click here to signup for reCAPTCHA"
-msgstr "Klik her, for at registerer med reCAPTCHA"
+msgstr "Klik her, for at registere med reCAPTCHA"
 
 #: adminpages/advancedsettings.php:216 adminpages/advancedsettings.php:209
 msgid "reCAPTCHA Public Key"
@@ -316,15 +317,15 @@ msgstr "reCAPTCHA Privat Nøgle"
 
 #: adminpages/advancedsettings.php:225 adminpages/advancedsettings.php:218
 msgid "Require Terms of Service on signups?"
-msgstr "Ønskes Vilkår og Betingelser med registrering? "
+msgstr "Kræv godkendelse af  Vilkår og Betingelser ved registrering? "
 
 #: adminpages/advancedsettings.php:232 adminpages/advancedsettings.php:225
 msgid ""
 "If yes, create a WordPress page containing your TOS agreement and assign it "
 "using the dropdown above."
 msgstr ""
-"Hvis ja er valgt, opret en Wordpress side, med indhold af din VOB aftale, og "
-"tilføje den, med dropdown ovenfor.t"
+"Hvis ja er valgt, opret en Wordpress side med din VOB aftale, og vælg den "
+"derefter fra listen herover"
 
 #: adminpages/advancedsettings.php:272
 msgid "selected"
@@ -343,7 +344,7 @@ msgstr "Rabat kode er opdateret succesfuldt"
 
 #: adminpages/discountcodes.php:55
 msgid "Error updating discount code. That code may already be in use."
-msgstr "Fejl I at opdatere rabat kode. Denne kode er nok allerede i brug."
+msgstr "Fejl i at opdatere rabat kode. Denne kode er måske allerede i brug."
 
 #: adminpages/discountcodes.php:64
 msgid "Discount code added successfully."
@@ -351,16 +352,16 @@ msgstr "Rabat kode er tilføjet succesfuldt."
 
 #: adminpages/discountcodes.php:71
 msgid "Error adding discount code. That code may already be in use."
-msgstr "Fejl i at tilføje rabat kode. Denne kode må allerede være i brug,"
+msgstr "Fejl i at tilføje rabat kode. Denne kode er måske allerede i brug."
 
 #: adminpages/discountcodes.php:196
 #, php-format
 msgid "Error saving values for the %s level."
-msgstr "Fejl i at gemme værdier til denne %s niveau."
+msgstr "Fejl i at gemme værdier til dette %s niveau."
 
 #: adminpages/discountcodes.php:204
 msgid "There were errors updating the level values: "
-msgstr "Der opstod fejl I at opdatere niveau værdier: "
+msgstr "Der opstod fejl i at opdatere niveau værdier: "
 
 #: adminpages/discountcodes.php:237 adminpages/discountcodes.php:234
 #, php-format
@@ -376,7 +377,7 @@ msgstr ""
 
 #: adminpages/discountcodes.php:248 adminpages/discountcodes.php:245
 msgid "Error deleting code. Please try again."
-msgstr "Fejl opstod I at slette koden. Prøv igen"
+msgstr "Fejl opstod i at slette koden. Prøv igen"
 
 #: adminpages/discountcodes.php:254 adminpages/discountcodes.php:251
 msgid "Code not found."
@@ -384,7 +385,7 @@ msgstr "Kode ikke fundet."
 
 #: adminpages/discountcodes.php:267 adminpages/discountcodes.php:264
 msgid "Edit Discount Code"
-msgstr "Redigere Rabat Kode"
+msgstr "Rediger Rabat Kode"
 
 #: adminpages/discountcodes.php:269 adminpages/discountcodes.php:529
 #: adminpages/discountcodes.php:266 adminpages/discountcodes.php:526
@@ -404,7 +405,7 @@ msgstr "ID"
 #: adminpages/discountcodes.php:310 adminpages/orders.php:261
 #: adminpages/discountcodes.php:307 adminpages/orders.php:211
 msgid "This will be generated when you save."
-msgstr "Dette ville blive generet, når du gemmer."
+msgstr "Dette ville blive genereret, når du gemmer."
 
 #: adminpages/discountcodes.php:314 adminpages/discountcodes.php:558
 #: adminpages/orders.php:265 adminpages/orders.php:901
@@ -430,34 +431,34 @@ msgstr "Forbrug"
 
 #: adminpages/discountcodes.php:391 adminpages/discountcodes.php:388
 msgid "Leave blank for unlimited uses."
-msgstr "Lad dette stå blank, for uendelig brug."
+msgstr "Lad dette stå blank, for ubegrænset brug."
 
 #: adminpages/discountcodes.php:430 adminpages/membershiplevels.php:339
 #: adminpages/membershiplevels.php:515 adminpages/discountcodes.php:427
 #: adminpages/membershiplevels.php:337 adminpages/membershiplevels.php:507
 #: adminpages/membershiplevels.php:513 pages/levels.php:14
 msgid "Initial Payment"
-msgstr "Begynd Betaling"
+msgstr "Første Betaling"
 
 #: adminpages/discountcodes.php:431 adminpages/membershiplevels.php:340
 #: adminpages/discountcodes.php:428 adminpages/membershiplevels.php:338
 msgid "The initial amount collected at registration."
-msgstr "Det påbegyndte beløb, er indsamlet ved registrering."
+msgstr "Det første beløb, der opkræves ved registrering."
 
 #: adminpages/discountcodes.php:435 adminpages/membershiplevels.php:344
 #: adminpages/discountcodes.php:432 adminpages/membershiplevels.php:342
 msgid "Recurring Subscription"
-msgstr "Gentag Abonnoment"
+msgstr "Gentagende Betaling"
 
 #: adminpages/discountcodes.php:436 adminpages/membershiplevels.php:345
 #: adminpages/discountcodes.php:433 adminpages/membershiplevels.php:343
 msgid "Check if this level has a recurring subscription payment."
-msgstr "Klik her, hvis dette niveau har en gentagene betaling."
+msgstr "Klik her, hvis dette niveau har Gentagende Betaling."
 
 #: adminpages/discountcodes.php:440 adminpages/membershiplevels.php:349
 #: adminpages/membershiplevels.php:347
 msgid "Billing Amount"
-msgstr "Fakture Beløb"
+msgstr "Beløb"
 
 #: adminpages/discountcodes.php:446 adminpages/discountcodes.php:492
 #: adminpages/membershiplevels.php:355 adminpages/membershiplevels.php:449
@@ -501,9 +502,9 @@ msgid ""
 "level, including the trial period (if applicable) but not including the "
 "initial payment. Set to zero if membership is indefinite."
 msgstr ""
-"Det <strong>totale</strong> antal af gentagende fakture cykluser for dette "
-"niveau, herunder prøveperioden (hvis relevant), men ikke inkluderet I den "
-"oprindelige betaling. Sæt til nul, hvis medlemskab er ubegrænset."
+"Det <strong>totale</strong> antal af gentagende faktura cykluser for dette "
+"niveau, herunder prøveperioden (hvis relevant), men ikke inkluderet i den "
+"første betaling. Sæt til nul, hvis medlemskab er ubegrænset."
 
 #: adminpages/discountcodes.php:467 adminpages/membershiplevels.php:395
 #: adminpages/discountcodes.php:464 adminpages/membershiplevels.php:393
@@ -514,13 +515,13 @@ msgstr "Brugerdefineret Prøveperiode"
 #: adminpages/discountcodes.php:465 adminpages/membershiplevels.php:394
 #: adminpages/membershiplevels.php:395
 msgid "Check to add a custom trial period."
-msgstr "Klik her, for at tilføje en brugerdefineret prøve periode"
+msgstr "Klik her, for at tilføje en Brugerdefineret Prøveperiode"
 
 #: adminpages/discountcodes.php:472 adminpages/membershiplevels.php:406
 #: adminpages/discountcodes.php:469 adminpages/membershiplevels.php:398
 #: adminpages/membershiplevels.php:404
 msgid "Trial Billing Amount"
-msgstr "Prøveperiode Fakture konto"
+msgstr "Prøveperiode Beløb"
 
 #: adminpages/discountcodes.php:475 adminpages/membershiplevels.php:409
 #: adminpages/discountcodes.php:472 adminpages/membershiplevels.php:401
@@ -532,7 +533,7 @@ msgstr "for det første"
 #: adminpages/discountcodes.php:474 adminpages/membershiplevels.php:403
 #: adminpages/membershiplevels.php:409
 msgid "subscription payments"
-msgstr "abonnoments betalings"
+msgstr "abonnoments betalinger"
 
 #: adminpages/discountcodes.php:482 adminpages/membershiplevels.php:439
 #: adminpages/discountcodes.php:479 adminpages/membershiplevels.php:431
@@ -558,9 +559,9 @@ msgid ""
 "(recurring subscription, if any) will be cancelled when the membership "
 "expires."
 msgstr ""
-"Indstil varigheden af medlemskab. Bemærk, at de eventuelle fremtidige "
-"betalinger (tilbagevendende abonnementer, hvis nogen) vil blive annulleret, "
-"når medlemskabet udløber."
+"Indstil varigheden af medlemskab. Bemærk, at eventuelle fremtidige "
+"betalinger (gentagende betalinger, hvis nogen) vil blive annulleret, når "
+"medlemskabet udløber."
 
 #: adminpages/discountcodes.php:528 adminpages/discountcodes.php:525
 msgid "Memberships Discount Codes"
@@ -599,15 +600,15 @@ msgid ""
 "Discount codes allow you to offer your memberships at discounted prices to "
 "select customers."
 msgstr ""
-"Rabat koder, giver dig mulighed for, at tilbyde medlemmer Rabat priser til "
-"udvalgte kunder."
+"Rabat koder, giver dig mulighed for, at tilbyde medlemmer Rabat til udvalgte "
+"kunder."
 
 #: adminpages/discountcodes.php:619 adminpages/membershiplevels.php:572
 #: adminpages/orders.php:961 adminpages/discountcodes.php:614
 #: adminpages/membershiplevels.php:564 adminpages/membershiplevels.php:570
 #: adminpages/orders.php:658
 msgid "edit"
-msgstr "Redigere"
+msgstr "Rediger"
 
 #: adminpages/discountcodes.php:622 adminpages/discountcodes.php:617
 #, php-format
@@ -616,8 +617,8 @@ msgid ""
 "existing users will not change, but new users will not be able to use this "
 "code anymore."
 msgstr ""
-"Er du sikker på, at du ville slette %s rabat kode?. Abonnement for den "
-"eksisterende bruger ville ikke ændre sig, men nye brugere har ikke mulighed "
+"Er du sikker på, at du ville slette %s rabat koden?. Abonnement for "
+"eksisterende brugerd ville ikke ændre sig, men nye brugere har ikke mulighed "
 "for, at bruge koden."
 
 #: adminpages/discountcodes.php:622 adminpages/membershiplevels.php:574
@@ -632,7 +633,7 @@ msgstr "Slet"
 #: includes/adminpages.php:12 includes/adminpages.php:59
 #: includes/adminpages.php:121
 msgid "Email Settings"
-msgstr "Email Indstillinger"
+msgstr "E-mail Indstillinger"
 
 #: adminpages/emailsettings.php:70 adminpages/emailsettings.php:61
 msgid ""
@@ -642,7 +643,7 @@ msgid ""
 msgstr ""
 "Som standard, vil systemet generere email sendt fra "
 "<em><strong>wordpress@ditdomæne.com</strong></em>. Du har mulighed for, at "
-"opdatere adresse, ved at bruge felterne nedenfor. "
+"opdatere denne adresse ved at bruge felterne nedenfor. "
 
 #: adminpages/emailsettings.php:72 adminpages/emailsettings.php:63
 msgid ""
@@ -654,7 +655,7 @@ msgid ""
 "paidmembershipspro.com/documentation/member-communications/\">Click here to "
 "learn more about Paid Memberships Pro emails</a>."
 msgstr ""
-"Hvis du vil ændre udseendet af systemet genererede e-mails, tilføje filerne "
+"Hvis du vil ændre udseendet af systemet genererede e-mails, tilføj filerne "
 "<em>email_header.html</em> og <em>email_footer.html</em> til din tema mappe. "
 "Dette vil ændre både WordPress standard beskeder samt meddelelser genereres "
 "af Paid  Memberships Pro.<a title=\"Paid medlemskaber Pro - Medlber "
@@ -672,7 +673,7 @@ msgstr "Fra Navn"
 
 #: adminpages/emailsettings.php:94
 msgid "Only Filter PMPro Emails?"
-msgstr "Filtere Kun PMPro Emails?"
+msgstr "Filtrer Kun PMPro Emails?"
 
 #: adminpages/emailsettings.php:98
 msgid "If unchecked, all emails from \"WordPress &lt;"
@@ -701,7 +702,7 @@ msgstr "Admin Ændringer"
 #: adminpages/emailsettings.php:134 adminpages/emailsettings.php:105
 #: adminpages/emailsettings.php:123
 msgid "when an admin changes a user's membership level through the dashboard."
-msgstr "Når en admin ændre en bruger's medlemsskab niveau gennem kontrolpanel."
+msgstr "Når en admin ændre en bruger's medlemsskabs niveau via kontrolpanel."
 
 #: adminpages/emailsettings.php:139 adminpages/emailsettings.php:110
 #: adminpages/emailsettings.php:128
@@ -711,17 +712,17 @@ msgstr "Annullering"
 #: adminpages/emailsettings.php:143 adminpages/emailsettings.php:114
 #: adminpages/emailsettings.php:132
 msgid "when a user cancels his or her account."
-msgstr "når en bruger annullere hans eller hendes konto."
+msgstr "når en bruger annullerer hans eller hendes konto."
 
 #: adminpages/emailsettings.php:148 adminpages/emailsettings.php:119
 #: adminpages/emailsettings.php:137
 msgid "Bill Updates"
-msgstr "Fakture Opdates"
+msgstr "Faktura Opdateringer"
 
 #: adminpages/emailsettings.php:152 adminpages/emailsettings.php:123
 #: adminpages/emailsettings.php:141
 msgid "when a user updates his or her billing information."
-msgstr "når en bruger opdatere hans eller hendes betalings informationer."
+msgstr "når en bruger opdaterer hans eller hendes betalings informationer."
 
 #: adminpages/emailsettings.php:158 adminpages/emailsettings.php:129
 #: adminpages/emailsettings.php:147
@@ -740,7 +741,7 @@ msgid ""
 "still get an email confirmation from PMPro after checkout.)"
 msgstr ""
 "Standard WP notifikations email. (Anbefales: Ikke Aktiveret. Medlemmer vil "
-"stadig få email bekræftigelse fra PMPRO efter de har været kassen.)"
+"stadig få email bekræftigelse fra PMPRO efter de har betalt.)"
 
 #: adminpages/membershiplevels.php:118
 msgid "Membership level updated successfully."
@@ -748,7 +749,7 @@ msgstr "Medlemsskab Niveau opdateret succesfuldt."
 
 #: adminpages/membershiplevels.php:124
 msgid "Error updating membership level."
-msgstr "Fejl I opdatering af medlemsskab niveau."
+msgstr "Fejl i opdatering af medlemsskab niveau."
 
 #: adminpages/membershiplevels.php:141
 msgid "Membership level added successfully."
@@ -756,7 +757,7 @@ msgstr "Medlemsskab niveau tilføjet succesfuldt."
 
 #: adminpages/membershiplevels.php:146
 msgid "Error adding membership level."
-msgstr "Fejl I at tilføje medlemskabs niveau."
+msgstr "Fejl i at tilføje medlemskabs niveau."
 
 #: adminpages/membershiplevels.php:181 adminpages/membershiplevels.php:179
 #, php-format
@@ -780,15 +781,15 @@ msgstr "Medlemskabs niveau slettet succesfuldt."
 #: adminpages/membershiplevels.php:203 adminpages/membershiplevels.php:209
 #: adminpages/membershiplevels.php:201 adminpages/membershiplevels.php:207
 msgid "Error deleting membership level."
-msgstr "Fejl I at slette medlemsskab niveau."
+msgstr "Fejl i at slette medlemsskab niveau."
 
 #: adminpages/membershiplevels.php:224 adminpages/membershiplevels.php:222
 msgid "Edit Membership Level"
-msgstr "Redigere medlemsskab niveau"
+msgstr "Rediger medlemsskab niveau"
 
 #: adminpages/membershiplevels.php:226 adminpages/membershiplevels.php:224
 msgid "Add New Membership Level"
-msgstr "Tilføj Ny Medlemsskab Niveau"
+msgstr "Tilføj Nyt Medlemsskab Niveau"
 
 #: adminpages/membershiplevels.php:293 adminpages/membershiplevels.php:514
 #: adminpages/reports/login.php:142 adminpages/membershiplevels.php:291
@@ -817,24 +818,24 @@ msgid ""
 "Stripe integration currently only supports billing periods of \"Week\", "
 "\"Month\" or \"Year\"."
 msgstr ""
-"Stripe integration understøtter kun Faktura af \"Uge\", \"Måned\" eller \"År"
-"\"."
+"Stripe integration understøtter kun gentagende betalinger per \"Uge\", "
+"\"Måned\" eller \"År\"."
 
 #: adminpages/membershiplevels.php:368 adminpages/membershiplevels.php:366
 msgid ""
 "Braintree integration currently only supports billing periods of \"Month\" "
 "or \"Year\"."
 msgstr ""
-"Braintree integration understøtter kun Faktura af \"Uge\", \"Måned\" eller "
-"\"År\"."
+"Braintree integration understøtter kun gentagende betalinger per \"Uge\", "
+"\"Måned\" eller \"År\"."
 
 #: adminpages/membershiplevels.php:370 adminpages/membershiplevels.php:368
 msgid ""
 "Payflow integration currently only supports billing frequencies of 1 and "
 "billing periods of \"Week\", \"Month\" or \"Year\"."
 msgstr ""
-"Payflow integration understøtter kun Faktura frekvens af  og faktura periode "
-"af \"Uge\", \"Måned\" eller \"År\"."
+"Payflow integration understøtter kun gentagende betalinger af 1 og per \"Uge"
+"\", \"Måned\" eller \"År\"."
 
 #: adminpages/membershiplevels.php:374 adminpages/membershiplevels.php:372
 msgid ""
@@ -857,7 +858,7 @@ msgid ""
 "You will need to create a \"Plan\" in your Braintree dashboard with the same "
 "settings and the \"Plan ID\" set to"
 msgstr ""
-"Du er nødtil at oprette en \"Plan\" i dit Braintree kontrolpanel med de "
+"Du er nød til at oprette en \"Plan\" i dit Braintree kontrolpanel med de "
 "samme indstillinger og hvor \"Plan ID\" er sat til"
 
 #: adminpages/membershiplevels.php:388 adminpages/membershiplevels.php:386
@@ -874,8 +875,8 @@ msgid ""
 "trials by setting an initial payment different from the billing amount."
 msgstr ""
 "2Checkout integration understøtter ikke brugerdefineret prøveperiode. Du kan "
-"lave en prøveperiode via indstillinger, og sætte betalings mulighed til en "
-"anden fakture."
+"lave en prøveperiode via indstillinger, og sætte første betaling til et "
+"andet beløb."
 
 #: adminpages/membershiplevels.php:414 adminpages/membershiplevels.php:406
 #: adminpages/membershiplevels.php:412
@@ -896,7 +897,7 @@ msgstr "Braintree integration understøtter prøveperioder der er større end $0
 msgid ""
 "Payflow integration currently does not support trial amounts greater than $0."
 msgstr ""
-"Payflow integration understøtter ikke prøveåerioder der er større end $0."
+"Payflow integration understøtter ikke prøveperioder der er større end $0."
 
 #: adminpages/membershiplevels.php:430 adminpages/membershiplevels.php:422
 #: adminpages/membershiplevels.php:428
@@ -914,13 +915,13 @@ msgid ""
 "Check to hide this level from the membership levels page and disable "
 "registration."
 msgstr ""
-"Klik her, for at skjule dette Niveau fra medlemsskabs Niveau side, og "
+"Kryds her, for at skjule dette Niveau fra medlemsskabs Niveau siden, og "
 "deaktivere registrering."
 
 #: adminpages/membershiplevels.php:465 adminpages/membershiplevels.php:457
 #: adminpages/membershiplevels.php:463
 msgid "Content Settings"
-msgstr "Indhols Indstillinger"
+msgstr "Indholds Indstillinger"
 
 #: adminpages/membershiplevels.php:469 adminpages/membershiplevels.php:461
 #: adminpages/membershiplevels.php:467
@@ -989,7 +990,7 @@ msgstr "Efter"
 #: adminpages/membershiplevels.php:565 adminpages/membershiplevels.php:571
 #: adminpages/orders.php:661
 msgid "copy"
-msgstr "Kopiere"
+msgstr "kopier"
 
 #: adminpages/membershiplevels.php:574 adminpages/membershiplevels.php:566
 #: adminpages/membershiplevels.php:572
@@ -1010,7 +1011,7 @@ msgstr "Medlems Liste"
 #: adminpages/memberslist.php:26 adminpages/orders.php:591
 #: adminpages/orders.php:522
 msgid "Export to CSV"
-msgstr "Eksportere til CSV"
+msgstr "Eksporter til CSV"
 
 #: adminpages/memberslist.php:30 adminpages/orders.php:603
 #: adminpages/reports/login.php:65 adminpages/reports/memberships.php:292
@@ -1023,7 +1024,7 @@ msgstr "Vis"
 #: adminpages/reports/memberships.php:317 adminpages/reports/sales.php:216
 #: adminpages/reports/sales.php:208 adminpages/reports/sales.php:217
 msgid "All Levels"
-msgstr "All Niveauer"
+msgstr "Alle Niveauer"
 
 #: adminpages/memberslist.php:42
 msgid "Old Members"
@@ -1046,11 +1047,11 @@ msgstr "Brugernavn"
 
 #: adminpages/memberslist.php:146 adminpages/memberslist.php:113
 msgid "First&nbsp;Name"
-msgstr "For&nbsp;Navn"
+msgstr "Fornavn"
 
 #: adminpages/memberslist.php:147 adminpages/memberslist.php:114
 msgid "Last&nbsp;Name"
-msgstr "Efter&nbsp;Navn"
+msgstr "Efternavn"
 
 #: adminpages/memberslist.php:150 pages/account.php:94 pages/billing.php:62
 #: pages/checkout.php:298 pages/confirmation.php:61 pages/invoice.php:48
@@ -1058,7 +1059,7 @@ msgstr "Efter&nbsp;Navn"
 #: pages/checkout.php:314 pages/checkout.php:321 pages/confirmation.php:59
 #: pages/invoice.php:46
 msgid "Billing Address"
-msgstr "Fakture Addresse"
+msgstr "Faktura Addresse"
 
 #: adminpages/memberslist.php:151 adminpages/reports/login.php:143
 #: classes/gateways/class.pmprogateway_authorizenet.php:187
@@ -1073,11 +1074,11 @@ msgstr "Gebyr"
 #: adminpages/memberslist.php:153 adminpages/reports/login.php:144
 #: adminpages/memberslist.php:120
 msgid "Joined"
-msgstr "Forbundet"
+msgstr "Tilmeldt"
 
 #: adminpages/memberslist.php:157
 msgid "Ended"
-msgstr "Sluttet"
+msgstr "Afsluttet"
 
 #: adminpages/memberslist.php:223 adminpages/reports/login.php:210
 #: adminpages/memberslist.php:195
@@ -1087,7 +1088,7 @@ msgstr "Ingen Medlemmer fundet."
 #: adminpages/memberslist.php:223 adminpages/reports/login.php:210
 #: adminpages/memberslist.php:195
 msgid "Search all levels"
-msgstr "Søg efter Niveauer"
+msgstr "Søg i alle Niveauer"
 
 #: adminpages/orders.php:67 adminpages/orders.php:26
 msgid "Order deleted successfully."
@@ -1099,11 +1100,11 @@ msgstr "Fejl i at slette ordre."
 
 #: adminpages/orders.php:169 adminpages/orders.php:119
 msgid "Order saved successfully."
-msgstr "Ordre gent succesfuldt."
+msgstr "Ordre gemt succesfuldt."
 
 #: adminpages/orders.php:174 adminpages/orders.php:124
 msgid "Error updating order timestamp."
-msgstr "Fejl i at opdatere tidsstempel ordre."
+msgstr "Fejl i at opdatere ordrens tidsstempel."
 
 #: adminpages/orders.php:180 adminpages/orders.php:130
 msgid "Error saving order."
@@ -1177,7 +1178,7 @@ msgstr "Total"
 
 #: adminpages/orders.php:375 adminpages/orders.php:325
 msgid "Should be subtotal + tax - couponamount."
-msgstr "Skulle være subtotal + skat - rabat beløb"
+msgstr "Skal være subtotal + skat - rabat beløb"
 
 #: adminpages/orders.php:380 adminpages/orders.php:330
 msgid "Payment Type"
@@ -1257,7 +1258,7 @@ msgstr "Betalings Transaktions ID"
 
 #: adminpages/orders.php:478 adminpages/orders.php:428
 msgid "Generated by the gateway. Useful to cross reference orders."
-msgstr "Genereret af Gateway. Nyttigt til at krydse referencer med ordre."
+msgstr "Genereret af Gateway. Nyttigt til krydsreferencer med ordre."
 
 #: adminpages/orders.php:482 adminpages/orders.php:432
 msgid "Subscription Transaction ID"
@@ -1265,8 +1266,7 @@ msgstr "Abonnoments Transaktion ID"
 
 #: adminpages/orders.php:487 adminpages/orders.php:437
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
-msgstr ""
-"Genereret af Gateway. Nyttigt til at krydse referencer med abonnomenter. "
+msgstr "Genereret af Gateway. Nyttigt til krydsreferencer med abonnomenter. "
 
 #: adminpages/orders.php:492 adminpages/orders.php:910 pages/invoice.php:107
 #: adminpages/orders.php:442 adminpages/orders.php:607 pages/invoice.php:105
@@ -1303,7 +1303,7 @@ msgstr "Ordrer"
 
 #: adminpages/orders.php:571 adminpages/orders.php:521
 msgid "Add New Order"
-msgstr "Tilføj Ny Ordrer"
+msgstr "Tilføj Ny Ordre"
 
 #: adminpages/orders.php:605
 msgid "All"
@@ -1335,7 +1335,7 @@ msgstr "Til"
 
 #: adminpages/orders.php:636
 msgid "filter by "
-msgstr "Filtreret af"
+msgstr "Filtreret efter"
 
 #: adminpages/orders.php:674
 msgid "Filter"
@@ -1389,12 +1389,12 @@ msgid ""
 "Deleting orders is permanent and can affect active users. Are you sure you "
 "want to delete order %s?"
 msgstr ""
-"Slette ordrer er permanent og kan ikke påvirke aktive brugere. Er du sikker "
-"på, at du ville slette ordrer %s?"
+"Slette ordre er permanent og kan påvirke aktive brugere. Er du sikker på, at "
+"du ville slette ordre %s?"
 
 #: adminpages/orders.php:977 adminpages/orders.php:674
 msgid "No orders found."
-msgstr "Ingen ordrer fundet."
+msgstr "Ingen ordre fundet."
 
 #: adminpages/pagesettings.php:51
 msgid "Membership Account"
@@ -1427,25 +1427,25 @@ msgstr "Medlems %s"
 
 #: adminpages/pagesettings.php:111 adminpages/pagesettings.php:83
 msgid "The following pages have been created for you"
-msgstr "De følgende sider, er bleven oprettet for dig"
+msgstr "De følgende sider, er blevet oprettet for dig"
 
 #: adminpages/pagesettings.php:126 adminpages/pagesettings.php:98
 msgid ""
 "Manage the WordPress pages assigned to each required Paid Memberships Pro "
 "page."
 msgstr ""
-"Håndtere Wordpress sider, som er tildelt og påkrævet til hver Paid "
-"Memberships Pro sider eller."
+"Indstil hvilke Wordpress sider som er tildelt hver påkrævet Paid Memberships "
+"Pro side."
 
 #: adminpages/pagesettings.php:132 adminpages/pagesettings.php:104
 msgid ""
 "Assign the WordPress pages for each required Paid Memberships Pro page or"
 msgstr ""
-"Tildel Wordpress sider, til hver påkrævet Paid Memberships Pro sider eller"
+"Tildel Wordpress sider til hver påkrævet Paid Memberships Pro side eller"
 
 #: adminpages/pagesettings.php:132 adminpages/pagesettings.php:104
 msgid "click here to let us generate them for you"
-msgstr "Klik her, for at lade dem generere dem for dig"
+msgstr "Klik her, for at lade dem generere for dig"
 
 #: adminpages/pagesettings.php:140 adminpages/pagesettings.php:112
 msgid "Account Page"
@@ -1486,7 +1486,7 @@ msgstr "se side"
 #: adminpages/pagesettings.php:201 adminpages/pagesettings.php:203
 #: adminpages/pagesettings.php:217
 msgid "Include the shortcode"
-msgstr "Include kort kode"
+msgstr "Inkluder kort kode"
 
 #: adminpages/pagesettings.php:155 adminpages/pagesettings.php:125
 #: adminpages/pagesettings.php:127
@@ -1511,12 +1511,12 @@ msgstr "Bekræftigelses Side"
 #: adminpages/pagesettings.php:218 adminpages/pagesettings.php:180
 #: adminpages/pagesettings.php:190
 msgid "Invoice Page"
-msgstr "Fakturer Side"
+msgstr "Faktura Side"
 
 #: adminpages/pagesettings.php:234 adminpages/pagesettings.php:194
 #: adminpages/pagesettings.php:206
 msgid "Levels Page"
-msgstr "Nivauers Side"
+msgstr "Niveauer Side"
 
 #: adminpages/paymentsettings.php:77 adminpages/paymentsettings.php:82
 msgid "Your payment settings have been updated."
@@ -1539,9 +1539,9 @@ msgid ""
 "Settings\" target=\"_blank\" href=\"http://www.paidmembershipspro.com/"
 "support/initial-plugin-setup/payment-gateway/\">Payment Gateway Settings</a>."
 msgstr ""
-"Lær mere omkring <a title=\"Paid Memberships Pro - SSL Indstillinger\" "
-"target=\"_blank\" href=\"http://www.paidmembershipspro.com/support/initial-"
-"plugin-setup/ssl/\">SSL</a> eller <a title=\"Paid Memberships Pro - Betaling "
+"Lær mere om <a title=\"Paid Memberships Pro - SSL Indstillinger\" target="
+"\"_blank\" href=\"http://www.paidmembershipspro.com/support/initial-plugin-"
+"setup/ssl/\">SSL</a> eller <a title=\"Paid Memberships Pro - Betaling "
 "Gateway Indstillinger\" target=\"_blank\" href=\"http://www."
 "paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/"
 "\">Betalings Gateway Indstillinger</a>."
@@ -1553,7 +1553,7 @@ msgid ""
 "<strong>Please be sure to upgrade Paid Memberships Pro to the latest "
 "versions when available.</strong>"
 msgstr ""
-"Denne gateway funktion er I beta. Nogle funktioner er nok ikke tilgængelig. "
+"Denne gateway funktion er i beta. Nogle funktioner er nok ikke tilgængelig. "
 "Venlig kontakt Paid Memberships Pro med de problemer, du oplever. "
 "<strong>Husk at opgradere Paid Memberships Pro til den seneste version, når "
 "det er tilgængeligt.</strong>"
@@ -1566,7 +1566,7 @@ msgid ""
 "paypal-standard-paid-memberships-pro/\">More information on why can be found "
 "here.</a>"
 msgstr ""
-"Vi anbefaler ikke, at bruge Paypal Standard. Vi forslår at brute PayPal "
+"Vi anbefaler ikke, at bruge Paypal Standard. Vi forslår at bruge PayPal "
 "Express, Website Payments Pro (Legacy), eller PayPal Pro (Payflow Pro). <a "
 "target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/09/read-"
 "using-paypal-standard-paid-memberships-pro/\">Mere information om hvorfor, "
@@ -1634,7 +1634,7 @@ msgstr "Publicerbar Nøgle"
 #: adminpages/paymentsettings.php:294 adminpages/paymentsettings.php:298
 #: adminpages/paymentsettings.php:364
 msgid "Merchant ID"
-msgstr "Købmands ID"
+msgstr "Forhanlder ID"
 
 #: adminpages/paymentsettings.php:311 adminpages/paymentsettings.php:302
 #: adminpages/paymentsettings.php:306
@@ -1653,7 +1653,7 @@ msgstr "Klient-Side Krypteret Nøgle"
 
 #: adminpages/paymentsettings.php:360 adminpages/paymentsettings.php:355
 msgid "Secret Word"
-msgstr "Hemmlig Ord"
+msgstr "Hemmelig Ord"
 
 #: adminpages/paymentsettings.php:377 adminpages/paymentsettings.php:372
 msgid "Transaction Security Key"
@@ -1670,12 +1670,13 @@ msgid ""
 "Not all currencies will be supported by every gateway. Please check with "
 "your gateway."
 msgstr ""
-"Ikke alt Valuta understøtter alle gateways. Kontrollere venligst din Gateway."
+"Ikke alt Valuta understøtter af alle gateways. Kontroller venligst med din "
+"Gateway."
 
 #: adminpages/paymentsettings.php:406 adminpages/paymentsettings.php:375
 #: adminpages/paymentsettings.php:401
 msgid "Accepted Credit Card Types"
-msgstr "Accepteret Kreditkort Typer"
+msgstr "Accepterede Kreditkort Typer"
 
 #: adminpages/paymentsettings.php:420 adminpages/paymentsettings.php:389
 #: adminpages/paymentsettings.php:415
@@ -1688,7 +1689,7 @@ msgid ""
 "Who to write the check out to. Where to mail it. Shown on checkout, "
 "confirmation, and invoice pages."
 msgstr ""
-"Hvem skal checken udskrives til. Hvor skal den mails til. Vis ved gå til "
+"Hvem skal checken udskrives til. Hvor skal den sendes til. Vises ved Gå til "
 "kassen, bekræftigelse, og faktura sider."
 
 #: adminpages/paymentsettings.php:430 adminpages/paymentsettings.php:425
@@ -1701,9 +1702,9 @@ msgid ""
 "the checkout page.<br /><strong>If No, make sure you disable address "
 "verification in the Stripe dashboard settings.</strong>"
 msgstr ""
-"Stripe behøver ikke regnings adresse felter. Vælg 'Nej' for at skjule dem "
-"ved gå til kassen side.<br/><strong>Hvis Nej, så vær sikker på, at du har "
-"deaktiveret bekræftigelse I Strip Kontrolpanel Indstillinger.</strong>"
+"Stripe behøver ikke regnings adresse felter. Vælg 'Nej' for at skjule dem på "
+"Gå til kassen siden.<br/><strong>Hvis Nej, så vær sikker på, at du har "
+"deaktiveret bekræftigelse i Stripe Kontrolpanel Indstillingerne.</strong>"
 
 #: adminpages/paymentsettings.php:443 adminpages/paymentsettings.php:398
 #: adminpages/paymentsettings.php:438
@@ -1719,7 +1720,7 @@ msgstr "valgfri"
 #: adminpages/paymentsettings.php:446 adminpages/paymentsettings.php:401
 #: adminpages/paymentsettings.php:441
 msgid "Tax State"
-msgstr "Moms ialt"
+msgstr "Moms sats"
 
 #: adminpages/paymentsettings.php:447 adminpages/paymentsettings.php:402
 #: adminpages/paymentsettings.php:442
@@ -1738,7 +1739,7 @@ msgid ""
 "<a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-"
 "taxes-paid-memberships-pro/\">pmpro_tax filter</a>."
 msgstr ""
-"Kun for US. Hvis værdien er sat korret op, så ville skat blive tilføjet til "
+"Kun for US. Hvis værdien er sat korret op, så vil skat blive tilføjet til "
 "hvilken som helst medlems ordre fra den valgte stat.<br> For ikke-US eller "
 "mere komplekse skatte regler, brug dette <a target=\"_blank\" href=\"http://"
 "www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/"
@@ -1746,7 +1747,7 @@ msgstr ""
 
 #: adminpages/paymentsettings.php:455 adminpages/paymentsettings.php:450
 msgid "Force SSL"
-msgstr "Tving SSL"
+msgstr "Gennetving SSL"
 
 #: adminpages/paymentsettings.php:461 adminpages/paymentsettings.php:456
 msgid "Yes (with JavaScript redirects)"
@@ -1769,7 +1770,7 @@ msgid ""
 "Check this if you are using SSL and have warnings on your checkout pages."
 msgstr ""
 "Brug \"Nuclear Funktion\" for at sikre (HTTPS) URLs på dine sikre sider. "
-"Tjek hvis du bruger SSL og har advarsler på din gå til kassen sider."
+"Kryds her hvis du bruger SSL og får advarsler på dine Gå til kassen sider."
 
 #: adminpages/paymentsettings.php:485 adminpages/paymentsettings.php:446
 #: adminpages/paymentsettings.php:479
@@ -1780,8 +1781,8 @@ msgstr "IPN Handler URL"
 #: adminpages/paymentsettings.php:482
 msgid "To fully integrate with PayPal, be sure to set your IPN Handler URL to "
 msgstr ""
-"For at integrerer fuldt ud med PayPal, vær sikker på, sæt din IPN Handler "
-"URL til "
+"For at integrerer fuldt ud med PayPal, sørg for at du har sat din IPN "
+"Handler URL til "
 
 #: adminpages/paymentsettings.php:493 adminpages/paymentsettings.php:487
 msgid "TwoCheckout INS URL"
@@ -1791,7 +1792,7 @@ msgstr "TwoCheckout INS URL"
 msgid ""
 "To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL "
 msgstr ""
-"For at kunne integrerer fuldtud med 2Checkout, vær sikker på, at sætte din "
+"For at kunne integrerer fuldt ud med 2Checkout, sørg for at sætte din "
 "2Checkout INS URL"
 
 #: adminpages/paymentsettings.php:501 adminpages/paymentsettings.php:454
@@ -1804,8 +1805,8 @@ msgstr "Skjul Post URL"
 msgid ""
 "To fully integrate with Authorize.net, be sure to set your Silent Post URL to"
 msgstr ""
-"For at kunne integrerer fuldtud med Authorize.net, vær sikker på, at sætte "
-"din Silent Post URL til"
+"For at kunne integrerer fuldt ud med Authorize.net, sørg for at sætte din "
+"Silent Post URL til"
 
 #: adminpages/paymentsettings.php:509 adminpages/paymentsettings.php:517
 #: adminpages/paymentsettings.php:462 adminpages/paymentsettings.php:470
@@ -1817,15 +1818,15 @@ msgstr "Web Hook URL"
 #: adminpages/paymentsettings.php:506
 msgid "To fully integrate with Stripe, be sure to set your Web Hook URL to"
 msgstr ""
-"For at kunne integrerer fuldtud med Stripe, vær sikker på, at sætte din web "
-"Hook URL til"
+"For at kunne integrerer fuldt ud med Stripe, sørg for at sætte din web Hook "
+"URL til"
 
 #: adminpages/paymentsettings.php:521 adminpages/paymentsettings.php:474
 #: adminpages/paymentsettings.php:515
 msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 msgstr ""
-"For at kunne integrerer fuldtud med Braintree, vær sikker på, at sætte din "
-"Silent Post URL til"
+"For at kunne integrerer fuldt ud med Braintree, sørg for at sætte din Silent "
+"Post URL til"
 
 #: adminpages/reports.php:40 adminpages/reports.php:26
 #: adminpages/reports.php:37
@@ -1834,47 +1835,47 @@ msgstr "Detaljer"
 
 #: adminpages/reports/login.php:16
 msgid "Visits, Views, and Logins"
-msgstr "Besøgende, Set, og Logget Ind"
+msgstr "Besøgende, Visninger, og Logget Ind"
 
 #: adminpages/reports/login.php:26
 msgid "Visits Today"
-msgstr "Besøgende Idag"
+msgstr "Besøgende i dag"
 
 #: adminpages/reports/login.php:27 adminpages/reports/login.php:147
 msgid "Visits This Month"
-msgstr "Besøgende I denne Måned"
+msgstr "Besøgende i denne måned"
 
 #: adminpages/reports/login.php:28
 msgid "Visits All Time"
-msgstr "Besøgende Hele Tiden"
+msgstr "Besøgende Totalt"
 
 #: adminpages/reports/login.php:31
 msgid "Views Today"
-msgstr "Set Idag"
+msgstr "Visninger i dag"
 
 #: adminpages/reports/login.php:32 adminpages/reports/login.php:149
 msgid "Views This Month"
-msgstr "Set I Denne Måned"
+msgstr "Visninger i denne måned"
 
 #: adminpages/reports/login.php:33
 msgid "Views All Time"
-msgstr "Set Hele Tiden"
+msgstr "Visninger Totalt"
 
 #: adminpages/reports/login.php:36
 msgid "Logins Today"
-msgstr "Logget ind Idag"
+msgstr "Logget ind i dag"
 
 #: adminpages/reports/login.php:37 adminpages/reports/login.php:152
 msgid "Logins This Month"
-msgstr "Logget ind I denne måned"
+msgstr "Logget ind i denne måned"
 
 #: adminpages/reports/login.php:38
 msgid "Logins All Time"
-msgstr "Logget ind hele Tiden"
+msgstr "Total antal Logget ind"
 
 #: adminpages/reports/login.php:61
 msgid "Visits, Views, and Logins Report"
-msgstr "Besøgende, Set. og Logget Ind Report"
+msgstr "Besøgende, Visninger, og Logget Ind Rapport"
 
 #: adminpages/reports/login.php:66
 msgid "All Users"
@@ -1890,7 +1891,7 @@ msgstr "Total Besøgende"
 
 #: adminpages/reports/login.php:150
 msgid "Total Views"
-msgstr "Total Set"
+msgstr "Total Visninger"
 
 #: adminpages/reports/login.php:151
 msgid "Last Login"
@@ -1907,11 +1908,11 @@ msgstr "Medlems Statestikker"
 
 #: adminpages/reports/memberships.php:48
 msgid "Signups"
-msgstr "Regestreringer"
+msgstr "Registreringer"
 
 #: adminpages/reports/memberships.php:50 adminpages/reports/memberships.php:69
 msgid "All Time"
-msgstr "Hele Tiden"
+msgstr "Totalt"
 
 #: adminpages/reports/memberships.php:54 adminpages/reports/memberships.php:73
 msgid "This Year"
@@ -1923,7 +1924,7 @@ msgstr "Denne Måned"
 
 #: adminpages/reports/memberships.php:62 adminpages/reports/memberships.php:81
 msgid "Today"
-msgstr "Idag"
+msgstr "I dag"
 
 #: adminpages/reports/memberships.php:67
 msgid "Cancellations"
@@ -1962,12 +1963,12 @@ msgstr "Årlig"
 
 #: adminpages/reports/memberships.php:299
 msgid "Signups vs. Cancellations"
-msgstr "Regestreringer vs Annulleringer"
+msgstr "Registreringer vs Annulleringer"
 
 #: adminpages/reports/memberships.php:331 adminpages/reports/sales.php:230
 #: adminpages/reports/sales.php:222 adminpages/reports/sales.php:231
 msgid "Generate Report"
-msgstr "Genereret Report"
+msgstr "Generer Rapport"
 
 #: adminpages/reports/sales.php:18
 msgid "Sales and Revenue (Testing/Sandbox)"
@@ -1996,14 +1997,14 @@ msgid ""
 "want to check your payment gateway to see if their subscription is still "
 "active."
 msgstr ""
-"Der var en fejl, med annullering af abonnement for bruger med ID=%s. Du "
-"ville nok kontrollere din betalings gateway, for at kunne se om deres "
-"abonnement stadig er aktiv"
+"Der var en fejl, ved annullering af abonnement for bruger med ID=%s. Du skal "
+"nok kontrollere din betalings gateway, for at se om deres abonnement stadig "
+"er aktiv."
 
 #: classes/class.pmproemail.php:37
 #, php-format
 msgid "An Email From %s"
-msgstr "En Email Fra %s"
+msgstr "En E-mail Fra %s"
 
 #: classes/class.pmproemail.php:122 classes/class.pmproemail.php:120
 #, php-format
@@ -2019,7 +2020,7 @@ msgstr "Medlemskab for %s hos %s er blevet ANNULLERET"
 #: classes/class.pmproemail.php:173
 #, php-format
 msgid "Your membership confirmation for %s"
-msgstr "Dit medlemskab bekræftigelse for %s"
+msgstr "Bekræftigelse af dit medlemskab  for %s"
 
 #: classes/class.pmproemail.php:228 classes/class.pmproemail.php:237
 #: classes/class.pmproemail.php:246 classes/class.pmproemail.php:325
@@ -2050,31 +2051,31 @@ msgstr "Dette medlemskab udløber den %s."
 #: classes/class.pmproemail.php:265
 #, php-format
 msgid "Member Checkout for %s at %s"
-msgstr "Medlem gå til kassen ved %s hos %s"
+msgstr "Medlemsbetaling for %s hos %s"
 
 #: classes/class.pmproemail.php:363 classes/class.pmproemail.php:342
 #: classes/class.pmproemail.php:345
 #, php-format
 msgid "Your billing information has been udpated at %s"
-msgstr "Dine betalings informationer er blevet opdateret hos %s"
+msgstr "Dine betalingsinformationer er blevet opdateret hos %s"
 
 #: classes/class.pmproemail.php:416 classes/class.pmproemail.php:386
 #: classes/class.pmproemail.php:390
 #, php-format
 msgid "Billing information has been udpated for %s at %s"
-msgstr "Betalings informationer er blevet opdateret ved %s hos %s"
+msgstr "Betalingsinformationer er blevet opdateret for %s hos %s"
 
 #: classes/class.pmproemail.php:464 classes/class.pmproemail.php:425
 #: classes/class.pmproemail.php:430
 #, php-format
 msgid "Membership Payment Failed at %s"
-msgstr "Medlemsskabs Betaling Fejlet hos %s"
+msgstr "Betaling af Medlemsskab Fejlet hos %s"
 
 #: classes/class.pmproemail.php:510 classes/class.pmproemail.php:462
 #: classes/class.pmproemail.php:468
 #, php-format
 msgid "Membership Payment Failed For %s at %s"
-msgstr "Medlemsskat Betaling Fejlet for %s ved %s"
+msgstr "Betaling af Medlemsskab Fejlet for %s hos %s"
 
 #: classes/class.pmproemail.php:557 classes/class.pmproemail.php:508
 #, php-format
@@ -2091,25 +2092,25 @@ msgstr "FAKTURA for %s medlemsskab"
 #: classes/class.pmproemail.php:611
 #, php-format
 msgid "Your trial at %s is ending soon"
-msgstr "Din prøveperiode ved %s ender snart"
+msgstr "Din prøveperiode ved %s stopper snart"
 
 #: classes/class.pmproemail.php:710 classes/class.pmproemail.php:596
 #: classes/class.pmproemail.php:645
 #, php-format
 msgid "Your membership at %s has ended"
-msgstr "Dit medlemskab hos %s er endt"
+msgstr "Dit medlemskab hos %s er stoppet"
 
 #: classes/class.pmproemail.php:735 classes/class.pmproemail.php:621
 #: classes/class.pmproemail.php:670
 #, php-format
 msgid "Your membership at %s will end soon"
-msgstr "Dit medlemsskab hos %s vil snart ende"
+msgstr "Dit medlemsskab hos %s vil snart stoppe"
 
 #: classes/class.pmproemail.php:755 classes/class.pmproemail.php:641
 #: classes/class.pmproemail.php:690
 #, php-format
 msgid "Your membership at %s has been changed"
-msgstr "Dit medlemsskab hos %s er belven ændret"
+msgstr "Dit medlemsskab hos %s er belvet ændret"
 
 #: classes/class.pmproemail.php:759
 #, php-format
@@ -2119,14 +2120,14 @@ msgstr "Det nye niveau er %s."
 #: classes/class.pmproemail.php:761 classes/class.pmproemail.php:647
 #: classes/class.pmproemail.php:696
 msgid "Your membership has been cancelled"
-msgstr "Dit medlskabskab er bleven annulleret"
+msgstr "Dit medlskabskab er blevet annulleret"
 
 #: classes/class.pmproemail.php:765 classes/class.pmproemail.php:803
 #: classes/class.pmproemail.php:651 classes/class.pmproemail.php:689
 #: classes/class.pmproemail.php:700 classes/class.pmproemail.php:738
 #, php-format
 msgid "This membership will expire on %s"
-msgstr "Dette medlemsskab ville udløbe hos %s"
+msgstr "Dette medlemsskab udløber den %s"
 
 #: classes/class.pmproemail.php:769 classes/class.pmproemail.php:807
 #: classes/class.pmproemail.php:655 classes/class.pmproemail.php:693
@@ -2138,7 +2139,7 @@ msgstr "Dette medlemsskab udløber ikke"
 #: classes/class.pmproemail.php:728
 #, php-format
 msgid "Membership for %s at %s has been changed"
-msgstr "Medlemsskab for %s hos %s er bleven ændret"
+msgstr "Medlemsskab for %s hos %s er blevet ændret"
 
 #: classes/class.pmproemail.php:797 classes/class.pmproemail.php:645
 #: classes/class.pmproemail.php:683 classes/class.pmproemail.php:694
@@ -2149,7 +2150,7 @@ msgstr "Det nye niveau er %s. Dette medlemsskab er gratis"
 
 #: classes/class.pmproemail.php:799
 msgid "Membership has been cancelled"
-msgstr "Medlemsskab er bleven annulleret"
+msgstr "Medlemsskab er blevet annulleret"
 
 #: classes/gateways/class.pmprogateway.php:55
 #: classes/gateways/class.pmprogateway_authorizenet.php:55
@@ -2186,8 +2187,8 @@ msgid ""
 "A partial payment was made that we could not void. Please contact the site "
 "owner immediately to correct this."
 msgstr ""
-"Noget af betaling var sket, som vi ikke kunne stoppe. Kontakt venligst site "
-"admin med det sammme, for at få det rettet."
+"En del af betalingen er allerede gennemført, og kan ikke afbrydes. Kontakt "
+"venligst webside administratoren med det sammme for at få det rettet."
 
 #: classes/gateways/class.pmprogateway_authorizenet.php:787
 #: classes/gateways/class.pmprogateway_authorizenet.php:788
@@ -2206,29 +2207,29 @@ msgstr "Fejl under afvikling:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:129
 msgid "Error during charge:"
-msgstr "Fejl under ændrening:"
+msgstr "Fejl under ændring:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:198
 msgid "Failed to update customer."
-msgstr "Fejlet I at opdatere kunde."
+msgstr "Fejlet i at opdatere kunde."
 
 #: classes/gateways/class.pmprogateway_braintree.php:246
 msgid "Failed to create customer."
-msgstr "Fejlret I at oprette kunde."
+msgstr "Fejlret i at oprette kunde."
 
 #: classes/gateways/class.pmprogateway_braintree.php:253
 msgid "Error creating customer record with Braintree:"
-msgstr "Fejl I at oprette en kunde rekord med Braintree:"
+msgstr "Fejl i at oprette en kunde konto hos Braintree:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:344
 #: classes/gateways/class.pmprogateway_braintree.php:345
 msgid "Error subscribing customer to plan with Braintree:"
-msgstr "Fejl i at abonnere kunde til plan med Braintree:"
+msgstr "Fejl i at tilmelde kunden til en plan hos Braintree:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:359
 #: classes/gateways/class.pmprogateway_braintree.php:360
 msgid "Failed to subscribe with Braintree:"
-msgstr "Fejl i at abonnere med Braintree:"
+msgstr "Fejl i at tilmelde hos Braintree:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:410
@@ -2244,7 +2245,7 @@ msgstr "Fejl i at abonnere med Braintree:"
 #: classes/gateways/class.pmprogateway_stripe.php:354
 #: classes/gateways/class.pmprogateway_stripe.php:361
 msgid "Could not find the subscription."
-msgstr "Kunne ikke finde abonnere."
+msgstr "Kunne ikke finde abonnement."
 
 #: classes/gateways/class.pmprogateway_payflowpro.php:57
 #: classes/gateways/class.pmprogateway_paypal.php:57
@@ -2252,8 +2253,8 @@ msgid ""
 "A partial payment was made that we could not refund. Please contact the site "
 "owner immediately to correct this."
 msgstr ""
-"Noget af betaling gik igennem, men vi kunne ikke refundere beløbet. Kontakt "
-"venligst site admin med det samme, for at få det rettet."
+"Noget af betalingen er gennemført, så vi kunne ikke refundere beløbet. "
+"Kontakt venligst webside administratoren med det samme for at få det rettet."
 
 #: classes/gateways/class.pmprogateway_paypal.php:385
 #: classes/gateways/class.pmprogateway_paypalexpress.php:305
@@ -2264,32 +2265,33 @@ msgid ""
 "Please contact the site owner or cancel your subscription from within PayPal "
 "to make sure you are not charged going forward."
 msgstr ""
-"Kontakt venligst site admin eller annullere dit abonnement gennem PAyPal, "
-"for at være sikker på, at du ikke bliver trukket I betaling."
+"Kontakt venligst webside administratoren eller annuller dit abonnement "
+"gennem PayPal, for at være sikker på at du ikke bliver trukket for beløbet "
+"fremover."
 
 #: classes/gateways/class.pmprogateway_stripe.php:199
 #: classes/gateways/class.pmprogateway_stripe.php:190
 #: classes/gateways/class.pmprogateway_stripe.php:192
 msgid "Error creating customer record with Stripe:"
-msgstr "Fejl i at oprette kunde rekord med Stripe;"
+msgstr "Fejl i at oprette kunde konto hos Stripe:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:302
 #: classes/gateways/class.pmprogateway_stripe.php:278
 #: classes/gateways/class.pmprogateway_stripe.php:279
 #: classes/gateways/class.pmprogateway_stripe.php:286
 msgid "Error creating plan with Stripe:"
-msgstr "Fejl I at oprette plan med Stripe:"
+msgstr "Fejl i at oprette en plan hos Stripe:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:318
 #: classes/gateways/class.pmprogateway_stripe.php:294
 #: classes/gateways/class.pmprogateway_stripe.php:295
 #: classes/gateways/class.pmprogateway_stripe.php:302
 msgid "Error subscribing customer to plan with Stripe:"
-msgstr "Fejl I at abonnere kunde til plan med Stripe:"
+msgstr "Fejl i at tilmelde kunden til en plan hos Stripe:"
 
 #: classes/gateways/class.pmprogateway_stripe.php:383
 msgid "Could not cancel old subscription."
-msgstr "Kunne ikke annullere gammel abonnement."
+msgstr "Kunne ikke annullere det gamle abonnement."
 
 #: includes/adminpages.php:47 includes/adminpages.php:100
 #: includes/adminpages.php:9 includes/adminpages.php:39
@@ -2313,7 +2315,7 @@ msgstr "Betalings Indstillinger"
 #: includes/adminpages.php:16 includes/adminpages.php:79
 #: includes/adminpages.php:149
 msgid "Reports"
-msgstr "Reporter"
+msgstr "Rapporter"
 
 #: includes/adminpages.php:56 includes/adminpages.php:170
 #: includes/adminpages.php:18 includes/adminpages.php:89
@@ -2363,7 +2365,7 @@ msgstr "Dansk Krone"
 
 #: includes/currencies.php:16 includes/currencies.php:15
 msgid "Hong Kong Dollar (&#36;)"
-msgstr "Kong Kong Dollar (&#36;)"
+msgstr "Hong Kong Dollar (&#36;)"
 
 #: includes/currencies.php:17 includes/currencies.php:16
 msgid "Hungarian Forint"
@@ -2449,7 +2451,7 @@ msgstr "Vietnamesisk Dong"
 #: includes/functions.php:196 includes/functions.php:202
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
-msgstr "Pris for medlemskab er <strong>%s</strong> nu "
+msgstr "Pris for medlemskab er <strong>%s</strong>"
 
 #: includes/functions.php:206 includes/functions.php:204
 #, php-format
@@ -2460,19 +2462,19 @@ msgstr "<strong>%s</strong> nu"
 #: includes/functions.php:205 includes/functions.php:213
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
-msgstr "og denne <strong>%s pr %s for %d mere %s</strong>."
+msgstr "og herefter <strong>%s pr %s for %d flere %s</strong>."
 
 #: includes/functions.php:219 includes/functions.php:173
 #: includes/functions.php:209 includes/functions.php:217
 #, php-format
 msgid " and then <strong>%s every %d %s for %d more %s</strong>."
-msgstr "og så <strong>%s hver %d %s for %d mere %s</strong>."
+msgstr "og herefter <strong>%s hver %d %s for %d flere %s</strong>."
 
 #: includes/functions.php:224 includes/functions.php:178
 #: includes/functions.php:214 includes/functions.php:222
 #, php-format
 msgid " and then <strong>%s after %d %s</strong>."
-msgstr "og derfeter <strong>%s efter %d %s</strong>."
+msgstr "og derefter <strong>%s efter %d %s</strong>."
 
 #: includes/functions.php:231 includes/functions.php:229
 #, php-format
@@ -2503,7 +2505,7 @@ msgstr "og derefter <strong>%s hver %d %s</strong>."
 #: includes/functions.php:260 pages/levels.php:82
 msgid "After your initial payment, your first payment is Free."
 msgstr ""
-"Efter du har indsat din betaling, ville din første betaling være GRATIS."
+"Når du har gennemført din betaling, vil din første periode være GRATIS."
 
 #: includes/functions.php:266 includes/functions.php:206
 #: includes/functions.php:242 includes/functions.php:253
@@ -2511,28 +2513,28 @@ msgstr ""
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr ""
-"Efter du har indsat din betaling, ville din først %d betaling være GRATIS."
+"Efter du har gennemført din betaling, vill din først %d periode være GRATIS."
 
 #: includes/functions.php:273 includes/functions.php:213
 #: includes/functions.php:249 includes/functions.php:260
 #: includes/functions.php:271 pages/levels.php:93
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
-msgstr "Efter du har indsat din betaling, ville din første betaling koste %s."
+msgstr "Efter du har gennemført din betaling, vil din første periode koste %s."
 
 #: includes/functions.php:277 includes/functions.php:217
 #: includes/functions.php:253 includes/functions.php:264
 #: includes/functions.php:275 pages/levels.php:97
 #, php-format
 msgid "After your initial payment, your first %d payments will cost %s."
-msgstr "Efter du har indsat din betaling, vil dit %d betaling koste %s."
+msgstr "Efter du har gennemført din betaling, vil dit %d gebyr koste %s."
 
 #: includes/functions.php:288 includes/functions.php:228
 #: includes/functions.php:264 includes/functions.php:275
 #: includes/functions.php:286
 #, php-format
 msgid "Customers in %s will be charged %s%% tax."
-msgstr "Kunder hos %s ville blive opkrævet i %s%% skat."
+msgstr "Kunder hos %s ville blive opkrævet %s%%  i skat."
 
 #: includes/functions.php:302 includes/functions.php:242
 #: includes/functions.php:278 includes/functions.php:289
@@ -2568,7 +2570,7 @@ msgstr "ændres ikke?"
 #: includes/functions.php:628 includes/functions.php:631
 #: includes/functions.php:637 includes/functions.php:640
 msgid "Error interacting with database"
-msgstr "Fejl med at kommunikere med database"
+msgstr "Fejl i at kommunikere med database"
 
 #: includes/functions.php:698 includes/functions.php:737
 #: includes/functions.php:629 includes/functions.php:651
@@ -2590,7 +2592,7 @@ msgstr "Denne rabat kode kunne ikke findes."
 #: includes/functions.php:1115 includes/functions.php:1118
 #, php-format
 msgid "This discount code goes into effect on %s."
-msgstr "Denne rabat kode træder i kraft til %s."
+msgstr "Denne rabat kode træder i kraft den %s."
 
 #: includes/functions.php:1137 includes/functions.php:1075
 #: includes/functions.php:1097 includes/functions.php:1113
@@ -2603,13 +2605,13 @@ msgstr "Denne rabat kode udløber den %s."
 #: includes/functions.php:1109 includes/functions.php:1125
 #: includes/functions.php:1136 includes/functions.php:1139
 msgid "This discount code is no longer valid."
-msgstr "Denne rabat kode, er ikke længere gyldig."
+msgstr "Denne rabat kode er ikke længere gyldig."
 
 #: includes/functions.php:1164 includes/functions.php:1102
 #: includes/functions.php:1124 includes/functions.php:1140
 #: includes/functions.php:1151 includes/functions.php:1154
 msgid "This discount code does not apply to this membership level."
-msgstr "Denne rabat kode, kan ikke tilføjes til dette medlemsskabs niveau."
+msgstr "Denne rabat kode kan ikke tilføjes til dette medlemsskabs niveau."
 
 #: includes/functions.php:1172 includes/functions.php:1110
 #: includes/functions.php:1132 includes/functions.php:1148
@@ -2633,7 +2635,7 @@ msgstr "Tilmeld !!name!! nu"
 #: includes/functions.php:1347 includes/functions.php:1367
 #: includes/functions.php:1378 includes/functions.php:1381
 msgid "Please specify a level id."
-msgstr "Uddybe venlig en niveau id."
+msgstr "Angiv venligst et niveau id."
 
 #: includes/localization.php:23
 msgid "Day"
@@ -2656,8 +2658,8 @@ msgid ""
 "This post is already protected for this level because it is within a "
 "category that requires membership."
 msgstr ""
-"Denne post er allerede beskyttet til dette niveau, pga det er inde for en "
-"kategori, hvor medlemsskab er påkrævet."
+"Dette indlæg er allerede beskyttet for dette niveau, idet der er angivet en "
+"kategori hvor medlemsskab er påkrævet."
 
 #: includes/metaboxes.php:99 includes/metaboxes.php:100
 msgid "Require Membership"
@@ -2680,8 +2682,8 @@ msgstr "Bruger betaler ikke."
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Register</a>"
 msgstr ""
-"Dette indhold er kun for !!niveau!! medlemmer.<br /><a href=\"%s"
-"\">Registrere</a>"
+"Dette indhold er kun for !!levels!! medlemmer.<br /><a href=\"%s\">Tilmeld "
+"dig her</a>"
 
 #: includes/upgradecheck.php:413 includes/upgradecheck.php:404
 #, php-format
@@ -2689,16 +2691,16 @@ msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Log In</a> "
 "<a href=\"%s\">Register</a>"
 msgstr ""
-"Dette indhold er kun for !!niveau!! medlemmer.<br /><a href=\"%s\">Log Ind</"
-"a> <a href=\"%s\">Registrere</a>"
+"Dette indhold er kun for !!levels!! medlemmer.<br /><a href=\"%s\">Log Ind</"
+"a> eller <a href=\"%s\">Tilmeld dig her</a>"
 
 #: includes/upgradecheck.php:417 includes/upgradecheck.php:408
 msgid ""
 "This content is for !!levels!! members only. Visit the site and log in/"
 "register to read."
 msgstr ""
-"Dette indhold er kun for !!niveau!! medlemmer. Besøg siden og log ind eller "
-"registrere for at læse indhold."
+"Dette indhold er kun for !!levels!! medlemmer. Besøg siden og log ind eller "
+"tilmeld dig for at læse indholdet."
 
 #: pages/account.php:10
 msgid "Your membership is <strong>active</strong>."
@@ -2748,7 +2750,7 @@ msgstr "Min Konto"
 
 #: pages/account.php:59 pages/account.php:55
 msgid "Edit Profile"
-msgstr "Redigere Profil"
+msgstr "Rediger Profil"
 
 #: pages/account.php:60 pages/account.php:56
 msgid "Change Password"
@@ -2756,16 +2758,16 @@ msgstr "Ændre Adganskode"
 
 #: pages/account.php:91 pages/account.php:87
 msgid "Billing Information"
-msgstr "Betalings Information"
+msgstr "Betalingsinformation"
 
 #: pages/account.php:109 pages/confirmation.php:63 pages/invoice.php:50
 #: pages/account.php:105 pages/confirmation.php:61 pages/invoice.php:48
 msgid "Payment Method"
-msgstr "Betalings Metode"
+msgstr "Betalingsmetode"
 
 #: pages/account.php:118 pages/account.php:114
 msgid "Edit Billing Information"
-msgstr "Redigere Betalings Informationer"
+msgstr "Rediger Betalingsinformationer"
 
 #: pages/account.php:129 pages/account.php:125
 msgid "Past Invoices"
@@ -2773,7 +2775,7 @@ msgstr "Sidste Faktura"
 
 #: pages/account.php:144 pages/account.php:140
 msgid "View All Invoices"
-msgstr "Se Alle Fakturaere"
+msgstr "Se Alle Fakturaer"
 
 #: pages/account.php:150 pages/account.php:146
 msgid "Member Links"
@@ -2781,7 +2783,7 @@ msgstr "Medlems Links"
 
 #: pages/account.php:156 pages/account.php:152
 msgid "Update Billing Information"
-msgstr "Updatere Betalings Informationer"
+msgstr "Updatere Betalingsinformationer"
 
 #: pages/account.php:159 pages/account.php:155
 msgid "Change Membership Level"
@@ -2805,9 +2807,9 @@ msgid ""
 "Your payment subscription is managed by PayPal. Please <a href=\"http://www."
 "paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr ""
-"Din betalings abonnement bliver behandlet af PayPal. Venlig <a href=\"http://"
-"www.paypal.com\">login til PayPal her</a> for at opdatere din regnings "
-"information."
+"Din betalings abonnement bliver styret af PayPal. Venligst <a href=\"http://"
+"www.paypal.com\">login til PayPal her</a> for at opdatere din "
+"betalingsinformation."
 
 #: pages/billing.php:69 pages/checkout.php:305 pages/billing.php:65
 #: pages/checkout.php:321 pages/checkout.php:328
@@ -2847,7 +2849,7 @@ msgstr "Postnummer"
 #: pages/billing.php:108 pages/checkout.php:344 pages/billing.php:104
 #: pages/checkout.php:360 pages/checkout.php:367
 msgid "City, State Zip"
-msgstr "By, Region Postnummer"
+msgstr "By, Region, Postnummer"
 
 #: pages/billing.php:161 pages/checkout.php:397 pages/billing.php:157
 #: pages/checkout.php:413 pages/checkout.php:420
@@ -2877,7 +2879,7 @@ msgstr "Kreditkort Information"
 #: pages/billing.php:221 pages/billing.php:217
 #, php-format
 msgid "We accept %s"
-msgstr "Vi acceptere %s"
+msgstr "Vi accepterer %s"
 
 #: pages/billing.php:248 pages/checkout.php:503 pages/billing.php:244
 #: pages/checkout.php:520 pages/checkout.php:527
@@ -2896,15 +2898,15 @@ msgstr "hvad er det?"
 
 #: pages/billing.php:329 pages/billing.php:294 pages/billing.php:298
 msgid "Update"
-msgstr "Opdatere"
+msgstr "Opdater"
 
 #: pages/billing.php:344 pages/billing.php:309 pages/billing.php:313
 msgid ""
 "This subscription is not recurring. So you don't need to update your billing "
 "information."
 msgstr ""
-"Dette abonnement er ikke gentagene. Så du behøver ikke, at opdatere dine "
-"betalings informationer."
+"Dette abonnement er ikke gentagene. Så du behøver ikke at opdatere dine "
+"betalingsinformationer."
 
 #: pages/cancel.php:14
 msgid "Are you sure you want to cancel your membership?"
@@ -2912,11 +2914,11 @@ msgstr "Er du sikker på, at du vil annullere dit medlemsskab?"
 
 #: pages/cancel.php:17
 msgid "Yes, cancel my account"
-msgstr "Ja, Annullere min Konto"
+msgstr "Ja, Annuller min Konto"
 
 #: pages/cancel.php:19
 msgid "No, keep my account"
-msgstr "Nej, beholder min konto"
+msgstr "Nej, behold min konto"
 
 #: pages/cancel.php:22
 msgid "Click here to go to the home page."
@@ -2928,7 +2930,7 @@ msgid ""
 "<strong>click the \"Complete Payment\" button</strong> to finish your order."
 msgstr ""
 "Næsten færdig. Gennemgå medlemsskabs informationer og priser neden for, "
-"derefter <strong>Klik på \"Færdiggør Betaling\" Knappen</strong> for at "
+"<strong>Klik derefter på \"Gennemfør Betaling\" Knappen</strong> for at "
 "færdiggøre din ordre."
 
 #: pages/checkout.php:33 pages/checkout.php:34
@@ -3025,16 +3027,16 @@ msgstr "Betalings Information"
 #: pages/checkout.php:476 pages/checkout.php:493 pages/checkout.php:500
 #, php-format
 msgid "We Accept %s"
-msgstr "Vi Acceptere %s"
+msgstr "Vi accepterer %s"
 
 #: pages/checkout.php:657 pages/checkout.php:277 pages/checkout.php:284
 #, php-format
 msgid "I agree to the %s"
-msgstr "Jeg Accepptere til %s"
+msgstr "Jeg acceppterer %s"
 
 #: pages/checkout.php:677 pages/checkout.php:667 pages/checkout.php:674
 msgid "Complete Payment"
-msgstr "færdiggør Betaling"
+msgstr "Gennemfør Betaling"
 
 #: pages/checkout.php:691 pages/checkout.php:681 pages/checkout.php:688
 msgid "Submit and Check Out"
@@ -3072,14 +3074,14 @@ msgid ""
 "initial membership invoice. A welcome email with a copy of your initial "
 "membership invoice has been sent to %s."
 msgstr ""
-"Nedenfor er der detaljer omkring dit medlemsskabs konto, og en faktura "
-"omkring medlemsskabet. En velkomst email, med en kopi af din faktura er "
-"blevet sendt til %s."
+"Nedenfor er der detaljer omkring din medlemsskabskonto, samt en kvittering "
+"for din første betaling for medlemsskabet. <br>En velkomst e-mail, med en "
+"kopi af din faktura er blevet sendt til %s."
 
 #: pages/confirmation.php:41 pages/invoice.php:22
 #, php-format
 msgid "Invoice #%s on %s"
-msgstr "Faktura #%s hos %s"
+msgstr "Faktura #%s den %s"
 
 #: pages/confirmation.php:43
 msgid "Print"
@@ -3098,7 +3100,7 @@ msgstr "Regning total"
 #: pages/confirmation.php:82 pages/invoice.php:69 pages/confirmation.php:80
 #: pages/invoice.php:67
 msgid "ending in"
-msgstr "ender om"
+msgstr "stopper om"
 
 #: pages/confirmation.php:97 pages/confirmation.php:95
 #, php-format
@@ -3106,7 +3108,7 @@ msgid ""
 "Below are details about your membership account. A welcome email with has "
 "been sent to %s."
 msgstr ""
-"Nedenfor er detajlerne omkring dit medlemsskab. En velkomst mail er bleven "
+"Nedenfor er detajlerne omkring dit medlemsskab. En velkomst e-mail er blevet "
 "sendt til %s."
 
 #: pages/confirmation.php:105 pages/confirmation.php:103
@@ -3123,8 +3125,8 @@ msgid ""
 "If your account is not activated within a few minutes, please contact the "
 "site owner."
 msgstr ""
-"Hvis din konto ikke er aktiveret inden for få minuter, kontakt venligst site "
-"admin."
+"Hvis din konto ikke er aktiveret inden for få minuter, kontakt venligst "
+"support."
 
 #: pages/invoice.php:79 pages/invoice.php:77
 msgid "Subtotal"
@@ -3144,7 +3146,7 @@ msgstr "Se Faktura"
 
 #: pages/invoice.php:134 pages/invoice.php:132
 msgid "No invoices found."
-msgstr "Ingen Faktura Fundet,"
+msgstr "Ingen Faktura Fundet."
 
 #: pages/invoice.php:145 pages/invoice.php:143
 msgid "&larr; View All Invoices"
@@ -3165,7 +3167,7 @@ msgstr "Forny"
 
 #: pages/levels.php:63 pages/levels.php:117 pages/levels.php:129
 msgid "Your&nbsp;Level"
-msgstr "Din&nbsp;Niveau"
+msgstr "Dit&nbsp;Niveau"
 
 #: pages/levels.php:79 pages/levels.php:129 pages/levels.php:145
 msgid "&larr; Return to Your Account"
@@ -3177,33 +3179,32 @@ msgstr "&larr; Tilbage til Hjem"
 
 #: preheaders/account.php:7 preheaders/levels.php:19
 msgid "Your membership status has been updated - Thank you!"
-msgstr "Dit medlemsskabs status er bleven opdateret. Mange tak!"
+msgstr "Dit medlemsskabs status er blevet opdateret. Mange tak!"
 
 #: preheaders/account.php:11 preheaders/levels.php:23
 msgid ""
 "Sorry, your request could not be completed - please try again in a few "
 "moments."
 msgstr ""
-"Beklager, din anmodning kunne ikke blive færdiggjort - venligst prøv igen om "
-"et øjeblik."
+"Beklager, din anmodning kunne ikke gennemføres - prøv venligst igen om lidt."
 
 #: preheaders/billing.php:279 preheaders/checkout.php:482
 #: preheaders/billing.php:258 preheaders/checkout.php:464
 #: preheaders/checkout.php:481
 msgid "Please complete all required fields."
-msgstr "Venligst færdiggøre alle påkrævet felter."
+msgstr "Udfyld venligst alle påkrævede felter."
 
 #: preheaders/billing.php:284 preheaders/checkout.php:492
 #: preheaders/billing.php:263 preheaders/checkout.php:474
 #: preheaders/checkout.php:491
 msgid "Your email addresses do not match. Please try again."
-msgstr "Din email addresser passer ikke sammen. Prøv igen"
+msgstr "Dine e-mail adresser er ikke ens. Prøv igen"
 
 #: preheaders/billing.php:289 preheaders/checkout.php:498
 #: preheaders/billing.php:268 preheaders/checkout.php:480
 #: preheaders/checkout.php:497
 msgid "The email address entered is in an invalid format. Please try again."
-msgstr "Den indtastet email adresse er en ugyldig format. Prøv igen."
+msgstr "Den indtastede e-mail adresse er i et ugyldigt format. Prøv igen."
 
 #: preheaders/billing.php:295 preheaders/billing.php:274
 msgid "All good!"
@@ -3218,7 +3219,7 @@ msgstr ""
 #: preheaders/billing.php:378 preheaders/billing.php:347
 #: preheaders/billing.php:380
 msgid "Error updating billing information."
-msgstr "Fejl I opdatering af betalings informationer."
+msgstr "Fejl i opdatering af betalingsinformationer."
 
 #: preheaders/cancel.php:24
 msgid "Your membership has been cancelled."
@@ -3235,18 +3236,18 @@ msgstr "Gå til Kassen: Betalings Informationer"
 
 #: preheaders/checkout.php:109
 msgid "Setup Your Account"
-msgstr "Sæt op din Konto"
+msgstr "Opsætning af din Konto"
 
 #: preheaders/checkout.php:486 preheaders/checkout.php:468
 #: preheaders/checkout.php:485
 msgid "Your passwords do not match. Please try again."
-msgstr "Dine adgangskoder passer ikke sammen. Prv igen."
+msgstr "Dine adgangskoder er ikke ens. Prøv igen."
 
 #: preheaders/checkout.php:504 preheaders/checkout.php:486
 #: preheaders/checkout.php:503
 #, php-format
 msgid "Please check the box to agree to the %s."
-msgstr "Klik på boksen, for at acceptere til %s. "
+msgstr "Sæt kryds i boksen, for at acceptere %s. "
 
 #: preheaders/checkout.php:513 preheaders/checkout.php:495
 #: preheaders/checkout.php:512
@@ -3261,7 +3262,7 @@ msgstr "Dette brugernavn er allerede i brug. Prøv et andet."
 #: preheaders/checkout.php:542 preheaders/checkout.php:524
 #: preheaders/checkout.php:541
 msgid "That email address is already taken. Please try another."
-msgstr "Denne email adresse er allerede i brug. Prøv et andet."
+msgstr "Denne e-mail adresse er allerede i brug. Prøv et andet."
 
 #: preheaders/checkout.php:562 preheaders/checkout.php:544
 #: preheaders/checkout.php:561
@@ -3279,14 +3280,14 @@ msgstr "Betaling accepteret."
 msgid ""
 "Unknown error generating account. Please contact us to setup your membership."
 msgstr ""
-"Ukendt fejl med at generer konto. Kontakt os, med at sætte dit medlemsskab "
-"op."
+"Ukendt fejl under oprettelse af konto. Kontakt support for at få hjælp til "
+"at sætte dit medlemsskab op."
 
 #: preheaders/checkout.php:754 preheaders/checkout.php:823
 #: preheaders/checkout.php:735 preheaders/checkout.php:753
 #: preheaders/checkout.php:803 preheaders/checkout.php:822
 msgid "The PayPal Token was lost."
-msgstr "PayPal Polet er væk."
+msgstr "PayPal Token gik tabt."
 
 #: preheaders/checkout.php:860 preheaders/checkout.php:825
 #: preheaders/checkout.php:844 preheaders/checkout.php:859
@@ -3295,7 +3296,7 @@ msgid ""
 "Please contact us."
 msgstr ""
 "Din betaling er accepteret. Men der opstod en fejl, med at sætte din konto "
-"op. Venligst kontakt os."
+"op. Kontakt venligst support."
 
 #: preheaders/checkout.php:1046 preheaders/checkout.php:983
 #: preheaders/checkout.php:1030 preheaders/checkout.php:1045
@@ -3306,8 +3307,8 @@ msgid ""
 msgstr ""
 "VIGTIGT: Noget gik galt, under oprettelse af medlemsskab. Dit kreditkort "
 "blive godkendt, men vi annullerede ordren med det samme. Du skal ikke "
-"anvende formularen igen. Istedet kontakt vores site admin, for at problemet "
-"kan blive fikset."
+"anvende formularen igen. Kontakt istedet vores support, for at problemet kan "
+"blive fikset."
 
 #: preheaders/checkout.php:1051 preheaders/checkout.php:988
 #: preheaders/checkout.php:1035 preheaders/checkout.php:1050
@@ -3318,8 +3319,8 @@ msgid ""
 msgstr ""
 "VIGTIGT: Noget gik galt, under oprettelsen af medlemsskab. Der blev trukket "
 "penge fra dit kreditkort, men vi kunne ikke tildele dig dit medlemsskab. Du "
-"skal ikke anvende formularen igen. Kontakt venligst site admin, for at få "
-"fikset problemet."
+"skal ikke anvende formularen igen. Kontakt istedet vores support, for at "
+"problemet kan blive fikset."
 
 #: preheaders/checkout.php:1064 preheaders/checkout.php:1001
 #: preheaders/checkout.php:1048 preheaders/checkout.php:1063
@@ -3328,34 +3329,34 @@ msgid ""
 "You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
-"Du er nødtil at sætte <a href=\"%s\">en Betalings Gateway</a> før nogen "
-"betaliger kan blive behandlet."
+"Du er nød til at angive en <a href=\"%s\">Betalings Gateway</a> før nogen "
+"betalinger kan blive behandlet."
 
 #: preheaders/checkout.php:1066 preheaders/checkout.php:1003
 #: preheaders/checkout.php:1050 preheaders/checkout.php:1065
 msgid "A Payment Gateway must be setup before any payments will be processed."
 msgstr ""
-"En Betaling Gateway må sættes op, før betalinger ville blive behandlet."
+"En Betalings Gateway skal sættes op, før betalinger kan blive behandlet."
 
 #: scheduled/crons.php:31 scheduled/crons.php:61
 #, php-format
 msgid "Membership expired email sent to %s. "
-msgstr "Medlemsskab udløbet email sendt til %s."
+msgstr "Medlemsskab udløbet e-mail, sendt til %s."
 
 #: scheduled/crons.php:74 scheduled/crons.php:27
 #, php-format
 msgid "Membership expiring email sent to %s. "
-msgstr "Medlemsskab udløbnings mail sendt til %s."
+msgstr "Medlemsskab udløber snart e-mail, sendt til %s."
 
 #: scheduled/crons.php:143
 #, php-format
 msgid "Credit card expiring email sent to %s. "
-msgstr "Kreditkort udløber email er sendt til %s."
+msgstr "Kreditkort udløber e-mail, er sendt til %s."
 
 #: scheduled/crons.php:196 scheduled/crons.php:104
 #, php-format
 msgid "Trial ending email sent to %s. "
-msgstr "Prøveperiode slutter email sendt til %s."
+msgstr "Prøveperiode slutter e-mail, sendt til %s."
 
 #: services/applydiscountcode.php:67 services/applydiscountcode.php:64
 #, php-format
@@ -3382,7 +3383,7 @@ msgid ""
 "%s has had their payment subscription cancelled by Stripe. Please check that "
 "this user's membership is cancelled on your site if it should be."
 msgstr ""
-"%s har fået deres abonnement annulleret af Stripe. Venlig kontrollere, at "
+"%s har fået deres abonnement annulleret hos Stripe. Venligst kontroller, at "
 "brugerens medlemsskab er annulleret på din side, hvis det skulle ønskes. "
 
 #: adminpages/discountcodes.php:437
@@ -3391,22 +3392,22 @@ msgstr "Betalings Beløb"
 
 #: adminpages/discountcodes.php:480
 msgid "Check this to set an expiration date for new sign ups."
-msgstr "Klik her, for at sætte en udløbsdato for nye regestreringer."
+msgstr "Klik her, for at sætte en udløbsdato for nye registreringer."
 
 #: adminpages/discountcodes.php:497
 msgid ""
 "How long before the expiration expires. Note that any future payments will "
 "be cancelled when the membership expires."
 msgstr ""
-"Hvor lang tid der går, før medlemsskab udløber. Husk at fremtidige betaling "
-"ville blive annulleret, når medlemskabet udløber. "
+"Hvor lang tid der går, før medlemsskab udløber. Husk at fremtidige "
+"betalinger vil blive annulleret, når medlemskabet udløber. "
 
 #: adminpages/membershiplevels.php:364
 msgid ""
 "Stripe integration currently only supports billing periods of \"Month\" or "
 "\"Year\"."
 msgstr ""
-"Integration med Stripe understøtter kun betalings perioder af \"Måneder\" "
+"Integration med Stripe understøtter kun betalingsperioder af \"Måneder\" "
 "eller \"År\"."
 
 #: adminpages/membershiplevels.php:398
@@ -3416,8 +3417,8 @@ msgid ""
 "amount."
 msgstr ""
 "Integration til 2Checkout understøtter ikke brugerdefineret prøve periode. "
-"Du kan lave en prøve periode op, ved at sætte en betaling op, som er "
-"anderledes fra det oprindelige beløb."
+"Du kan lave en prøve periode, ved at sætte en betaling op, som er anderledes "
+"fra det oprindelige beløb."
 
 #: adminpages/memberslist.php:184 adminpages/memberslist.php:212
 msgid "Never"
@@ -3436,7 +3437,7 @@ msgid ""
 "If values are given, tax will be applied for any members ordering from the "
 "selected state. For more complex tax rules, use the \"pmpro_tax\" filter."
 msgstr ""
-"Hvis værdier er given, skat ville blive tilføjet til hvilken som helst "
+"Hvis værdier er angivet, vil skat blive tilføjet til hvilken som helst "
 "medlem, fra den valgte Stat. For mere komplekse skatte regler, brug "
 "\"pmpro_tax\" filter."
 
@@ -3453,25 +3454,26 @@ msgid ""
 "Stripe doesn't require billing address fields. Choose 'No' to hide them on "
 "the checkout page."
 msgstr ""
-"Stripe behøver ikke nogen faktura adresse felter. Vælg 'Nej' for at gemme "
-"dem på  Gå til Kassen side."
+"Stripe behøver ikke nogen faktura adresse felter. Vælg 'Nej' for at skjule "
+"dem på Gå til Kassen side."
 
 #: classes/class.pmproemail.php:685 classes/class.pmproemail.php:734
 #: classes/class.pmproemail.php:799
 msgid "membership has been cancelled"
-msgstr "medlemsskab er bleven annulleret"
+msgstr "medlemsskab er blevet annulleret"
 
 #: pages/checkout.php:51 pages/checkout.php:52
 #, php-format
 msgid "<p>The <strong>%s</strong> code has been applied to your order.</p>"
-msgstr "<p>denne <strong>%s</strong> kode er blevn tilføjet til din ordre.</p>"
+msgstr ""
+"<p>Denne <strong>%s</strong> kode er blevet tilføjet til din ordre.</p>"
 
 #: pages/confirmation.php:12
 msgid ""
 "Your payment has been submitted to PayPal. Your membership will be activated "
 "shortly."
 msgstr ""
-"Din Betaling er bleven tilføjet til PayPal. Dit medlemskab bliver aktiveret "
+"Din Betaling er blevet tilføjet til PayPal. Dit medlemskab bliver aktiveret "
 "inde for kort tid."
 
 #: pages/levels.php:15
@@ -3489,12 +3491,12 @@ msgstr "Gratis"
 #: pages/levels.php:51
 #, php-format
 msgid "%s per %s for %d more %s."
-msgstr "%s pr %s for %d mere %s."
+msgstr "%s pr %s for %d flere %s."
 
 #: pages/levels.php:55
 #, php-format
 msgid "%s every %d %s for %d more %s."
-msgstr "%s hver %d %s for %d mere %s."
+msgstr "%s hver %d %s for %d flere %s."
 
 #: pages/levels.php:60
 #, php-format

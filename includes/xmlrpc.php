@@ -28,7 +28,7 @@ function pmpro_xmlrpc_getMembershipLevelForUser($args)
 	if ( !$user = $wp_xmlrpc_server->login($username, $password) ) {
 		return $wp_xmlrpc_server->error;
 	}
-	
+
 	// The user passed should be an admin or have the pmpro_xmlprc capability
 	if(!user_can($user->ID, "manage_options") && !user_can($user->ID, "pmpro_xmlrpc"))
 		return "ERROR: User does not have access to the PMPro XMLRPC methods.";
@@ -56,14 +56,14 @@ function pmpro_xmlrpc_hasMembershipAccess($args)
 	$post_id = $args[2];	//post id to check
 	$user_id = $args[3];	//optional user id passed in
 	$return_membership_levels = $args[4];	//option to also include an array of membership levels with access to the post
-	
+
 	global $wp_xmlrpc_server;
 
-	// Let's run a check to see if credentials are okay	
+	// Let's run a check to see if credentials are okay
 	if ( !$user = $wp_xmlrpc_server->login($username, $password) ) {
 		return $wp_xmlrpc_server->error;
 	}
-	
+
 	// The user passed should be an admin or have the pmpro_xmlprc capability
 	if(!user_can($user->ID, "manage_options") && !user_can($user->ID, "pmpro_xmlrpc"))
 		return "ERROR: User does not have access to the PMPro XMLRPC methods.";
@@ -75,6 +75,6 @@ function pmpro_xmlrpc_hasMembershipAccess($args)
 	}
 
 	$has_access = pmpro_has_membership_access($post_id, $user_id, $return_membership_levels);
-	
+
 	return $has_access;
 }

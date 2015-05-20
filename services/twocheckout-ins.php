@@ -1,5 +1,6 @@
 <?php
-	define('PMPRO_INS_DEBUG', false);
+	//set this in your wp-config.php for debugging
+	//define('PMPRO_INS_DEBUG', true);
 	
 	//in case the file is loaded directly	
 	if(!defined("WP_USE_THEMES"))
@@ -43,7 +44,7 @@
 	$fraud_status = pmpro_getParam( 'fraud_status', 'REQUEST' ); // Check fraud status?
 	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'REQUEST' ); // Price paid by customer in seller currency code
 	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST' );
-	
+
 	// No message = return processing
 	if( empty($message_type) ) {
 		//initial payment, get the order
@@ -63,7 +64,7 @@
 		
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
-	
+
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
 	if( $message_type == 'ORDER_CREATED' ) {
 		//initial payment, get the order
@@ -161,7 +162,7 @@
 	
 	//Other
 	//if we got here, this is a different kind of txn
-	inslog("No recurring payment id or item number. message_type = " . $message_type);	
+	inslog("The PMPro INS handler does not process this type of message. message_type = " . $message_type);	
 	pmpro_twocheckoutExit();	
 	
 	/*
@@ -182,15 +183,25 @@
 		//echo $logstr;
 	
 		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";		
-			
-		//uncomment these lines and make sure logs/ins.txt is writable to log INS activity
-		if(PMPRO_INS_DEBUG)
-		{
-			echo $logstr;
-			$loghandle = fopen(dirname(__FILE__) . "/../logs/ins.txt", "a+");	
+					
+		//log in file or email?
+		if(defined('PMPRO_INS_DEBUG') && PMPRO_INS_DEBUG === "log")
+		{			
+			//file
+			$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");	
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);
 		}
+		elseif(defined('PMPRO_INS_DEBUG'))
+		{			
+			//email
+			if(strpos(PMPRO_INS_DEBUG, "@"))
+				$log_email = PMPRO_INS_DEBUG;	//constant defines a specific email address
+			else
+				$log_email = get_option("admin_email");
+			
+			wp_mail($log_email, get_option("blogname") . " 2Checkout INS Log", nl2br($logstr));
+		}		
 		
 		if(!empty($redirect))
 			wp_redirect($redirect);
@@ -207,7 +218,7 @@
 			$params[$k] = $v;
 		
 		//2Checkout uses an order number of 1 in the hash for demo orders for some reason
-		if(($params['demo'] == 'Y'))
+		if(!empty($params['demo']) && $params['demo'] == 'Y')
 			$params['order_number'] = 1;
 		
 		//is this a return call or notification

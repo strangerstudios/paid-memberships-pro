@@ -19,7 +19,7 @@ if(is_dir($pmpro_reports_theme_dir))
 {
 	$cwd = getcwd();
 	chdir($pmpro_reports_theme_dir);
-	foreach (glob("*.php") as $filename) 
+	foreach (glob("*.php") as $filename)
 	{
 		require_once($filename);
 	}

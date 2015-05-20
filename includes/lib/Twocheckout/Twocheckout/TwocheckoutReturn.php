@@ -3,7 +3,7 @@
 class Twocheckout_Return extends Twocheckout
 {
 
-    public static function check($params=array(), $secretWord, $format='json')
+    public static function check($params=array(), $secretWord)
     {
         $hashSecretWord = $secretWord;
         $hashSid = $params['sid'];
@@ -15,7 +15,7 @@ class Twocheckout_Return extends Twocheckout
         } else {
             $result = Twocheckout_Message::message('Success', 'Hash Matched');
         }
-        return Twocheckout_Util::return_resp($result, $format);
+        return Twocheckout_Util::returnResponse($result);
     }
 
 }

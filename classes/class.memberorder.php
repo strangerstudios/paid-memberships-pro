@@ -246,7 +246,7 @@
 
 			//filter @since v1.7.14
 			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
-			
+
 			return $this->discount_code;
 		}
 
@@ -295,9 +295,9 @@
 					$discount_code = $this->discount_code->code;
 				else
 					$discount_code = $this->discount_code;
-				
+
 				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";
-				
+
 				$this->membership_level = $wpdb->get_row($sqlQuery);
 			}
 

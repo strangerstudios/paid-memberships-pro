@@ -9,6 +9,8 @@
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
+    $pmpro_level_order = pmpro_getOption('level_order');
+
 	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $wp_version;
 	
 	if(isset($_REQUEST['edit']))
@@ -511,8 +513,8 @@
 			</tbody>
 		</table>				
 		<p class="submit topborder">
-			<input name="save" type="submit" class="button-primary" value="Save Level" /> 					
-			<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
+			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'pmpro'); ?>" /> 					
+			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro'); ?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
 		</p>
 	</form>
 	</div>
@@ -521,7 +523,48 @@
 	}	
 	else
 	{
-	?>							
+	?>
+        <script>
+            jQuery(document).ready(function($) {
+
+                // Return a helper with preserved width of cells
+                // from http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable/
+                var fixHelper = function(e, ui) {
+                    ui.children().each(function() {
+                        $(this).width($(this).width());
+                    });
+                    return ui;
+                };
+
+                $("table.membership-levels tbody").sortable({
+                    helper: fixHelper,
+                    placeholder: 'testclass',
+                    forcePlaceholderSize: true,
+                    update: update_level_order
+                });
+
+                function update_level_order(event, ui) {
+                    level_order = [];
+                    $("table.membership-levels tbody tr").each(function() {
+                        $(this).removeClass('alternate');
+                        level_order.push(parseInt( $("td:first", this).text()));
+                    });
+
+                    //update styles
+                    $("table.membership-levels tbody tr:odd").each(function() {
+                        $(this).addClass('alternate');
+                    });
+
+                    data = {
+                        action: 'pmpro_update_level_order',
+                        level_order: level_order
+                    };
+
+                    $.post(ajaxurl, data, function(response) {
+                    });
+                }
+            });
+        </script>
 				
 	<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
 	<form id="posts-filter" method="get" action="">			
@@ -530,12 +573,11 @@
 			<input type="hidden" name="page" value="pmpro-membershiplevels" />
 			<input id="post-search-input" type="text" value="<?php echo $s?>" name="s" size="30" />
 			<input class="button" type="submit" value="<?php _e('Search Levels', 'pmpro');?>" id="search-submit" />
-		</p>		
+		</p>
 	</form>	
-	
 	<br class="clear" />
-	
-	<table class="widefat">
+    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'pmpro'); ?></p>
+    <table class="widefat membership-levels">
 	<thead>
 		<tr>
 			<th><?php _e('ID', 'pmpro');?></th>
@@ -553,10 +595,48 @@
 				$sqlQuery .= "WHERE name LIKE '%$s%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 			
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);						
+			
+            if(!empty($pmpro_level_order)) {
+                //reorder levels
+                $order = explode(',', $pmpro_level_order);
+				
+				//put level ids in their own array
+				$level_ids = array();
+				foreach($levels as $level)
+					$level_ids[] = $level->id;
+				
+				//remove levels from order if they are gone
+				foreach($order as $key => $level_id)
+					if(!in_array($level_id, $level_ids))
+						unset($order[$key]);
 						
-			foreach($levels as $level)
-			{			
+				//add levels to the end if they aren't in the order array
+				foreach($level_ids as $level_id)
+					if(!in_array($level_id, $order))
+						$order[] = $level_id;
+				
+				//remove dupes
+				$order = array_unique($order);
+				
+				//save the level order
+				pmpro_setOption('level_order', implode(',', $order));
+
+				//reorder levels here
+                $reordered_levels = array();
+                foreach ($order as $level_id) {
+                    foreach ($levels as $level) {
+                        if ($level_id == $level->id)
+                            $reordered_levels[] = $level;
+                    }
+                }								
+            }
+			else
+				$reordered_levels = $levels;
+
+			$count = 0;
+			foreach($reordered_levels as $level)
+			{
 		?>
 		<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 			<td><?php echo $level->id?></td>
@@ -591,4 +671,3 @@
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");	
 ?>
-
