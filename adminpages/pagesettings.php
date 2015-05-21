@@ -139,10 +139,7 @@
 				<th scope="row" valign="top">                        
 					<label for="account_page_id"><?php _e('Account Page', 'pmpro');?>:</label>
 				</th>
-				<td>
-					<?php
-						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['account']));
-					?>	
+				<td>	
 					<?php
 						wp_dropdown_pages(array("name"=>"account_page_id", "show_option_none"=>"-- ".__( 'Choose One', 'pmpro' )." --", "selected"=>$pmpro_pages['account']));
 					?>	

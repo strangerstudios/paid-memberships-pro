@@ -26,7 +26,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	ob_start();
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
-	if($current_user->membership_level->ID)
+	if(pmpro_hasMembershipLevel())
 	{
 		$ssorder = new MemberOrder();
 		$ssorder->getLastMemberOrder();

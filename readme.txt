@@ -102,6 +102,11 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.4.2 =
+* Fixed bug where dropdown to set the account page in the page settings was showing up twice.
+* Fixed warning in pmpro_account shortcode.
+
+
 = 1.8.4.1 =
 * BUG: Fixed issue introduced in 1.8.4 where levels wouldn't show up in the front end if they hadn't been reordered.
 
