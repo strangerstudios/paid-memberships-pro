@@ -34,7 +34,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		?>	
 	<div id="pmpro_account">		
 		
-		<?php if(in_array('membership', $sections)) { ?>
+		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
 			<div id="pmpro_account-membership" class="pmpro_box">
 				
 				<h3><?php _e("My Memberships", "pmpro");?></h3>

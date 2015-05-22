@@ -103,8 +103,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.4.2 =
-* Fixed bug where dropdown to set the account page in the page settings was showing up twice.
-* Fixed warning in pmpro_account shortcode.
+* BUG: Fixed bug where dropdown to set the account page in the page settings was showing up twice.
+* BUG: Fixed warning in pmpro_account shortcode.
+* ENHANCEMENT: The pmpro_account shortcode will now accept "membership" or "memberships" for the section name.
 
 
 = 1.8.4.1 =
@@ -136,7 +137,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added pmpro_account_bullets_top and pmpro_account_bullets_bottom hooks to add content to the accounts page.
 * ENHANCEMENT: Added pmpro_get_recurring_payments_profile_details_nvpstr, pmpro_manage_recurring_payments_profile_status_nvpstr, pmpro_create_recurring_payments_profile_nvpstr, pmpro_do_express_checkout_payment_nvpstr, and pmpro_get_express_checkout_details_nvpstr hooks to filter specific nvp strings in the PayPal Express integration.
 * ENHANCEMENT: Added labels to checkboxes in the dashboard settings pages.
-* ENHANCEMENT: Can now use the [pmpro_account] shortcode on other pages/widgets/etc. Can also limit to specific sections [pmpro_account sections='memberships,profile,invoices,links'] just remove sections from that list.
+* ENHANCEMENT: Can now use the [pmpro_account] shortcode on other pages/widgets/etc. Can also limit to specific sections [pmpro_account sections='membership,profile,invoices,links'] just remove sections from that list.
 * ENHANCEMENT: Changed all uses of the global $table_prefix to use $wpdb->base_prefix to aid in compatibility when loading WordPress with other PHP code (e.g. phpBB). (Thanks, Dion)
 * ENHANCEMENT: The notification script was updated to point to notifications.paidmembershipspro.com instead of www.paidmembershipspro.com/notifications/. This allows us to keep our notification script on a different server. This script is used to insert notifications into the PMPro admin pages when important updates are available.
 
