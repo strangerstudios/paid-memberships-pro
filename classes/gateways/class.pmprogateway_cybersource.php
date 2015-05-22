@@ -177,7 +177,7 @@
 				//charge first payment
 				if($this->charge($order))
 				{
-					//setup recurring billing					
+					//set up recurring billing					
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{					
 						if(!pmpro_isLevelTrial($order->membership_level))
@@ -560,7 +560,7 @@
 			$request->merchantReferenceCode = $order->code;
 			
 			/*
-				setup billing amount/etc
+				set up billing amount/etc
 			*/
 			//figure out the amounts
 			$amount = $order->PaymentAmount;

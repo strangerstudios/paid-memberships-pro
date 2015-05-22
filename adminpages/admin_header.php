@@ -24,9 +24,9 @@
 		if(empty($pmpro_level_ready) && empty($edit))
 			$msgt .= " <a href=\"?page=pmpro-membershiplevels&edit=-1\">" . __("Add a membership level to get started.", "pmpro") . "</a>";
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
-			$msgt .= " <a href=\"?page=pmpro-pagesettings\">" . __("Setup the membership pages", "pmpro") . "</a>.";		
+			$msgt .= " <a href=\"?page=pmpro-pagesettings\">" . __("Set up the membership pages", "pmpro") . "</a>.";		
 		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
-			$msgt .= " <a href=\"?page=pmpro-paymentsettings\">" . __("Setup your SSL certificate and payment gateway", "pmpro") . "</a>.";
+			$msgt .= " <a href=\"?page=pmpro-paymentsettings\">" . __("Set up your SSL certificate and payment gateway", "pmpro") . "</a>.";
 			
 		if(empty($msgt))
 			$msg = false;
