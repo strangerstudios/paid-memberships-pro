@@ -6,7 +6,7 @@
 		 */
 		function MemberOrder($id = NULL)
 		{
-			//setup the gateway
+			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));
 
 			//get data if an id was passed
@@ -106,7 +106,7 @@
 		}
 
 		/**
-		 * Setup the Gateway class to use with this order.
+		 * Set up the Gateway class to use with this order.
 		 *
 		 * @param string $gateway Name/label for the gateway to set.
 		 *

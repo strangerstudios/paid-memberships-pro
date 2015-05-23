@@ -177,7 +177,7 @@
 				//charge first payment
 				if($this->charge($order))
 				{
-					//setup recurring billing
+					//set up recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
 						if(!pmpro_isLevelTrial($order->membership_level))

@@ -1317,7 +1317,7 @@
 				$user_id = $current_user->ID;
 			}
 
-			//setup customer
+			//set up customer
 			$result = $this->getCustomer($order);
 			if(empty($result))
 				return false;	//error retrieving customer
