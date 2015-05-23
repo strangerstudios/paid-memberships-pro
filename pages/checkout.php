@@ -667,7 +667,7 @@
 			<tr class="odd">
 				<td>								
 					<div id="pmpro_license">
-<?php echo wpautop($tospage->post_content)?>
+<?php echo wpautop(do_shortcode($tospage->post_content));?>
 					</div>								
 					<input type="checkbox" name="tos" value="1" id="tos" /> <label class="pmpro_normal pmpro_clickable" for="tos"><?php printf(__('I agree to the %s', 'pmpro'), $tospage->post_title);?></label>
 				</td>

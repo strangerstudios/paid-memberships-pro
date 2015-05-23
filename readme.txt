@@ -105,8 +105,9 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.4.2 =
 * BUG: Fixed bug where dropdown to set the account page in the page settings was showing up twice.
 * BUG: Fixed warning in pmpro_account shortcode.
+* BUG: Grammar fixes in admin pages. "Setup" changed to "Set Up" when used as a verb. (Thanks, sumobi on GitHub)
+* ENHANCEMENT: If the option is set, terms of service page embedded on the checkout page will not be passed through do_shortcode so shortcodes get processed in the text. (Thanks, cliffordp on GitHub)
 * ENHANCEMENT: The pmpro_account shortcode will now accept "membership" or "memberships" for the section name.
-
 
 = 1.8.4.1 =
 * BUG: Fixed issue introduced in 1.8.4 where levels wouldn't show up in the front end if they hadn't been reordered.
