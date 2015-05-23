@@ -38,11 +38,11 @@ msgid "Add a membership level to get started."
 msgstr "Fügen Sie ein Paket hinzu, um zu beginnen."
 
 #: adminpages/admin_header.php:27
-msgid "Setup the membership pages"
+msgid "Set up the membership pages"
 msgstr "Mitglieds-Seiten erstellen"
 
 #: adminpages/admin_header.php:29
-msgid "Setup your SSL certificate and payment gateway"
+msgid "Set up your SSL certificate and payment gateway"
 msgstr "SSL-Zertifikat und Zahlungsdienstleister einstellen"
 
 #: adminpages/admin_header.php:38
@@ -3249,7 +3249,7 @@ msgid "Checkout: Payment Information"
 msgstr "Checkout: Zahlungs Informationen"
 
 #: preheaders/checkout.php:109
-msgid "Setup Your Account"
+msgid "Set up Your Account"
 msgstr "Account einrichten"
 
 #: preheaders/checkout.php:486 preheaders/checkout.php:468
@@ -3296,7 +3296,7 @@ msgstr "Zahlung erfolgreich."
 #: preheaders/checkout.php:710 preheaders/checkout.php:691
 #: preheaders/checkout.php:709
 msgid ""
-"Unknown error generating account. Please contact us to setup your membership."
+"Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 "Unbekannter Fehler beim Erstellen des Accounts. BItte kontaktieren Sie uns "
 "um Ihren Account einzurichten."
@@ -3344,7 +3344,7 @@ msgstr ""
 #: preheaders/checkout.php:1048 preheaders/checkout.php:1063
 #, php-format
 msgid ""
-"You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
+"You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
 "Sie müssen <a href=\"%s\">einen Zahlungsdienstleister auswählen</a> damit "
@@ -3352,7 +3352,7 @@ msgstr ""
 
 #: preheaders/checkout.php:1066 preheaders/checkout.php:1003
 #: preheaders/checkout.php:1050 preheaders/checkout.php:1065
-msgid "A Payment Gateway must be setup before any payments will be processed."
+msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 "Ein Zahlungsdienstleister muss ausgewählt werden, bevor Zahlungen erfolgen "
 "können."

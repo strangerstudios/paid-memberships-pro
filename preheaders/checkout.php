@@ -97,7 +97,7 @@
 		$besecure = pmpro_getOption("use_ssl");
 	} else {
 		//no payment so we don't need ssl
-		$pagetitle = __("Setup Your Account", 'pmpro');
+		$pagetitle = __("Set Up Your Account", 'pmpro');
 		$pmpro_requirebilling = false;
 		$besecure = false;
 	}
@@ -506,7 +506,7 @@
 						{
 							$pmpro_msg = $morder->error;
 							if (empty($pmpro_msg))
-								$pmpro_msg = __("Unknown error generating account. Please contact us to setup your membership.", "pmpro");
+								$pmpro_msg = __("Unknown error generating account. Please contact us to set up your membership.", "pmpro");
 							$pmpro_msgt = "pmpro_error";
 						}
 
@@ -721,9 +721,9 @@
 		//show message if the payment gateway is not setup yet
 		if ($pmpro_requirebilling && !pmpro_getOption("gateway", true))	{
 			if (pmpro_isAdmin())
-				$pmpro_msg = sprintf(__('You must <a href="%s">setup a Payment Gateway</a> before any payments will be processed.', 'pmpro'), get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels&view=payment'));
+				$pmpro_msg = sprintf(__('You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'pmpro'), get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels&view=payment'));
 			else
-				$pmpro_msg = __("A Payment Gateway must be setup before any payments will be processed.", "pmpro");
+				$pmpro_msg = __("A Payment Gateway must be set up before any payments will be processed.", "pmpro");
 			$pmpro_msgt = "";
 		}
 
