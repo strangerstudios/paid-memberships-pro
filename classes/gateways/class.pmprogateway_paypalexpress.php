@@ -276,7 +276,7 @@
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 				if($morder->Token)
 				{
-					//setup values
+					//set up values
 					$morder->membership_id = $pmpro_level->id;
 					$morder->membership_name = $pmpro_level->name;
 					$morder->discount_code = $discount_code;
@@ -287,7 +287,7 @@
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
 
-					//setup level var
+					//set up level var
 					$morder->getMembershipLevel();
 					$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
 
