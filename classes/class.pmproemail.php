@@ -48,7 +48,9 @@
 			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "pmpro");
-			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
+			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
+			$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");           //email folder in pmpro language folder in theme
+			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");			//email folder in pmpro folder in theme
 			elseif(file_exists(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html"))
 				$this->body = file_get_contents(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html");						//membership- file in pmpro folder in theme
