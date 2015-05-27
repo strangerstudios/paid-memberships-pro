@@ -494,7 +494,7 @@
 					<td>
 						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(option("date_format"), $order->timestamp); } else { ?>
 						<?php
-							//setup date vars
+							//set up date vars
 							if(!empty($order->timestamp))
 								$timestamp = $order->timestamp;
 							else

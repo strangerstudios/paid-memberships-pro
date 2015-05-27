@@ -394,11 +394,11 @@ msgid "Add a membership level to get started."
 msgstr "Añade un nivel de membresía para comenzar."
 
 #: adminpages/admin_header.php:27
-msgid "Setup the membership pages"
+msgid "Set up the membership pages"
 msgstr "Configura las paginas de membresía"
 
 #: adminpages/admin_header.php:29
-msgid "Setup your SSL certificate and payment gateway"
+msgid "Set up your SSL certificate and payment gateway"
 msgstr "Configura tu certificado SSL y tu pasarela de pagos"
 
 #: adminpages/admin_header.php:38
@@ -2551,7 +2551,7 @@ msgid "Checkout: Payment Information"
 msgstr "Checkout: Información de pago"
 
 #: preheaders/checkout.php:109
-msgid "Setup Your Account"
+msgid "Set up Your Account"
 msgstr "Configura tu cuenta"
 
 #: preheaders/checkout.php:468
@@ -2586,7 +2586,7 @@ msgstr "Pago aceptado."
 
 #: preheaders/checkout.php:691
 msgid ""
-"Unknown error generating account. Please contact us to setup your membership."
+"Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 "Error desconocido generando tu cuenta. Por favor contactanos para que "
 "podamos configurar tu membresía."
@@ -2628,14 +2628,14 @@ msgstr ""
 #: preheaders/checkout.php:1001
 #, php-format
 msgid ""
-"You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
+"You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
 "Debes <a href=\"%s\">Configurar una pasarela de pagos</a> antes de poder "
 "procesar pagos."
 
 #: preheaders/checkout.php:1003
-msgid "A Payment Gateway must be setup before any payments will be processed."
+msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 "Una pasarela de pagos debe de ser configurada antes de que los pagos puedan "
 "ser procesados."

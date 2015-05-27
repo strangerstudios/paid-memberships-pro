@@ -28,7 +28,7 @@ if(!function_exists("sornot"))
 	}
 }
 
-//setup wpdb for the tables we need
+//set up wpdb for the tables we need
 function pmpro_setDBTables()
 {
 	global $wpdb;

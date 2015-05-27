@@ -234,7 +234,7 @@
 		<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
 		<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
 		<script type="text/javascript">
-			//setup braintree encryption
+			//set up braintree encryption
 			var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
 			braintree.onSubmitEncryptForm('pmpro_form');
 
@@ -658,7 +658,7 @@
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 			
-			//setup customer
+			//set up customer
 			$this->getCustomer($order);
 			if(empty($this->customer) || !empty($order->error))
 				return false;	//error retrieving customer

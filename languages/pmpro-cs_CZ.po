@@ -34,11 +34,11 @@ msgid "Add a membership level to get started."
 msgstr "Pro začátek zadejte nějakou úroveň členství."
 
 #: adminpages/admin_header.php:27
-msgid "Setup the membership pages"
+msgid "Set up the membership pages"
 msgstr "Nastavte stránky členství"
 
 #: adminpages/admin_header.php:29
-msgid "Setup your SSL certificate and payment gateway"
+msgid "Set up your SSL certificate and payment gateway"
 msgstr "Nastavte Váš SSL certifikát a platební bránu"
 
 #: adminpages/admin_header.php:38
@@ -3922,7 +3922,7 @@ msgstr "Pokladna: Informace o platbě"
 
 #: preheaders/checkout.php:100 preheaders/checkout.php:99
 #: preheaders/checkout.php:102 preheaders/checkout.php:109
-msgid "Setup Your Account"
+msgid "Set up Your Account"
 msgstr "Nastavení Vašeho účtu"
 
 #: preheaders/checkout.php:300 preheaders/checkout.php:416
@@ -3985,7 +3985,7 @@ msgstr "Platba byla přijata."
 #: preheaders/checkout.php:665 preheaders/checkout.php:691
 #: preheaders/checkout.php:709 preheaders/checkout.php:710
 msgid ""
-"Unknown error generating account. Please contact us to setup your membership."
+"Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 "Neznámá chyba při generování účtu. Prosím, kontaktujte nás pro nastavení "
 "vašeho členství."
@@ -4039,7 +4039,7 @@ msgstr ""
 #: preheaders/checkout.php:1064
 #, php-format
 msgid ""
-"You must <a href=\"%s\">setup a Payment Gateway</a> before any payments will "
+"You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will "
 "be processed."
 msgstr ""
 "Před zpracováním jakýchkoliv plateb musíte <a href=\"%s\">nastavit platební "
@@ -4050,7 +4050,7 @@ msgstr ""
 #: preheaders/checkout.php:986 preheaders/checkout.php:1003
 #: preheaders/checkout.php:1050 preheaders/checkout.php:1065
 #: preheaders/checkout.php:1066
-msgid "A Payment Gateway must be setup before any payments will be processed."
+msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 "Předtím, než budou moci být zpracovány jakékoliv platby, musí být nastavena "
 "platební brána."

@@ -1,6 +1,6 @@
 <?php
 /*
-	Code that runs on the init, set_current_user, or wp hooks to setup PMPro
+	Code that runs on the init, set_current_user, or wp hooks to set up PMPro
 */
 //init code
 function pmpro_init()
