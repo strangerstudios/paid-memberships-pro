@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.4.3 =
+* BUG: Now tracking "views" when the wp_head hook is fired instead of the "wp" hook. Previously page redirects and AJAX calls might have been counted as "views". Using wp_head will result in more accurate numbers (compared to something like Google Analytics, e.g.). Also note that the number of views will now be much much lower than before on some sites. (Thanks, Michael Cummings)
+
 = 1.8.4.2 =
 * BUG: Fixed bug where dropdown to set the account page in the page settings was showing up twice.
 * BUG: Fixed warning in pmpro_account shortcode.
