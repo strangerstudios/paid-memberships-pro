@@ -129,6 +129,8 @@ function pmpro_wp()
 					ob_start();
 					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
 						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
+					elseif(file_exists(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
+						include(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
 					else
 						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
 					
