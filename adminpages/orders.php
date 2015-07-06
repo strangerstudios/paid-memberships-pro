@@ -97,57 +97,57 @@
 			$order = new MemberOrder();
 
 		//update values
-		if(!in_array("code", $read_only_fields))
+		if(!in_array("code", $read_only_fields) && isset($_POST['code']))
 			$order->code = $_POST['code'];
-		if(!in_array("user_id", $read_only_fields))
+		if(!in_array("user_id", $read_only_fields) && isset($_POST['user_id']))
 			$order->user_id = intval($_POST['user_id']);
-		if(!in_array("membership_id", $read_only_fields))
+		if(!in_array("membership_id", $read_only_fields) && isset($_POST['membership_id']))
 			$order->membership_id = intval($_POST['membership_id']);
-		if(!in_array("billing_name", $read_only_fields))
+		if(!in_array("billing_name", $read_only_fields) && isset($_POST['billing_name']))
 			$order->billing->name = stripslashes($_POST['billing_name']);
-		if(!in_array("billing_street", $read_only_fields))
+		if(!in_array("billing_street", $read_only_fields) && isset($_POST['billing_street']))
 			$order->billing->street = stripslashes($_POST['billing_street']);
-		if(!in_array("billing_city", $read_only_fields))
+		if(!in_array("billing_city", $read_only_fields) && isset($_POST['billing_city']))
 			$order->billing->city = stripslashes($_POST['billing_city']);
-		if(!in_array("billing_state", $read_only_fields))
+		if(!in_array("billing_state", $read_only_fields) && isset($_POST['billing_state']))
 			$order->billing->state = stripslashes($_POST['billing_state']);
-		if(!in_array("billing_zip", $read_only_fields))
+		if(!in_array("billing_zip", $read_only_fields) && isset($_POST['billing_zip']))
 			$order->billing->zip = $_POST['billing_zip'];
-		if(!in_array("billing_country", $read_only_fields))
+		if(!in_array("billing_country", $read_only_fields) && isset($_POST['billing_country']))
 			$order->billing->country = stripslashes($_POST['billing_country']);
-		if(!in_array("billing_phone", $read_only_fields))
+		if(!in_array("billing_phone", $read_only_fields) && isset($_POST['billing_phone']))
 			$order->billing->phone = $_POST['billing_phone'];
-		if(!in_array("subtotal", $read_only_fields))
+		if(!in_array("subtotal", $read_only_fields) && isset($_POST['subtotal']))
 			$order->subtotal = $_POST['subtotal'];
-		if(!in_array("tax", $read_only_fields))
+		if(!in_array("tax", $read_only_fields) && isset($_POST['tax']))
 			$order->tax = $_POST['tax'];
-		if(!in_array("couponamount", $read_only_fields))
+		if(!in_array("couponamount", $read_only_fields) && isset($_POST['couponamount']))
 			$order->couponamount = $_POST['couponamount'];
-		if(!in_array("total", $read_only_fields))
+		if(!in_array("total", $read_only_fields) && isset($_POST['total']))
 			$order->total = $_POST['total'];
-		if(!in_array("payment_type", $read_only_fields))
+		if(!in_array("payment_type", $read_only_fields) && isset($_POST['payment_type']))
 			$order->payment_type = $_POST['payment_type'];
-		if(!in_array("cardtype", $read_only_fields))
+		if(!in_array("cardtype", $read_only_fields) && isset($_POST['cardtype']))
 			$order->cardtype = $_POST['cardtype'];
-		if(!in_array("accountnumber", $read_only_fields))
+		if(!in_array("accountnumber", $read_only_fields) && isset($_POST['accountnumber']))
 			$order->accountnumber = $_POST['accountnumber'];
-		if(!in_array("expirationmonth", $read_only_fields))
+		if(!in_array("expirationmonth", $read_only_fields) && isset($_POST['expirationmonth']))
 			$order->expirationmonth = $_POST['expirationmonth'];
-		if(!in_array("expirationyear", $read_only_fields))
+		if(!in_array("expirationyear", $read_only_fields) && isset($_POST['expirationyear']))
 			$order->expirationyear = $_POST['expirationyear'];
-		if(!in_array("ExpirationDate", $read_only_fields))
+		if(!in_array("ExpirationDate", $read_only_fields) && isset($_POST['ExpirationDate']))
 			$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
-		if(!in_array("status", $read_only_fields))
+		if(!in_array("status", $read_only_fields) && isset($_POST['status']))
 			$order->status = stripslashes($_POST['status']);
-		if(!in_array("gateway", $read_only_fields))
+		if(!in_array("gateway", $read_only_fields) && isset($_POST['gateway']))
 			$order->gateway = $_POST['gateway'];
-		if(!in_array("gateway_environment", $read_only_fields))
+		if(!in_array("gateway_environment", $read_only_fields) && isset($_POST['gateway_environment']))
 			$order->gateway_environment = $_POST['gateway_environment'];
-		if(!in_array("payment_transaction_id", $read_only_fields))
+		if(!in_array("payment_transaction_id", $read_only_fields) && isset($_POST['payment_transaction_id']))
 			$order->payment_transaction_id = $_POST['payment_transaction_id'];
-		if(!in_array("subscription_transaction_id", $read_only_fields))
+		if(!in_array("subscription_transaction_id", $read_only_fields) && isset($_POST['subscription_transaction_id']))
 			$order->subscription_transaction_id = $_POST['subscription_transaction_id'];
-		if(!in_array("notes", $read_only_fields))
+		if(!in_array("notes", $read_only_fields) && isset($_POST['notes']))
 			$order->notes = stripslashes($_POST['notes']);
 
 		//affiliate stuff
