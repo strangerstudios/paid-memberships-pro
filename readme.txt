@@ -103,6 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.4.4 =
+* BUG: Fixed issue where subscriptions cancelled at Stripe wouldn't cancel the related PMPro membership if the membership was created after updating to v1.8. (Thank, Ninjami-Juho)
 * BUG: Now tracking "views" when the wp_head hook is fired instead of the "wp" hook. Previously page redirects and AJAX calls might have been counted as "views". Using wp_head will result in more accurate numbers (compared to something like Google Analytics, e.g.). Also note that the number of views will now be much much lower than before on some sites. (Thanks, Michael Cummings)
 * BUG: Fixed loading of email templates from language folders in themes, child themes, and languages folder. (Thanks, Karel Martens)
 
