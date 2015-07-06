@@ -9,52 +9,52 @@
 
 	//get users
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 
 	if(isset($_REQUEST['l']))
-		$l = $_REQUEST['l'];
+		$l = intval($_REQUEST['l']);
 	else
 		$l = false;
 
 	if(isset($_REQUEST['start-month']))
-		$start_month = $_REQUEST['start-month'];
+		$start_month = intval($_REQUEST['start-month']);
 	else
 		$start_month = "1";
 
 	if(isset($_REQUEST['start-day']))
-		$start_day = $_REQUEST['start-day'];
+		$start_day = intval($_REQUEST['start-day']);
 	else
 		$start_day = "1";
 
 	if(isset($_REQUEST['start-year']))
-		$start_year = $_REQUEST['start-year'];
+		$start_year = intval($_REQUEST['start-year']);
 	else
 		$start_year = date("Y");
 
 	if(isset($_REQUEST['end-month']))
-		$end_month = $_REQUEST['end-month'];
+		$end_month = intval($_REQUEST['end-month']);
 	else
 		$end_month = date("n");
 
 	if(isset($_REQUEST['end-day']))
-		$end_day = $_REQUEST['end-day'];
+		$end_day = intval($_REQUEST['end-day']);
 	else
 		$end_day = date("j");
 
 	if(isset($_REQUEST['end-year']))
-		$end_year = $_REQUEST['end-year'];
+		$end_year = intval($_REQUEST['end-year']);
 	else
 		$end_year = date("Y");
 
 	if(isset($_REQUEST['predefined-date']))
-		$predefined_date = $_REQUEST['predefined-date'];
+		$predefined_date = sanitize_text_field($_REQUEST['predefined-date']);
 	else
 		$predefined_date = "This Month";
 
 	if(isset($_REQUEST['status']))
-		$status = $_REQUEST['status'];
+		$status = sanitize_text_field($_REQUEST['status']);
 	else
 		$status = "";
 

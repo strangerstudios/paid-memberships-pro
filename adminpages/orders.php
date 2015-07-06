@@ -8,52 +8,52 @@
 	//vars
 	global $wpdb;
 	if(isset($_REQUEST['s']))
-		$s = trim($_REQUEST['s']);
+		$s = sanitize_text_field(trim($_REQUEST['s']));
 	else
 		$s = "";
 
 	if(isset($_REQUEST['l']))
-		$l = $_REQUEST['l'];
+		$l = intval($_REQUEST['l']);
 	else
 		$l = false;
 
 	if(isset($_REQUEST['start-month']))
-		$start_month = $_REQUEST['start-month'];
+		$start_month = intval($_REQUEST['start-month']);
 	else
 		$start_month = "1";
 
 	if(isset($_REQUEST['start-day']))
-		$start_day = $_REQUEST['start-day'];
+		$start_day = intval($_REQUEST['start-day']);
 	else
 		$start_day = "1";
 
 	if(isset($_REQUEST['start-year']))
-		$start_year = $_REQUEST['start-year'];
+		$start_year = intval($_REQUEST['start-year']);
 	else
 		$start_year = date("Y");
 
 	if(isset($_REQUEST['end-month']))
-		$end_month = $_REQUEST['end-month'];
+		$end_month = intval($_REQUEST['end-month']);
 	else
 		$end_month = date("n");
 
 	if(isset($_REQUEST['end-day']))
-		$end_day = $_REQUEST['end-day'];
+		$end_day = intval($_REQUEST['end-day']);
 	else
 		$end_day = date("j");
 
 	if(isset($_REQUEST['end-year']))
-		$end_year = $_REQUEST['end-year'];
+		$end_year = intval($_REQUEST['end-year']);
 	else
 		$end_year = date("Y");
 
 	if(isset($_REQUEST['predefined-date']))
-		$predefined_date = $_REQUEST['predefined-date'];
+		$predefined_date = sanitize_text_field($_REQUEST['predefined-date']);
 	else
 		$predefined_date = "This Month";
 
 	if(isset($_REQUEST['status']))
-		$status = $_REQUEST['status'];
+		$status = sanitize_text_field($_REQUEST['status']);
 	else
 		$status = "";
 
@@ -513,8 +513,8 @@
 							}
 						?>
 						</select>
-						<input name="ts_day" type="text" size="2" value="<?php echo $day?>" />
-						<input name="ts_year" type="text" size="4" value="<?php echo $year?>" />
+						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr($day);?>" />
+						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr($year);?>" />
 						<?php } ?>
 					</td>
 				</tr>
@@ -617,8 +617,8 @@
 				<?php } ?>
 			</select>
 
-			<input id='start-day' name="start-day" type="text" size="2" value="<?php echo $start_day?>" />
-			<input id='start-year' name="start-year" type="text" size="4" value="<?php echo $start_year?>" />
+			<input id='start-day' name="start-day" type="text" size="2" value="<?php echo esc_attr($start_day);?>" />
+			<input id='start-year' name="start-year" type="text" size="4" value="<?php echo esc_attr($start_year);?>" />
 
 
 			<span id="to"><?php _ex('To', 'Dropdown label', 'pmpro')?></span>
@@ -630,8 +630,8 @@
 			</select>
 
 
-			<input id='end-day' name="end-day" type="text" size="2" value="<?php echo $end_day?>" />
-			<input id='end-year' name="end-year" type="text" size="4" value="<?php echo $end_year?>" />
+			<input id='end-day' name="end-day" type="text" size="2" value="<?php echo esc_attr($end_day);?>" />
+			<input id='end-year' name="end-year" type="text" size="4" value="<?php echo esc_attr($end_year);?>" />
 
 			<span id="filterby"><?php _ex('filter by ', 'Dropdown label', 'pmpro')?></span>
 
@@ -776,7 +776,7 @@
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php _e('Search Orders', 'pmpro');?>:</label>
 		<input type="hidden" name="page" value="pmpro-orders" />
-		<input id="post-search-input" type="text" value="<?php echo $s?>" name="s"/>
+		<input id="post-search-input" type="text" value="<?php echo esc_attr($s);?>" name="s"/>
 		<input class="button" type="submit" value="<?php _e('Search Orders', 'pmpro');?>"/>
 	</p>
 

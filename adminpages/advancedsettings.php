@@ -227,10 +227,10 @@ if(pmpro_displayAds())
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
 					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'pmpro');?>:</label>
-					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo $recaptcha_publickey?>" />
+					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />
 					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'pmpro');?>:</label>
-					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo $recaptcha_privatekey?>" />
+					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
 				</td>
 			</tr>
 			<tr>
@@ -296,14 +296,14 @@ if(pmpro_displayAds())
                             <input id="<?php _e($field['field_name'], 'pmpro'); ?>"
                                    name="<?php _e($field['field_name'], 'pmpro'); ?>"
                                    type="<?php _e($field['field_type'], 'pmpro'); ?>"
-                                   value="<?php echo pmpro_getOption($field['field_name']); ?> ">
+                                   value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> ">
                             <?php
                             break;
                         case 'textarea':
                             ?>
                             <textarea id="<?php _e($field['field_name'], 'pmpro'); ?>"
                                       name="<?php _e($field['field_name'], 'pmpro'); ?>">
-                                <?php echo pmpro_getOption($field['field_name']); ?>
+                                <?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
                             </textarea>
                             <?php
                             break;

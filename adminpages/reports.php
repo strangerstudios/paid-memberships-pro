@@ -54,7 +54,7 @@
 	else
 	{
 		//view a single report
-		$report = $_REQUEST['report'];
+		$report = sanitize_text_field($_REQUEST['report']);
 		call_user_func("pmpro_report_" . $report . "_page");
 	}
 	

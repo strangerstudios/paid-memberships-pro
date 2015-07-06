@@ -101,6 +101,9 @@ Not sure? You can find out by doing a bit a research.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
+= 1.8.4.3 = 
+* SECURITY PATCH: Fixes to Cross Site Scripting vulnerabilities in the PMPro settings pages in the WordPress dashboard. [Advisory ID HTB23264](https://www.htbridge.com/advisory/HTB23264). (Thanks, High-Tech Bridge Security Research Lab)
+
 == Changelog == 
 = 1.8.4.2 =
 * BUG: Fixed bug where dropdown to set the account page in the page settings was showing up twice.
