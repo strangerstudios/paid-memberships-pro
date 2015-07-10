@@ -14,7 +14,7 @@
 		$s = "";
 
 	if(isset($_REQUEST['l']))
-		$l = intval($_REQUEST['l']);
+		$l = sanitize_text_field($_REQUEST['l']);
 	else
 		$l = false;
 
