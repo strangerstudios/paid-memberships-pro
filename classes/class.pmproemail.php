@@ -48,30 +48,39 @@
 			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "pmpro");
-			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");			//email folder in pmpro folder in theme
+			
+			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
+				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in child theme
+			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
+				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in child theme
 			elseif(file_exists(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html"))
-				$this->body = file_get_contents(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html");						//membership- file in pmpro folder in theme
-			elseif(file_exists(TEMPLATEPATH . "/membership-email-" . $this->template . ".html"))
-				$this->body = file_get_contents(TEMPLATEPATH . "/membership-email-" . $this->template . ".html");									//membership- file in theme root
+				$this->body = file_get_contents(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in child theme
+			elseif(file_exists(get_template_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))	
+				$this->body = file_get_contents(get_template_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in parent theme
+			elseif(file_exists(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
+				$this->body = file_get_contents(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in parent theme
+			elseif(file_exists(get_template_directory() . "/membership-email-" . $this->template . ".html"))
+				$this->body = file_get_contents(get_template_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in parent theme
+			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html"))
+				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html");				//localized email folder in WP language folder
 			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html"))
-				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");											//email folder in WP language folder
+				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");								//email folder in WP language folder
 			elseif(file_exists(PMPRO_DIR . "/languages/" . $locale . "/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/languages/" . $locale . "/" . $this->template . ".html");								//email folder in PMPro language folder
+				$this->body = file_get_contents(PMPRO_DIR . "/languages/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
 			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");													//default template in plugin
+				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");										//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
-				$this->body = $this->data['body'];
+				$this->body = $this->data['body'];																						//data passed in
 			
 			//header and footer
 			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
-			if(file_exists(TEMPLATEPATH . "/email_header.html"))
+			if(file_exists(get_template_directory() . "/email_header.html"))
 			{
-				$this->body = file_get_contents(TEMPLATEPATH . "/email_header.html") . "\n" . $this->body;
+				$this->body = file_get_contents(get_template_directory() . "/email_header.html") . "\n" . $this->body;
 			}			
-			if(file_exists(TEMPLATEPATH . "/email_footer.html"))
+			if(file_exists(get_template_directory() . "/email_footer.html"))
 			{
-				$this->body = $this->body . "\n" . file_get_contents(TEMPLATEPATH . "/email_footer.html");
+				$this->body = $this->body . "\n" . file_get_contents(get_template_directory() . "/email_footer.html");
 			}
 			*/
 			
@@ -188,7 +197,7 @@
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
-								"user_email" => $user->user_email,0								
+								"user_email" => $user->user_email,								
 							);						
 						
 			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))
@@ -288,7 +297,7 @@
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
-								"user_email" => $user->user_email,0								
+								"user_email" => $user->user_email,								
 							);						
 			
 			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))

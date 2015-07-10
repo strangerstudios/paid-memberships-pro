@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 1.8.4.3
+Stable tag: 1.8.4.4
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,6 +102,13 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.4.4 =
+* BUG: Fixed issue where subscriptions cancelled at Stripe wouldn't cancel the related PMPro membership if the membership was created after updating to v1.8. (Thank, Ninjami-Juho)
+* BUG: Now tracking "views" when the wp_head hook is fired instead of the "wp" hook. Previously page redirects and AJAX calls might have been counted as "views". Using wp_head will result in more accurate numbers (compared to something like Google Analytics, e.g.). Also note that the number of views will now be much much lower than before on some sites. (Thanks, Michael Cummings)
+* BUG: Fixed loading of email templates from language folders in themes, child themes, and languages folder. (Thanks, Karel Martens)
+* ENHANCEMENT: Added the pmpro_format_phone filter to change how phone numbers are formated. Param 1 is $r, the formatted phone number. Param 2 is $phone, the original phone number.
+* ENHANCEMENT: Added doc blocks to cleanPhone and formatPhone functions and the new pmpro_format_phone filter.
+
 = 1.8.4.3 = 
 * SECURITY PATCH: Fixes to Cross Site Scripting vulnerabilities in the PMPro settings pages in the WordPress dashboard. [Advisory ID HTB23264](https://www.htbridge.com/advisory/HTB23264). (Thanks, High-Tech Bridge Security Research Lab)
 

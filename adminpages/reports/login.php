@@ -365,7 +365,7 @@ function pmpro_report_login_wp_views()
 	
 	update_option("pmpro_views", $views);		
 }
-add_action("wp", "pmpro_report_login_wp_views");
+add_action("wp_head", "pmpro_report_login_wp_views");
 
 //track logins
 function pmpro_report_login_wp_login($user_login)

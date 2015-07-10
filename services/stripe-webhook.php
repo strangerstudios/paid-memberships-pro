@@ -320,10 +320,11 @@
 		global $wpdb;
 
 		$customer_id = $event->data->object->customer;
+		$subscription_id = $event->data->object->id;
 		$plan_id = $event->data->object->plan->id;
 
 		//look up the order
-		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($customer_id) . "' ";
+		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . esc_sql($customer_id) . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') ";
 		if($status)
 			$sqlQuery .= " AND status='" . esc_sql($status) . "' ";
 		if($checkplan)

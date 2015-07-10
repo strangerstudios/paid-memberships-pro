@@ -381,39 +381,62 @@ if(!function_exists("hideCardNumber"))
 	}
 }
 
+//check for existing functions since we didn't use a prefix for this function
 if(!function_exists("cleanPhone"))
 {
+	/**
+	 * Function to remove special characters from a phone number.
+	 * NOTE: Could probably replace with preg_replace("[^0-9]", "", $phone)
+	 *
+	 * @since 1.0
+	 *	 
+	 * @param string $phone The phone number to clean.
+	 */
 	function cleanPhone($phone)
 	{
 		//if a + is passed, just pass it along
 		if(strpos($phone, "+") !== false)
 			return $phone;
-
 		//clean the phone
 		$phone = str_replace("-", "", $phone);
 		$phone = str_replace(".", "", $phone);
 		$phone = str_replace("(", "", $phone);
 		$phone = str_replace(")", "", $phone);
 		$phone = str_replace(" ", "", $phone);
-
 		return $phone;
 	}
 }
 
+//check for existing functions since we didn't use a prefix for this function
 if(!function_exists("formatPhone"))
 {
+	/**
+	 * Function to format a phone number.
+	 *
+	 * @since 1.0
+	 *	 
+	 * @param string $phone The phone number to format.
+	 */
 	function formatPhone($phone)
 	{
-		$phone = cleanPhone($phone);
+		$r = cleanPhone($phone);
 
-		if(strlen($phone) == 11)
-			return substr($phone, 0, 1) . " (" . substr($phone, 1, 3) . ") " . substr($phone, 4, 3) . "-" . substr($phone, 7, 4);
-		elseif(strlen($phone) == 10)
-			return "(" . substr($phone, 0, 3) . ") " . substr($phone, 3, 3) . "-" . substr($phone, 6, 4);
-		elseif(strlen($phone) == 7)
-			return substr($phone, 0, 3) . "-" . substr($phone, 3, 4);
-		else
-			return $phone;
+		if(strlen($r) == 11)
+			$r = substr($r, 0, 1) . " (" . substr($r, 1, 3) . ") " . substr($r, 4, 3) . "-" . substr($r, 7, 4);
+		elseif(strlen($r) == 10)
+			$r = "(" . substr($r, 0, 3) . ") " . substr($r, 3, 3) . "-" . substr($r, 6, 4);
+		elseif(strlen($r) == 7)
+			$r = substr($r, 0, 3) . "-" . substr($r, 3, 4);		
+		
+		/**
+		 * Filter to do more or less cleaning of phone numbers.
+		 *
+		 * @since 1.8.4.4
+		 *
+		 * @param string $r The formatted phone number.
+		 * @param string $phone The original phone number.
+		 */
+		return apply_filters('pmpro_format_phone', $r, $phone);
 	}
 }
 
