@@ -1805,6 +1805,10 @@ function pmpro_is_ready()
 			else
 				$pmpro_gateway_ready = false;
 		}
+		elseif($gateway == "check")
+		{
+			$pmpro_gateway_ready = true;
+		}
 		else
 		{
 			$pmpro_gateway_ready = false;
