@@ -1825,9 +1825,24 @@ function pmpro_is_ready()
 
 	//now check both
 	if($pmpro_gateway_ready && $pmpro_pages_ready)
-		return true;
+		$r = true;
 	else
-		return false;
+		$r = false;
+	
+	/**
+	 * Filter to determine if PMPro setup is complete or
+	 * if notices or warnings need to be shown in the PMPro settings.
+	 *
+	 * Note: The filter should return true or false and also set
+	 * the $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready global variabls.
+	 * 
+	 * @since 1.8.4.5
+	 *
+	 * @param bool $r ready?	 
+	 */	
+	$r = apply_filters('pmpro_is_ready', $r);
+	
+	return $r;
 }
 
 /**
