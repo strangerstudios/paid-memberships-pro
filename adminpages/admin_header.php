@@ -22,11 +22,11 @@
 		if(empty($msg))
 			$msg = -1;		
 		if(empty($pmpro_level_ready) && empty($edit))
-			$msgt .= " <a href=\"?page=pmpro-membershiplevels&edit=-1\">" . __("Add a membership level to get started.", "pmpro") . "</a>";
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels&edit=-1') . "\">" . __("Add a membership level to get started.", "pmpro") . "</a>";
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
-			$msgt .= " <a href=\"?page=pmpro-pagesettings\">" . __("Set up the membership pages", "pmpro") . "</a>.";		
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", "pmpro") . "</a>.";		
 		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
-			$msgt .= " <a href=\"?page=pmpro-paymentsettings\">" . __("Set up your SSL certificate and payment gateway", "pmpro") . "</a>.";
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your SSL certificate and payment gateway", "pmpro") . "</a>.";
 			
 		if(empty($msgt))
 			$msg = false;
@@ -49,7 +49,7 @@
 		elseif($view == "pmpro-membershiplevels")
 			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
 		else
-			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", "pmpro") . "</a>.";			
 	}
 	
 	if(!pmpro_checkLevelForPayflowCompatibility())
@@ -69,7 +69,7 @@
 		elseif($view == "pmpro-membershiplevels")
 			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
 		else
-			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", "pmpro") . "</a>.";			
 	}
 	
 	if(!pmpro_checkLevelForBraintreeCompatibility())
@@ -89,7 +89,7 @@
 		elseif($view == "pmpro-membershiplevels")
 			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
 		else
-			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", "pmpro") . "</a>.";			
 	}
 	
 	if(!pmpro_checkLevelForTwoCheckoutCompatibility())
@@ -110,7 +110,7 @@
 		elseif($view == "pmpro-membershiplevels")
 			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
 		else
-			$msgt .= " <a href=\"?page=pmpro-membershiplevels\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", "pmpro") . "</a>.";			
 	}
 	
 	if(!empty($msg))
@@ -147,27 +147,27 @@
 	?>
 	<h2 class="nav-tab-wrapper">
 		<?php if(current_user_can('pmpro_membershiplevels')) { ?>
-			<a href="admin.php?page=pmpro-membershiplevels" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Membership Levels', 'pmpro');?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Membership Levels', 'pmpro');?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_pagesettings')) { ?>
-			<a href="admin.php?page=pmpro-pagesettings" class="nav-tab<?php if($view == 'pmpro-pagesettings') { ?> nav-tab-active<?php } ?>"><?php _e('Pages', 'pmpro');?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" class="nav-tab<?php if($view == 'pmpro-pagesettings') { ?> nav-tab-active<?php } ?>"><?php _e('Pages', 'pmpro');?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_paymentsettings')) { ?>
-			<a href="admin.php?page=pmpro-paymentsettings" class="nav-tab<?php if($view == 'pmpro-paymentsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Payment Gateway &amp; SSL', 'pmpro');?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-paymentsettings');?>" class="nav-tab<?php if($view == 'pmpro-paymentsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Payment Gateway &amp; SSL', 'pmpro');?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_emailsettings')) { ?>
-			<a href="admin.php?page=pmpro-emailsettings" class="nav-tab<?php if($view == 'pmpro-emailsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Email', 'pmpro');?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-emailsettings');?>" class="nav-tab<?php if($view == 'pmpro-emailsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Email', 'pmpro');?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_advancedsettings')) { ?>
-			<a href="admin.php?page=pmpro-advancedsettings" class="nav-tab<?php if($view == 'pmpro-advancedsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Advanced', 'pmpro');?></a>	
+			<a href="<?php echo admin_url('admin.php?page=pmpro-advancedsettings');?>" class="nav-tab<?php if($view == 'pmpro-advancedsettings') { ?> nav-tab-active<?php } ?>"><?php _e('Advanced', 'pmpro');?></a>	
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
-			<a href="admin.php?page=pmpro-addons" class="nav-tab<?php if($view == 'pmpro-addons') { ?> nav-tab-active<?php } ?>"><?php _e('Add Ons', 'pmpro');?></a>	
+			<a href="<?php echo admin_url('admin.php?page=pmpro-addons');?>" class="nav-tab<?php if($view == 'pmpro-addons') { ?> nav-tab-active<?php } ?>"><?php _e('Add Ons', 'pmpro');?></a>	
 		<?php } ?>
 	</h2>
 	<?php } ?>
