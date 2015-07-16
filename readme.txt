@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
 * ENHANCEMENT: Added the pmpro_is_ready filter. This should be used by gateway plugins to set the $pmpro_gateway_ready global variable.
+* ENHANCEMENT: Added pmpro_memberslist_per_page and pmpro_orders_per_page filters to change the default number of items to show on those admin pages.
 
 = 1.8.4.4 =
 * BUG: Fixed issue where subscriptions cancelled at Stripe wouldn't cancel the related PMPro membership if the membership was created after updating to v1.8. (Thank, Ninjami-Juho)
