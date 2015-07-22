@@ -104,8 +104,15 @@ Not sure? You can find out by doing a bit a research.
 == Changelog == 
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
+* BUG: Fixed issue with PMPro page templates being loaded from child themes. (Thanks, SeventhQueen)
+* BUG: Fixed bug where gateway subscriptions would sometimes be cancelled even if an admin unchecked the "cancel at gateway" option when changing a users level on the edit user page. (Thanks, Scott Noelle)
+* ENHANCEMENT: Added debugging to the Braintree webhook. Use define('PMPRO_BRAINTREE_WEBHOOK_DEBUG', true); in your wp-config.php to have debug emails sent to the admin when the Braintree webhook is hit.
+* ENHANCEMENT: Updated email fields on checkout and billing update form to use the "email" field type instead of "text". If you need to revert this back to "text" type, use the pmpro_email_field_type filter like this: apply_filters('pmpro_email_field_type', '__return_false'); (Thanks, Yann Kozon)
+* ENHANCEMENT: French translation updated and now includes email templates. (Thanks, Jean-Christophe Michel)
 * ENHANCEMENT: Added the pmpro_is_ready filter. This should be used by gateway plugins to set the $pmpro_gateway_ready global variable.
 * ENHANCEMENT: Added pmpro_memberslist_per_page and pmpro_orders_per_page filters to change the default number of items to show on those admin pages.
+* ENHANCEMENT: Added pmpro_new_user and pmpro_new_user_setup hooks to allow for alterring the user creation code at checkout. For an example of how to use these see (https://github.com/strangerstudios/paid-memberships-pro/pull/224). (Thanks, David Crabill)
+* ENHANCEMENT: Now setting the Stripe API version in the Stripe class. (Set to version "2015-07-13" right now.) This ensures that Stripe processes PMPro API calls correctly. We will update this to the latest versions as they come out and we test PMPro against them. You will still need to update the API version in the Account Settings of your Stripe dashboard to versio 2015-07-13 (or later as we update the version we work against) so webhook events originating from Stripe are sent out in the correct format.
 
 = 1.8.4.4 =
 * BUG: Fixed issue where subscriptions cancelled at Stripe wouldn't cancel the related PMPro membership if the membership was created after updating to v1.8. (Thank, Ninjami-Juho)
