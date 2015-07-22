@@ -25,11 +25,14 @@
 	$gateway = new PMProGateway_braintree();
 
 	//verify
-	echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);
+	if(!empty($_REQUEST['bt_challenge']))
+		echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);
+	else
+		$logstr .= "Guessing you are just testing the URL out. Check that the timestamp updates on refresh to make sure this isn't being cached.";
 
 	//only verifying?
 	if(empty($_REQUEST['bt_payload']))
-		exit;
+		pmpro_braintreeWebhookExit();
 
 	//get notification
     try
