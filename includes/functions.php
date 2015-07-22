@@ -646,7 +646,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
     //should we cancel their gateway subscriptions?
     $pmpro_cancel_previous_subscriptions = true;
-    if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_memberhip'] == false)
+    if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
         $pmpro_cancel_previous_subscriptions = false;
     $pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
 
