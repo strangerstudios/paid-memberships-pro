@@ -26,6 +26,7 @@
 
 			$this->loadStripeLibrary();
 			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+			Stripe::setAPIVersion("2015-07-13");
 
 			return $this->gateway;
 		}
