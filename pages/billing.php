@@ -2,6 +2,15 @@
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
+	/**
+	 * Filter to set if PMPro uses email or text as the type for email field inputs.
+	 * 
+	 * @since 1.8.4.5
+	 *
+	 * @param bool $use_email_type, true to use email type, false to use text type
+	 */
+	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+	
 	$gateway = pmpro_getOption("gateway");
 
 	//set to true via filter to have Stripe use the minimal billing fields
@@ -195,11 +204,11 @@
 						?>
 						<div>
 							<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-							<input id="bemail" name="bemail" type="text" class="input" size="20" value="<?php echo esc_attr($bemail)?>" />
+							<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input" size="20" value="<?php echo esc_attr($bemail)?>" />
 						</div>
 						<div>
 							<label for="bconfirmemail"><?php _e('Confirm E-mail', 'pmpro');?></label>
-							<input id="bconfirmemail" name="bconfirmemail" type="text" class="input" size="20" value="<?php echo esc_attr($bconfirmemail)?>" />
+							<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input" size="20" value="<?php echo esc_attr($bconfirmemail)?>" />
 
 						</div>
 						<?php } ?>

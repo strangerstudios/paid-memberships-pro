@@ -1,6 +1,15 @@
 <?php		
 	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;		
+
+	/**
+	 * Filter to set if PMPro uses email or text as the type for email field inputs.
+	 * 
+	 * @since 1.8.4.5
+	 *
+	 * @param bool $use_email_type, true to use email type, false to use text type
+	 */
+	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 ?>
 <div id="pmpro_level-<?php echo $pmpro_level->id; ?>">
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
@@ -205,7 +214,7 @@
 				
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="text" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -214,7 +223,7 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail Address', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 					</div>	                        
 					<?php
@@ -438,7 +447,7 @@
 				?>
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="text" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -447,7 +456,7 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="text" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
 
 					</div>	                        
 					<?php
@@ -521,16 +530,16 @@
 							jQuery(document).ready(function() {												
 									jQuery('#AccountNumber').validateCreditCard(function(result) {								
 										var cardtypenames = {
-											"amex":"American Express",
-											"diners_club_carte_blanche":"Diners Club Carte Blanche",
-											"diners_club_international":"Diners Club International",
-											"discover":"Discover",
-											"jcb":"JCB",
-											"laser":"Laser",
-											"maestro":"Maestro",
-											"mastercard":"Mastercard",
-											"visa":"Visa",
-											"visa_electron":"Visa Electron"
+											"amex"                      : "American Express",
+											"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+											"diners_club_international" : "Diners Club International",
+											"discover"                  : "Discover",
+											"jcb"                       : "JCB",
+											"laser"                     : "Laser",
+											"maestro"                   : "Maestro",
+											"mastercard"                : "Mastercard",
+											"visa"                      : "Visa",
+											"visa_electron"             : "Visa Electron"
 										}
 										
 										if(result.card_type)
@@ -748,7 +757,7 @@
 	}
 	
 	//add required to required fields
-	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> *</span>');
+	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
 	
 	//unhighlight error fields when the user edits them
 	jQuery('.pmpro_error').bind("change keyup input", function() {
