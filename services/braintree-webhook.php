@@ -7,6 +7,9 @@
 	global $isapage;
 	$isapage = true;
 
+    global $logstr;
+    $logstr = "";
+
 	//in case the file is loaded directly
 	if(!defined("WP_USE_THEMES"))
 	{
@@ -29,16 +32,30 @@
 		exit;
 
 	//get notification
-	$webhookNotification = Braintree_WebhookNotification::parse(
-	  $_REQUEST['bt_signature'], $_REQUEST['bt_payload']
-	);
+    try
+    {
+        $webhookNotification = Braintree_WebhookNotification::parse(
+            $_REQUEST['bt_signature'], $_REQUEST['bt_payload']
+        );
+    }
+    catch ( Exception $e )
+    {
+        {
+            $logstr .= "Couldn't get notification with payload " . $_REQUEST['bt_payload'] . ". " . $e->getMessage();
+            pmpro_braintreeWebhookExit();
+        }
+    }
+
 
 	//subscription charged sucessfully
 	if($webhookNotification->kind == "subscription_charged_successfully")
 	{
 		//need a subscription id
 		if(empty($webhookNotification->subscription->id))
-			die("No subscription ID.");
+        {
+            $logstr .= "No subscription ID.";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//figure out which order to attach to
 		$old_order = new MemberOrder();
@@ -46,7 +63,10 @@
 
 		//no order?
 		if(empty($old_order))
-			die("Couldn't find the original subscription with ID=" . $webhookNotification->subscription->id . ".");
+        {
+            $logstr .= "Couldn't find the original subscription with ID=" . $webhookNotification->subscription->id . ".";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//create new order
 		$user_id = $old_order->user_id;
@@ -54,7 +74,10 @@
 		$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 		if(empty($user))
-			die("Couldn't find the old order's user. Order ID = " . $old_order->id . ".");
+        {
+            $logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//data about this transaction
 		$transaction = $webhookNotification->transactions[0];
@@ -117,15 +140,20 @@
 	if($webhookNotification->kind == "subscription_charged_unsuccessfully")
 	{
 		//need a subscription id
-		if(empty($webhookNotification->subscription->id))
-			die("No subscription ID.");
+		if(empty($webhookNotification->subscription->id)) {
+            $logstr .= "No subscription ID.";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//figure out which order to attach to
 		$old_order = new MemberOrder();
 		$old_order->getLastMemberOrderBySubscriptionTransactionID($webhookNotification->subscription->id);
 
 		if(empty($old_order))
-			die("Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id);
+        {
+            $logstr .= "Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id;
+            pmpro_braintreeWebhookExit();
+        }
 
 		$user_id = $old_order->user_id;
 		$user = get_userdata($user_id);
@@ -170,14 +198,20 @@
 	{
 		//need a subscription id
 		if(empty($webhookNotification->subscription->id))
-			die("No subscription ID.");
+        {
+            $logstr .= "No subscription ID.";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//figure out which order to attach to
 		$old_order = new MemberOrder();
 		$old_order->getLastMemberOrderBySubscriptionTransactionID($webhookNotification->subscription->id);
 
 		if(empty($old_order))
-			die("Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id);
+        {
+            $logstr .= "Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id;
+            pmpro_braintreeWebhookExit();
+        }
 
 		$user_id = $old_order->user_id;
 		$user = get_userdata($user_id);
@@ -223,14 +257,20 @@
 	{
 		//need a subscription id
 		if(empty($webhookNotification->subscription->id))
-			die("No subscription ID.");
+        {
+            $logstr .= "No subscription ID.";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//figure out which order to attach to
 		$old_order = new MemberOrder();
 		$old_order->getLastMemberOrderBySubscriptionTransactionID($webhookNotification->subscription->id);
 
 		if(empty($old_order))
-			die("Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id);
+        {
+            $logstr .= "Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id;
+            pmpro_braintreeWebhookExit();
+        }
 
 		$user_id = $old_order->user_id;
 		$user = get_userdata($user_id);
@@ -275,14 +315,20 @@
 	{
 		//need a subscription id
 		if(empty($webhookNotification->subscription->id))
-			die("No subscription ID.");
+        {
+            $logstr .= "No subscription ID.";
+            pmpro_braintreeWebhookExit();
+        }
 
 		//figure out which order to attach to
 		$old_order = new MemberOrder();
 		$old_order->getLastMemberOrderBySubscriptionTransactionID($webhookNotification->subscription->id);
 
 		if(empty($old_order))
-			die("Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id);
+        {
+            $logstr .= "Couldn't find old order for failed payment with subscription id=" . $webhookNotification->subscription->id;
+            pmpro_braintreeWebhookExit();
+        }
 
 		$user_id = $old_order->user_id;
 		$user = get_userdata($user_id);
@@ -321,3 +367,37 @@
 		echo "Sent email to the member and site admin. Thanks.";
 		exit;
 	}
+
+function pmpro_braintreeWebhookExit()
+{
+    global $logstr;
+
+    //for log
+    if($logstr)
+    {
+        $logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
+
+        echo $logstr;
+
+        //log in file or email?
+        if(defined('PMPRO_BRAINTREE_WEBHOOK_DEBUG') && PMPRO_BRAINTREE_WEBHOOK_DEBUG === "log")
+        {
+            //file
+            $loghandle = fopen(dirname(__FILE__) . "/../logs/braintree-webhook.txt", "a+");
+            fwrite($loghandle, $logstr);
+            fclose($loghandle);
+        }
+        elseif(defined('PMPRO_BRAINTREE_WEBHOOK_DEBUG'))
+        {
+            //email
+            if(strpos(PMPRO_BRAINTREE_WEBHOOK_DEBUG, "@"))
+                $log_email = PMPRO_BRAINTREE_WEBHOOK_DEBUG;	//constant defines a specific email address
+            else
+                $log_email = get_option("admin_email");
+
+            wp_mail($log_email, get_option("blogname") . " Braintree Webhook Log", nl2br($logstr));
+        }
+    }
+
+    exit;
+}
