@@ -563,12 +563,14 @@
 																				"last_name" => $last_name)
 																				);
 
-			$user_id = wp_insert_user($new_user_array);
+			$user_id = apply_filters('pmpro_new_user', '', $new_user_array);
+			if (!$user_id)
+				$user_id = wp_insert_user($new_user_array);
 
 			if (!$user_id || is_wp_error($user_id)) {
 				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro");
 				$pmpro_msgt = "pmpro_error";
-			} else {
+			} elseif ( apply_filters('pmpro_setup_new_user', true, $user_id, $new_user_array) ) {
 
 				//check pmpro_wp_new_user_notification filter before sending the default WP email
 				if (apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id))
