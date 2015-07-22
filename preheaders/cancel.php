@@ -7,10 +7,10 @@
 	if($current_user->ID)
 		$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
-	//if they don't have a membership, send them back to the subscription page
-	if(empty($current_user->membership_level->ID)) {
+	if(!isset($current_user->membership_level->ID)) {
 		wp_redirect(pmpro_url("levels"));
-	}
+		exit;
+	}	
 
 	if(isset($_REQUEST['confirm']))
 		$pmpro_confirm = $_REQUEST['confirm'];
