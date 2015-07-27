@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.5 =
+* ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
+
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
 * BUG: Fixed issue with PMPro page templates being loaded from child themes. (Thanks, SeventhQueen)
