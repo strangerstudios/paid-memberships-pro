@@ -27,6 +27,16 @@
 			add_filter('pmpro_payment_options', array('PMProGateway_paypalexpress', 'pmpro_payment_options'));
 
 			/*
+				Filter pmpro_next_payment to get actual value
+				via the PayPal API. This is disabled by default
+				for performance reasons, but you can enable it
+				by copying this line into a custom plugin or
+				your active theme's functions.php and uncommenting
+				it there.
+			*/
+			//add_filter('pmpro_next_payment', array('PMProGateway_paypalexpress', 'pmpro_next_payment'), 10, 3);
+			
+			/*
 				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
 				So we only load it if we haven't already.
 			*/
@@ -770,6 +780,46 @@
 
 				return false;
 			}
+		}
+		
+		/**
+		 * Filter pmpro_next_payment to get date via API if possible
+		 *
+		 * @since 1.8.5
+		*/
+		static function pmpro_next_payment($timestamp, $user_id, $order_status)
+		{
+			//find the last order for this user
+			if(!empty($user_id))
+			{
+				//get last order
+				$order = new MemberOrder();
+				$order->getLastMemberOrder($user_id, $order_status);
+				
+				//check if this is a paypal express order with a subscription transaction id
+				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
+				{
+					//get the subscription status
+					$status = $order->getGatewaySubscriptionStatus();					
+					
+					d($status);
+
+					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
+					{
+						//found the next billing date at PayPal, going to use that						
+						$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
+					}
+					elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled")
+					{
+						//startdate is in the future and we cancelled so going to use that as the next payment date
+						$startdate_timestamp = strtotime(urldecode($status['PROFILESTARTDATE']), current_time('timestamp'));
+						if($startdate_timestamp > current_time('timestamp'))
+							$timestamp = $startdate_timestamp;
+					}
+				}
+			}
+						
+			return $timestamp;
 		}
 
 		/**
