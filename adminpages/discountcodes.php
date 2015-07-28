@@ -606,6 +606,7 @@
 				}
 				else
 				{
+					$count = 0;
 					foreach($codes as $code)
 					{
 					?>
