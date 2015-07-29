@@ -103,6 +103,8 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog == 
 = 1.8.5 =
+* BUG: Fixed bug where the subscription_transaction_id was not showing up in the orders CSV export.
+* ENHANCEMENT: Now showing the time in date column of on the orders page and in the timestamp column of the orders CSV export.
 * ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
 
 = 1.8.4.5 =

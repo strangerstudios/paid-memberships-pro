@@ -217,7 +217,7 @@
 		array("order", "gateway"),
 		array("order", "gateway_environment"),
 		array("order", "payment_transaction_id"),
-		array("order", "subscription_transactiond_id"),
+		array("order", "subscription_transaction_id"),
 		array("discount_code", "id"),
 		array("discount_code", "code")
 	);
@@ -270,7 +270,7 @@
 			}
 
 			//timestamp
-			$csvoutput .= "," . pmpro_enclose(date(get_option("date_format"), $order->timestamp));
+			$csvoutput .= "," . pmpro_enclose(date(get_option('date_format') . ' ' . get_option('time_format'), $order->timestamp));
 
 			//any extra columns
 			if(!empty($extra_columns))
