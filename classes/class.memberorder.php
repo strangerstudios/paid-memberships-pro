@@ -649,7 +649,13 @@
 				}
 				else
 				{
-					//would have been cancelled by the gateway class
+					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
+					
+					//remove billing numbers in pmpro_memberships_users if the membership is still active
+					global $wpdb;
+					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
+					$wpdb->query($sqlQuery);
+					
 					return $result;
 				}
 			}

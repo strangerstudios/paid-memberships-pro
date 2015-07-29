@@ -48,15 +48,19 @@ function pmpro_membership_level_profile_fields($user)
 				</select>
                 <span id="current_level_cost">
                 <?php
-                $membership_values = pmpro_getMembershipLevelForUser($user->ID);
-                if(empty($membership_values) || pmpro_isLevelFree($membership_values))
-                { ?>
-                    <?php _e("Not paying.", "pmpro"); ?>
-                <?php }
-                else
-                {
-                    //we tweak the initial payment here so the text here effectively shows the recurring amount
-                    $membership_values->initial_payment = $membership_values->billing_amount;
+                $membership_values = pmpro_getMembershipLevelForUser($user->ID);              
+				//we tweak the initial payment here so the text here effectively shows the recurring amount
+				$membership_values->original_initial_payment = $membership_values->initial_payment;
+				$membership_values->initial_payment = $membership_values->billing_amount;
+				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
+                { 
+					if($membership_values->original_initial_payment > 0)
+						echo "Paid " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
+					else
+						_e('Not paying.', 'pmpro');					
+				}                
+				else
+                {                    
                     echo pmpro_getLevelCost($membership_values, true, true);
                 }
                 ?>
@@ -274,6 +278,15 @@ function pmpro_membership_level_profile_fields_update()
             //it changed. send email
             $level_changed = true;
         }
+		elseif(!empty($_REQUEST['cancel_subscription']))
+		{
+			//the level didn't change, but we were asked to cancel the subscription at the gateway, let's do that
+			$order = new MemberOrder();
+			$order->getLastMemberOrder($user_ID);
+						
+			if(!empty($order) && !empty($order->id))
+				$r = $order->cancel();			
+		}
 		
 		//remove filter after ward		
 		if(empty($_REQUEST['cancel_subscription']))
