@@ -180,6 +180,7 @@ li.pmpro_more {list-style-type: none; text-align: center; margin-left: -20px; pa
 	Fixes for Twentyfiften and other themes.
 */
 form.pmpro_form .input {display: inline-block; width: auto; }
+#your-profile input {display: inline-block; width: auto; }			/* front end profile via Theme My Login */
 
 @media (max-width:768px){
 	#pmpro_levels_table {border: none; }
