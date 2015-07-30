@@ -105,6 +105,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.5 =
 * BUG: Fixed bug where the subscription_transaction_id was not showing up in the orders CSV export.
 * BUG: Fixed bug where gateway subscriptions were not being cancelled when the "cancel at gateway" option was checked when changing a user's level on the edit user page.
+* BUG: Drag and drop for reordering levels has been disabled if there are < 2 levels or if the user is searching the levels list.
 * ENHANCEMENT: Now showing the time in date column of on the orders page and in the timestamp column of the orders CSV export.
 * ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
 * ENHANCEMENT: Now zeroing out the initial payment and billing amount in pmpro_memberships_users when an order gets cancelled.
