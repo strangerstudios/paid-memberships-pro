@@ -4,7 +4,7 @@
 
 	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 * 
+	 *
 	 * @since 1.8.4.5
 	 *
 	 * @param bool $use_email_type, true to use email type, false to use text type
@@ -17,7 +17,7 @@
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />		
 	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />		
 	
-	<?php if($pmpro_msg) 
+	<?php if($pmpro_msg)
 		{
 	?>
 		<div id="pmpro_message" class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
@@ -43,7 +43,7 @@
 			</th>						
 		</tr>
 	</thead>
-	<tbody>                
+	<tbody>
 		<tr>
 			<td>				
 				<p>
@@ -83,7 +83,7 @@
 			<td>
 				<div>
 					<label for="other_discount_code"><?php _e('Discount Code', 'pmpro');?></label>
-					<input id="other_discount_code" name="other_discount_code" type="text" class="input <?php echo pmpro_getClassForField("other_discount_code");?>" size="20" value="<?php echo esc_attr($discount_code)?>" /> 
+					<input id="other_discount_code" name="other_discount_code" type="text" class="input <?php echo pmpro_getClassForField("other_discount_code");?>" size="20" value="<?php echo esc_attr($discount_code)?>" />
 					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'pmpro');?>" />					
 				</div>				
 			</td>
@@ -173,12 +173,12 @@
 			</th>						
 		</tr>
 	</thead>
-	<tbody>                
+	<tbody>
 		<tr>
 			<td>
 				<div>
 					<label for="username"><?php _e('Username', 'pmpro');?></label>
-					<input id="username" name="username" type="text" class="input <?php echo pmpro_getClassForField("username");?>" size="30" value="<?php echo esc_attr($username)?>" /> 
+					<input id="username" name="username" type="text" class="input <?php echo pmpro_getClassForField("username");?>" size="30" value="<?php echo esc_attr($username)?>" />
 				</div>
 				
 				<?php
@@ -187,7 +187,7 @@
 				
 				<div>
 					<label for="password"><?php _e('Password', 'pmpro');?></label>
-					<input id="password" name="password" type="password" class="input <?php echo pmpro_getClassForField("password");?>" size="30" value="<?php echo esc_attr($password)?>" /> 
+					<input id="password" name="password" type="password" class="input <?php echo pmpro_getClassForField("password");?>" size="30" value="<?php echo esc_attr($password)?>" />
 				</div>
 				<?php
 					$pmpro_checkout_confirm_password = apply_filters("pmpro_checkout_confirm_password", true);					
@@ -196,7 +196,7 @@
 					?>
 					<div>
 						<label for="password2"><?php _e('Confirm Password', 'pmpro');?></label>
-						<input id="password2" name="password2" type="password" class="input <?php echo pmpro_getClassForField("password2");?>" size="30" value="<?php echo esc_attr($password2)?>" /> 
+						<input id="password2" name="password2" type="password" class="input <?php echo pmpro_getClassForField("password2");?>" size="30" value="<?php echo esc_attr($password2)?>" />
 					</div>
 					<?php
 					}
@@ -214,7 +214,7 @@
 				
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" />
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -223,9 +223,9 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail Address', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
 
-					</div>	                        
+					</div>	
 					<?php
 					}
 					else
@@ -248,7 +248,7 @@
 				<div class="pmpro_captcha">
 				<?php 																								
 					global $recaptcha, $recaptcha_publickey;										
-					if($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level))) 
+					if($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level)))
 					{											
 						echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);						
 					}								
@@ -262,7 +262,7 @@
 			</td>
 		</tr>
 	</tbody>
-	</table>   
+	</table>
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>                        	                       										
 		
 		<p id="pmpro_account_loggedin">
@@ -300,7 +300,7 @@
 		</table>
 	<?php } ?>
 	
-	<?php 
+	<?php
 		$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 		if($pmpro_include_billing_address_fields)
 		{
@@ -316,15 +316,15 @@
 			<td>
 				<div>
 					<label for="bfirstname"><?php _e('First Name', 'pmpro');?></label>
-					<input id="bfirstname" name="bfirstname" type="text" class="input <?php echo pmpro_getClassForField("bfirstname");?>" size="30" value="<?php echo esc_attr($bfirstname)?>" /> 
+					<input id="bfirstname" name="bfirstname" type="text" class="input <?php echo pmpro_getClassForField("bfirstname");?>" size="30" value="<?php echo esc_attr($bfirstname)?>" />
 				</div>	
 				<div>
 					<label for="blastname"><?php _e('Last Name', 'pmpro');?></label>
-					<input id="blastname" name="blastname" type="text" class="input <?php echo pmpro_getClassForField("blastname");?>" size="30" value="<?php echo esc_attr($blastname)?>" /> 
+					<input id="blastname" name="blastname" type="text" class="input <?php echo pmpro_getClassForField("blastname");?>" size="30" value="<?php echo esc_attr($blastname)?>" />
 				</div>					
 				<div>
 					<label for="baddress1"><?php _e('Address 1', 'pmpro');?></label>
-					<input id="baddress1" name="baddress1" type="text" class="input <?php echo pmpro_getClassForField("baddress1");?>" size="30" value="<?php echo esc_attr($baddress1)?>" /> 
+					<input id="baddress1" name="baddress1" type="text" class="input <?php echo pmpro_getClassForField("baddress1");?>" size="30" value="<?php echo esc_attr($baddress1)?>" />
 				</div>
 				<div>
 					<label for="baddress2"><?php _e('Address 2', 'pmpro');?></label>
@@ -338,7 +338,7 @@
 				?>
 					<div>
 						<label for="bcity"><?php _e('City', 'pmpro');?></label>
-						<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="30" value="<?php echo esc_attr($bcity)?>" /> 
+						<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="30" value="<?php echo esc_attr($bcity)?>" />
 					</div>
 					<div>
 						<label for="bstate"><?php _e('State', 'pmpro');?></label>																
@@ -346,7 +346,7 @@
 					</div>
 					<div>
 						<label for="bzipcode"><?php _e('Postal Code', 'pmpro');?></label>
-						<input id="bzipcode" name="bzipcode" type="text" class="input <?php echo pmpro_getClassForField("bzipcode");?>" size="30" value="<?php echo esc_attr($bzipcode)?>" /> 
+						<input id="bzipcode" name="bzipcode" type="text" class="input <?php echo pmpro_getClassForField("bzipcode");?>" size="30" value="<?php echo esc_attr($bzipcode)?>" />
 					</div>					
 				<?php
 					}
@@ -355,7 +355,7 @@
 					?>
 					<div>
 						<label for="bcity_state_zip"><?php _e('City, State Zip', 'pmpro');?></label>
-						<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="14" value="<?php echo esc_attr($bcity)?>" />, 
+						<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="14" value="<?php echo esc_attr($bcity)?>" />,
 						<?php
 							$state_dropdowns = apply_filters("pmpro_state_dropdowns", false);							
 							if($state_dropdowns === true || $state_dropdowns == "names")
@@ -365,8 +365,8 @@
 							<select name="bstate" class=" <?php echo pmpro_getClassForField("bstate");?>">
 								<option value="">--</option>
 								<?php 									
-									foreach($pmpro_states as $ab => $st) 
-									{ 
+									foreach($pmpro_states as $ab => $st)
+									{
 								?>
 									<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $st;?></option>
 								<?php } ?>
@@ -380,8 +380,8 @@
 								<select name="bstate" class=" <?php echo pmpro_getClassForField("bstate");?>">
 									<option value="">--</option>
 									<?php 									
-										foreach($pmpro_states_abbreviations as $ab) 
-										{ 
+										foreach($pmpro_states_abbreviations as $ab)
+										{
 									?>
 										<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo $ab;?></option>
 									<?php } ?>
@@ -391,11 +391,11 @@
 							else
 							{
 							?>	
-							<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bstate");?>" size="2" value="<?php echo esc_attr($bstate)?>" /> 
+							<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bstate");?>" size="2" value="<?php echo esc_attr($bstate)?>" />
 							<?php
 							}
 						?>
-						<input id="bzipcode" name="bzipcode" type="text" class="input <?php echo pmpro_getClassForField("bzipcode");?>" size="5" value="<?php echo esc_attr($bzipcode)?>" /> 
+						<input id="bzipcode" name="bzipcode" type="text" class="input <?php echo pmpro_getClassForField("bzipcode");?>" size="5" value="<?php echo esc_attr($bzipcode)?>" />
 					</div>
 					<?php
 					}
@@ -447,7 +447,7 @@
 				?>
 				<div>
 					<label for="bemail"><?php _e('E-mail Address', 'pmpro');?></label>
-					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" /> 
+					<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" />
 				</div>
 				<?php
 					$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);					
@@ -456,9 +456,9 @@
 					?>
 					<div>
 						<label for="bconfirmemail"><?php _e('Confirm E-mail', 'pmpro');?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" /> 
+						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
 
-					</div>	                        
+					</div>	
 					<?php
 						}
 						else
@@ -468,11 +468,11 @@
 					<?php
 						}
 					?>
-				<?php } ?>    
+				<?php } ?>
 			</td>						
 		</tr>											
 	</tbody>
-	</table>                   
+	</table>
 	<?php } ?>
 	
 	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
@@ -494,7 +494,7 @@
 				<th><span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span><?php _e('Payment Information', 'pmpro');?></th>
 			</tr>
 		</thead>
-		<tbody>                    
+		<tbody>
 			<tr valign="top">		
 				<td>	
 					<?php
@@ -507,9 +507,9 @@
 						}
 					?>
 					
-					<?php 
+					<?php
 						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
-						if($pmpro_include_cardtype_field) 
+						if($pmpro_include_cardtype_field)
 						{
 						?>
 						<div class="pmpro_payment-card-type">
@@ -518,10 +518,10 @@
 								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 									<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 								<?php } ?>												
-							</select> 
+							</select>
 						</div>
-						<?php 
-						} 
+						<?php
+						}
 						else
 						{
 						?>
@@ -555,7 +555,7 @@
 				
 					<div class="pmpro_payment-account-number">
 						<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
-						<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" /> 
+						<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
 					</div>
 				
 					<div class="pmpro_payment-expiration">
@@ -703,7 +703,7 @@
 				
 		<?php } else { ?>								
 			
-			<?php 
+			<?php
 				$pmpro_checkout_default_submit_button = apply_filters('pmpro_checkout_default_submit_button', true);
 				if($pmpro_checkout_default_submit_button)
 				{
@@ -719,7 +719,7 @@
 		<?php } ?>
 		
 		<span id="pmpro_processing_message" style="visibility: hidden;">
-			<?php 
+			<?php
 				$processing_message = apply_filters("pmpro_processing_message", __("Processing...", "pmpro"));
 				echo $processing_message;
 			?>					
@@ -775,8 +775,8 @@
 	//hide apply button if a discount code was passed in
 	<?php if(!empty($_REQUEST['discount_code'])) {?>
 		jQuery('#discount_code_button').hide();
-		jQuery('#discount_code').bind('change keyup', function() { 
-			jQuery('#discount_code_button').show(); 
+		jQuery('#discount_code').bind('change keyup', function() {
+			jQuery('#discount_code_button').show();
 		});
 	<?php } ?>
 	
