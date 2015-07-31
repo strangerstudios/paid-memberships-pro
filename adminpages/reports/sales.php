@@ -104,7 +104,7 @@ function pmpro_report_sales_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';		
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';		
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-32';		
 		$date_function = 'DAY';
 	}
 	elseif($period == "monthly")
