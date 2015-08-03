@@ -10,8 +10,9 @@
 */
 function pmpro_setupAddonUpdateInfo()
 {
-	add_filter( 'plugins_api', 'pmpro_plugins_api', 10, 3 );
-	add_filter( 'pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter' );    
+	add_filter('plugins_api', 'pmpro_plugins_api', 10, 3);
+	add_filter('pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter');
+	add_filter('http_request_args', 'pmpro_http_request_args_for_addons', 10, 2);
 }
 add_action('init', 'pmpro_setupAddonUpdateInfo');
 
@@ -22,15 +23,33 @@ add_action('init', 'pmpro_setupAddonUpdateInfo');
  */
 function pmpro_getAddons()
 {
-	if(empty($_REQUEST['force-check']))
-		$addons = get_transient("pmpro_addons");	
-		
-	if(empty($addons))
+	//check if forcing a pull from the server
+	$addons = get_transient("pmpro_addons");	
+	
+	//if no addons locally, we need to hit the server
+	if(empty($addons) || !empty($_REQUEST['force-check']))
 	{
-		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/");			
-		$addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
-					
-		set_transient("pmpro_addons", $addons, 86400);
+		//get em
+		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/");
+		
+		//test response
+		if(empty($remote_addons['response']) || $remote_addons['response']['code'] != '200')
+		{
+			//error
+			pmpro_setMessage("Could not connect to the PMPro License Server to update addon information. Try again later.", "error");
+			
+			//make sure we have at least an array to pass back
+			if(empty($addons))
+				$addons = array();
+		}
+		else
+		{
+			//update addons in cache
+			$addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
+			set_transient("pmpro_addons", $addons, 86400);			
+		}
+		
+		//save timestamp of last update
 		set_transient("pmpro_addons_timestamp", current_time('timestamp'), 86400);
 	}		
 	
@@ -108,6 +127,24 @@ function pmpro_update_plugins_filter( $value ) {
 	
 	// Return the update object.
 	return $value;
+}
+
+/**
+ * Disables SSL verification to prevent download package failures.
+ *
+ * @since 1.8.5
+ *
+ * @param array $args  Array of request args.
+ * @param string $url  The URL to be pinged.
+ * @return array $args Amended array of request args.
+ */
+function pmpro_http_request_args_for_addons($args, $url) 
+{
+	// If this is an SSL request and we are performing an upgrade routine, disable SSL verification.
+	if(strpos($url, 'https://') !== false && strpos($url, PMPRO_LICENSE_SERVER) !== false && strpos($url, "download") !== false)
+		$args['sslverify'] = false;
+	
+	return $args;
 }
 
 /**

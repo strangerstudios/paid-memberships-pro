@@ -1655,6 +1655,25 @@ function pmpro_setMessage($message, $type, $force = false)
 	}
 }
 
+/**
+ * Show a a PMPro message set via pmpro_setMessage
+ *
+ * @since 1.8.5
+ */
+function pmpro_showMessage()
+{
+	global $pmpro_msg, $pmpro_msgt;
+	
+	if(!empty($pmpro_msg))
+	{
+	?>
+	<div class="<?php echo $pmpro_msgt;?>">
+		<p><?php echo $pmpro_msg;?></p>
+	</div>
+	<?php
+	}
+}
+
 //used in class definitions for input fields to see if there was an error
 function pmpro_getClassForField($field)
 {
