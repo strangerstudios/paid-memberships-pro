@@ -34,13 +34,15 @@
 	{
 		wp_version_check(array(), true);
 		wp_update_plugins();
+		$pmpro_license_key = get_option("pmpro_license_key", "");
+		pmpro_license_isValid($pmpro_license_key, NULL, true);
 	}
 	
 	//some vars
 	$addons = pmpro_getAddons();
 	$addons_timestamp = get_transient("pmpro_addons_timestamp");
 	$plugin_info = get_site_transient( 'update_plugins' );
-	$pmpro_license_key = get_option("pmpro_license_key", "");	
+	$pmpro_license_key = get_option("pmpro_license_key", "");
 	
 	//get plugin status for filters
 	if(!empty($_REQUEST['plugin_status']))
@@ -101,7 +103,8 @@
 			*/ ?>
 		</th>	
 		<th scope="col" id="name" class="manage-column column-name" style=""><?php _e('Add On Name','pmpro'); ?></th>
-		<th scope="col" id="description" class="manage-column column-description" style=""><?php _e('Description'); ?></th>
+		<th scope="col" id="type" class="manage-column column-type" style=""><?php _e('Type', 'pmpro'); ?></th>
+		<th scope="col" id="description" class="manage-column column-description" style=""><?php _e('Description', 'pmpro'); ?></th>		
 	</tr>
 	</thead>
 	<tbody id="the-list">
@@ -124,7 +127,7 @@
 			?>
 			<tr>
 				<td></td>
-				<td colspan="2"><p><?php _e('No Add Ons found.', 'pmpro'); ?></p></td>	
+				<td colspan="3"><p><?php _e('No Add Ons found.', 'pmpro'); ?></p></td>	
 			</tr>
 			<?php
 			}
@@ -183,11 +186,33 @@
 							if($context === 'uninstalled inactive')
 							{
 								if($plugin_data['License'] == 'wordpress.org')
+								{
+									//wordpress.org
 									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
+								}
+								elseif($plugin_data['License'] == 'free')
+								{
+									//free
+									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'pmpro') . '</a></span>';
+								}
+								elseif(empty($pmpro_license_key))
+								{
+									//no key
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'pmpro') . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'pmpro') . '</a></span>';
+								}
+								elseif(pmpro_license_isValid($pmpro_license_key, $plugin_data['License']))
+								{
+									//valid key
+									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'pmpro') . '</a></span>';									
+								}
 								else
 								{
-									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
-									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?license=' . $pmpro_license_key . '">' . __('Download', 'pmpro') . '</a></span>';
+									//invalid key
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'pmpro') . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'pmpro') . '</a></span>';
 								}
 							}
 							elseif($context === 'active' || $context === 'active update')
@@ -203,6 +228,20 @@
 							echo implode(' | ',$actions);
 						?>
 						</div>
+					</td>
+					<td class="column-type">
+						<?php
+							if($addon['License'] == 'free')
+								_e("PMPRo Free", "pmpro");
+							elseif($addon['License'] == 'core')
+								_e("PMPRo Core", "pmpro");
+							elseif($addon['License'] == 'plus')
+								_e("PMPRo Plus", "pmpro");
+							elseif($addon['License'] == 'wordpress.org')
+								_e("WordPress.org", "pmpro");
+							else
+								_e("N/A", "pmpro");
+						?>
 					</td>
 					<td class="column-description desc">
 						<div class="plugin-description"><p><?php echo $plugin_data['Description']; ?></p></div>
@@ -236,7 +275,7 @@
 							echo implode( ' | ', $plugin_meta );
 							?>
 						</div>
-					</td>
+					</td>					
 				</tr>
 				<?php
 								
@@ -245,7 +284,7 @@
 				$row = ob_get_contents();
 				ob_end_clean();
 				
-				echo str_replace('colspan="0"', 'colspan="3"', $row);
+				echo str_replace('colspan="0"', 'colspan="4"', $row);
 			}
 		?>
 		</tbody>
