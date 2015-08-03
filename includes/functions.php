@@ -1974,3 +1974,4 @@ function pmpro_isDateThisMonth($str)
 	else
 		return false;
 }
+

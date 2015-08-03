@@ -328,6 +328,7 @@
 							<?php
 							}
 						?>	
+							<p>[ ] Include this message in the Membership Confirmation Email</p>
 						</div>    
 					</td>
 				</tr>
