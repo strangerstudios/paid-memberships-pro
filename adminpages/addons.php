@@ -232,11 +232,11 @@
 					<td class="column-type">
 						<?php
 							if($addon['License'] == 'free')
-								_e("PMPRo Free", "pmpro");
+								_e("PMPro Free", "pmpro");
 							elseif($addon['License'] == 'core')
-								_e("PMPRo Core", "pmpro");
+								_e("PMPro Core", "pmpro");
 							elseif($addon['License'] == 'plus')
-								_e("PMPRo Plus", "pmpro");
+								_e("PMPro Plus", "pmpro");
 							elseif($addon['License'] == 'wordpress.org')
 								_e("WordPress.org", "pmpro");
 							else
