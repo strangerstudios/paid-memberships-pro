@@ -1,20 +1,4 @@
 <?php
-	/*
-		New Addons Page
-		
-		* Just like WP plugins page. Filters: all | active | inactive | update available
-		* Hit the license server to get data on addons.
-		* Show them in a list.
-		* Check for correct license before showing install link. Otherwise show an upgrade link.
-		* Filter plugin update location for non-repo plugins.
-		* Show new version, but have upgrade link go to upgrade PMPro level if they don't have correct license.
-		
-		License Server needs:
-		* DB of addons
-		* Service to get addon data.
-		* Service to serve zip files.
-	*/
-	
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_addons")))
 	{
