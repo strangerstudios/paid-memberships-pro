@@ -160,12 +160,12 @@
 			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
 			
 			//start and end date
-			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND (status = 'inactive' OR status = 'cancelled' OR status = 'admin_cancelled') ORDER BY id DESC");
+			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($startdate))
 				$this->data['startdate'] = date(get_option('date_format'), $startdate);
 			else
 				$this->data['startdate'] = "";
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND (status = 'inactive' OR status = 'cancelled' OR status = 'admin_cancelled') ORDER BY id DESC");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($enddate))
 				$this->data['enddate'] = date(get_option('date_format'), $enddate);
 			else
