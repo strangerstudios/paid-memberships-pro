@@ -40,7 +40,7 @@
 	
 	//some vars
 	$addons = pmpro_getAddons();
-	$addons_timestamp = get_transient("pmpro_addons_timestamp");
+	$addons_timestamp = get_option("pmpro_addons_timestamp", false);
 	$plugin_info = get_site_transient( 'update_plugins' );
 	$pmpro_license_key = get_option("pmpro_license_key", "");
 	

@@ -24,10 +24,11 @@ add_action('init', 'pmpro_setupAddonUpdateInfo');
 function pmpro_getAddons()
 {
 	//check if forcing a pull from the server
-	$addons = get_transient("pmpro_addons");	
+	$addons = get_option("pmpro_addons", array());
+	$addons_timestamp = get_option("pmpro_addons_timestamp", 0);
 	
 	//if no addons locally, we need to hit the server
-	if(empty($addons) || !empty($_REQUEST['force-check']))
+	if(empty($addons) || !empty($_REQUEST['force-check']) || current_time('timestamp') > $addons_timestamp+86400)
 	{
 		//get em
 		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/");
@@ -46,11 +47,13 @@ function pmpro_getAddons()
 		{
 			//update addons in cache
 			$addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
-			set_transient("pmpro_addons", $addons, 86400);			
+			delete_option('pmpro_addons');
+			add_option("pmpro_addons", $addons, NULL, 'no');
 		}
 		
 		//save timestamp of last update
-		set_transient("pmpro_addons_timestamp", current_time('timestamp'), 86400);
+		delete_option('pmpro_addons_timestamp');
+		add_option("pmpro_addons_timestamp", current_time('timestamp'), NULL, 'no');		
 	}		
 	
 	return $addons;
