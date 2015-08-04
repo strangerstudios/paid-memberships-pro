@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
 * ENHANCEMENT: Now zeroing out the initial payment and billing amount in pmpro_memberships_users when an order gets cancelled.
 * ENHANCEMENT: Modified how billing information shows up on the edit user page.
+* ENHANCEMENT: Added partial Finnish translations. (Thanks, Onni Hakala)
 * FEATURE: Overhauled the Add Ons page with one click installs and automatic updates of non-WordPress.org add ons for PMPro Plus members.
 
 = 1.8.4.5 =
