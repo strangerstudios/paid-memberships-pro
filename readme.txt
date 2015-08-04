@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.2.3
-Stable tag: 1.8.4.5
+Tested up to: 4.2.4
+Stable tag: 1.8.5
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -102,10 +102,22 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog == 
+= 1.8.5 =
+* BUG: Fixed bug where the subscription_transaction_id was not showing up in the orders CSV export.
+* BUG: Fixed bug where gateway subscriptions were not being cancelled when the "cancel at gateway" option was checked when changing a user's level on the edit user page.
+* BUG: Drag and drop for reordering levels has been disabled if there are < 2 levels or if the user is searching the levels list. (Thanks, Isaac Coleman.)
+* BUG: Fixed bug where sales and revenue charts would never show data for the 31st of the month. (Thanks, TYTNetwork)
+* ENHANCEMENT: Now showing the time in date column of on the orders page and in the timestamp column of the orders CSV export.
+* ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
+* ENHANCEMENT: Now zeroing out the initial payment and billing amount in pmpro_memberships_users when an order gets cancelled.
+* ENHANCEMENT: Modified how billing information shows up on the edit user page.
+* ENHANCEMENT: Added partial Finnish translations. (Thanks, Onni Hakala)
+* FEATURE: Overhauled the Add Ons page with one click installs and automatic updates of non-WordPress.org add ons for PMPro Plus members.
+
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
 * BUG: Fixed issue with PMPro page templates being loaded from child themes. (Thanks, SeventhQueen)
-* BUG: Fixed bug where gateway subscriptions would sometimes be cancelled even if an admin unchecked the "cancel at gateway" option when changing a users level on the edit user page. (Thanks, Scott Noelle)
+* BUG: Fixed bug where gateway subscriptions would sometimes be cancelled even if an admin unchecked the "cancel at gateway" option when changing a user's level on the edit user page. (Thanks, Scott Noelle)
 * ENHANCEMENT: Added debugging to the Braintree webhook. Use define('PMPRO_BRAINTREE_WEBHOOK_DEBUG', true); in your wp-config.php to have debug emails sent to the admin when the Braintree webhook is hit.
 * ENHANCEMENT: Updated email fields on checkout and billing update form to use the "email" field type instead of "text". If you need to revert this back to "text" type, use the pmpro_email_field_type filter like this: apply_filters('pmpro_email_field_type', '__return_false'); (Thanks, Yann Kozon)
 * ENHANCEMENT: French translation updated and now includes email templates. (Thanks, Jean-Christophe Michel)

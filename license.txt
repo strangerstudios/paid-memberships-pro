@@ -1,6 +1,6 @@
 Paid Memberships Pro 
 
-Copyright (C) 2013 Stranger Studios, LLC and other contributors
+Copyright (C) 2015 Stranger Studios, LLC and other contributors
 
 Paid Memberships Pro uses the same software license as the current version of WordPress: GPLv2. You can get the text of that license in the license.txt file of your root WordPress directory or online at http://wordpress.org/about/gpl/.
 

@@ -492,7 +492,7 @@
 				<tr>
 					<th scope="row" valign="top"><label for="ts_month"><?php _e('Date', 'pmpro');?>:</label></th>
 					<td>
-						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(option("date_format"), $order->timestamp); } else { ?>
+						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(get_option('date_format') . " " . get_option('time_format'), $order->timestamp); } else { ?>
 						<?php
 							//set up date vars
 							if(!empty($order->timestamp))
@@ -984,7 +984,10 @@
 								<?php _e('Subscription', 'pmpro');?>: <?php if(!empty($order->subscription_transaction_id)) echo $order->subscription_transaction_id; else echo "N/A";?>
 							</td>
 							<td><?php echo $order->status;?></td>
-							<td><?php echo date(get_option('date_format'), $order->timestamp);?></td>
+							<td>
+								<?php echo date(get_option('date_format'), $order->timestamp);?><br />
+								<?php echo date(get_option('time_format'), $order->timestamp);?>
+							</td>
 							<td align="center">
 								<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id;?>"><?php _e('edit', 'pmpro');?></a>
 							</td>

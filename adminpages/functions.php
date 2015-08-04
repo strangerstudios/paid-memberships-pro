@@ -221,7 +221,7 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
  * @param string $field The name of the field to check.
  * @param bool $force If true, it will rebuild the cached results.
  *
- * @since  2.0
+ * @since  1.8
  */
 function pmpro_getClassesForPaymentSettingsField($field, $force = false)
 {

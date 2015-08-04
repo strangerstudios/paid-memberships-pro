@@ -328,6 +328,7 @@
 							<?php
 							}
 						?>	
+							<p>[ ] Include this message in the Membership Confirmation Email</p>
 						</div>    
 					</td>
 				</tr>
@@ -523,147 +524,156 @@
 	}	
 	else
 	{
-	?>
-        <script>
-            jQuery(document).ready(function($) {
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
+		if($s)
+			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+		$sqlQuery .= "ORDER BY id ASC";
+		
+		$levels = $wpdb->get_results($sqlQuery, OBJECT);						
+		
+        if(empty($_REQUEST['s']) && !empty($pmpro_level_order)) {
+            //reorder levels
+            $order = explode(',', $pmpro_level_order);
+			
+			//put level ids in their own array
+			$level_ids = array();
+			foreach($levels as $level)
+				$level_ids[] = $level->id;
+			
+			//remove levels from order if they are gone
+			foreach($order as $key => $level_id)
+				if(!in_array($level_id, $level_ids))
+					unset($order[$key]);
+					
+			//add levels to the end if they aren't in the order array
+			foreach($level_ids as $level_id)
+				if(!in_array($level_id, $order))
+					$order[] = $level_id;
+			
+			//remove dupes
+			$order = array_unique($order);
+			
+			//save the level order
+			pmpro_setOption('level_order', implode(',', $order));
 
-                // Return a helper with preserved width of cells
-                // from http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable/
-                var fixHelper = function(e, ui) {
-                    ui.children().each(function() {
-                        $(this).width($(this).width());
-                    });
-                    return ui;
-                };
-
-                $("table.membership-levels tbody").sortable({
-                    helper: fixHelper,
-                    placeholder: 'testclass',
-                    forcePlaceholderSize: true,
-                    update: update_level_order
-                });
-
-                function update_level_order(event, ui) {
-                    level_order = [];
-                    $("table.membership-levels tbody tr").each(function() {
-                        $(this).removeClass('alternate');
-                        level_order.push(parseInt( $("td:first", this).text()));
-                    });
-
-                    //update styles
-                    $("table.membership-levels tbody tr:odd").each(function() {
-                        $(this).addClass('alternate');
-                    });
-
-                    data = {
-                        action: 'pmpro_update_level_order',
-                        level_order: level_order
-                    };
-
-                    $.post(ajaxurl, data, function(response) {
-                    });
+			//reorder levels here
+            $reordered_levels = array();
+            foreach ($order as $level_id) {
+                foreach ($levels as $level) {
+                    if ($level_id == $level->id)
+                        $reordered_levels[] = $level;
                 }
-            });
-        </script>
-				
-	<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
-	<form id="posts-filter" method="get" action="">			
-		<p class="search-box">
-			<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'pmpro');?>:</label>
-			<input type="hidden" name="page" value="pmpro-membershiplevels" />
-			<input id="post-search-input" type="text" value="<?php echo esc_attr($s); ?>" name="s" size="30" />
-			<input class="button" type="submit" value="<?php _e('Search Levels', 'pmpro');?>" id="search-submit" />
-		</p>
-	</form>	
-	<br class="clear" />
-    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'pmpro'); ?></p>
-    <table class="widefat membership-levels">
-	<thead>
-		<tr>
-			<th><?php _e('ID', 'pmpro');?></th>
-			<th><?php _e('Name', 'pmpro');?></th>
-			<th><?php _e('Billing Details', 'pmpro');?></th>
-			<th><?php _e('Expiration', 'pmpro');?></th>
-			<th><?php _e('Allow Signups', 'pmpro');?></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php
-			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
-			if($s)
-				$sqlQuery .= "WHERE name LIKE '%$s%' ";
-			$sqlQuery .= "ORDER BY id ASC";
-			
-			$levels = $wpdb->get_results($sqlQuery, OBJECT);						
-			
-            if(!empty($pmpro_level_order)) {
-                //reorder levels
-                $order = explode(',', $pmpro_level_order);
-				
-				//put level ids in their own array
-				$level_ids = array();
-				foreach($levels as $level)
-					$level_ids[] = $level->id;
-				
-				//remove levels from order if they are gone
-				foreach($order as $key => $level_id)
-					if(!in_array($level_id, $level_ids))
-						unset($order[$key]);
-						
-				//add levels to the end if they aren't in the order array
-				foreach($level_ids as $level_id)
-					if(!in_array($level_id, $order))
-						$order[] = $level_id;
-				
-				//remove dupes
-				$order = array_unique($order);
-				
-				//save the level order
-				pmpro_setOption('level_order', implode(',', $order));
+            }								
+        }
+		else
+			$reordered_levels = $levels;
 
-				//reorder levels here
-                $reordered_levels = array();
-                foreach ($order as $level_id) {
-                    foreach ($levels as $level) {
-                        if ($level_id == $level->id)
-                            $reordered_levels[] = $level;
-                    }
-                }								
-            }
-			else
-				$reordered_levels = $levels;
+		if(empty($_REQUEST['s']) && count($reordered_levels) > 1)
+		{
+			?>
+		    <script>
+		        jQuery(document).ready(function($) {
 
-			$count = 0;
-			foreach($reordered_levels as $level)
-			{
-		?>
-		<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
-			<td><?php echo $level->id?></td>
-			<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a></td>
-			<td>
-				<?php if(pmpro_isLevelFree($level)) { ?>
-					<?php _e('FREE', 'pmpro');?>
-				<?php } else { ?>
-					<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
-				<?php } ?>
-			</td>
-			<td>
-				<?php if(!pmpro_isLevelExpiring($level)) { ?>
-					--
-				<?php } else { ?>		
-					<?php _e('After', 'pmpro');?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
-				<?php } ?>
-			</td>
-			<td><?php if($level->allow_signups) { ?><a href="<?php echo pmpro_url("checkout", "?level=" . $level->id);?>"><?php _e('Yes', 'pmpro');?></a><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
+		            // Return a helper with preserved width of cells
+		            // from http://www.foliotek.com/devblog/make-table-rows-sortable-using-jquery-ui-sortable/
+		            var fixHelper = function(e, ui) {
+		                ui.children().each(function() {
+		                    $(this).width($(this).width());
+		                });
+		                return ui;
+		            };
 
-			<td><a title="<?php _e('edit','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript: askfirst('<?php echo str_replace("'", "\'", sprintf("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
-		</tr>
-		<?php
+		            $("table.membership-levels tbody").sortable({
+		                helper: fixHelper,
+		                placeholder: 'testclass',
+		                forcePlaceholderSize: true,
+		                update: update_level_order
+		            });
+
+		            function update_level_order(event, ui) {
+		                level_order = [];
+		                $("table.membership-levels tbody tr").each(function() {
+		                    $(this).removeClass('alternate');
+		                    level_order.push(parseInt( $("td:first", this).text()));
+		                });
+
+		                //update styles
+		                $("table.membership-levels tbody tr:odd").each(function() {
+		                    $(this).addClass('alternate');
+		                });
+
+		                data = {
+		                    action: 'pmpro_update_level_order',
+		                    level_order: level_order
+		                };
+
+		                $.post(ajaxurl, data, function(response) {
+		                });
+		            }
+		        });
+		    </script>
+			<?php
 			}
 		?>
-	</tbody>
-	</table>	
+
+		<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
+		<form id="posts-filter" method="get" action="">			
+			<p class="search-box">
+				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'pmpro');?>:</label>
+				<input type="hidden" name="page" value="pmpro-membershiplevels" />
+				<input id="post-search-input" type="text" value="<?php echo esc_attr($s); ?>" name="s" size="30" />
+				<input class="button" type="submit" value="<?php _e('Search Levels', 'pmpro');?>" id="search-submit" />
+			</p>
+		</form>
+
+		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
+			<br class="clear" />
+		    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'pmpro'); ?></p>
+	    <?php } ?>
+
+	    <table class="widefat membership-levels">
+		<thead>
+			<tr>
+				<th><?php _e('ID', 'pmpro');?></th>
+				<th><?php _e('Name', 'pmpro');?></th>
+				<th><?php _e('Billing Details', 'pmpro');?></th>
+				<th><?php _e('Expiration', 'pmpro');?></th>
+				<th><?php _e('Allow Signups', 'pmpro');?></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				$count = 0;
+				foreach($reordered_levels as $level)
+				{
+			?>
+			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
+				<td><?php echo $level->id?></td>
+				<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a></td>
+				<td>
+					<?php if(pmpro_isLevelFree($level)) { ?>
+						<?php _e('FREE', 'pmpro');?>
+					<?php } else { ?>
+						<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
+					<?php } ?>
+				</td>
+				<td>
+					<?php if(!pmpro_isLevelExpiring($level)) { ?>
+						--
+					<?php } else { ?>		
+						<?php _e('After', 'pmpro');?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
+					<?php } ?>
+				</td>
+				<td><?php if($level->allow_signups) { ?><a href="<?php echo pmpro_url("checkout", "?level=" . $level->id);?>"><?php _e('Yes', 'pmpro');?></a><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
+
+				<td><a title="<?php _e('edit','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript: askfirst('<?php echo str_replace("'", "\'", sprintf("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name);?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
+			</tr>
+			<?php
+				}
+			?>
+		</tbody>
+		</table>	
 	<?php
 	}
 	?>		

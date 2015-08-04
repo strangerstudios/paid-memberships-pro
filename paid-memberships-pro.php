@@ -42,6 +42,9 @@ require_once(PMPRO_DIR . "/includes/lib/name-parser.php");		//parses "Jason Cole
 require_once(PMPRO_DIR . "/includes/functions.php");			//misc functions used by the plugin
 require_once(PMPRO_DIR . "/includes/upgradecheck.php");			//database and other updates
 
+if(!defined('PMPRO_LICENSE_SERVER'))
+	require_once(PMPRO_DIR . "/includes/license.php");			//defines location of addons data and licenses
+
 require_once(PMPRO_DIR . "/scheduled/crons.php");				//crons for expiring members, sending expiration emails, etc
 
 require_once(PMPRO_DIR . "/classes/class.memberorder.php");		//class to process and save orders
@@ -92,6 +95,10 @@ global $wpdb;
 if(is_admin())
 	pmpro_checkForUpgrades();
 
+//load plugin updater
+if(is_admin())
+	require_once(PMPRO_DIR . "/includes/addons.php");
+	
 /*
 	Definitions
 */

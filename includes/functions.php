@@ -322,37 +322,60 @@ function pmpro_displayAds()
 	return $pmpro_display_ads;
 }
 
-function pmpro_next_payment($user_id = NULL, $order_status = "success")
+function pmpro_next_payment($user_id = NULL, $order_status = "success", $format = "timestamp")
 {
 	global $wpdb, $current_user;
 	if(!$user_id)
 		$user_id = $current_user->ID;
 
 	if(!$user_id)
-		return false;
-
-	//get last order
-	$order = new MemberOrder();
-	$order->getLastMemberOrder($user_id, $order_status);
-
-	//get current membership level
-	$level = pmpro_getMembershipLevelForUser($user_id);
-
-	if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
-	{
-		//last payment date
-		$lastdate = date("Y-m-d", $order->timestamp);
-
-		//next payment date
-		$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
-
-		return $nextdate;
-	}
+		$r = false;
 	else
 	{
-		//no order or level found, or level was not recurring
-		return false;
+		//get last order
+		$order = new MemberOrder();
+		$order->getLastMemberOrder($user_id, $order_status);
+
+		//get current membership level
+		$level = pmpro_getMembershipLevelForUser($user_id);
+
+		if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
+		{
+			//last payment date
+			$lastdate = date("Y-m-d", $order->timestamp);
+
+			//next payment date
+			$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
+
+			$r = $nextdate;
+		}
+		else
+		{
+			//no order or level found, or level was not recurring
+			$r = false;
+		}
 	}
+	
+	/**
+	 * Filter the next payment date.
+	 *
+	 * @since 1.8.5
+	 *
+	 * @param mixed $r false or the next payment date timestamp
+	 * @param int $user_id The user id to get the next payment date for
+	 * @param string $order_status Status or array of statuses to find the last order based on.
+	 */
+	$r = apply_filters('pmpro_next_payment', $r, $user_id, $order_status);
+	
+	//return in desired format
+	if($r === false)
+		return false;				//always return false when no date found
+	elseif($format == "timestamp")
+		return $r;
+	elseif($format == "date_format")
+		return date(get_option('date_format'), $r);
+	else
+		return date($format, $r);	//assume a PHP date format	
 }
 
 if(!function_exists("last4"))
@@ -1632,6 +1655,25 @@ function pmpro_setMessage($message, $type, $force = false)
 	}
 }
 
+/**
+ * Show a a PMPro message set via pmpro_setMessage
+ *
+ * @since 1.8.5
+ */
+function pmpro_showMessage()
+{
+	global $pmpro_msg, $pmpro_msgt;
+	
+	if(!empty($pmpro_msg))
+	{
+	?>
+	<div class="<?php echo $pmpro_msgt;?>">
+		<p><?php echo $pmpro_msg;?></p>
+	</div>
+	<?php
+	}
+}
+
 //used in class definitions for input fields to see if there was an error
 function pmpro_getClassForField($field)
 {
@@ -1951,3 +1993,4 @@ function pmpro_isDateThisMonth($str)
 	else
 		return false;
 }
+

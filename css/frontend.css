@@ -175,3 +175,26 @@ li.pmpro_more {list-style-type: none; text-align: center; margin-left: -20px; pa
 .clear {clear: both; }
 
 .pmpro_small {font-size: .8em;}
+
+/*
+	Fixes for Twentyfiften and other themes.
+*/
+form.pmpro_form .input {display: inline-block; width: auto; }
+#your-profile input {display: inline-block; width: auto; }			/* front end profile via Theme My Login */
+
+@media (max-width:768px){
+	#pmpro_levels_table {border: none; }
+	#pmpro_levels_table th {display: none; }
+	#pmpro_levels_table td {border: none; display: block; padding: 0 10px; text-align: center; }
+	#pmpro_levels_table td:first-child {font-size: 1.4em; padding-top: 10px; }
+	#pmpro_levels_table td:last-child {padding-bottom: 10px; padding-top: 10px; }
+	form.pmpro_form label {display: block; margin: 0; text-align: left; width: 100%; }
+	form.pmpro_form label.pmpro_normal, #pmpro_tos_fields label {display: inline-block; }
+	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {width: 90%; }
+	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {width: 40%; }
+	form.pmpro_form #pmpro_payment_information_fields .pmpro_thead-msg {float: none; margin-bottom: 10px; text-align: left; text-wrap: normal; white-space: normal; }
+	form.pmpro_form .leftmar {margin: 2px 0 0 0; }
+	form.pmpro_form .pmpro_submit {margin-left: 0; }
+	form.pmpro_form .pmpro_submit #pmpro_submit_span {display: block; float: none; }
+	form.pmpro_form .pmpro_btn {display: block; width: 100%; }
+}
