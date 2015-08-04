@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.2.3
-Stable tag: 1.8.4.5
+Tested up to: 4.2.4
+Stable tag: 1.8.5
 
 The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
 
@@ -111,6 +111,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
 * ENHANCEMENT: Now zeroing out the initial payment and billing amount in pmpro_memberships_users when an order gets cancelled.
 * ENHANCEMENT: Modified how billing information shows up on the edit user page.
+* FEATURE: Overhauled the Add Ons page with one click installs and automatic updates of non-WordPress.org add ons for PMPro Plus members.
 
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
