@@ -182,12 +182,6 @@ function pmpro_plugins_api($api, $action = '', $args = null)
 			
 	// Create a new stdClass object and populate it with our plugin information.
 	$api = pmpro_getPluginAPIObjectFromAddon($addon);
-	
-	//get license key if one is available
-	$key = get_option("pmpro_license_key", "");
-	if(!empty($key) && !empty($api->download_link))
-		$api->download_link = add_query_arg("key", $key, $api->download_link);
-	
 	return $api;
 }
 
@@ -216,6 +210,11 @@ function pmpro_getPluginAPIObjectFromAddon($addon)
 	$api->sections['changelog'] = isset( $addon['Changelog'] )      ? $addon['Changelog']      : '';
 	$api->download_link         = isset( $addon['Download'] )  		? $addon['Download']  	   : '';
 	$api->package        		= isset( $addon['Download'] )  		? $addon['Download']  	   : '';
-	
+
+    //get license key if one is available
+    $key = get_option("pmpro_license_key", "");
+    if(!empty($key) && !empty($api->download_link))
+        $api->download_link = add_query_arg("key", $key, $api->download_link);
+
 	return $api;
 }
