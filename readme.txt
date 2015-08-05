@@ -101,7 +101,11 @@ Not sure? You can find out by doing a bit a research.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
-== Changelog == 
+== Changelog ==
+= 1.8.5.1 =
+* ENHANCEMENT: Added the pmpro_get_addons_timeout and pmpro_license_check_key_timeout filters to change the default timeout during addon and license key checks.
+* BUG: Fixed error handling during addon and license key checks.
+
 = 1.8.5 =
 * BUG: Fixed bug where the subscription_transaction_id was not showing up in the orders CSV export.
 * BUG: Fixed bug where gateway subscriptions were not being cancelled when the "cancel at gateway" option was checked when changing a user's level on the edit user page.

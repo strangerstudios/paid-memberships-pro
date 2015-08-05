@@ -72,7 +72,7 @@ function pmpro_license_settings_page() {
 	//get saved license
 	$key = get_option("pmpro_license_key", "");
 	$pmpro_license_check = get_option("pmpro_license_check", array("license"=>false, "enddate"=>0));
-	
+
 	//html for license settings page
 	if(defined('PMPRO_DIR'))
 		require_once(PMPRO_DIR . "/adminpages/admin_header.php");
@@ -189,7 +189,16 @@ function pmpro_license_check_key($key = NULL) {
 	{
 		//check license server
 		$url = add_query_arg(array('license'=>$key, 'domain'=>site_url()), PMPRO_LICENSE_SERVER);
+
+        /**
+         * Filter to change the timeout for this wp_remote_get() request.
+         *
+         * @since 1.8.5.1
+         *
+         * @param int $timeout The number of seconds before the request times out
+         */
         $timeout = apply_filters("pmpro_license_check_key_timeout", 5);
+
         $r = wp_remote_get($url, array("timeout" => $timeout));
 
         //test response
@@ -261,7 +270,7 @@ function pmpro_license_nag() {
 	//blocked by constant?
 	if(defined('PMPRO_LICENSE_NAG') && !PMPRO_LICENSE_NAG)
 		return;
-	
+
 	//valid license?
 	if(pmpro_license_isValid())
 		return;	
@@ -281,4 +290,21 @@ function pmpro_license_nag() {
 		</p>
 	</div>
 	<?php
+}
+
+/**
+ * Force update of theme update data when the PMPro License key is updated
+ *
+ * @since 1.8.5.1
+ *
+ * @param array $args  Array of request args.
+ * @param string $url  The URL to be pinged.
+ * @return array $args Amended array of request args.
+ */
+function pmpro_update_option_pmpro_license_check($option, $old_value, $value)
+{
+    if ($option == "pmpro_license_check") {
+        delete_option('memberlite_update_info_timestamp');
+        delete_site_transient('update_themes');
+    }
 }

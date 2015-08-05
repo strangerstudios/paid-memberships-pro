@@ -30,8 +30,16 @@ function pmpro_getAddons()
 	//if no addons locally, we need to hit the server
 	if(empty($addons) || !empty($_REQUEST['force-check']) || current_time('timestamp') > $addons_timestamp+86400)
 	{
-		//get em
+        /**
+         * Filter to change the timeout for this wp_remote_get() request.
+         *
+         * @since 1.8.5.1
+         *
+         * @param int $timeout The number of seconds before the request times out
+         */
         $timeout = apply_filters("pmpro_get_addons_timeout", 5);
+
+        //get em
 		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/", $timeout);
 
         //make sure we have at least an array to pass back
