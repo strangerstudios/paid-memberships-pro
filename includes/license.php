@@ -189,9 +189,15 @@ function pmpro_license_check_key($key = NULL) {
 	{
 		//check license server
 		$url = add_query_arg(array('license'=>$key, 'domain'=>site_url()), PMPRO_LICENSE_SERVER);
-		$r = wp_remote_get($url);				
-		
-		if(!empty($r) && $r['response']['code'] == 200)
+        $timeout = apply_filters("pmpro_license_check_key_timeout", 5);
+        $r = wp_remote_get($url, array("timeout" => $timeout));
+
+        //test response
+        if(is_wp_error($r)) {
+            //error
+            pmpro_setMessage("Could not connect to the PMPro License Server to check key Try again later.", "error");
+        }
+        elseif(!empty($r) && $r['response']['code'] == 200)
 		{
 			$r = json_decode($r['body']);
 						
@@ -215,13 +221,13 @@ function pmpro_license_check_key($key = NULL) {
 				
 				delete_option('pmpro_license_check');
 				add_option('pmpro_license_check', array('license'=>false, 'enddate'=>0), NULL, 'no');
-				
-				return false;
+                
 			}
 		}	
 	}
-	else
-		return false;
+
+    //no key or there was an error
+    return false;
 }
 add_action('pmpro_license_check_key', 'pmpro_license_check_key');
 

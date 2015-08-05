@@ -31,26 +31,26 @@ function pmpro_getAddons()
 	if(empty($addons) || !empty($_REQUEST['force-check']) || current_time('timestamp') > $addons_timestamp+86400)
 	{
 		//get em
-		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/");
-		
+        $timeout = apply_filters("pmpro_get_addons_timeout", 5);
+		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/", $timeout);
+
+        //make sure we have at least an array to pass back
+        if(empty($addons))
+            $addons = array();
+
 		//test response
-		if(empty($remote_addons['response']) || $remote_addons['response']['code'] != '200')
-		{
-			//error
-			pmpro_setMessage("Could not connect to the PMPro License Server to update addon information. Try again later.", "error");
-			
-			//make sure we have at least an array to pass back
-			if(empty($addons))
-				$addons = array();
-		}
-		else
-		{
-			//update addons in cache
-			$addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
-			delete_option('pmpro_addons');
-			add_option("pmpro_addons", $addons, NULL, 'no');
-		}
-		
+        if(is_wp_error($remote_addons)) {
+            //error
+            pmpro_setMessage("Could not connect to the PMPro License Server to update addon information. Try again later.", "error");
+        }
+		elseif(!empty($r) && $r['response']['code'] == 200)
+        {
+            //update addons in cache
+            $addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
+            delete_option('pmpro_addons');
+            add_option("pmpro_addons", $addons, NULL, 'no');
+        }
+
 		//save timestamp of last update
 		delete_option('pmpro_addons_timestamp');
 		add_option("pmpro_addons_timestamp", current_time('timestamp'), NULL, 'no');		
