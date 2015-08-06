@@ -801,9 +801,7 @@
 				{
 					//get the subscription status
 					$status = $order->getGatewaySubscriptionStatus();					
-					
-					d($status);
-
+										
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{
 						//found the next billing date at PayPal, going to use that						
