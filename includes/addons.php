@@ -13,7 +13,7 @@ function pmpro_setupAddonUpdateInfo()
 	add_filter('plugins_api', 'pmpro_plugins_api', 10, 3);
 	add_filter('pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter');
 	add_filter('http_request_args', 'pmpro_http_request_args_for_addons', 10, 2);
-	add_action('update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 3);
+	add_action('update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 2);
 }
 add_action('init', 'pmpro_setupAddonUpdateInfo');
 
@@ -231,11 +231,8 @@ function pmpro_getPluginAPIObjectFromAddon($addon)
  * @param string $url  The URL to be pinged.
  * @return array $args Amended array of request args.
  */
-function pmpro_reset_update_plugins_cache($option, $old_value, $value) 
+function pmpro_reset_update_plugins_cache($old_value, $value) 
 {
-	if($option == "pmpro_license_key")
-	{
-		delete_option('pmpro_addons_timestamp');
-		delete_site_transient('update_themes');
-	}
+	delete_option('pmpro_addons_timestamp');
+	delete_site_transient('update_themes');	
 }
