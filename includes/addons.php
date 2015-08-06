@@ -13,6 +13,7 @@ function pmpro_setupAddonUpdateInfo()
 	add_filter('plugins_api', 'pmpro_plugins_api', 10, 3);
 	add_filter('pre_set_site_transient_update_plugins', 'pmpro_update_plugins_filter');
 	add_filter('http_request_args', 'pmpro_http_request_args_for_addons', 10, 2);
+	add_action('update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 3);
 }
 add_action('init', 'pmpro_setupAddonUpdateInfo');
 
@@ -215,6 +216,26 @@ function pmpro_getPluginAPIObjectFromAddon($addon)
     $key = get_option("pmpro_license_key", "");
     if(!empty($key) && !empty($api->download_link))
         $api->download_link = add_query_arg("key", $key, $api->download_link);
+	if(!empty($key) && !empty($api->package))
+        $api->package = add_query_arg("key", $key, $api->package);
 
 	return $api;
+}
+
+/**
+ * Force update of plugin update data when the PMPro License key is updated
+ *
+ * @since 2.0
+ *
+ * @param array $args  Array of request args.
+ * @param string $url  The URL to be pinged.
+ * @return array $args Amended array of request args.
+ */
+function pmpro_reset_update_plugins_cache($option, $old_value, $value) 
+{
+	if($option == "pmpro_license_key")
+	{
+		delete_option('pmpro_addons_timestamp');
+		delete_site_transient('update_themes');
+	}
 }
