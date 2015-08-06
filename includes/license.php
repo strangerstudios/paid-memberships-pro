@@ -291,20 +291,3 @@ function pmpro_license_nag() {
 	</div>
 	<?php
 }
-
-/**
- * Force update of theme update data when the PMPro License key is updated
- *
- * @since 1.8.5.1
- *
- * @param array $args  Array of request args.
- * @param string $url  The URL to be pinged.
- * @return array $args Amended array of request args.
- */
-function pmpro_update_option_pmpro_license_check($option, $old_value, $value)
-{
-    if ($option == "pmpro_license_check") {
-        delete_option('memberlite_update_info_timestamp');
-        delete_site_transient('update_themes');
-    }
-}
