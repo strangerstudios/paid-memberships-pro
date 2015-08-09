@@ -49,12 +49,17 @@ function pmpro_membership_level_profile_fields($user)
                 <span id="current_level_cost">
                 <?php
                 $membership_values = pmpro_getMembershipLevelForUser($user->ID);              
+
 				//we tweak the initial payment here so the text here effectively shows the recurring amount
-				$membership_values->original_initial_payment = $membership_values->initial_payment;
-				$membership_values->initial_payment = $membership_values->billing_amount;
+				if(!empty($membership_values))
+				{
+					$membership_values->original_initial_payment = $membership_values->initial_payment;
+					$membership_values->initial_payment = $membership_values->billing_amount;
+				}
+
 				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
                 { 
-					if($membership_values->original_initial_payment > 0)
+					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
 						echo "Paid " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
 					else
 						_e('Not paying.', 'pmpro');					

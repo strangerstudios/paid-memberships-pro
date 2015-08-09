@@ -102,6 +102,9 @@ Not sure? You can find out by doing a bit a research.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
 
 == Changelog ==
+= 1.8.5.3 =
+* BUG: Fixed notices in the code that shows a member's payment amount on the edit user/profile page.
+
 = 1.8.5.2 =
 * BUG: Fixed notice in pmpro_reset_update_plugins_cache
 * BUG: Removed debug code from the PayPal Express gateway.
