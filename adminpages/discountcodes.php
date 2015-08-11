@@ -396,7 +396,7 @@
 				</tbody>
 			</table>
 			
-			<?php do_action("pmpro_discount_code_after_settings"); ?>
+			<?php do_action("pmpro_discount_code_after_settings", $edit); ?>
 			
 			<h3><?php _e('Which Levels Will This Code Apply To?', 'pmpro'); ?></h3>
 			
