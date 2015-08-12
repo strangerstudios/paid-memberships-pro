@@ -460,8 +460,8 @@ function pmpro_upgrade_1()
 	pmpro_db_delta();	
 	
 	//update version and return
-	pmpro_setOption("db_version", "1.702");		//no need to run other updates
-	return 1.702;
+	pmpro_setOption("db_version", "1.71");		//no need to run other updates
+	return 1.71;
 }
 
 function pmpro_db_delta()
