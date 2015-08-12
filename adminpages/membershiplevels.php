@@ -327,8 +327,7 @@
 							<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo esc_textarea($level->confirmation);?></textarea>	
 							<?php
 							}
-						?>	
-							<p>[ ] Include this message in the Membership Confirmation Email</p>
+						?>
 						</div>    
 					</td>
 				</tr>
