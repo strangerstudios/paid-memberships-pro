@@ -52,7 +52,7 @@ function pmpro_getAddons()
             //error
             pmpro_setMessage("Could not connect to the PMPro License Server to update addon information. Try again later.", "error");
         }
-		elseif(!empty($r) && $r['response']['code'] == 200)
+		elseif(!empty($remote_addons) && $remote_addons['response']['code'] == 200)
         {
             //update addons in cache
             $addons = json_decode(wp_remote_retrieve_body($remote_addons), true);
