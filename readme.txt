@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.5.3 =
 * BUG: Fixed notices in the code that shows a member's payment amount on the edit user/profile page.
+* BUG: Fixed warnings that would show up if you used pmpro_getLevel('name') to get a level by name for a level that didn't exist.
 
 = 1.8.5.2 =
 * BUG: Fixed notice in pmpro_reset_update_plugins_cache

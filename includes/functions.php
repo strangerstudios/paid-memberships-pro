@@ -1451,10 +1451,15 @@ function pmpro_getLevel($level)
 		}
 	}
 	else
-	{
+	{		
 		global $wpdb;
-		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");
-		$level_id = $level_obj->id;
+		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");	
+		
+		if(!empty($level_obj))
+			$level_id = $level_obj->id;
+		else
+			return false;
+		
 		$pmpro_levels[$level_id] = $level_obj;
 		return $pmpro_levels[$level_id];
 	}
