@@ -104,6 +104,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.5.4 =
 * BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
+* BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
 
 = 1.8.5.3 =
 * BUG: Fixed issue where addon information was not being updated. (Thanks, walcee, jeff1010ihs, and ron)

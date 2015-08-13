@@ -87,9 +87,9 @@ function pmpro_report_sales_page()
 	if(isset($_REQUEST['month']))
 		$month = intval($_REQUEST['month']);
 	else
-		$month = date("n");
+		$month = date("n", current_time('timestamp'));
 	
-	$thisyear = date("Y");
+	$thisyear = date("Y", current_time('timestamp'));
 	if(isset($_REQUEST['year']))
 		$year = intval($_REQUEST['year']);
 	else
@@ -320,11 +320,11 @@ function pmpro_getSales($period, $levels = NULL)
 		
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
-		$startdate = date("Y-m-d");
+		$startdate = date("Y-m-d", current_time('timestamp'));
 	elseif($period == "this month")
-		$startdate = date("Y-m") . "-01";
+		$startdate = date("Y-m", current_time('timestamp')) . "-01";
 	elseif($period == "this year")
-		$startdate = date("Y") . "-01-01";
+		$startdate = date("Y", current_time('timestamp')) . "-01-01";
 	else
 		$startdate = "";
 	
@@ -363,11 +363,11 @@ function pmpro_getRevenue($period, $levels = NULL)
 		
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
-		$startdate = date("Y-m-d");
+		$startdate = date("Y-m-d", current_time('timestamp'));
 	elseif($period == "this month")
-		$startdate = date("Y-m") . "-01";
+		$startdate = date("Y-m", current_time('timestamp')) . "-01";
 	elseif($period == "this year")
-		$startdate = date("Y") . "-01-01";
+		$startdate = date("Y", current_time('timestamp')) . "-01-01";
 	else
 		$startdate = "";
 	
