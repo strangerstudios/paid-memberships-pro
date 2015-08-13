@@ -138,7 +138,7 @@ function pmpro_admin_https_handler()
 {
 	if(!empty($_SERVER['HTTPS']))
 	{
-		if($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false" && is_admin())
+		if($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != "off" && strtolower($_SERVER['HTTPS']) != "false" && is_admin())
 		{
 			if(substr(get_option("siteurl"), 0, 5) == "http:" && !force_ssl_admin())
 			{
