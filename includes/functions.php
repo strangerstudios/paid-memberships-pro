@@ -1999,3 +1999,55 @@ function pmpro_isDateThisMonth($str)
 		return false;
 }
 
+/**
+ * Function to generate PMPro front end pages.
+ *
+ * @param array $pages {
+ *     Formatted as array($name => $title)
+ *
+ *     @type string $name Page name. (Letters, numbers, and underscores only.)
+ *     @type string $title Page title.
+ * }
+ * @return array $created_pages Created page IDs.
+ * @since 1.8.5
+ */
+function pmpro_generatePages($pages) {
+
+	global $pmpro_pages;
+
+	$pages_created = array();
+
+	if(!empty($pages)) {
+		foreach($pages as $name => $title) {
+
+			//does it already exist?
+			if(!empty($pmpro_pages[$name]))
+				continue;
+
+			//no id set. create an array to store the page info
+			$insert = array(
+				'post_title' => $title,
+				'post_status' => 'publish',
+				'post_type' => 'page',
+				'post_content' => '[pmpro_' . $name . ']',
+				'comment_status' => 'closed',
+				'ping_status' => 'closed'
+			);
+
+			//make non-account pages a subpage of account
+			if ($name != "account") {
+				$insert['post_parent'] = $pmpro_pages['account'];
+			}
+
+			//create the page
+			$pmpro_pages[$name] = wp_insert_post($insert);
+
+			//update the option too
+			pmpro_setOption($name . "_page_id", $pmpro_pages[$name]);
+			$pages_created[] = $pmpro_pages[$name];
+		}
+	}
+
+	return $pages_created;
+}
+

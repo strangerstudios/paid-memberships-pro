@@ -15,8 +15,8 @@ global $pmpro_pages;
  * @param array $pages {
  *     Formatted as array($name => $label)
  *
- * @type string $name Page name. (Letters, numbers, and underscores only.)
- * @type string $label Settings label.
+ *     @type string $name Page name. (Letters, numbers, and underscores only.)
+ *     @type string $label Settings label.
  * }
  * @since 1.8.5
  */
@@ -56,102 +56,27 @@ if (!empty($_REQUEST['savesettings'])) {
 
 //are we generating pages?
 if (!empty($_REQUEST['createpages'])) {
-    global $pmpro_pages;
 
-    $pages_created = array();
+    $pages = array();
 
-    //check the pages array
-    foreach ($pmpro_pages as $pmpro_page_name => $pmpro_page_id) {
-        if (!$pmpro_page_id) {
-            switch ($pmpro_page_name) {
-                case 'account':
-                    $pmpro_page_title = __('Membership Account', 'pmpro');
-                    break;
-                case 'billing':
-                    $pmpro_page_title = __('Membership Billing', 'pmpro');
-                    break;
-                case 'cancel':
-                    $pmpro_page_title = __('Membership Cancel', 'pmpro');
-                    break;
-                case 'checkout':
-                    $pmpro_page_title = __('Membership Checkout', 'pmpro');
-                    break;
-                case 'confirmation':
-                    $pmpro_page_title = __('Membership Confirmation', 'pmpro');
-                    break;
-                case 'invoice':
-                    $pmpro_page_title = __('Membership Invoice', 'pmpro');
-                    break;
-                case 'levels':
-                    $pmpro_page_title = __('Membership Levels', 'pmpro');
-                    break;
+    if(empty($_REQUEST['page_name'])) {
+        //default pages
+        $pages['account'] = __('Membership Account', 'pmpro');
+        $pages['billing'] = __('Membership Billing', 'pmpro');
+        $pages['cancel'] = __('Membership Cancel', 'pmpro');
+        $pages['checkout'] = __('Membership Checkout', 'pmpro');
+        $pages['confirmation'] = __('Membership Confirmation', 'pmpro');
+        $pages['invoice'] = __('Membership Invoice', 'pmpro');
+        $pages['levels'] = __('Membership Levels', 'pmpro');
 
-                default:
-                    $pmpro_page_title = sprintf(__('Membership %s', 'Page title template', 'pmpro'), ucwords($pmpro_page_name));
-                    break;
-            }
-
-            //no id set. create an array to store the page info
-            $insert = array(
-                'post_title' => $pmpro_page_title,
-                'post_status' => 'publish',
-                'post_type' => 'page',
-                'post_content' => '[pmpro_' . $pmpro_page_name . ']',
-                'comment_status' => 'closed',
-                'ping_status' => 'closed'
-            );
-
-            //make non-account pages a subpage of account
-            if ($pmpro_page_name != "account") {
-                $insert['post_parent'] = $pmpro_pages['account'];
-            }
-
-            //create the page
-            $pmpro_pages[$pmpro_page_name] = wp_insert_post($insert);
-
-            //add besecure post option to pages that need it
-            /* these pages are handling this themselves in the preheader
-            if(in_array($pmpro_page_name, array("billing", "checkout")))
-                update_post_meta($pmpro_pages[$pmpro_page_name], "besecure", 1);
-            */
-
-            //update the option too
-            pmpro_setOption($pmpro_page_name . "_page_id", $pmpro_pages[$pmpro_page_name]);
-            $pages_created[] = $pmpro_pages[$pmpro_page_name];
-        }
-    }
-
-    //generate extra pages one at a time
-    if(!empty($_REQUEST['page_name'])) {
-
+    } else {
+        //generate extra pages one at a time
         $pmpro_page_name = $_REQUEST['page_name'];
         $pmpro_page_id = $pmpro_pages[$pmpro_page_name];
-
-        if(!$pmpro_page_id) {
-
-            //no id set. create an array to store the page info
-            $insert = array(
-                'post_title' => $extra_pages[$pmpro_page_name],
-                'post_status' => 'publish',
-                'post_type' => 'page',
-                'post_content' => '[pmpro_' . $pmpro_page_name . ']',
-                'comment_status' => 'closed',
-                'ping_status' => 'closed'
-            );
-
-            //make non-account pages a subpage of account
-            if ($pmpro_page_name != "account") {
-                $insert['post_parent'] = $pmpro_pages['account'];
-            }
-
-            //create the page
-            $pmpro_pages[$pmpro_page_name] = wp_insert_post($insert);
-
-            //update the option too
-            pmpro_setOption($pmpro_page_name . "_page_id", $pmpro_pages[$pmpro_page_name]);
-            $pages_created[] = $pmpro_pages[$pmpro_page_name];
-        }
+        $pages[$pmpro_page_name] = $extra_pages[$pmpro_page_name];
     }
+
+    $pages_created = pmpro_generatePages($pages);
 
     if (!empty($pages_created)) {
         $msg = true;
@@ -316,7 +241,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             </tbody>
         </table>
         <?php
-        if (!empty($extra_pages)): ?>
+        if (!empty($extra_pages)) { ?>
             <h2><?php _e('Additional Page Settings', 'pmpro'); ?></h2>
             <table class="form-table">
                 <tbody>
@@ -331,7 +256,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                                 "show_option_none" => "-- " . __('Choose One', 'pmpro') . " --",
                                 "selected" => $pmpro_pages[$name],
                             ));
-                            if (!empty($pmpro_pages[$name])) {
+                            if(!empty($pmpro_pages[$name])) {
                                 ?>
                                 <a target="_blank" href="post.php?post=<?php echo $pmpro_pages[$name] ?>&action=edit"
                                    class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'pmpro'); ?></a>
@@ -349,7 +274,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 <?php } ?>
                 </tbody>
             </table>
-        <?php endif; ?>
+        <?php } ?>
         <p class="submit">
             <input name="savesettings" type="submit" class="button button-primary"
                    value="<?php _e('Save Settings', 'pmpro'); ?>"/>
