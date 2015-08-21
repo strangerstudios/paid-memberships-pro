@@ -281,5 +281,4 @@
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 	wp_print_request_filesystem_credentials_modal();
-	echo '</div>';
 ?>

@@ -103,6 +103,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.5.4 =
+* ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
 * BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
 * BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
 * ENHANCEMENT: Added the pmpro_next_payment filter to PayPal Express and Stripe gateways. These use the respective APIs to get the next payment date instead of estimating it from the date of the last order. These filters are in place, but haven't been enabled because hitting the API on each call could cause performance issues when exporting members or something else.
