@@ -2003,7 +2003,7 @@ function pmpro_isDateThisMonth($str)
  * Function to generate PMPro front end pages.
  *
  * @param array $pages {
- *     Formatted as array($name => $title)
+ *     Formatted as array($name => $title) or array(array('title'=>'The Title', 'content'=>'The Content'))
  *
  *     @type string $name Page name. (Letters, numbers, and underscores only.)
  *     @type string $title Page title.
@@ -2018,18 +2018,26 @@ function pmpro_generatePages($pages) {
 	$pages_created = array();
 
 	if(!empty($pages)) {
-		foreach($pages as $name => $title) {
+		foreach($pages as $name => $page) {
 
 			//does it already exist?
 			if(!empty($pmpro_pages[$name]))
 				continue;
 
 			//no id set. create an array to store the page info
+			if(is_array($page)) {
+				$title = $page['title'];
+				$content = $page['content'];
+			} else {
+				$title = $page;
+				$content = '[pmpro_' . $name . ']';
+			}
+			
 			$insert = array(
 				'post_title' => $title,
 				'post_status' => 'publish',
 				'post_type' => 'page',
-				'post_content' => '[pmpro_' . $name . ']',
+				'post_content' => $content,
 				'comment_status' => 'closed',
 				'ping_status' => 'closed'
 			);

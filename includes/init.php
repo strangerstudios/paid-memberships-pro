@@ -86,8 +86,9 @@ function pmpro_init()
 	 * This action is documented in /adminpages/pagesettings.php
 	 */
 	$extra_pages = apply_filters('pmpro_extra_page_settings', array());
-	foreach($extra_pages as $name => $title)
+	foreach($extra_pages as $name => $page)	
 		$pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
+	
 
 	//set currency
 	$pmpro_currency = pmpro_getOption("currency");

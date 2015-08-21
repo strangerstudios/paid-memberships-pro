@@ -245,8 +245,20 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             <h2><?php _e('Additional Page Settings', 'pmpro'); ?></h2>
             <table class="form-table">
                 <tbody>
-                <?php foreach ($extra_pages as $name => $label) { ?>
-                    <tr>
+                <?php foreach ($extra_pages as $name => $page) { ?>
+                    <?php
+						if(is_array($page)) {
+							$label = $page['title'];
+							if(!empty($page['hint']))
+								$hint = $page['hint'];
+							else
+								$hint = '';
+						} else {
+							$label = $page;
+							$hint = '';
+						}
+					?>
+					<tr>
                         <th scope="row" valign="top">
                             <label for="<?php echo $name; ?>_page_id"><?php echo $label; ?></label>
                         </th>
@@ -265,10 +277,12 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                                    class="button button-secondary pmpro_page_view"><?php _e('view page', 'pmpro'); ?></a>
                             <?php } else { ?>
                                 &nbsp;
-                                <a href="?page=pmpro-pagesettings&createpages=1&page_name=<?php echo $name; ?>">
-                                    <?php _e('Generate page', 'pmpro'); ?>
-                                </a>.
+                                <a href="?page=pmpro-pagesettings&createpages=1&page_name=<?php echo $name; ?>"><?php _e('Generate Page', 'pmpro'); ?></a>
                             <?php } ?>
+							<?php if(!empty($hint)) { ?>
+								<br/>
+								<small class="pmpro_lite"><?php echo $hint;?></small>
+							<?php } ?>
                         </td>
                     </tr>
                 <?php } ?>
