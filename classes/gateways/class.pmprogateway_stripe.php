@@ -71,6 +71,16 @@
 			add_action('pmpro_deactivation', array('PMProGateway_stripe', 'pmpro_deactivation'));
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
+			/*
+				Filter pmpro_next_payment to get actual value
+				via the Stripe API. This is disabled by default
+				for performance reasons, but you can enable it
+				by copying this line into a custom plugin or
+				your active theme's functions.php and uncommenting
+				it there.
+			*/
+			//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
+			
 			//code to add at checkout if Stripe is the current gateway
 			$gateway = pmpro_getOption("gateway");
 			if($gateway == "stripe")
@@ -1614,5 +1624,35 @@
 			{
 				return false;
 			}
+		}
+		
+		/**
+		 * Filter pmpro_next_payment to get date via API if possible
+		 *
+		 * @since 1.8.6
+		*/
+		static function pmpro_next_payment($timestamp, $user_id, $order_status)
+		{
+			//find the last order for this user
+			if(!empty($user_id))
+			{
+				//get last order
+				$order = new MemberOrder();
+				$order->getLastMemberOrder($user_id, $order_status);
+				
+				//check if this is a paypal express order with a subscription transaction id
+				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
+				{
+					//get the subscription and return the current_period end or false
+					$subscription = $order->Gateway->getSubscription($order);					
+					
+					if(!empty($subscription->current_period_end))
+						return $subscription->current_period_end;
+					else
+						return false;
+				}
+			}
+						
+			return $timestamp;
 		}
 	}
