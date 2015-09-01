@@ -459,3 +459,34 @@ function pmpro_hide_pages_redirect()
 	}
 }
 add_action('wp', 'pmpro_hide_pages_redirect');
+
+/**
+ * Adds custom classes to the array of post classes.
+ *
+ * pmpro-level-required = this post requires at least one level
+ * pmpro-level-1 = this post requires level 1
+ * pmpro-has-access = this post is usually locked, but the current user has access to this post
+ *
+ * @param array $classes Classes for the post element.
+ * @return array
+ *
+ * @since 1.8.5.4
+ */
+function pmpro_post_classes( $classes ) {	
+	global $post;
+	$post_levels = array();
+	$post_levels = pmpro_has_membership_access($post->ID,NULL,true);
+	if(!empty($post_levels))
+	{
+		if(!empty($post_levels[1]))
+		{
+			$classes[] = 'pmpro-level-required';
+			foreach($post_levels[1] as $post_level)
+				$classes[] = 'pmpro-level-' . $post_level[0];
+		}
+		if(!empty($post_levels[0]) && $post_levels[0] == true)
+			$classes[] = 'pmpro-has-access';
+	}
+	return $classes;
+}
+add_filter( 'post_class', 'pmpro_post_classes' );
