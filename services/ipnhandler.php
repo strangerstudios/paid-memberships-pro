@@ -29,6 +29,7 @@
 	$txn_id = pmpro_getParam("txn_id", "POST");
 	$item_name = pmpro_getParam("item_name", "POST");
 	$item_number = pmpro_getParam("item_number", "POST");
+	$initial_payment_status = pmpro_getParam("initial_payment_status", "POST");
 	$payment_status = pmpro_getParam("payment_status", "POST");
 	$payment_amount = pmpro_getParam("payment_amount", "POST");
 	$payment_currency = pmpro_getParam("payment_currency", "POST");
@@ -216,7 +217,11 @@
 				}
 				else
 				{
-					pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'cancelled');
+					//if the initial payment failed, cancel with status error instead of cancelled
+					if($initial_payment_status === "Failed")
+						pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'error');
+					else
+						pmpro_changeMembershipLevel(0, $last_subscr_order->user_id, 'cancelled');
 
 					ipnlog("Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . ".");
 

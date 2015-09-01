@@ -109,6 +109,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
 * ENHANCEMENT: Added the pmpro_next_payment filter to PayPal Express and Stripe gateways. These use the respective APIs to get the next payment date instead of estimating it from the date of the last order. These filters are in place, but haven't been enabled because hitting the API on each call could cause performance issues when exporting members or something else.
 * ENHANCEMENT: Now showing which levels a category is locked down for on the edit category page.
+* ENHANCEMENT: Updated the PayPal IPN handler to check the initial_payment_status and set order to "error" status if the payment failed. This will keep PMPro from counting the order in sales totals and can be used by gists and addons to tweak how orders are dealt with.
 
 = 1.8.5.3 =
 * BUG: Fixed issue where addon information was not being updated. (Thanks, walcee, jeff1010ihs, and ron)
