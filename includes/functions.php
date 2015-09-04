@@ -1381,6 +1381,18 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 														WHERE mu.user_id = $user_id AND mu.status = 'active'
 														LIMIT 1");
+
+		/**
+		 * pmpro_get_membership_level_for_user filter.
+		 *
+		 * Filters the returned level.
+		 *
+		 * @since 1.8.5.4
+		 *
+		 * @param object $level Level object.
+		 */
+		$all_membership_levels[$user_id] = apply_filters('pmpro_get_membership_level_for_user', $all_membership_levels[$user_id]);
+
 		return $all_membership_levels[$user_id];
 	}
 }
@@ -1411,7 +1423,8 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 	$user_id = intval($user_id);
 	
 	global $wpdb;
-	return $wpdb->get_results("SELECT
+
+	$levels = $wpdb->get_results("SELECT
 								l.id AS ID,
 								l.id as id,
 								mu.id as subscription_id,
@@ -1432,6 +1445,18 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 							FROM {$wpdb->pmpro_membership_levels} AS l
 							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 							WHERE mu.user_id = $user_id".($include_inactive?"":" AND mu.status = 'active'"));
+	/**
+	 * pmpro_get_membership_levels_for_user filter.
+	 *
+	 * Filters the returned levels.
+	 *
+	 * @since 1.8.5.4
+	 *
+	 * @param array $levels Array of level objects.
+	 */
+	$levels = apply_filters('pmpro_get_membership_levels_for_user', $levels);
+
+	return $levels;
 }
 
 /* pmpro_getLevel() returns the level object for a level
