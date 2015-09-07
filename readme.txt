@@ -107,6 +107,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
 * BUG: Fixed issues where delete links using the askfirst() JavaScript function would break for some language settings.
 * BUG: Added "CVV" and "What's This?" from the checkout page to the .pot file. (Thanks, Laurentc)
+* BUG: Fixed issue where preheaders/account.php was not loaded on the account page if you passed it sections params. (Thanks, sweettea)
 * ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
 * ENHANCEMENT: Added the pmpro_next_payment filter to PayPal Express and Stripe gateways. These use the respective APIs to get the next payment date instead of estimating it from the date of the last order. These filters are in place, but haven't been enabled because hitting the API on each call could cause performance issues when exporting members or something else.
 * ENHANCEMENT: Now showing which levels a category is locked down for on the edit category page.
