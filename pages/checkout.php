@@ -39,7 +39,8 @@
 	<thead>
 		<tr>
 			<th>
-				<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_thead-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _e('change', 'pmpro');?></a></span><?php } ?><?php _e('Membership Level', 'pmpro');?>
+				<span class="pmpro_thead-name"><?php _e('Membership Level', 'pmpro');?></span>
+				<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_thead-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _e('change', 'pmpro');?></a></span><?php } ?>
 			</th>
 		</tr>
 	</thead>
@@ -169,7 +170,8 @@
 	<thead>
 		<tr>
 			<th>
-				<span class="pmpro_thead-msg"><?php _e('Already have an account?', 'pmpro');?> <a href="<?php echo wp_login_url(pmpro_url("checkout", "?level=" . $pmpro_level->id))?>"><?php _e('Log in here', 'pmpro');?></a>.</span><?php _e('Account Information', 'pmpro');?>
+				<span class="pmpro_thead-name"><?php _e('Account Information', 'pmpro');?></span>
+				<span class="pmpro_thead-msg"><?php _e('Already have an account?', 'pmpro');?> <a href="<?php echo wp_login_url(pmpro_url("checkout", "?level=" . $pmpro_level->id))?>"><?php _e('Log in here', 'pmpro');?></a></span>
 			</th>
 		</tr>
 	</thead>
@@ -491,7 +493,10 @@
 		<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
 		<thead>
 			<tr>
-				<th><span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span><?php _e('Payment Information', 'pmpro');?></th>
+				<th>
+					<span class="pmpro_thead-name"><?php _e('Payment Information', 'pmpro');?></span>
+					<span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
