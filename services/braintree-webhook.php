@@ -83,7 +83,7 @@
         }
 
 		//data about this transaction
-		$transaction = $webhookNotification->transactions[0];
+		$transaction = $webhookNotification->subscription->transactions[0];
 
 		//alright. create a new order/invoice
 		$morder = new MemberOrder();
