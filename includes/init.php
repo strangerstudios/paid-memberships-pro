@@ -149,7 +149,7 @@ function pmpro_wp()
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
 				break;	//only the first page found gets a shortcode replacement
 			}
-			elseif(is_page($pmpro_pages[$pmpro_page_name]))
+			elseif(!empty($pmpro_page_name) && is_page($pmpro_pages[$pmpro_page_name]))
 			{
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
