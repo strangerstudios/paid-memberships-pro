@@ -2,26 +2,28 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.2.4
+Tested up to: 4.3
 Stable tag: 1.8.5.3
 
-The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
+A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
 == Description ==
-Set up unlimited membership levels and provide restricted access to pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more. Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
+Set up unlimited membership levels and provide restricted access to members-only content (including pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more). 
+
+Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
 
 [youtube http://www.youtube.com/watch?v=33nORRIZaQk]
 
-Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
+Paid Memberships Pro is 100% GPL and available for free from the WordPress repository or on our site at http://www.paidmembershipspro.com. The full version of the plugin is offered with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
-= Integrate with The Most Popular Payment Gateways. =
-Stripe, Authorize.net, Braintree Payments, and PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow)
+= Integrate with [The Most Popular Payment Gateways](http://www.paidmembershipspro.com/gateway/). =
+Stripe, Authorize.net, PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow), Braintree, 2Checkout, and Cybersource. 
 
 = Works with Any Theme You Want. =
-Your Existing Theme or a Popular Free or Premium Third-Party Theme.
+Use your Existing Theme, the fully-integrated [Memberlite Theme](http://www.paidmembershipspro.com/themes) or a Popular Free or Premium Third-Party Theme.
 
 = Infinitely Configurable, Unlimited Membership Levels. =
-Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
+Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing).
 
 = Easy-to-Use Admin Pages and Settings. =
 1. Membership access by Page/Post/Category
@@ -34,33 +36,35 @@ Set up the membership levels that best fit your business, whether they are Free,
 Your members can update their billing information or cancel their account directly on your site. Any active subscription will be cancelled at the payment gateway for you.
 
 = Integrate with Top Third Party Tools. =
-PMPro integrates with Mailchimp, Constant Contact, AWeber, KISSMetrics, Infusionsoft, WP Courseware, LearnDash, Post Affiliate Pro, bbPress, WooCommerce, and many more popular third party tools.
+PMPro integrates with Mailchimp, Constant Contact, AWeber, GetResponse, Social Login, KISSMetrics, Infusionsoft, WP Courseware, LearnDash, Post Affiliate Pro, bbPress, WooCommerce, and many more popular third party tools.
 
-= Free Add-ons to Customize and Extend PMPro. =
-Extensions, sister plugins, and other bits of code to customize your implementation and help you integrate with 3rd party services or other plugins. All open source and available for free under the GPL v2 license.
+= Add-ons to Customize and Extend Paid Memberships Pro. =
+Our growing library of Add ons allow you to extend Paid Memberships Pro to your needs. These extensions, sister plugins, and recipes customize your membership site and help you integrate with 3rd party services or other plugins.
 
-[View the PMPro Add-Ons](http://www.paidmembershipspro.com/add-ons/)
+[View the Add-Ons](http://www.paidmembershipspro.com/add-ons/)
 
 == Installation ==
 
 = Download, Install and Activate! =
+In your WordPress admin, go to Plugins > Add New to install Paid Memberships Pro, or:
+
 1. Download the latest version of the plugin.
 2. Unzip the downloaded file to your computer.
 3. Upload the /paid-memberships-pro/ directory to the /wp-content/plugins/ directory of your site.
 4. Activate the plugin through the 'Plugins' menu in WordPress.
 
 = Complete the Initial Plugin Setup =
-The plugin will walk you through initial setup - basic steps are outlined below.
+Go to Memberships in the WordPress admin for a step-by-step initial setup. The basic steps are:
 
-1. Add one or more Membership Levels
-2. Set up the PMPro Pages
-3. Configure your Payment Gateway and SSL
-4. Customize Email Settings
-5. Review Advanced Settings (best left untouched).
+1. Membership Levels: Add one or more Membership Levels
+2. Page Settings: Generate or assign the Pages
+3. Payment Gateway: Select and configure your Gateway and SSL
+4. Email: Customize Email Settings
+5. Advanced Settings: Update non-member messages, optionally show excerpts or filter content.
 
-[A tutorial video of the initial plugin setup is available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
+[Installation Video](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
 
-[Written instructions on initial plugin setup are available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
+[Installation Docs](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
 
 == Frequently Asked Questions ==
 
@@ -82,7 +86,9 @@ Long term, you will need to find and fix the conflict. We can usually do this fo
 
 Out of the box PMPro will basically act as a stand alone plugin for each site. Each site has its own list of membership levels, members, payment settings, etc.
 
-I've written a plugin [PMPro-Network](http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-network-multisite-membership/) that shows the basics for allowing users who signs up for a membership at one site to be able to create or reclaim their own site under the multisite setup. It's powerful stuff.
+Our [Network/Multisite Add On](http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-network-multisite-membership/) allows members to choose a site name and title at checkout and will set up a network site at checkout.
+
+Our [Network Membership Add On](http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-network-membership/) allows you to manage memberships at the 'Main' Network site and provide or restrict access on other Network Subsites.
 
 If you would like more help using PMPro on a network install, sign up for support at http://www.paidmembershipspro.com.
 
@@ -96,10 +102,19 @@ Not sure? You can find out by doing a bit a research.
 
 == Screenshots ==
 
+= Memberships Admin Pages =
 1. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
 2. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
+5. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
+6. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
+
+= Frontend Membership Page =
+7. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
+8. Membership Account page, display all sections or show specific sections using shortcode attributes.
+
+[View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
 = 1.8.5.4 =
