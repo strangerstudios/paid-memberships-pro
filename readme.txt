@@ -16,8 +16,8 @@ Paid Memberships Pro is flexible enough to fit the needs of almost all online an
 
 Paid Memberships Pro is 100% GPL and available for free from the WordPress repository or on our site at http://www.paidmembershipspro.com. The full version of the plugin is offered with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
-= Integrate with [The Most Popular Payment Gateways](http://www.paidmembershipspro.com/gateway/). =
-Stripe, Authorize.net, PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow), Braintree, 2Checkout, and Cybersource. 
+= Integrate with The Most Popular Payment Gateways. =
+Stripe, Authorize.net, PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow), Braintree, 2Checkout, and Cybersource. [View Gateways](http://www.paidmembershipspro.com/gateway/)
 
 = Works with Any Theme You Want. =
 Use your Existing Theme, the fully-integrated [Memberlite Theme](http://www.paidmembershipspro.com/themes) or a Popular Free or Premium Third-Party Theme.
@@ -62,9 +62,7 @@ Go to Memberships in the WordPress admin for a step-by-step initial setup. The b
 4. Email: Customize Email Settings
 5. Advanced Settings: Update non-member messages, optionally show excerpts or filter content.
 
-[Installation Video](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
-
-[Installation Docs](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
+[Installation Video](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/) | [Installation Docs](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/)
 
 == Frequently Asked Questions ==
 
