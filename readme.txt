@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.5.5 =
+* BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
+
 = 1.8.5.4 =
 * BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
 * BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.

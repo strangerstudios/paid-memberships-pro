@@ -70,7 +70,7 @@ function pmpro_init()
 		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
 	}
 	
-	global $pmpro_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
+	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
 	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
@@ -80,6 +80,9 @@ function pmpro_init()
 	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
 
+	//save this in case we want a clean version of the array with just the core pages
+	$pmpro_core_pages = $pmpro_pages;
+	
 	$pmpro_ready = pmpro_is_ready();
 
 	/**
@@ -113,14 +116,14 @@ function pmpro_wp()
 {
 	if(!is_admin())
 	{
-		global $post, $pmpro_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
+		global $post, $pmpro_core_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
 		
 		//no pages yet?
 		if(empty($pmpro_pages))
 			return;
 		
 		//run the appropriate preheader function
-		foreach($pmpro_pages as $pmpro_page_name => $pmpro_page_id)
+		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
 			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false)
 			{
