@@ -13,7 +13,7 @@ Author URI: http://www.strangerstudios.com
 */
 
 //version constant
-define("PMPRO_VERSION", "1.8.5.4");
+define("PMPRO_VERSION", "1.8.5.5");
 
 //if the session has been started yet, start it (ignore if running from command line)
 if(defined('STDIN') )
