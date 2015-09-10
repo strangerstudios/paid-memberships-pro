@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.5.6 =
 * BUG: Fixed $pmpro_core_pages bug added in 1.8.5.5.
+* BUG: Removed styling of .input from frontend.css. (Thanks, Russell Jamieson)
 
 = 1.8.5.5 =
 * BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
