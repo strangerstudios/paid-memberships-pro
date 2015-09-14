@@ -177,9 +177,6 @@ li.pmpro_more {list-style-type: none; text-align: center; margin-left: -20px; pa
 
 .pmpro_small {font-size: .8em;}
 
-/* Fixes for Twentyfiften and other themes. */
-#your-profile input {display: inline-block; width: auto; }			/* front end profile via Theme My Login */
-
 @media (max-width:768px){
 	#pmpro_levels_table {border: none; }
 	#pmpro_levels_table th {display: none; }
