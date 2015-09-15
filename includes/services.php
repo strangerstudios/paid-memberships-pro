@@ -69,6 +69,17 @@ function pmpro_wp_ajax_orders_csv()
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 
+/**
+ * Load the Orders print view template.
+ *
+ * @since 1.8.6
+ */
+function pmpro_orders_print_view() {
+	require_once(dirname(__FILE__) . "/../adminpages/orders-print.php");
+	exit;
+}
+add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
+
 function pmpro_update_level_order() {
     echo pmpro_setOption('level_order');
     exit;

@@ -997,6 +997,12 @@
 							<td align="center">
 								<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?", "pmpro"), str_replace("'", "", $order->code)));?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id;?>'); void(0);"><?php _e('delete', 'pmpro');?></a>
 							</td>
+							<td align="center">
+								<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>" target="_blank"><?php _e('print', 'pmpro');?></a>
+							</td>
+							<td align="center">
+								<a href="admin.php?page=pmpro-ordersprint&order=<?php echo $order->id; ?>"><?php _e('email', 'pmpro');?></a>
+							</td>
 						</tr>
 					<?php
 				}
