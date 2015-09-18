@@ -3,12 +3,22 @@
 	global $pmpro_currencies, $pmpro_default_currency;
 	$pmpro_default_currency = apply_filters("pmpro_default_currency", "USD");
 	
+	function pmpro_euro_position_from_locale($position = 'right')
+	{
+		$locale = get_locale();
+		if(strpos($locale, 'en_') === 0)
+		{
+			$position = 'left';
+		}
+		return $position;
+	}
+	
 	$pmpro_currencies = array( 
 			'USD' => __('US Dollars (&#36;)', 'pmpro'),
 			'EUR' => array(
 				'name' => __('Euros (&euro;)', 'pmpro'),
 				'symbol' => '&euro;',
-				'position' => 'right'
+				'position' => apply_filters("pmpro_euro_position", pmpro_euro_position_from_locale())
 				),				
 			'GBP' => array(
 				'name' => __('Pounds Sterling (&pound;)', 'pmpro'),
