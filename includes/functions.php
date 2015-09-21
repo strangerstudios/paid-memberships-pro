@@ -667,6 +667,20 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
         }
     }
 
+    //get level id
+	if(is_array($level))
+		$level_id = $level['membership_id'];	//custom level
+	else
+		$level_id = $level;	//just id
+
+	/**
+	 * Action to run before the membership level changes.
+	 *
+	 * @param int $level_id ID of the level changed to.
+	 * @param int $user_id ID of the user changed.
+	 */
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id);
+
     //should we cancel their gateway subscriptions?
     $pmpro_cancel_previous_subscriptions = true;
     if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
@@ -749,19 +763,20 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		}
 	}
 
-	//get level id
-	if(is_array($level))
-		$level_id = $level['membership_id'];	//custom level
-	else
-		$level_id = $level;	//just id
-
 	//remove cached level
 	global $all_membership_levels;
 	unset($all_membership_levels[$user_id]);
 
 	//update user data and call action
 	pmpro_set_current_user();
-	do_action("pmpro_after_change_membership_level", $level_id, $user_id);	//$level is the $level_id here
+
+	/**
+	 * Action to run after the membership level changes.
+	 *
+	 * @param int $level_id ID of the level changed to.
+	 * @param int $user_id ID of the user changed.
+	 */
+	do_action("pmpro_after_change_membership_level", $level_id, $user_id);
 	return true;
 }
 

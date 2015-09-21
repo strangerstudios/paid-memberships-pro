@@ -41,32 +41,33 @@
 	{
 		try
 		{
-			$event = Stripe_Event::retrieve($event_id);
+			global $pmpro_stripe_event;
+			$pmpro_stripe_event = Stripe_Event::retrieve($event_id);
 		}
 		catch(Exception $e)
 		{
 			$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
 			pmpro_stripeWebhookExit();
-			//$event = $post_event;			//for testing you may want to assume that the passed in event is legit
+			//$pmpro_stripe_event = $post_event;			//for testing you may want to assume that the passed in event is legit
 		}
 	}
 
 	global $wpdb;
 
 	//real event?
-	if(!empty($event->id))
+	if(!empty($pmpro_stripe_event->id))
 	{
 		//check what kind of event it is
-		if($event->type == "charge.succeeded")
+		if($pmpro_stripe_event->type == "charge.succeeded")
 		{
 			//do we have this order yet? (check status too)
-			$order = getOrderFromInvoiceEvent($event);
+			$order = getOrderFromInvoiceEvent($pmpro_stripe_event);
 
 			//no? create it
 			if(empty($order->id))
 			{
 				//last order for this subscription
-				$old_order = getOldOrderFromInvoiceEvent($event);
+				$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 
 				if(empty($old_order))
 				{
@@ -84,7 +85,7 @@
 					pmpro_stripeWebhookExit();
 				}
 
-				$invoice = $event->data->object;
+				$invoice = $pmpro_stripe_event->data->object;
 
 				//alright. create a new order/invoice
 				$morder = new MemberOrder();
@@ -133,7 +134,7 @@
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendInvoiceEmail($user, $morder);
 
-				$logstr .= "Created new order with ID #" . $morder->id . ". Event ID #" . $event->id . ".";
+				$logstr .= "Created new order with ID #" . $morder->id . ". Event ID #" . $pmpro_stripe_event->id . ".";
 
 				/*
 					Checking if there is an update "after next payment" for this user.
@@ -207,14 +208,14 @@
 			}
 			else
 			{
-				$logstr .= "We've already processed this order with ID #" . $order->id . ". Event ID #" . $event->id . ".";
+				$logstr .= "We've already processed this order with ID #" . $order->id . ". Event ID #" . $pmpro_stripe_event->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 		}
-		elseif($event->type == "charge.failed")
+		elseif($pmpro_stripe_event->type == "charge.failed")
 		{
 			//last order for this subscription
-			$old_order = getOldOrderFromInvoiceEvent($event);
+			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
 
@@ -252,16 +253,16 @@
 			}
 			else
 			{
-				$logstr .= "Could not find the related subscription for event with ID #" . $event->id . ".";
-				if(!empty($event->data->object->customer))
-					$logstr .= " Customer ID #" . $event->data->object->customer . ".";
+				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
+				if(!empty($pmpro_stripe_event->data->object->customer))
+					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
 				pmpro_stripeWebhookExit();
 			}
 		}
-		elseif($event->type == "customer.subscription.deleted")
+		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
 		{
 			//for one of our users? if they still have a membership, notify the admin
-			$user = getUserFromCustomerEvent($event, "success", true);
+			$user = getUserFromCustomerEvent($pmpro_stripe_event, "success", true);
 			if(!empty($user->ID))
 			{
 				do_action("pmpro_stripe_subscription_deleted", $user->ID);
@@ -270,17 +271,17 @@
 				$pmproemail->data = array("body"=>"<p>" . sprintf(__("%s has had their payment subscription cancelled by Stripe. Please check that this user's membership is cancelled on your site if it should be.", "pmpro"), $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ")") . "</p>");
 				$pmproemail->sendEmail(get_bloginfo("admin_email"));
 
-				$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $event->id . ".";
+				$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $pmpro_stripe_event->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 			else
 			{
 				//check for any user at all
-				$user = getUserFromCustomerEvent($event);
+				$user = getUserFromCustomerEvent($pmpro_stripe_event);
 				if(!empty($user->ID))
-					$logstr .= "Stripe tells us a subscription is deleted. This was probably initiated from PMPro and the membership/order is already cancelled. Event ID #" . $event->id . ".";
+					$logstr .= "Stripe tells us a subscription is deleted. This was probably initiated from PMPro and the membership/order is already cancelled. Event ID #" . $pmpro_stripe_event->id . ".";
 				else
-					$logstr .= "Stripe tells us a subscription is deleted, but we could not find a user here for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $event->id . ".";
+					$logstr .= "Stripe tells us a subscription is deleted, but we could not find a user here for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 		}
@@ -294,14 +295,14 @@
 		pmpro_stripeWebhookExit();
 	}
 
-	function getUserFromInvoiceEvent($event)
+	function getUserFromInvoiceEvent($pmpro_stripe_event)
 	{
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
 		global $wpdb;
 
-		$customer_id = $event->data->object->customer;
+		$customer_id = $pmpro_stripe_event->data->object->customer;
 
 		//look up the order
 		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($customer_id) . "' LIMIT 1");
@@ -312,16 +313,16 @@
 			return false;
 	}
 
-	function getUserFromCustomerEvent($event, $status = false, $checkplan = true)
+	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true)
 	{
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
 		global $wpdb;
 
-		$customer_id = $event->data->object->customer;
-		$subscription_id = $event->data->object->id;
-		$plan_id = $event->data->object->plan->id;
+		$customer_id = $pmpro_stripe_event->data->object->customer;
+		$subscription_id = $pmpro_stripe_event->data->object->id;
+		$plan_id = $pmpro_stripe_event->data->object->plan->id;
 
 		//look up the order
 		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . esc_sql($customer_id) . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') ";
@@ -339,14 +340,14 @@
 			return false;
 	}
 
-	function getOldOrderFromInvoiceEvent($event)
+	function getOldOrderFromInvoiceEvent($pmpro_stripe_event)
 	{
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
 		global $wpdb;
 
-		$customer_id = $event->data->object->customer;
+		$customer_id = $pmpro_stripe_event->data->object->customer;
 
 		// no customer passed? we can't cross reference
 		if(empty($customer_id))
@@ -362,7 +363,7 @@
 			// let's look up the Stripe subscription_id instead
 			// unfortunately, the subscription_id is not included in the JSON data from the Stripe event
 			// so, we must look up the subscription_id from the invoice_id, which IS included in the JSON data from the Stripe event
-			$invoice_id = $event->data->object->invoice;
+			$invoice_id = $pmpro_stripe_event->data->object->invoice;
 			$invoice = Stripe_Invoice::retrieve($invoice_id);
 			$subscription_id = $invoice->subscription;
 			$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $subscription_id . "' AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1");
@@ -376,12 +377,12 @@
 			return false;
 	}
 
-	function getOrderFromInvoiceEvent($event)
+	function getOrderFromInvoiceEvent($pmpro_stripe_event)
 	{
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
-		$invoice_id = $event->data->object->id;
+		$invoice_id = $pmpro_stripe_event->data->object->id;
 
 		$order = new MemberOrder();
 		$order->getMemberOrderByPaymentTransactionID($invoice_id);
