@@ -121,6 +121,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Commented out a console.log call from Stripe JavaScript code. (Still there to uncomment if you want to debug.)
 * ENHANCEMENT: No longer requiring the CVC/CVV code with Stripe. If blank, Stripe will try to verify without it. If your Stripe settings are to decline transactions that fail CVC check, you will still need a valid CVC code at checkout.
 * ENHANCEMENT: Added pmpro_before_change_membership_level action. Runs before the subscriptions are cancelled and before the SQL executes to change a user's level. Passes $level_id and $user_id.
+* ENHANCEMENT: Updated Stripe Web Hook handler to save event into global $pmpro_stripe_event so filters can act on it.
 
 = 1.8.5.5 =
 * BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
