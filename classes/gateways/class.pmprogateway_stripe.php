@@ -1272,7 +1272,7 @@
 				}
 				catch (Exception $e)
 				{
-					$order->error = __("Error creating plan with Stripe:", "pmpro") . $e->getMessage();
+					$order->error = __("Error getting subscription with Stripe:", "pmpro") . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
