@@ -128,6 +128,9 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
 
 = 1.8.5.4 =
+* ENHANCEMENT: Added pmpro_get_membership_level_for_user and pmpro_get_membership_levels_for_user filters to change the levels returned for a user with the pmpro_getMembershipLevelForUser() and pmpro_getMembershipLevelsForUser() functions.
+* ENHANCEMENT: Updated pmpro_hasMembershipLevels() function to search for expired members with "e" or "E". Also applies to [membership] shortcodes.
+* ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
 * BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
 * BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
 * BUG: Fixed issues where delete links using the askfirst() JavaScript function would break for some language settings.
