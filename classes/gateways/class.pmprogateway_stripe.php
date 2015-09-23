@@ -231,8 +231,7 @@
 						{
 							//build array for creating token
 							var args = {
-								number: jQuery('#AccountNumber').val(),
-								cvc: jQuery('#CVV').val(),
+								number: jQuery('#AccountNumber').val(),								
 								exp_month: jQuery('#ExpirationMonth').val(),
 								exp_year: jQuery('#ExpirationYear').val()
 								<?php
@@ -251,6 +250,11 @@
 								?>
 							};
 
+							//add CVC if not blank
+							if(jQuery('#CVV').val().length)
+								args['cvc'] = jQuery('#CVV').val();
+
+							//add first and last name if not blank
 							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
@@ -283,7 +287,7 @@
 							// insert the token into the form so it gets submitted to the server
 							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
-							console.log(response);
+							//console.log(response);
 
 							//insert fields for other card fields
 							if(jQuery('#CardType[name=CardType]').length)
@@ -1268,7 +1272,7 @@
 				}
 				catch (Exception $e)
 				{
-					$order->error = __("Error creating plan with Stripe:", "pmpro") . $e->getMessage();
+					$order->error = __("Error getting subscription with Stripe:", "pmpro") . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
