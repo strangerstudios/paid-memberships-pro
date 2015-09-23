@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.5.6 =
+* ENHANCEMENT: Added printable and emailable invoice templates to the Orders page.
 * BUG: Fixed $pmpro_core_pages bug added in 1.8.5.5.
 * BUG: Removed styling of .input from frontend.css. (Thanks, Russell Jamieson)
 
