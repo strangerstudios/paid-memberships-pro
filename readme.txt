@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.5.6 =
+* ENHANCEMENT: Added pmpro_payflow_authorize_nvpstr, pmpro_payflow_void_nvpstr, pmpro_payflow_charge_nvpstr, pmpro_payflow_subscribe_nvpstr, pmpro_payflow_update_nvpstr, pmpro_payflow_cancel_nvpstr filters for PayPal Payflow Pro gateway. Usage is the same as PayPal Express NVP string filters.
 * ENHANCEMENT: Added printable and emailable invoice templates to the Orders page.
 * BUG: Fixed $pmpro_core_pages bug added in 1.8.5.5.
 * BUG: Removed styling of .input from frontend.css. (Thanks, Russell Jamieson)
