@@ -70,7 +70,7 @@ function pmpro_wp_ajax_orders_csv()
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 
 /**
- * Load the Orders print view template.
+ * Load the Orders print view.
  *
  * @since 1.8.6
  */
@@ -79,6 +79,19 @@ function pmpro_orders_print_view() {
 	exit;
 }
 add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
+
+/**
+ * Get order JSON.
+ *
+ * @since 1.8.6
+ */
+function pmpro_get_order_json() {
+	$order_id = $_REQUEST['order_id'];
+	$order = new MemberOrder($order_id);
+	echo json_encode($order);
+	exit;
+}
+add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
 
 function pmpro_update_level_order() {
     echo pmpro_setOption('level_order');
