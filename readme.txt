@@ -120,6 +120,8 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated Stripe Web Hook handler to save event into global $pmpro_stripe_event so filters can act on it.
 
 = 1.8.5.6 =
+* ENHANCEMENT: Added pmpro_payflow_authorize_nvpstr, pmpro_payflow_void_nvpstr, pmpro_payflow_charge_nvpstr, pmpro_payflow_subscribe_nvpstr, pmpro_payflow_update_nvpstr, pmpro_payflow_cancel_nvpstr filters for PayPal Payflow Pro gateway. Usage is the same as PayPal Express NVP string filters.
+* ENHANCEMENT: Added printable and emailable invoice templates to the Orders page.
 * BUG: Fixed $pmpro_core_pages bug added in 1.8.5.5.
 * BUG: Removed styling of .input from frontend.css. (Thanks, Russell Jamieson)
 * BUG: Commented out a console.log call from Stripe JavaScript code. (Still there to uncomment if you want to debug.)
@@ -129,6 +131,9 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
 
 = 1.8.5.4 =
+* ENHANCEMENT: Added pmpro_get_membership_level_for_user and pmpro_get_membership_levels_for_user filters to change the levels returned for a user with the pmpro_getMembershipLevelForUser() and pmpro_getMembershipLevelsForUser() functions.
+* ENHANCEMENT: Updated pmpro_hasMembershipLevels() function to search for expired members with "e" or "E". Also applies to [membership] shortcodes.
+* ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
 * BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
 * BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
 * BUG: Fixed issues where delete links using the askfirst() JavaScript function would break for some language settings.

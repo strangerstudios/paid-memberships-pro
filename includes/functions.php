@@ -486,18 +486,28 @@ function pmpro_showRequiresMembershipMessage()
 	}
 }
 
-/* pmpro_hasMembershipLevel() checks if the passed user is a member of the passed level
+/**
+ * Function to check if a user has specified membership levels.
  *
+ * pmpro_hasMembershipLevel() checks if the passed user is a member of the passed level
  * $level may either be the ID or name of the desired membership_level. (or an array of such)
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
- * Return values:
- *		Success returns boolean true.
- *		Failure returns a string containing the error message.
+ *  Return values:
+ *	 * Success returns boolean true.
+ *	 * Failure returns a string containing the error message.
+ *
+ * @since 1.8.5 Added 'e' option for expired members.
+ * @since 1.0.0
+ *
+ * @param mixed $levels The levels to check.
+ * @param int $user_id The user ID to check.
+ *
+ * @return bool Result of membership query.
  */
 function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 {
-	global $current_user, $all_membership_levels, $wpdb;
+	global $current_user, $wpdb;
 
 	$return = false;
 
@@ -530,13 +540,17 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 				
 		if(empty($membership_levels))
 		{			
-			//user has no levels just check if 0, L, or -L was sent in one of the levels
+			//user has no levels just check if 0, L, -1, or e was sent in one of the levels
 			if(in_array(0, $levels, true) || in_array("0", $levels))
 				$return = true;
 			elseif(in_array("L", $levels) || in_array("l", $levels))
 				$return = (!empty($user_id) && $user_id == $current_user->ID);
 			elseif(in_array("-L", $levels) || in_array("-l", $levels))
-				$return = (empty($user_id) || $user_id != $current_user->ID);		
+				$return = (empty($user_id) || $user_id != $current_user->ID);
+			elseif(in_array("E", $levels) || in_array("e", $levels)) {
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+				return !empty($wpdb->get_results($sql));
+			}
 		}
 		else
 		{			
@@ -554,9 +568,9 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 					if(empty($user_id) || $user_id != $current_user->ID)
 						$return = true;
 				}
-				elseif($level == "0")
+				elseif($level == "0" || strtoupper($level) == "E")
 				{
-					continue;	//user with levels so not a "non-member"
+					continue;	//user with levels so not a "non-member" or expired
 				}
 				else
 				{
@@ -1382,6 +1396,18 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 														WHERE mu.user_id = $user_id AND mu.status = 'active'
 														LIMIT 1");
+
+		/**
+		 * pmpro_get_membership_level_for_user filter.
+		 *
+		 * Filters the returned level.
+		 *
+		 * @since 1.8.5.4
+		 *
+		 * @param object $level Level object.
+		 */
+		$all_membership_levels[$user_id] = apply_filters('pmpro_get_membership_level_for_user', $all_membership_levels[$user_id]);
+
 		return $all_membership_levels[$user_id];
 	}
 }
@@ -1412,7 +1438,8 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 	$user_id = intval($user_id);
 	
 	global $wpdb;
-	return $wpdb->get_results("SELECT
+
+	$levels = $wpdb->get_results("SELECT
 								l.id AS ID,
 								l.id as id,
 								mu.id as subscription_id,
@@ -1433,6 +1460,18 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 							FROM {$wpdb->pmpro_membership_levels} AS l
 							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 							WHERE mu.user_id = $user_id".($include_inactive?"":" AND mu.status = 'active'"));
+	/**
+	 * pmpro_get_membership_levels_for_user filter.
+	 *
+	 * Filters the returned levels.
+	 *
+	 * @since 1.8.5.4
+	 *
+	 * @param array $levels Array of level objects.
+	 */
+	$levels = apply_filters('pmpro_get_membership_levels_for_user', $levels);
+
+	return $levels;
 }
 
 /* pmpro_getLevel() returns the level object for a level

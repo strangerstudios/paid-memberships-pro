@@ -242,6 +242,13 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_authorize_nvpstr', $nvpStr, $this);
+
 			//for debugging, let's attach this to the class object
 			$this->nvpStr = $nvpStr;
 
@@ -267,6 +274,13 @@
 
 			//paypal profile stuff
 			$nvpStr="&ORIGID=" . $authorization_id;
+
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_void_nvpstr', $nvpStr, $this);
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('V', $nvpStr);
 
@@ -315,6 +329,13 @@
 
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
+
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_charge_nvpstr', $nvpStr, $this);
 
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('S', $nvpStr);
@@ -432,6 +453,13 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_subscribe_nvpstr', $nvpStr, $this);
+
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
 
@@ -474,6 +502,13 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
 
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_update_nvpstr', $nvpStr, $this);
+
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
 
@@ -498,6 +533,13 @@
 
 			//paypal profile stuff
 			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=C";
+
+			/**
+			 * Filter NVP string
+			 *
+			 * @since 1.8.5.6
+			 */
+			$nvpStr = apply_filters('pmpro_payflow_cancel_nvpstr', $nvpStr, $this);
 
 			$this->nvpStr = $nvpStr;
 			$this->httpParsedResponseAr = $this->PPHttpPost('R', $nvpStr);
