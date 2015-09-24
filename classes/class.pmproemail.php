@@ -821,4 +821,55 @@
 			
 			return $this->sendEmail();
 		}
+
+		/**
+		 * Send billable invoice email.
+		 *
+		 * @since 1.8.6
+		 *
+		 * @param WP_User $user
+		 * @param MemberOrder $order
+		 *
+		 * @return bool Whether the email was sent successfully.
+		 */
+		function sendBillableInvoiceEmail($user = NULL, $order = NULL)
+		{
+			global $current_user;
+
+			if(!$user)
+				$user = $current_user;
+
+			if(!$user || !$order)
+				return false;
+
+			$level = pmpro_getLevel($order->membership_id);
+
+			$this->email = $user->user_email;
+			$this->subject = __('Invoice for Order #: ', 'pmpro') . $order->code;
+			$this->template = "billable_invoice";
+
+			// Load invoice template
+			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {
+				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php';
+			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {
+				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-print.php';
+			} else {
+				$template = PMPRO_DIR . '/adminpages/templates/orders-print.php';
+			}
+
+			ob_start();
+			require_once( $template );
+
+			$invoice = ob_get_contents();
+			ob_end_clean();
+
+			$this->data = array(
+				'order_code' => $order->code,
+				'login_link' => wp_login_url(pmpro_url("account")),
+				'invoice_link' => wp_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				'invoice' => $invoice
+			);
+
+			return $this->sendEmail();
+		}
 	}
