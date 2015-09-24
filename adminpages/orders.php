@@ -57,6 +57,88 @@
 	else
 		$status = "";
 
+	//some vars for the search
+	if(isset($_REQUEST['pn']))
+		$pn = intval($_REQUEST['pn']);
+	else
+		$pn = 1;
+
+	if(isset($_REQUEST['limit']))
+		$limit = intval($_REQUEST['limit']);
+	else
+	{
+		/**
+		 * Filter to set the default number of items to show per page
+		 * on the Orders page in the admin.
+		 *
+		 * @since 1.8.4.5
+		 *
+		 * @param int $limit The number of items to show per page.
+		 */
+		$limit = apply_filters('pmpro_orders_per_page', 15);
+	}
+
+	$end = $pn * $limit;
+	$start = $end - $limit;
+
+	//filters
+	if(empty($filter) || $filter === "all")
+	{
+		$condition = "1=1";
+		$filter = "all";
+	}
+	elseif($filter == "within-a-date-range")
+	{
+		$start_date = $start_year."-".$start_month."-".$start_day;
+		$end_date = $end_year."-".$end_month."-".$end_day;
+
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+
+		$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
+	}
+	elseif($filter == "predefined-date-range")
+	{
+		if($predefined_date == "Last Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of last month", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of last month", current_time("timestamp")));
+		}
+		elseif($predefined_date == "This Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of this month", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of this month", current_time("timestamp")));
+		}
+		elseif($predefined_date == "This Year")
+		{
+			$year = date('Y');
+			$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
+		}
+
+		elseif($predefined_date == "Last Year")
+		{
+			$year = date('Y') - 1;
+			$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
+		}
+
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+
+		$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
+	}
+	elseif($filter == "within-a-level")
+	{
+		$condition = "membership_id = " . esc_sql($l);
+	}
+	elseif($filter == "within-a-status")
+	{
+		$condition = "status = '" . esc_sql($status) . "' ";
+	}
+		
 	//emailing?
 	if(!empty($_REQUEST['email']) && !empty($_REQUEST['order']))
 	{
@@ -73,6 +155,10 @@
 			$pmpro_msg = __("Error emailing invoice.", "pmpro");
 			$pmpro_msgt = "error";
 		}
+		
+		//clean up so we stay on the orders list view
+		unset($_REQUEST['order']);
+		$order = NULL;
 	}
 
 	//deleting?
@@ -609,9 +695,9 @@
 	<div id="email_invoice" style="display:none;">
 		<h3><?php _e('Email Invoice', 'pmpro'); ?></h3>
 		<form method="post" action="">
-			<input type="hidden" name="order" value="">
+			<input type="hidden" name="order" value="" />					
 			<?php _e('Send an invoice for this order to: ', 'pmpro'); ?>
-			<input type="text" value="" name="email">
+			<input type="text" value="" name="email" />
 			<button class="button button-primary alignright"><?php _e('Send Email', 'pmpro'); ?></button>
 		</form>
 	</div>
@@ -696,8 +782,7 @@
 
 			<?php
 			//Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
-			 $levels = pmpro_getAllLevels();
-
+			$levels = pmpro_getAllLevels(true, true);
 			?>
 			<select id="l" name="l">
 			<?php foreach($levels as $level) { ?>
@@ -831,85 +916,6 @@
 	</p>
 
 	<?php
-		//some vars for the search
-		if(isset($_REQUEST['pn']))
-			$pn = intval($_REQUEST['pn']);
-		else
-			$pn = 1;
-
-		if(isset($_REQUEST['limit']))
-			$limit = intval($_REQUEST['limit']);
-		else
-		{
-			/**
-			 * Filter to set the default number of items to show per page
-			 * on the Orders page in the admin.
-			 *
-			 * @since 1.8.4.5
-			 *
-			 * @param int $limit The number of items to show per page.
-			 */
-			$limit = apply_filters('pmpro_orders_per_page', 15);
-		}
-
-		$end = $pn * $limit;
-		$start = $end - $limit;
-
-		//filters
-		if($filter == "all" || !$filter)
-				$condition = "1=1";
-		elseif($filter == "within-a-date-range")
-		{
-			$start_date = $start_year."-".$start_month."-".$start_day;
-			$end_date = $end_year."-".$end_month."-".$end_day;
-
-			//add times to dates
-			$start_date =  $start_date . " 00:00:00";
-			$end_date =  $end_date . " 23:59:59";
-
-			$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
-		}
-		elseif($filter == "predefined-date-range")
-		{
-			if($predefined_date == "Last Month")
-			{
-				$start_date = date("Y-m-d", strtotime("first day of last month", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of last month", current_time("timestamp")));
-			}
-			elseif($predefined_date == "This Month")
-			{
-				$start_date = date("Y-m-d", strtotime("first day of this month", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of this month", current_time("timestamp")));
-			}
-			elseif($predefined_date == "This Year")
-			{
-				$year = date('Y');
-				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
-			}
-
-			elseif($predefined_date == "Last Year")
-			{
-				$year = date('Y') - 1;
-				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
-			}
-
-			//add times to dates
-			$start_date =  $start_date . " 00:00:00";
-			$end_date =  $end_date . " 23:59:59";
-
-			$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
-		}
-		elseif($filter == "within-a-level")
-		{
-			$condition = "membership_id = " . esc_sql($l);
-		}
-		elseif($filter == "within-a-status")
-		{
-			$condition = "status = '" . esc_sql($status) . "' ";
-		}
-
 		//string search
 		if($s)
 		{
@@ -968,6 +974,8 @@
 				<th><?php _e('Transaction IDs', 'pmpro');?></th>
 				<th><?php _e('Status', 'pmpro');?></th>
 				<th><?php _e('Date', 'pmpro');?></th>
+				<th></th>
+				<th></th>
 				<th></th>
 				<th></th>
 				<th></th>
