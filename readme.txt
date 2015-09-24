@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.6 =
+* BUG: The pmpro_membership_level_profile_fields_update() function now only fires on the personal_options_update and edit_user_profile_update hooks instead of the profile_update hook since this function expects to be called from the your-profile or edit-user page.
 * ENHANCEMENT: Added pmpro_before_change_membership_level action. Runs before the subscriptions are cancelled and before the SQL executes to change a user's level. Passes $level_id and $user_id.
 * ENHANCEMENT: Updated Stripe Web Hook handler to save event into global $pmpro_stripe_event so filters can act on it.
 

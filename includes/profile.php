@@ -344,4 +344,5 @@ function pmpro_membership_level_profile_fields_update()
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
-add_action( 'profile_update', 'pmpro_membership_level_profile_fields_update' );
+add_action( 'personal_options_update', 'pmpro_membership_level_profile_fields_update' );
+add_action( 'edit_user_profile_update', 'pmpro_membership_level_profile_fields_update' );
