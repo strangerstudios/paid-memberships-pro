@@ -849,12 +849,12 @@
 			$this->template = "billable_invoice";
 
 			// Load invoice template
-			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {
-				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php';
-			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {
-				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-print.php';
+			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php';
+			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-email.php';
 			} else {
-				$template = PMPRO_DIR . '/adminpages/templates/orders-print.php';
+				$template = PMPRO_DIR . '/adminpages/templates/orders-email.php';
 			}
 
 			ob_start();
