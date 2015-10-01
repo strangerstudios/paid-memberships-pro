@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: The pmpro_membership_level_profile_fields_update() function now only fires on the personal_options_update and edit_user_profile_update hooks instead of the profile_update hook since this function expects to be called from the your-profile or edit-user page.
 * ENHANCEMENT: Added pmpro_before_change_membership_level action. Runs before the subscriptions are cancelled and before the SQL executes to change a user's level. Passes $level_id and $user_id.
 * ENHANCEMENT: Updated Stripe Web Hook handler to save event into global $pmpro_stripe_event so filters can act on it.
+* ENHANCEMENT: Added $pmpro_level as a second parameter for the pmpro_setup_new_user filter. (Thanks, David Crabill)
 
 = 1.8.5.6 =
 * ENHANCEMENT: Added pmpro_payflow_authorize_nvpstr, pmpro_payflow_void_nvpstr, pmpro_payflow_charge_nvpstr, pmpro_payflow_subscribe_nvpstr, pmpro_payflow_update_nvpstr, pmpro_payflow_cancel_nvpstr filters for PayPal Payflow Pro gateway. Usage is the same as PayPal Express NVP string filters.
