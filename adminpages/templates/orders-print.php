@@ -75,6 +75,10 @@
 				<td class="alignright"><?php echo $order->subtotal; ?></td>
 			</tr>
 			<tr>
+				<th colspan="2" class="alignright"><?php _e('Subtotal', 'pmpro'); ?></th>
+				<td class="alignright"><?php echo $order->subtotal; ?></td>
+			</tr>
+			<tr>
 				<th colspan="2" class="alignright"><?php _e('Tax', 'pmpro'); ?></th>
 				<td class="alignright"><?php echo $order->tax; ?></td>
 			</tr>
