@@ -22,16 +22,18 @@
 		<tr>
 			<td>
 				<strong><?php _e( 'Bill to:', 'pmpro' ); ?></strong><br>
-				<?php echo pmpro_formatAddress(
-					$order->billing->name,
-					$order->billing->address1,
-					$order->billing->address2,
-					$order->billing->city,
-					$order->billing->state,
-					$order->billing->zip,
-					$order->billing->country,
-					$order->billing->phone
-				); ?>
+				<?php
+					echo pmpro_formatAddress(
+						$order->billing->name,
+						$order->billing->street,
+						"",
+						$order->billing->city,
+						$order->billing->state,
+						$order->billing->zip,
+						$order->billing->country,
+						$order->billing->phone
+					); 
+				?>
 				<?php endif; ?>
 			</td>
 		</tr>
