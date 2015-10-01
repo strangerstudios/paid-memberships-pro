@@ -1,3 +1,10 @@
+<?php
+/**
+ * Template for Print Invoices
+ *
+ * @since 1.8.6
+ */
+?>
 <!doctype html>
 <html lang="en">
 <head>
