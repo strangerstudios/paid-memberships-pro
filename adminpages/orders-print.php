@@ -32,4 +32,8 @@ if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orde
 }
 
 require_once( $template );
+?>
+<script>
+	window.print();
+</script>
 
