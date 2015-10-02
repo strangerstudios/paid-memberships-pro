@@ -491,7 +491,7 @@
 						$morder->subtotal = $morder->InitialPayment;
 						$morder->getTax();
 
-						//filter for order, since v2.0
+						//filter for order, since v1.8
 						$morder = apply_filters("pmpro_checkout_order", $morder);
 
 						$pmpro_processed = $morder->process();
@@ -638,6 +638,8 @@
 					$morder->InitialPayment = 0;
 					$morder->Email = $bemail;
 					$morder->gateway = "free";
+
+					$morder = apply_filters("pmpro_checkout_order_free", $morder);
 				}
 
 				//add an item to the history table, cancel old subscriptions

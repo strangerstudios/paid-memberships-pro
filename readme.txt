@@ -115,6 +115,11 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.1 =
+* CODE: Changed a couple instances of "since v2.0" to "since v1.8".
+* ENHANCEMENT: Added a hook for pmpro_checkout_order_free that functions like pmpro_checkout_order but fires for the blank order created for free checkouts.
+
+
 = 1.8.6 =
 * BUG: The pmpro_membership_level_profile_fields_update() function now only fires on the personal_options_update and edit_user_profile_update hooks instead of the profile_update hook since this function expects to be called from the your-profile or edit-user page.
 * FEATURE: Added the ability to print invoices/orders from the Memberships -> Orders page in the dashboard. (Thanks, AgResources)

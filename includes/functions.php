@@ -293,7 +293,7 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 	if(!$tags)
 		$r = strip_tags($r);
 
-	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v2.0
+	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v1.8
 	return $r;
 }
 
