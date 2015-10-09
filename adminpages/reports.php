@@ -9,7 +9,7 @@
 		//wrapper
 		?>
 		<div id="dashboard-widgets-wrap">
-			<div id="dashboard-widgets" class="metabox-holder pmpro_reports-holder columns-2">	
+			<div id="dashboard-widgets" class="metabox-holder pmpro_reports-holder">	
 			<div id="postbox-container-1" class="postbox-container">
 				<div id="normal-sortables" class="meta-box-sortables ui-sortable">
 		<?php
@@ -36,9 +36,9 @@
 			<h3 class="hndle"><span><?php echo $title; ?></span></h3>
 			<div class="inside">
 				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
-				<div style="margin-top:10px;border-top: 1px solid #ddd; padding-top: 10px; text-align:center;">
+				<p style="text-align:center;">
 					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
-				</div>
+				</p>
 			</div>
 		</div>
 		<?php
@@ -56,6 +56,10 @@
 		//view a single report
 		$report = sanitize_text_field($_REQUEST['report']);
 		call_user_func("pmpro_report_" . $report . "_page");
+		?>
+		<hr />
+		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'pmpro');?></a>
+		<?php
 	}
 	
 	require_once(dirname(__FILE__) . "/admin_footer.php");

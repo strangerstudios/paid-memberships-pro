@@ -323,7 +323,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 		$pmpro_content_message_post = '</div>';
 
 		$sr_search = array("!!levels!!", "!!referrer!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), $_SERVER['REQUEST_URI']);
+		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), site_url($_SERVER['REQUEST_URI']));
 
 		//get the correct message to show at the bottom
 		if(is_feed())
@@ -472,10 +472,16 @@ add_action('wp', 'pmpro_hide_pages_redirect');
  *
  * @since 1.8.5.4
  */
-function pmpro_post_classes( $classes ) {	
-	global $post;
+function pmpro_post_classes( $classes, $class, $post_id ) {	
+	
+	$post = get_post($post_id);
+	
+	if(empty($post))
+		return $classes;
+	
 	$post_levels = array();
 	$post_levels = pmpro_has_membership_access($post->ID,NULL,true);
+	
 	if(!empty($post_levels))
 	{
 		if(!empty($post_levels[1]))
@@ -489,4 +495,42 @@ function pmpro_post_classes( $classes ) {
 	}
 	return $classes;
 }
-add_filter( 'post_class', 'pmpro_post_classes' );
+add_filter( 'post_class', 'pmpro_post_classes', 10, 3 );
+
+/**
+ * Adds custom classes to the array of body classes.
+ * Same as the above, but acts on the "queried object" instead of the post global.
+ *
+ * pmpro-body-level-required = this post requires at least one level
+ * pmpro-body-level-1 = this post requires level 1
+ * pmpro-body-has-access = this post is usually locked, but the current user has access to this post
+ *
+ * @param array $classes Classes for the body element.
+ * @return array
+ *
+ * @since 1.8.6.1
+ */
+function pmpro_body_classes( $classes ) {	
+	
+	$post = get_queried_object();
+	
+	if(empty($post))
+		return $classes;
+	
+	$post_levels = array();
+	$post_levels = pmpro_has_membership_access($post->ID,NULL,true);
+	
+	if(!empty($post_levels))
+	{
+		if(!empty($post_levels[1]))
+		{
+			$classes[] = 'pmpro-body-level-required';
+			foreach($post_levels[1] as $post_level)
+				$classes[] = 'pmpro-body-level-' . $post_level[0];
+		}
+		if(!empty($post_levels[0]) && $post_levels[0] == true)
+			$classes[] = 'pmpro-body-has-access';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'pmpro_body_classes' );

@@ -27,77 +27,41 @@ add_action( 'init', 'pmpro_report_memberships_init' );
 
 //widget
 function pmpro_report_memberships_widget() {
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb;
 ?>
-	<style type="text/css">
-		#pmpro_report_memberships .section-label {
-			margin: 15px 0;
-			font-size: 18px;
-			text-align: left;
-			display: block;
-		}
-		
-		#pmpro_report_memberships .section-label:first-child {
-			margin-top: 0;
-		}
-
-		#pmpro_report_memberships div {text-align: center;}
-		#pmpro_report_memberships em {display: block; font-style: normal; font-size: 2em; margin: 5px; line-height: 26px;}	
-	</style>
-	<span id="pmpro_report_memberships">
-		<label class="section-label"><?php _e('Signups', 'pmpro');?>:</label>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('All Time', 'pmpro');?></label>
-			<em><?php echo pmpro_getSignups( 'all time' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('This Year', 'pmpro');?></label>
-			<em><?php echo pmpro_getSignups( 'this year' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('This Month', 'pmpro');?></label>
-			<em><?php echo pmpro_getSignups( 'this month' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">
-			<label><?php _e('Today', 'pmpro');?></label>
-			<em><?php echo pmpro_getSignups( 'today' ); ?></em>		
-		</div>	
-		<div class="clear"></div>
-
-		<label class="section-label"><?php _e('Cancellations', 'pmpro');?>:</label>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('All Time', 'pmpro');?></label>
-			<em><?php echo pmpro_getCancellations( 'all time' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('This Year', 'pmpro');?></label>
-			<em><?php echo pmpro_getCancellations( 'this year' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">	
-			<label><?php _e('This Month', 'pmpro');?></label>
-			<em><?php echo pmpro_getCancellations( 'this month' ); ?></em>		
-		</div>
-		<div style="width: 25%; float: left;">
-			<label><?php _e('Today', 'pmpro');?></label>
-			<em><?php echo pmpro_getCancellations( 'today' ); ?></em>		
-		</div>	
-		<div class="clear"></div>
-
-		<label class="section-label"><?php _e('Other Stats', 'pmpro');?>:</label>
-		<div style="width: 33%; float: left;">	
-			<label><?php _e('Monthly Recurring Revenue (MRR)', 'pmpro');?></label>
-			<em><?php echo pmpro_formatPrice(pmpro_getMRR( 'all time' )); ?></em>		
-		</div>
-		<div style="width: 33%; float: left;">	
-			<label><?php _e('Cancellation Rate', 'pmpro');?></label>
-			<em><?php echo pmpro_getCancellationRate('all time' ); ?>%</em>		
-		</div>
-		<div style="width: 33%; float: left;">	
-			<label><?php _e('Lifetime Value (LTV)', 'pmpro');?></label>
-			<em><?php echo pmpro_formatPrice(pmpro_getLTV('all time')); ?></em>		
-		</div>
-		<div class="clear"></div>
-	</span>
+<span id="pmpro_report_memberships">	
+	<table class="wp-list-table widefat fixed striped">
+	<thead>
+		<tr>
+			<th scope="col">&nbsp;</th>
+			<th scope="col"><?php _e('Signups','pmpro'); ?></th>
+			<th scope="col"><?php _e('Cancellations','pmpro'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th scope="row"><?php _e('Today','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSignups('today')); ?></td>
+			<td><?php echo number_format_i18n(pmpro_getCancellations('today')); ?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('This Month','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSignups('this month')); ?></td>
+			<td><?php echo number_format_i18n(pmpro_getCancellations('this month')); ?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('This Year','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSignups('this year')); ?></td>
+			<td><?php echo number_format_i18n(pmpro_getCancellations('this year')); ?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('All Time','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSignups('all time')); ?></td>
+			<td><?php echo number_format_i18n(pmpro_getCancellations('all time')); ?></td>
+		</tr>
+	</tbody>
+	</table>
+</span>
 <?php
 }
 
@@ -267,7 +231,7 @@ function pmpro_report_memberships_page()
 	
 		foreach( $dates as &$date )
 		{
-			if(!empty($cdates[$date->date]))
+			if(!empty($cdates) && !empty($cdates[$date->date]))
 				$date->cancellations = $cdates[$date->date]->cancellations;
 			else
 				$date->cancellations = 0;

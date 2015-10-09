@@ -116,3 +116,7 @@ h2.nav-tab-wrapper {margin-bottom: 1em; }
 .pmpro_reports-holder { }
 .pmpro_clickable {cursor: pointer;}
 .js .postbox.pmpro_clickable h3 {cursor: pointer;}
+.pmpro_reports-holder .wp-list-table tbody td {font-size: 1.2rem; font-weight: bold; }
+@media screen and (max-width: 782px) {
+	.pmpro_reports-holder tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {display: table-cell; }
+}

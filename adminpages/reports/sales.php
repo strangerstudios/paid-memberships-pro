@@ -35,31 +35,40 @@ function pmpro_report_sales_widget()
 	global $wpdb;
 ?>
 <style>
-	#pmpro_report_sales div {text-align: center;}
-	#pmpro_report_sales em {display: block; font-style: normal; font-size: 2em; margin: 5px;}	
+	#pmpro_report_sales tbody td:last-child {text-align: right; }
 </style>
-<span id="#pmpro_report_sales">
-	<div style="width: 25%; float: left;">	
-		<em><?php echo pmpro_getSales("all time");?></em>	
-		<label>All Time</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></em>		
-	</div>
-	<div style="width: 25%; float: left;">	
-		<em><?php echo pmpro_getSales("this year");?></em>
-		<label>This Year</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></em>		
-	</div>
-	<div style="width: 25%; float: left;">	
-		<em><?php echo pmpro_getSales("this month");?></em>
-		<label>This Month</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></em>		
-	</div>
-	<div style="width: 25%; float: left;">
-		<em><?php echo pmpro_getSales("today");?></em>
-		<label>Today</label>
-		<em><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></em>		
-	</div>	
-	<div class="clear"></div>
+<span id="pmpro_report_sales">
+	<table class="wp-list-table widefat fixed striped">
+	<thead>
+		<tr>
+			<th scope="col">&nbsp;</th>
+			<th scope="col"><?php _e('Sales','pmpro'); ?></th>
+			<th scope="col"><?php _e('Revenue','pmpro'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th scope="row"><?php _e('Today','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSales("today")); ?></td>
+			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('This Month','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSales("this month")); ?></td>
+			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('This Year','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSales("this year")); ?></td>
+			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('All Time','pmpro'); ?></th>
+			<td><?php echo number_format_i18n(pmpro_getSales("all time")); ?></td>
+			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></td>
+		</tr>
+	</tbody>
+	</table>	
 </span>
 <?php
 }
