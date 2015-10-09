@@ -115,8 +115,7 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 1.8.6.1 =
-* SECURITY: Removed debug code from the PayPal IPN Handler script that was causing invalid IPN requests to process as if they were valid. (Thanks, Francois Harvey)
+= 1.8.6.2 =
 * BUG: Stripe supports daily recurring subscriptions. Fixed issue where PMPro was still throwing a warning in some cases.
 * BUG: Removed warnings in the membership stats report.
 * CODE: Changed a couple instances of "since v2.0" to "since v1.8".
@@ -126,6 +125,9 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added pmpro_body_classes to add classes like pmpro-body-level-required, pmpro-body-level-1, and pmpro-body-has-access to the body tag based on the queried object.
 * ENHANCEMENT: Reformatted the PMPro Reports dashboard.
 * ENHANCEMENT: Now using separate invoice templates for email and print.
+
+= 1.8.6.1 =
+* SECURITY: Removed debug code from the PayPal IPN Handler script that was causing invalid IPN requests to process as if they were valid. (Thanks, Francois Harvey)
 
 = 1.8.6 =
 * BUG: The pmpro_membership_level_profile_fields_update() function now only fires on the personal_options_update and edit_user_profile_update hooks instead of the profile_update hook since this function expects to be called from the your-profile or edit-user page.
