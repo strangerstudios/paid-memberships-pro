@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.6.1 =
+* SECURITY: Removed debug code from the PayPal IPN Handler script that was causing invalid IPN requests to process as if they were valid. (Thanks, Francois Harvey)
 * BUG: Stripe supports daily recurring subscriptions. Fixed issue where PMPro was still throwing a warning in some cases.
 * BUG: Removed warnings in the membership stats report.
 * CODE: Changed a couple instances of "since v2.0" to "since v1.8".
