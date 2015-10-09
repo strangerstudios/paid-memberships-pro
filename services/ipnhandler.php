@@ -393,7 +393,7 @@
 			ipnlog("FP!");
 
 			$res = wp_remote_retrieve_body($fp);
-			if(strcmp($res, "VERIFIED") == 0 || true)
+			if(strcmp($res, "VERIFIED") == 0)
 			{
 				//all good so far
 				ipnlog("VERIFIED");
