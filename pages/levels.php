@@ -51,17 +51,14 @@ if($pmpro_msg)
 			
 			<?php
 				//if it's a one-time-payment level, offer a link to renew				
-				if(!pmpro_isLevelRecurring($current_user->membership_level) && !empty($current_user->membership_level->enddate))
-				{
-				?>
-					<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'pmpro');?></a>
-				<?php
-				}
-				else
-				{
-				?>
-					<a class="pmpro_btn disabled" href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
-				<?php
+				if( pmpro_isLevelExpiringSoon( $current_user->membership_level) ) {
+					?>
+						<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'pmpro');?></a>
+					<?php
+				} else {
+					?>
+						<a class="pmpro_btn disabled" href="<?php echo pmpro_url("account")?>"><?php _e('Your&nbsp;Level', 'pmpro');?></a>
+					<?php
 				}
 			?>
 			
