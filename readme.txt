@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.3 =
+* BUG: No longer using the $pmpro_levels global in pages/levels.php.
+
 = 1.8.6.2 =
 * BUG: Stripe supports daily recurring subscriptions. Fixed issue where PMPro was still throwing a warning in some cases.
 * BUG: Removed warnings in the membership stats report.
