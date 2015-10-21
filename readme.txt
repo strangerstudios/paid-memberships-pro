@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.6.3 =
+* SECURITY: No longer showing email addresses in output when cron jobs are processed by non-admins. (Thanks, Daniel Bachhuber)
 * BUG: No longer using the $pmpro_levels global in pages/levels.php.
 
 = 1.8.6.2 =
