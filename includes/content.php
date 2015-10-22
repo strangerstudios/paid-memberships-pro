@@ -514,7 +514,7 @@ function pmpro_body_classes( $classes ) {
 	
 	$post = get_queried_object();
 	
-	if(empty($post))
+	if(empty($post) || !is_singular())
 		return $classes;
 	
 	$post_levels = array();
