@@ -196,14 +196,18 @@
 		$bphone = sanitize_text_field(stripslashes($_REQUEST['bphone']));
 	else
 		$bphone = "";
-	if (isset($_REQUEST['bemail']))
+	if( isset ( $_REQUEST['bemail'] ) )
 		$bemail = sanitize_email(stripslashes($_REQUEST['bemail']));
+	elseif( is_user_logged_in() )
+		$bemail = $current_user->user_email;
 	else
 		$bemail = "";
 	if (isset($_REQUEST['bconfirmemail_copy']))
 		$bconfirmemail = $bemail;
 	elseif (isset($_REQUEST['bconfirmemail']))
 		$bconfirmemail = sanitize_email(stripslashes($_REQUEST['bconfirmemail']));
+	elseif( is_user_logged_in() )
+		$bconfirmemail = $current_user->user_email;
 	else
 		$bconfirmemail = "";
 
@@ -573,8 +577,12 @@
 			} elseif (apply_filters('pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level)) {
 
 				//check pmpro_wp_new_user_notification filter before sending the default WP email
-				if (apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id))
-					wp_new_user_notification($user_id, $new_user_array['user_pass']);
+				if (apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id)) {
+					if (version_compare($wp_version, "4.3.0") >= 0)
+						wp_new_user_notification($user_id, null, 'both');
+					else
+						wp_new_user_notification($user_id, $new_user_array['user_pass']);
+				}
 
 				$wpuser = get_userdata($user_id);
 

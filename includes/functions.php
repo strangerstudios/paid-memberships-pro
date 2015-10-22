@@ -193,6 +193,47 @@ function pmpro_isLevelExpiring(&$level)
 		return false;
 }
 
+/**
+ * Is this level expiring within one pay period
+ *
+ * @since 1.8.6.3
+ *
+ * @param object $level PMPro Level Object to test
+ */
+function pmpro_isLevelExpiringSoon( &$level ) {
+	if( !pmpro_isLevelExpiring( $level ) || empty( $level->enddate ) )
+		$r = false;
+	else {
+		//days til expiration for the standard level
+		$standard = pmpro_getLevel( $level->id );
+
+		if( !empty( $standard->expiration_number ) ){
+			if( $standard->expiration_period == 'Day' )
+				$days = $level->expiration_number;
+			elseif( $standard->expiration_period == 'Week' )
+				$days = $level->expiration_number * 7;
+			elseif( $standard->expiration_period == 'Month' )
+				$days = $level->expiration_number * 30;
+			elseif( $standard->expiration_period == 'Year' )
+				$days = $level->expiration_number * 365;
+		}
+		else
+			$days = 30;
+
+		//are we within the days til expiration?
+		$now = current_time('timestamp');
+		if( $now + ($days*3600*24) < strtotime( $level->enddate, $now ) )
+			$r = true;
+		else
+			$r = false;
+	}
+
+	//filter
+	$r = apply_filters('pmpro_is_level_expiring_soon', $r, $level);
+
+	return $r;
+}
+
 function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
 	//initial payment
