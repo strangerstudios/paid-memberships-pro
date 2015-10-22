@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.3.1
-Stable tag: 1.8.6.2
+Stable tag: 1.8.6.3
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -117,6 +117,8 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.6.3 =
 * SECURITY: No longer showing email addresses in output when cron jobs are processed by non-admins. (Thanks, Daniel Bachhuber)
+* BUG: Better handling of errors when validating PayPal IPN requests. Added pmpro_ipn_validate filter. PayPal users should read the release notes here: http://www.paidmembershipspro.com/2015/10/pmpro-update-1-8-6-3/
+* BUG: Fixed bug where both the return and first order INS would change membership and update the order twice, leading to unwanted cancellations and emails. (Thanks, Steffen Dressler)
 * BUG: No longer using the $pmpro_levels global in pages/levels.php.
 
 = 1.8.6.2 =
