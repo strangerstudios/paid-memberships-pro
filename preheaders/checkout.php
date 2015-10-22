@@ -196,14 +196,18 @@
 		$bphone = sanitize_text_field(stripslashes($_REQUEST['bphone']));
 	else
 		$bphone = "";
-	if (isset($_REQUEST['bemail']))
+	if( isset ( $_REQUEST['bemail'] ) )
 		$bemail = sanitize_email(stripslashes($_REQUEST['bemail']));
+	elseif( is_user_logged_in() )
+		$bemail = $current_user->user_email;
 	else
 		$bemail = "";
 	if (isset($_REQUEST['bconfirmemail_copy']))
 		$bconfirmemail = $bemail;
 	elseif (isset($_REQUEST['bconfirmemail']))
 		$bconfirmemail = sanitize_email(stripslashes($_REQUEST['bconfirmemail']));
+	elseif( is_user_logged_in() )
+		$bconfirmemail = $current_user->user_email;
 	else
 		$bconfirmemail = "";
 
