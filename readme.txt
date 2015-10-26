@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.4 =
+* BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.
+* ENHANCEMENT: Added a constant PMPRO_USER_AGENT used in all outside HTTP requests. The user agent will look like "Paid Memberships Pro v1.8.6.4;http://yourdomain.com".
+
 = 1.8.6.3 =
 * SECURITY: No longer showing email addresses in output when cron jobs are processed by non-admins. (Thanks, Daniel Bachhuber)
 * BUG: Better handling of errors when validating PayPal IPN requests. Added pmpro_ipn_validate filter. PayPal users should read the release notes here: http://www.paidmembershipspro.com/2015/10/pmpro-update-1-8-6-3/

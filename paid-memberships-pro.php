@@ -14,6 +14,7 @@ Author URI: http://www.strangerstudios.com
 
 //version constant
 define("PMPRO_VERSION", "1.8.6.3");
+define("PMPRO_USER_AGENT", "Paid Memberships Pro v" . PMPRO_VERSION . "; " . site_url());
 
 //if the session has been started yet, start it (ignore if running from command line)
 if(defined('STDIN') )
