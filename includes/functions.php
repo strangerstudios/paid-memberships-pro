@@ -356,7 +356,7 @@ function pmpro_getLevelExpiration(&$level)
  * Get level metadata.
  *
  * @ssince 1.8.6.5
- */
+*/
 function pmpro_getLevelMeta($level_id, $meta_key) {
 
 	global $wpdb;

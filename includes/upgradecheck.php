@@ -108,7 +108,10 @@ function pmpro_checkForUpgrades()
 
 	//add level meta table
 	if($pmpro_db_version < 1.865) {
+
+		pmpro_db_delta();
 		pmpro_upgrade_1_8_6_5();
+
 		pmpro_setOption("db_version", "1.865");
 		$pmpro_db_version = 1.865;
 	}
@@ -116,25 +119,6 @@ function pmpro_checkForUpgrades()
 
 function pmpro_upgrade_1_8_6_5() {
 
-	global $wpdb;
-
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
-
-	// pmpro_membership_levelmeta table
-	$sqlQuery = "
-		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `membership_id` int(10) unsigned NOT NULL,
-		  `meta_key` varchar(255) NOT NULL,
-		  `meta_value` longtext,
-		  PRIMARY KEY (`id`),
-		  KEY (`membership_id`),
-		  KEY (`meta_key`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-	";
-
-	$wpdb->query($sqlQuery);
 }
 
 function pmpro_upgrade_1_7()
@@ -688,6 +672,20 @@ function pmpro_db_delta()
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
 		);
+	";
+	dbDelta($sqlQuery);
+
+	// pmpro_membership_levelmeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
+		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `membership_id` int(10) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`id`),
+		  KEY (`membership_id`),
+		  KEY (`meta_key`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 	";
 	dbDelta($sqlQuery);
 }
