@@ -41,6 +41,7 @@ function pmpro_setDBTables()
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
+	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
 }
 pmpro_setDBTables();
 
@@ -349,6 +350,40 @@ function pmpro_getLevelExpiration(&$level)
 
 	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
 	return $expiration_text;
+}
+
+/**
+ * Get level metadata.
+ *
+ * @ssince 1.8.6.5
+ *
+*/
+function pmpro_getLevelMeta($level_id, $meta_key) {
+
+	global $wpdb;
+
+	$sql = $wpdb->prepare("SELECT meta_value FROM $wpdb->pmpro_membership_levelmeta WHERE meta_key = '%s' AND membership_id = %d", $meta_key, $level_id);
+	return $wpdb->get_col($sql);
+}
+
+/**
+ * Update level metadata, creates it if it doesn't already exist.
+ *
+ * @since 1.8.6.5
+ */
+function pmpro_updateLevelMeta($level_id, $meta_key, $meta_value = null) {
+
+	global $wpdb;
+
+	// does it already exist?
+	$exists = pmpro_getLevelMeta($level_id, $meta_key);
+
+	if( ! $exists )
+		$sql = $wpdb->prepare("INSERT INTO $wpdb->pmpro_membership_levelmeta (membership_id, meta_key, meta_value) VALUES (%d, '%s', '%s')", $level_id, $meta_key, $meta_value);
+	else
+		$sql = $wpdb->prepare("UPDATE $wpdb->pmpro_membership_levelmeta SET meta_value = '%s' WHERE meta_key = '%s' AND membership_id = %d", $meta_value, $meta_key, $level_id);
+
+	return $wpdb->query($sql);
 }
 
 function pmpro_hideAds()

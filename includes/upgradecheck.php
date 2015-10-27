@@ -5,7 +5,7 @@
 function pmpro_checkForUpgrades()
 {
 	$pmpro_db_version = pmpro_getOption("db_version");
-	
+
 	//if we can't find the DB tables, reset db_version to 0
 	global $wpdb;
 	$wpdb->hide_errors();
@@ -105,6 +105,36 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption("db_version", "1.791");
 		$pmpro_db_version = 1.791;
 	}
+
+	//add level meta table
+	if($pmpro_db_version < 1.87) {
+		pmpro_upgrade_1_8_7();
+		pmpro_setOption("db_version", "1.87");
+		$pmpro_db_version = 1.87;
+	}
+}
+
+function pmpro_upgrade_1_8_7() {
+
+	global $wpdb;
+
+	$wpdb->hide_errors();
+	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+
+	// pmpro_membership_levelmeta table
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
+		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `membership_id` int(10) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`id`),
+		  KEY (`membership_id`),
+		  KEY (`meta_key`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+	";
+
+	$wpdb->query($sqlQuery);
 }
 
 function pmpro_upgrade_1_7()
