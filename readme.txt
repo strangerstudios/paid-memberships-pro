@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.5 =
+* BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
+
 = 1.8.6.4 =
 * BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.
 * ENHANCEMENT: Added a constant PMPRO_USER_AGENT used in all outside HTTP requests. The user agent will look like "Paid Memberships Pro v1.8.6.4;http://yourdomain.com".
