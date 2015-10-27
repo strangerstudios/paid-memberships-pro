@@ -363,7 +363,7 @@ function pmpro_getLevelMeta($level_id, $meta_key) {
 	global $wpdb;
 
 	$sql = $wpdb->prepare("SELECT meta_value FROM $wpdb->pmpro_membership_levelmeta WHERE meta_key = '%s' AND membership_id = %d", $meta_key, $level_id);
-	return $wpdb->get_col($sql);
+	return $wpdb->get_var($sql);
 }
 
 /**
