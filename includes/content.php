@@ -323,7 +323,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 		$pmpro_content_message_post = '</div>';
 
 		$sr_search = array("!!levels!!", "!!referrer!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), site_url($_SERVER['REQUEST_URI']));
+		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), urlencode(site_url($_SERVER['REQUEST_URI'])));
 
 		//get the correct message to show at the bottom
 		if(is_feed())
