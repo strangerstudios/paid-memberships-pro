@@ -492,6 +492,7 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
+	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -675,7 +676,7 @@ function pmpro_db_delta()
 	";
 	dbDelta($sqlQuery);
 
-	// pmpro_membership_levelmeta
+	//pmpro_membership_levelmeta
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
 		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -685,7 +686,7 @@ function pmpro_db_delta()
 		  PRIMARY KEY (`id`),
 		  KEY (`membership_id`),
 		  KEY (`meta_key`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+		);
 	";
 	dbDelta($sqlQuery);
 }
