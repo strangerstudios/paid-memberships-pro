@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.6.5 =
 * BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
+* BUG: Fixed issue where filters stopped working on the orders page in the dashboard.
 
 = 1.8.6.4 =
 * BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.

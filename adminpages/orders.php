@@ -57,6 +57,11 @@
 	else
 		$status = "";
 
+	if(isset($_REQUEST['filter']))
+		$filter = sanitize_text_field($_REQUEST['filter']);
+	else
+		$filter = "all";
+
 	//some vars for the search
 	if(isset($_REQUEST['pn']))
 		$pn = intval($_REQUEST['pn']);
@@ -176,11 +181,6 @@
 			$pmpro_msgt = "error";
 		}
 	}
-
-	if(isset($_REQUEST['filter']))
-		$filter = sanitize_text_field($_REQUEST['filter']);
-	else
-		$filter = "all";
 
 	$thisyear = date("Y");
 
