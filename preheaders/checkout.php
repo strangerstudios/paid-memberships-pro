@@ -314,7 +314,7 @@
 		}
 
 		//check billing fields
-		if ($pmpro_requirebilling) {
+		if ($pmpro_requirebilling || !empty($pmpro_required_billing_fields)) {
 			//filter
 			foreach($pmpro_required_billing_fields as $key => $field) {
 				if (!$field)	{
