@@ -1029,7 +1029,7 @@ function pmpro_getMetavalues($query)
 	$r = new stdClass();
 	foreach($results as $result)
 	{
-		if(!empty($r))
+		if(!empty($r) && !empty($result->key))
 			$r->{$result->key} = $result->value;
 	}
 
