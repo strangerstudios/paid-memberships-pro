@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
 * BUG: Fixed issue where filters stopped working on the orders page in the dashboard.
 * BUG: Fixed issue in pmpro_isLevelExpiringSoon that caused the "renew" link to not appear sometimes. (Thanks, xzistance3)
+* BUG: Fixed wording of level cost text for levels with billing limits and billing periods with cycles > 1, e.g. "$1 now and then $1 every 2 Months for 2 periods". Thanks, russell77)
 
 = 1.8.6.4 =
 * BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.

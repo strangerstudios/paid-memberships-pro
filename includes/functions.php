@@ -254,7 +254,7 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 			}
 			else
 			{
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
+				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more payments</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit);
 			}
 		}
 		elseif($level->billing_limit == 1)
