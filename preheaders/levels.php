@@ -42,7 +42,7 @@ if(!empty($pmpro_level_order))
     foreach($order as $level_id) {
         foreach($pmpro_levels as $key=>$level) {
             if($level_id == $level->id)
-                $reordered_levels[] = $pmpro_levels[$key];
+                $reordered_levels[$key] = $pmpro_levels[$key];
         }
     }
 
