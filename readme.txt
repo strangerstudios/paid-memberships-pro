@@ -117,7 +117,6 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.6.5 =
 * BUG: Now checking for required fields even if $pmpro_requirebilling is not set.
-* ENHANCEMENT: Added pmpro_membership_levelmeta table and pmpro_getLevelMeta() and pmpro_updateLevelMeta() functions.
 * BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
 * BUG: Fixed issue where filters stopped working on the orders page in the dashboard.
 * BUG: Fixed issue in pmpro_isLevelExpiringSoon that caused the "renew" link to not appear sometimes. (Thanks, xzistance3)

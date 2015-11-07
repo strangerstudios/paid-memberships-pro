@@ -107,18 +107,24 @@ function pmpro_checkForUpgrades()
 	}
 
 	//add level meta table
-	if($pmpro_db_version < 1.865) {
+	/*
+	if($pmpro_db_version < 1.87) {
 
 		pmpro_db_delta();
-		pmpro_upgrade_1_8_6_5();
+		pmpro_upgrade_1_8_7();
 
-		pmpro_setOption("db_version", "1.865");
-		$pmpro_db_version = 1.865;
+		pmpro_setOption("db_version", "1.87");
+		$pmpro_db_version = 1.87;
 	}
+	*/
 }
 
-function pmpro_upgrade_1_8_6_5() {
-	return 1.865;
+function pmpro_upgrade_1_8_7() {
+	
+	/*
+		Additional upgrade scripts will go here or we will remove it.
+	*/
+	return 1.87;
 }
 
 function pmpro_upgrade_1_7()
