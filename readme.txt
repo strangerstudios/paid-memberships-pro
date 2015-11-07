@@ -116,12 +116,15 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.6.5 =
+* BUG: Now checking for required fields even if $pmpro_requirebilling is not set.
+* ENHANCEMENT: Added pmpro_membership_levelmeta table and pmpro_getLevelMeta() and pmpro_updateLevelMeta() functions.
 * BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
 * BUG: Fixed issue where filters stopped working on the orders page in the dashboard.
 * BUG: Fixed issue in pmpro_isLevelExpiringSoon that caused the "renew" link to not appear sometimes. (Thanks, xzistance3)
 * BUG: Fixed wording of level cost text for levels with billing limits and billing periods with cycles > 1, e.g. "$1 now and then $1 every 2 Months for 2 periods". Thanks, russell77)
 
 = 1.8.6.4 =
+* BUG/ENHANCEMENT: Now expiring members before sending expiration warnings.
 * BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.
 * ENHANCEMENT: Added a constant PMPRO_USER_AGENT used in all outside HTTP requests. The user agent will look like "Paid Memberships Pro v1.8.6.4;http://yourdomain.com".
 
