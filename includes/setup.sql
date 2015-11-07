@@ -97,6 +97,22 @@ CREATE TABLE `wp_pmpro_membership_levels` (
 -- --------------------------------------------------------
 
 -- 
+-- Table structure for table `wp_pmpro_membership_levelmeta`
+-- 
+
+CREATE TABLE `wp_pmpro_membership_levelmeta` (
+  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pmpro_membership_level_id` int(10) unsigned NOT NULL,
+  `meta_key` varchar(255) NOT NULL,
+  `meta_value` longtext,
+  PRIMARY KEY (`meta_id`),
+  KEY (`pmpro_membership_level_id`),
+  KEY (`meta_key`)
+);
+
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table `wp_pmpro_membership_orders`
 -- 
 
