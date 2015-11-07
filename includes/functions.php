@@ -354,36 +354,24 @@ function pmpro_getLevelExpiration(&$level)
 }
 
 /**
- * Get level metadata.
+ * pmpro_membership_level Meta Functions
  *
  * @ssince 1.8.6.5
 */
-function pmpro_getLevelMeta($level_id, $meta_key) {
-
-	global $wpdb;
-
-	$sql = $wpdb->prepare("SELECT meta_value FROM $wpdb->pmpro_membership_levelmeta WHERE meta_key = '%s' AND membership_id = %d", $meta_key, $level_id);
-	return $wpdb->get_col($sql);
+function add_pmpro_membership_level_meta($level_id, $meta_key, $meta_value, $unique = false) {	
+	return add_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique);
 }
 
-/**
- * Update level metadata, create it if it doesn't already exist.
- *
- * @since 1.8.6.5
- */
-function pmpro_updateLevelMeta($level_id, $meta_key, $meta_value = null) {
+function get_pmpro_membership_level_meta($level_id, $key, $single = false) {
+	return get_metadata('pmpro_membership_level', $level_id, $key, $single);
+}
 
-	global $wpdb;
+function update_pmpro_membership_level_meta($level_id, $meta_key, $meta_value, $prev_value = '') {		
+	return update_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value, $prev_value);
+}
 
-	// does it already exist?
-	$exists = pmpro_getLevelMeta($level_id, $meta_key);
-
-	if( ! $exists )
-		$sql = $wpdb->prepare("INSERT INTO $wpdb->pmpro_membership_levelmeta (membership_id, meta_key, meta_value) VALUES (%d, '%s', '%s')", $level_id, $meta_key, $meta_value);
-	else
-		$sql = $wpdb->prepare("UPDATE $wpdb->pmpro_membership_levelmeta SET meta_value = '%s' WHERE meta_key = '%s' AND membership_id = %d", $meta_value, $meta_key, $level_id);
-
-	return $wpdb->query($sql);
+function delete_pmpro_membership_level_meta($level_id, $meta_key, $meta_value = '') {		
+	return delete_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value);
 }
 
 function pmpro_hideAds()

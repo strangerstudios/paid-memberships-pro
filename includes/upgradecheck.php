@@ -118,7 +118,7 @@ function pmpro_checkForUpgrades()
 }
 
 function pmpro_upgrade_1_8_6_5() {
-
+	return 1.865;
 }
 
 function pmpro_upgrade_1_7()
@@ -385,7 +385,7 @@ function pmpro_upgrade_1_1_15()
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
 		  KEY `expires` (`expires`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+		);
 	";
 	$wpdb->query($sqlQuery);
 
@@ -403,7 +403,7 @@ function pmpro_upgrade_1_1_15()
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  PRIMARY KEY (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+		);
 	";
 	$wpdb->query($sqlQuery);
 
@@ -418,7 +418,7 @@ function pmpro_upgrade_1_1_15()
 		  PRIMARY KEY (`id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
+		);
 	";
 	$wpdb->query($sqlQuery);
 
@@ -679,12 +679,12 @@ function pmpro_db_delta()
 	//pmpro_membership_levelmeta
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `membership_id` int(10) unsigned NOT NULL,
+		  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_level_id` int(10) unsigned NOT NULL,
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
-		  PRIMARY KEY (`id`),
-		  KEY (`membership_id`),
+		  PRIMARY KEY (`meta_id`),
+		  KEY (`pmpro_membership_level_id`),
 		  KEY (`meta_key`)
 		);
 	";
