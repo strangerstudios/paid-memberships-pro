@@ -57,6 +57,114 @@
 	else
 		$status = "";
 
+	if(isset($_REQUEST['filter']))
+		$filter = sanitize_text_field($_REQUEST['filter']);
+	else
+		$filter = "all";
+
+	//some vars for the search
+	if(isset($_REQUEST['pn']))
+		$pn = intval($_REQUEST['pn']);
+	else
+		$pn = 1;
+
+	if(isset($_REQUEST['limit']))
+		$limit = intval($_REQUEST['limit']);
+	else
+	{
+		/**
+		 * Filter to set the default number of items to show per page
+		 * on the Orders page in the admin.
+		 *
+		 * @since 1.8.4.5
+		 *
+		 * @param int $limit The number of items to show per page.
+		 */
+		$limit = apply_filters('pmpro_orders_per_page', 15);
+	}
+
+	$end = $pn * $limit;
+	$start = $end - $limit;
+
+	//filters
+	if(empty($filter) || $filter === "all")
+	{
+		$condition = "1=1";
+		$filter = "all";
+	}
+	elseif($filter == "within-a-date-range")
+	{
+		$start_date = $start_year."-".$start_month."-".$start_day;
+		$end_date = $end_year."-".$end_month."-".$end_day;
+
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+
+		$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
+	}
+	elseif($filter == "predefined-date-range")
+	{
+		if($predefined_date == "Last Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of last month", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of last month", current_time("timestamp")));
+		}
+		elseif($predefined_date == "This Month")
+		{
+			$start_date = date("Y-m-d", strtotime("first day of this month", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of this month", current_time("timestamp")));
+		}
+		elseif($predefined_date == "This Year")
+		{
+			$year = date('Y');
+			$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
+		}
+
+		elseif($predefined_date == "Last Year")
+		{
+			$year = date('Y') - 1;
+			$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
+			$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
+		}
+
+		//add times to dates
+		$start_date =  $start_date . " 00:00:00";
+		$end_date =  $end_date . " 23:59:59";
+
+		$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
+	}
+	elseif($filter == "within-a-level")
+	{
+		$condition = "membership_id = " . esc_sql($l);
+	}
+	elseif($filter == "within-a-status")
+	{
+		$condition = "status = '" . esc_sql($status) . "' ";
+	}
+		
+	//emailing?
+	if(!empty($_REQUEST['email']) && !empty($_REQUEST['order']))
+	{
+		$email = new PMProEmail();
+		$user = get_user_by('email', $_REQUEST['email']);
+		$order = new MemberOrder($_REQUEST['order']);
+		if($email->sendBillableInvoiceEmail($user, $order))
+		{
+			$pmpro_msg = __("Invoice emailed successfully.", "pmpro");
+			$pmpro_msgt = "success";
+		}
+		else
+		{
+			$pmpro_msg = __("Error emailing invoice.", "pmpro");
+			$pmpro_msgt = "error";
+		}
+		
+		//clean up so we stay on the orders list view
+		unset($_REQUEST['order']);
+		$order = NULL;
+	}
 
 	//deleting?
 	if(!empty($_REQUEST['delete']))
@@ -74,14 +182,7 @@
 		}
 	}
 
-	if(isset($_REQUEST['filter']))
-		$filter = sanitize_text_field($_REQUEST['filter']);
-	else
-		$filter = "all";
-
 	$thisyear = date("Y");
-
-
 
 	//this array stores fields that should be read only
 	$read_only_fields = apply_filters("pmpro_orders_read_only_fields", array("code", "payment_transaction_id", "subscription_transaction_id"));
@@ -492,7 +593,7 @@
 				<tr>
 					<th scope="row" valign="top"><label for="ts_month"><?php _e('Date', 'pmpro');?>:</label></th>
 					<td>
-						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(option("date_format"), $order->timestamp); } else { ?>
+						<?php if(in_array("timestamp", $read_only_fields) && $order_id > 0) { echo date(get_option('date_format') . " " . get_option('time_format'), $order->timestamp); } else { ?>
 						<?php
 							//set up date vars
 							if(!empty($order->timestamp))
@@ -564,7 +665,42 @@
 	</form>
 
 <?php } else { ?>
-
+	<?php
+	/**
+	 * Code to handle emailing billable invoices.
+	 *
+	 * @since 1.8.6
+	 */
+	?>
+	<script>
+		// Update fields in email modal.
+		jQuery(document).ready(function($) {
+			var order, order_id;
+			$('.email_link').click(function() {
+				order_id = $(this).data('order');
+				$('input[name=order]').val(order_id);
+				// Get email address from order ID
+				data = {
+					action: 'pmpro_get_order_json',
+					order_id: order_id
+				};
+				$.post(ajaxurl, data, function(response) {
+					order = JSON.parse(response);
+					$('input[name=email]').val(order.Email);
+				});
+			});
+		});
+	</script>
+	<?php add_thickbox(); ?>
+	<div id="email_invoice" style="display:none;">
+		<h3><?php _e('Email Invoice', 'pmpro'); ?></h3>
+		<form method="post" action="">
+			<input type="hidden" name="order" value="" />					
+			<?php _e('Send an invoice for this order to: ', 'pmpro'); ?>
+			<input type="text" value="" name="email" />
+			<button class="button button-primary alignright"><?php _e('Send Email', 'pmpro'); ?></button>
+		</form>
+	</div>
 	<form id="posts-filter" method="get" action="">
 	<h2>
 		<?php _e('Orders', 'pmpro');?>
@@ -646,8 +782,7 @@
 
 			<?php
 			//Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
-			 $levels = pmpro_getAllLevels();
-
+			$levels = pmpro_getAllLevels(true, true);
 			?>
 			<select id="l" name="l">
 			<?php foreach($levels as $level) { ?>
@@ -781,85 +916,6 @@
 	</p>
 
 	<?php
-		//some vars for the search
-		if(isset($_REQUEST['pn']))
-			$pn = intval($_REQUEST['pn']);
-		else
-			$pn = 1;
-
-		if(isset($_REQUEST['limit']))
-			$limit = intval($_REQUEST['limit']);
-		else
-		{
-			/**
-			 * Filter to set the default number of items to show per page
-			 * on the Orders page in the admin.
-			 *
-			 * @since 1.8.4.5
-			 *
-			 * @param int $limit The number of items to show per page.
-			 */
-			$limit = apply_filters('pmpro_orders_per_page', 15);
-		}
-
-		$end = $pn * $limit;
-		$start = $end - $limit;
-
-		//filters
-		if($filter == "all" || !$filter)
-				$condition = "1=1";
-		elseif($filter == "within-a-date-range")
-		{
-			$start_date = $start_year."-".$start_month."-".$start_day;
-			$end_date = $end_year."-".$end_month."-".$end_day;
-
-			//add times to dates
-			$start_date =  $start_date . " 00:00:00";
-			$end_date =  $end_date . " 23:59:59";
-
-			$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
-		}
-		elseif($filter == "predefined-date-range")
-		{
-			if($predefined_date == "Last Month")
-			{
-				$start_date = date("Y-m-d", strtotime("first day of last month", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of last month", current_time("timestamp")));
-			}
-			elseif($predefined_date == "This Month")
-			{
-				$start_date = date("Y-m-d", strtotime("first day of this month", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of this month", current_time("timestamp")));
-			}
-			elseif($predefined_date == "This Year")
-			{
-				$year = date('Y');
-				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
-			}
-
-			elseif($predefined_date == "Last Year")
-			{
-				$year = date('Y') - 1;
-				$start_date = date("Y-m-d", strtotime("first day of January $year", current_time("timestamp")));
-				$end_date   = date("Y-m-d", strtotime("last day of December $year", current_time("timestamp")));
-			}
-
-			//add times to dates
-			$start_date =  $start_date . " 00:00:00";
-			$end_date =  $end_date . " 23:59:59";
-
-			$condition = "timestamp BETWEEN '".esc_sql($start_date)."' AND '".esc_sql($end_date)."'";
-		}
-		elseif($filter == "within-a-level")
-		{
-			$condition = "membership_id = " . esc_sql($l);
-		}
-		elseif($filter == "within-a-status")
-		{
-			$condition = "status = '" . esc_sql($status) . "' ";
-		}
-
 		//string search
 		if($s)
 		{
@@ -904,7 +960,7 @@
 		<?php
 		}
 	?>
-	<table class="widefat">
+		<table class="widefat">
 		<thead>
 			<tr class="thead">
 				<th><?php _e('ID', 'pmpro');?></th>
@@ -918,6 +974,8 @@
 				<th><?php _e('Transaction IDs', 'pmpro');?></th>
 				<th><?php _e('Status', 'pmpro');?></th>
 				<th><?php _e('Date', 'pmpro');?></th>
+				<th></th>
+				<th></th>
 				<th></th>
 				<th></th>
 				<th></th>
@@ -984,7 +1042,10 @@
 								<?php _e('Subscription', 'pmpro');?>: <?php if(!empty($order->subscription_transaction_id)) echo $order->subscription_transaction_id; else echo "N/A";?>
 							</td>
 							<td><?php echo $order->status;?></td>
-							<td><?php echo date(get_option('date_format'), $order->timestamp);?></td>
+							<td>
+								<?php echo date(get_option('date_format'), $order->timestamp);?><br />
+								<?php echo date(get_option('time_format'), $order->timestamp);?>
+							</td>
 							<td align="center">
 								<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id;?>"><?php _e('edit', 'pmpro');?></a>
 							</td>
@@ -992,7 +1053,13 @@
 								<a href="admin.php?page=pmpro-orders&order=-1&copy=<?php echo $order->id;?>"><?php _e('copy', 'pmpro');?></a>
 							</td>
 							<td align="center">
-								<a href="javascript:askfirst('<?php printf(__("Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?", "pmpro"), str_replace("'", "", $order->code));?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id;?>'); void(0);"><?php _e('delete', 'pmpro');?></a>
+								<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?", "pmpro"), str_replace("'", "", $order->code)));?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id;?>'); void(0);"><?php _e('delete', 'pmpro');?></a>
+							</td>
+							<td align="center">
+								<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>" target="_blank"><?php _e('print', 'pmpro');?></a>
+							</td>
+							<td align="center">
+								<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo $order->id; ?>"><?php _e('email', 'pmpro');?></a>
 							</td>
 						</tr>
 					<?php
@@ -1010,7 +1077,6 @@
 		</tbody>
 	</table>
 	</form>
-
 	<?php
 		//add normal args
 		$pagination_url = add_query_arg($url_params, get_admin_url(NULL, "/admin.php?page=pmpro-orders"));
@@ -1018,7 +1084,6 @@
 	?>
 
 <?php } ?>
-
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 ?>

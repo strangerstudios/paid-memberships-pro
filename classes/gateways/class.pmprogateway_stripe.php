@@ -71,6 +71,16 @@
 			add_action('pmpro_deactivation', array('PMProGateway_stripe', 'pmpro_deactivation'));
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
+			/*
+				Filter pmpro_next_payment to get actual value
+				via the Stripe API. This is disabled by default
+				for performance reasons, but you can enable it
+				by copying this line into a custom plugin or
+				your active theme's functions.php and uncommenting
+				it there.
+			*/
+			//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
+			
 			//code to add at checkout if Stripe is the current gateway
 			$gateway = pmpro_getOption("gateway");
 			if($gateway == "stripe")
@@ -221,8 +231,7 @@
 						{
 							//build array for creating token
 							var args = {
-								number: jQuery('#AccountNumber').val(),
-								cvc: jQuery('#CVV').val(),
+								number: jQuery('#AccountNumber').val(),								
 								exp_month: jQuery('#ExpirationMonth').val(),
 								exp_year: jQuery('#ExpirationYear').val()
 								<?php
@@ -241,6 +250,11 @@
 								?>
 							};
 
+							//add CVC if not blank
+							if(jQuery('#CVV').val().length)
+								args['cvc'] = jQuery('#CVV').val();
+
+							//add first and last name if not blank
 							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
@@ -273,7 +287,7 @@
 							// insert the token into the form so it gets submitted to the server
 							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
 
-							console.log(response);
+							//console.log(response);
 
 							//insert fields for other card fields
 							if(jQuery('#CardType[name=CardType]').length)
@@ -346,7 +360,7 @@
 
 			if($gateway == "stripe")
 			{
-				if(!empty($morder) && !empty($morer->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				if(!empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
 				{
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
@@ -1258,7 +1272,7 @@
 				}
 				catch (Exception $e)
 				{
-					$order->error = __("Error creating plan with Stripe:", "pmpro") . $e->getMessage();
+					$order->error = __("Error getting subscription with Stripe:", "pmpro") . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1614,5 +1628,35 @@
 			{
 				return false;
 			}
+		}
+		
+		/**
+		 * Filter pmpro_next_payment to get date via API if possible
+		 *
+		 * @since 1.8.6
+		*/
+		static function pmpro_next_payment($timestamp, $user_id, $order_status)
+		{
+			//find the last order for this user
+			if(!empty($user_id))
+			{
+				//get last order
+				$order = new MemberOrder();
+				$order->getLastMemberOrder($user_id, $order_status);
+				
+				//check if this is a paypal express order with a subscription transaction id
+				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
+				{
+					//get the subscription and return the current_period end or false
+					$subscription = $order->Gateway->getSubscription($order);					
+					
+					if(!empty($subscription->current_period_end))
+						return $subscription->current_period_end;
+					else
+						return false;
+				}
+			}
+						
+			return $timestamp;
 		}
 	}

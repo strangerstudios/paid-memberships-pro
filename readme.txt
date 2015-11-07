@@ -2,26 +2,28 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.2.3
-Stable tag: 1.8.4.5
+Tested up to: 4.3.1
+Stable tag: 1.8.6.5
 
-The easiest way to GET PAID with your WordPress site. Flexible content control by Membership Level, Reports, Affiliates and Discounts
+A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
 == Description ==
-Set up unlimited membership levels and provide restricted access to pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more. Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
+Set up unlimited membership levels and provide restricted access to members-only content (including pages, posts, categories, videos, forums, downloads, support, single "a la carte" page access, and more). 
+
+Paid Memberships Pro is flexible enough to fit the needs of almost all online and offline businesses. It works great out of the box, but is easy for developers to customize to fit your needs.
 
 [youtube http://www.youtube.com/watch?v=33nORRIZaQk]
 
-Paid Memberships Pro is the community solution for adding paid memberships to your WordPress site. PMPro is 100% GPL. All code, including add-ons, is available for free from the WordPress repository here or on our site at http://www.paidmembershipspro.com. This version in the WordPress repository is the full version of the plugin with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
+Paid Memberships Pro is 100% GPL and available for free from the WordPress repository or on our site at http://www.paidmembershipspro.com. The full version of the plugin is offered with no restrictions or additional licenses required. Developers should get involved at [our GitHub page](https://github.com/strangerstudios/paid-memberships-pro/).
 
 = Integrate with The Most Popular Payment Gateways. =
-Stripe, Authorize.net, Braintree Payments, and PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow)
+Stripe, Authorize.net, PayPal (Standard, Express, Website Payments Pro, and PayPal Payments Pro/Payflow), Braintree, 2Checkout, and Cybersource. [View Gateways](http://www.paidmembershipspro.com/gateway/)
 
 = Works with Any Theme You Want. =
-Your Existing Theme or a Popular Free or Premium Third-Party Theme.
+Use your Existing Theme, the fully-integrated [Memberlite Theme](http://www.paidmembershipspro.com/themes) or a Popular Free or Premium Third-Party Theme.
 
 = Infinitely Configurable, Unlimited Membership Levels. =
-Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
+Set up the membership levels that best fit your business, whether they are Free, Paid, or Recurring Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing).
 
 = Easy-to-Use Admin Pages and Settings. =
 1. Membership access by Page/Post/Category
@@ -34,33 +36,33 @@ Set up the membership levels that best fit your business, whether they are Free,
 Your members can update their billing information or cancel their account directly on your site. Any active subscription will be cancelled at the payment gateway for you.
 
 = Integrate with Top Third Party Tools. =
-PMPro integrates with Mailchimp, Constant Contact, AWeber, KISSMetrics, Infusionsoft, WP Courseware, LearnDash, Post Affiliate Pro, bbPress, WooCommerce, and many more popular third party tools.
+PMPro integrates with Mailchimp, Constant Contact, AWeber, GetResponse, Social Login, KISSMetrics, Infusionsoft, WP Courseware, LearnDash, Post Affiliate Pro, bbPress, WooCommerce, and many more popular third party tools.
 
-= Free Add-ons to Customize and Extend PMPro. =
-Extensions, sister plugins, and other bits of code to customize your implementation and help you integrate with 3rd party services or other plugins. All open source and available for free under the GPL v2 license.
+= Add-ons to Customize and Extend Paid Memberships Pro. =
+Our growing library of Add ons allow you to extend Paid Memberships Pro to your needs. These extensions, sister plugins, and recipes customize your membership site and help you integrate with 3rd party services or other plugins.
 
-[View the PMPro Add-Ons](http://www.paidmembershipspro.com/add-ons/)
+[View the Add-Ons](http://www.paidmembershipspro.com/add-ons/)
 
 == Installation ==
 
 = Download, Install and Activate! =
+In your WordPress admin, go to Plugins > Add New to install Paid Memberships Pro, or:
+
 1. Download the latest version of the plugin.
 2. Unzip the downloaded file to your computer.
 3. Upload the /paid-memberships-pro/ directory to the /wp-content/plugins/ directory of your site.
 4. Activate the plugin through the 'Plugins' menu in WordPress.
 
 = Complete the Initial Plugin Setup =
-The plugin will walk you through initial setup - basic steps are outlined below.
+Go to Memberships in the WordPress admin for a step-by-step initial setup. The basic steps are:
 
-1. Add one or more Membership Levels
-2. Set up the PMPro Pages
-3. Configure your Payment Gateway and SSL
-4. Customize Email Settings
-5. Review Advanced Settings (best left untouched).
+1. Membership Levels: Add one or more Membership Levels
+2. Page Settings: Generate or assign the Pages
+3. Payment Gateway: Select and configure your Gateway and SSL
+4. Email: Customize Email Settings
+5. Advanced Settings: Update non-member messages, optionally show excerpts or filter content.
 
-[A tutorial video of the initial plugin setup is available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/).
-
-[Written instructions on initial plugin setup are available here](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
+[Installation Video](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/) | [Installation Docs](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/)
 
 == Frequently Asked Questions ==
 
@@ -82,7 +84,9 @@ Long term, you will need to find and fix the conflict. We can usually do this fo
 
 Out of the box PMPro will basically act as a stand alone plugin for each site. Each site has its own list of membership levels, members, payment settings, etc.
 
-I've written a plugin [PMPro-Network](http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-network-multisite-membership/) that shows the basics for allowing users who signs up for a membership at one site to be able to create or reclaim their own site under the multisite setup. It's powerful stuff.
+Our [Network/Multisite Add On](http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-network-multisite-membership/) allows members to choose a site name and title at checkout and will set up a network site at checkout.
+
+Our [Network Membership Add On](http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-network-membership/) allows you to manage memberships at the 'Main' Network site and provide or restrict access on other Network Subsites.
 
 If you would like more help using PMPro on a network install, sign up for support at http://www.paidmembershipspro.com.
 
@@ -96,16 +100,119 @@ Not sure? You can find out by doing a bit a research.
 
 == Screenshots ==
 
+= Memberships Admin Pages =
 1. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
 2. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
 3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
 4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
+5. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
+6. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
-== Changelog == 
+= Frontend Membership Page =
+7. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
+8. Membership Account page, display all sections or show specific sections using shortcode attributes.
+
+[View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
+
+== Changelog ==
+= 1.8.6.5 =
+* BUG: Now checking for required fields even if $pmpro_requirebilling is not set.
+* BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
+* BUG: Fixed issue where filters stopped working on the orders page in the dashboard.
+* BUG: Fixed issue in pmpro_isLevelExpiringSoon that caused the "renew" link to not appear sometimes. (Thanks, xzistance3)
+* BUG: Fixed wording of level cost text for levels with billing limits and billing periods with cycles > 1, e.g. "$1 now and then $1 every 2 Months for 2 periods". Thanks, russell77)
+
+= 1.8.6.4 =
+* BUG/ENHANCEMENT: Now expiring members before sending expiration warnings.
+* BUG: Now adding a specific user agent to IPN requests to PayPal (and other gateways) to avoid 403 errors.
+* ENHANCEMENT: Added a constant PMPRO_USER_AGENT used in all outside HTTP requests. The user agent will look like "Paid Memberships Pro v1.8.6.4;http://yourdomain.com".
+
+= 1.8.6.3 =
+* SECURITY: No longer showing email addresses in output when cron jobs are processed by non-admins. (Thanks, Daniel Bachhuber)
+* BUG: Better handling of errors when validating PayPal IPN requests. Added pmpro_ipn_validate filter. PayPal users should read the release notes here: http://www.paidmembershipspro.com/2015/10/pmpro-update-1-8-6-3/
+* BUG: Fixed bug where both the return and first order INS would change membership and update the order twice, leading to unwanted cancellations and emails. (Thanks, Steffen Dressler)
+* BUG: No longer using the $pmpro_levels global in pages/levels.php.
+
+= 1.8.6.2 =
+* BUG: Stripe supports daily recurring subscriptions. Fixed issue where PMPro was still throwing a warning in some cases.
+* BUG: Removed warnings in the membership stats report.
+* CODE: Changed a couple instances of "since v2.0" to "since v1.8".
+* ENHANCEMENT: Added a hook for pmpro_checkout_order_free that functions like pmpro_checkout_order but fires for the blank order created for free checkouts.
+* ENHANCEMENT: Using site_url to get full URL to for the redirect_to value generated by !!referrer!! in the non-member/logged-out text strings in the advanced settings page. This fixes issues with using !!referrer!! on multisite setups. (Thanks, Keith Hall)
+* ENHANCEMENT: Updated pmpro_post_classes to work on the $post_id passed by the filter instead of the global $post variable.
+* ENHANCEMENT: Added pmpro_body_classes to add classes like pmpro-body-level-required, pmpro-body-level-1, and pmpro-body-has-access to the body tag based on the queried object.
+* ENHANCEMENT: Reformatted the PMPro Reports dashboard.
+* ENHANCEMENT: Now using separate invoice templates for email and print.
+
+= 1.8.6.1 =
+* SECURITY: Removed debug code from the PayPal IPN Handler script that was causing invalid IPN requests to process as if they were valid. (Thanks, Francois Harvey)
+
+= 1.8.6 =
+* BUG: The pmpro_membership_level_profile_fields_update() function now only fires on the personal_options_update and edit_user_profile_update hooks instead of the profile_update hook since this function expects to be called from the your-profile or edit-user page.
+* FEATURE: Added the ability to print invoices/orders from the Memberships -> Orders page in the dashboard. (Thanks, AgResources)
+* FEATURE: Added the ability to email invoices/orders from the Memberships -> Orders page in the dashboard. (Thanks, AgResources)
+* ENHANCEMENT: Added pmpro_before_change_membership_level action. Runs before the subscriptions are cancelled and before the SQL executes to change a user's level. Passes $level_id and $user_id.
+* ENHANCEMENT: Updated Stripe Web Hook handler to save event into global $pmpro_stripe_event so filters can act on it.
+* ENHANCEMENT: Added $pmpro_level as a second parameter for the pmpro_setup_new_user filter. (Thanks, David Crabill)
+* ENHANCEMENT: Added Vietnamese language pack. (Thanks, Alex Training Center)
+
+= 1.8.5.6 =
+* ENHANCEMENT: Added pmpro_payflow_authorize_nvpstr, pmpro_payflow_void_nvpstr, pmpro_payflow_charge_nvpstr, pmpro_payflow_subscribe_nvpstr, pmpro_payflow_update_nvpstr, pmpro_payflow_cancel_nvpstr filters for PayPal Payflow Pro gateway. Usage is the same as PayPal Express NVP string filters.
+* ENHANCEMENT: Added printable and emailable invoice templates to the Orders page.
+* BUG: Fixed $pmpro_core_pages bug added in 1.8.5.5.
+* BUG: Removed styling of .input from frontend.css. (Thanks, Russell Jamieson)
+* BUG: Commented out a console.log call from Stripe JavaScript code. (Still there to uncomment if you want to debug.)
+* ENHANCEMENT: No longer requiring the CVC/CVV code with Stripe. If blank, Stripe will try to verify without it. If your Stripe settings are to decline transactions that fail CVC check, you will still need a valid CVC code at checkout.
+
+= 1.8.5.5 =
+* BUG: Added a $pmpro_core_pages global and using that in includes/init.php so we don't try to load preheaders and templates for pages added to that from other addons/etc.
+
+= 1.8.5.4 =
+* ENHANCEMENT: Added pmpro_get_membership_level_for_user and pmpro_get_membership_levels_for_user filters to change the levels returned for a user with the pmpro_getMembershipLevelForUser() and pmpro_getMembershipLevelsForUser() functions.
+* ENHANCEMENT: Updated pmpro_hasMembershipLevels() function to search for expired members with "e" or "E". Also applies to [membership] shortcodes.
+* ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
+* BUG: Fixed infinite redirect issues that would come up on servers setting $_SERVER['HTTPS'] to 'Off' vs 'off' or false. (Thanks, Gordon Seirup)
+* BUG: Using current_time('timestamp') in the sales report to avoid issues where sales at the beginning or end of the day aren't showing up under Today.
+* BUG: Fixed issues where delete links using the askfirst() JavaScript function would break for some language settings.
+* BUG: Added "CVV" and "What's This?" from the checkout page to the .pot file. (Thanks, Laurentc)
+* BUG: Fixed issue where preheaders/account.php was not loaded on the account page if you passed it sections params. (Thanks, sweettea)
+* BUG: Fixed issue where no data was showing up for the 31st of the month on the graph of the signups/cancellations report. (Thanks, David Koller)
+* ENHANCEMENT: Added the pmpro_extra_page_settings filter to add additional page settings fields for use with add-on plugins, etc.
+* ENHANCEMENT: Added the pmpro_next_payment filter to PayPal Express and Stripe gateways. These use the respective APIs to get the next payment date instead of estimating it from the date of the last order. These filters are in place, but haven't been enabled because hitting the API on each call could cause performance issues when exporting members or something else.
+* ENHANCEMENT: Now showing which levels a category is locked down for on the edit category page.
+* ENHANCEMENT: Updated the PayPal IPN handler to check the initial_payment_status and set order to "error" status if the payment failed. This will keep PMPro from counting the order in sales totals and can be used by gists and addons to tweak how orders are dealt with.
+* ENHANCEMENT: Filtering post_classes to add pmpro-level-required, pmpro-level-#, pmpro-has-access classes to post elements that require membership and/or the user has access to.
+
+= 1.8.5.3 =
+* BUG: Fixed issue where addon information was not being updated. (Thanks, walcee, jeff1010ihs, and ron)
+* BUG: Fixed DB errors that would happen sometimes on brand new activations.
+* BUG: Fixed notices in the code that shows a member's payment amount on the edit user/profile page.
+* BUG: Fixed warnings that would show up if you used pmpro_getLevel('name') to get a level by name for a level that didn't exist.
+
+= 1.8.5.2 =
+* BUG: Fixed notice in pmpro_reset_update_plugins_cache
+* BUG: Removed debug code from the PayPal Express gateway.
+
+= 1.8.5.1 =
+* ENHANCEMENT: Added the pmpro_get_addons_timeout and pmpro_license_check_key_timeout filters to change the default timeout during addon and license key checks.
+* BUG: Fixed error handling during addon and license key checks.
+
+= 1.8.5 =
+* BUG: Fixed bug where the subscription_transaction_id was not showing up in the orders CSV export.
+* BUG: Fixed bug where gateway subscriptions were not being cancelled when the "cancel at gateway" option was checked when changing a user's level on the edit user page.
+* BUG: Drag and drop for reordering levels has been disabled if there are < 2 levels or if the user is searching the levels list. (Thanks, Isaac Coleman.)
+* BUG: Fixed bug where sales and revenue charts would never show data for the 31st of the month. (Thanks, TYTNetwork)
+* ENHANCEMENT: Now showing the time in date column of on the orders page and in the timestamp column of the orders CSV export.
+* ENHANCEMENT: Added the pmpro_next_payment filter so you can alter how the next payment date is found. Also added a filter to the PayPal Express gateway class, but left it disabled for performance reasons.
+* ENHANCEMENT: Now zeroing out the initial payment and billing amount in pmpro_memberships_users when an order gets cancelled.
+* ENHANCEMENT: Modified how billing information shows up on the edit user page.
+* ENHANCEMENT: Added partial Finnish translations. (Thanks, Onni Hakala)
+* FEATURE: Overhauled the Add Ons page with one click installs and automatic updates of non-WordPress.org add ons for PMPro Plus members.
+
 = 1.8.4.5 =
 * BUG: Fixed broken links when adminpages/admin_header.php is loaded outside of the PMPro settings tabs.
 * BUG: Fixed issue with PMPro page templates being loaded from child themes. (Thanks, SeventhQueen)
-* BUG: Fixed bug where gateway subscriptions would sometimes be cancelled even if an admin unchecked the "cancel at gateway" option when changing a users level on the edit user page. (Thanks, Scott Noelle)
+* BUG: Fixed bug where gateway subscriptions would sometimes be cancelled even if an admin unchecked the "cancel at gateway" option when changing a user's level on the edit user page. (Thanks, Scott Noelle)
 * ENHANCEMENT: Added debugging to the Braintree webhook. Use define('PMPRO_BRAINTREE_WEBHOOK_DEBUG', true); in your wp-config.php to have debug emails sent to the admin when the Braintree webhook is hit.
 * ENHANCEMENT: Updated email fields on checkout and billing update form to use the "email" field type instead of "text". If you need to revert this back to "text" type, use the pmpro_email_field_type filter like this: apply_filters('pmpro_email_field_type', '__return_false'); (Thanks, Yann Kozon)
 * ENHANCEMENT: French translation updated and now includes email templates. (Thanks, Jean-Christophe Michel)
@@ -766,340 +873,4 @@ useful for determining if/what discount code was applied to the level when proce
 * Added hooks for changing the discount code page: pmpro_save_discount_code_level, pmpro_save_discount_code, pmpro_discount_code_after_settings, pmpro_discount_code_after_level_settings. Look them up in discountcodes.php to see how they work.
 * Updated pmpro_send_html(), which filters emails, to use wpautop instead of nl2br. This will fix any extra double spacing you may have noticed in your emails.
 * Added a stripslashes around the membership level confirmation text on the confirmation page. Extra slashes were breaking links, etc.
-* Added membership level to subject of checkout confirmation email sent to admins.
-
-= 1.4.2 =
-* Fixed bug that was added slashes into a level's description and confirmation when saving.
-* Removed wp_editor use is the blog is running a version of WordPress < 3.3. (Note: We will only officially support the latest version of WordPress with each release.)
-* Added the pmpro_pages_shortcode_{membership page} filter. This can be used to filter the content output by the pmpro_checkout and other page shortcodes. e.g. use pmpro_pages_shortcode_checkout to tweak the HTML output of the pmpro_checkout shortcode. The pages are "account", "billing", "cancel", "checkout", "confirmation", and "levels".
-* Added a "use_ssl" option. For the PayPal Website Payments Pro and Authorize.net gateways, this must be on. For Stripe, this will default to on, but can be switched off. For PayPal Express and the test gateway, it will default to off but can be switched on. When on, the checkout and update billing pages will be forced to be served over SSL. If off, those pages will redirect to non-ssl versions. The previous hooks/filters for overriding this will still work.
-* Added pmpro_save_membership_level and pmpro_membership_level_after_other_settings hooks to be able to add fields to the new/edit membership level page.
-* Fixed some more warnings and notices.
-* Updated checkout page to use pmpro_isLevelFree() in logic to display recaptcha or not.
-
-= 1.4.1 =
-* Fixed critical bugs with PayPal Express.
-* When a PayPal cancellation returns error "11556" (The subscription must have status "active" or "suspended".) I am cancelling the membership without an error. Most likely the PayPal subscription was already cancelled on the PayPal side.
-* No longer trying to cancel a subscription with the gateway if a membership/order doesn't have a subscription_transaction_id. (It was a initial payment only membership probably.)
-
-= 1.4 =
-* Rewrote how gateways are handled to make it easier to add and manage new gateway options.
-* Added Stripe as a gateway option. (http://www.stripe.com)
-* Added a "confirmation message" field to the level editor that is shown on the confirmation page after checking out. The message is added to the text that can be filtered using the pmpro_confirmation_message hook.
-* Now applying "the_content" filters on the confirmation message on the confirmation page. e.g. wpautop will be run on the text to automatically add paragraphs.
-* Now showing the level description on the checkout page. You can use this code to remove the description from the checkout page: https://gist.github.com/2323424
-* The description and confirmation fields of the membership level editor now use WP Editor fields with full WYSIWYG support.
-* Fixed the logic around setting the $pmpro_display_ads global, used by the pmpro_displayAds() and pmpro_hideAds() functions.
-* Fixed bug with recaptcha logic.
-* Updated /pages/checkout.php to use wp_login_url function for login link.
-* Small changes to pmpro_changeMembershipLevel function to support deleting users when they cancel their account.
-* Added the pmpro_member_links_top and pmpro_member_links_bottom hooks so you can add links to the "Member Links" list of the account page. Just output an a tag wrapped in a li tag. (May tweak this to build an array of links that can be filters, but this is good for now.)
-* Fixed some more notices.
-
-= 1.3.19 =
-* Rewrote the pmpro_login_redirect function. It's cleaner now. Important: there was a pmpro_login_redirect hook in there that was fairly redundant with the core login_redirect hook. I've renamed the pmpro hook to pmpro_login_redirect_to because I had a hook with the same name (pmpro_login_redirect) used in a different place to control whether or not PMPro redirects the register page to the levels page. Having one hook for two things is a bad idea. It seems like more people were using the hook for controlling the registration redirect, so I left that one alone and renamed these.
-* Changed PMPro page creation to set all membership pages as subpages of the membership account page. This results in nicer menus for themes that add all top level pages to the menu.
-* Updated the checkout page to submit to "" (itself) instead of echoing the checkout page URL here. (Since we can have multiple checkout pages.) This also fixes from SSL conflicts that may crop up on the checkout page.
-* Updated the priority of a few actions/hooks so the "besecure" https stuff gets run as soon as possible. Before it was possible that some URLs could be written out with http: on an HTTPS page before PMPro had a chance to fix things. You should have fewer SSL errors on the checkout page to deal with now.
-* Added an option on the payment settings page to "nuke" http: links on all secure pages. This option can add time to your page loads, but will ensure that all http: links for your domain are replaced with https: links.
-* Allowing multiple pages to use the [pmpro_checkout] shortcode so you can create multiple checkout pages. This is good if you want a separate templated checkout page for each membership level or product you have.
-* You can now add a pmpro_default_level custom field, set to the id # of the level you want, that will be used if you navigate directly to a checkout page without setting a level.
-* Added some stuff to support adding shipping fields via hooks. Add this plugin to your site, edit, and activate to add shipping to your checkout: https://gist.github.com/1894897
-* Removed the price from the description sent to PayPal. The DESC field is limited to 127 characters and must match up across API calls. So there is a good chance the price would get truncated which could be confusing. This was a kind of hack anyway. PayPal should show the price data it has. Not sure why it won't. The price is still reviewed on the review page of your site though.
-* The recaptcha code now checks for a previous error before changing pmpro_msg to "All Good".
-* Fixed warning in pmpro_has_membership_access(). Fixed a bunch of other warnings here and there.
-* Rewrote pmpro_updateMembershipCategories() just to be cleaner
-* Added pmpro_state_dropdowns filter. If you return true, the state field will become a dropdown with US states. Use the pmpro_states and pmpro_states_abbreviations filters to change the array of states used.
-
-= 1.3.18.1 =
-* Added the new email .html templates to svn.
-
-= 1.3.18 =
-* Fixed some warnings: admin bar warning that showed up on admin pages; warning issued by pmpro_setOption(); warning in pmpro_hasMembershipLevel(); warning in billing update; warnings on the user edit page; warnings in the getTax method of the order class; warnings in save method of order class.
-* Added a pmpro_checkout_confirm_email filter that can return false to hide and not require the "Confirm E-mail" field at checkout.
-* Added a pmpro_checkout_confirm_password filter that can return false to hide and not require the "Confirm Password" field at checkout.
-* If the PMPRO_DEFAULT_LEVEL constant is set, traffic on the levels page is redirected to the checkout page. This redirect no longer forces HTTPS.
-* Moved the pmpro_paypalexpress_session_vars hook call so it will run even if existing users are checking out (upgrades, etc).
-* Added some confirmation emails for admins: (1) for new user signups, (2) when an admin changes a member's level, (3) when a user cancel's their membership, and (4) when a user update's their billing information. New email templates (ending with "_admin.html") have been added to the /email/ folder of the plugin.
-* Added new email settings to enable/disable the new admin emails. They will be enabled by default on install and upgrade to 1.3.18. The settings are on the email tab of the PMPro settings.
-* Added a couple hooks to the checkout page to have more control over where you add fields, etc. pmpro_checkout_before_submit_button and pmpro_checkout_after_billing_fields.
-
-= 1.3.17.1 =
-* Fixing activation bug from 1.3.17.
-
-= 1.3.17 =
-* Updated pmpro_hasMembershipLevel() and [membership] shortcode to allow passing a level like "-5" which will return true if the user does NOT have level #5.
-* Updated how PMPro notifications are retrieved and shown on the PMPro admin pages. We're using admin-ajax to call the pmpro_notifications function which uses WP's HTTP API to call the www.paidmembershipspro.com server. Only the PMPro version number is passed to check if a notification should be shown. This method shouldn't slow page load since the javascript is called using jQuery's ready function. If the PMPro server is unavailable, you'll get a JS error instead of a PHP one.
-* Fixed warning on discount codes page. Fixed some other warnings.
-* Updated expiration/trial crons to avoid blank ('') and zero ('0000-00-00 00:00:00') DB values in addition to NULLs. (Some backup programs will incorrectly export NULL dates as '' which could be interpretted as 1/1/1970... meaning the membership has expired.)
-* Fixed bug where "Billing Information" was shown on the account page for some free levels.
-
-= 1.3.16 =
-* Moved the SSL Seal box lower on the payment settings page.
-* Made dashboard menu and admin bar menus consistent. 
-* Fixed bug with selecting categories when adding a new level.
-* Fixed bug where the user was sometimes redirected to the add level page after adding a level.
-
-= 1.3.15 =
-* Fixed SSL handling on the billing page for members without an order.
-* Removed single quotes from shortcode examples on page settings page. Doh! (Thanks, Caps)
-* Added Multisite/Network FAQ item.
-* Updated the payments settings page to convert tax rates like 7 into 0.07. (Tax rates > 1 are divided by 100.)
-
-= 1.3.14 =
-* Added pmpro_show_cvv filter to hide the CVV from the checkout and billing information pages.
-* Updated the billing page to use the pmpro_required_billing_fields like the checkout page does.
-* Updated the Authorize.net integration to not pass an empty CVV if the value is empty. Authorize.net will still throw an error if you require CVV via your gateway settings. If you update your settings and PMpro to not require a CVV, you won't get an error.
-* Passing the level cost to PayPal Express through the description.
-* The billing page doesn't require SSL now if the gateway for the order was PayPal Express. A link to PayPal is shown instead of the form. (Be sure to remove the "becesure" custom field from your billing page if it has one and you don't want this page served over SSL.)
-* Fixed bug where the membership level name wasn't being passed to Authorize.net in the description field for the order.
-* Added a second paramter ($tags = true) to the pmpro_getLevelCost function. If this is false, strip_tags is run on the cost before returning it. (By default we wrap the prices in <strong> tags which is not good for passing to PayPal for example.)
-* Some bug fixes for updating billing against Authorize.net.
-
-= 1.3.13 =
-* Fixed warning on checkout page. (Thanks Caps!)
-* Fixed bug in PayPal Express checkout that resulted in trying to load the confirmation page over SSL (which would break on some servers). (Thanks Caps!)
-* Updated getTaxFromPrice method of order class to allow for better filtering, by level, etc. The pmpro_tax filter now passes the $tax amount, $values (array with price passed and other values), and $this (the order object). It's a little clunky, but must be for backwards compatibility. Custom tax example here: http://www.paidmembershipspro.com/2012/02/custom-tax-structure-using-the-pmpro_tax-hook/
-* Removed all TAXAMT NVP parameters in PayPal Express calls. Including these would sometimes introduce errors during checkout. The tax amount is still included in the total amounts passed. Not sure what impact dropping the TAXAMT property will have on reporting in PayPal. I don't believe their tax reporting is the best anyway. Maybe we can build a tax report into PMPro.
-
-= 1.3.12 =
-* Fixed bug in members list pagination on sites installed in a subdirectory.
-* Now swapping out the PayPal Express checkout button if the level is free or becomes free with a discount code. (Thanks, Caps!)
-
-= 1.3.11 =
-* Fixed bug with cancelling a user's membership through the admin.
-
-= 1.3.10 =
-* Fixed the links in the discount code table.
-* pmpro_hasMembershipLevel(0) and [membership level="0"] will once again return true for non-members. (This broke whent he pmpro_has_membership_level filter was added.)
-* WP 3.3.1 testing. (Looks good!)
-
-= 1.3.9 =
-* Added a "pmpro_has_membership_level" filter ($r = apply_filters("pmpro_has_membership_level", $r, $user_id, $levels);) which can be used to override the default behavior here.
-* Fixed the pmpro shortcodes to allow content above and below the shortcodes on the membership pages. (Thanks, Bluewind!)
-* Now setting the user's first and last name to the billing first and last name after checkout.
-* Added billing first/last name, billing address, and phone number to the members list screen and CSV export.
-* Removed email header/footer code from email class because sometimes it was added twice. Now it is added by the pmpro_send_html function in paid-memberships-pro.php for all emails (WP or PMPro) if a header or footer file are found in your theme folder.
-* Added a pmpro_after_phpmailer_init. (The old hook pmpro_after_pmpmailer_init had a typo -- pmpmailer instead of phpmailer.) I left the old hook in for backwards compatibility.
-
-= 1.3.8 =
-* Fixed a bug with canceling memberships. Important Note: User requested cancellations were not being forwarded to PayPal and Authorize.net in the past couple updates. Please double check your members lists with your payment gateway subscriptions. Sorry for the inconvenience.
-* Fixed a bug in the billing update form.
-* Wrapped some output on the billing update form in esc_attr.
-* Now sorting countries alphabetically if international orders are turned on.
-* Updated the membership-billing page to show country and long form fields if enabled via the hooks pmpro_international_addresses and pmpro_longform_address. (These were only showing up on the checkout form before.)
-
-= 1.3.7 =
-* Added "expiration" field to user profile page. Updated the email class to include information on expiration dates in the admin change emails.
-* Added "pmpro_profile_show_membership_level" and "pmpro_profile_show_expiration" filters which will hide those fields from the edit profile screen if false is returned.
-* Added a pmpro_getMembershipLevelForUser($user_id) function and replaced some redundant code in a few places where we query the DB for this. Maybe we'll have a membership level class as some point. Makes sense now.
-* Fixed bug where the wrong price for levels was showing up on the edit profile page in the admin. (It would show the current user's level info instead of the edited user's info.)
-* Cleaned up a few more warnings, etc.
-
-= 1.3.6 =
-* Changed a few split() calls to explode() to avoid warnings.
-* Fixed a couple other warnings/notifices.
-* Updated account page to hide the change billing info link if the user doesn't have an active subscription or signed up with PayPal Express.
-* Added a filter pmpro_paypal_express_return_url_parameters which can be used to add parameters to the ReturnURL when checking out with PayPal Express. Return an array of key, value pairs. { return array("option" => "1"); }
-
-= 1.3.5 =
-* Important update to Authorize.net processing code to account for the "credit card expires before the start of this subscription" error that comes up. For levels/discount codes with no trials or only free trials/initial payments, the subscription setup with Authorize.net starts the day of checkout and a free trial is tacked on for 1 period vs. setting up the subscription one period out. One period is added to the billing limit as well, if applicable. Check the blog for more information.
-* Important update for PayPal Website Payments Pro users. When using PayPal WPP, the user will have an option to checkout via PayPal Express as well. PayPal requires this and now we support it.
-
-= 1.3.4 =
-* Swapped the $ in the levels page code for $pmpro_currency_symbol.
-* Changed the membership shortcode to apply the_content filters to the return value instead of just wpautop. This allows shortcodes within that shortcode and other filters to be run on the content. (Let me know if issues arrise from this.)
-* Wrapped some post variables in checkout and billing preheaders with trim()
-* Now voiding authorizations with Authorize.net. (The plugin will authorize $1 before setting up a subscription without an initial payment.)
-* Now voiding an initial payment with Authorize.net if the subscription setup fails.
-* Now refunding an intial payment with PayPal if the subscription setup fails.
-* Added a "pmpro_checkout_after_level_cost" to add fields or arbitrary code after the level cost description on the checkout page.
-* Added Diner's Club, EnRoute, and JCB as credit card options. Make sure you congiture your Gateway/Merchant account to accept these card types as well.
-
-= 1.3.3 =
-* Fixed bug where country field was resetting to default when there were errors with the checkout form submission. (If you templatized your checkout page and have international addresses enabled, you will need to add $bcountry to the globals setup at the top of your checkout template .php)
-
-= 1.3.2 =
-* Fixed issue introduced in 1.3.1 where checkout page would not redirect to HTTPS when it should have.
-* Fixing issues with slashes in addresses/etc in the checkout form.
-* Updated the PMProEmail class to use the wp_mail function instead of use PHPMailer directly. (Thanks VadaPrime: http://wordpress.org/support/topic/plugin-paid-memberships-pro-wp_mail?replies=6#post-2449672)
-* Fixed some more notices and warnings.
-
-= 1.3.1 =
-* Fixed automatic page creation, which broke in the last update.
-* Added hook pmpro_checkout_level which allows you to tweak the $level object before checkout, e.g. to change pricing for upgrades.
-* Added hook pmpro_checkout_start_date which allows you to change the start date of a membership before checkout. (preheaders/checkout.php)
-* Added hook pmpro_profile_start_date which allows you to change the start date of a membership that is sent to the gateway. (classes/class.memberorder.php)
-* Cleaned up some notices and warnings. Will hopefully finish the remaining ones next update.
-* Removed some old tinyMCE code that wasn't in use anymore. FYI, WP 3.3 will have a way to include visual editors on other pages, so we may add it to the description field of the membership levels.
-* Updated order class to send phone and email to Authorize.net when creating subscriptions. The charge/authorize API support international phone numbers, but the ARB API does not. So if a customer enters an international phone number (or other phone number over 10 characters), the number will be sent for any initial payment/charge, but not for the subscription setup.
-* Fixed where !!discount_code!! was not being parsed out in emails.
-
-= 1.3 =
-* Added a filter pmpro_login_redirect. You can return false to allow users to signup via the default WP login page.
-* Member CSV export no longer limiting to 15 members.
-* Correctly adding code_id to the pmpro_memberships_users table on signup. View here for retroactively updating your users tables in case you intend to use that value for advanced functionality.
-* Changed URL to send IPN checks for live PayPal instances from www.live.paypal.com to www.paypal.com.
-* Updated getfile.php to work when WP is installed in a subdomain.
-* Added links to individual settings tabs in the WP menu.
-* Changed the architecture of the settings pages which used to all be coded in the membershiplevels.php page. Each settings page has its own script now. I removed the pmpro-data.php service and have the pages submit to themselves now. This won't impact how things work, but will make it easier for me to develop going forward.
-
-= 1.2.10 =
-* Added pmpro_confirmation_message hook to change the output on the confirmation page without having to templatize it. The filter passes the constructed html string with the confirmation message and a second parameter containing the order/invoice object if it is a paid membership.
-* Added a pmpro_checkout_boxes hook that can be used to output extra fields and other content in the middle of the checkout page.
-* Now showing 2 decimals places for the tax rate when showing a membership level's cost.
-
-= 1.2.9 =
-* IMPORTANT fix so new user email addresses are properly captured when using PayPal Express.
-* rewrote the IPN handler to use the WordPress HTTP API for better compatibility.
-* added extra id to tables and fields for easier styling. (let me know if you have suggestions for small changes like these that can save you from having to templatize a page)
-* fixed query in readiness check function.
-* Authorize.net doesn't support international phone numbers, so we're not sending them to Authorize.net anymore.
-
-= 1.2.8 =
-* Ordering levels by id (ascending) on the levels page now. Added a "pmpro_levels_array" filter that can be used to reorder the levels or alter the levels before displaying them on the levels page. The array of levels is the only parameter.
-* Added expiration date to the member list and export.
-* Showing a member count on the member list page.
-* Added filter to change subject lines for PMPro emails. (pmpro_email_subject) The filter's first paramter is the subject, the second parameter is an object containg all of the email information. There are also filters for pmpro_email_recipient, pmpro_email_sender, pmpro_email_sender_name, pmpro_email_template, amd pmpro_email_body.
-* Added an RSS feed from the PMPro blog to the dashboard.
-* Now only showing the discount code field at checkout if there are discount codes in the database. Can be overriden by the pmpro_show_discount_code filter.
-* Cancelling with PayPal now properly updates status to "cancelled".
-* No longer trying to unsubscribe from PayPal or Authorize.net if there is no subscription ID to check against (e.g. when the user was manually added to a membership level) or if the last order does not have "success" status (e.g. they already cancelled).
-* Removed PHP short tags (e.g., <?=$variable?>) for wider compatibility.
-
-= 1.2.7 =
-* Fixed bug with non-USD currencies.
-* Fixed bug with phone number formatting.
-
-= 1.2.6 =
-* Fixed bug with discount codes showing up in emails, confirmation pages, and invoices.
-* Added currency option to gateway settings.
-
-= 1.2.5 =
-* PayPal Express support! PayPal Express requires just a verified PayPal Business account (no monthly fees from PayPal).
-* Fixed a bug when plans with a "cycle number"/billing frequency that was greater than 1 (e.g. every 4 months). Before the first payment was being scheduled 1 day/month ext out instead of e.g. 4 months out... resulting in an extra payment.
-* Added some hooks to support international orders: pmpro_international_addresses, pmpro_default_country, pmpro_countries, pmpro_required_billing_fields. Example code to support international credit cards: https://gist.github.com/1212479
-
-= 1.2.4 =
-* VERY IMPORTANT BUG FIX: The getMembershipLevel function of the MemberOrder class had an error where the membership level object was not being created properly during signup and so * recurring subscriptions were not being created *. This update fixes the bug. Thanks to mvp29 for catching this.
-* Fixed another bug that was causing warnings on some setups, e.g. WAMP server for Windows.
-* Fixed a bug that would show warnings when visiting a login page over HTTPS.
-* Fixed membership pricing wording for certain cases, e.g. every 4 months for 4 more payments.
-* Fixed a bug in the email generation for order confirmations when discount codes were used. This will no longer freeze the screen.
-
-= 1.2.3 =
-* Fixed an error in the DB upgrade code that was keeping the "enddate" from being added to new members' records.
-
-= 1.2.2 =
-* Added pmpro_skip_account_fields hook. This value is used to determine if the username/password accounts fields should show up at checkout. By default, it is shown when the user is logged out and not shown when logged in. The hook allows you to return true or false to override this behavior. If the fields are skipped while no user is logged in a username and password will be automatically generated for the new user after checkout.
-* You can delete discount codes now from the admin.
-* Added a hook pmpro_level_cost_text to allow you to override how the cost is shown on the checkout page. Obviously don't abuse this by showing a different price than what will be charged. Be careful if you change your membership levels pricing to update your filter if needed. The hook passes the text generated by the pmpro_getLevelCost(&$level) function and also a level object which is prepopulated with levels pricing and expiration settings already adjusted for any discount codes that may be in affect.
-* Added expiration settings for levels. You can set an "expiration number" and "expiration period" for any level now. e.g. "6 months" or "180 days". You can also alter expiration settings via discount codes. Expirations will be useful for offering free trials which don't require a credit card... and other scenarios you guys have come up with. A script is run once a day using WP Cron that checks for any membership that has ended and then cancels that membership. The user will lose access and the subscription setup in your payment gateway will be canceled.
-* Users can "extend" a membership that is set to expire via the Membership Account page.
-* Added a hook pmpro_level_expiration_text to allow you to override how the expiration information is shown on the levels and checkout pages. Again don't abuse this by showing a different expiration than is real. Be careful if you change your expiration settings to update your filter if needed. The hook passes the text generated by the pmpro_getLevelExpiration(&$level) function and also a level object which is prepopulated with levels pricing and expiration settings already adjusted for any discount codes that may be in affect.
-* Added an error check if the MySQL insertion of the membership level fails. This happens after the user's credit card/etc has already been charged. The plugin tries to cancel the order just made, but might fail. The user is adviced to contact the site owner instead of trying again. I don't want to scare you. We test the checkout process a lot. So assuming that the code hasn't been tampered with and there isn't an internet outage in the microseconds between the order going through and the database being updates, you should never run into this. Still it's nice to have, just in case.
-* Fixed a bug that may have caused the billing amount to show up incorrectly on the Membership Account page.
-* Added the discount code used to the confirmation page, invoices, and invoice emails.
-* Now sending notification emails to members 1 week before their trial period ends (if applicable). A WP cron job is setup on plugin activation. You can disable the email via the pmpro_send_trial_ending_email hook.
-* Now sending notification emails to members 1 week before their membership expires (if applicable). A WP cron job is setup on plugin activation. You can disable the email via the pmpro_send_expiration_warning_email hook.
-* An email is sent when a membership expires. A WP cron job is setup on plugin activation. You can disable the email via the pmpro_send_expiration_email hook.
-* Note: Right now users cannot "extend" a membership that is about to expire without first canceling their current membership. I plan to add "membership extensions" for these cases, but it's a little complicated and I didn't want to hold up this release for them. So Real Soon Now.
-
-= 1.2.1 =
-* Fixed bug where non-member admins would be redirected away from the "All Pages" page in the admin.
-
-= 1.2 =
-* Fixing some wonkiness with the 1.1.15 update.
-* Fixed "warning" showing up on discount code pages.
-* Tweaked the admin pages a bit for consistency.
-* Added screenshots and FAQ to the readme.
-* Figured we were due for a bigger version step.
-
-= 1.1.15 =
-* Discount Codes Added!
-* Removed some redundant files that slipped into the services folder.
-* Fixed the !!levels!! variable for message settings of the advanced tab.
-* Changing some ids columns in tables to unsigned.
-
-= 1.1.14 =
-* Now encoding #'s when sending info via Authorize.net's API. This may prevent some address conflicts.
-
-= 1.1.13 =
-* No longer adding "besecure" custom field to the billing and checkout pages. You can still add this manually to selectively require SSL on a page. If you are trying to do a free membership without SSL, you will have to make sure the besecure custom field is deleted from the Membership-Checkout page, especially if you are upgrading from an older version of PMPro.
-* Added a filter before sending the default WP welcome notification email. Return false for the "pmpro_wp_new_user_notification" hook/filter to skip sending the WP default welcome email (because in many cases they are already getting an email from PMPro as well).
-
-= 1.1.12 =
-* Revenue report on members list page. (Rought estimate only that doesn't take into account trial periods and billing limits.)
-* Enabling weekly recurring payments for Authorize.net by converting week period to 7 days * # months.
-* Improved error handling on checkout page.
-* Now running "pmpro_after_change_membership_level" actions after the "pmpro_after_checkout" action. Previously this hook was only called when a membership level was changed via the WP admin.
-* Won't complain about setting up a Payment Gateway if you only have free membership levels.
-* The "besecure" custom field is not added to the billing or checkout by default anymore when you run the "create the pages for me" option in the settings. Whether or not to use HTTPS on a page is now handled in the preheader files for each page (see below).
-* The plugin won't force SSL on the checkout page anymore unless the membership level requires payment. If your checkout page is still running over HTTPS/SSL for free membership checkouts, make sure the "besecure" custom field has been deleted on your checkout page. You can use the "besecure" custom field or the "pmpro_besecure" filter to override the plugin's decision.
-* The plugin won't force SSL on the cancel page anymore. Again, you can override this using the "besecure" custom field or the "pmpro_besecure" filter.
-
-= 1.1.11 =
-* Removed some debug code from the invoice page that might have shown on error.
-* Added check to recaptcha library code incase it is already installed. (Let's hope other plugin developers are doing the same.)
-* Removed the TinyMCE editor from the description field on the edit membership level page. It was a little buggy. Might bring it back later.
-
-= 1.1.10 =
-* added a hook/filter "pmpro_rss_text_filter"
-* added a hook/filter "pmpro_non_member_text_filter"
-* added a hook/filter "pmpro_not_logged_in_text_filter"
-* adjusted the pmpro_has_membership_access() function
-* added a hook/filter "pmpro_has_membership_access_filter"
-* updated the hook/filter "pmpro_has_membership_access_filter_{post-type}"
-* removed the "pmpro_has_membership_access_action_{post-type}" hook/action
-* update invoice page to handle case where no invoice is found
-
-= 1.1.9 =
-* You can now set individual posts to require membership without assigning them to a category.
-* Fixed bug with the confirmation email during signup.
-* Fixed a CSS bug on the cancel membership page.
-
-= 1.1.8 =
-* Fix for login/registration URL rerouting.
-* Added members list to admin bar menu.
-* Added warning/error when trying to checkout before the payment gateway is setup.
-* Fixed some error handling in the order class.
-* Fixed a bug that occurred when processing amounts less than $1.
-
-= 1.1.7 =
-* Fixed bugs with http to https redirects and visa versa.
-* Fixed redirect bugs for sites installed in a subdomain.
-
-= 1.1.6 =
-* Fixed MySQL bug showing up on some users add membership level page.
-
-= 1.1.5 =
-* Required fix for PayPal Website Payments Pro processing. Please update.
-* Fixed bug with pagination on members list.
-* Fixed bugs with errors thrown by MemberOrder class.
-* Updated login/registration URL rerouting.
-
-= 1.1.4 =
-* Custom Post Types default to allowing access
-* Fixed login_redirect code.
-* Added pmpro_login_redirect filter for when members login.
-
-= 1.1.3 =
-* Getting ready for the WP plugin repository
-* License text update.
-
-= 1.1.2 =
-* Added hooks to checkout page for customizing registration fields.
-* Fixed bug in pmpro_getLevelCost();
-* Another CCV/CVV fix for Authorize.net.
-* License text update.
-* Admin notices are loaded via Ajax now.
-
-= 1.1.1 =
-* Added honeypot to signup page.
-* Updated pmpro_add_pages to use capabilities instead of user levels
-* Fixed checkboxes in admin screens.
-* Now checking that passwords match on signup.
-* Properly sending CCV/CVV codes to Authorize.net.
-
-= 1.0 =
-* This is the launch version. No changes yet.
+* Added membership level to subj

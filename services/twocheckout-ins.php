@@ -21,7 +21,7 @@
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
 	//validate?
-	if( false || ! pmpro_twocheckoutValidate() ) {
+	if( ! pmpro_twocheckoutValidate() ) {
 		
 		inslog("(!!FAILED VALIDATION!!)");
 		
@@ -55,12 +55,15 @@
 		inslog("NO MESSAGE: ORDER: " . var_export($morder, true) . "\n---\n");
 		
 		//update membership
-		if (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
+		if( ! empty ( $morder ) && ! empty ( $morder->status ) && $morder->status === 'success' ) {
+			inslog( "Checkout was already processed (" . $morder->code . "). Ignoring this request." );
+		}
+		elseif (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
 		}
 		else {
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
-		}	
+		}
 		
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
@@ -75,12 +78,15 @@
 		inslog("ORDER_CREATED: ORDER: " . var_export($morder, true) . "\n---\n");
 		
 		//update membership
-		if (pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
+		if( ! empty ( $morder ) && ! empty ( $morder->status ) && $morder->status === 'success' ) {
+			inslog( "Checkout was already processed (" . $morder->code . "). Ignoring this request." );
+		}
+		elseif (pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
 		}
 		else {
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );		
-		}	
+		}
 		
 		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
 	}
@@ -227,6 +233,23 @@
 		else		
 			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );				
 		
+		if( empty ( $check ) )
+			$r = false;	//HTTP failure
+		else if( empty ( $check['response_code'] ) )
+			$r = false;	//Invalid response
+		else
+			$r = $check['response_code'];
+
+		/**
+		 * Filter if an twocheckout request is valid or not.
+		 *
+		 * @since 1.8.6.3
+		 *
+		 * @param bool $r true or false if the request is valid
+		 * @param mixed $check remote post object from request to Twocheckout
+		 */
+		$r = apply_filters('pmpro_twocheckout_validate', $r, $check);
+
 		return $check['response_code'] === 'Success';
 	}
 	

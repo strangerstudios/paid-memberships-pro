@@ -160,12 +160,12 @@
 			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
 			
 			//start and end date
-			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status = 'inactive' ORDER BY id DESC");
+			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($startdate))
 				$this->data['startdate'] = date(get_option('date_format'), $startdate);
 			else
 				$this->data['startdate'] = "";
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status = 'inactive' ORDER BY id DESC");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($enddate))
 				$this->data['enddate'] = date(get_option('date_format'), $enddate);
 			else
@@ -819,6 +819,57 @@
 				$this->data["membership_change"] .= ". " . __("This membership does not expire", "pmpro");
 			}
 			
+			return $this->sendEmail();
+		}
+
+		/**
+		 * Send billable invoice email.
+		 *
+		 * @since 1.8.6
+		 *
+		 * @param WP_User $user
+		 * @param MemberOrder $order
+		 *
+		 * @return bool Whether the email was sent successfully.
+		 */
+		function sendBillableInvoiceEmail($user = NULL, $order = NULL)
+		{
+			global $current_user;
+
+			if(!$user)
+				$user = $current_user;
+
+			if(!$user || !$order)
+				return false;
+
+			$level = pmpro_getLevel($order->membership_id);
+
+			$this->email = $user->user_email;
+			$this->subject = __('Invoice for Order #: ', 'pmpro') . $order->code;
+			$this->template = "billable_invoice";
+
+			// Load invoice template
+			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php';
+			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-email.php';
+			} else {
+				$template = PMPRO_DIR . '/adminpages/templates/orders-email.php';
+			}
+
+			ob_start();
+			require_once( $template );
+
+			$invoice = ob_get_contents();
+			ob_end_clean();
+
+			$this->data = array(
+				'order_code' => $order->code,
+				'login_link' => wp_login_url(pmpro_url("account")),
+				'invoice_link' => wp_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				'invoice' => $invoice
+			);
+
 			return $this->sendEmail();
 		}
 	}
