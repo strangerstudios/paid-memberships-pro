@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.3.1
-Stable tag: 1.8.6.5
+Stable tag: 1.8.6.6
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.6 =
+* BUG: Fixed issue introduced in 1.8.6.5 where "Please enter all required fields" errors would show up even for free/etc levels at checkout.
+
 = 1.8.6.5 =
 * BUG: Now checking for required fields even if $pmpro_requirebilling is not set.
 * BUG: The redirect_to URL is now encoded with urlencode() when using the !!referrer!! tag in the logged out/non-member text settings on the advanced settings tab. (Thanks, Robert Wilkins)
