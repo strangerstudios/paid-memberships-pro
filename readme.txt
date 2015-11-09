@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.7 =
+* BUG: Fixed issue with prices over $1000 when using TwoCheckout. (Thanks, BigBradBrown and others.)
+
 = 1.8.6.6 =
 * BUG: Fixed issue introduced in 1.8.6.5 where "Please enter all required fields" errors would show up even for free/etc levels at checkout.
 

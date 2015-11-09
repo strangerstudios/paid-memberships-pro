@@ -296,11 +296,11 @@
 			
 			// Recurring membership			
 			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
-				$tco_args['li_0_startup_fee'] = number_format($initial_payment - $amount, 2);		//negative amount for lower initial payments
-				$recurring_payment = $order->membership_level->billing_amount;
-				$recurring_payment_tax = $order->getTaxForPrice($recurring_payment);
-				$recurring_payment = round((float)$recurring_payment + (float)$recurring_payment_tax, 2);
-				$tco_args['li_0_price'] = number_format($recurring_payment, 2);
+				$tco_args['li_0_startup_fee'] = number_format($initial_payment - $amount, 2, ".", "");		//negative amount for lower initial payments
+				$recurring_payment = number_format($order->membership_level->billing_amount, 2, ".", "");
+				$recurring_payment_tax = number_format($order->getTaxForPrice($recurring_payment), 2, ".", "");
+				$recurring_payment = number_format(round((float)$recurring_payment + (float)$recurring_payment_tax, 2), 2, ".", "");
+				$tco_args['li_0_price'] = number_format($recurring_payment, 2, ".", "");
 
 				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod . 's';
 
@@ -311,7 +311,7 @@
 			}
 			// Non-recurring membership
 			else {
-				$tco_args['li_0_price'] = $initial_payment;
+				$tco_args['li_0_price'] = number_format($initial_payment, 2, ".", "");
 			}
 
 			// Demo mode?
@@ -332,7 +332,7 @@
 			if(!empty($order->TrialBillingPeriod)) {
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$trial_amount = pmpro_formatPrice(round((float)$trial_amount + (float)$trial_tax, 2), false, false);
 				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
 			}				
 			
