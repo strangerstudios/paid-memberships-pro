@@ -13,8 +13,7 @@
 				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
 			
 			//set API connection vars
-			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));
-			Twocheckout::privateKey(pmpro_getOption('twocheckout_privatekey'));
+			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));			
 			Twocheckout::username(pmpro_getOption('twocheckout_apiusername'));
 			Twocheckout::password(pmpro_getOption('twocheckout_apipassword'));
 			Twocheckout::$verifySSL = false;
@@ -74,8 +73,7 @@
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'twocheckout_apiusername',
-				'twocheckout_apipassword',
-				'twocheckout_privatekey',
+				'twocheckout_apipassword',				
 				'twocheckout_accountnumber',
 				'twocheckout_secretword',
 				'currency',
@@ -133,16 +131,7 @@
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
 				<br /><small><?php _e('Password for the API user created.');?></small>
 			</td>
-		</tr>
-		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="twocheckout_privatekey"><?php _e('API Private Key', 'pmpro');?>:</label>
-			</th>
-			<td>
-				<input type="text" name="twocheckout_privatekey" size="60" value="<?php echo $values['twocheckout_privatekey']?>" />
-				<br /><small><?php _e('Go to API in 2Checkout and generate a new key pair. Paste the Private Key here.');?></small>
-			</td>
-		</tr>
+		</tr>		
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'pmpro');?>:</label>

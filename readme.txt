@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.6.7 =
 * BUG: Fixed issue with prices over $1000 when using TwoCheckout. (Thanks, BigBradBrown and others.)
+* ENHANCEMENT: Removed the API Private Key option from 2Checkout setup since we don't actually use that in the API.
 
 = 1.8.6.6 =
 * BUG: Fixed issue introduced in 1.8.6.5 where "Please enter all required fields" errors would show up even for free/etc levels at checkout.
