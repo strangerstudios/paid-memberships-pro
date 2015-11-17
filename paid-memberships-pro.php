@@ -152,7 +152,7 @@ function pmpro_activation()
 {
 	//schedule crons
 	wp_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
-	wp_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expiration_warnings');
+	wp_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
 	//wp_schedule_event(current_time('timestamp')(), 'daily', 'pmpro_cron_trial_ending_warnings');		//this warning has been deprecated since 1.7.2
 	wp_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
