@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.6.7 =
 * BUG: Fixed issue with prices over $1000 when using TwoCheckout. (Thanks, BigBradBrown and others.)
 * ENHANCEMENT: Removed the API Private Key option from 2Checkout setup since we don't actually use that in the API.
+* ENHANCEMENT: Using the pmpro_check_status_after_checkout filter to set the status of orders for recurring check payments in addition to one time payments. This update supports the update Pay by Check Add On v.5.
 
 = 1.8.6.6 =
 * BUG: Fixed issue introduced in 1.8.6.5 where "Please enter all required fields" errors would show up even for free/etc levels at checkout.

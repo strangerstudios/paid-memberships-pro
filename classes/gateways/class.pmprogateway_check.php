@@ -234,6 +234,7 @@
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{
+							$order->status = apply_filters("pmpro_check_status_after_checkout", "success");	//saved on checkout page	
 							return true;
 						}
 						else
