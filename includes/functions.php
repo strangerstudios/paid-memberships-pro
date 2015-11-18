@@ -178,7 +178,7 @@ function pmpro_isLevelRecurring(&$level)
 
 function pmpro_isLevelTrial(&$level)
 {
-	if($level->trial_limit > 0)
+	if(!empty($level) && !empty($level->trial_limit) && $level->trial_limit > 0)
 	{
 		return true;
 	}
@@ -188,7 +188,7 @@ function pmpro_isLevelTrial(&$level)
 
 function pmpro_isLevelExpiring(&$level)
 {
-	if($level->expiration_number > 0)
+	if(!empty($level) && !empty($level->expiration_number) && $level->expiration_number > 0)
 		return true;
 	else
 		return false;
