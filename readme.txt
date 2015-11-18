@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.3.1
-Stable tag: 1.8.6.6
+Stable tag: 1.8.6.7
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -120,6 +120,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Removed the API Private Key option from 2Checkout setup since we don't actually use that in the API.
 * ENHANCEMENT: Using the pmpro_check_status_after_checkout filter to set the status of orders for recurring check payments in addition to one time payments. This update supports the update Pay by Check Add On v.5.
 * ENHANCEMENT: Added +1 to timestamp when the pmpro_cron_expiration_warnings cron is scheduled to make sure it runs after the pmpro_cron_expire_memberships cron.
+* ENHANCEMENT: Added email templates for Greek translation. (Thanks, Dimitris Kalliris)
 
 = 1.8.6.6 =
 * BUG: Fixed issue introduced in 1.8.6.5 where "Please enter all required fields" errors would show up even for free/etc levels at checkout.
