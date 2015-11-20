@@ -62,13 +62,20 @@ function pmpro_send_html( $phpmailer ) {
 	
 	//to check if we should wpautop later
 	$original_body = $phpmailer->Body;
-	
+
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
-	// Clean < and > around text links in WP 3.1
-	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
-	// Convert line breaks & make links clickable
-	$phpmailer->Body = make_clickable ($phpmailer->Body);
+
+	if ($phpmailer->ContentType == 'text/plain')
+	{
+		// Convert text to HTML
+		// Clean < and > around text links in WP 3.1
+		$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
+		// Convert line breaks & make links clickable
+		$phpmailer->Body = make_clickable($phpmailer->Body);
+		$phpmailer->Body = wpautop($phpmailer->Body);
+	}
+	$phpmailer->ContentType = 'text/html';
 
 	// Get header for message if found
 	if(file_exists(get_stylesheet_directory() . "/email_header.html"))
@@ -107,25 +114,12 @@ function pmpro_send_html( $phpmailer ) {
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
 	}
 
-	// If there is no HTML, run through wpautop
-	if($original_body == strip_tags($original_body) &&
-		$header == strip_tags($header) &&
-		$footer == strip_tags($footer)
-	)
-		$phpmailer->Body = wpautop($phpmailer->Body);
-	
 	do_action("pmpro_after_phpmailer_init", $phpmailer);
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }
 
 function pmpro_wp_mail_content_type( $content_type ) {
 	add_action('phpmailer_init', 'pmpro_send_html');
-
-	//change to html if not already
-	if( $content_type == 'text/plain')
-	{			
-		$content_type = 'text/html';
-	}
 	return $content_type;
 }
 add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
