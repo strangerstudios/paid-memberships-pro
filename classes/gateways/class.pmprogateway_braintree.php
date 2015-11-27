@@ -234,6 +234,7 @@
 		<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
 		<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
 		<script type="text/javascript">
+			<!--
 			//set up braintree encryption
 			var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
 			braintree.onSubmitEncryptForm('pmpro_form');
@@ -257,6 +258,7 @@
 				pmpro_updateBraintreeAccountNumber();
 			});
 			pmpro_updateBraintreeAccountNumber();
+			-->
 		</script>
 		<?php
 		}

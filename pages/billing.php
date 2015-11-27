@@ -310,6 +310,7 @@
 				<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
 				<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
 				<script type="text/javascript">
+					<!--
 					//setup braintree encryption
 					var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
 					braintree.onSubmitEncryptForm('pmpro_form');
@@ -333,6 +334,7 @@
 						pmpro_updateBraintreeAccountNumber();
 					});
 					pmpro_updateBraintreeAccountNumber();
+					-->
 				</script>
 			<?php } ?>
 
@@ -344,12 +346,14 @@
 
 		</form>
 		<script>
+			<!--
 			// Find ALL <form> tags on your page
 			jQuery('form').submit(function(){
 				// On submit disable its submit button
 				jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 				jQuery('input[type=image]', this).attr('disabled', 'disabled');
 			});
+			-->
 		</script>
 	<?php } ?>
 <?php } else { ?>

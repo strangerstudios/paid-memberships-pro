@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.8 =
+* BUG/ENHANCEMENT: Adding <!-- comment markup --> to inline JavaScript to avoid issues where themes/plugins were adding formatting into the JavaScript code. (Thanks, Isabelle Couillard)
+
 = 1.8.6.7 =
 * BUG: Fixed issue with prices over $1000 when using TwoCheckout. (Thanks, BigBradBrown and others.)
 * ENHANCEMENT: Removed the API Private Key option from 2Checkout setup since we don't actually use that in the API.

@@ -198,6 +198,7 @@
 		{
 		?>
 		<script>
+			<!--
 			//choosing payment method
 			jQuery('input[name=gateway]').click(function() {
 				if(jQuery(this).val() == 'paypal')
@@ -220,6 +221,7 @@
 			jQuery('a.pmpro_radio').click(function() {
 				jQuery(this).prev().click();
 			});
+			-->
 		</script>
 		<?php
 		}

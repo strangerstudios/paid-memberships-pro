@@ -218,6 +218,7 @@
 					global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
 				?>
 				<script type="text/javascript">
+					<!--
 					// this identifies your website in the createToken call below
 					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 
@@ -302,6 +303,7 @@
 							form$.get(0).submit();
 						}
 					}
+					-->
 				</script>
 				<?php
 				}
@@ -434,6 +436,7 @@
 							?>
 							<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
 							<script>
+								<!--
 								jQuery(document).ready(function() {
 										jQuery('#AccountNumber').validateCreditCard(function(result) {
 											var cardtypenames = {
@@ -455,6 +458,7 @@
 												jQuery('#CardType').val('Unknown Card Type');
 										});
 								});
+								-->
 							</script>
 							<?php
 							}
@@ -655,6 +659,7 @@
 				</tr>
 			</table>
 			<script>
+				<!--
 				jQuery(document).ready(function() {
 					//function to update dropdowns/etc based on when field
 					function updateSubscriptionUpdateFields(when)
@@ -707,6 +712,7 @@
 					}
 					addUpdateEvents();
 				});
+			-->
 			</script>
 			<?php
 			}
