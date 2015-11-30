@@ -598,7 +598,7 @@
 
 				//setting some cookies
 				wp_set_current_user($user_id, $username);
-				wp_set_auth_cookie($user_id, true, apply_filters('pmpro_checkout_signon_secure', (force_ssl_login() || force_ssl_admin())));
+				wp_set_auth_cookie($user_id, true, apply_filters('pmpro_checkout_signon_secure', force_ssl_admin()));
 			}
 		}
 		else

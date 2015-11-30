@@ -38,7 +38,7 @@ add_filter('home_url', 'pmpro_https_filter');
 function pmpro_besecure_set()
 {	
 	global $besecure;		
-	if(force_ssl_admin() || force_ssl_login() || is_ssl())
+	if(force_ssl_admin() || is_ssl())
 		$besecure = true;
 	
 	$besecure = apply_filters("pmpro_besecure", $besecure);
@@ -58,10 +58,6 @@ function pmpro_besecure()
 	//if forcing ssl on admin, be secure in admin and login page
 	if(!$besecure && force_ssl_admin() && (is_admin() || pmpro_is_login_page()))
 		$besecure = true;		
-
-	//if forcing ssl on login, be secure on the login page
-	if(!$besecure && force_ssl_login() && pmpro_is_login_page())
-		$besecure = true;			
 
 	$besecure = apply_filters("pmpro_besecure", $besecure);
 

@@ -32,10 +32,6 @@ function pmpro_login_redirect($redirect_to, $request, $user)
 		//not logging in (login form) so return what was given		
 	}
 	
-	//let's strip the https if force_ssl_login is set, but force_ssl_admin is not
-	if(force_ssl_login() && !force_ssl_admin())
-		$redirect_to = str_replace("https:", "http:", $redirect_to);
-	
 	return apply_filters("pmpro_login_redirect_url", $redirect_to, $request, $user);
 }
 add_filter('login_redirect','pmpro_login_redirect', 10, 3);
