@@ -14,7 +14,7 @@ if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_op
 
 // Do we have an order ID?
 if ( empty( $_REQUEST['order'] ) ) {
-	wp_redirect( admin_url( 'admin..php?page=pmpro-orders' ) );
+	wp_redirect( admin_url( 'admin.php?page=pmpro-orders' ) );
 	exit;
 }
 
