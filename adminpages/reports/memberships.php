@@ -35,7 +35,7 @@ function pmpro_report_memberships_widget() {
 		<tr>
 			<th scope="col">&nbsp;</th>
 			<th scope="col"><?php _e('Signups','pmpro'); ?></th>
-			<th scope="col"><?php _e('Cancellations','pmpro'); ?></th>
+			<th scope="col"><?php _e('All Cancellations','pmpro'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -73,7 +73,7 @@ function pmpro_report_memberships_page()
 	if(isset($_REQUEST['type']))
 		$type = sanitize_text_field($_REQUEST['type']);
 	else
-		$type = "signup_v_cancel";
+		$type = "signup_v_all";
 	
 	if(isset($_REQUEST['period']))
 		$period = sanitize_text_field($_REQUEST['period']);
@@ -112,6 +112,7 @@ function pmpro_report_memberships_page()
 	elseif($period == "annual")
 	{
 		$startdate = '1960-01-01';	//all time
+		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'YEAR';
 	}
 	
@@ -119,7 +120,7 @@ function pmpro_report_memberships_page()
 	$gateway_environment = pmpro_getOption("gateway_environment");
 	
 	//get data
-	if ( $type === "signup_v_cancel" ) {
+	if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all") {
 		$sqlQuery = "SELECT $date_function(startdate) as date, COUNT(DISTINCT user_id) as signups
 		FROM $wpdb->pmpro_memberships_users WHERE startdate >= '" . $startdate . "' ";
 
@@ -157,8 +158,8 @@ function pmpro_report_memberships_page()
 	
 		for($i = 1; $i <= $lastday; $i++)
 		{
-			// Signups vs. Cancellations
-			if ( $type === "signup_v_cancel" ) {
+			// Signups vs. Cancellations, Expirations, or All
+			if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" ) {
 				$cols[$i] = new stdClass();
 				$cols[$i]->signups = 0;
 				foreach($dates as $date)
@@ -174,8 +175,8 @@ function pmpro_report_memberships_page()
 	{
 		for($i = 1; $i < 13; $i++)
 		{
-			// Signups vs. Cancellations
-			if ( $type === "signup_v_cancel" ) {
+			// Signups vs. Cancellations, Expirations, or All
+			if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" ) {
 				$cols[$i] = new stdClass();
 				$cols[$i]->date = $i;
 				$cols[$i]->signups = 0;
@@ -208,16 +209,22 @@ function pmpro_report_memberships_page()
 
 	$dates = ( ! empty( $cols ) ) ? $cols : $dates;
 
-	// Signups vs. cancellations
-	if ( $type === "signup_v_cancel" )
+	// Signups vs. all
+	if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" )
 	{
 		$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
 		FROM $wpdb->pmpro_memberships_users mu1
 		LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
 		mu2.modified > mu1.enddate AND
-		DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
-		WHERE mu1.status = 'inactive'
-		AND mu2.id IS NULL 
+		DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate ";
+		if ( $type === "signup_v_cancel")
+			$sqlQuery .= "WHERE mu1.status IN('inactive','cancelled','cancelled_admin') ";
+		elseif($type === "signup_v_expiration")
+			$sqlQuery .= "WHERE mu1.status IN('expired') ";
+		else
+			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','cancelled_admin') ";
+			
+		$sqlQuery .= "AND mu2.id IS NULL 
 		AND mu1.startdate >= '" . $startdate . "' 
 		AND mu1.startdate < '" . $enddate . "' ";
 		 
@@ -248,9 +255,9 @@ function pmpro_report_memberships_page()
 	}
 	?>
 	<form id="posts-filter" method="get" action="">		
-	<h2>
+	<h1>
 		<?php _e('Membership Stats', 'pmpro');?>
-	</h2>
+	</h1>
 	<ul class="subsubsub">
 		<li>
 			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
@@ -260,7 +267,9 @@ function pmpro_report_memberships_page()
 				<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'pmpro');?></option>
 			</select>
 			<select id="type" name="type">
+				<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php _e('Signups vs. All Cancellations', 'pmpro');?></option>
 				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php _e('Signups vs. Cancellations', 'pmpro');?></option>
+				<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php _e('Signups vs. Expirations', 'pmpro');?></option>
 				<?php /*
 				<option value="mrr_ltv" <?php selected($type, "mrr_ltv");?>><?php _e('MRR & LTV', 'pmpro');?></option>
 				*/ ?>
@@ -292,7 +301,7 @@ function pmpro_report_memberships_page()
 			
 			<input type="hidden" name="page" value="pmpro-reports" />		
 			<input type="hidden" name="report" value="memberships" />	
-			<input type="submit" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
+			<input type="submit" class="button" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
 		</li>
 	</ul>
 	
@@ -337,14 +346,28 @@ function pmpro_report_memberships_page()
 		function drawChart() {			
 			
 			var data = google.visualization.arrayToDataTable([
+			<?php if ( $type === "signup_v_all" ) : // Signups vs. all cancellations ?>
+			  ['<?php echo $date_function;?>', 'Signups', 'All Cancellations'],
+			  <?php foreach($dates as $key => $value) { ?>
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+			  <?php } ?>
+			<?php endif; ?>
+			
 			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
 			  ['<?php echo $date_function;?>', 'Signups', 'Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
 				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
 			  <?php } ?>
 			<?php endif; ?>
+			
+			<?php if ( $type === "signup_v_expiration" ) : // Signups vs. expirations ?>
+			  ['<?php echo $date_function;?>', 'Signups', 'Expirations'],
+			  <?php foreach($dates as $key => $value) { ?>
+				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+			  <?php } ?>
+			<?php endif; ?>
 
-			<?php if ( $type === "mrr_ltv" ) : // Signups vs. cancellations ?>
+			<?php if ( $type === "mrr_ltv" ) : ?>
 			  ['<?php echo $date_function;?>', 'MRR', 'LTV'],
 			  <?php foreach($dates as $key => $value) { ?>
 				['<?php if($period == "monthly") echo date("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo (($mrr = $value->total / $value->months) && $mrr != 0) ? $mrr : 0; ?>, <?php echo pmpro_getLTV($period, NULL, $mrr ); ?>],
@@ -358,8 +381,9 @@ function pmpro_report_memberships_page()
 			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},			  
 			};
 
-			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
+			<?php if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" ) : // Signups vs. cancellations ?>
 				var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			
 			<?php elseif ( $type === "mrr_ltv" ) : // MRR & LTV ?>
 				
 				<?php
@@ -434,56 +458,75 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	return $signups;
 }
 
-//get cancellations
-function pmpro_getCancellations($period = false, $levels = 'all')
+//get cancellations by status
+function pmpro_getCancellations($period = false, $levels = 'all', $status = array('inactive','expired','cancelled','cancelled_admin') )
 {
+	//make sure status is an array
+	if(!is_array($status))
+		$status = array($status);
+
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_cancellations' );
-	if( ! empty( $cache ) && ! empty( $cache[$period] ) && ! empty( $cache[$period][$levels] ) )
-		return $cache[$period][$levels];
-		
+	$hash = md5($period . $levels . implode(',', $status));
+	if( ! empty( $cache ) && ! empty( $cache[$hash] ) )
+		return $cache[$hash];
+
 	//figure out start date
+	$now = current_time('timestamp');
+	$year = date("Y", $now);
 	if( $period == 'today' )
-		$startdate = date(' Y-m-d' );
+	{
+		$startdate = date('Y-m-d', $now) . " 00:00:00";
+		$enddate = date('Y-m-d', $now) . " 23:59:59";
+	}
 	elseif( $period == 'this month')
-		$startdate = date( 'Y-m' ) . '-01';
+	{
+		$startdate = date( 'Y-m', $now ) . '-01 00:00:00';
+		$enddate = date( 'Y-m', $now ) . '-32 00:00:00';
+	}
 	elseif( $period == 'this year')
-		$startdate = date( 'Y' ) . '-01-01';
+	{
+		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
+		$enddate = date( 'Y', $now ) . '-12-32 00:00:00';
+	}
 	else
-		$startdate = '';
-
-		$startdate_plus_one = strtotime( $startdate . + ' + 1 day', current_time("timestamp") );
-
+	{
+		//all time
+		$startdate = '1960-01-01';	//all time
+		$enddate = strval(intval($year)+1) . '-01-01';
+	}
+		
 	/*
-		build query. 
-		cancellations are marked in the memberships users table with status = 'inactive'
+		build query.
+		cancellations are marked in the memberships users table with status 'inactive', 'expired', 'cancelled', 'cancelled_admin'
 		we try to ignore cancellations when the user gets a new level with 24 hours (probably an upgrade or downgrade)
 	*/
 	global $wpdb;
 
-	//$sqlQuery = "SELECT mu1.user_id, mu2.user_id FROM $wpdb->pmpro_memberships_users mu1 LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND mu2.status = 'inactive' AND mu2.startdate > mu1.startdate"; 
 	$sqlQuery = "SELECT COUNT(mu1.id)
-FROM $wpdb->pmpro_memberships_users mu1
-LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
-mu2.modified > mu1.enddate AND
-DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
-WHERE mu1.status = 'inactive'
-AND mu2.id IS NULL 
-AND mu1.startdate >= '" . $startdate . "' ";
+	FROM $wpdb->pmpro_memberships_users mu1
+	LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
+	mu2.modified > mu1.enddate AND
+	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
+	WHERE mu1.status IN('" . implode("','", $status) . "')
+	AND mu2.id IS NULL 
+	AND mu1.enddate >= '" . $startdate . "' 
+	AND mu1.enddate <= '" . $enddate . "'
+	";
  
 	//restrict by level
 	if(!empty($levels) && $levels != 'all')
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
 	
 	$cancellations = $wpdb->get_var($sqlQuery);
-		
+	
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]) && is_array($cache[$period]))
-		$cache[$period][$levels] = $cancellations;
+	if(!empty($cache) && !empty($cache[$hash]))
+		$cache[$hash] = $cancellations;
 	elseif(!empty($cache))
-		$cache[$period] = array($levels => $cancellations);
+		$cache[$hash] = $cancellations;
 	else
-		$cache = array($period => array($levels => $cancellations));
+		$cache = array($hash => $cancellations);
 	
 	set_transient("pmpro_report_memberships_cancellations", $cache, 3600*24);
 	
@@ -557,15 +600,20 @@ function pmpro_getMRR($period, $levels = 'all')
 }
 
 //get Cancellation Rate
-function pmpro_getCancellationRate($period, $levels = 'all')
+function pmpro_getCancellationRate($period, $levels = 'all', $status = NULL)
 {	
+	//make sure status is an array
+	if(!is_array($status))
+		$status = array($status);
+
 	//check for a transient
 	$cache = get_transient("pmpro_report_cancellation_rate");
-	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];	
+	$hash = md5($period . $levels . implode('',$status));
+	if(!empty($cache) && !empty($cache[$hash]))
+		return $cache[$hash];
 	
 	$signups = pmpro_getSignups($period, $levels);
-	$cancellations = pmpro_getCancellations($period, $levels);
+	$cancellations = pmpro_getCancellations($period, $levels, $status);
 	
 	if(empty($signups))
 		return false;
