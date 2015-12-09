@@ -224,7 +224,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 		//are we within the days til expiration?
 		$now = current_time('timestamp');
 		
-		if( $now + ($days*3600*24) < $level->enddate )
+		if( $now + ($days*3600*24) >= $level->enddate )
 			$r = true;
 		else
 			$r = false;
