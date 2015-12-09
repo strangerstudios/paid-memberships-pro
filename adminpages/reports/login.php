@@ -75,9 +75,9 @@ function pmpro_report_login_page()
 		$l = "";
 ?>
 	<form id="posts-filter" method="get" action="">	
-	<h2>
+	<h1>
 		<?php _e('Visits, Views, and Logins Report', 'pmpro');?>
-	</h2>		
+	</h1>		
 	<ul class="subsubsub">
 		<li>			
 			<?php _ex('Show', 'Dropdown label, e.g. Show All Users', 'pmpro')?> <select name="l" onchange="jQuery('#posts-filter').submit();">
