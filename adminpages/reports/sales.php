@@ -194,9 +194,9 @@ function pmpro_report_sales_page()
 	}	
 	?>
 	<form id="posts-filter" method="get" action="">		
-	<h2>
+	<h1>
 		<?php _e('Sales and Revenue', 'pmpro');?>
-	</h2>
+	</h1>
 	
 	<div class="tablenav top">
 		<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
