@@ -581,49 +581,29 @@
 			}
 
 			$version = urlencode('4');
-
-			// setting the curl parameters.
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $API_Endpoint);
-			curl_setopt($ch, CURLOPT_VERBOSE, 1);
-
-			// turning off the server and peer verification(TrustManager Concept).
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_POST, 1);
-
-			curl_setopt($ch, CURLOPT_USERAGENT, PMPRO_USER_AGENT);	//set user agent
 			
 			// NVPRequest for submitting to server
 			$nvpreq = "TRXTYPE=" . $methodName_ . "&TENDER=C&PARTNER=" . $PARTNER . "&VENDOR=" . $VENDOR . "&USER=" . $USER . "&PWD=" . $PWD . "&VERBOSITY=medium" . "&BUTTONSOURCE=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
 
-			//$nvpreq = "TRXTYPE=" . urlencode($methodName_) . "&TENDER=C&PARTNER=" . urlencode($PARTNER) . "&VENDOR=" . urlencode($VENDOR) . "&USER=" . urlencode($USER) . "&PWD=" . urlencode($PWD) . "&VERBOSITY=medium" . $nvpStr_;
+			//post to PayPal
+			$response = wp_remote_post( $API_Endpoint, array(
+					'sslverify' => FALSE,
+					'body' => $nvpreq
+			    )
+			);
 
-			// setting the nvpreq as POST FIELD to curl
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);
+			if ( is_wp_error( $response ) ) {
+			   $error_message = $response->get_error_message();
+			   die( "methodName_ failed: $error_message" );
+			} else {
+				//extract the response details
+				$httpParsedResponseAr = array();
+				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
-			// getting response from server
-			$httpResponse = curl_exec($ch);
-
-			if(empty($httpResponse)) {
-				exit("$methodName_ failed: ".curl_error($ch).'('.curl_errno($ch).')');
-			}
-
-			// Extract the RefundTransaction response details
-			$httpResponseAr = explode("&", $httpResponse);
-
-			$httpParsedResponseAr = array();
-			foreach ($httpResponseAr as $i => $value) {
-				$tmpAr = explode("=", $value);
-				if(sizeof($tmpAr) > 1) {
-					$httpParsedResponseAr[$tmpAr[0]] = $tmpAr[1];
+				//check for valid response
+				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
+					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
 				}
-			}
-
-			if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
-				exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
 			}
 
 			return $httpParsedResponseAr;
