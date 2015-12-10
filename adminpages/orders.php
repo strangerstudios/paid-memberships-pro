@@ -303,7 +303,15 @@
 			else
 			{
 				$order = new MemberOrder();			//new order
-
+				
+				// empty order object?
+				if (true === $order) 
+				{
+					// Avoid PHP warnings
+					$order = new stdClass();
+					$order->billing = new stdClass();
+				}
+				
 				//defaults
 				$order->code = $order->getRandomCode();
 				$order->user_id = "";
