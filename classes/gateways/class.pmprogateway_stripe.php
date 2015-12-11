@@ -617,7 +617,7 @@
 									<option value="payment" <?php selected($update['when'], "payment");?>>After Next Payment</option>
 									<option value="date" <?php selected($update['when'], "date");?>>On Date</option>
 								</select>
-								<span class="updates_date" <?php if($uwhen != "date") { ?>style="display: none;"<?php } ?>>
+								<span class="updates_date" <?php if($update['when'] != "date") { ?>style="display: none;"<?php } ?>>
 									<select name="updates_date_month[]">
 										<?php
 											for($i = 1; $i < 13; $i++)
@@ -633,7 +633,7 @@
 									<input name="updates_date_day[]" type="text" size="2" value="<?php if(!empty($update['date_day'])) echo esc_attr($update['date_day']);?>" />
 									<input name="updates_date_year[]" type="text" size="4" value="<?php if(!empty($update['date_year'])) echo esc_attr($update['date_year']);?>" />
 								</span>
-								<span class="updates_billing" <?php if($uwhen == "no") { ?>style="display: none;"<?php } ?>>
+								<span class="updates_billing" <?php if($update['when'] == "now") { ?>style="display: none;"<?php } ?>>
 									<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="<?php echo esc_attr($update['billing_amount']);?>" />
 									<small><?php _e('per', 'pmpro');?></small>
 									<input name="updates_cycle_number[]" type="text" size="5" value="<?php echo esc_attr($update['cycle_number']);?>" />
