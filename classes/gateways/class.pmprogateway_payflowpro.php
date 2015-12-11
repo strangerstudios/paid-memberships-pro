@@ -7,7 +7,7 @@
 
 	class PMProGateway_payflowpro extends PMProGateway
 	{
-		function PMProGateway_payflowpro($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

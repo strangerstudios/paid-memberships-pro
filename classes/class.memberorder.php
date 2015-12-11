@@ -4,7 +4,7 @@
 		/**
 		 * Constructor
 		 */
-		function MemberOrder($id = NULL)
+		function __construct($id = NULL)
 		{
 			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));

@@ -1,7 +1,7 @@
 <?php
 	class PMProEmail
 	{
-		function PMProEmail()
+		function __construct()
 		{
 			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
 		}					

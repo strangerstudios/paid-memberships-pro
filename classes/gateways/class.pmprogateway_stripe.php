@@ -12,7 +12,7 @@
 	 *
 	 * @since  1.4
 	 */
-	class PMProGateway_stripe extends PMProGateway
+	class __construct extends PMProGateway
 	{
 		/**
 		 * Stripe Class Constructor
