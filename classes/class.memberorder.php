@@ -18,11 +18,56 @@
 					return $this->getMemberOrderByCode($id);
 			}
 			else
-				return true;	//blank constructor
+				return $this->getEmptyMemberOrder();	//blank constructor
 		}
 
 		/**
-		 * Retrieve a member ordr from the DB by ID
+		 * Returns an empty (but complete) order object.
+		 *
+		 * @return stdClass $order - a 'clean' order object
+		 *
+		 * @since: 1.8.6.8
+		 */
+		function getEmptyMemberOrder()
+		{
+
+			//defaults
+			$order = new stdClass();
+			$order->code = $this->getRandomCode();
+			$order->user_id = "";
+			$order->membership_id = "";
+			$order->subtotal = "";
+			$order->tax = "";
+			$order->couponamount = "";
+			$order->total = "";
+			$order->payment_type = "";
+			$order->cardtype = "";
+			$order->accountnumber = "";
+			$order->expirationmonth = "";
+			$order->expirationyear = "";
+			$order->status = "success";
+			$order->gateway = pmpro_getOption("gateway");
+			$order->gateway_environment = pmpro_getOption("gateway_environment");
+			$order->payment_transaction_id = "";
+			$order->subscription_transaction_id = "";
+			$order->affiliate_id = "";
+			$order->affiliate_subid = "";
+			$order->notes = "";
+
+			$order->billing = new stdClass();
+			$order->billing->name = "";
+			$order->billing->street = "";
+			$order->billing->city = "";
+			$order->billing->state = "";
+			$order->billing->zip = "";
+			$order->billing->country = "";
+			$order->billing->phone = "";
+
+			return $order;
+		}
+
+		/**
+		 * Retrieve a member order from the DB by ID
 		 */
 		function getMemberOrderByID($id)
 		{
