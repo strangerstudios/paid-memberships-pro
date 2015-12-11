@@ -705,6 +705,10 @@
 				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
 			}
 
+			//figure out timestamp or default to none (today)
+			if(!empty($_POST['payment_date']))
+				$morder->timestamp = strtotime($_POST['payment_date']);
+
 			//save
 			$morder->saveOrder();
 			$morder->getMemberOrderByID($morder->id);
