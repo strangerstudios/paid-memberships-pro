@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.7 =
+* ENHANCEMENT: MemberOrder class will now insert/update the timestamp if a ->timestamp or ->datetime variable is set on the object.
+* BUG/ENHANCEMENT: The IPN service will now look for the payment_date parameter to set the timestamp of the recurring order/etc when processing IPN requests.
+
 = 1.8.6.8 =
 * BUG/ENHANCEMENT: Adding <!-- comment markup --> to inline JavaScript to avoid issues where themes/plugins were adding formatting into the JavaScript code. (Thanks, Isabelle Couillard)
 * BUG: Removed calls to force_ssl_login(), which has been deprecated in WP 4.4+. We are using force_ssl_admin() instead.
