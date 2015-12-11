@@ -458,6 +458,13 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
+			if(empty($this->datetime) && empty($this->timestamp))
+				$this->datetime = date("Y-m-d H:s:i", current_time("timestamp"));		//use current time
+			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
+				$this->datetime = date("Y-m-d H:s:i", $this->timestamp);	//get datetime from timestamp
+			elseif(empty($this->datetime) && !empty($this->timestamp))
+				$this->datetime = $this->timestamp;		//must have a datetime in it
+
 			if(empty($this->notes))
 				$this->notes = "";
 
@@ -497,6 +504,7 @@
 									`gateway_environment` = '" . $this->gateway_environment . "',
 									`payment_transaction_id` = '" . esc_sql($this->payment_transaction_id) . "',
 									`subscription_transaction_id` = '" . esc_sql($this->subscription_transaction_id) . "',
+									`timestamp` = '" . esc_sql($this->datetime) . "',
 									`affiliate_id` = '" . esc_sql($this->affiliate_id) . "',
 									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
 									`notes` = '" . esc_sql($this->notes) . "'
@@ -539,7 +547,7 @@
 									   '" . $this->gateway_environment . "',
 									   '" . esc_sql($this->payment_transaction_id) . "',
 									   '" . esc_sql($this->subscription_transaction_id) . "',
-									   '" . current_time('mysql') . "',
+									   '" . esc_sql($this->datetime) . "',
 									   '" . esc_sql($this->affiliate_id) . "',
 									   '" . esc_sql($this->affiliate_subid) . "',
 									    '" . esc_sql($this->notes) . "'
