@@ -55,6 +55,9 @@
 			{
 				//should we check for a dupe x_trans_id?
 
+				//get the user's membership level info
+				$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
+
 				//alright. create a new order/invoice
 				$morder = new MemberOrder();
 				$morder->user_id = $old_order->user_id;
