@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.4
-Stable tag: 1.8.6.8
+Stable tag: 1.8.6.8.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.6.8.1 =
+* BUG: Fixed bug in the Payflow gateway class that was breaking API calls and checkout.
+
 = 1.8.6.8 =
 * BUG/ENHANCEMENT: Adding <!-- comment markup --> to inline JavaScript to avoid issues where themes/plugins were adding formatting into the JavaScript code. (Thanks, Isabelle Couillard)
 * BUG: Removed calls to force_ssl_login(), which has been deprecated in WP 4.4+. We are using force_ssl_admin() instead.
