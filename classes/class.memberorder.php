@@ -458,12 +458,17 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
+			//figure out datetime
 			if(empty($this->datetime) && empty($this->timestamp))
 				$this->datetime = date("Y-m-d H:s:i", current_time("timestamp"));		//use current time
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
 				$this->datetime = date("Y-m-d H:s:i", $this->timestamp);	//get datetime from timestamp
 			elseif(empty($this->datetime) && !empty($this->timestamp))
 				$this->datetime = $this->timestamp;		//must have a datetime in it
+
+			//set timestamp if not already set
+			if(empty($this->timestamp))
+				$this->timestamp = strtotime($this->datetime, current_time('timestamp'));
 
 			if(empty($this->notes))
 				$this->notes = "";
