@@ -7,7 +7,7 @@
 
 	class PMProGateway_paypalexpress extends PMProGateway
 	{
-		function PMProGateway_paypalexpress($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

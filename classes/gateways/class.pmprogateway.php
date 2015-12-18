@@ -2,7 +2,7 @@
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	class PMProGateway
 	{
-		function PMProGateway($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

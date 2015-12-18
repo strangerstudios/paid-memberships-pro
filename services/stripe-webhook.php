@@ -10,7 +10,7 @@
 		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
 
 	//in case the file is loaded directly
-	if(!defined("WP_USE_THEMES"))
+	if(!defined("ABSPATH"))
 	{
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');

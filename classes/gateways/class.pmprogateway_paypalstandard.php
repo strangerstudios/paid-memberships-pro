@@ -7,7 +7,7 @@
 	
 	class PMProGateway_paypalstandard extends PMProGateway
 	{
-		function PMProGateway_paypalstandard($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

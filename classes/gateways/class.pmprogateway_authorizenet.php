@@ -7,7 +7,7 @@
 
 	class PMProGateway_authorizenet extends PMProGateway
 	{
-		function PMProGateway_authorizenet($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;
