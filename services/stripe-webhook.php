@@ -58,17 +58,18 @@
 	if(!empty($pmpro_stripe_event->id))
 	{
 		//check what kind of event it is
-		if($pmpro_stripe_event->type == "charge.succeeded")
+		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
 			//do we have this order yet? (check status too)
 			$order = getOrderFromInvoiceEvent($pmpro_stripe_event);
 
 			//no? create it
 			if(empty($order->id))
-			{
-				//last order for this subscription
-				$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-
+			{				
+				//last order for this subscription //getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+				$old_order = new MemberOrder();
+				$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
+				
 				if(empty($old_order))
 				{
 					$logstr .= "Couldn't find the original subscription.";
@@ -94,7 +95,7 @@
 				$morder->InitialPayment = $invoice->amount / 100;	//not the initial payment, but the class is expecting that
 				$morder->PaymentAmount = $invoice->amount / 100;
 				$morder->payment_transaction_id = $invoice->id;
-				$morder->subscription_transaction_id = $invoice->customer;
+				$morder->subscription_transaction_id = $invoice->subscription;
 
 				$morder->gateway = $old_order->gateway;
 				$morder->gateway_environment = $old_order->gateway_environment;
