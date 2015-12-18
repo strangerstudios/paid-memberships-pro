@@ -7,7 +7,7 @@
 	
 	class PMProGateway_braintree extends PMProGateway
 	{
-		function PMProGateway_braintree($gateway = NULL)
+		function __construct($gateway = NULL)
 		{			
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");

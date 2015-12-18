@@ -7,7 +7,7 @@
 	
 	class PMProGateway_check extends PMProGateway
 	{
-		function PMProGateway_check($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			return $this->gateway;

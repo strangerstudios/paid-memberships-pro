@@ -7,7 +7,7 @@
 		
 	class PMProGateway_Twocheckout extends PMProGateway
 	{
-		function PMProGateway_Twocheckout($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			if(!class_exists("Twocheckout"))
 				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");

@@ -7,7 +7,7 @@
 	
 	class PMProGateway_cybersource extends PMProGateway
 	{
-		function PMProGateway_cybersource($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			if(!class_exists("CyberSourceSoapClient"))
 				require_once(dirname(__FILE__) . "/../../includes/lib/CyberSource/cyber_source_soap_client.php");
