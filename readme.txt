@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.7 =
 * ENHANCEMENT: MemberOrder class will now insert/update the timestamp if a ->timestamp or ->datetime variable is set on the object.
 * BUG/ENHANCEMENT: The IPN service will now look for the payment_date parameter to set the timestamp of the recurring order/etc when processing IPN requests.
+* ENHANCEMENT: Added Argentine Peso (ARS) as a currency.
 
 = 1.8.6.8.1 =
 * BUG: Fixed bug in the Payflow gateway class that was breaking API calls and checkout.
