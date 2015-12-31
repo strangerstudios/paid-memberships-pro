@@ -601,7 +601,7 @@
 				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
 				//check for valid response
-				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
+				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
 					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
 				}
 			}

@@ -1,6 +1,6 @@
 <?php
 	//in case the file is loaded directly
-	if(!defined("WP_USE_THEMES"))
+	if(!defined("ABSPATH"))
 	{
 		global $isapage;
 		$isapage = true;
@@ -727,4 +727,3 @@
 			return false;
 		}
 	}
-

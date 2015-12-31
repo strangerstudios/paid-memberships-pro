@@ -6,7 +6,7 @@
 	$logstr = "";
 
 	//in case the file is loaded directly
-	if(!defined("WP_USE_THEMES"))
+	if(!defined("ABSPATH"))
 	{
 		define('WP_USE_THEMES', false);
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
@@ -54,6 +54,9 @@
 			if($user_id)
 			{
 				//should we check for a dupe x_trans_id?
+
+				//get the user's membership level info
+				$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 				//alright. create a new order/invoice
 				$morder = new MemberOrder();

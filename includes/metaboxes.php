@@ -34,9 +34,14 @@ function pmpro_page_meta()
 		}
     ?>
     </ul>
-	<?php if('post' == get_post_type($post) && $in_member_cat) { ?>
+	<?php 
+		if('post' == get_post_type($post) && $in_member_cat) { ?>
 		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", "pmpro");?></p>
-	<?php } ?>
+	<?php 
+		}
+		
+		do_action('pmpro_after_require_membership_metabox', $post);
+	?>
 <?php
 }
 

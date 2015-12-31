@@ -25,6 +25,7 @@
 				'symbol' => '&pound;',
 				'position' => 'left'
 				),
+			'ARS' => __('Argentine Peso (&#36;)', 'pmpro'),
 			'AUD' => __('Australian Dollars (&#36;)', 'pmpro'),
 			'BRL' => array(
 				'name' => __('Brazilian Real (R&#36;)', 'pmpro'),

@@ -614,7 +614,7 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 			elseif(in_array("E", $levels) || in_array("e", $levels)) {
 				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
 				$expired = $wpdb->get_var($sql);
-				return !empty($expired);
+				$return = !empty($expired);
 			}
 		}
 		else

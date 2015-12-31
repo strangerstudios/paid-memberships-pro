@@ -12,14 +12,14 @@
 	 *
 	 * @since  1.4
 	 */
-	class __construct extends PMProGateway
+	class PMProGateway_stripe extends PMProGateway
 	{
 		/**
 		 * Stripe Class Constructor
 		 *
 		 * @since 1.4
 		 */
-		function PMProGateway_stripe($gateway = NULL)
+		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
