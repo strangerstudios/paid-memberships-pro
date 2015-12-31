@@ -14,6 +14,7 @@
 	 */
 	class PMProGateway_stripe extends PMProGateway
 	{
+
 		/**
 		 * Stripe Class Constructor
 		 *
@@ -24,11 +25,33 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
+			$this->dependencies();
+
 			$this->loadStripeLibrary();
 			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
 			Stripe::setAPIVersion("2015-07-13");
 
 			return $this->gateway;
+		}
+
+		/**
+		 * Warn if required extensions aren't loaded.
+		 *
+		 * @since 1.8.6.8.1
+		 */
+		public function dependencies()
+		{
+			global $msg, $msgt, $pmpro_stripe_error;
+
+			$modules = array('curl');
+
+			foreach($modules as $module){
+				if(!extension_loaded($module)){
+					$pmpro_stripe_error = true;
+					$msg = -1;
+					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it", "pmpro"), $this->gateway, $module);
+				}
+			}
 		}
 
 		/**
