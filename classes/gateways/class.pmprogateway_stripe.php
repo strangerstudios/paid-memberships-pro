@@ -14,7 +14,6 @@
 	 */
 	class PMProGateway_stripe extends PMProGateway
 	{
-
 		/**
 		 * Stripe Class Constructor
 		 *
