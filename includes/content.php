@@ -15,8 +15,11 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	if(!$post_id)
 		return true;
 
+	if (!isset($post->post_type))
+		return true;
+
 	//if no post or current_user object, set them up
-	if(!empty($post->ID) && $post_id == $post->ID)
+	if( isset($post->ID) && !empty($post->ID) && $post_id == $post->ID)
 		$mypost = $post;
 	else
 		$mypost = get_post($post_id);
@@ -27,7 +30,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		$myuser = get_userdata($user_id);
 
 	//for these post types, we want to check the parent
-	if($mypost->post_type == "attachment" || $mypost->post_type == "revision")
+	if(isset($mypost->post_type) && in_array( $mypost->post_type, array("attachment", "revision")))
 	{
 		$mypost = get_post($mypost->post_parent);
 	}
@@ -35,7 +38,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	// Allow plugins and themes to find the protected post        
     $mypost = apply_filters( 'pmpro_membership_access_post', $mypost, $myuser );
 	
-	if($mypost->post_type == "post")
+	if(isset($mypost->post_type) && $mypost->post_type == "post")
 	{
 		$post_categories = wp_get_post_categories($mypost->ID);
 
@@ -53,7 +56,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	else
 	{
 		//are any membership levels associated with this page?
-		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "'";
+		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $post_id . "'";
 	}
 
 
