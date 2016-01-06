@@ -162,9 +162,9 @@ function pmpro_report_memberships_page()
 			if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" ) {
 				$cols[$i] = new stdClass();
 				$cols[$i]->signups = 0;
-				foreach($dates as $date)
+				foreach($dates as $day => $date)
 				{
-					if( $date->date == $i ) {
+					if( $day == $i ) {
 						$cols[$i]->signups = $date->signups;
 					}
 				}
@@ -206,7 +206,7 @@ function pmpro_report_memberships_page()
 	elseif($period == "annual") //annual
 	{
 	}
-
+	
 	$dates = ( ! empty( $cols ) ) ? $cols : $dates;
 
 	// Signups vs. all
@@ -230,16 +230,16 @@ function pmpro_report_memberships_page()
 		 
 		//restrict by level
 		if(!empty($l))
-			$sqlQuery .= "AND membership_id IN(" . $l . ") ";
+			$sqlQuery .= "AND mu1.membership_id IN(" . $l . ") ";
 	
 		$sqlQuery .= " GROUP BY date ORDER BY date ";
 
-		$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);
-	
-		foreach( $dates as &$date )
+		$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);				
+		
+		foreach( $dates as $day => &$date )
 		{
-			if(!empty($cdates) && !empty($cdates[$date->date]))
-				$date->cancellations = $cdates[$date->date]->cancellations;
+			if(!empty($cdates) && !empty($cdates[$day]))
+				$date->cancellations = $cdates[$day]->cancellations;
 			else
 				$date->cancellations = 0;
 		}
