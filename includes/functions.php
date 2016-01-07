@@ -1379,7 +1379,7 @@ function pmpro_no_quotes($s, $quotes = array("'", '"'))
 }
 
 //from: http://www.php.net/manual/en/function.implode.php#86845
-function pmpro_implodeToEnglish($array)
+function pmpro_implodeToEnglish($array, $conjunction = 'and')
 {
 	// sanity check
 	if (!$array || !count ($array))
@@ -1392,7 +1392,11 @@ function pmpro_implodeToEnglish($array)
 	if (!count ($array))
 		return $last;
 
-	return implode (', ', $array).' ' . __('and', 'pmpro') . ' '.$last;
+	//possibly translate the conjunction
+	if($conjunction == 'and')
+		$conjunction = __('and', 'pmpro');
+
+	return implode (', ', $array).' ' . $conjunction . ' '.$last;
 }
 
 //from yoast wordpress seo
