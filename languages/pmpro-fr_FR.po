@@ -2934,7 +2934,7 @@ msgstr "Votre paiement a été envoyé. Votre adhésion sera activée très bien
 #, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr ""
-"Nous vous remercions de votre adhésion à %s. Votre adésion %s est "
+"Nous vous remercions de votre adhésion à %s. Votre adhésion <b>%s</b> est "
 "maintenant active."
 
 #: pages/confirmation.php:28
