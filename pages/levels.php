@@ -52,7 +52,7 @@ if($pmpro_msg)
 		<td>
 			<?php 
 				if(pmpro_isLevelFree($level))
-					$cost_text = "<strong>" . _e("Free", "pmpro") . "</strong>";
+					$cost_text = "<strong>" . __("Free", "pmpro") . "</strong>";
 				else
 					$cost_text = pmpro_getLevelCost($level, true, true); 
 				$expiration_text = pmpro_getLevelExpiration($level);
