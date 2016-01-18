@@ -106,6 +106,12 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.791;
 	}
 
+	//fix subscription ids on stripe orders
+	if($pmpro_db_version < 1.869) {
+		pmpro_upgrade_1_8_6_9();
+		$pmpro_db_version = 1.869;
+	}
+
 	//add level meta table
 	/*
 	if($pmpro_db_version < 1.87) {
@@ -125,6 +131,64 @@ function pmpro_upgrade_1_8_7() {
 		Additional upgrade scripts will go here or we will remove it.
 	*/
 	return 1.87;
+}
+
+/*
+	Upgrade to 1.8.6.9
+
+	1. Find all orders for stripe gateway with a subscription_transaction_id LIKE 'cus_%'
+	2. Search for an order for the same user_id and membership_id with a subscription_transaction_id LIKE 'sub_%'
+	3. Replace subscription_transaction_id field.
+*/
+function pmpro_upgrade_1_8_6_9() {
+	global $wpdb;
+	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%'");
+	
+	if(!empty($orders)) {
+		if(count($orders) > 100) {
+			//if more than 100 orders, we'll need to do this via AJAX
+			pmpro_addUpdate('pmpro_upgrade_1_8_6_9_ajax');
+		} else {
+			//less than 100, let's just do them now		
+			$subids = array();
+					
+			foreach($orders as $order) {
+				if(!empty($subids[$order->subscription_transaction_id])) {
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+
+					//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
+				}
+				elseif(isset($subids[$order->subscription_transaction_id])) {
+					//no sub id found, so let it go
+
+					//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . " in cache.<br />";
+				}
+				else {
+					//need to look for a sub id in the database
+					$subid = $wpdb->get_var("SELECT subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE membership_id = '" . $order->membership_id . "' AND user_id = '" . $order->user_id . "' AND subscription_transaction_id LIKE 'sub_%' LIMIT 1");
+					$subids[$order->subscription_transaction_id] = $subid;
+					if(!empty($subid)) {
+						$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+
+						//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";	
+					}
+					else {
+						//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
+					}
+				}
+			}
+		}
+	}
+
+	pmpro_setOption("db_version", "1.869");
+	return 1.869;
+}
+
+/*
+	If a site has > 100 orders then we run this pasrt of the update via AJAX from the updates page.
+*/
+function pmpro_upgrade_1_8_6_9_ajax() {
+
 }
 
 function pmpro_upgrade_1_7()

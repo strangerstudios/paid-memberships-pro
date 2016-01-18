@@ -41,6 +41,7 @@ define("PMPRO_DIR", dirname(__FILE__));
 require_once(PMPRO_DIR . "/includes/localization.php");			//localization functions
 require_once(PMPRO_DIR . "/includes/lib/name-parser.php");		//parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once(PMPRO_DIR . "/includes/functions.php");			//misc functions used by the plugin
+require_once(PMPRO_DIR . "/includes/updates.php");			//database and other updates
 require_once(PMPRO_DIR . "/includes/upgradecheck.php");			//database and other updates
 
 if(!defined('PMPRO_LICENSE_SERVER'))
@@ -148,6 +149,10 @@ $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership
 /*
 	Activation/Deactivation
 */
+
+
+pmpro_activation();
+
 function pmpro_activation()
 {
 	//schedule crons
@@ -172,6 +177,7 @@ function pmpro_activation()
 	$role->add_cap( 'pmpro_orders' );
 	$role->add_cap( 'pmpro_orderscsv' );
 	$role->add_cap( 'pmpro_discountcodes' );
+	$role->add_cap( 'pmpro_updates' );
 
 	do_action('pmpro_activation');
 }
@@ -199,6 +205,7 @@ function pmpro_deactivation()
 	$role->remove_cap( 'pmpro_orders' );
 	$role->remove_cap( 'pmpro_orderscsv' );
 	$role->remove_cap( 'pmpro_discountcodes' );
+	$role->remove_cap( 'pmpro_updates' );
 
 	do_action('pmpro_deactivation');
 }

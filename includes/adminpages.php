@@ -15,7 +15,8 @@ function pmpro_getPMProCaps()
 		'pmpro_memberslist',
 		'pmpro_reports',
 		'pmpro_orders',
-		'pmpro_discountcodes'
+		'pmpro_discountcodes',
+		'pmpro_updates'
 	);
 	
 	return $pmpro_caps;
@@ -54,7 +55,11 @@ function pmpro_add_pages()
 	add_submenu_page('pmpro-membershiplevels', __('Reports', 'pmpro'), __('Reports', 'pmpro'), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
 	add_submenu_page('pmpro-membershiplevels', __('Orders', 'pmpro'), __('Orders', 'pmpro'), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
 	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'pmpro'), __('Discount Codes', 'pmpro'), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
-	
+
+	//updates page only if needed
+	if(pmpro_isUpdateRequired())
+		add_submenu_page('pmpro-membershiplevels', __('Updates Required', 'pmpro'), __('Updates Required', 'pmpro'), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates');	
+
 	//rename the automatically added Memberships submenu item
 	global $submenu;
 	if(!empty($submenu['pmpro-membershiplevels']))
@@ -229,6 +234,10 @@ function pmpro_orders()
 	require_once(PMPRO_DIR . "/adminpages/orders.php");
 }
 
+function pmpro_updates()
+{
+	require_once(PMPRO_DIR . "/adminpages/updates.php");
+}
 
 /*
 Function to add links to the plugin action links

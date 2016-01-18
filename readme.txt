@@ -122,6 +122,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG/ENHANCEMENT: The IPN service will now look for the payment_date parameter to set the timestamp of the recurring order/etc when processing IPN requests.
 * ENHANCEMENT: Added Argentine Peso (ARS) as a currency.
 * ENHANCEMENT: Added a second option $conjunction parameter to the pmpro_implodeToEnglish() function. So you can use pmpro_implodeToEnglish($array, 'or') to change the 'and' in the text to 'or' or something different.
+* ENHANCEMENT: Added Nigerian Naira as a currency option. (Thanks, Maria)
 
 = 1.8.6.8.1 =
 * BUG: Fixed bug in the Payflow gateway class that was breaking API calls and checkout.
