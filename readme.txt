@@ -123,6 +123,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added Argentine Peso (ARS) as a currency.
 * ENHANCEMENT: Added a second option $conjunction parameter to the pmpro_implodeToEnglish() function. So you can use pmpro_implodeToEnglish($array, 'or') to change the 'and' in the text to 'or' or something different.
 * ENHANCEMENT: Added Nigerian Naira as a currency option. (Thanks, Maria)
+* ENHANCEMENT: The "Sales" numbers on the sales and revenue reports now only includes orders with totals > $0.
 
 = 1.8.6.8.1 =
 * BUG: Fixed bug in the Payflow gateway class that was breaking API calls and checkout.
