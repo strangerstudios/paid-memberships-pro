@@ -15,8 +15,8 @@
 	if(!empty($updates)) {
 		//let's process the first one
 	?>
-	<p><?php _e('Updates are processing. This may take a few minutes to complete.', 'pmpro');?></p>
-	<textarea id="pmpro_updates" rows="10" cols="60">Loading...</textarea>
+	<p id="pmpro_updates_intro"><?php _e('Updates are processing. This may take a few minutes to complete.', 'pmpro');?></p>
+	<textarea id="pmpro_updates_status" rows="10" cols="60">Loading...</textarea>
 	
 	<?php
 	} else {
