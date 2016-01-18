@@ -192,25 +192,23 @@ function pmpro_upgrade_1_8_6_9_ajax() {
 
 	//keeping track of which order we're working on
 	$last_order_id = get_option('pmpro_upgrade_1_8_6_9_last_order_id', 0);
-	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%' LIMIT 100");
+	
+	//get orders
+	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%' ORDER BY id LIMIT 100");
 
 	if(empty($orders)) {
 		//done with this update
 		pmpro_removeUpdate('pmpro_upgrade_1_8_6_9_ajax');
+		delete_option('pmpro_upgrade_1_8_6_9_last_order_id');
 	} else {
-
-		$subids = array();				
+		$subids = array();					//cache of subids found
 		foreach($orders as $order) {
-			$last_order_id = $order->id;
+			$last_order_id = $order->id;	//keeping track of the last order we processed
 			if(!empty($subids[$order->subscription_transaction_id])) {
 				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-
-				//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
 			}
 			elseif(isset($subids[$order->subscription_transaction_id])) {
 				//no sub id found, so let it go
-
-				//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . " in cache.<br />";
 			}
 			else {
 				//need to look for a sub id in the database
@@ -218,11 +216,9 @@ function pmpro_upgrade_1_8_6_9_ajax() {
 				$subids[$order->subscription_transaction_id] = $subid;
 				if(!empty($subid)) {
 					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-
-					//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";	
 				}
 				else {
-					//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
+					//no sub id found, so let it go
 				}
 			}
 		}
