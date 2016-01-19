@@ -117,13 +117,15 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.8.7 =
+* BUG: Fixed bug where recurring Stripe orders were saving the customer ID in the subscription_transaction_id instead of the subscription ID. This was causing issues with plugins like AffiliateWP that tried to track recurring orders. After upgrading to 1.8.7, a script will run on your database to fix old recurring orders.
 * BUG: Fixed bug where cancellations weren't showing up in the chart views of the membership stats reports.
-* ENHANCEMENT: MemberOrder class will now insert/update the timestamp if a ->timestamp or ->datetime variable is set on the object.
 * BUG/ENHANCEMENT: The IPN service will now look for the payment_date parameter to set the timestamp of the recurring order/etc when processing IPN requests.
+* ENHANCEMENT: Added tools to run large database updates (e.g. Stripe fix above) over AJAX to avoid timeouts.
+* ENHANCEMENT: MemberOrder class will now insert/update the timestamp if a ->timestamp or ->datetime variable is set on the object.
 * ENHANCEMENT: Added Argentine Peso (ARS) as a currency.
-* ENHANCEMENT: Added a second option $conjunction parameter to the pmpro_implodeToEnglish() function. So you can use pmpro_implodeToEnglish($array, 'or') to change the 'and' in the text to 'or' or something different.
 * ENHANCEMENT: Added Nigerian Naira as a currency option. (Thanks, Maria)
-* ENHANCEMENT: The "Sales" numbers on the sales and revenue reports now only includes orders with totals > $0.
+* ENHANCEMENT: Added a second option $conjunction parameter to the pmpro_implodeToEnglish() function. So you can use pmpro_implodeToEnglish($array, 'or') to change the 'and' in the text to 'or' or something different.
+* ENHANCEMENT: The "Sales" numbers on the sales and revenue reports now only includes orders with totals > $0. (More reports updates in the works.)
 
 = 1.8.6.8.1 =
 * BUG: Fixed bug in the Payflow gateway class that was breaking API calls and checkout.
