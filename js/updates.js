@@ -31,6 +31,7 @@ jQuery(document).ready(function() {
 						$status.html($status.html() + '\nDone!');
 						document.title = '! ' + $title;
 						jQuery('#pmpro_updates_intro').html('All updates are complete.');
+						location.reload(1);
 					}
 					else
 					{

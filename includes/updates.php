@@ -70,15 +70,26 @@ function pmpro_wp_ajax_pmpro_updates() {
 add_action('wp_ajax_pmpro_updates', 'pmpro_wp_ajax_pmpro_updates');
 
 /*
+	Redirect away from updates page if there are no updates
+*/
+function pmpro_admin_init_updates_redirect() {
+	if(is_admin() && !empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates' && !pmpro_isUpdateRequired()) {
+		wp_redirect(admin_url('admin.php?page=pmpro-membershiplevels&updatescomplete=1'));
+		exit;
+	}
+}
+add_action('init', 'pmpro_admin_init_updates_redirect');
+
+/*
 	Show admin notice if an update is required and not already on the updates page.
 */
 if(pmpro_isUpdateRequired() && (empty($_REQUEST['page']) || $_REQUEST['page'] != 'pmpro-updates'))
-	add_action('admin_notices', 'pmpro_update_notice');
-
+	add_action('admin_notices', 'pmpro_updates_notice');
+	
 /*
 	Function to show an admin notice linking to the updates page.
 */
-function pmpro_update_notice() {
+function pmpro_updates_notice() {
 ?>
 <div class="update-nag">
 	<p>
@@ -91,6 +102,27 @@ function pmpro_update_notice() {
 		echo '<a class="button button-primary" href="' . admin_url('admin.php?page=pmpro-updates') . '">' . __('Start the Update', 'pmpro') . '</a>';
 	?>
 	</p>
+</div>
+<?php
+}
+
+/*
+	Show admin notice when updates are complete.
+*/
+if(is_admin() && !empty($_REQUEST['updatescomplete']))
+	add_action('admin_notices', 'pmpro_updates_notice_complete');
+	
+/*
+	Function to show an admin notice linking to the updates page.
+*/
+function pmpro_updates_notice_complete() {
+?>
+<div class="updated notice notice-success is-dismissible">
+	<p>
+	<?php 
+		echo __('All Paid Memberships Pro updates have finished.', 'pmpro' );
+	?>
+	</p>	
 </div>
 <?php
 }
