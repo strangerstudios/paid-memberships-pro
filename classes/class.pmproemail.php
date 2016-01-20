@@ -372,7 +372,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your billing information has been udpated at %s", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("Your billing information has been updated at %s", "pmpro"), get_option("blogname"));	
 			$this->template = "billing";
 			
 			$this->data = array(
@@ -425,7 +425,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Billing information has been udpated for %s at %s", "pmpro"), $user->user_login, get_option("blogname"));	
+			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "pmpro"), $user->user_login, get_option("blogname"));	
 			$this->template = "billing_admin";
 			
 			$this->data = array(
