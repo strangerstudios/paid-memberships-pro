@@ -57,7 +57,7 @@ msgid ""
 "The billing details for some of your membership levels is not supported by "
 "Stripe."
 msgstr ""
-"Les détails de facturation pour certains de vos niveaux d'adhésion sont pas "
+"Les détails de facturation pour certains de vos niveaux d'adhésion ne sont pas "
 "pris en charge par Stripe."
 
 #: adminpages/admin_header.php:46
@@ -155,7 +155,7 @@ msgstr "Passerelle de paiement et SSL"
 #: adminpages/admin_header.php:152 adminpages/memberslist.php:158
 #: shortcodes/pmpro_account.php:106
 msgid "Email"
-msgstr "Email"
+msgstr "Courriel"
 
 #: adminpages/admin_header.php:153
 msgid "Advanced"
@@ -618,7 +618,7 @@ msgstr "supprimer"
 #: adminpages/emailsettings.php:69 includes/adminpages.php:50
 #: includes/adminpages.php:128
 msgid "Email Settings"
-msgstr "Paramètres d'email"
+msgstr "Paramètres de courriel"
 
 #: adminpages/emailsettings.php:70
 msgid ""
@@ -626,7 +626,7 @@ msgid ""
 "<em><strong>wordpress@yourdomain.com</strong></em>. You can update this from "
 "address using the fields below."
 msgstr ""
-"Par défaut, les emails générés par le système sont envoyés par "
+"Par défaut, les courriels générés par le système sont envoyés par "
 "<em><strong>wordpress@yourdomain.com</strong></em>. Vous pouvez mettre à jour "
 "cette adresse en utilisant les champs ci-dessous"
 
@@ -640,17 +640,17 @@ msgid ""
 "paidmembershipspro.com/documentation/member-communications/\">Click here to "
 "learn more about Paid Memberships Pro emails</a>."
 msgstr ""
-"Pour modifier l'apparence des emails générés, ajoutez les fichiers "
+"Pour modifier l'apparence des courriels générés, ajoutez les fichiers "
 "<em>email_header.html</em> et <em>email_footer.html</em> dans le répertoire "
 "de votre thème. Cela modifiera à la fois les messages par défaut de Wordpress "
 "et les messages générés par Paid Menberships Pro. <a title=\"Paid Memberships "
 "Pro - Member Communications\" target=\"_blank\" href=\"http://www."
 "paidmembershipspro.com/documentation/member-communications/\">Cliquez ici "
-"pour en apprendre plus sur les emails dans Paid Memberships Pro</a>."
+"pour en apprendre plus sur les courriels dans Paid Memberships Pro</a>."
 
 #: adminpages/emailsettings.php:78
 msgid "From Email"
-msgstr "Email d'envoi"
+msgstr "Courriel d'envoi"
 
 #: adminpages/emailsettings.php:86
 msgid "From Name"
@@ -658,15 +658,15 @@ msgstr "Nom d'envoi"
 
 #: adminpages/emailsettings.php:94
 msgid "Only Filter PMPro Emails?"
-msgstr "Filtrer seulement les emails de PMPro ?"
+msgstr "Filtrer seulement les courriels de PMPro ?"
 
 #: adminpages/emailsettings.php:98
 msgid "If unchecked, all emails from \"WordPress &lt;"
-msgstr "Si décoché, tous les emails venant de \"WordPress &lt;"
+msgstr "Si décoché, tous les courriels venant de \"WordPress &lt;"
 
 #: adminpages/emailsettings.php:115
 msgid "Send the site admin emails"
-msgstr "Envoyer des emails aux administrateurs du site"
+msgstr "Envoyer des courriels aux administrateurs du site"
 
 #: adminpages/emailsettings.php:121
 msgid "Checkout"
@@ -704,7 +704,7 @@ msgstr "lorsqu'un utilisateur met à jour ses informations de facturation."
 
 #: adminpages/emailsettings.php:158
 msgid "Send members emails"
-msgstr "Envoyer des emails aux membres"
+msgstr "Envoyer des courriels aux membres"
 
 #: adminpages/emailsettings.php:164
 msgid "New Users"
@@ -715,8 +715,8 @@ msgid ""
 "Default WP notification email. (Recommended: Leave unchecked. Members will "
 "still get an email confirmation from PMPro after checkout.)"
 msgstr ""
-"Notification email de Wordpress par défaut. (Recommandé : Laissez décochée. "
-"Les membres continueront de recevoir un email de confirmation de PMPpro après "
+"Notification courriel de Wordpress par défaut. (Recommandé : Laissez décochée. "
+"Les membres continueront de recevoir un courriel de confirmation de PMPpro après "
 "paiement.)"
 
 #: adminpages/membershiplevels.php:118
@@ -1087,7 +1087,7 @@ msgstr "Ville de facturation"
 
 #: adminpages/orders.php:315
 msgid "Billing State"
-msgstr "État de facturation"
+msgstr "Province de facturation"
 
 #: adminpages/orders.php:322
 msgid "Billing Postal Code"
@@ -1257,7 +1257,7 @@ msgstr "filtré par"
 
 #: adminpages/orders.php:674
 msgid "Filter"
-msgstr "FIltrer"
+msgstr "Filtrer"
 
 #: adminpages/orders.php:777 adminpages/orders.php:780
 msgid "Search Orders"
@@ -1530,7 +1530,7 @@ msgstr "Visites depuis le début"
 
 #: adminpages/reports/login.php:32
 msgid "Views Today"
-msgstr "Vues ajourdhui"
+msgstr "Vues aujourd'hui"
 
 #: adminpages/reports/login.php:33 adminpages/reports/login.php:151
 msgid "Views This Month"
@@ -1674,13 +1674,13 @@ msgid ""
 "active."
 msgstr ""
 "Une erreur est survenue lors de l'annulation d'abonnement pour l'utilisateur "
-"avec l ID=%s. Vous devrez vérifier sur votre passerelle de paiement pour voir "
+"avec l'ID=%s. Vous devrez vérifier sur votre passerelle de paiement pour voir "
 "si leur abonnement est toujours actif."
 
 #: classes/class.pmproemail.php:37
 #, php-format
 msgid "An Email From %s"
-msgstr "Un Courrier électronique de %s"
+msgstr "Un courriel de %s"
 
 #: classes/class.pmproemail.php:125
 #, php-format
@@ -2089,7 +2089,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:128
 #: classes/gateways/class.pmprogateway_paypalstandard.php:122
 msgid "Gateway Account Email"
-msgstr "Email du compte"
+msgstr "Courriel du compte"
 
 #: classes/gateways/class.pmprogateway_paypal.php:131
 #: classes/gateways/class.pmprogateway_paypalexpress.php:136
@@ -2171,7 +2171,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:268
 #: classes/gateways/class.pmprogateway_paypalexpress.php:320
 msgid "The PayPal Token was lost."
-msgstr "Le Token PayPal a été perdu."
+msgstr "Le jeton PayPal a été perdu."
 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:60
 #: paid-memberships-pro.php:122
@@ -2201,7 +2201,7 @@ msgstr "Clé secrète"
 
 #: classes/gateways/class.pmprogateway_stripe.php:161
 msgid "Publishable Key"
-msgstr "Clé publiable"
+msgstr "Clé publique"
 
 #: classes/gateways/class.pmprogateway_stripe.php:169
 msgid "Show Billing Address Fields"
@@ -2329,11 +2329,11 @@ msgstr "Consultez le forum de support"
 
 #: includes/adminpages.php:262
 msgid "Support"
-msgstr ""
+msgstr "Soutien"
 
 #: includes/currencies.php:7 includes/currencies.php:75
 msgid "US Dollars (&#36;)"
-msgstr ""
+msgstr "Dollar américain (&#36;)"
 
 #: includes/currencies.php:9 includes/currencies.php:78
 msgid "Euros (&euro;)"
@@ -2341,11 +2341,11 @@ msgstr ""
 
 #: includes/currencies.php:14 includes/currencies.php:77
 msgid "Pounds Sterling (&pound;)"
-msgstr ""
+msgstr "Livres sterling (&pound;)"
 
 #: includes/currencies.php:18
 msgid "Australian Dollars (&#36;)"
-msgstr ""
+msgstr "Dollar australien (&#36;)"
 
 #: includes/currencies.php:20
 msgid "Brazilian Real (R&#36;)"
@@ -2353,7 +2353,7 @@ msgstr ""
 
 #: includes/currencies.php:24 includes/currencies.php:76
 msgid "Canadian Dollars (&#36;)"
-msgstr ""
+msgstr "Dollar canadien (&#36;)"
 
 #: includes/currencies.php:25
 msgid "Chinese Yuan"
@@ -2639,12 +2639,12 @@ msgid ""
 "This post is already protected for this level because it is within a category "
 "that requires membership."
 msgstr ""
-"Ce poste est déjà protégé à ce niveau, car il est dans une catégorie qui "
+"Cet article est déjà protégé à ce niveau, car il est dans une catégorie qui "
 "nécessite l'adhésion."
 
 #: includes/metaboxes.php:99 includes/metaboxes.php:100
 msgid "Require Membership"
-msgstr "Exiger l'adhésion"
+msgstr "Exige un adhésion"
 
 #: includes/profile.php:36
 msgid "Current Level"
@@ -2704,7 +2704,7 @@ msgstr "Niveau"
 
 #: pages/billing.php:18
 msgid "Membership Fee"
-msgstr "Droits d'adhésion"
+msgstr "Coût d'adhésion"
 
 #: pages/billing.php:22
 #, php-format
@@ -2751,7 +2751,7 @@ msgstr "Ville"
 
 #: pages/billing.php:95 pages/checkout.php:335
 msgid "State"
-msgstr "État"
+msgstr "Province"
 
 #: pages/billing.php:99 pages/checkout.php:339
 msgid "Postal Code"
@@ -2771,11 +2771,11 @@ msgstr "Téléphone"
 
 #: pages/billing.php:197 pages/checkout.php:207 pages/checkout.php:440
 msgid "E-mail Address"
-msgstr "Adresse email"
+msgstr "Adresse courriel"
 
 #: pages/billing.php:201 pages/checkout.php:449
 msgid "Confirm E-mail"
-msgstr "Confirmer l'email"
+msgstr "Confirmer courriel"
 
 #: pages/billing.php:221
 #, php-format
@@ -2896,7 +2896,7 @@ msgid ""
 "You are logged in as <strong>%s</strong>. If you would like to use a "
 "different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr ""
-"Vous êtes connecté en tant de <strong>%s </ strong>. Si vous souhaitez "
+"Vous êtes connecté en tant que <strong>%s </ strong>. Si vous souhaitez "
 "utiliser un compte différent pour cette adhésion, <a href=\"%s\">déconnectez-"
 "vous</a>."
 
@@ -2923,7 +2923,7 @@ msgstr "Traitement en cours ..."
 
 #: pages/checkout.php:751
 msgid "Required field"
-msgstr "Champ obligatoire"
+msgstr "Champs obligatoire"
 
 #: pages/confirmation.php:12
 msgid ""
@@ -2934,7 +2934,7 @@ msgstr "Votre paiement a été envoyé. Votre adhésion sera activée très bien
 #, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr ""
-"Nous vous remercions de votre adhésion à %s. Votres %s adhésion est "
+"Nous vous remercions de votre adhésion à %s. Votre adhésion <b>%s</b> est "
 "maintenant active."
 
 #: pages/confirmation.php:28
@@ -2945,7 +2945,7 @@ msgid ""
 "membership invoice has been sent to %s."
 msgstr ""
 "Voici les détails de votre compte et un reçu pour votre adhésion initiale. Un "
-"email de bienvenue avec une copie de votre reçu vous a été envoyé à %s."
+"courriel de bienvenue avec une copie de votre reçu vous a été envoyé à %s."
 
 #: pages/confirmation.php:41 pages/invoice.php:22
 #, php-format
@@ -2982,7 +2982,7 @@ msgid ""
 "Below are details about your membership account. A welcome email has been "
 "sent to %s."
 msgstr ""
-"Ci-dessous les détails de votre compte d'adhérent. Un mail de bienvenue a été "
+"Ci-dessous les détails de votre compte d'adhérent. Un courriel de bienvenue a été "
 "envoyé à %s."
 
 #: pages/confirmation.php:105
@@ -3079,12 +3079,12 @@ msgstr "Veuillez remplir tous les champs obligatoires."
 
 #: preheaders/billing.php:273 preheaders/checkout.php:340
 msgid "Your email addresses do not match. Please try again."
-msgstr "Vos adresses emails ne correspondent pas. Veuillez essayer de nouveau."
+msgstr "Vos adresses courriels ne correspondent pas. Veuillez essayer de nouveau."
 
 #: preheaders/billing.php:276 preheaders/checkout.php:345
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr ""
-"L'adresse email saisie est dans un format non valide. Veuillez essayer de "
+"L'adresse courriel saisie est dans un format non valide. Veuillez essayer de "
 "nouveau."
 
 #: preheaders/billing.php:280
@@ -3119,7 +3119,7 @@ msgstr "Configurer votre compte"
 
 #: preheaders/checkout.php:300
 msgid "There are JavaScript errors on the page. Please contact the webmaster."
-msgstr "Il y a des erreurs Javascript sur la page. Contactez le webmaster."
+msgstr "Il y a des erreurs Javascript sur la page. Contactez le webmestre."
 
 #: preheaders/checkout.php:335
 msgid "Your passwords do not match. Please try again."
@@ -3128,19 +3128,19 @@ msgstr "Vos mots de passe ne correspondent pas. Veuillez essayer de nouveau."
 #: preheaders/checkout.php:350
 #, php-format
 msgid "Please check the box to agree to the %s."
-msgstr "Veuillez cochee la case pour accepter le %s."
+msgstr "Veuillez cocher la case pour accepter le %s."
 
 #: preheaders/checkout.php:357
 msgid "Are you a spammer?"
-msgstr "Êtes-vous un spammeur?"
+msgstr "Êtes-vous un polluposteur?"
 
 #: preheaders/checkout.php:377
 msgid "That username is already taken. Please try another."
-msgstr "Ce nom d'utilisateur est déjà pris. Veuillez en essayer un autre."
+msgstr "Ce nom d'utilisateur est déjà utilisé. Veuillez en essayer un autre."
 
 #: preheaders/checkout.php:382
 msgid "That email address is already taken. Please try another."
-msgstr "Cette adresse email est déjà prise."
+msgstr "Cette adresse courriel est déjà utilisée. Veuillez en essayer une autre."
 
 #: preheaders/checkout.php:416
 #, php-format
@@ -3156,7 +3156,7 @@ msgid ""
 "Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 "Erreur inconnue lors de la génération du compte. Veuillez nous contacter pour "
-"finir votre adhésion."
+"compléter votre adhésion."
 
 #: preheaders/checkout.php:569
 msgid ""
@@ -3172,8 +3172,8 @@ msgid ""
 "authorized, but we cancelled the order immediately. You should not try to "
 "submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
-"IMPORTANT : Quelque chose a mal tourné lors de la création d'adhésion. Votre "
-"carte de crédit est autorisée, mais nous avons annulé la commande. Ne "
+"IMPORTANT : Quelque chose a mal tourné lors de la création de l'adhésion. Votre "
+"carte de crédit a été autorisée, mais nous avons annulé la commande. Ne "
 "renvoyez pas ce formulaire. Veuillez contacter le propriétaire du site pour "
 "résoudre ce problème."
 
@@ -3183,7 +3183,7 @@ msgid ""
 "was charged, but we couldn't assign your membership. You should not submit "
 "this form again. Please contact the site owner to fix this issue."
 msgstr ""
-"IMPORTANT: Quelque chose a mal tourné lors de la création d'adhésion. Votre "
+"IMPORTANT: Quelque chose a mal tourné lors de la création de l'adhésion. Votre "
 "carte de crédit a été débitée, mais nous n'avons pas pu valider votre "
 "adhésion. Ne renvoyez pas ce formulaire. Veuillez contacter le propriétaire "
 "du site pour résoudre ce problème."
@@ -3206,22 +3206,22 @@ msgstr ""
 #: scheduled/crons.php:38
 #, php-format
 msgid "Membership expired email sent to %s. "
-msgstr "Email d'adhésion expirée envoyé à %s. "
+msgstr "Courriel d'adhésion expirée envoyé à %s. "
 
 #: scheduled/crons.php:84
 #, php-format
 msgid "Membership expiring email sent to %s. "
-msgstr "Email d'expiration d'adhésion envoyé à %s. "
+msgstr "Courriel d'avis d'expiration d'adhésion envoyé à %s. "
 
 #: scheduled/crons.php:157
 #, php-format
 msgid "Credit card expiring email sent to %s. "
-msgstr "Email d'expiration de la carte de crédit envoyé à %s. "
+msgstr "Courriel d'expiration de la carte de crédit envoyé à %s. "
 
 #: scheduled/crons.php:210
 #, php-format
 msgid "Trial ending email sent to %s. "
-msgstr "Email de fin de période d'essai envoyé à %s. "
+msgstr "Courriel de fin de période d'essai envoyé à %s. "
 
 #: services/applydiscountcode.php:67
 #, php-format
@@ -3290,7 +3290,7 @@ msgstr "Montant"
 
 #: shortcodes/pmpro_account.php:152
 msgid "View All Invoices"
-msgstr "Voir toutes les reçus"
+msgstr "Voir tous les reçus"
 
 #: shortcodes/pmpro_account.php:159
 msgid "Member Links"
@@ -3345,7 +3345,7 @@ msgstr "Liens pour les membres"
 #~ msgstr "Utiliser SSL"
 
 #~ msgid "Required by this Gateway Option"
-#~ msgstr "Recquis pour cette option de passerelle"
+#~ msgstr "Requis pour cette option de passerelle"
 
 #~ msgid "HTTPS Nuclear Option"
 #~ msgstr "HTTPS Option nucléaire"
@@ -3375,7 +3375,7 @@ msgstr "Liens pour les membres"
 #~ msgstr "Vos premiers paiements %d coûteront %s."
 
 #~ msgid "Edit Billing Information"
-#~ msgstr "Éditer information de facturation."
+#~ msgstr "Modifier l'information de facturation."
 
 #~ msgid "Update Billing Information"
 #~ msgstr "Mise à jour des informations de facturation"
@@ -3400,7 +3400,7 @@ msgstr "Liens pour les membres"
 #~ "Below are details about your membership account. A welcome email with has "
 #~ "been sent to %s."
 #~ msgstr ""
-#~ "Voici les détails de votre compte. Un email de bienvenue avec a été envoyé "
+#~ "Voici les détails de votre compte. Un courriel de bienvenue avec a été envoyé "
 #~ "à %s."
 
 #~ msgid "View Invoice"
