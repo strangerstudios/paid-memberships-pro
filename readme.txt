@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.4
-Stable tag: 1.8.7
+Stable tag: 1.8.7.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.8.7.1 =
+* BUG: Added missing files via svn.
 
 = 1.8.7 =
 * BUG: Fixed bug where recurring Stripe orders were saving the customer ID in the subscription_transaction_id instead of the subscription ID. This was causing issues with plugins like AffiliateWP that tried to track recurring orders. After upgrading to 1.8.7, a script will run on your database to fix old recurring orders.
