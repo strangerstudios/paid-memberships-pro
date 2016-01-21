@@ -62,7 +62,7 @@
 								<td class="pmpro_cancel-membership-expiration">
 								<?php 
 									if($current_user->membership_level->enddate) 
-										echo date(get_option('date_format'), $current_user->membership_level->enddate);
+										echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate);
 									else
 										echo "---";
 								?>
