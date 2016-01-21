@@ -162,12 +162,12 @@
 			//start and end date
 			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($startdate))
-				$this->data['startdate'] = date(get_option('date_format'), $startdate);
+				$this->data['startdate'] = date_i18n(get_option('date_format'), $startdate);
 			else
 				$this->data['startdate'] = "";
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 			if(!empty($enddate))
-				$this->data['enddate'] = date(get_option('date_format'), $enddate);
+				$this->data['enddate'] = date_i18n(get_option('date_format'), $enddate);
 			else
 				$this->data['enddate'] = "";	
 				
@@ -215,7 +215,7 @@
 					$this->template = "checkout_paid";
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -262,7 +262,7 @@
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 			
@@ -312,7 +312,7 @@
 					$this->template = "checkout_paid_admin";
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -355,7 +355,7 @@
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 			
@@ -629,7 +629,7 @@
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->code,
 								"invoice_total" => pmpro_formatPrice($invoice->total),
-								"invoice_date" => date(get_option('date_format'), $invoice->timestamp),								
+								"invoice_date" => date_i18n(get_option('date_format'), $invoice->timestamp),
 								"billing_name" => $invoice->billing->name,
 								"billing_street" => $invoice->billing->street,
 								"billing_city" => $invoice->billing->city,
@@ -660,7 +660,7 @@
 		
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 				
@@ -703,7 +703,7 @@
 				"cycle_period" => $user->membership_level->cycle_period, 
 				"trial_amount" => pmpro_formatPrice($user->membership_level->trial_amount), 
 				"trial_limit" => $user->membership_level->trial_limit,
-				"trial_end" => date(get_option('date_format'), strtotime(date("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period), current_time("timestamp"))
+				"trial_end" => date_i18n(get_option('date_format'), strtotime(date_i18n("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period), current_time("timestamp"))
 			);			
 			
 			return $this->sendEmail();
@@ -746,7 +746,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s will end soon", "pmpro"), get_option("blogname"));
 			$this->template = "membership_expiring";
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "enddate" => date(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);			
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
 			
 			return $this->sendEmail();
 		}
@@ -774,7 +774,7 @@
 			
 			if(!empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
@@ -812,7 +812,7 @@
 			
 			if(!empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
