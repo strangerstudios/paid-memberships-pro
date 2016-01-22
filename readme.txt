@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.4
-Stable tag: 1.8.7.1
+Stable tag: 1.8.7.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,8 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.7.2 =
+* BUG: Fixed bug where pmpro_activation() was firing on every page load. (Thanks, Tigertech and MegaZ on WordPress.org)
 
 = 1.8.7.1 =
 * BUG: Added missing files via svn.
