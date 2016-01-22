@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.7.2 =
 * BUG: Fixed bug where pmpro_activation() was firing on every page load. (Thanks, Tigertech and MegaZ on WordPress.org)
+* BUG: Fixed bugs with internationalized date formats in a few places.
 
 = 1.8.7.1 =
 * BUG: Added missing files via svn.
