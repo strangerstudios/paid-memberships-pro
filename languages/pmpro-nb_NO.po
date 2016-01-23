@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Paid Memberships Pro v1.8.6.8.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-01-23 09:56-0500\n"
-"PO-Revision-Date: 2016-01-23 10:02-0500\n"
+"PO-Revision-Date: 2016-01-23 15:18-0500\n"
 "Last-Translator: Thomas Sjolshagen <thomas@eighty20results.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -36,7 +36,7 @@ msgstr "Du har ikke rettigheter nok for denne aktiviteten."
 #: adminpages/addons.php:64 adminpages/admin_header.php:170
 #: includes/adminpages.php:53 includes/adminpages.php:151
 msgid "Add Ons"
-msgstr "Add Ons"
+msgstr "Utvidelser"
 
 #: adminpages/addons.php:71
 #, php-format
