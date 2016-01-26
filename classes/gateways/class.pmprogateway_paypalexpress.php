@@ -850,6 +850,7 @@
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'sslverify' => FALSE,
+					'httpversion' => '1.1',
 					'body' => $nvpreq
 			    )
 			);
