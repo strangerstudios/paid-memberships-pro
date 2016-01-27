@@ -73,7 +73,7 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.72)
 	{
 		//schedule the credit card expiring cron
-		wp_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+		pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
 		pmpro_setOption("db_version", "1.72");
 		$pmpro_db_version = 1.72;
@@ -144,9 +144,9 @@ function pmpro_upgrade_1_8_7() {
     _set_cron_array($jobs);
 
     //add the three we want back
-	wp_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
-	wp_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
-	wp_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
+	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
+	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
 	pmpro_setOption("db_version", "1.87");
 	$pmpro_db_version = 1.87;

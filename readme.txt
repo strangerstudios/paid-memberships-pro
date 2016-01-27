@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.7.3 =
+* ENHANCEMENT: Added the pmpro_maybe_schedule_event() function. This checks if an event with the same hook and args is already scheduled before scheduling the new event.
+* ENHANCEMENT: Added a script that will run on upgrade to clean out old cron jobs.
+
 = 1.8.7.2 =
 * BUG: Fixed bug where pmpro_activation() was firing on every page load. (Thanks, Tigertech and MegaZ on WordPress.org)
 * BUG: Fixed bugs with internationalized date formats in a few places.

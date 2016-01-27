@@ -2181,3 +2181,21 @@ function pmpro_generatePages($pages) {
 
 	return $pages_created;
 }
+
+/**
+ * Schedule a periodic event unless one with the same hook is already scheduled.
+ *
+ * @param int $timestamp Timestamp for when to run the event.
+ * @param string $recurrence How often the event should recur.
+ * @param string $hook Action hook to execute when cron is run.
+ * @param array $args Optional. Arguments to pass to the hook's callback function.
+ * @return false|void False when an event is not scheduled.
+ * @since 1.8.7.3
+ */
+ function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array()) {
+	$next = wp_next_scheduled($hook, $args);
+	if(empty($next))
+		return wp_schedule_event($timestamp, $recurrence, $hook, $args);
+	else
+		return false;
+ }

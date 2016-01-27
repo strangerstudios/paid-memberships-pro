@@ -158,7 +158,7 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 */
 //activation
 function pmpro_license_activation() {
-	wp_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_license_check_key');
+	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_license_check_key');
 }
 register_activation_hook(__FILE__, 'pmpro_activation');
 

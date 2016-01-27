@@ -886,7 +886,7 @@
 		 */
 		static function pmpro_activation()
 		{
-			wp_schedule_event(time(), 'daily', 'pmpro_cron_stripe_subscription_updates');
+			pmpro_maybe_schedule_event(time(), 'daily', 'pmpro_cron_stripe_subscription_updates');
 		}
 
 		/**
