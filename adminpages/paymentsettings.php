@@ -98,7 +98,7 @@
 		<tbody>
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					Choose a Gateway
+					<?php _e('Choose a Gateway', 'pmpro'); ?>
 				</td>
 			</tr>
 			<tr>
@@ -145,7 +145,7 @@
 
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					Currency and Tax Settings
+					<?php _e('Currency and Tax Settings', 'pmpro'); ?>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("currency"));?>" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource" && $gateway != "payflowpro" && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "gourl") { ?>style="display: none;"<?php } ?>>
@@ -190,7 +190,7 @@
 				<td>
 					<?php _e('Tax State', 'pmpro');?>:
 					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'pmpro');?>)</small>
-					&nbsp; Tax Rate:
+					&nbsp; <?php _e('Tax Rate', 'pmpro'); ?>:
 					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'pmpro');?>)</small>
 					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/">pmpro_tax filter</a>.', 'pmpro');?></small></p>
 				</td>
@@ -198,7 +198,7 @@
 
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					SSL Settings
+					<?php _e('SSL Settings', 'pmpro'); ?>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("use_ssl"));?>">
@@ -211,7 +211,7 @@
 						<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
 						<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'pmpro');?></option>
 					</select>
-					<small>Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.</small>
+					<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'pmpro'); ?></small>
 				</td>
 			</tr>
 			<tr>
@@ -220,7 +220,7 @@
 				</th>
 				<td>
 					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
-					<br /><small>Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.</small>
+					<br /><small><?php _e('Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.', 'pmpro'); ?></small>
 				</td>
 			</tr>
 			<tr>
