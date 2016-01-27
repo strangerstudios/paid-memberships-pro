@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Paid Memberships Pro v1.8.6.8.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-16 22:46-0500\n"
-"PO-Revision-Date: 2016-01-16 23:43-0500\n"
+"POT-Creation-Date: 2016-01-23 09:56-0500\n"
+"PO-Revision-Date: 2016-01-23 15:18-0500\n"
 "Last-Translator: Thomas Sjolshagen <thomas@eighty20results.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -28,15 +28,15 @@ msgstr ""
 #: adminpages/memberslist.php:5 adminpages/orders-csv.php:5
 #: adminpages/orders-print.php:12 adminpages/orders.php:5
 #: adminpages/pagesettings.php:4 adminpages/paymentsettings.php:5
-#: includes/license.php:36
+#: adminpages/updates.php:5 includes/license.php:36
 msgid "You do not have permissions to perform this action."
 msgstr "Du har ikke rettigheter nok for denne aktiviteten."
 
 # @ pmpro
 #: adminpages/addons.php:64 adminpages/admin_header.php:170
-#: includes/adminpages.php:52 includes/adminpages.php:146
+#: includes/adminpages.php:53 includes/adminpages.php:151
 msgid "Add Ons"
-msgstr "Add Ons"
+msgstr "Utvidelser"
 
 #: adminpages/addons.php:71
 #, php-format
@@ -279,8 +279,8 @@ msgstr "Brukerforum"
 
 # @ pmpro
 #: adminpages/admin_header.php:150 adminpages/membershiplevels.php:618
-#: adminpages/pagesettings.php:70 includes/adminpages.php:64
-#: includes/adminpages.php:65 includes/adminpages.php:111
+#: adminpages/pagesettings.php:70 includes/adminpages.php:69
+#: includes/adminpages.php:70 includes/adminpages.php:116
 #: includes/metaboxes.php:131
 msgid "Membership Levels"
 msgstr "Medlemskapsnivå"
@@ -337,8 +337,8 @@ msgstr ""
 "pålogget som bruker, eller ha registrert deg for å få tilgang."
 
 # @ pmpro
-#: adminpages/advancedsettings.php:88 includes/adminpages.php:51
-#: includes/adminpages.php:139
+#: adminpages/advancedsettings.php:88 includes/adminpages.php:52
+#: includes/adminpages.php:144
 msgid "Advanced Settings"
 msgstr "Avanserte innstillinger"
 
@@ -830,8 +830,8 @@ msgid "delete"
 msgstr "slett"
 
 # @ pmpro
-#: adminpages/emailsettings.php:69 includes/adminpages.php:50
-#: includes/adminpages.php:132
+#: adminpages/emailsettings.php:69 includes/adminpages.php:51
+#: includes/adminpages.php:137
 msgid "Email Settings"
 msgstr "Innstillinger for e-post"
 
@@ -880,8 +880,13 @@ msgid "Only Filter PMPro Emails?"
 msgstr "Kun behandle e-post for PMPro?"
 
 #: adminpages/emailsettings.php:98
-msgid "If unchecked, all emails from \"WordPress &lt;"
-msgstr "Dersom denne ikke er krysset av sendes alle email fra “WordPress &lt;"
+#, php-format
+msgid ""
+"If unchecked, all emails from \"WordPress &lt;%s&gt;\" will be filtered to "
+"use the above settings."
+msgstr ""
+"Dersom denne ikke er krysset av, vil alle mail fra “Wordpress &lt;%s&gt; bli "
+"filtrert basert på innstillingene ovenfor."
 
 # @ pmpro
 #: adminpages/emailsettings.php:115
@@ -1225,8 +1230,8 @@ msgstr ""
 "abonnement vil bli avsluttet."
 
 # @ pmpro
-#: adminpages/memberslist.php:25 includes/adminpages.php:53
-#: includes/adminpages.php:153
+#: adminpages/memberslist.php:25 includes/adminpages.php:54
+#: includes/adminpages.php:158
 msgid "Members List"
 msgstr "Medlemsliste"
 
@@ -1574,8 +1579,8 @@ msgid "Send Email"
 msgstr "Send e-post"
 
 # @ pmpro
-#: adminpages/orders.php:677 includes/adminpages.php:55
-#: includes/adminpages.php:167
+#: adminpages/orders.php:677 includes/adminpages.php:56
+#: includes/adminpages.php:172
 msgid "Orders"
 msgstr "Bestillinger"
 
@@ -1904,7 +1909,7 @@ msgid ""
 msgstr ""
 "Kun for USA. Dersom du oppgir verdier her vil statlige skatterrater bli "
 "brukt for medlemmer som bestiller fra den valgte staten.<br />For områder "
-"utenfor USA, eller områder med mer komplekse skatteregler, bruk a target="
+"utenfor USA, eller områder med mer komplekse skatteregler, bruk <a target="
 "\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-taxes-"
 "paid-memberships-pro/\">pmpro_tax filteret (Engelsk)</a>."
 
@@ -2150,6 +2155,18 @@ msgstr "Pris"
 msgid "Subtotal"
 msgstr "Delsum"
 
+#: adminpages/updates.php:11
+msgid "Updating Paid Memberships Pro"
+msgstr "Oppdaterer Paid Memberships Pro"
+
+#: adminpages/updates.php:18
+msgid "Updates are processing. This may take a few minutes to complete."
+msgstr "Vi jobber med oppdateringen. Dette kan komme til å ta noen minutter."
+
+#: adminpages/updates.php:23
+msgid "Update complete."
+msgstr "Oppdateringen er ferdig."
+
 # @ pmpro
 #: classes/class.memberorder.php:697
 #, php-format
@@ -2210,17 +2227,18 @@ msgstr "Dette medlemsskapet kommer til å utløpe den %s"
 msgid "Member Checkout for %s at %s"
 msgstr "Nytt medlem for %s via %s"
 
-# @ pmpro
 #: classes/class.pmproemail.php:375
 #, php-format
-msgid "Your billing information has been udpated at %s"
-msgstr "Faktureringsinformasjonen har blitt oppdatert på %s"
+msgid "Your billing information has been updated at %s"
+msgstr ""
+"Faktura adressen og kreditt kort informasjonen din har blitt oppdatert på %s"
 
-# @ pmpro
 #: classes/class.pmproemail.php:428
 #, php-format
-msgid "Billing information has been udpated for %s at %s"
-msgstr "Faktureringsinformasjonen har blitt oppdatert for %s den %s"
+msgid "Billing information has been updated for %s at %s"
+msgstr ""
+"Faktura adressen og kreditt kort informasjonen din har blitt oppdatert for "
+"%s på %s"
 
 # @ pmpro
 #: classes/class.pmproemail.php:476
@@ -2348,7 +2366,7 @@ msgstr ""
 "problemet."
 
 #: classes/gateways/class.pmprogateway_authorizenet.php:39
-#: paid-memberships-pro.php:131
+#: paid-memberships-pro.php:132
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -2386,7 +2404,7 @@ msgid "Could not connect to Authorize.net"
 msgstr "Feil: Kunne ikke koble oss til Authorize.net"
 
 #: classes/gateways/class.pmprogateway_braintree.php:76
-#: paid-memberships-pro.php:132
+#: paid-memberships-pro.php:133
 msgid "Braintree Payments"
 msgstr "Braintree Payments"
 
@@ -2517,7 +2535,7 @@ msgstr "Fant ikke abonnementet."
 
 # @ pmpro
 #: classes/gateways/class.pmprogateway_check.php:48
-#: paid-memberships-pro.php:125
+#: paid-memberships-pro.php:126
 msgid "Pay by Check"
 msgstr "Betal med sjekk"
 
@@ -2614,7 +2632,7 @@ msgstr ""
 "kontakt med eieren av denne websiden for å fikse problemet."
 
 #: classes/gateways/class.pmprogateway_paypal.php:57
-#: paid-memberships-pro.php:128
+#: paid-memberships-pro.php:129
 msgid "PayPal Website Payments Pro"
 msgstr "PayPal Website Payments Pro"
 
@@ -2724,7 +2742,7 @@ msgstr ""
 "blir belastet for dette videre."
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:73
-#: paid-memberships-pro.php:127
+#: paid-memberships-pro.php:128
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -2742,7 +2760,7 @@ msgid "The PayPal Token was lost."
 msgstr "PayPal tokenet var tapt."
 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:60
-#: paid-memberships-pro.php:130
+#: paid-memberships-pro.php:131
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -2764,7 +2782,7 @@ msgstr ""
 "aktiver den, eller be webhotell leverandøren din om å aktivere den."
 
 #: classes/gateways/class.pmprogateway_stripe.php:126
-#: paid-memberships-pro.php:126
+#: paid-memberships-pro.php:127
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -2867,7 +2885,7 @@ msgid "Could not find the customer."
 msgstr "Fant ikke kunden"
 
 #: classes/gateways/class.pmprogateway_twocheckout.php:59
-#: paid-memberships-pro.php:133
+#: paid-memberships-pro.php:134
 msgid "2Checkout"
 msgstr "2Checkout"
 
@@ -2922,62 +2940,66 @@ msgid "Check Out with 2Checkout"
 msgstr "Betal med 2Checkout"
 
 # @ pmpro
-#: includes/adminpages.php:47
+#: includes/adminpages.php:48
 msgid "Memberships"
 msgstr "Medlemskap"
 
 # @ pmpro
-#: includes/adminpages.php:48 includes/adminpages.php:118
+#: includes/adminpages.php:49 includes/adminpages.php:123
 msgid "Page Settings"
 msgstr "Sideinnstillinger"
 
 # @ pmpro
-#: includes/adminpages.php:49 includes/adminpages.php:125
+#: includes/adminpages.php:50 includes/adminpages.php:130
 msgid "Payment Settings"
 msgstr "Betalingsinnstillinger"
 
 # @ pmpro
-#: includes/adminpages.php:54 includes/adminpages.php:160
+#: includes/adminpages.php:55 includes/adminpages.php:165
 msgid "Reports"
 msgstr "Rapporter"
 
 # @ pmpro
-#: includes/adminpages.php:56 includes/adminpages.php:174
+#: includes/adminpages.php:57 includes/adminpages.php:179
 msgid "Discount Codes"
 msgstr "Rabattkoder"
 
-#: includes/adminpages.php:104
+#: includes/adminpages.php:61
+msgid "Updates Required"
+msgstr "Må oppdateres"
+
+#: includes/adminpages.php:109
 msgid "<span class=\"ab-icon\"></span>Memberships"
 msgstr "<span class=\"ab-icon\"></span>Medlemsskap"
 
-#: includes/adminpages.php:265
+#: includes/adminpages.php:274
 msgid "View PMPro Documentation"
 msgstr "Til PMPro dokumentasjonen"
 
-#: includes/adminpages.php:265
+#: includes/adminpages.php:274
 msgid "Docs"
 msgstr "Documentasjon"
 
-#: includes/adminpages.php:266
+#: includes/adminpages.php:275
 msgid "Visit Customer Support Forum"
 msgstr "Besøk brukerstøtte forumet"
 
-#: includes/adminpages.php:266
+#: includes/adminpages.php:275
 msgid "Support"
 msgstr "Brukerstøtte"
 
 # @ pmpro
-#: includes/currencies.php:17 includes/currencies.php:86
+#: includes/currencies.php:17 includes/currencies.php:87
 msgid "US Dollars (&#36;)"
 msgstr "Amerikanske dollar (&#36;)"
 
 # @ pmpro
-#: includes/currencies.php:19 includes/currencies.php:89
+#: includes/currencies.php:19 includes/currencies.php:90
 msgid "Euros (&euro;)"
 msgstr "Euro (&euro;)"
 
 # @ pmpro
-#: includes/currencies.php:24 includes/currencies.php:88
+#: includes/currencies.php:24 includes/currencies.php:89
 msgid "Pounds Sterling (&pound;)"
 msgstr "Britiske pund (&pound;)"
 
@@ -2995,7 +3017,7 @@ msgid "Brazilian Real (R&#36;)"
 msgstr "Brasilianske Real (R&#36;)"
 
 # @ pmpro
-#: includes/currencies.php:35 includes/currencies.php:87
+#: includes/currencies.php:35 includes/currencies.php:88
 msgid "Canadian Dollars (&#36;)"
 msgstr "Kanadiske dollar (&#36;)"
 
@@ -3054,67 +3076,71 @@ msgstr "Malaysiske Ringgits"
 msgid "Mexican Peso (&#36;)"
 msgstr "Meksikanske Peso ($#36;)"
 
-# @ pmpro
 #: includes/currencies.php:58
+msgid "Nigerian Naira (&#8358;)"
+msgstr "Nigerianske Naira (%#8358)"
+
+# @ pmpro
+#: includes/currencies.php:59
 msgid "New Zealand Dollar (&#36;)"
 msgstr "New Zealandske Dollar ($#36;)"
 
 # @ pmpro
-#: includes/currencies.php:59
+#: includes/currencies.php:60
 msgid "Norwegian Krone"
 msgstr "Norske kroner (NOK)"
 
 # @ pmpro
-#: includes/currencies.php:60
+#: includes/currencies.php:61
 msgid "Philippine Pesos"
 msgstr "Filippinske Pesos"
 
 # @ pmpro
-#: includes/currencies.php:61
+#: includes/currencies.php:62
 msgid "Polish Zloty"
 msgstr "Polske Zloty"
 
 # @ pmpro
-#: includes/currencies.php:63
+#: includes/currencies.php:64
 msgid "Singapore Dollar (&#36;)"
 msgstr "Singaporske Dollar ($#36;)"
 
-#: includes/currencies.php:68
+#: includes/currencies.php:69
 msgid "South African Rand (R)"
 msgstr "Sørafrikanske Rand(R)"
 
 # @ pmpro
-#: includes/currencies.php:72
+#: includes/currencies.php:73
 msgid "South Korean Won"
 msgstr "Sør-Koreanske Won"
 
 # @ pmpro
-#: includes/currencies.php:73
+#: includes/currencies.php:74
 msgid "Swedish Krona"
 msgstr "Svenske kroner (SEK)"
 
 # @ pmpro
-#: includes/currencies.php:74
+#: includes/currencies.php:75
 msgid "Swiss Franc"
 msgstr "Sveitsiske Franc"
 
 # @ pmpro
-#: includes/currencies.php:75
+#: includes/currencies.php:76
 msgid "Taiwan New Dollars"
 msgstr "Taiwanesiske New Dollars"
 
 # @ pmpro
-#: includes/currencies.php:76
+#: includes/currencies.php:77
 msgid "Thai Baht"
 msgstr "Thai Baht"
 
 # @ pmpro
-#: includes/currencies.php:77
+#: includes/currencies.php:78
 msgid "Turkish Lira"
 msgstr "Trykiske Lire"
 
 # @ pmpro
-#: includes/currencies.php:78
+#: includes/currencies.php:79
 msgid "Vietnamese Dong"
 msgstr "Vietnamesiske Dong"
 
@@ -3285,17 +3311,17 @@ msgid "This discount code is okay."
 msgstr "Denne rabattkoden er korrekt."
 
 # @ pmpro
-#: includes/functions.php:1395
+#: includes/functions.php:1397
 msgid "and"
 msgstr "og"
 
 # @ pmpro
-#: includes/functions.php:1620
+#: includes/functions.php:1624
 msgid "Sign Up for !!name!! Now"
 msgstr "Registrer deg for !!name!! i dag"
 
 # @ pmpro
-#: includes/functions.php:1626
+#: includes/functions.php:1630
 msgid "Please specify a level id."
 msgstr "Oppgi id for nivået"
 
@@ -3450,7 +3476,19 @@ msgstr ""
 "Denne operasjonen kommer ikke til å endre abonnementet på "
 "betalingsformidlings"
 
-#: includes/upgradecheck.php:442
+#: includes/updates.php:97
+msgid "Paid Memberships Pro Data Update Required"
+msgstr "Må oppdatere data for Paid Memberships Pro"
+
+#: includes/updates.php:102
+msgid "Start the Update"
+msgstr "Start oppdateringen"
+
+#: includes/updates.php:123
+msgid "All Paid Memberships Pro updates have finished."
+msgstr "Alle påkrevde oppdateringer for Paid Memberships Pro er ferdigstilte."
+
+#: includes/upgradecheck.php:542
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Register</a>"
@@ -3458,7 +3496,7 @@ msgstr ""
 "Dette innholdet er reservert for særskilte medlemmer (!!level!!)<br /><a "
 "href=\"%s\">Registrer deg!</a>"
 
-#: includes/upgradecheck.php:445
+#: includes/upgradecheck.php:545
 #, php-format
 msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Log In</a> "
@@ -3467,7 +3505,7 @@ msgstr ""
 "Dette innholdet er reservert for særskilte medlemmer (!!level!!)<br /><a "
 "href=\"%s\">Logg deg på</a> eller <a href=\"%s\">Register deg</a>"
 
-#: includes/upgradecheck.php:449
+#: includes/upgradecheck.php:549
 msgid ""
 "This content is for !!levels!! members only. Visit the site and log in/"
 "register to read."
@@ -3905,15 +3943,15 @@ msgid "&larr; Return to Home"
 msgstr "&larr; Til hjemmesiden"
 
 # @ pmpro
-#: paid-memberships-pro.php:124
+#: paid-memberships-pro.php:125
 msgid "Testing Only"
 msgstr "Kun for test"
 
-#: paid-memberships-pro.php:129
+#: paid-memberships-pro.php:130
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
-#: paid-memberships-pro.php:134
+#: paid-memberships-pro.php:135
 msgid "Cybersource"
 msgstr "Cybersource"
 
@@ -4188,6 +4226,18 @@ msgstr "Se alle fakturaer"
 #: shortcodes/pmpro_account.php:162
 msgid "Member Links"
 msgstr "Lenker for medlemmer"
+
+#~ msgid "If unchecked, all emails from \"WordPress &lt;"
+#~ msgstr ""
+#~ "Dersom denne ikke er krysset av sendes alle email fra “WordPress &lt;"
+
+# @ pmpro
+#~ msgid "Your billing information has been udpated at %s"
+#~ msgstr "Faktureringsinformasjonen har blitt oppdatert på %s"
+
+# @ pmpro
+#~ msgid "Billing information has been udpated for %s at %s"
+#~ msgstr "Faktureringsinformasjonen har blitt oppdatert for %s den %s"
 
 # @ pmpro
 #~ msgid "Enabled"
