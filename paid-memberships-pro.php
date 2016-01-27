@@ -149,8 +149,18 @@ $membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership
 /*
 	Activation/Deactivation
 */
-function pmpro_activation()
-{
+//we need monthly crons
+function pmpro_cron_schedules_monthly($schedules) {	
+	$schedules['monthly'] = array(
+		'interval' => 2635200,
+		'display' => __('Once a month')
+	);
+	return $schedules;
+}
+add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly'); 
+
+//activation
+function pmpro_activation() {
 	//schedule crons	
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
 	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
@@ -176,8 +186,9 @@ function pmpro_activation()
 
 	do_action('pmpro_activation');
 }
-function pmpro_deactivation()
-{
+
+//deactivation
+function pmpro_deactivation() {
 	//remove crons
 	wp_clear_scheduled_hook('pmpro_cron_expiration_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
