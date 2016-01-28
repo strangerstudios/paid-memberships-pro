@@ -107,14 +107,13 @@ function pmpro_checkForUpgrades()
 	}
 
 	//fix subscription ids on stripe orders
-	if($pmpro_db_version < 1.869) {
-		pmpro_upgrade_1_8_6_9();
-		$pmpro_db_version = 1.869;
+	if($pmpro_db_version < 1.869) {		
+		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
 	//Remove extra cron jobs inserted in version 1.8.7 and 1.8.7.1
-	if($pmpro_db_version < 1.87) {
-		add_action('init', 'pmpro_upgrade_1_8_7');	//needs to run on init
+	if($pmpro_db_version < 1.87) {		
+		$pmpro_db_version = pmpro_upgrade_1_8_7();
 	}
 }
 
@@ -125,7 +124,7 @@ function pmpro_upgrade_1_8_7() {
 	
 	//fix cron jobs
     $jobs = _get_cron_array();
-
+	
     // Remove all pmpro cron jobs (for now).
     foreach( $jobs as $when => $job_array ) {
 
@@ -148,8 +147,7 @@ function pmpro_upgrade_1_8_7() {
 	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
-	pmpro_setOption("db_version", "1.87");
-	$pmpro_db_version = 1.87;
+	pmpro_setOption("db_version", "1.87");	
 
 	return 1.87;
 }
