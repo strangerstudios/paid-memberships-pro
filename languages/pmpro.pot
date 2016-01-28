@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
-"POT-Creation-Date: 2016-01-20 11:58-0500\n"
+"POT-Creation-Date: 2016-01-28 11:25-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
@@ -1112,8 +1112,11 @@ msgstr ""
 msgid "Only Filter PMPro Emails?"
 msgstr ""
 
-#: adminpages/emailsettings.php:98 adminpages/emailsettings.php:98
-msgid "If unchecked, all emails from \"WordPress &lt;"
+#: adminpages/emailsettings.php:98
+#, php-format
+msgid ""
+"If unchecked, all emails from \"WordPress &lt;%s&gt;\" will be filtered to "
+"use the above settings."
 msgstr ""
 
 #: adminpages/emailsettings.php:115 adminpages/emailsettings.php:86
@@ -2353,8 +2356,9 @@ msgstr ""
 msgid "Payment Gateway"
 msgstr ""
 
-#: adminpages/paymentsettings.php:93 adminpages/paymentsettings.php:93
-#: adminpages/paymentsettings.php:144 adminpages/paymentsettings.php:146
+#: adminpages/paymentsettings.php:93 adminpages/paymentsettings.php:201
+#: adminpages/paymentsettings.php:93 adminpages/paymentsettings.php:144
+#: adminpages/paymentsettings.php:146
 msgid "SSL Settings"
 msgstr ""
 
@@ -2366,6 +2370,14 @@ msgid ""
 "setup/ssl/\">SSL</a> or <a title=\"Paid Memberships Pro - Payment Gateway "
 "Settings\" target=\"_blank\" href=\"http://www.paidmembershipspro.com/"
 "support/initial-plugin-setup/payment-gateway/\">Payment Gateway Settings</a>."
+msgstr ""
+
+#: adminpages/paymentsettings.php:101
+msgid "Choose a Gateway"
+msgstr ""
+
+#: adminpages/paymentsettings.php:148
+msgid "Currency and Tax Settings"
 msgstr ""
 
 #: adminpages/paymentsettings.php:153 adminpages/paymentsettings.php:153
@@ -2414,6 +2426,10 @@ msgstr ""
 msgid "abbreviation, e.g. \"PA\""
 msgstr ""
 
+#: adminpages/paymentsettings.php:193
+msgid "Tax Rate"
+msgstr ""
+
 #: adminpages/paymentsettings.php:194 adminpages/paymentsettings.php:194
 #: adminpages/paymentsettings.php:404 adminpages/paymentsettings.php:444
 #: adminpages/paymentsettings.php:449 adminpages/paymentsettings.php:451
@@ -2441,10 +2457,24 @@ msgstr ""
 msgid "Yes (with JavaScript redirects)"
 msgstr ""
 
+#: adminpages/paymentsettings.php:214
+msgid ""
+"Recommended: Yes. Try the JavaScript redirects setting if you are having "
+"issues with infinite redirect loops."
+msgstr ""
+
 #: adminpages/paymentsettings.php:219 adminpages/paymentsettings.php:219
 #: adminpages/paymentsettings.php:430 adminpages/paymentsettings.php:463
 #: adminpages/paymentsettings.php:468 adminpages/paymentsettings.php:470
 msgid "SSL Seal Code"
+msgstr ""
+
+#: adminpages/paymentsettings.php:223
+msgid ""
+"Your <strong><a target=\"_blank\" href=\"http://www.paidmembershipspro.com/"
+"documentation/initial-plugin-setup/ssl/\">SSL Certificate</a></strong> must "
+"be installed by your web host. Your <strong>SSL Seal</strong> will be a "
+"short HTML or JavaScript snippet that can be pasted here."
 msgstr ""
 
 #: adminpages/paymentsettings.php:228 adminpages/paymentsettings.php:228
@@ -2826,12 +2856,12 @@ msgstr ""
 msgid "Member Checkout for %s at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:375
+#: classes/class.pmproemail.php:375 classes/class.pmproemail.php:375
 #, php-format
 msgid "Your billing information has been updated at %s"
 msgstr ""
 
-#: classes/class.pmproemail.php:428
+#: classes/class.pmproemail.php:428 classes/class.pmproemail.php:428
 #, php-format
 msgid "Billing information has been updated for %s at %s"
 msgstr ""
@@ -4808,7 +4838,7 @@ msgstr ""
 msgid "All Paid Memberships Pro updates have finished."
 msgstr ""
 
-#: includes/upgradecheck.php:542 includes/upgradecheck.php:401
+#: includes/upgradecheck.php:563 includes/upgradecheck.php:401
 #: includes/upgradecheck.php:410 includes/upgradecheck.php:422
 #: includes/upgradecheck.php:442 includes/upgradecheck.php:542
 #, php-format
@@ -4816,7 +4846,7 @@ msgid ""
 "This content is for !!levels!! members only.<br /><a href=\"%s\">Register</a>"
 msgstr ""
 
-#: includes/upgradecheck.php:545 includes/upgradecheck.php:404
+#: includes/upgradecheck.php:566 includes/upgradecheck.php:404
 #: includes/upgradecheck.php:413 includes/upgradecheck.php:425
 #: includes/upgradecheck.php:445 includes/upgradecheck.php:545
 #, php-format
@@ -4825,7 +4855,7 @@ msgid ""
 "<a href=\"%s\">Register</a>"
 msgstr ""
 
-#: includes/upgradecheck.php:549 includes/upgradecheck.php:408
+#: includes/upgradecheck.php:570 includes/upgradecheck.php:408
 #: includes/upgradecheck.php:417 includes/upgradecheck.php:429
 #: includes/upgradecheck.php:449 includes/upgradecheck.php:549
 msgid ""
@@ -5305,6 +5335,10 @@ msgstr ""
 msgid "Cybersource"
 msgstr ""
 
+#: paid-memberships-pro.php:156
+msgid "Once a month"
+msgstr ""
+
 #: preheaders/account.php:10 preheaders/levels.php:22 preheaders/account.php:7
 #: preheaders/account.php:9 preheaders/account.php:10 preheaders/levels.php:19
 #: preheaders/levels.php:21 preheaders/levels.php:22
@@ -5668,6 +5702,10 @@ msgstr ""
 msgid ""
 "How long before the expiration expires. Note that any future payments will "
 "be cancelled when the membership expires."
+msgstr ""
+
+#: adminpages/emailsettings.php:98
+msgid "If unchecked, all emails from \"WordPress &lt;"
 msgstr ""
 
 #: adminpages/membershiplevels.php:364
