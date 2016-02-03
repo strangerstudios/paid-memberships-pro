@@ -66,6 +66,7 @@ require_once(PMPRO_DIR . "/includes/email.php");				//code related to email
 require_once(PMPRO_DIR . "/includes/recaptcha.php");			//load recaptcha files if needed
 require_once(PMPRO_DIR . "/includes/cleanup.php");				//clean things up when deletes happen, etc.
 require_once(PMPRO_DIR . "/includes/login.php");				//code to redirect away from login/register page
+require_once(PMPRO_DIR . "/includes/capabilities.php");			//manage PMPro capabilities for roles
 
 require_once(PMPRO_DIR . "/includes/xmlrpc.php");				//xmlrpc methods
 
@@ -166,23 +167,7 @@ function pmpro_activation() {
 	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
-	//add caps to admin role
-	$role = get_role( 'administrator' );
-	$role->add_cap( 'pmpro_memberships_menu' );
-	$role->add_cap( 'pmpro_membershiplevels' );
-	$role->add_cap( 'pmpro_edit_memberships' );
-	$role->add_cap( 'pmpro_pagesettings' );
-	$role->add_cap( 'pmpro_paymentsettings' );
-	$role->add_cap( 'pmpro_emailsettings' );
-	$role->add_cap( 'pmpro_advancedsettings' );
-	$role->add_cap( 'pmpro_addons' );
-	$role->add_cap( 'pmpro_memberslist' );
-	$role->add_cap( 'pmpro_memberslistcsv' );
-	$role->add_cap( 'pmpro_reports' );
-	$role->add_cap( 'pmpro_orders' );
-	$role->add_cap( 'pmpro_orderscsv' );
-	$role->add_cap( 'pmpro_discountcodes' );
-	$role->add_cap( 'pmpro_updates' );
+	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 
 	do_action('pmpro_activation');
 }
@@ -196,22 +181,7 @@ function pmpro_deactivation() {
 	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
 
 	//remove caps from admin role
-	$role = get_role( 'administrator' );
-	$role->remove_cap( 'pmpro_memberships_menu' );
-	$role->remove_cap( 'pmpro_membershiplevels' );
-	$role->remove_cap( 'pmpro_edit_memberships' );
-	$role->remove_cap( 'pmpro_pagesettings' );
-	$role->remove_cap( 'pmpro_paymentsettings' );
-	$role->remove_cap( 'pmpro_emailsettings' );
-	$role->remove_cap( 'pmpro_advancedsettings' );
-	$role->remove_cap( 'pmpro_addons' );
-	$role->remove_cap( 'pmpro_memberslist' );
-	$role->remove_cap( 'pmpro_memberslistcsv' );
-	$role->remove_cap( 'pmpro_reports' );
-	$role->remove_cap( 'pmpro_orders' );
-	$role->remove_cap( 'pmpro_orderscsv' );
-	$role->remove_cap( 'pmpro_discountcodes' );
-	$role->remove_cap( 'pmpro_updates' );
+	pmpro_set_capabilities_for_role('administrator', 'disable');
 
 	do_action('pmpro_deactivation');
 }
