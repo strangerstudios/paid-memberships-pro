@@ -164,7 +164,7 @@ function pmpro_report_memberships_page()
 				$cols[$i]->signups = 0;
 				foreach($dates as $day => $date)
 				{
-					if( $day == $i ) {
+					if( $date->date == $i ) {
 						$cols[$i]->signups = $date->signups;
 					}
 				}
