@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.8 =
+* BUG: Fixed issue where data in the Signups vs Cancellations detailed view chart was shifted back one day. (Thanks, TYT)
+* ENHANCEMENT: Added pmpro_reports_signups_sql and pmpro_reports_get_cancellations_sql filters to filter SQL that generates cancellation numbers in reports.
+
 = 1.8.7.3 =
 * BUG: Using HTTP 1.1 for calls to the PayPal API now.
 * BUG: The pmpro_cron_credit_card_expiring_warnings cron job setup by PMPro needed a monthly schedule added via the cron_schedules filter.

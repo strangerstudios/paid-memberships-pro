@@ -113,7 +113,7 @@
 			$wpdb->query($sqlQuery);
 			
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			if(!mysql_errno())
+			if(empty($wpdb->last_error))
 			{
 				$edit = false;
 				$msg = 2;
@@ -133,7 +133,7 @@
 						VALUES
 						( '" . esc_sql($ml_name) . "', '" . esc_sql($ml_description) . "', '" . esc_sql($ml_confirmation) . "', '" . esc_sql($ml_initial_payment) . "', '" . esc_sql($ml_billing_amount) . "', '" . esc_sql($ml_cycle_number) . "', '" . esc_sql($ml_cycle_period) . "', '" . esc_sql($ml_billing_limit) . "', '" . esc_sql($ml_trial_amount) . "', '" . esc_sql($ml_trial_limit) . "', '" . esc_sql($ml_expiration_number) . "', '" . esc_sql($ml_expiration_period) . "', '" . esc_sql($ml_allow_signups) . "' )";
 			$wpdb->query($sqlQuery);
-			if(!mysql_errno())
+			if(empty($wpdb->last_error))
 			{
 				$saveid = $wpdb->insert_id;
 				pmpro_updateMembershipCategories( $saveid, $ml_categories );

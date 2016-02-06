@@ -105,6 +105,8 @@
 
 	//get users
 	$theusers = $wpdb->get_col($sqlQuery);
+	
+	do_action('pmpro_before_members_list_csv_export', $theusers);
 
 	//begin output
 	header("Content-type: text/csv");
@@ -243,7 +245,9 @@
 	}
 
 	print $csvoutput;
-
+	
+	do_action('pmpro_after_members_list_csv_export');
+	
 	function pmpro_enclose($s)
 	{
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";

@@ -164,7 +164,7 @@ function pmpro_report_memberships_page()
 				$cols[$i]->signups = 0;
 				foreach($dates as $day => $date)
 				{
-					if( $day == $i ) {
+					if( $date->date == $i ) {
 						$cols[$i]->signups = $date->signups;
 					}
 				}
@@ -234,6 +234,19 @@ function pmpro_report_memberships_page()
 	
 		$sqlQuery .= " GROUP BY date ORDER BY date ";
 
+		/**
+		 * Filter query to get cancellation numbers in signups vs cancellations detailed report.
+		 *
+		 * @since 1.8.8
+		 *
+		 * @param string $sqlQuery The current SQL
+		 * @param string $type report type
+		 * @param string $startdate Start Date in YYYY-MM-DD format
+		 * @param string $enddate End Date in YYYY-MM-DD format
+		 * @param int $l Level ID
+		 */
+		$sqlQuery = apply_filters('pmpro_reports_signups_sql', $sqlQuery, $type, $startdate, $enddate, $l);
+		
 		$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);				
 		
 		foreach( $dates as $day => &$date )
@@ -517,6 +530,18 @@ function pmpro_getCancellations($period = false, $levels = 'all', $status = arra
 	//restrict by level
 	if(!empty($levels) && $levels != 'all')
 		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
+	
+	/**
+	 * Filter query to get cancellation numbers in signups vs cancellations detailed report.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param string $sqlQuery The current SQL
+	 * @param string $period Period for report. today, this month, this year, empty string for all time.
+	 * @param array(int) $levels Level IDs to include in report.
+	 * @param array(string) $status Statuses to include as cancelled.
+	 */
+	$sqlQuery = apply_filters('pmpro_reports_get_cancellations_sql', $sqlQuery, $period, $levels, $status);
 	
 	$cancellations = $wpdb->get_var($sqlQuery);
 	
