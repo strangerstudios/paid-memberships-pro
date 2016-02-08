@@ -358,6 +358,5 @@
 			$fh = fopen( $file, 'rb' );
 			fpassthru($fh);
 			fclose($fh);
-			wp_die();
 		}
 	}
