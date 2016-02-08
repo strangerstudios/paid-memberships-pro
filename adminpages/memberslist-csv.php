@@ -308,6 +308,9 @@
 			$csvoutput = '';
 		}
 
+		//free memory for user records
+		unset($usr_data);
+
 		// Increment starting position
 		if(0 !== $i_limit)
 		{
@@ -315,6 +318,9 @@
 			$i_limit += $i_limit;
 		}
 	}
+
+	// free memory
+	unset($theusers);
 
 	//close the temp file
 	fclose($csv_fh);
