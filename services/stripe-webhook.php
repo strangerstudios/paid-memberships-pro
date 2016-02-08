@@ -92,8 +92,19 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $old_order->user_id;
 				$morder->membership_id = $old_order->membership_id;
-				$morder->InitialPayment = $invoice->amount / 100;	//not the initial payment, but the class is expecting that
-				$morder->PaymentAmount = $invoice->amount / 100;
+
+				if (isset($invoice->amount))
+				{
+					$morder->InitialPayment = $invoice->amount / 100;    //not the initial payment, but the class is expecting that
+					$morder->PaymentAmount  = $invoice->amount / 100;
+				}
+				elseif(isset($invoice->subtotal))
+				{
+					$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / 100 : 0);
+					$morder->tax = (! empty($invoice->tax) ? $invoice->tax / 100 : null);
+					$morder->total = (! empty($invoice->total) ? $invoice->total / 100 : 0);
+				}
+
 				$morder->payment_transaction_id = $invoice->id;
 				$morder->subscription_transaction_id = $invoice->subscription;
 

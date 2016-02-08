@@ -1,5 +1,7 @@
 <?php
-	//only admins can get this
+	//set the number of users we'll load to protect from OOM errors
+	$max_users_per_loop = apply_filters('pmpro_set_max_user_per_export_loop', 2000);
+
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslistcsv")))
 	{
 		die(__("You do not have permissions to perform this action.", "pmpro"));
@@ -7,12 +9,13 @@
 
 	global $wpdb;
 
-	//get users
+	//get users (search input field)
 	if(isset($_REQUEST['s']))
 		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 
+	// requested a level id
 	if(isset($_REQUEST['l']))
 		$l = sanitize_text_field($_REQUEST['l']);
 	else
@@ -40,96 +43,29 @@
 		$start = NULL;
 	}
 
-    if($s)
-    {
-        $sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+	$headers = array();
+	$headers[] = "Content-type: text/csv";
 
-        if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
-            $sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-
-        $sqlQuery .= " WHERE mu.membership_id > 0 AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
-
-        if($l == "oldmembers")
-            $sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
-        elseif($l == "expired")
-            $sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
-        elseif($l == "cancelled")
-            $sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
-        elseif($l)
-            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
-        else
-            $sqlQuery .= " AND mu.status = 'active' ";
-
-        $sqlQuery .= "GROUP BY u.ID ";
-
-        if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
-            $sqlQuery .= "ORDER BY enddate DESC ";
-        else
-            $sqlQuery .= "ORDER BY u.user_registered DESC ";
-
-        if(!empty($limit))
-            $sqlQuery .= "LIMIT $start, $limit";
-    }
-    else
-    {
-        $sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
-
-        if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
-            $sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-
-        $sqlQuery .= " WHERE mu.membership_id > 0  ";
-
-        if($l == "oldmembers")
-            $sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
-        elseif($l == "expired")
-            $sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
-        elseif($l == "cancelled")
-            $sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
-        elseif($l)
-            $sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
-        else
-            $sqlQuery .= " AND mu.status = 'active' ";
-        $sqlQuery .= "GROUP BY u.ID ";
-
-        if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
-            $sqlQuery .= "ORDER BY enddate DESC ";
-        else
-            $sqlQuery .= "ORDER BY u.user_registered DESC ";
-
-        if(!empty($limit))
-            $sqlQuery .= "LIMIT $start, $limit";
-    }
-
-	//filter
-	$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-
-	//get users
-	$theusers = $wpdb->get_col($sqlQuery);
-	
-	do_action('pmpro_before_members_list_csv_export', $theusers);
-
-	//begin output
-	header("Content-type: text/csv");
 	if($s && $l == "oldmembers")
-		header("Content-Disposition: attachment; filename=members_list_expired_" . sanitize_file_name($s) . ".csv");
+		$headers[] = "Content-Disposition: attachment; filename=members_list_expired_" . sanitize_file_name($s) . ".csv";
 	elseif($s && $l)
-		header("Content-Disposition: attachment; filename=members_list_" . intval($l) . "_level_" . sanitize_file_name($s) . ".csv");
+		$headers[] = "Content-Disposition: attachment; filename=members_list_" . intval($l) . "_level_" . sanitize_file_name($s) . ".csv";
 	elseif($s)
-		header("Content-Disposition: attachment; filename=members_list_" . sanitize_file_name($s) . ".csv");
+		$headers[] = "Content-Disposition: attachment; filename=members_list_" . sanitize_file_name($s) . ".csv";
 	elseif($l == "oldmembers")
-		header("Content-Disposition: attachment; filename=members_list_expired.csv");
+		$headers[] = "Content-Disposition: attachment; filename=members_list_expired.csv";
 	else
-		header("Content-Disposition: attachment; filename=members_list.csv");
+		$headers[] = "Content-Disposition: attachment; filename=members_list.csv";
 
-	$heading = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
+	//set default CSV file headers, using comma as delimiter
+	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
 
 	if($l == "oldmembers")
-		$heading .= ",ended";
+		$csv_file_header .= ",ended";
 	else
-		$heading .= ",expires";
+		$csv_file_header .= ",expires";
 
-	$heading = apply_filters("pmpro_members_list_csv_heading", $heading);
-	$csvoutput = $heading;
+	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
 
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 	$default_columns = array(
@@ -159,39 +95,166 @@
 	//filter
 	$default_columns = apply_filters("pmpro_members_list_csv_default_columns", $default_columns);
 
+	//set the preferred date format:
+	$dateformat = apply_filters("pmpro_memberslist_csv_dateformat","Y-m-d");
+
 	//any extra columns
 	$extra_columns = apply_filters("pmpro_members_list_csv_extra_columns", array());
 	if(!empty($extra_columns))
 	{
 		foreach($extra_columns as $heading => $callback)
 		{
-			$csvoutput .= "," . $heading;
+			$csv_file_header .= "," . $heading;
 		}
 	}
 
-	$csvoutput .= "\n";
+	$csv_file_header .= "\n";
 
-	//output
-	echo $csvoutput;
-	$csvoutput = "";
+	//generate SQL for list of users to process
+	$sqlQuery = "
+		SELECT
+			u.ID,
+		FROM $wpdb->users u ";
 
-	if($theusers)
+	if ($s)
+		$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
+
+	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
+	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
+
+	$former_members = in_array( $l, array( "oldmembers", "expired", "cancelled"));
+
+	if($former_members)
+		$sqlQuery .= " LEFT JOIN {$wpdb->pmpro_memberships_users} mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
+
+	$sqlQuery .= "WHERE mu.membership_id > 0 ";
+
+	// looking for a specific user
+	if($s)
+		$sqlQuery .= " AND (u.user_login LIKE '%". esc_sql($s) ."%' OR u.user_email LIKE '%". esc_sql($s) ."%' OR um.meta_value LIKE '%". esc_sql($s) ."%') ";
+
+	if($l == "oldmembers")
+		$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+	elseif($l == "expired")
+		$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+	elseif($l == "cancelled")
+		$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
+	elseif($l)
+		$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql($l) . "' ";
+	else
+		$sqlQuery .= " AND mu.status = 'active' ";
+
+	$sqlQuery .= "GROUP BY u.ID ";
+
+	/* TODO: Shouldn't this be by ID only? Let user(s) re-sort in spreadsheet?
+	if($former_members)
+		$sqlQuery .= "ORDER BY enddate DESC ";
+	else
+		$sqlQuery .= "ORDER BY u.user_registered DESC ";
+	*/
+	// TO process based on limit value(s).
+	$sqlQuery .= "ORDER BY u.ID ASC";
+
+	if(!empty($limit))
+		$sqlQuery .= "LIMIT {$start}, {$limit}";
+
+	do_action('pmpro_before_members_list_csv_export', $theusers);
+
+	// Generate a temporary file to store the data in.
+	$tmp_dir = sys_get_temp_dir();
+	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
+
+	// open in append mode
+	$csv_fh = fopen($filename, 'a');
+
+	//write the CSV header to the file
+	fprintf($csv_fh, '%s', $csv_file_header );
+
+	//get users
+	$theusers = $wpdb->get_col($sqlQuery);
+
+	$users_found = count($theusers);
+
+	$i_start = 0;
+	$i_limit = 0;
+	$iterations = 1;
+
+	$csvoutput = '';
+
+	if($users_found > $max_users_per_loop)
 	{
-		foreach($theusers as $user_id)
-		{
-			//MULTI: This query will need to be updated to support multiple levels per user. Should probably just dump multiple rows for each membership.
-			//get meta
+		$iterations = ceil($users_found / $max_users_per_loop);
+		$i_limit = $max_users_per_loop;
+	}
 
-			if($l == "oldmembers")
-				$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' ORDER BY mu.id DESC LIMIT 1");
-			else
-				$theuser = $wpdb->get_row("SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, u.user_login, u.user_nicename, u.user_url, u.user_registered, u.user_status, u.display_name, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE u.ID = '" . $user_id . "' LIMIT 1");
+	//to manage memory footprint, we'll iterate through the membership list multiple times
+	for ( $ic = 1 ; $ic <= $iterations ; $ic++ ) {
 
-			$sqlQuery = "SELECT meta_key as `key`, meta_value as `value` FROM $wpdb->usermeta WHERE $wpdb->usermeta.user_id = '" . $user_id . "'";
-			$metavalues = pmpro_getMetavalues($sqlQuery);
-			$theuser->metavalues = $metavalues;
-			$sqlQuery = "SELECT c.id, c.code FROM $wpdb->pmpro_discount_codes_uses cu LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = '" . $theuser->ID . "' ORDER BY c.id DESC LIMIT 1";
-			$discount_code = $wpdb->get_row($sqlQuery);
+		// Create list of users to fetch from DB
+		$csv_ulist = array_slice( $theusers, $i_start, (($i_limit * $ic)-1) );
+
+		// get first and last user ID to use
+		$first_uid = $csv_ulist[0];
+		$last_uid = $csv_ulist[(count($csv_ulist) - 1)];
+
+		// attempt to free memory
+		unset ($csv_ulist);
+
+		$userSql = $wpdb->prepare("
+		SELECT
+			u.ID,
+			u.user_login,
+			u.user_email,
+			UNIX_TIMESTAMP(u.user_registered) as joindate,
+			u.user_login,
+			u.user_nicename,
+			u.user_url,
+			u.user_registered,
+			u.user_status,
+			u.display_name,
+			mu.membership_id,
+			mu.initial_payment,
+			mu.billing_amount,
+			mu.cycle_period,
+			UNIX_TIMESTAMP(mu.enddate) as enddate,
+			m.name as membership
+		FROM {$wpdb->users} u
+		LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
+		LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id AND mu.status LIKE %s
+		LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
+		WHERE u.ID BETWEEN (%d, %d)
+		ORDER BY mu.id DESC",
+			($l == 'oldmembers' ? '%' : 'active'), // if requesting 'oldmembers', we use the wildcard value
+			$first_uid,
+			$last_uid
+		);
+
+		$usr_data = $wpdb->get_results($userSql);
+		$userSql = null;
+
+		foreach($usr_data as $user) {
+
+			// Returns array of meta keys containing array(s) of metavalues.
+			$um_values = get_user_meta($user->ID);
+
+			//process usermeta
+			foreach( $um_values as $key => $value )
+				$user->metavalues->{$key} = $value[0];
+
+			unset($um_values);
+
+			//grab discount code info
+			$disSql = $wpdb->prepare("
+				SELECT
+					c.id,
+					c.code
+				FROM {$wpdb->pmpro_discount_codes_uses} cu
+				LEFT JOIN $wpdb->pmpro_discount_codes c ON cu.code_id = c.id WHERE cu.user_id = %d
+				ORDER BY c.id DESC LIMIT 1", $user->ID);
+
+			$discount_code = $wpdb->get_row($disSql);
+
+			unset($disSql);
 
 			//default columns
 			if(!empty($default_columns))
@@ -209,20 +272,19 @@
 						$csvoutput .= pmpro_enclose($$col[0]->$col[1]);	//output the value
 				}
 			}
-
 			//joindate and enddate
-			$csvoutput .= "," . pmpro_enclose(date("Y-m-d", $theuser->joindate)) . ",";
+			$csvoutput .= "," . pmpro_enclose(date($dateformat, $user->joindate)) . ",";
 
-			if($theuser->membership_id)
+			if($user->membership_id)
 			{
-				if($theuser->enddate)
-					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date("Y-m-d", $theuser->enddate), $theuser));
+				if($user->enddate)
+					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date($dateformat, $user->enddate), $user));
 				else
-					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser));
+					$csvoutput .= pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $user));
 			}
-			elseif($l == "oldmembers" && $theuser->enddate)
+			elseif($l == "oldmembers" && $user->enddate)
 			{
-				$csvoutput .= pmpro_enclose(date("Y-m-d", $theuser->enddate));
+				$csvoutput .= pmpro_enclose(date($dateformat, $user->enddate));
 			}
 			else
 				$csvoutput .= "N/A";
@@ -232,23 +294,69 @@
 			{
 				foreach($extra_columns as $heading => $callback)
 				{
-					$csvoutput .= "," . pmpro_enclose(call_user_func($callback, $theuser, $heading));
+					$csvoutput .= "," . pmpro_enclose(call_user_func($callback, $user, $heading));
 				}
 			}
 
-			$csvoutput .= "\n";
+			unset($discount_code);
+			unset($user);
 
-			//output
-			echo $csvoutput;
-			$csvoutput = "";
+			$csvoutput .= "\n";
+			fprintf($csv_fh, "%s", $csvoutput);
+
+			//reset
+			$csvoutput = '';
+		}
+
+		//free memory for user records
+		unset($usr_data);
+
+		// Increment starting position
+		if(0 !== $i_limit)
+		{
+			$i_start += $i_limit;
+			$i_limit += $i_limit;
 		}
 	}
 
-	print $csvoutput;
-	
+	// free memory
+	unset($theusers);
+
+	//close the temp file
+	fclose($csv_fh);
+
+	//make sure we get the right file size
+	clearstatcache( true, $file );
+
+	//set the download size
+	$headers[] = "Content/Length: " . filesize($file);
+
+	// send the data to the remote browser
+	pmpro_transmit_content($filename, $headers);
+
+	//allow user to clean up after themselves
 	do_action('pmpro_after_members_list_csv_export');
 	
 	function pmpro_enclose($s)
 	{
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
+	}
+
+	// responsible for trasnmitting content of file to remote browser
+	function pmpro_transmit_content( $file, $headers = array() ) {
+
+		// Set the headers for transmission
+		if (! empty($headers))
+		{
+			// Iterate through all headers
+			foreach($headers as $header)
+			{
+				header($header);
+			}
+
+			// open and write the file to the remote location
+			$fh = fopen( $file, 'rb' );
+			fpassthru($fh);
+			fclose($fh);
+		}
 	}
