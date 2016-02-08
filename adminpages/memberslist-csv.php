@@ -360,7 +360,4 @@
 			fclose($fh);
 			wp_die();
 		}
-
-
-
 	}
