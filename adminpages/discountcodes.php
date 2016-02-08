@@ -27,7 +27,7 @@
 	{
 		//get vars
 		//disallow/strip all non-alphanumeric characters except '_'
-		$code = preg_replace('/\W', '', sanitize_text_field($_POST['code']));
+		$code = preg_replace('/\s', '', sanitize_text_field($_POST['code']));
 		$starts_month = intval($_POST['starts_month']);
 		$starts_day = intval($_POST['starts_day']);
 		$starts_year = intval($_POST['starts_year']);
