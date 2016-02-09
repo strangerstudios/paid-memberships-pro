@@ -6,7 +6,7 @@
 	}
 
 	if (!defined('PMPRO_BENCHMARK'))
-		define('PMPRO_BENCHMARK', true);
+		define('PMPRO_BENCHMARK', false);
 
 	if (PMPRO_BENCHMARK)
 	{
