@@ -370,14 +370,14 @@
 		if ($pmpro_continue_registration) {
 			//if creating a new user, check that the email and username are available
 			if (empty($current_user->ID)) {
-				$oldusername = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
-				$oldemail = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE user_email = '" . esc_sql($bemail) . "' LIMIT 1");
+				$ouser = get_user_by('login', $username);
+				$oldem_user = get_user_by('email', $bemail);
 
 				//this hook can be used to allow multiple accounts with the same email address
-				$oldemail = apply_filters("pmpro_checkout_oldemail", $oldemail);
+				$oldemail = apply_filters("pmpro_checkout_oldemail", ( false !== $oldem_user ? $oldem_user->user_email : null ));
 			}
 
-			if (!empty($oldusername)) {
+			if (!empty($ouser->user_login)) {
 				pmpro_setMessage(__("That username is already taken. Please try another.", "pmpro"), "pmpro_error");
 				$pmpro_error_fields[] = "username";
 			}
@@ -568,13 +568,21 @@
 																				);
 
 			$user_id = apply_filters('pmpro_new_user', '', $new_user_array);
-			if (!$user_id)
+			if (empty($user_id))
 				$user_id = wp_insert_user($new_user_array);
 
-			if (!$user_id || is_wp_error($user_id)) {
-				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro");
+			if (empty($user_id) || is_wp_error($user_id))
+			{
+				$e_msg = '';
+
+				if ( is_wp_error($user_id) )
+					$e_msg = $user_id->get_error_message();
+
+				$pmpro_msg = __("Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro") . sprintf(" %s", $e_msg); // Dirty 'don't break translation hack.
 				$pmpro_msgt = "pmpro_error";
-			} elseif (apply_filters('pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level)) {
+			}
+			elseif (apply_filters('pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level))
+			{
 
 				//check pmpro_wp_new_user_notification filter before sending the default WP email
 				if (apply_filters("pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id)) {
@@ -617,7 +625,7 @@
 
 			//update membership_user table.
 			if (!empty($discount_code) && !empty($use_discount_code))
-				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($discount_code) . "' LIMIT 1");
 			else
 				$discount_code_id = "";
 

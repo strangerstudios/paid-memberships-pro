@@ -552,7 +552,7 @@
 											"mastercard"                : "Mastercard",
 											"visa"                      : "Visa",
 											"visa_electron"             : "Visa Electron"
-										}
+										};
 
 										if(result.card_type)
 											jQuery('#CardType').val(cardtypenames[result.card_type.name]);

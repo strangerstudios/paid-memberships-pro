@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Paid Memberships Pro v1.8.6.8.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-01-23 09:56-0500\n"
-"PO-Revision-Date: 2016-01-23 15:18-0500\n"
+"PO-Revision-Date: 2016-01-29 07:54-0500\n"
 "Last-Translator: Thomas Sjolshagen <thomas@eighty20results.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -1394,22 +1394,22 @@ msgstr "Navn"
 # @ pmpro
 #: adminpages/orders.php:373
 msgid "Billing Street"
-msgstr "Gate"
+msgstr "Gatenavn"
 
 # @ pmpro
 #: adminpages/orders.php:380
 msgid "Billing City"
-msgstr "By"
+msgstr "Sted/By"
 
 # @ pmpro
 #: adminpages/orders.php:387
 msgid "Billing State"
-msgstr "Fylke for regninger"
+msgstr "Fylke"
 
 # @ pmpro
 #: adminpages/orders.php:394
 msgid "Billing Postal Code"
-msgstr "Postnummer for regning"
+msgstr "Postnummer"
 
 # @ pmpro
 #: adminpages/orders.php:401
@@ -3586,7 +3586,7 @@ msgstr "Adresse 2"
 # @ pmpro
 #: pages/billing.php:100 pages/checkout.php:348
 msgid "City"
-msgstr "By"
+msgstr "Sted/By"
 
 # @ pmpro
 #: pages/billing.php:104 pages/checkout.php:352
@@ -3601,7 +3601,7 @@ msgstr "Postnummer"
 # @ pmpro
 #: pages/billing.php:117 pages/checkout.php:365
 msgid "City, State Zip"
-msgstr "By, Postnummer"
+msgstr "Sted/By, Postnummer"
 
 # @ pmpro
 #: pages/billing.php:170 pages/checkout.php:418
