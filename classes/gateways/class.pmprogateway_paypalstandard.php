@@ -505,7 +505,7 @@
 
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   die( "methodName_ failed: $error_message" );
+			   die( "{$methodName_} failed: $error_message" );
 			} else {
 				//extract the response details
 				$httpParsedResponseAr = array();
