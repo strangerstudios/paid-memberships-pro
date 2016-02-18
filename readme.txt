@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.8 =
 * BUG: Fixed issue where recurring Stripe orders were being created with $0 totals.
+* BUG: Fixed issues in pmpro_has_membership_access() that was affecting some sites with files locked down for members. (Thanks, MannyC on GitHub)
 * BUG: Fixed issue where data in the Signups vs Cancellations detailed view chart was shifted back one day. (Thanks, TYT)
 * BUG: Fixed issue where whitespace in email addresses and user names could confuse the pre-existing user checks.
 * BUG: Added some closing HTML tags where needed.
