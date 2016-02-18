@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.4.1
+Tested up to: 4.4.2
 Stable tag: 1.8.7.3
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
@@ -116,8 +116,15 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.8 =
+* BUG: Fixed issue where recurring Stripe orders were being created with $0 totals.
 * BUG: Fixed issue where data in the Signups vs Cancellations detailed view chart was shifted back one day. (Thanks, TYT)
+* BUG: Fixed issue where whitespace in email addresses and user names could confuse the pre-existing user checks.
+* BUG: Added some closing HTML tags where needed.
+* BUG: Fixed issue where discount codes could be created with special characters even though only letters, numbers, and - will work at checkout.
+* ENHANCEMENT: Refactored the members list CSV to use less memory and scale better. It should work faster in general and better on large sites. (Thanks, Thomas Sjolshagen)
 * ENHANCEMENT: Added pmpro_reports_signups_sql and pmpro_reports_get_cancellations_sql filters to filter SQL that generates cancellation numbers in reports.
+* ENHANCEMENT: Now setting the timeout on PayPal API calls to 60 seconds from 5 seconds.
+* ENHANCEMENT: Now checking admin capabilities on each load in the dashboard in case PMPro-related admin capabilities have been changed. This avoids issues where users were upgrading PMPro but wouldn't have access to updates or new features without deactivating and reactivating PMPro.
 
 = 1.8.7.3 =
 * BUG: Using HTTP 1.1 for calls to the PayPal API now.
