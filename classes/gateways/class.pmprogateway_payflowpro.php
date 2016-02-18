@@ -381,7 +381,7 @@
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
-			$nvpStr .= "&PROFILENAME=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
+			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			$nvpStr .= "&PAYPERIOD=" . $payperiod;
 
@@ -484,7 +484,7 @@
 			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=M";
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 
-			$nvpStr .= "&PROFILENAME=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127));
+			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;
 
