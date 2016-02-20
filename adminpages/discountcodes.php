@@ -26,7 +26,8 @@
 	if($saveid)
 	{
 		//get vars
-		$code = sanitize_text_field($_POST['code']);
+		//disallow/strip all non-alphanumeric characters except -
+		$code = preg_replace("/[^A-Za-z0-9\-]/", "", sanitize_text_field($_POST['code']));
 		$starts_month = intval($_POST['starts_month']);
 		$starts_day = intval($_POST['starts_day']);
 		$starts_year = intval($_POST['starts_year']);

@@ -113,7 +113,7 @@
 			$wpdb->query($sqlQuery);
 			
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			if(!mysql_errno())
+			if(empty($wpdb->last_error))
 			{
 				$edit = false;
 				$msg = 2;
@@ -133,7 +133,7 @@
 						VALUES
 						( '" . esc_sql($ml_name) . "', '" . esc_sql($ml_description) . "', '" . esc_sql($ml_confirmation) . "', '" . esc_sql($ml_initial_payment) . "', '" . esc_sql($ml_billing_amount) . "', '" . esc_sql($ml_cycle_number) . "', '" . esc_sql($ml_cycle_period) . "', '" . esc_sql($ml_billing_limit) . "', '" . esc_sql($ml_trial_amount) . "', '" . esc_sql($ml_trial_limit) . "', '" . esc_sql($ml_expiration_number) . "', '" . esc_sql($ml_expiration_period) . "', '" . esc_sql($ml_allow_signups) . "' )";
 			$wpdb->query($sqlQuery);
-			if(!mysql_errno())
+			if(empty($wpdb->last_error))
 			{
 				$saveid = $wpdb->insert_id;
 				pmpro_updateMembershipCategories( $saveid, $ml_categories );
@@ -467,7 +467,7 @@
 				
 				<tr>
 					<th scope="row" valign="top"><label><?php _e('Membership Expiration', 'pmpro');?>:</label></th>
-					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php _e('Check this to set when membership access expires.', 'pmpro');?></a></td>
+					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php _e('Check this to set when membership access expires.', 'pmpro');?></label></a></td>
 				</tr>
 				
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>

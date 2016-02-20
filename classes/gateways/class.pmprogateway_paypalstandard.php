@@ -497,6 +497,7 @@
 						
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
+					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
 					'body' => $nvpreq
@@ -505,7 +506,7 @@
 
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   die( "methodName_ failed: $error_message" );
+			   die( "{$methodName_} failed: $error_message" );
 			} else {
 				//extract the response details
 				$httpParsedResponseAr = array();

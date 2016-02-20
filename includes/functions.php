@@ -739,7 +739,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
 			if(!$wpdb->query($sql))
 			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
+				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
 
 				return false;
 			}
@@ -812,7 +812,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
 			if(!$wpdb->query($sql))
 			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
+				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
 				return false;
 			}
 		}
@@ -836,7 +836,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
 			if(!$wpdb->query($sql))
 			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".(mysql_errno()?mysql_error():'unavailable');
+				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
 				return false;
 			}
 		}
@@ -886,13 +886,13 @@ function pmpro_toggleMembershipCategory( $level, $category, $value )
 	{
 		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
 		$wpdb->query($sql);
-		if(mysql_errno()) return mysql_error();
+		if($wpdb->last_error) return $wpdb->last_error;
 	}
 	else
 	{
 		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
 		$wpdb->query($sql);
-		if(mysql_errno()) return mysql_error();
+		if($wpdb->last_error) return $wpdb->last_error;
 	}
 
 	return true;
@@ -924,7 +924,7 @@ function pmpro_updateMembershipCategories($level, $categories)
 	// remove all existing links...
 	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql($level) . "'";
 	$wpdb->query($sqlQuery);
-	if(mysql_errno()) return mysql_error();
+	if($wpdb->last_error) return $wpdb->last_error;
 
 	// add the given links [back?] in...
 	foreach($categories as $cat)

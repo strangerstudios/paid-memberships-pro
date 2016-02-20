@@ -1186,7 +1186,13 @@
 			}
 
 			//get name and email values from order in case we update
-			$name = trim($order->FirstName . " " . $order->LastName);
+			if(!empty($order->FirstName) && !empty($order->LastName))
+				$name = trim($order->FirstName . " " . $order->LastName);
+			elseif(!empty($order->FirstName))
+				$name = $order->FirstName;
+			elseif(!empty($order->LastName))
+				$name = $order->LastName;	
+
 			if(empty($name) && !empty($user->ID))
 			{
 				$name = trim($user->first_name . " " . $user->last_name);
@@ -1198,8 +1204,12 @@
 			elseif(empty($name))
 				$name = "No Name";
 
+			if(!empty($order->Email))
+				$email = $order->Email;
+			else
+				$email = "";
 			$email = $order->Email;
-			if(empty($email) && !empty($user->ID))
+			if(empty($email) && !empty($user->ID) && !empty($user->user_email))
 			{
 				$email = $user->user_email;
 			}
