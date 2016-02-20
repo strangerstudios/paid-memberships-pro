@@ -93,10 +93,9 @@
 				$morder->user_id = $old_order->user_id;
 				$morder->membership_id = $old_order->membership_id;
 
-				if (isset($invoice->amount))
+				if(isset($invoice->amount))
 				{
-					$morder->InitialPayment = $invoice->amount / 100;    //not the initial payment, but the class is expecting that
-					$morder->PaymentAmount  = $invoice->amount / 100;
+					$morder->subtotal = $invoice->amount / 100;					
 				}
 				elseif(isset($invoice->subtotal))
 				{
