@@ -97,6 +97,7 @@
 				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
 
 				//save
+				$morder->status = "success";
 				$morder->saveOrder();
 				$morder->getMemberOrderByID($morder->id);
 
