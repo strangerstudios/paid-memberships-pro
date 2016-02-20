@@ -14,35 +14,65 @@ function pmpro_checkForUpgrades()
 	if(!$table_exists)
 		$pmpro_db_version = 0;
 
-	if(!$pmpro_db_version)
+	//default options
+	if(!$pmpro_db_version) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1.php");
 		$pmpro_db_version = pmpro_upgrade_1();
+	}
 
-	if($pmpro_db_version < 1.115)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.115) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_1_15.php");
 		$pmpro_db_version = pmpro_upgrade_1_1_15();
+	}
 
-	if($pmpro_db_version < 1.23)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.23) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_2_3.php");
 		$pmpro_db_version = pmpro_upgrade_1_2_3();
+	}
 
-	if($pmpro_db_version < 1.318)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.318) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_3_18.php");
 		$pmpro_db_version = pmpro_upgrade_1_3_18();
+	}
 
-	if($pmpro_db_version < 1.4)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.4) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_4.php");
 		$pmpro_db_version = pmpro_upgrade_1_4();
+	}
 
-	if($pmpro_db_version < 1.42)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.42) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_4_2.php");
 		$pmpro_db_version = pmpro_upgrade_1_4_2();
+	}
 
-	if($pmpro_db_version < 1.48)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.48) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_4_8.php");
 		$pmpro_db_version = pmpro_upgrade_1_4_8();
+	}
 
-	if($pmpro_db_version < 1.5)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.5) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_5.php");
 		$pmpro_db_version = pmpro_upgrade_1_5();
+	}
 
-	if($pmpro_db_version < 1.59)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.59) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_5_9.php");
 		$pmpro_db_version = pmpro_upgrade_1_5_9();
+	}
 
-	if($pmpro_db_version < 1.6)
+	//upgrading from early early versions of PMPro
+	if($pmpro_db_version < 1.6) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_6.php");
 		$pmpro_db_version = pmpro_upgrade_1_6();
+	}
 
 	//fix for fresh 1.7 installs
 	if($pmpro_db_version == 1.7)
@@ -53,6 +83,7 @@ function pmpro_checkForUpgrades()
 		if($wpdb->last_error == "Unknown column 'id' in 'field list'")
 		{
 			//redo 1.5 fix
+			require_once(PMPRO_DIR . "/includes/updates/upgrade_1_5.php");
 			pmpro_upgrade_1_5();
 		}
 
@@ -70,6 +101,7 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.71;
 	}
 
+	//schedule the credit card expiring cron
 	if($pmpro_db_version < 1.72)
 	{
 		//schedule the credit card expiring cron
@@ -79,12 +111,7 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.72;
 	}
 
-	/*
-		1.7.3
-		- default Stripe Billing Fields to true
-		- unless Stripe Lite is activated, then deactivate Stripe Lite and set Stripe Billing Fields to false
-	*/
-
+	//register capabilities required for menus now
 	if($pmpro_db_version < 1.79)
 	{
 		//need to register caps for menu
@@ -107,500 +134,27 @@ function pmpro_checkForUpgrades()
 	}
 
 	//fix subscription ids on stripe orders
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_6_9.php");	//need to include this for AJAX calls
 	if($pmpro_db_version < 1.869) {		
 		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
 	//Remove extra cron jobs inserted in version 1.8.7 and 1.8.7.1
-	if($pmpro_db_version < 1.87) {		
+	if($pmpro_db_version < 1.87) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_7.php");
 		$pmpro_db_version = pmpro_upgrade_1_8_7();
 	}
-}
-
-/*
-	Remove extra cron jobs inserted in version 1.8.7 and 1.8.7.1
-*/
-function pmpro_upgrade_1_8_7() {
 	
-	//fix cron jobs
-    $jobs = _get_cron_array();
-	
-    // Remove all pmpro cron jobs (for now).
-    foreach( $jobs as $when => $job_array ) {
-
-        foreach($job_array as $name => $job) {
-	        //delete pmpro cron
-	        if ( false !== stripos( $name, 'pmpro_cron') )
-	            unset($jobs[$when][$name]);	     
-    	}
-
-    	//delete empty cron time slots
-    	if( empty($jobs[$when]) )
-	        unset($jobs[$when]);
-    }
-
-    // Save the data
-    _set_cron_array($jobs);
-
-    //add the three we want back
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
-	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
-
-	pmpro_setOption("db_version", "1.87");	
-
-	return 1.87;
-}
-
-/*
-	Upgrade to 1.8.6.9
-
-	1. Find all orders for stripe gateway with a subscription_transaction_id LIKE 'cus_%'
-	2. Search for an order for the same user_id and membership_id with a subscription_transaction_id LIKE 'sub_%'
-	3. Replace subscription_transaction_id field.
-*/
-function pmpro_upgrade_1_8_6_9() {
-	global $wpdb;
-	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%'");
-	
-	if(!empty($orders)) {
-		if(count($orders) > 100) {
-			//if more than 100 orders, we'll need to do this via AJAX
-			pmpro_addUpdate('pmpro_upgrade_1_8_6_9_ajax');
-		} else {
-			//less than 100, let's just do them now		
-			$subids = array();
-					
-			foreach($orders as $order) {
-				if(!empty($subids[$order->subscription_transaction_id])) {
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-
-					//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
-				}
-				elseif(isset($subids[$order->subscription_transaction_id])) {
-					//no sub id found, so let it go
-
-					//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . " in cache.<br />";
-				}
-				else {
-					//need to look for a sub id in the database
-					$subid = $wpdb->get_var("SELECT subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE membership_id = '" . $order->membership_id . "' AND user_id = '" . $order->user_id . "' AND subscription_transaction_id LIKE 'sub_%' LIMIT 1");
-					$subids[$order->subscription_transaction_id] = $subid;
-					if(!empty($subid)) {
-						$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-
-						//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";	
-					}
-					else {
-						//echo "No subid found for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
-					}
-				}
-			}
-		}
+	/*
+		v1.8.8
+		* Running the cron job cleanup again.
+		* Fixing old $0 Stripe orders.
+		* Fixing old Authorize.net orders with empty status.
+	*/	
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_8.php");
+	if($pmpro_db_version < 1.88) {		
+		$pmpro_db_version = pmpro_upgrade_1_8_8();			
 	}
-
-	pmpro_setOption("db_version", "1.869");
-	return 1.869;
-}
-
-/*
-	If a site has > 100 orders then we run this pasrt of the update via AJAX from the updates page.
-*/
-function pmpro_upgrade_1_8_6_9_ajax() {
-	global $wpdb;
-
-	//keeping track of which order we're working on
-	$last_order_id = get_option('pmpro_upgrade_1_8_6_9_last_order_id', 0);
-	
-	//get orders
-	$orders = $wpdb->get_results("SELECT id, user_id, membership_id, subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND subscription_transaction_id LIKE 'cus_%' ORDER BY id LIMIT 100");
-
-	if(empty($orders)) {
-		//done with this update
-		pmpro_removeUpdate('pmpro_upgrade_1_8_6_9_ajax');
-		delete_option('pmpro_upgrade_1_8_6_9_last_order_id');
-	} else {
-		$subids = array();					//cache of subids found
-		foreach($orders as $order) {
-			$last_order_id = $order->id;	//keeping track of the last order we processed
-			if(!empty($subids[$order->subscription_transaction_id])) {
-				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-			}
-			elseif(isset($subids[$order->subscription_transaction_id])) {
-				//no sub id found, so let it go
-			}
-			else {
-				//need to look for a sub id in the database
-				$subid = $wpdb->get_var("SELECT subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE membership_id = '" . $order->membership_id . "' AND user_id = '" . $order->user_id . "' AND subscription_transaction_id LIKE 'sub_%' LIMIT 1");
-				$subids[$order->subscription_transaction_id] = $subid;
-				if(!empty($subid)) {
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
-				}
-				else {
-					//no sub id found, so let it go
-				}
-			}
-		}
-
-		update_option('pmpro_upgrade_1_8_6_9_last_order_id', $last_order_id);
-	}
-}
-
-function pmpro_upgrade_1_7()
-{
-	pmpro_db_delta();	//just a db delta
-
-	pmpro_setOption("db_version", "1.7");
-	return 1.7;
-}
-
-function pmpro_upgrade_1_6()
-{
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-
-	//add notes column to orders
-	$sqlQuery = "ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `notes` TEXT NOT NULL";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.6");
-	return 1.6;
-}
-
-function pmpro_upgrade_1_5_9()
-{
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-
-	//fix firstpayment statuses
-	$sqlQuery = "UPDATE " . $wpdb->pmpro_membership_orders . " SET status = 'success' WHERE status = 'firstpayment'";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.59");
-	return 1.59;
-}
-
-function pmpro_upgrade_1_5()
-{
-	/*
-		Add the id and status fields to pmpro_memberships_users, change primary key to id instead of user_id
-	*/
-
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-
-	//remove primary key
-	$sqlQuery = "ALTER TABLE `" . $wpdb->pmpro_memberships_users . "` DROP PRIMARY KEY";
-	$wpdb->query($sqlQuery);
-
-	//id
-	$sqlQuery = "ALTER TABLE `" . $wpdb->pmpro_memberships_users . "` ADD  `id` BIGINT( 20 ) UNSIGNED AUTO_INCREMENT FIRST, ADD PRIMARY KEY(id)";
-	$wpdb->query($sqlQuery);
-
-	//status
-	$sqlQuery = "ALTER TABLE `" . $wpdb->pmpro_memberships_users . "` ADD  `status` varchar( 20 ) NOT NULL DEFAULT 'active' AFTER `trial_limit`";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.5");
-	return 1.5;
-}
-
-function pmpro_upgrade_1_4_8()
-{
-	/*
-		Adding a billing_country field to the orders table.		
-	*/
-
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-
-	//billing_country
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `billing_country` VARCHAR( 128 ) NOT NULL AFTER  `billing_zip`
-	";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.48");
-	return 1.48;
-}
-
-function pmpro_upgrade_1_4_2()
-{
-	/*
-		Setting the new use_ssl setting.
-		PayPal Website Payments Pro, Authorize.net, and Stripe will default to use ssl.
-		PayPal Express and the test gateway (no gateway) will default to not use ssl.
-	*/
-	$gateway = pmpro_getOption("gateway");
-	if($gateway == "paypal" || $gateway == "authorizenet" || $gateway == "stripe")
-		pmpro_setOption("use_ssl", 1);
-	else
-		pmpro_setOption("use_ssl", 0);
-
-	pmpro_setOption("db_version", "1.42");
-	return 1.42;
-}
-
-function pmpro_upgrade_1_4()
-{
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-
-	//confirmation message
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `confirmation` LONGTEXT NOT NULL AFTER  `description`
-	";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.4");
-	return 1.4;
-}
-
-function pmpro_upgrade_1_3_18()
-{
-	//setting new email settings defaults
-	pmpro_setOption("email_admin_checkout", "1");
-	pmpro_setOption("email_admin_changes", "1");
-	pmpro_setOption("email_admin_cancels", "1");
-	pmpro_setOption("email_admin_billing", "1");
-
-	pmpro_setOption("db_version", "1.318");
-	return 1.318;
-}
-
-function pmpro_upgrade_1_2_3()
-{
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-	$wpdb->pmpro_memberships_categories = $wpdb->prefix . 'pmpro_memberships_categories';
-	$wpdb->pmpro_memberships_pages = $wpdb->prefix . 'pmpro_memberships_pages';
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
-	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
-
-	//expiration number and period for levels
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
-ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	//expiration number and period for discount code levels
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_discount_codes_levels . "` ADD  `expiration_number` INT UNSIGNED NOT NULL ,
-ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	//end date for members
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `enddate` DATETIME NULL AFTER  `startdate`
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `enddate` )
-	";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.23");
-	return 1.23;
-}
-
-function pmpro_upgrade_1_1_15()
-{
-	/*
-		DB table setup	
-	*/
-	global $wpdb;
-	$wpdb->hide_errors();
-	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$wpdb->pmpro_memberships_users = $wpdb->prefix . 'pmpro_memberships_users';
-	$wpdb->pmpro_memberships_categories = $wpdb->prefix . 'pmpro_memberships_categories';
-	$wpdb->pmpro_memberships_pages = $wpdb->prefix . 'pmpro_memberships_pages';
-	$wpdb->pmpro_membership_orders = $wpdb->prefix . 'pmpro_membership_orders';
-	$wpdb->pmpro_discount_codes = $wpdb->prefix . 'pmpro_discount_codes';
-	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
-
-	/*
-		Changing some id columns to unsigned.			
-	*/
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_categories . "` CHANGE  `category_id`  `category_id` INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_pages . "` CHANGE  `page_id`  `page_id` INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `user_id`  `user_id`  INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `id`  `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `user_id`  `user_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` CHANGE  `membership_id`  `membership_id` INT( 11 ) UNSIGNED NOT NULL DEFAULT  '0'
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD  `code_id` INT UNSIGNED NOT NULL AFTER  `membership_id` ;
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_memberships_users . "` ADD INDEX (  `code_id` )
-	";
-	$wpdb->query($sqlQuery);
-
-	/*
-		New tables for discount codes
-	*/
-
-	//wp_pmpro_discount_codes
-	$sqlQuery = "		
-		CREATE TABLE `" . $wpdb->pmpro_discount_codes . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `code` varchar(32) NOT NULL,
-		  `starts` date NOT NULL,
-		  `expires` date NOT NULL,
-		  `uses` int(11) NOT NULL,
-		  PRIMARY KEY (`id`),
-		  UNIQUE KEY `code` (`code`),
-		  KEY `starts` (`starts`),
-		  KEY `expires` (`expires`)
-		);
-	";
-	$wpdb->query($sqlQuery);
-
-	//wp_pmpro_discount_codes_levels
-	$sqlQuery = "		
-		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
-		  `code_id` int(11) unsigned NOT NULL,
-		  `level_id` int(11) unsigned  NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `cycle_number` int(11) NOT NULL DEFAULT '0',
-		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
-		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-		  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `trial_limit` int(11) NOT NULL DEFAULT '0',
-		  PRIMARY KEY (`code_id`,`level_id`),
-		  KEY `initial_payment` (`initial_payment`)
-		);
-	";
-	$wpdb->query($sqlQuery);
-
-	//wp_pmpro_discount_codes_uses
-	$sqlQuery = "		
-		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `code_id` int(10) unsigned NOT NULL,
-		  `user_id` int(10) unsigned NOT NULL,
-		  `order_id` int(10) unsigned NOT NULL,
-		  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY (`id`),
-		  KEY `user_id` (`user_id`),
-		  KEY `timestamp` (`timestamp`)
-		);
-	";
-	$wpdb->query($sqlQuery);
-
-	pmpro_setOption("db_version", "1.115");
-
-	//do the next update
-	return pmpro_upgrade_1_2_2();
-}
-
-function pmpro_upgrade_1()
-{
-	/*
-		default options
-	*/
-	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Register</a>', 'pmpro' ), wp_login_url() . "?action=register" );
-	pmpro_setOption("nonmembertext", $nonmembertext);
-
-	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Register</a>', 'pmpro' ), wp_login_url(), wp_login_url() . "?action=register" );
-	'?action=register">Register</a>';
-	pmpro_setOption("notloggedintext", $notloggedintext);
-
-	$rsstext = __( "This content is for !!levels!! members only. Visit the site and log in/register to read.", 'pmpro' );
-	pmpro_setOption("rsstext", $rsstext);
-
-	$gateway_environment = "sandbox";
-	pmpro_setOption("gateway_environment", $gateway_environment);
-
-	$pmpro_currency = "USD";
-	pmpro_setOption("currency", $pmpro_currency);
-
-	$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
-	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
-
-	$parsed = parse_url(home_url());
-	$hostname = $parsed['host'];
-	$hostparts = explode(".", $hostname);
-	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];
-	$from_email = "wordpress@" . $email_domain;
-	pmpro_setOption("from_email", $from_email);
-
-	$from_name = "WordPress";
-	pmpro_setOption("from_name", $from_name);
-
-	//setting new email settings defaults
-	pmpro_setOption("email_admin_checkout", "1");
-	pmpro_setOption("email_admin_changes", "1");
-	pmpro_setOption("email_admin_cancels", "1");
-	pmpro_setOption("email_admin_billing", "1");
-
-	pmpro_setOption("tospage", "");
-
-	//db update
-	pmpro_db_delta();
-
-	//update version and return
-	pmpro_setOption("db_version", "1.71");		//no need to run other updates
-	return 1.71;
 }
 
 function pmpro_db_delta()
