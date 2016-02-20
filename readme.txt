@@ -129,6 +129,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now checking admin capabilities on each load in the dashboard in case PMPro-related admin capabilities have been changed. This avoids issues where users were upgrading PMPro but wouldn't have access to updates or new features without deactivating and reactivating PMPro.
 * ENHANCEMENT: Added a pmpro_paypal_level_description filter that can be used to filter the description of the level sent to PayPal.
 * ENHANCEMENT: Added Catalan translations (ca, ca_AD, ca_ES). (Thanks, Jordi Martín)
+* ENHANCEMENT: Added Estonian translations (et_EE). (Thanks, Enriko Ojala)
 
 = 1.8.7.3 =
 * BUG: Using HTTP 1.1 for calls to the PayPal API now.
