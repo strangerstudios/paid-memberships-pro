@@ -227,7 +227,7 @@
 			}
 			else
 			{
-				$logstr .= "Ignoring an invoice for $0. Probably for a subscription. Event ID #" . $pmpro_stripe_event->id . ".";
+				$logstr .= "Ignoring an invoice for $0. Probably for a new subscription just created. Event ID #" . $pmpro_stripe_event->id . ".";
 				pmpro_stripeWebhookExit();
 			}
 		}
