@@ -71,10 +71,14 @@ function pmpro_upgrade_1_8_8_ajax() {
 					//get total
 					if(!empty($invoice)) {
 						if($invoice->total > 0) {
+							//invoice we accidentally saved $0 for. update the real total.
 							$order->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / 100 : 0);
 							$order->tax = (! empty($invoice->tax) ? $invoice->tax / 100 : null);
 							$order->total = (! empty($invoice->total) ? $invoice->total / 100 : 0);
 							$order->saveOrder();
+						} else {
+							//we don't want to track $0 invoices. delete it.
+							$order->deleteMe();
 						}
 					}
 				}
