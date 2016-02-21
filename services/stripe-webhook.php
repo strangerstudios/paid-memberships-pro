@@ -395,9 +395,19 @@
 
 		$invoice_id = $pmpro_stripe_event->data->object->id;
 
+		//get order by invoice id
 		$order = new MemberOrder();
 		$order->getMemberOrderByPaymentTransactionID($invoice_id);
 
+		//if this is the first invoice for a subscription, return the initial order
+		if(empty($order->id) && !empty($pmpro_stripe_event->data->object->subscription)) {
+			$order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
+			
+			//if the timestamps differ, this must be a recurring payment, so null out the $order so we create a new one
+			if(!empty($order->id) && date("Y-m-d", $order->timestamp) != date("Y-m-d", $pmpro_stripe_event->data->object->date))
+				$order = new MemberOrder();
+		}
+		
 		if(!empty($order->id))
 			return $order;
 		else
