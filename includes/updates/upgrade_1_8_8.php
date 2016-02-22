@@ -35,7 +35,7 @@ function pmpro_upgrade_1_8_8_ajax() {
 	$last_order_id = get_option('pmpro_upgrade_1_8_8_last_order_id', 0);
 	
 	//Fixing old $0 Stripe orders.	
-	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND total = 0 ORDER BY id LIMIT 5");
+	$orders = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE id > $last_order_id AND gateway = 'stripe' AND total = 0 ORDER BY id LIMIT 2");
 
 	//track progress
 	$first_load = get_transient('pmpro_updates_first_load');

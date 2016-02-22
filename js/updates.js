@@ -42,7 +42,7 @@ jQuery(document).ready(function() {
 							jQuery('#pmpro_updates_progress').html(progress + ' ' + parseInt(eval(progress[0].replace(/\[|\]/ig, ''))*100) + '%');
 						$status.html($status.html() + responseHTML.replace(re, ''));						
 						document.title = $cycles[$count%4] + ' ' + $title;
-						$update_timer = setTimeout(function() { pmpro_updates();}, 500);
+						$update_timer = setTimeout(function() { pmpro_updates();}, 100);
 					}
 
 					//scroll the text area unless the mouse is over it
@@ -53,6 +53,6 @@ jQuery(document).ready(function() {
 			});
 		}
 
-		var $update_timer = setTimeout(function() { pmpro_updates();}, 500);
+		var $update_timer = setTimeout(function() { pmpro_updates();}, 200);
 	}
 });
