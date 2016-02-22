@@ -44,7 +44,7 @@ function pmpro_removeUpdate($update) {
 */
 function pmpro_enqueue_update_js() {
 	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-updates') {
-		wp_enqueue_script( 'pmpro-updates', plugin_dir_url( dirname(__FILE__) ) . 'js/updates.js' );
+		wp_enqueue_script( 'pmpro-updates', plugin_dir_url( dirname(__FILE__) ) . 'js/updates.js', array('jquery'), PMPRO_VERSION );
 	}
 }
 add_action('admin_enqueue_scripts', 'pmpro_enqueue_update_js');
@@ -62,8 +62,16 @@ function pmpro_wp_ajax_pmpro_updates() {
 		call_user_func($updates[0]);
 		echo ". ";
 	} else {
-		echo "done";
+		echo "[done]";
 	}
+	
+	//reset this transient so we know AJAX is running
+	set_transient('pmpro_updates_first_load', false, 60*60*24);
+	
+	//show progress
+	global $pmpro_updates_progress;
+	if(!empty($pmpro_updates_progress))
+		echo $pmpro_updates_progress;
 
 	exit;
 }

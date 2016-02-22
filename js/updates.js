@@ -21,12 +21,12 @@ jQuery(document).ready(function() {
 					alert('Error with update. Try refreshing.');				
 				},
 				success: function(responseHTML){
-					if (responseHTML == 'error')
+					if (responseHTML.indexOf('[error]') > -1)
 					{
 						alert('Error with update. Try refreshing.');
 						document.title = $title;
 					}
-					else if(responseHTML == 'done')
+					else if(responseHTML.indexOf('[done]') > -1)
 					{
 						$status.html($status.html() + '\nDone!');
 						document.title = '! ' + $title;
@@ -36,7 +36,11 @@ jQuery(document).ready(function() {
 					else
 					{
 						$count++;
-						$status.html($status.html() + responseHTML);
+						re = /\[.*\]/;
+						progress = re.exec(responseHTML);
+						if(progress.length > 0)
+							jQuery('#pmpro_updates_progress').html(progress + ' ' + parseInt(eval(progress[0].replace(/\[|\]/ig, ''))*100) + '%');
+						$status.html($status.html() + responseHTML.replace(re, ''));						
 						document.title = $cycles[$count%4] + ' ' + $title;
 						$update_timer = setTimeout(function() { pmpro_updates();}, 500);
 					}

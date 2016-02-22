@@ -5,6 +5,9 @@
 		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}
 
+	//reset this transient so we know the page was just loaded
+	set_transient('pmpro_updates_first_load', true, 60*60*24);
+	
 	require_once(dirname(__FILE__) . "/admin_header.php");	
 ?>
 
@@ -16,6 +19,7 @@
 		//let's process the first one
 	?>
 	<p id="pmpro_updates_intro"><?php _e('Updates are processing. This may take a few minutes to complete.', 'pmpro');?></p>
+	<p id="pmpro_updates_progress">[...]</p>
 	<textarea id="pmpro_updates_status" rows="10" cols="60">Loading...</textarea>
 	
 	<?php
