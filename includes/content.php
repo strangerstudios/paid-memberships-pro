@@ -5,9 +5,12 @@
 function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_membership_levels = false)
 {
 	global $post, $wpdb, $current_user;
-
-	//use queried object if no value is supplied
-	$queried_object = get_queried_object();
+	
+	// queried_object doesn't exist if we're on the admin dashboard
+	if (! is_admin() && ! current_user_can('manage_options') )
+		//use queried object if no value is supplied
+		$queried_object = get_queried_object();
+		
 	if(!$post_id && !empty($queried_object) && !empty($queried_object->ID))
 		$post_id = $queried_object->ID;
 	
