@@ -8,7 +8,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 
 	//use queried object if no value is supplied
 	$queried_object = get_queried_object();
-	if(!$post_id && !empty($queried_object) && !empty($queried_object->ID))
+	if(!$post_id && !empty($post) && !empty($post->ID))
+		$post_id = $post->ID;
+	elseif(!$post_id && !empty($queried_object) && !empty($queried_object->ID))
 		$post_id = $queried_object->ID;
 	
 	//no post, return true (changed from false in version 1.7.2)
