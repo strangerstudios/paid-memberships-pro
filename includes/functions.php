@@ -236,6 +236,61 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 	return $r;
 }
 
+/**
+ * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
+ *
+ * @param null $page_name - Name of the page/template
+ * @param string $type - Type of template (valid: 'email' or 'pages'
+ * @param string $ext - File extension ('php', 'html', 'htm', etc)
+ * @return string - The HTML for the template.
+ *
+ * @since 1.8.9
+ */
+function pmpro_loadTemplate($page_name = null, $type = 'pages', $ext = 'php' )
+{
+	// called from page handler shortcode
+	if (is_null($page_name))
+	{
+		global $pmpro_page_name;
+		$page_name = $pmpro_page_name;
+	}
+
+	// template paths in order of priority (array gets reversed)
+	$default_templates = array(
+		PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
+		get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
+		get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
+	);
+
+	// Valid types: 'email', 'pages'
+	$templates = apply_filters("pmpro_{$type}_custom_template_path", $default_templates);
+	$user_templates = array_diff($templates, $default_templates);
+
+	//user specified a custom template path, so it has priority.
+	if (!empty($user_templates))
+		$templates = $user_templates;
+
+	//last element included in the array is the most first one we try to load
+	$templates = array_reverse($templates);
+
+	// look for template file to include
+	ob_start();
+	foreach($templates as $template_path)
+	{
+		$included = get_included_files();
+
+		// only attempt to include if the file isn't already included & it exists in the file system
+		if (!in_array( $template_path, $included ) && file_exists($template_path) ) {
+			include $template_path;
+			break;
+		}
+	}
+	$template = ob_get_clean();
+
+	// return template content
+	return $template;
+}
+
 function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 {
 	//initial payment
