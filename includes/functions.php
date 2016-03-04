@@ -240,7 +240,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
  *
  * @param null $page_name - Name of the page/template
- * @oaram string $where - `local` or `url` (whether to load from FS or over http)
+ * @param string $where - `local` or `url` (whether to load from FS or over http)
  * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
  * @param string $ext - File extension ('php', 'html', 'htm', etc)
  * @return string - The HTML for the template.
