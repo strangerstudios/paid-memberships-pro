@@ -138,13 +138,17 @@ function pmpro_wp()
 				{
 					global $pmpro_page_name;
 					ob_start();
+
+					$shortcode_template = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
+					include($shortcode_template);
+					/*
 					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
 						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
 					elseif(file_exists(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
 						include(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
 					else
 						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
-					
+					*/
 					$temp_content = ob_get_contents();
 					ob_end_clean();
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
@@ -155,7 +159,8 @@ function pmpro_wp()
 			elseif(!empty($pmpro_page_id) && is_page($pmpro_page_id))
 			{
 				//shortcode has params, but we still want to load the preheader
-				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
+				$preheader_path = apply_filters("pmpro_preheader_shortcode_{$pmpro_page_name}", PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php" );
+				require_once($preheader_path);
 			}
 		}				
 	}
