@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.8.1 =
+* BUG: Fixed issue in pmpro_has_membership_access() that kept member content from being locked down on blog homepages and archive/index pages.
+
 = 1.8.8 =
 * BUG: Fixed issue where recurring Stripe orders were being created with $0 totals.
 * BUG: Fixed issues in pmpro_has_membership_access() that was affecting some sites with files locked down for members. (Thanks, MannyC on GitHub)

@@ -6,7 +6,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 {
 	global $post, $wpdb, $current_user;
 
-	//use queried object if no value is supplied
+	//use post global or queried object if no value is supplied
 	$queried_object = get_queried_object();
 	if(!$post_id && !empty($post) && !empty($post->ID))
 		$post_id = $post->ID;
