@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.4.2
-Stable tag: 1.8.8
+Stable tag: 1.8.8.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,12 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.8.1 =
+* BUG: Fixed issue in pmpro_has_membership_access() that kept member content from being locked down on blog homepages and archive/index pages.
+* BUG: Fixed display of renew button for memberships with an enddate, but no expiration number or period (e.g. if an admin changed the enddate).
+* BUG: Fixed issue where the subtotal was not being recorded properly for some new orders.
+* BUG: Fixed issues some where having running the update scripts.
+
 = 1.8.8 =
 * BUG: Fixed issue where recurring Stripe orders were being created with $0 totals.
 * BUG: Fixed issues in pmpro_has_membership_access() that was affecting some sites with files locked down for members. (Thanks, MannyC on GitHub)

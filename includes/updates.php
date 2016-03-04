@@ -18,7 +18,7 @@ function pmpro_isUpdateRequired() {
 function pmpro_addUpdate($update) {
 	$updates = get_option('pmpro_updates', array());
 	$updates[] = $update;
-	$updates = array_unique($updates);
+	$updates = array_values(array_unique($updates));
 
 	update_option('pmpro_updates', $updates, 'no');
 }
@@ -36,6 +36,8 @@ function pmpro_removeUpdate($update) {
 	    unset($updates[$key]);
 	}
 
+	$updates = array_values($updates);
+	
 	update_option('pmpro_updates', $updates, 'no');
 }
 
@@ -54,12 +56,15 @@ add_action('admin_enqueue_scripts', 'pmpro_enqueue_update_js');
 */
 function pmpro_wp_ajax_pmpro_updates() {
 	//get updates
-	$updates = get_option('pmpro_updates', array());
+	$updates = array_values(get_option('pmpro_updates', array()));
 
 	//run update or let them know we're done
-	if(!empty($updates)) {
+	if(!empty($updates)) {	
 		//get the latest one and run it
-		call_user_func($updates[0]);
+		if(function_exists($updates[0]))
+			call_user_func($updates[0]);
+		else
+			echo "[error] Function not found: " . $updates[0];
 		echo ". ";
 	} else {
 		echo "[done]";
