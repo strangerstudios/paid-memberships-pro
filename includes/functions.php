@@ -240,13 +240,14 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
  *
  * @param null $page_name - Name of the page/template
- * @param string $type - Type of template (valid: 'email' or 'pages'
+ * @oaram string $protocol - `local` or `url` (whether to load from FS or over http)
+ * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
  * @param string $ext - File extension ('php', 'html', 'htm', etc)
  * @return string - The HTML for the template.
  *
  * @since 1.8.9
  */
-function pmpro_loadTemplate($page_name = null, $type = 'pages', $ext = 'php' )
+function pmpro_loadTemplate($page_name = null, $protocol = 'local', $type = 'pages', $ext = 'php' )
 {
 	// called from page handler shortcode
 	if (is_null($page_name))
@@ -255,15 +256,23 @@ function pmpro_loadTemplate($page_name = null, $type = 'pages', $ext = 'php' )
 		$page_name = $pmpro_page_name;
 	}
 
-	// template paths in order of priority (array gets reversed)
-	$default_templates = array(
-		PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
-		get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-		get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-	);
+	if ($protocol == 'local') {
+		// template paths in order of priority (array gets reversed)
+		$default_templates = array(
+			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
+		);
+	} elseif( $protocol == 'url' ) {
+		$default_templates = array(
+			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
+		);
 
+	}
 	// Valid types: 'email', 'pages'
-	$templates = apply_filters("pmpro_{$type}_custom_template_path", $default_templates);
+	$templates = apply_filters("pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $protocol, $ext);
 	$user_templates = array_diff($templates, $default_templates);
 
 	//user specified a custom template path, so it has priority.
@@ -280,9 +289,17 @@ function pmpro_loadTemplate($page_name = null, $type = 'pages', $ext = 'php' )
 		$included = get_included_files();
 
 		// only attempt to include if the file isn't already included & it exists in the file system
-		if (!in_array( $template_path, $included ) && file_exists($template_path) ) {
-			include $template_path;
-			break;
+		if (!in_array( $template_path, $included ) )
+		{
+			// since we allow the user to specify a path for a template, we'll sanitize it.
+			$template_path = sanitize_file_name($template_path);
+
+			// Only include if the file exists.
+			if (file_exists($template_path))
+			{
+				include $template_path;
+				break;
+			}
 		}
 	}
 	$template = ob_get_clean();
