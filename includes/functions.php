@@ -266,6 +266,7 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
 	} elseif( $where == 'url' ) {
+		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
 			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
 			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
@@ -293,9 +294,6 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 		// only attempt to include if the file isn't already included & it exists in the file system
 		if (!in_array( $template_path, $included ) )
 		{
-			// since we allow the user to specify a path for a template, we'll sanitize it.
-			$template_path = sanitize_file_name($template_path);
-
 			// Only include if the file exists.
 			if (file_exists($template_path))
 			{
