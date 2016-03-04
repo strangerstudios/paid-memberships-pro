@@ -188,7 +188,7 @@ function pmpro_isLevelTrial(&$level)
 
 function pmpro_isLevelExpiring(&$level)
 {
-	if(!empty($level) && !empty($level->expiration_number) && $level->expiration_number > 0)
+	if(!empty($level) && (!empty($level->expiration_number) && $level->expiration_number > 0) || !empty($level->enddate))
 		return true;
 	else
 		return false;
