@@ -707,7 +707,7 @@
 
 	<ul class="subsubsub">
 		<li>
-			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Orders for January', 'pmpro')?>
+			<?php _e('Show', 'pmpro')?>
 			<select id="filter" name="filter">
 				<option value="all" <?php selected($filter, "all");?>><?php _e('All', 'pmpro');?></option>
 				<option value="within-a-date-range" <?php selected($filter, "within-a-date-range");?>><?php _e('Within a Date Range', 'pmpro');?></option>
@@ -716,7 +716,7 @@
 				<option value="within-a-status" <?php selected($filter, "within-a-status");?>><?php _e('Within a Status', 'pmpro');?></option>
 			</select>
 
-			<span id="from"><?php _ex('From', 'Dropdown label', 'pmpro')?></span>
+			<span id="from"><?php _e('From', 'pmpro')?></span>
 
 			<select id="start-month" name="start-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
@@ -728,7 +728,7 @@
 			<input id='start-year' name="start-year" type="text" size="4" value="<?php echo esc_attr($start_year);?>" />
 
 
-			<span id="to"><?php _ex('To', 'Dropdown label', 'pmpro')?></span>
+			<span id="to"><?php _e('To', 'pmpro')?></span>
 
 			<select id="end-month" name="end-month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
@@ -740,7 +740,7 @@
 			<input id='end-day' name="end-day" type="text" size="2" value="<?php echo esc_attr($end_day);?>" />
 			<input id='end-year' name="end-year" type="text" size="4" value="<?php echo esc_attr($end_year);?>" />
 
-			<span id="filterby"><?php _ex('filter by ', 'Dropdown label', 'pmpro')?></span>
+			<span id="filterby"><?php _e('filter by ', 'pmpro')?></span>
 
 			<select id="predefined-date" name="predefined-date">
 
@@ -777,7 +777,7 @@
 	</select>
 
 
-		<input id="submit" type="submit" value="<?php _ex('Filter', 'Submit button value.', 'pmpro');?>" />
+		<input id="submit" type="submit" value="<?php _e('Filter', 'pmpro');?>" />
 		</li>
 	</ul>
 
