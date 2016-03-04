@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
 	var $cycles = ['|','/','-','\\'];
 	
 	//start updates and update status
-	if($status.length > 0)
+	if($status && $status.length > 0)
 	{
 		$status.html($status.html() + '\n' + 'JavaScript Loaded. Starting updates.\n');
 
@@ -23,7 +23,7 @@ jQuery(document).ready(function() {
 				success: function(responseHTML){
 					if (responseHTML.indexOf('[error]') > -1)
 					{
-						alert('Error with update. Try refreshing.');
+						alert('Error while running update: ' + responseHTML + ' Try refreshing. If this error occurs again, seek help on the PMPro member forums.');
 						document.title = $title;
 					}
 					else if(responseHTML.indexOf('[done]') > -1)
@@ -38,7 +38,7 @@ jQuery(document).ready(function() {
 						$count++;
 						re = /\[.*\]/;
 						progress = re.exec(responseHTML);
-						if(progress.length > 0)
+						if(progress && progress.length > 0)
 							jQuery('#pmpro_updates_progress').html(progress + ' ' + parseInt(eval(progress[0].replace(/\[|\]/ig, ''))*100) + '%');
 						$status.html($status.html() + responseHTML.replace(re, ''));						
 						document.title = $cycles[$count%4] + ' ' + $title;

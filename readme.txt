@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issue in pmpro_has_membership_access() that kept member content from being locked down on blog homepages and archive/index pages.
 * BUG: Fixed display of renew button for memberships with an enddate, but no expiration number or period (e.g. if an admin changed the enddate).
 * BUG: Fixed issue where the subtotal was not being recorded properly for some new orders.
+* BUG: Fixed issues some where having running the update scripts.
 
 = 1.8.8 =
 * BUG: Fixed issue where recurring Stripe orders were being created with $0 totals.
