@@ -576,7 +576,7 @@
 									   '" . esc_sql($this->billing->zip) . "',
 									   '" . esc_sql($this->billing->country) . "',
 									   '" . cleanPhone($this->billing->phone) . "',
-									   '" . $this->$subtotal . "',
+									   '" . $this->subtotal . "',
 									   '" . $tax . "',
 									   '" . $this->couponamount. "',
 									   " . intval($this->certificate_id) . ",
