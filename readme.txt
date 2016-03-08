@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.8.3 =
+* BUG: Fixed issue in pmpro_has_membership_access() that was causing issues on some sites, specifically sites running PMPro Series.
+
 = 1.8.8.2 =
 * BUG: Fixed bug with new order creation.
 
