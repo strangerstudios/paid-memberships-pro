@@ -90,8 +90,6 @@
 	else
 		$csv_file_header .= ",expires";
 
-	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
-
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 	$default_columns = array(
 		array("theuser", "ID"),
@@ -133,6 +131,7 @@
 		}
 	}
 
+	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
 	$csv_file_header .= "\n";
 
 	//generate SQL for list of users to process
