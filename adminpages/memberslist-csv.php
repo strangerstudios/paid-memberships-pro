@@ -69,18 +69,21 @@
 	}
 
 	$headers = array();
-	$headers[] = "Content-type: text/csv";
+	$headers[] = "Content-Type: text/csv";
+	$headers[] = "Cache-Control: max-age=0, no-cache, no-store";
+	$headers[] = "Pragma: no-cache";
+	$headers[] = "Connection: close";
 
 	if($s && $l == "oldmembers")
-		$headers[] = "Content-Disposition: attachment; filename=members_list_expired_" . sanitize_file_name($s) . ".csv";
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name($s) . '.csv"';
 	elseif($s && $l)
-		$headers[] = "Content-Disposition: attachment; filename=members_list_" . intval($l) . "_level_" . sanitize_file_name($s) . ".csv";
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval($l) . '_level_' . sanitize_file_name($s) . '.csv"';
 	elseif($s)
-		$headers[] = "Content-Disposition: attachment; filename=members_list_" . sanitize_file_name($s) . ".csv";
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name($s) . '.csv"';
 	elseif($l == "oldmembers")
-		$headers[] = "Content-Disposition: attachment; filename=members_list_expired.csv";
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"';
 	else
-		$headers[] = "Content-Disposition: attachment; filename=members_list.csv";
+		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
 	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
@@ -89,8 +92,6 @@
 		$csv_file_header .= ",ended";
 	else
 		$csv_file_header .= ",expires";
-
-	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
 
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 	$default_columns = array(
@@ -133,6 +134,7 @@
 		}
 	}
 
+	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
 	$csv_file_header .= "\n";
 
 	//generate SQL for list of users to process
@@ -382,7 +384,8 @@
 				foreach($default_columns as $col)
 				{
 					//checking $object->property. note the double $$
-					array_push($csvoutput, pmpro_enclose(${$col[0]}->{$col[1]}));	//output the value
+					$val = isset(${$col[0]}->{$col[1]}) ? ${$col[0]}->{$col[1]} : null;
+					array_push($csvoutput, pmpro_enclose($val));	//output the value
 				}
 			}
 
@@ -408,7 +411,9 @@
 			{
 				foreach($extra_columns as $heading => $callback)
 				{
-					array_push($csvoutput, pmpro_enclose(call_user_func($callback, $theuser, $heading)));
+					$val = call_user_func($callback, $theuser, $heading);
+					$val = !empty($val) ? $val : null;
+					array_push( $csvoutput, pmpro_enclose($val) );
 				}
 			}
 
@@ -514,12 +519,17 @@
 		if (! empty($headers) )
 		{
 			//set the download size
-			$headers[] = "Content/Length: " . filesize($filename);
+			$headers[] = "Content-Length: " . filesize($filename);
 
 			//set headers
 			foreach($headers as $header)
 			{
 				header($header . "\r\n");
+			}
+
+			// disable compression for the duration of file download
+			if(ini_get('zlib.output_compression')){
+				ini_set('zlib.output_compression', 'Off');
 			}
 
 			// open and send the file contents to the remote location
