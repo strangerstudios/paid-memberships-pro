@@ -273,7 +273,7 @@ function pmpro_report_memberships_page()
 	</h1>
 	<ul class="subsubsub">
 		<li>
-			<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
+			<?php _e('Show', 'pmpro')?>
 			<select id="period" name="period">
 				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
 				<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'pmpro');?></option>
@@ -287,7 +287,7 @@ function pmpro_report_memberships_page()
 				<option value="mrr_ltv" <?php selected($type, "mrr_ltv");?>><?php _e('MRR & LTV', 'pmpro');?></option>
 				*/ ?>
 			</select>
-			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+			<span id="for"><?php _e('for', 'pmpro')?></span>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
 					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
@@ -298,7 +298,7 @@ function pmpro_report_memberships_page()
 					<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
 				<?php } ?>
 			</select>
-			<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+			<span id="for"><?php _e('for', 'pmpro')?></span>
 			<select name="level">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
 				<?php
@@ -314,7 +314,7 @@ function pmpro_report_memberships_page()
 			
 			<input type="hidden" name="page" value="pmpro-reports" />		
 			<input type="hidden" name="report" value="memberships" />	
-			<input type="submit" class="button" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
+			<input type="submit" class="button" value="<?php _e('Generate Report', 'pmpro');?>" />
 		</li>
 	</ul>
 	

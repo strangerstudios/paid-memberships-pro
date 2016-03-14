@@ -199,7 +199,7 @@ function pmpro_report_sales_page()
 	</h1>
 	
 	<div class="tablenav top">
-		<?php _ex('Show', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?>
+		<?php _e('Show', 'pmpro')?>
 		<select id="period" name="period">
 			<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
 			<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'pmpro');?></option>
@@ -209,7 +209,7 @@ function pmpro_report_sales_page()
 			<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'pmpro');?></option>
 			<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'pmpro');?></option>
 		</select>
-		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+		<span id="for"><?php _e('for', 'pmpro')?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
 				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date("F", mktime(0, 0, 0, $i, 2));?></option>
@@ -220,7 +220,7 @@ function pmpro_report_sales_page()
 				<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
 			<?php } ?>
 		</select>
-		<span id="for"><?php _ex('for', 'Dropdown label, e.g. Show Daily Revenue for January', 'pmpro')?></span>
+		<span id="for"><?php _e('for', 'pmpro')?></span>
 		<select name="level">
 			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
 			<?php
@@ -236,7 +236,7 @@ function pmpro_report_sales_page()
 		
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="sales" />	
-		<input type="submit" class="button action" value="<?php _ex('Generate Report', 'Submit button value.', 'pmpro');?>" />
+		<input type="submit" class="button action" value="<?php _e('Generate Report', 'pmpro');?>" />
 	</div>
 	
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>				
