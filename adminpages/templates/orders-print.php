@@ -61,8 +61,8 @@
 		<p>
 			<?php echo pmpro_formatAddress(
 				$order->billing->name,
-				$order->billing->address1,
-				$order->billing->address2,
+				$order->billing->street,
+				'',
 				$order->billing->city,
 				$order->billing->state,
 				$order->billing->zip,
