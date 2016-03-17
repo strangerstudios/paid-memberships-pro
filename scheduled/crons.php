@@ -62,6 +62,7 @@ function pmpro_cron_expiration_warnings()
 	LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id
 	AND um.meta_key = 'pmpro_expiration_notice'
 	WHERE mu.status = 'active'
+	AND ((mu.membership_id != 0) AND (mu.membership_id IS NOT NULL))
 	AND mu.enddate IS NOT NULL
 	AND mu.enddate <> ''
 	AND mu.enddate <> '0000-00-00 00:00:00'
