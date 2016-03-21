@@ -104,7 +104,7 @@
 			//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
 			
 			//code to add at checkout if Stripe is the current gateway
-			$gateway = pmpro_getOption("gateway");
+			$gateway = pmpro_getGateway();
 			if($gateway == "stripe")
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
