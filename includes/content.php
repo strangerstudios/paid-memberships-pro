@@ -505,6 +505,8 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true)
 			$classes[] = 'pmpro-has-access';
+		else
+			$classes[] = 'pmpro-no-access';
 	}
 	return $classes;
 }
