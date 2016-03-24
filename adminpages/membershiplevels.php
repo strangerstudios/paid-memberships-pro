@@ -502,9 +502,10 @@
 						$categories = get_categories( array( 'hide_empty' => 0 ) );
 						echo "<ul>";
 						foreach ( $categories as $cat )
-						{                               								
+						{
 							$checked = in_array( $cat->term_id, $level->categories ) ? "checked='checked'" : '';
-							echo "<li><input id='membershipcategory_{$cat->term_id}' name='membershipcategory_{$cat->term_id}' type='checkbox' value='yes' $checked /> <label for='membershipcategory_{$cat->term_id}'>{$cat->name}</label></li>\n";
+							$catclass = empty( $cat->category_parent ) ? '' : 'membershipcategory_hasparent';
+							echo "<li class='membershipcategory $catclass'><input id='membershipcategory_{$cat->term_id}' name='membershipcategory_{$cat->term_id}' type='checkbox' value='yes' $checked /> <label for='membershipcategory_{$cat->term_id}'>{$cat->name}</label></li>\n";
 						}
 						echo "</ul>";
 						?>

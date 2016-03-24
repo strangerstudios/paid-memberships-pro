@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.9 =
 * BUG: Fixed bug where the address/street wasn't showing up when printing orders from the dashboard.
 * BUG: Fixed bug where the Stripe class would sometimes show its billing and payment fields even if a secondary gateway was chosen.
+* ENHANCEMENT: Updated categories list on the edit levels page to show nested categories.
 
 = 1.8.8.3 =
 * BUG: Fixed issue in pmpro_has_membership_access() that was causing issues on some sites, specifically sites running PMPro Series.
