@@ -462,8 +462,10 @@
 			//calculate total
 			if(!empty($this->total))
 				$total = $this->total;
-			else
+			else {
 				$total = (float)$amount + (float)$tax;
+				$this->total = $total;
+			}
 
 			//these fix some warnings/notices
 			if(empty($this->billing))
