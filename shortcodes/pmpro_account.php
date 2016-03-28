@@ -57,7 +57,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								<div class="pmpro_actionlinks">
 									<?php do_action("pmpro_member_action_links_before"); ?>
 									
-									<?php if( pmpro_isLevelExpiringSoon( $current_user->membership_level) ) { ?>
+									<?php if( $current_user->membership_level->allow_signups && pmpro_isLevelExpiringSoon( $current_user->membership_level) ) { ?>
 										<a href="<?php echo pmpro_url("checkout", "?level=" . $current_user->membership_level->id, "https")?>"><?php _e("Renew", "pmpro");?></a>
 									<?php } ?>
 
