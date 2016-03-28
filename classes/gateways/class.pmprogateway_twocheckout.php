@@ -291,7 +291,7 @@
 				$recurring_payment = number_format(round((float)$recurring_payment + (float)$recurring_payment_tax, 2), 2, ".", "");
 				$tco_args['li_0_price'] = number_format($recurring_payment, 2, ".", "");
 
-				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod . 's';
+				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod;
 
 				if( property_exists( $order, 'TotalBillingCycles' ) )
 					$tco_args['li_0_duration'] = ($order->BillingFrequency * $order->TotalBillingCycles ) . ' ' . $order->BillingPeriod;

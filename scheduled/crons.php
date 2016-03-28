@@ -62,11 +62,12 @@ function pmpro_cron_expiration_warnings()
 	LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id
 	AND um.meta_key = 'pmpro_expiration_notice'
 	WHERE mu.status = 'active'
+	AND ((mu.membership_id != 0) AND (mu.membership_id IS NOT NULL))
 	AND mu.enddate IS NOT NULL
 	AND mu.enddate <> ''
 	AND mu.enddate <> '0000-00-00 00:00:00'
 	AND DATE_SUB(mu.enddate, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "'
-	AND (um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "')
+	AND ((um.meta_value IS NULL) OR (DATE_ADD(um.meta_value, INTERVAL " . $pmpro_email_days_before_expiration . " Day) <= '" . $today . "'))
 	ORDER BY mu.enddate";
 
 	if(defined('PMPRO_CRON_LIMIT'))
