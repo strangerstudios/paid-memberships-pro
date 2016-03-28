@@ -1523,6 +1523,7 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 															l.description,
 															l.expiration_number,
 															l.expiration_period,
+															l.allow_signups,
 															mu.initial_payment,
 															mu.billing_amount,
 															mu.cycle_number,
