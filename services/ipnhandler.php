@@ -70,21 +70,34 @@
 		{
 			//trial, get the order
 			$morder = new MemberOrder($item_number);
-			$morder->getMembershipLevel();
-			$morder->getUser();
 
-			//no txn_id on these, so let's use the subscr_id
-			if(empty($txn_id))
-				$txn_id = $subscr_id;
-
-			//update membership
-			if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
-			{
-				ipnlog("Checkout processed (" . $morder->code . ") success!");
-			}
+			//No order?
+			if(empty($morder) || empty($morder->id))
+				ipnlog("ERROR: No order found item_number/code = " . $item_number . ".");
 			else
 			{
-				ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+				//get some more order info
+				$morder->getMembershipLevel();
+				$morder->getUser();
+
+				//no txn_id on these, so let's use the subscr_id
+				if(empty($txn_id))
+					$txn_id = $subscr_id;
+
+				//Check that the corresponding order has a $0 initial payment as well
+				if((float)$amount != (float)$morder->total)
+					ipnlog("ERROR: PayPal subscription #" . $_POST['subscr_id'] . " initial payment amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ").");
+				else {
+					//update membership
+					if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
+					{
+						ipnlog("Checkout processed (" . $morder->code . ") success!");
+					}
+					else
+					{
+						ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+					}
+				}
 			}
 		}
 		else
@@ -105,17 +118,31 @@
 		{
 			//first payment, get order
 			$morder = new MemberOrder($_POST['item_number']);
-			$morder->getMembershipLevel();
-			$morder->getUser();
 
-			//update membership
-			if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
-			{
-				ipnlog("Checkout processed (" . $morder->code . ") success!");
-			}
+			//No order?
+			if(empty($morder) || empty($morder->id))
+				ipnlog("ERROR: No order found item_number/code = " . $item_number . ".");
 			else
 			{
-				ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+				//get some more order info
+				$morder->getMembershipLevel();
+				$morder->getUser();
+
+				//Check that the corresponding order has the same amount as what we're getting from PayPal
+				$amount = $_POST['mc_gross'];
+				if((float)$amount != (float)$morder->total)
+					ipnlog("ERROR: PayPal transaction #" . $_POST['tnx_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ").");
+				else {
+					//update membership
+					if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
+					{
+						ipnlog("Checkout processed (" . $morder->code . ") success!");
+					}
+					else
+					{
+						ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+					}
+				}
 			}
 
 			pmpro_ipnExit();
@@ -139,17 +166,32 @@
 	{
 		//initial payment, get the order
 		$morder = new MemberOrder($item_number);
-		$morder->getMembershipLevel();
-		$morder->getUser();
 
-		//update membership
-		if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
-		{
-			ipnlog("Checkout processed (" . $morder->code . ") success!");
-		}
+		//No order?
+		if(empty($morder) || empty($morder->id))
+			ipnlog("ERROR: No order found item_number/code = " . $item_number . ".");
 		else
 		{
-			ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+			//get some more order info
+			$morder->getMembershipLevel();
+			$morder->getUser();
+
+			//Check that the corresponding order has the same amount
+			$amount = $_POST['mc_gross'];
+			if((float)$amount != (float)$morder->total)
+				ipnlog("ERROR: PayPal transaction #" . $_POST['txn_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ").");
+			else
+			{
+				//update membership
+				if(pmpro_ipnChangeMembershipLevel($txn_id, $morder))
+				{
+					ipnlog("Checkout processed (" . $morder->code . ") success!");
+				}
+				else
+				{
+					ipnlog("ERROR: Couldn't change level for order (" . $morder->code . ").");
+				}
+			}
 		}
 
 		pmpro_ipnExit();
