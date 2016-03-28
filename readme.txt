@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where the address/street wasn't showing up when printing orders from the dashboard.
 * BUG: Fixed bug where the Stripe class would sometimes show its billing and payment fields even if a secondary gateway was chosen.
 * BUG: Making sure $this->total is set for new orders and available to the pmpro_add_order, pmpro_added_order filters.
+* BUG: No longer showing a "renew" link on the membership account page if the user's level is not allowing sign ups.
 * ENHANCEMENT: Updated categories list on the edit levels page to show nested categories.
 * ENHANCEMENT: Now adding a pmpro-no-access class (similar to the pmpro-has-access class) to the post element if a user doesn't have access to that post.
 
