@@ -73,7 +73,7 @@ if($pmpro_msg)
 			
 			<?php
 				//if it's a one-time-payment level, offer a link to renew				
-				if( pmpro_isLevelExpiringSoon( $current_user->membership_level) ) {
+				if( pmpro_isLevelExpiringSoon( $current_user->membership_level) && $current_user->membership_level->allow_signups ) {
 					?>
 						<a class="pmpro_btn pmpro_btn-select" href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e('Renew', 'pmpro');?></a>
 					<?php
