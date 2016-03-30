@@ -613,6 +613,8 @@
 			if(!$user || !$invoice)
 				return false;
 			
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("INVOICE for %s membership", "pmpro"), get_option("blogname"));	
 			$this->template = "invoice";
