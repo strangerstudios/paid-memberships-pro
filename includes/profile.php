@@ -252,7 +252,7 @@ function pmpro_membership_level_profile_fields_update()
 {
 	//get the user id
 	global $wpdb, $current_user, $user_ID;
-	get_currentuserinfo();
+	wp_get_current_user();
 	
 	if(!empty($_REQUEST['user_id'])) 
 		$user_ID = $_REQUEST['user_id'];

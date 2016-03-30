@@ -186,7 +186,7 @@ function pmpro_set_current_user()
 {
 	//this code runs at the beginning of the plugin
 	global $current_user, $wpdb;
-	get_currentuserinfo();
+	wp_get_current_user();
 	$id = intval($current_user->ID);
 	if($id)
 	{

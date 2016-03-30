@@ -98,7 +98,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		
 		<?php if(in_array('profile', $sections)) { ?>
 			<div id="pmpro_account-profile" class="pmpro_box">	
-				<?php get_currentuserinfo(); ?> 
+				<?php wp_get_current_user(); ?> 
 				<h3><?php _e("My Account", "pmpro");?></h3>
 				<?php if($current_user->user_firstname) { ?>
 					<p><?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?></p>
