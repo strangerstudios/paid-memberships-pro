@@ -616,9 +616,12 @@
 		{
 			do_action('pmpro_checkout_before_change_membership_level', $user_id, $morder);
 
+			//set the start date to NOW() but allow filters
+			$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time("mysql") . "'", $user_id, $pmpro_level);
+
 			//calculate the end date
 			if (!empty($pmpro_level->expiration_number)) {
-				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time("timestamp"))) . "'";
+				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, strtotime(trim($startdate,"'")) )) . "'";
 			} else {
 				$enddate = "NULL";
 			}
@@ -628,9 +631,6 @@
 				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($discount_code) . "' LIMIT 1");
 			else
 				$discount_code_id = "";
-
-			//set the start date to NOW() but allow filters
-			$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time("mysql") . "'", $user_id, $pmpro_level);
 
 			$custom_level = array(
 				'user_id' => $user_id,
