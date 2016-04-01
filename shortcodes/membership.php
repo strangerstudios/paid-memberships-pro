@@ -24,7 +24,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	//guilty until proven innocent :)
 	$hasaccess = false;
 
-	//does the user have the level specified?
+	//figure out which level/levels to check
 	if(!empty($level) || $level === "0")
 	{
 	   //they specified a level(s)
@@ -37,17 +37,17 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	   {
 		   //they specified just one level
 		   $levels = array($level);
-	   }
-
-	   if(pmpro_hasMembershipLevel($levels))
-		   $hasaccess = true;
+	   }	   
 	}
 	else
 	{
-		//didn't specify a membership level, so check for any
-		if(!empty($current_user->membership_level->ID))
-			$hasaccess = true;
+		//didn't specify a membership level, so use false so pmpro_hasMembershipLevel checks for any level
+		$levels = false;
 	}
+	
+	//check their level
+	if(pmpro_hasMembershipLevel($levels))
+		   $hasaccess = true;
 
 	//is there a delay?
 	if($hasaccess && !empty($delay))
