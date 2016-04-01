@@ -121,6 +121,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where the address/street wasn't showing up when printing orders from the dashboard.
 * BUG: Fixed bug where the Stripe class would sometimes show its billing and payment fields even if a secondary gateway was chosen.
 * BUG: Making sure $this->total is set for new orders and available to the pmpro_add_order, pmpro_added_order filters.
+* BUG: Fixed bug where email templates were not being loaded out of the /paid-memberships-pro/languages/email/ directory. (Thanks, menardmam on wordpress.org)
 * BUG: No longer showing a "renew" link on the membership account or membership levels pages if the user's level is not allowing sign ups.
 * BUG: Fixed bug where the expiration script might try to run on deleted or expired users.
 * BUG/ENHANCEMENT: Change membership shortcode to call pmpro_hasMembershipLevel when checking for level="" as well. This ensures the pmpro_has_membership_level filter runs, which some addons/etc need.
