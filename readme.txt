@@ -126,6 +126,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG/ENHANCEMENT: Change membership shortcode to call pmpro_hasMembershipLevel when checking for level="" as well. This ensures the pmpro_has_membership_level filter runs, which some addons/etc need.
 * ENHANCEMENT: Updated categories list on the edit levels page to show nested categories.
 * ENHANCEMENT: Now adding a pmpro-no-access class (similar to the pmpro-has-access class) to the post element if a user doesn't have access to that post.
+* ENHANCEMENT: Added pmpro_checkout_end_date filter, similar to pmpro_checkout_start_date. Takes params $enddate, $user_id, $pmpro_level, $startdate.
 
 = 1.8.8.3 =
 * BUG: Fixed issue in pmpro_has_membership_access() that was causing issues on some sites, specifically sites running PMPro Series.

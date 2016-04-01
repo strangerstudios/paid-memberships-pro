@@ -263,6 +263,9 @@
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_inshandler_level", $morder->membership_level, $morder->user_id);
 
+		//set the start date to current_time('mysql') but allow filters (documented in preheaders/checkout.php)
+		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
+
 		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
@@ -272,6 +275,9 @@
 		{
 			$enddate = "NULL";
 		}
+
+		//filter the enddate (documented in preheaders/checkout.php)
+		$enddate = apply_filters("pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate);
 
 		//get discount code
 		$morder->getDiscountCode();
@@ -284,8 +290,7 @@
 		else
 			$discount_code_id = "";
 
-		//set the start date to current_time('mysql') but allow filters
-		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
+		
 
 		//custom level to change user to
 		$custom_level = array(

@@ -616,6 +616,20 @@
 		{
 			do_action('pmpro_checkout_before_change_membership_level', $user_id, $morder);
 
+			//start date is NOW() but filterable below
+			$startdate = "'" . current_time("mysql") . "'";
+
+			/**
+			 * Filter the start date for the membership/subscription.
+			 *
+			 * @since 1.8.9
+			 *
+			 * @param string $startdate, datetime formatsted for MySQL (NOW() or YYYY-MM-DD)
+			 * @param int $user_id, ID of the user checking out
+			 * @param object $pmpro_level, object of level being checked out for
+			 */
+			$startdate = apply_filters("pmpro_checkout_start_date", $startdate, $user_id, $pmpro_level);
+
 			//calculate the end date
 			if (!empty($pmpro_level->expiration_number)) {
 				$enddate = "'" . date("Y-m-d", strtotime("+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time("timestamp"))) . "'";
@@ -623,15 +637,25 @@
 				$enddate = "NULL";
 			}
 
+			/**
+			 * Filter the end date for the membership/subscription.
+			 *
+			 * @since 1.8.9
+			 *
+			 * @param string $enddate, datetime formatsted for MySQL (YYYY-MM-DD)
+			 * @param int $user_id, ID of the user checking out
+			 * @param object $pmpro_level, object of level being checked out for
+			 * @param string $startdate, startdate calculated above
+			 */
+			$enddate = apply_filters("pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate);
+
 			//update membership_user table.
 			if (!empty($discount_code) && !empty($use_discount_code))
 				$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($discount_code) . "' LIMIT 1");
 			else
 				$discount_code_id = "";
 
-			//set the start date to NOW() but allow filters
-			$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time("mysql") . "'", $user_id, $pmpro_level);
-
+			
 			$custom_level = array(
 				'user_id' => $user_id,
 				'membership_id' => $pmpro_level->id,
