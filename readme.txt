@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.4.2
-Stable tag: 1.8.8.3
+Tested up to: 4.5
+Stable tag: 1.8.9
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
