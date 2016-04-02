@@ -1187,6 +1187,45 @@
 				{
 					$customer_id = get_user_meta($user_id, "pmpro_stripe_customerid", true);
 				}
+
+				//look up by transaction id
+				if(empty($customer_id) && !empty($user_id)) 
+				{
+					//user id from this order or the user's last stripe order
+					if(!empty($order->payment_transaction_id))
+						$payment_transaction_id = $order->payment_transaction_id;
+					else
+					{
+						//find the user's last stripe order
+						$last_order = new MemberOrder();
+						$last_order->getLastMemberOrder($user_id, array('success', 'cancelled'), NULL, 'stripe', $order->gateway_environment);
+						if(!empty($last_order->payment_transaction_id))
+							$payment_transaction_id = $last_order->payment_transaction_id;
+					}
+
+					//we have a transaction id to look up
+					if(!empty($payment_transaction_id))
+					{
+						if(strpos($payment_transaction_id, "ch_") !== false)
+						{
+							//charge, look it up
+							$charge = Stripe_Charge::retrieve($payment_transaction_id);
+							if(!empty($charge) && !empty($charge->customer))
+								$customer_id = $charge->customer;
+						} 
+						else if(strpos($payment_transaction_id, "in_") !== false)
+						{
+							//invoice look it up
+							$invoice = Stripe_Invoice::retrieve($payment_transaction_id);
+							if(!empty($invoice) && !empty($invoice->customer))
+								$customer_id = $invoice->customer;
+						}
+					}
+
+					//if we found it, save to user meta for future reference
+					if(!empty($customer_id))
+						update_user_meta($user_id, "pmpro_stripe_customerid", $customer_id);
+				}
 			}
 
 			//get name and email values from order in case we update
