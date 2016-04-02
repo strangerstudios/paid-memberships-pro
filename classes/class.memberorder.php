@@ -188,7 +188,7 @@
 		 * @param id $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
 		 *
 		 */
-		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL)
+		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL, $gateway = NULL, $gateway_environment = NULL)
 		{
 			global $current_user, $wpdb;
 			if(!$user_id)
@@ -206,6 +206,13 @@
 
 			if(!empty($membership_id))
 				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
+			
+			if(!empty($gateway))
+				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
+
+			if(!empty($gateway_environment))
+				$this->sqlQuery .= "AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
+
 			$this->sqlQuery .= "ORDER BY timestamp DESC LIMIT 1";
 
 			//get id
