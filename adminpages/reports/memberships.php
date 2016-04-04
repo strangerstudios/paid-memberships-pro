@@ -532,7 +532,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	mu2.modified > mu1.enddate AND
 	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
 	WHERE mu1.status IN('" . implode("','", $status) . "')
-		AND mu2.membership_id IS NOT NULL
+		AND mu2.id IS NULL
 		AND mu1.enddate >= '" . $startdate . "'
 		AND mu1.enddate <= " . $enddate . "
 	";
