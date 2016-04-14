@@ -158,15 +158,27 @@ function pmpro_search_filter($query)
 		//get page ids that are in my levels
         $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
         $my_pages = array();
+		$member_pages = array();
 
         if($levels) {
             foreach($levels as $key => $level) {
                 //get restricted posts for level
-                $sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE membership_id=" . $current_user->membership_level->ID;
-                $member_pages = $wpdb->get_col($sql);
-                $my_pages = array_unique(array_merge($my_pages, $member_pages));
-            }
-        }
+
+				// make sure the object contains membership info.
+				if (isset($level->ID)) {
+
+					$sql = $wpdb->prepare("
+						SELECT page_id
+						FROM {$wpdb->pmpro_memberships_pages}
+						WHERE membership_id = %d",
+						$level->ID
+					);
+
+					$member_pages = $wpdb->get_col($sql);
+					$my_pages = array_unique(array_merge($my_pages, $member_pages));
+				}
+            } // foreach
+        } // if($levels)
 
         //get hidden page ids
         if(!empty($my_pages))
