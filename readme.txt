@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.5
-Stable tag: 1.8.9
+Stable tag: 1.8.9.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.9.1 =
+* BUG: Fixed warning in comments_array and comments_open filters. (Thanks, Mihail Chepovskiy)
+
 = 1.8.9 =
 * BUG: Fixed bug with recurring orders and TwoCheckout.
 * BUG: Fixed bug where some non-members (membership_id was 0 or NULL) were being processed for expiration.

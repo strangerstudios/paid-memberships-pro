@@ -450,8 +450,8 @@ function pmpro_comments_filter($comments, $post_id = NULL)
 
 	return $comments;
 }
-add_filter("comments_array", "pmpro_comments_filter");
-add_filter("comments_open", "pmpro_comments_filter");
+add_filter("comments_array", "pmpro_comments_filter", 10, 2);
+add_filter("comments_open", "pmpro_comments_filter", 10, 2);
 
 //keep non-members from getting to certain pages (attachments, etc)
 function pmpro_hide_pages_redirect()
