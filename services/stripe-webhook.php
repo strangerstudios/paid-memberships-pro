@@ -217,6 +217,8 @@
 						update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
 					}
 
+					do_action('pmpro_subscription_payment_completed', $morder);
+
 					pmpro_stripeWebhookExit();
 				}
 				else

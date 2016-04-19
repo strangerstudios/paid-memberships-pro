@@ -501,8 +501,14 @@
 		//close the temp file
 		fclose($csv_fh);
 
-		//make sure we get the right file size
-		clearstatcache( true, $filename );
+		if (version_compare(phpversion(), '5.3.0', '>')) {
+
+			//make sure we get the right file size
+			clearstatcache( true, $filename );
+		} else {
+			// for any PHP version prior to v5.3.0
+			clearstatcache();
+		}
 
 		//did we accidentally send errors/warnings to browser?
 		if (headers_sent())

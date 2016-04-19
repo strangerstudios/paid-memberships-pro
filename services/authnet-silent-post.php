@@ -104,6 +104,10 @@
 				//email the user their invoice
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendInvoiceEmail($user, $morder);
+
+				//hook for successful subscription payments
+				do_action("pmpro_subscription_payment_completed", $morder);
+
 			}
 		}
 		elseif($fields['x_response_code'] == 2 || $fields['x_response_code'] == 3)

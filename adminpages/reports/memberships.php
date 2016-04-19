@@ -471,8 +471,16 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	return $signups;
 }
 
-//get cancellations by status
-function pmpro_getCancellations($period = false, $levels = 'all', $status = array('inactive','expired','cancelled','cancelled_admin') )
+//
+/**
+ * get cancellations by status
+ *
+ * @param string $period - Either a string description ('today', 'this month', 'this year')
+ * @param array(int)|string $levels - Either an array of level IDs or the string 'all'
+ * @param array(string) $status - Array of statuses to fetch data for
+ * @return null|int - The # of cancellations for the period specified
+ */
+function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','cancelled_admin') )
 {
 	//make sure status is an array
 	if(!is_array($status))
@@ -487,25 +495,26 @@ function pmpro_getCancellations($period = false, $levels = 'all', $status = arra
 	//figure out start date
 	$now = current_time('timestamp');
 	$year = date("Y", $now);
+
 	if( $period == 'today' )
 	{
 		$startdate = date('Y-m-d', $now) . " 00:00:00";
-		$enddate = date('Y-m-d', $now) . " 23:59:59";
+		$enddate = "'" . date('Y-m-d', $now) . " 23:59:59'";
 	}
 	elseif( $period == 'this month')
 	{
 		$startdate = date( 'Y-m', $now ) . '-01 00:00:00';
-		$enddate = date( 'Y-m', $now ) . '-32 00:00:00';
+		$enddate = "CONCAT(LAST_DAY('" . date( 'Y-m', $now ) . '-01' ."'), ' 23:59:59')";
 	}
 	elseif( $period == 'this year')
 	{
 		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
-		$enddate = date( 'Y', $now ) . '-12-32 00:00:00';
+		$enddate = "'" . date( 'Y', $now ) . "-12-31 23:59:59'";
 	}
 	else
 	{
 		//all time
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time (no point in using a value prior to the start of the UNIX epoch)
 		$enddate = strval(intval($year)+1) . '-01-01';
 	}
 		
@@ -516,20 +525,29 @@ function pmpro_getCancellations($period = false, $levels = 'all', $status = arra
 	*/
 	global $wpdb;
 
-	$sqlQuery = "SELECT COUNT(mu1.id)
-	FROM $wpdb->pmpro_memberships_users mu1
-	LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
+	$sqlQuery = "
+	SELECT COUNT(mu1.id)
+	FROM {$wpdb->pmpro_memberships_users} AS mu1
+		LEFT JOIN {$wpdb->pmpro_memberships_users} AS mu2 ON mu1.user_id = mu2.user_id AND
 	mu2.modified > mu1.enddate AND
 	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
 	WHERE mu1.status IN('" . implode("','", $status) . "')
-	AND mu2.id IS NULL 
-	AND mu1.enddate >= '" . $startdate . "' 
-	AND mu1.enddate <= '" . $enddate . "'
+		AND mu2.id IS NULL
+		AND mu1.enddate >= '" . $startdate . "'
+		AND mu1.enddate <= " . $enddate . "
 	";
  
 	//restrict by level
-	if(!empty($levels) && $levels != 'all')
-		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
+	if(!empty($levels) && $levels != 'all') {
+
+		// the levels provided wasn't in array form
+		if ( ! is_array($levels) ) {
+
+			$levels = array($levels);
+		}
+
+		$sqlQuery .= "AND membership_id IN(" . implode(", ", $levels) . ") ";
+	}
 	
 	/**
 	 * Filter query to get cancellation numbers in signups vs cancellations detailed report.

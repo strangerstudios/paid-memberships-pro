@@ -83,6 +83,7 @@
 		}
 		elseif (pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
+
 		}
 		else {
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
@@ -104,6 +105,10 @@
 			//update membership
 			if( pmpro_insChangeMembershipLevel( $txn_id, $morder ) ) {
 				inslog( "Checkout processed (" . $morder->code . ") success!" );
+
+				//hook for successful subscription payments
+				do_action("pmpro_subscription_payment_completed", $morder);
+
 			}
 			else {
 				inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
@@ -411,8 +416,6 @@
 		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
 
 		if( empty( $old_txn ) ) {
-			//hook for successful subscription payments
-			do_action("pmpro_subscription_payment_completed");
 
 			//save order
 			$morder = new MemberOrder();

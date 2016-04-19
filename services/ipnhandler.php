@@ -687,9 +687,6 @@
 
 		if(empty($old_txn))
 		{
-			//hook for successful subscription payments
-			do_action("pmpro_subscription_payment_completed");
-
 			//save order
 			$morder = new MemberOrder();
 			$morder->user_id = $last_order->user_id;
@@ -763,6 +760,9 @@
 			//email the user their invoice
 			$pmproemail = new PMProEmail();
 			$pmproemail->sendInvoiceEmail(get_userdata($last_order->user_id), $morder);
+
+			//hook for successful subscription payments
+			do_action("pmpro_subscription_payment_completed", $morder);
 
 			ipnlog("New order (" . $morder->code . ") created.");
 

@@ -132,6 +132,8 @@
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendInvoiceEmail($user, $morder);
 
+		do_action('pmpro_subscription_payment_completed', $morder);
+
 		exit;
 	}
 
