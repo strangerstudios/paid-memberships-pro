@@ -5,6 +5,10 @@
 	//load classes init method
 	add_action('init', array('PMProGateway_stripe', 'init'));
 
+	// loading plugin activation actions
+	add_action('activate_paid-memberships-pro', array('PMProGateway_stripe', 'pmpro_activation'));
+	add_action('deactivate_paid-memberships-pro', array('PMProGateway_stripe', 'pmpro_deactivation'));
+
 	/**
 	 * PMProGateway_stripe Class
 	 *
@@ -89,8 +93,6 @@
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 
 			//updates cron
-			add_action('pmpro_activation', array('PMProGateway_stripe', 'pmpro_activation'));
-			add_action('pmpro_deactivation', array('PMProGateway_stripe', 'pmpro_deactivation'));
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
 			/*
@@ -1003,7 +1005,7 @@
 
 								//save order
 								$update_order->status = "success";
-								$update_order->save();
+								$update_order->saveOrder();
 
 								//remove update from list
 								unset($user_updates[$key]);
