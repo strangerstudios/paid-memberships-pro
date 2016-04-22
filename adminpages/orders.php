@@ -974,7 +974,7 @@
 								<br />
 								<?php
 									// Set up the hover actions for this user
-									$actions = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user );
+									$actions = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
 									$action_count = count( $actions );
 									$i = 0;
 									if($action_count)
