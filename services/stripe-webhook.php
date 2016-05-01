@@ -19,7 +19,12 @@
 	if(!class_exists("Stripe"))
 		require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
 
-	Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+	try {
+		Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
+	} catch ( Exception $e ) {
+		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
+		pmpro_stripeWebhookExit();
+	}
 
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
@@ -385,17 +390,31 @@
 			// unfortunately, the subscription_id is not included in the JSON data from the Stripe event
 			// so, we must look up the subscription_id from the invoice_id, which IS included in the JSON data from the Stripe event
 			$invoice_id = $pmpro_stripe_event->data->object->invoice;
-			$invoice = Stripe_Invoice::retrieve($invoice_id);
-			$subscription_id = $invoice->subscription;
-			$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $subscription_id . "' AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1");
+
+			try {
+
+				$invoice = Stripe_Invoice::retrieve( $invoice_id );
+
+			} catch (Exception $e) {
+				error_log("Unable to fetch Stripe Invoice object: " . $e->getMessage());
+				$invoice = null;
+			}
+
+			if (isset( $invoice->subscription )) {
+				$subscription_id = $invoice->subscription;
+				$old_order_id    = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $subscription_id . "' AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1" );
+			}
 		}
 
-		$old_order = new MemberOrder($old_order_id);
+		if (!empty($old_order_id)) {
 
-		if(!empty($old_order->id))
-			return $old_order;
-		else
-			return false;
+			$old_order = new MemberOrder( $old_order_id );
+
+			if(isset($old_order->id) && ! empty($old_order->id))
+				return $old_order;
+		}
+
+		return false;
 	}
 
 	function getOrderFromInvoiceEvent($pmpro_stripe_event)
