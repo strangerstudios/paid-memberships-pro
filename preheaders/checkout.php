@@ -612,7 +612,7 @@
 		else
 			$user_id = $current_user->ID;
 
-		if ($user_id && !is_wp_error($user_id))
+		if (!empty($user_id) && !is_wp_error($user_id))
 		{
 			do_action('pmpro_checkout_before_change_membership_level', $user_id, $morder);
 
@@ -749,8 +749,12 @@
 				wp_redirect($rurl);
 				exit;
 			} else {
+
 				//uh oh. we charged them then the membership creation failed
-				if (isset($morder) && $morder->cancel()) {
+
+				// test that the order object contains data
+				$test = (array) $morder;
+				if ( ! empty($test) && $morder->cancel() ) {
 					$pmpro_msg = __("IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", "pmpro");
 					$morder = NULL;
 				} else {
