@@ -513,9 +513,9 @@
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
 			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date("Y-m-d H:s:i", current_time("timestamp"));		//use current time
+				$this->datetime = date("Y-m-d H:i:s", current_time("timestamp"));		//use current time
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
-				$this->datetime = date("Y-m-d H:s:i", $this->timestamp);	//get datetime from timestamp
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
 			elseif(empty($this->datetime) && !empty($this->timestamp))
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 
