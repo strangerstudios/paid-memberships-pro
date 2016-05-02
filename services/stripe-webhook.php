@@ -72,7 +72,14 @@
 					$old_order = new MemberOrder();
 					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
 					
-					if(empty($old_order))
+					//lookup by customer id
+					if(empty($old_order) || empty($old_order->id))
+					{
+						$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->customer);
+					}
+					
+					//still can't find the order
+					if(empty($old_order) || empty($old_order->id))
 					{
 						$logstr .= "Couldn't find the original subscription.";
 						pmpro_stripeWebhookExit();
