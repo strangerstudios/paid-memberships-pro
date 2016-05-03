@@ -217,6 +217,22 @@
 		pmpro_ipnExit();
 	}
 
+	if ($txn_type == "recurring_payment_suspended_due_to_max_failed_payment") {
+
+		$last_subscr_order = new MemberOrder();
+		if($last_subscr_order->getLastMemberOrderBySubscriptionTransactionID($subscr_id))
+		{
+			//subscription payment, completed or failure?
+				pmpro_ipnFailedPayment($last_subscr_order);
+		}
+		else
+		{
+			ipnlog("ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ").");
+		}
+
+		pmpro_ipnExit();
+	}
+
 	//Recurring Payment Profile Cancelled (PayPal Express)
 	if($txn_type == "recurring_payment_profile_cancel")
 	{
