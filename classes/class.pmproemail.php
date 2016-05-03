@@ -763,7 +763,7 @@
 				return false;
 			
 			//make sure we have the current membership level data
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been changed", "pmpro"), get_option("blogname"));
@@ -773,7 +773,6 @@
 				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
 			else
 				$this->data["membership_change"] = __("Your membership has been cancelled", "pmpro");
-			
 			if(!empty($user->membership_level->enddate))
 			{
 					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
@@ -801,7 +800,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			//make sure we have the current membership level data
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "pmpro"), $user->user_login, get_option("blogname"));

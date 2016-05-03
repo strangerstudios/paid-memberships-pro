@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.9.1 =
+* BUG: Now forcing pmpro_getMembershipLevelForUser() in admin change emails.
 * BUG: Fixed warning in comments_array and comments_open filters. (Thanks, Mihail Chepovskiy)
 * BUG: Fixed format error for dates when saving orders. (Thanks, EmreErdogan)
 * BUG: Fixed bug that was causing issues in the cancellations report.
