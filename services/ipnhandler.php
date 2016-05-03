@@ -37,6 +37,7 @@
 	$business_email = pmpro_getParam("business", "POST");
 	$payer_email = pmpro_getParam("payer_email", "POST");
 	$recurring_payment_id = pmpro_getParam("recurring_payment_id", "POST");
+	$profile_status = strtolower(pmpro_getParam("profile_status", "POST"));
 
     if(empty($subscr_id))
         $subscr_id = $recurring_payment_id;
@@ -217,13 +218,13 @@
 		pmpro_ipnExit();
 	}
 
-	if ($txn_type == "recurring_payment_suspended_due_to_max_failed_payment") {
+	if ($txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'suspended' == $profile_status) {
 
 		$last_subscr_order = new MemberOrder();
 		if($last_subscr_order->getLastMemberOrderBySubscriptionTransactionID($subscr_id))
 		{
-			//subscription payment, completed or failure?
-				pmpro_ipnFailedPayment($last_subscr_order);
+			// the payment failed
+			pmpro_ipnFailedPayment($last_subscr_order);
 		}
 		else
 		{
