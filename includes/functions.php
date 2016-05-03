@@ -289,8 +289,8 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 	ob_start();
 	foreach($templates as $template_path)
 	{		
-		// Only include if the file exists.
-		if(file_exists($template_path))
+		// If loading a local file, check if it exists first
+		if($where == 'url' || file_exists($template_path))
 		{
 			include $template_path;
 			break;
