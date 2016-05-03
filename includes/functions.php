@@ -288,18 +288,12 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 	// look for template file to include
 	ob_start();
 	foreach($templates as $template_path)
-	{
-		$included = get_included_files();
-
-		// only attempt to include if the file isn't already included & it exists in the file system
-		if (!in_array( $template_path, $included ) )
+	{		
+		// Only include if the file exists.
+		if(file_exists($template_path))
 		{
-			// Only include if the file exists.
-			if (file_exists($template_path))
-			{
-				include $template_path;
-				break;
-			}
+			include $template_path;
+			break;
 		}
 	}
 	$template = ob_get_clean();
