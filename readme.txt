@@ -126,6 +126,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Reverted code to generate the CVV popup URL.
 * BUG: Fixed a couple bugs in the pmpro_loadTemplate function.
 * BUG/ENHANCEMENT: Updated URL used in the IPN Handler API calls to match the latest PayPal docs. (Thanks, pbaylies)
+* ENHANCEMENT: Added Greek (el_GR) translation. (Thanks, Alexandros Karypidis)
 * ENHANCEMENT: Added $order as a parameter to the pmpro_orders_user_row_actions hook. (Thanks, SquareLines)
 
 = 1.8.9 =
