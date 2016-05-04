@@ -123,6 +123,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where the Stripe class activation/deactivation methods were setup too late to actually run on activation/deactivation.
 * BUG: Fixed the pmpro_cron_expiration_warnings script to properly skip deleted and already expired members.
 * BUG: Updated the Stripe class to use the same language and markup in the Payment Information section as the default checkout.
+* BUG: Reverted code to generate the CVV popup URL.
+* BUG: Fixed a couple bugs in the pmpro_loadTemplate function.
 * BUG/ENHANCEMENT: Updated URL used in the IPN Handler API calls to match the latest PayPal docs. (Thanks, pbaylies)
 * ENHANCEMENT: Added $order as a parameter to the pmpro_orders_user_row_actions hook. (Thanks, SquareLines)
 
