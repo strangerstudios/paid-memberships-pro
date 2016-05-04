@@ -2272,3 +2272,30 @@ function pmpro_generatePages($pages) {
 	else
 		return false;
  }
+
+/**
+ *
+ * Clear the buffer to ensure AJAX transmissions do not include PHP Notice & PHP Warning messages.
+ *
+ * @return array|bool - True if the buffer is clean, the contents if the buffer isn't clean (all warning messages).
+ *
+ * @since 1.8.9.2
+ */
+function pmpro_safe_ajax() {
+
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		$bufferContents = array();
+
+		// Capture nested buffer contents and discard them
+		while ( 1 < ob_get_level() ) {
+			$bufferContents[] = ob_get_clean();
+		}
+
+		// Ensure that a top-level buffer is available to capture any unexpected output
+		if ( ! ob_get_level() ) {
+			ob_start();
+		}
+	}
+
+	return (empty($bufferContents) ? true : $bufferContents);
+}
