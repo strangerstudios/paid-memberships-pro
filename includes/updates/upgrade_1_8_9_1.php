@@ -21,6 +21,9 @@ function pmpro_upgrade_1_8_9_1() {
 function pmpro_upgrade_1_8_9_1_ajax() {
 	global $wpdb;
 
+	$debug = false;
+	$run = true;
+
 	//keeping track of which order we're working on
 	$last_order_id = get_option('pmpro_upgrade_1_8_9_1_last_order_id', 0);
 	
@@ -62,20 +65,42 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 			if(!empty($order->user_id))
 				continue;
 			
-			//echo "Order #" . $order->code . " (" . $order->subscription_transaction_id . ")<br />";
+			if($debug)
+				echo "Order #" . $order->id . ", " . $order->code . " (" . $order->subscription_transaction_id . ")\n";
 			
+			//find the subscription (via remote_get since this isn't the version of the library we use)
+			$subscription = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.stripe.com/v1/subscriptions/' . $order->subscription_transaction_id, array(
+					'timeout' => 60,
+					'sslverify' => FALSE,
+					'httpversion' => '1.1',
+					'headers'=>array('Authorization' => 'Bearer ' . pmpro_getOption("stripe_secretkey")),
+			    ))));
+
+			//no sub?
+			if(empty($subscription) || empty($subscription->customer)) {
+				if($debug)
+					echo "- Can't find the subscription.\n";
+				if($run)
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the subscription.') WHERE id = $order->id LIMIT 1");
+				
+				continue;
+			}
+												
 			//get customer
-			$customer = $order->Gateway->getCustomer($order);
+			$customer = Stripe_Customer::retrieve($subscription->customer);
 			
 			//no customer? mark order as error and bail
-			if(empty($order->Gateway->customer)) {
-				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
-				//echo "Can't find the customer for order #" . $order->id . ", " . $order->code . ".<br />";
+			if(empty($customer)) {
+				if($debug)
+					echo "- Can't find the customer.\n";
+				if($run)
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+
 				continue;
 			}
 						
 			//get past payments
-			$invoices = $order->Gateway->customer->invoices(array("limit"=>100));
+			$invoices = $customer->invoices(array("limit"=>100));
 
 			//find invoices for the same sub and see if we have a good order for it
 			if(!empty($invoices)) {				
@@ -92,20 +117,27 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 													     LIMIT 1
 														 ");													
 						if(!empty($old_order)) {
-							//found it, let's fix data							
-							$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET user_id = " . $old_order->user_id . ", membership_id = " . $old_order->membership_id . " WHERE user_id = 0 AND membership_id = 0 AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' ";							
-							$wpdb->query($sqlQuery);
-							//echo "Order #" . $old_order->id . " found! FIXED<br />";
+							//found it, let's fix data
+							if($debug)
+								echo "- Order #" . $old_order->id . ", " . $old_order->code . " found! FIXED\n";
 							
-							continue;
+							if($run) {
+								$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET user_id = " . $old_order->user_id . ", membership_id = " . $old_order->membership_id . " WHERE user_id = 0 AND membership_id = 0 AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' ";							
+								$wpdb->query($sqlQuery);
+							}
+
+							continue 2;
 						}
 					}
 				}
 			}
 			
 			//didn't find an invoice for this sub
-			$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
-			//echo "- No invoice for this sub.<br />";
+			if($debug)
+				echo "- No invoice for this sub.\n";
+			if($run)
+				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+
 			continue;
 		}
 		
