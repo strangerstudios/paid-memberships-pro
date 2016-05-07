@@ -590,7 +590,8 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 							"review",
 							"token",
 							"refunded",
-							"pending"
+							"pending",
+							"error",
 						);
 						$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
 						$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );

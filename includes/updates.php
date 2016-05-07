@@ -107,12 +107,8 @@ function pmpro_updates_notice() {
 <div class="update-nag">
 	<p>
 	<?php 
-		echo __( 'Paid Memberships Pro Data Update Required', 'pmpro' );
-	?>
-	</p>
-	<p>
-	<?php 
-		echo '<a class="button button-primary" href="' . admin_url('admin.php?page=pmpro-updates') . '">' . __('Start the Update', 'pmpro') . '</a>';
+		echo __( 'Paid Memberships Pro Data Update Required', 'pmpro' ) . '. ';
+		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'pmpro'), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
 	?>
 	</p>
 </div>

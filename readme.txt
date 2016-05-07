@@ -116,15 +116,21 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.9.1 =
+* BUG: Fixed bug where some recurring orders members who checked out with Stripe in very old versions of PMPro would show up as orders with a blank user_id and membership_id. This update includes a fix for this and an update script to fix old orders affected by this.
+* BUG: Fixed bug where the Stripe class activation/deactivation methods were setup too late to actually run on activation/deactivation.
+* BUG: Updated the Stripe class to use the same language and markup in the Payment Information section as the default checkout.
 * BUG: Now forcing pmpro_getMembershipLevelForUser() in admin change emails.
 * BUG: Fixed warning in comments_array and comments_open filters. (Thanks, Mihail Chepovskiy)
 * BUG: Fixed format error for dates when saving orders. (Thanks, EmreErdogan)
 * BUG: Fixed bug that was causing issues in the cancellations report.
-* BUG: Fixed bug where the Stripe class activation/deactivation methods were setup too late to actually run on activation/deactivation.
 * BUG: Fixed the pmpro_cron_expiration_warnings script to properly skip deleted and already expired members.
-* BUG: Updated the Stripe class to use the same language and markup in the Payment Information section as the default checkout.
+* BUG: Reverted code to generate the CVV popup URL.
+* BUG: Fixed a couple bugs in the pmpro_loadTemplate function.
 * BUG/ENHANCEMENT: Updated URL used in the IPN Handler API calls to match the latest PayPal docs. (Thanks, pbaylies)
+* BUG/ENHANCEMENT: Overhauled the orders list CSV export for improved performance. There is still scaling work to be done on the exports, but timeouts and memory errors will happen much less often.
+* ENHANCEMENT: Added Greek (el_GR) translation. (Thanks, Alexandros Karypidis)
 * ENHANCEMENT: Added $order as a parameter to the pmpro_orders_user_row_actions hook. (Thanks, SquareLines)
+* ENHANCEMENT: Added a warning to backup your database to the update notice.
 
 = 1.8.9 =
 * BUG: Fixed bug with recurring orders and TwoCheckout.

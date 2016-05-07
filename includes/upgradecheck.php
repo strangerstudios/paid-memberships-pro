@@ -155,6 +155,15 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.88) {		
 		$pmpro_db_version = pmpro_upgrade_1_8_8();			
 	}
+	
+	/*
+		v1.8.9.1
+		* Fixing Stripe orders where user_id/membership_id = 0		
+	*/	
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
+	if($pmpro_db_version < 1.891) {		
+		$pmpro_db_version = pmpro_upgrade_1_8_9_1();			
+	}	
 }
 
 function pmpro_db_delta()

@@ -279,21 +279,18 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
     //last element included in the array is the most first one we try to load
     $templates = array_reverse($templates);
 
-    // look for template file to include
-    ob_start();
-    foreach ($templates as $template_path) {
-        $included = get_included_files();
-
-        // only attempt to include if the file isn't already included & it exists in the file system
-        if (!in_array($template_path, $included)) {
-            // Only include if the file exists.
-            if (file_exists($template_path)) {
-                include $template_path;
-                break;
-            }
-        }
-    }
-    $template = ob_get_clean();
+	// look for template file to include
+	ob_start();
+	foreach($templates as $template_path)
+	{
+		// If loading a local file, check if it exists first
+		if($where == 'url' || file_exists($template_path))
+		{
+			include $template_path;
+			break;
+		}
+	}
+	$template = ob_get_clean();
 
     // return template content
     return $template;
