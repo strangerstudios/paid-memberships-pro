@@ -108,6 +108,11 @@ function pmpro_report_sales_page()
 		$l = intval($_REQUEST['level']);
 	else
 		$l = "";
+		
+	if(isset($_REQUEST['b_state']))
+		$s = strtoupper($_REQUEST['b_state']);
+	else
+		$s = "";		
 	
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
@@ -139,6 +144,9 @@ function pmpro_report_sales_page()
 	
 	if(!empty($l))
 		$sqlQuery .= "AND membership_id IN(" . $l . ") ";
+		
+	if(!empty($s))
+		$sqlQuery .= "AND upper(billing_state) like '%" . $s . "%' ";
 	
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 		
@@ -233,7 +241,9 @@ function pmpro_report_sales_page()
 				}
 			?>
 		</select>
-		
+
+		<span id="for"><?php _e('for', 'pmpro')?></span>
+                <input type="text" name="b_state" value="<?php echo $s; ?>" style="width:80px;" placeholder="State" />			
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="sales" />	
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'pmpro');?>" />
