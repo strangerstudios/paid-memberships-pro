@@ -171,6 +171,9 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.9) {
 		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.9;
+		pmpro_setOption("db_version", "1.9");
 	}
 }
 
