@@ -853,41 +853,39 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		if(is_array($level))
 		{
 			//make sure the dates are in good formats
-			if($level['startdate'] != current_time('mysql') && $level['startdate'] != "NULL" && substr($level['startdate'], 0, 1) != "'")
-				$level['startdate'] = "'" . $level['startdate'] . "'";
-
-			if($level['enddate'] != current_time('mysql') && $level['enddate'] != "NULL" && substr($level['enddate'], 0, 1) != "'")
-				$level['enddate'] = "'" . $level['enddate'] . "'";
-
+		if(is_array($level))
+		{
 			//Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
-			if ($level['cycle_period'] == '') $level['cycle_period'] = 0;
+			if ($level['cycle_period'] == '') { $level['cycle_period'] = 0; }
 
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
-					VALUES('" . $level['user_id'] . "',
-					'" . $level['membership_id'] . "',
-					'" . intval($level['code_id']) . "',
-					'" . $level['initial_payment'] . "',
-					'" . $level['billing_amount'] . "',
-					'" . $level['cycle_number'] . "',
-					'" . $level['cycle_period'] . "',
-					'" . $level['billing_limit'] . "',
-					'" . $level['trial_amount'] . "',
-					'" . $level['trial_limit'] . "',
-					" . $level['startdate'] . ",
-					" . $level['enddate'] . ")";
-
-			if(!$wpdb->query($sql))
-			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
-				return false;
-			}
+			$sql = $wpdb->prepare("
+					INSERT INTO {$wpdb->pmpro_memberships_users}
+					(`user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
+					VALUES
+					( %d, %d, %d, %s, %s, %d, %s, %d, %s, %d, %s, %s )",
+				$level['user_id'], // integer
+				$level['membership_id'], // integer
+				$level['code_id'], // integer
+				$level['initial_payment'], // float (string)
+				$level['billing_amount'], // float (string)
+				$level['cycle_number'], // integer
+				$level['cycle_period'], // string (enum)
+				$level['billing_limit'], // integer
+				$level['trial_amount'], // float (string)
+				$level['trial_limit'], // integer
+				$level['startdate'], // string (date)
+				$level['enddate'] // string (date)
+			);
 		}
 		else
 		{
-			$sql = "INSERT INTO $wpdb->pmpro_memberships_users (user_id, membership_id, code_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, startdate, enddate)
-			    VALUES (
-			    '" . $user_id . "',
-			    '" . $level . "',
+			$sql = $wpdb->prepare("
+				INSERT INTO {$wpdb->pmpro_memberships_users}
+				( `user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
+			    	VALUES 
+			    	( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s )",
+			    $user_id,
+			    $level_id,
 			    '0',
 			    '0',
 			    '0',
@@ -896,15 +894,15 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			    '0',
 			    '0',
 			    '0',
-			    '" . current_time('mysql') . "',
-                	    '0000-00-00 00:00:00'
-                	    )";
+			    current_time('mysql'),
+				'0000-00-00 00:00:00'
+			);
+		}
 
-			if(!$wpdb->query($sql))
-			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
-				return false;
-			}
+		if( false === $wpdb->query($sql) )
+		{
+			$pmpro_error = sprintf( __("Error interacting with database: %s", "pmpro"), (!empty($wpdb->last_error)  ? $wpdb->last_error : 'unavailable' ));
+			return false;
 		}
 	}
 
