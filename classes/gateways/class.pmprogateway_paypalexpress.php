@@ -59,7 +59,18 @@
 				add_action('pmpro_checkout_before_processing', array('PMProGateway_paypalexpress', 'pmpro_checkout_before_processing'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('pmpro_checkout_after_form', array('PMProGateway_paypalexpress', 'pmpro_checkout_after_form'));
+				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'));
 			}
+		}
+
+		/**
+		 * Update the SSLVERSION for CURL to support PayPal Express moving to TLS 1.2
+		 *
+		 * @since 1.8.9.1
+		 */
+		static function http_api_curl($handle) {
+			//TODO: check if TLS is supported, add filters for non-curl use
+			curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
 
 		/**
