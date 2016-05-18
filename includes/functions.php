@@ -849,10 +849,8 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
 	//insert current membership
 	if(!empty($level)) //are we getting a new one or just cancelling the old ones
-	{
-		if(is_array($level))
-		{
-			//make sure the dates are in good formats
+	{		
+		//make sure the dates are in good formats
 		if(is_array($level))
 		{
 			//Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
@@ -882,19 +880,19 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			$sql = $wpdb->prepare("
 				INSERT INTO {$wpdb->pmpro_memberships_users}
 				( `user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
-			    	VALUES 
-			    	( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s )",
-			    $user_id,
-			    $level_id,
-			    '0',
-			    '0',
-			    '0',
-			    '0',
-			    '0',
-			    '0',
-			    '0',
-			    '0',
-			    current_time('mysql'),
+					VALUES 
+					( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s )",
+				$user_id,
+				$level_id,
+				'0',
+				'0',
+				'0',
+				'0',
+				'0',
+				'0',
+				'0',
+				'0',
+				current_time('mysql'),
 				'0000-00-00 00:00:00'
 			);
 		}
@@ -903,7 +901,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		{
 			$pmpro_error = sprintf( __("Error interacting with database: %s", "pmpro"), (!empty($wpdb->last_error)  ? $wpdb->last_error : 'unavailable' ));
 			return false;
-		}
+		}		
 	}
 
 	//remove cached level
