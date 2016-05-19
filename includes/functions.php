@@ -829,8 +829,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
+	 * @param array $old_levels array of prior levels the user belonged to.
 	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id);
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels);
 
 	//should we cancel their gateway subscriptions?
 	$pmpro_cancel_previous_subscriptions = true;
