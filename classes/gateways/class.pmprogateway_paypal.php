@@ -43,7 +43,7 @@
 			{
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));
 				add_action('pmpro_checkout_after_form', array('PMProGateway_paypal', 'pmpro_checkout_after_form'));
-				add_action('http_api_curl', array('PMProGateway_paypal', 'http_api_curl'));
+				add_action('http_api_curl', array('PMProGateway_paypal', 'http_api_curl'), 10, 3);
 			}
 		}
 
@@ -53,8 +53,8 @@
 		 * @since 1.8.9.1
 		 */
 		static function http_api_curl($handle) {
-			//TODO: check if TLS is supported, add filters for non-curl use
-			curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
+			if(strpos($url, 'paypal.com') !== false)
+				curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
 
 		/**
