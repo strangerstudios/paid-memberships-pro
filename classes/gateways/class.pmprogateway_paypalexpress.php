@@ -574,11 +574,11 @@
 				$order->saveOrder();
 
 				//redirect to paypal
-				$paypal_url = "https://www.paypal.com/webscr&cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
+				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
 				$environment = pmpro_getOption("gateway_environment");
 				if("sandbox" === $environment || "beta-sandbox" === $environment)
 				{
-					$paypal_url = "https://www.sandbox.paypal.com/webscr&useraction=commit&cmd=_express-checkout&token="  . $this->httpParsedResponseAr['TOKEN'];
+					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
 				}
 
 				wp_redirect($paypal_url);
