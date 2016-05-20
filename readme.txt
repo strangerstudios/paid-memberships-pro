@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.9.2 =
 * BUG: Addon page now passes $status to the plugin_row_meta filter to fix warnings that were sometimes showing up. (Thanks, jawhite)
+* BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
 
 = 1.8.9.1 =
