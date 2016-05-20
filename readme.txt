@@ -115,6 +115,14 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+<<<<<<< HEAD
+=======
+= 1.8.9.2 =
+* BUG: Addon page now passes $status to the plugin_row_meta filter to fix warnings that were sometimes showing up. (Thanks, jawhite)
+* BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
+* ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
+
+>>>>>>> c7e3e5e... BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
 = 1.8.9.1 =
 * BUG: Fixed bug where some recurring orders members who checked out with Stripe in very old versions of PMPro would show up as orders with a blank user_id and membership_id. This update includes a fix for this and an update script to fix old orders affected by this.
 * BUG: Fixed bug where the Stripe class activation/deactivation methods were setup too late to actually run on activation/deactivation.
