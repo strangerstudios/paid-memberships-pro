@@ -118,7 +118,7 @@ Not sure? You can find out by doing a bit a research.
 =======
 = 1.8.9.2 =
 * BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
-* BUG: Fixed URL PayPal Express redirects to at checkout. (Although the incorrect URL was still working on the PayPal side.)
+* BUG: Fixed URL PayPal Express and PayPal standard redirect to at checkout. (Although the incorrect URL was still working on the PayPal side.)
 * BUG: Addon page now passes $status to the plugin_row_meta filter to fix warnings that were sometimes showing up. (Thanks, jawhite)
 * BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
 
