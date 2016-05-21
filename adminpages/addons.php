@@ -259,7 +259,7 @@
 									__( 'Visit plugin site' )
 								);
 							}
-							$plugin_meta = apply_filters( 'plugin_row_meta', $plugin_meta, $plugin_file, $plugin_data );
+							$plugin_meta = apply_filters( 'plugin_row_meta', $plugin_meta, $plugin_file, $plugin_data, $status);
 							echo implode( ' | ', $plugin_meta );
 							?>
 						</div>

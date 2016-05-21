@@ -314,7 +314,8 @@ $csv_file_header_array = apply_filters( "pmpro_order_list_csv_export_header_arra
 $dateformat = apply_filters( 'pmpro_order_list_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 
 //any extra columns
-$extra_columns = apply_filters( "pmpro_order_list_csv_extra_columns", array() );
+$extra_columns = apply_filters( "pmpro_orders_csv_extra_columns", array() );	//the original filter
+$extra_columns = apply_filters( "pmpro_order_list_csv_extra_columns", $extra_columns );	//in case anyone used the typo'd filter
 
 if ( ! empty( $extra_columns ) ) {
 	foreach ( $extra_columns as $heading => $callback ) {

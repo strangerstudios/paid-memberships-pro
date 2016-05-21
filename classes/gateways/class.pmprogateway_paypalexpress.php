@@ -59,7 +59,18 @@
 				add_action('pmpro_checkout_before_processing', array('PMProGateway_paypalexpress', 'pmpro_checkout_before_processing'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('pmpro_checkout_after_form', array('PMProGateway_paypalexpress', 'pmpro_checkout_after_form'));
+				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
+		}
+
+		/**
+		 * Update the SSLVERSION for CURL to support PayPal Express moving to TLS 1.2
+		 *
+		 * @since 1.8.9.1
+		 */
+		static function http_api_curl($handle, $r, $url) {
+			if(strpos($url, 'paypal.com') !== false)
+				curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
 
 		/**
@@ -93,7 +104,8 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'paypalexpress_skip_confirmation'
 			);
 
 			return $options;
@@ -163,6 +175,17 @@
 			</th>
 			<td>
 				<input type="text" id="apisignature" name="apisignature" size="60" value="<?php echo esc_attr($values['apisignature'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypalexpress_skip_confirmation"><?php _e('Confirmation Step', 'pmpro');?>:</label>
+			</th>
+			<td>
+				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
+					<option value="0" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 0);?>>Require an extra confirmation after users return from PayPal Express.</option>
+					<option value="1" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 1);?>>Skip the extra confirmation after users return from PayPal Express.</option>
+				</select>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -279,7 +302,11 @@
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
-			elseif(!empty($_REQUEST['confirm']))
+			
+			if(empty($pmpro_msg) &&
+				(!empty($_REQUEST['confirm']) ||
+				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
+			)
 			{
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
@@ -529,8 +556,8 @@
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
 
 			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
-            		if ($account_optional)
-                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
+    		if ($account_optional)
+        		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
 
 			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
 
@@ -547,11 +574,11 @@
 				$order->saveOrder();
 
 				//redirect to paypal
-				$paypal_url = "https://www.paypal.com/webscr&cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
+				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
 				$environment = pmpro_getOption("gateway_environment");
 				if("sandbox" === $environment || "beta-sandbox" === $environment)
 				{
-					$paypal_url = "https://www.sandbox.paypal.com/webscr&useraction=commit&cmd=_express-checkout&token="  . $this->httpParsedResponseAr['TOKEN'];
+					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
 				}
 
 				wp_redirect($paypal_url);

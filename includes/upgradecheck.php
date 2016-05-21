@@ -163,7 +163,18 @@ function pmpro_checkForUpgrades()
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
 	if($pmpro_db_version < 1.891) {		
 		$pmpro_db_version = pmpro_upgrade_1_8_9_1();			
-	}	
+	}
+
+	/*
+		v1.9
+		* Changed 'code' column of pmpro_membership_orders table to 32 characters.
+	*/
+	if($pmpro_db_version < 1.9) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.9;
+		pmpro_setOption("db_version", "1.9");
+	}
 }
 
 function pmpro_db_delta()
@@ -211,7 +222,7 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_orders . "` (
 		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-		  `code` varchar(10) NOT NULL,
+		  `code` varchar(32) NOT NULL,
 		  `session_id` varchar(64) NOT NULL DEFAULT '',
 		  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
 		  `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
