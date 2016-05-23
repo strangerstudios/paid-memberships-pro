@@ -169,11 +169,11 @@ function pmpro_checkForUpgrades()
 		v1.9
 		* Changed 'code' column of pmpro_membership_orders table to 32 characters.
 	*/
-	if($pmpro_db_version < 1.9) {
+	if($pmpro_db_version < 1.892) {
 		pmpro_db_delta();
 		
-		$pmpro_db_version = 1.9;
-		pmpro_setOption("db_version", "1.9");
+		$pmpro_db_version = 1.892;
+		pmpro_setOption("db_version", "1.892");
 	}
 }
 
