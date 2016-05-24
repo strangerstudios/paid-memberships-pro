@@ -116,6 +116,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 =======
+= 1.8.9.3 =
+* BUG: Fixed warnings on new order page in the dashboard.
+
 = 1.8.9.2 =
 * BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
 * BUG: Fixed URL PayPal Express and PayPal standard redirect to at checkout. (Although the incorrect URL was still working on the PayPal side.)
