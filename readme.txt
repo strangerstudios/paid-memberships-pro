@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
-Tested up to: 4.5
-Stable tag: 1.8.9.1
+Tested up to: 4.5.2
+Stable tag: 1.8.9.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,10 +115,17 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.10 =
+* ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
+
+= 1.8.9.3 =
+* BUG: Fixed warnings on new order page in the dashboard.
+
 = 1.8.9.2 =
+* BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
+* BUG: Fixed URL PayPal Express and PayPal standard redirect to at checkout. (Although the incorrect URL was still working on the PayPal side.)
 * BUG: Addon page now passes $status to the plugin_row_meta filter to fix warnings that were sometimes showing up. (Thanks, jawhite)
 * BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
-* ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
 
 = 1.8.9.1 =
 * BUG: Fixed bug where some recurring orders members who checked out with Stripe in very old versions of PMPro would show up as orders with a blank user_id and membership_id. This update includes a fix for this and an update script to fix old orders affected by this.

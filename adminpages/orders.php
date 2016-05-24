@@ -184,6 +184,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order = new MemberOrder( $order_id );
 	} else {
 		$order = new MemberOrder();
+		$order->billing = new stdClass();
 	}
 
 	//update values
@@ -307,6 +308,36 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->code = $order->getRandomCode();
 		} else {
 			$order = new MemberOrder();            //new order
+
+			//defaults
+			$order->code = $order->getRandomCode();
+			$order->user_id = "";
+			$order->membership_id = "";
+			$order->billing = new stdClass();
+			$order->billing->name = "";
+			$order->billing->street = "";
+			$order->billing->city = "";
+			$order->billing->state = "";
+			$order->billing->zip = "";
+			$order->billing->country = "";
+			$order->billing->phone = "";
+			$order->subtotal = "";
+			$order->tax = "";
+			$order->couponamount = "";
+			$order->total = "";
+			$order->payment_type = "";
+			$order->cardtype = "";
+			$order->accountnumber = "";
+			$order->expirationmonth = "";
+			$order->expirationyear = "";
+			$order->status = "success";
+			$order->gateway = pmpro_getOption("gateway");
+			$order->gateway_environment = pmpro_getOption("gateway_environment");
+			$order->payment_transaction_id = "";
+			$order->subscription_transaction_id = "";
+			$order->affiliate_id = "";
+			$order->affiliate_subid = "";
+			$order->notes = "";
 		}
 	}
 }
