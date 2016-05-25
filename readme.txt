@@ -120,6 +120,8 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.8.9.3 =
 * BUG: Fixed warnings on new order page in the dashboard.
+* BUG/ENHANCEMENT: Fixed the pmpro_checkout_default_submit_button() methods of the PayPal Express to no longer check if the current gateway is a paypal one. The method is only called when the gateway is loaded anyway or when another addon (e.g. the pmpro-pay-by-check addon) adds the hook.
+* BUG/ENHANCEMENT: Moved check instructions code into the check gateway class so it can be overriden by addons (e.g. an update to the pmpro-pay-by-check addon).
 
 = 1.8.9.2 =
 * BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
