@@ -663,7 +663,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate = "'" . date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+			$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
 			$enddate = "NULL";
 		}
