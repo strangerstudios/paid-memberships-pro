@@ -648,7 +648,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
 		//start date is NOW() but filterable below
-		$startdate = "'" . current_time( "mysql" ) . "'";
+		$startdate = current_time( "mysql" );
 
 		/**
 		 * Filter the start date for the membership/subscription.

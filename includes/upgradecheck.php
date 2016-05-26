@@ -175,6 +175,11 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.9;
 		pmpro_setOption("db_version", "1.9");
 	}
+
+	/*
+		Fix users who were not given an expiration date at checkout due to a bug in 1.8.9.2
+	*/
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
 }
 
 function pmpro_db_delta()
