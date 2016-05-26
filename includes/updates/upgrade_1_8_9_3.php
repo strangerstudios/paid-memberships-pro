@@ -22,7 +22,7 @@ function pmpro_upgrade_1_8_9_3() {
 function pmpro_upgrade_1_8_9_3_ajax() {
 	global $wpdb;
 	
-	$debug = true;
+	$debug = false;
 	$run = true;
 
 	//some vars
