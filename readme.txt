@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.5.2
-Stable tag: 1.8.9.2
+Stable tag: 1.8.9.3
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 =======
 = 1.8.9.3 =
+* BUG: Fixed bug introduced in 1.8.9.2 where member start and end dates weren't being set correctly. Includes an update script to fix past users affected by this.
 * BUG: Fixed warnings on new order page in the dashboard.
 * BUG/ENHANCEMENT: Fixed the pmpro_checkout_default_submit_button() methods of the PayPal Express to no longer check if the current gateway is a paypal one. The method is only called when the gateway is loaded anyway or when another addon (e.g. the pmpro-pay-by-check addon) adds the hook.
 * BUG/ENHANCEMENT: Moved check instructions code into the check gateway class so it can be overriden by addons (e.g. an update to the pmpro-pay-by-check addon).
