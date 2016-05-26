@@ -193,7 +193,7 @@ function pmprou_1_8_9_3_page()
 
 	<hr />
 
-	<p><?php sprintf(__('We detect %s potentially affected user(s) that need to be fixed.', 'pmpro'), $nusers);?></p>
+	<p><?php echo sprintf(__('We detect %s potentially affected user(s) that need to be fixed.', 'pmpro'), $nusers);?></p><hr />
 	
 	<?php
 		if(!empty($_REQUEST['run']) || !empty($_REQUEST['test'])) {
