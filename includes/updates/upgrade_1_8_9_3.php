@@ -168,7 +168,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 			//calculate and fix the end date
 			if(empty($user->membership_level->enddate)) {
 				if ( ! empty( $pmpro_level->expiration_number ) ) {
-					$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+					$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, $last_order->timestamp ) );
 				} else {
 					$enddate = "NULL";
 				}
