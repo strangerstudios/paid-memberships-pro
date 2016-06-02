@@ -201,6 +201,8 @@
 	$tmp_dir = sys_get_temp_dir();
 	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
 
+	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
+
 	// open in append mode
 	$csv_fh = fopen($filename, 'a');
 
