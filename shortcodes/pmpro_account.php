@@ -21,7 +21,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		$sections = $section;
 	
 	//turn into an array
-	$sections = explode(',', $sections);		
+	$sections = array_map('trim',explode(",",$sections));
 	
 	ob_start();
 	
