@@ -20,7 +20,13 @@
 	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress")); //default is oposite of the stripe_billingaddress setting
 
 	$level = $current_user->membership_level;
-	if($level)
+	
+	/** 
+	 * Make sure the $level object is a valid level definition
+	 * @since   1.9.0 - FIX: Assumed that the level object was well formed when it existed
+	 * @author: Thomas Sjolshagen <thomas@eighty20results.com> 
+	 */
+	if(isset($level->id) && !empty($level->id))
 	{
 	?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", "pmpro"), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", "pmpro");?></a></small></p>
