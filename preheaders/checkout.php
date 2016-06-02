@@ -648,7 +648,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
 		//start date is NOW() but filterable below
-		$startdate = "'" . current_time( "mysql" ) . "'";
+		$startdate = current_time( "mysql" );
 
 		/**
 		 * Filter the start date for the membership/subscription.
@@ -663,7 +663,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate = "'" . date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+			$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
 			$enddate = "NULL";
 		}

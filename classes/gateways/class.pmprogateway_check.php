@@ -26,6 +26,7 @@
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);
+			add_filter('pmpro_checkout_after_payment_information_fields', array('PMProGateway_check', 'pmpro_checkout_after_payment_information_fields'));
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
@@ -136,6 +137,21 @@
 			
 			return $fields;
 		}
+
+		/**
+		 * Show instructions on checkout page
+		 * Moved here from pages/checkout.php
+		 * @since 1.8.9.3
+		 */
+		static function pmpro_checkout_after_payment_information_fields() {
+			global $gateway;
+
+			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
+				$instructions = pmpro_getOption("instructions");
+				echo '<div class="pmpro_check_instructions">' . wpautop($instructions) . '</div>';
+			}
+		}
+
 		
 		/**
 		 * Process checkout.

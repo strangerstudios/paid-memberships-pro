@@ -166,7 +166,7 @@ function pmpro_checkForUpgrades()
 	}
 
 	/*
-		v1.9
+		v1.8.9.2 (db v1.9)
 		* Changed 'code' column of pmpro_membership_orders table to 32 characters.
 	*/
 	if($pmpro_db_version < 1.892) {
@@ -174,6 +174,15 @@ function pmpro_checkForUpgrades()
 		
 		$pmpro_db_version = 1.892;
 		pmpro_setOption("db_version", "1.892");
+	}
+
+	/*
+		v1.8.9.3 (db v1.91)
+		* Fixing incorrect start and end dates.	
+	*/
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
+	if($pmpro_db_version < 1.91) {
+		$pmpro_db_version = pmpro_upgrade_1_8_9_3();			
 	}
 }
 

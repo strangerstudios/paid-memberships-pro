@@ -665,13 +665,7 @@
 		-->
 	</script>
 
-	<?php
-		if($gateway == "check" && !pmpro_isLevelFree($pmpro_level))
-		{
-			$instructions = pmpro_getOption("instructions");
-			echo '<div class="pmpro_check_instructions">' . wpautop($instructions) . '</div>';
-		}
-	?>
+	<?php do_action('pmpro_checkout_after_payment_information_fields'); ?>
 
 	<?php
 		if($tospage && !$pmpro_review)
