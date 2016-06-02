@@ -19,9 +19,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	//did they use 'section' instead of 'sections'?
 	if(!empty($section))
 		$sections = $section;
-	
+
 	//turn into an array
-	$sections = explode(',', $sections);		
+	/**
+	 * Turn into an array
+	 * @since v1.9.0        - FIX: Would drop sections if whitespace existed in sections short code argument
+	 */
+	$sections = array_map('trim',explode(",",$sections));
 	
 	ob_start();
 	
