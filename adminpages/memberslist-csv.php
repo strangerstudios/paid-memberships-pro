@@ -197,6 +197,14 @@
 	if(!empty($limit))
 		$sqlQuery .= "LIMIT {$start}, {$limit}";
 
+	/**
+	 * Edit/Update the SQL statement in a filter
+	 * 
+	 * @since v1.8.9    - Accidentally removed the pmpro_members_list_sql filter
+	 * @since v1.9.0    - ENHANCEMENT/FIX: Re-introduced the pmpro_members_list_sql filter 
+	 */
+	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
+
 	// Generate a temporary file to store the data in.
 	$tmp_dir = sys_get_temp_dir();
 	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
