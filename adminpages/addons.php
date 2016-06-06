@@ -76,7 +76,7 @@
 		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'pmpro'); ?> <span class="count">(<?php echo count($addons);?>)</span></a> |</li>
 		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'pmpro'); ?> <span class="count">(<?php echo count($addons_active);?>)</span></a> |</li>
 		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'pmpro'); ?> <span class="count">(<?php echo count($addons_inactive);?>)</span></a> |</li>
-		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'pmpro'); ?><span class="count">(<?php echo count($addons_update);?>)</span></a> |</li>
+		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'pmpro'); ?> <span class="count">(<?php echo count($addons_update);?>)</span></a> |</li>
 		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'pmpro'); ?> <span class="count">(<?php echo count($addons_uninstalled);?>)</span></a></li>
 	</ul>
 
