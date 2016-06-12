@@ -2096,7 +2096,7 @@ function pmpro_formatPrice($price)
 	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
 
 	//start with the price formatted with two decimals
-	$formatted = number_format($price, 2);
+	$formatted = number_format((double)$price, 2);
 
 	//settings stored in array?
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
