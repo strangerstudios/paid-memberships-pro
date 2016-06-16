@@ -1412,8 +1412,19 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 		}
 	}
 
-	//allow filter
-	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", !$error, $dbcode, $level_id, $code);
+	/**
+	 * Filter the results of the discount code check.	 
+	 * @since 1.7.13.1
+	 *
+	 * @param bool $okay true if code check is okay or false if there was an error
+	 * @param object $dbcode Object containing code data from the database row
+	 * @param int $level_id ID of the level the user is checking out for.
+	 * @param string $code Discount code string.
+	 * 
+	 * @return mixed $okay true if okay, false or error message string if not okay
+	 */
+	$okay = !$error;
+	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", $okay, $dbcode, $level_id, $code);
 	if(is_string($pmpro_check_discount_code))
 		$error = $pmpro_check_discount_code;	//string returned, this is an error
 	elseif(!$pmpro_check_discount_code && !$error)
