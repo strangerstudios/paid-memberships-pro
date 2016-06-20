@@ -600,6 +600,9 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$morder          = new MemberOrder();
 	$morder->user_id = $last_order->user_id;
 
+	$user = new WP_User($last_order->user_id);
+	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+	
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
