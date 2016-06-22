@@ -221,11 +221,22 @@
 			</table>
 			<?php } ?>
 
-			<?php
-				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
-				$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-			?>
+			/**
+			 * Filter hide or show of Credit Card information fields on billing page
+			 *
+			 * @since 1.9.0
+			 *
+			 * @param	boolean 		$hide		true if user wants to hide the CC fields on billing page
+			 *
+			 * @returns	boolean			$hide		false by default (show the CC fields)
+			 */
+				$hide_cc_fields = apply_filters('pmpro_hide_billing_cc_fields', false);
+
+				if (false === $hide_cc_fields ) {
+					$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+					$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
+					$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
+				?>
 
 			<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -340,7 +351,9 @@
 					pmpro_updateBraintreeAccountNumber();
 					-->
 				</script>
-			<?php } ?>
+			<?php }
+				} // if false === $hide_cc_fields
+			?>
 
 			<div align="center">
 				<input type="hidden" name="update-billing" value="1" />
