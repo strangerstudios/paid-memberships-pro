@@ -197,6 +197,13 @@
 	if(!empty($limit))
 		$sqlQuery .= "LIMIT {$start}, {$limit}";
 
+	/**
+	* Filter to change/manipulate the SQL for the list of members export
+	* @since v1.9.0    Re-introduced
+	* @author: Thomas Sjolshagen <thomas@eighty20results.com>
+	*/
+	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
+
 	// Generate a temporary file to store the data in.
 	$tmp_dir = sys_get_temp_dir();
 	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
