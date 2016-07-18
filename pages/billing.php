@@ -67,7 +67,7 @@
 				}
 			?>
 
-			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
+			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields')) { ?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -248,7 +248,7 @@
 							<?php
 							}
 						?>
-						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
+						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields') ) { ?>
 						<div>
 							<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
