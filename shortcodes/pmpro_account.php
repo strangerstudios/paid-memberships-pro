@@ -20,11 +20,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	if(!empty($section))
 		$sections = $section;
 
-	/**
-	* @var $sections - Extract the user-defined sections for the shortcode
-	*
-	* @since 1.9.0 - BUG: Didn't correctly handle whitespace in sections argument.
-	*/
+	//Extract the user-defined sections for the shortcode
 	$sections = array_map('trim',explode(",",$sections));	
 	ob_start();
 	
