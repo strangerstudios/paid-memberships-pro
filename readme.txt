@@ -119,7 +119,12 @@ Not sure? You can find out by doing a bit a research.
 * SECURITY: Patched a cross site scripting (XSS) vulnerability on the Memberships -> Addons page in the dashboard. Thanks to Burak Kelebek for the discovery and responsible disclosure of this vulnerability.
 * BUG: Added pmpro_btn-submit-checkout class to the PayPal checkout buttons.
 * BUG: Updated Stripe and Braintree gateways to load billing fields and JavaScript when it's the default gateway (if not the current gateway specified).
+* BUG: Fixed bug where cancelation emails weren't being sent to users if they originated from PayPal.
+* BUG: Fixed bug where unsucessful invoices were shown on the Membership Account page. We aren't showing refunded invoices here now either, but plan to in the future.
+* BUG: Fixed compatibility issue with the "Address for Free Levels" and the update billing page.
+* BUG: Reintroduced the pmpro_members_list_sql filter.
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
+* ENHANCEMENT: Add pmpro_hide_billing_cc_fields filter (false by default) Allows user to hide Credit card section from billing page (only update billing address if needed)
 
 = 1.8.9.3 =
 * BUG: Fixed bug introduced in 1.8.9.2 where member start and end dates weren't being set correctly. Includes an update script to fix past users affected by this.
