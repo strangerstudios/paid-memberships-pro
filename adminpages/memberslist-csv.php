@@ -200,7 +200,6 @@
 	/**
 	* Filter to change/manipulate the SQL for the list of members export
 	* @since v1.9.0    Re-introduced
-	* @author: Thomas Sjolshagen <thomas@eighty20results.com>
 	*/
 	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
 
