@@ -21,11 +21,7 @@
 
 	$level = $current_user->membership_level;
 
-	/**
-	* Make sure the $level object is a valid level definition
-	* @since   1.9.0 - BUG: Assumed that the level object was well formed and it existed
-	* @author: Thomas Sjolshagen <thomas@eighty20results.com>
-	*/
+	//Make sure the $level object is a valid level definition
 	if(isset($level->id) && !empty($level->id))
 	{
 	?>
