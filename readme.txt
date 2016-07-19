@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.10 =
+* SECURITY: Patched a cross site scripting (XSS) vulnerability on the Memberships -> Addons page in the dashboard. Thanks to Burak Kelebek for the discovery and responsible disclosure of this vulnerability.
 * BUG: Added pmpro_btn-submit-checkout class to the PayPal checkout buttons.
 * BUG: Updated Stripe and Braintree gateways to load billing fields and JavaScript when it's the default gateway (if not the current gateway specified).
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
