@@ -644,9 +644,9 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 	if(empty($user_id)) //no user_id passed, check the current user
 	{
 		$user_id = $current_user->ID;
-		$membership_levels = $current_user->membership_levels;
 	}
-	elseif(is_numeric($user_id)) //get membership levels for given user
+	
+	if(!empty($user_id) && is_numeric($user_id)) //get membership levels for given user
 	{
 		$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
 	}
