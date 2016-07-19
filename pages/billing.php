@@ -65,9 +65,10 @@
 				<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 			<?php
 				}
-			?>
 
-			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
+			$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+			if($pmpro_include_billing_address_fields)
+			{ ?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -248,7 +249,6 @@
 							<?php
 							}
 						?>
-						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
 						<div>
 							<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
@@ -257,7 +257,6 @@
 								<?php } ?>
 							</select>
 						</div>
-						<?php } ?>
 
 						<div>
 							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
