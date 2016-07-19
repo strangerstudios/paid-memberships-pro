@@ -145,6 +145,7 @@
 		 */
 		static function pmpro_checkout_after_payment_information_fields() {
 			global $gateway;
+			global $pmpro_level;
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
 				$instructions = pmpro_getOption("instructions");
