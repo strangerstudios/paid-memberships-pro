@@ -19,10 +19,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	//did they use 'section' instead of 'sections'?
 	if(!empty($section))
 		$sections = $section;
-	
-	//turn into an array
-	$sections = explode(',', $sections);		
-	
+
+	/**
+	* @var $sections - Extract the user-defined sections for the shortcode
+	*
+	* @since 1.9.0 - BUG: Didn't correctly handle whitespace in sections argument.
+	*/
+	$sections = array_map('trim',explode(",",$sections));	
 	ob_start();
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)

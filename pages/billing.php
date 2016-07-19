@@ -20,7 +20,13 @@
 	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress")); //default is oposite of the stripe_billingaddress setting
 
 	$level = $current_user->membership_level;
-	if($level)
+
+	/**
+	* Make sure the $level object is a valid level definition
+	* @since   1.9.0 - BUG: Assumed that the level object was well formed and it existed
+	* @author: Thomas Sjolshagen <thomas@eighty20results.com>
+	*/
+	if(isset($level->id) && !empty($level->id))
 	{
 	?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", "pmpro"), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", "pmpro");?></a></small></p>
@@ -67,7 +73,7 @@
 				}
 			?>
 
-			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
+			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields')) { ?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -259,7 +265,7 @@
 							<?php
 							}
 						?>
-						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe") { ?>
+						<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields') ) { ?>
 						<div>
 							<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
