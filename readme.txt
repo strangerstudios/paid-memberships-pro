@@ -122,6 +122,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where cancelation emails weren't being sent to users if they originated from PayPal.
 * BUG: Fixed bug where unsucessful invoices were shown on the Membership Account page. We aren't showing refunded invoices here now either, but plan to in the future.
 * BUG: Fixed compatibility issue with the "Address for Free Levels" and the update billing page.
+* BUG: The update billing page now uses the validatecreditcard.js script to set the Card Type in the background, just like checkout. Fixes some issues with updating credit cards on certain gateways.
 * BUG: Reintroduced the pmpro_members_list_sql filter.
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
 * ENHANCEMENT: Add pmpro_hide_billing_cc_fields filter (false by default) Allows user to hide Credit card section from billing page (only update billing address if needed)
