@@ -124,6 +124,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: The update billing page now uses the pmpro_include_billing_address_fields filter so gateways and addons can properly override the payment fields when needed.
 * BUG: The update billing page now uses the validatecreditcard.js script to set the Card Type in the background, just like checkout. Fixes some issues with updating credit cards on certain gateways.
 * BUG: Reintroduced the pmpro_members_list_sql filter.
+* BUG/ENHANCEMENT: Switched the Japanese Yen and South Korean Won to not use decimals by default. (Thanks, flatworld21 on wp.org)
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
 * ENHANCEMENT: Added the pmpro_membership_levels_table filter on the membership levels page of the dashboard to allow addons (like the upcoming MMPU addon) to override the HTML for the table shown.
 * ENHANCEMENT: Added the checkout_id column to the pmpro_membership_orders table. This will be used by addons and possible core in the future to track multiple orders that happen during the same checkout process.
