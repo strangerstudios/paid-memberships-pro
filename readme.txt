@@ -128,6 +128,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
 * ENHANCEMENT: Added the pmpro_membership_levels_table filter on the membership levels page of the dashboard to allow addons (like the upcoming MMPU addon) to override the HTML for the table shown.
 * ENHANCEMENT: Added the checkout_id column to the pmpro_membership_orders table. This will be used by addons and possible core in the future to track multiple orders that happen during the same checkout process.
+* ENHANCEMENT: Added support for the Serian language. (Thanks, Sasa Trifkovic)
 * NOTE: We are planning to remove the certificate_id and certificate_amount columns from the pmpro_membership_orders table. Please contact us if you are using this column for something to come up with a work around.
 
 = 1.8.9.3 =
