@@ -121,11 +121,10 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Updated Stripe and Braintree gateways to load billing fields and JavaScript when it's the default gateway (if not the current gateway specified).
 * BUG: Fixed bug where cancelation emails weren't being sent to users if they originated from PayPal.
 * BUG: Fixed bug where unsucessful invoices were shown on the Membership Account page. We aren't showing refunded invoices here now either, but plan to in the future.
-* BUG: Fixed compatibility issue with the "Address for Free Levels" and the update billing page.
+* BUG: The update billing page now uses the pmpro_include_billing_address_fields filter so gateways and addons can properly override the payment fields when needed.
 * BUG: The update billing page now uses the validatecreditcard.js script to set the Card Type in the background, just like checkout. Fixes some issues with updating credit cards on certain gateways.
 * BUG: Reintroduced the pmpro_members_list_sql filter.
 * ENHANCEMENT: Added an option to skip the confirmation step with PayPal Express.
-* ENHANCEMENT: Add pmpro_hide_billing_cc_fields filter (false by default) Allows user to hide Credit card section from billing page (only update billing address if needed)
 * ENHANCEMENT: Added the pmpro_membership_levels_table filter on the membership levels page of the dashboard to allow addons (like the upcoming MMPU addon) to override the HTML for the table shown.
 * ENHANCEMENT: Added the checkout_id column to the pmpro_membership_orders table. This will be used by addons and possible core in the future to track multiple orders that happen during the same checkout process.
 * NOTE: We are planning to remove the certificate_id and certificate_amount columns from the pmpro_membership_orders table. Please contact us if you are using this column for something to come up with a work around.
