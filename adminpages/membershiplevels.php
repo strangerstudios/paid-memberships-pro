@@ -631,6 +631,10 @@
 		    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'pmpro'); ?></p>
 	    <?php } ?>
 
+	    <?php
+	    	//going to capture the output of this table so we can filter it
+	    	ob_start();
+	    ?>
 	    <table class="widefat membership-levels">
 		<thead>
 			<tr>
@@ -675,6 +679,18 @@
 		</tbody>
 		</table>	
 	<?php
+		$table_html = ob_get_clean();
+
+		/**
+		 * Filter to change the Membership Levels table 
+		 * @since 1.8.10
+		 *
+		 * @param string $table_html HTML of the membership levels table
+		 * @param array $reordered_levels Array of membership levels
+		 */
+		$table_html = apply_filters('pmpro_membership_levels_table', $table_html, $reordered_levels);
+
+		echo $table_html;
 	}
 	?>		
 	

@@ -644,9 +644,9 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 	if(empty($user_id)) //no user_id passed, check the current user
 	{
 		$user_id = $current_user->ID;
-		$membership_levels = $current_user->membership_levels;
 	}
-	elseif(is_numeric($user_id)) //get membership levels for given user
+	
+	if(!empty($user_id) && is_numeric($user_id)) //get membership levels for given user
 	{
 		$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
 	}
@@ -823,8 +823,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
+	 * @param array $old_levels array of prior levels the user belonged to.
 	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id);
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels);
 
 	//should we cancel their gateway subscriptions?
 	$pmpro_cancel_previous_subscriptions = true;
@@ -1411,8 +1412,19 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 		}
 	}
 
-	//allow filter
-	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", !$error, $dbcode, $level_id, $code);
+	/**
+	 * Filter the results of the discount code check.	 
+	 * @since 1.7.13.1
+	 *
+	 * @param bool $okay true if code check is okay or false if there was an error
+	 * @param object $dbcode Object containing code data from the database row
+	 * @param int $level_id ID of the level the user is checking out for.
+	 * @param string $code Discount code string.
+	 * 
+	 * @return mixed $okay true if okay, false or error message string if not okay
+	 */
+	$okay = !$error;
+	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", $okay, $dbcode, $level_id, $code);
 	if(is_string($pmpro_check_discount_code))
 		$error = $pmpro_check_discount_code;	//string returned, this is an error
 	elseif(!$pmpro_check_discount_code && !$error)
@@ -2096,7 +2108,7 @@ function pmpro_formatPrice($price)
 	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
 
 	//start with the price formatted with two decimals
-	$formatted = number_format($price, 2);
+	$formatted = number_format((double)$price, 2);
 
 	//settings stored in array?
 	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))

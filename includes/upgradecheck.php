@@ -169,11 +169,11 @@ function pmpro_checkForUpgrades()
 		v1.8.9.2 (db v1.9)
 		* Changed 'code' column of pmpro_membership_orders table to 32 characters.
 	*/
-	if($pmpro_db_version < 1.9) {
+	if($pmpro_db_version < 1.892) {
 		pmpro_db_delta();
 		
-		$pmpro_db_version = 1.9;
-		pmpro_setOption("db_version", "1.9");
+		$pmpro_db_version = 1.892;
+		pmpro_setOption("db_version", "1.892");
 	}
 
 	/*
@@ -183,6 +183,18 @@ function pmpro_checkForUpgrades()
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
 	if($pmpro_db_version < 1.91) {
 		$pmpro_db_version = pmpro_upgrade_1_8_9_3();			
+	}
+
+	/*
+		v1.8.10 (db v1.92)
+
+		Added checkout_id column to pmpro_membership_orders
+	*/
+	if($pmpro_db_version < 1.92) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.92;
+		pmpro_setOption("db_version", "1.92");
 	}
 }
 
@@ -246,6 +258,7 @@ function pmpro_db_delta()
 		  `subtotal` varchar(16) NOT NULL DEFAULT '',
 		  `tax` varchar(16) NOT NULL DEFAULT '',
 		  `couponamount` varchar(16) NOT NULL DEFAULT '',
+		  `checkout_id` int(11) NOT NULL DEFAULT '0',
 		  `certificate_id` int(11) NOT NULL DEFAULT '0',
 		  `certificateamount` varchar(16) NOT NULL DEFAULT '',
 		  `total` varchar(16) NOT NULL DEFAULT '',
@@ -276,6 +289,7 @@ function pmpro_db_delta()
 		  KEY `subscription_transaction_id` (`subscription_transaction_id`),
 		  KEY `affiliate_id` (`affiliate_id`),
 		  KEY `affiliate_subid` (`affiliate_subid`)
+		  KEY `checkout_id` (`checkout_id`)
 		);
 	";
 	dbDelta($sqlQuery);

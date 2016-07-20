@@ -33,7 +33,7 @@
 			$this->loadStripeLibrary();
 			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
 			Stripe::setAPIVersion("2015-07-13");
-
+			
 			return $this->gateway;
 		}
 
@@ -106,8 +106,9 @@
 			//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
 			
 			//code to add at checkout if Stripe is the current gateway
-			$gateway = pmpro_getGateway();
-			if($gateway == "stripe")
+			$default_gateway = pmpro_getOption('gateway');
+			$current_gateway = pmpro_getGateway();			
+			if($default_gateway == "stripe" || $current_gateway == "stripe")
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
@@ -231,7 +232,9 @@
 		{
 			global $gateway, $pmpro_level;
 
-			if($gateway == "stripe" && !pmpro_isLevelFree($pmpro_level))
+			$default_gateway = pmpro_getOption("gateway");
+			
+			if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level))
 			{
 				//stripe js library
 				wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
@@ -1198,8 +1201,8 @@
 					else
 					{
 						//find the user's last stripe order
-						$last_order = new MemberOrder();
-						$last_order->getLastMemberOrder($user_id, array('success', 'cancelled'), NULL, 'stripe', $order->gateway_environment);
+						$last_order = new MemberOrder();						
+						$last_order->getLastMemberOrder($user_id, array('success', 'cancelled'), NULL, 'stripe', $order->Gateway->gateway_environment);
 						if(!empty($last_order->payment_transaction_id))
 							$payment_transaction_id = $last_order->payment_transaction_id;
 					}

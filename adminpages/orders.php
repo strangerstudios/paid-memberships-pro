@@ -1199,6 +1199,9 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						<?php if ( ! empty( $order->accountnumber ) ) { ?>
 							<?php echo $order->cardtype; ?>: x<?php echo last4( $order->accountnumber ); ?><br/>
 						<?php } ?>
+						<?php if ( ! empty( $order->billing->name ) ) { ?>
+								<?php echo $order->billing->name; ?><br/>
+						<?php } ?>
 						<?php if ( ! empty( $order->billing->street ) ) { ?>
 							<?php echo $order->billing->street; ?><br/>
 							<?php if ( $order->billing->city && $order->billing->state ) { ?>
