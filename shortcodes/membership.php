@@ -16,7 +16,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	), $atts));
 
 	//if levels is used instead of level
-	if(!empty($levels) && empty($level))
+	if(isset($levels) && !isset($level))
 		$level = $levels;
 	
 	global $wpdb, $current_user;
@@ -25,7 +25,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	$hasaccess = false;
 
 	//figure out which level/levels to check
-	if(!empty($level) || $level === "0")
+	if(!empty($level) || $level === "0" || $level === 0)
 	{
 	   //they specified a level(s)
 	   if(strpos($level, ","))
@@ -44,7 +44,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		//didn't specify a membership level, so use false so pmpro_hasMembershipLevel checks for any level
 		$levels = false;
 	}
-	
+
 	//check their level
 	if(pmpro_hasMembershipLevel($levels))
 		   $hasaccess = true;
