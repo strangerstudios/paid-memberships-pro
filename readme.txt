@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.10.1 =
+* BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
+
 = 1.8.10 =
 * SECURITY: Patched a cross site scripting (XSS) vulnerability on the Memberships -> Addons page in the dashboard. Thanks to Burak Kelebek for the discovery and responsible disclosure of this vulnerability.
 * BUG: Added pmpro_btn-submit-checkout class to the PayPal checkout buttons.
