@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.11 =
+* ENHANCEMENT: Added Hebrew language support. Thanks, Nadav Waisbrod.
+
 = 1.8.10.1 =
 * BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
 
