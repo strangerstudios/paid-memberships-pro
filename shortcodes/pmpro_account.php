@@ -19,10 +19,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	//did they use 'section' instead of 'sections'?
 	if(!empty($section))
 		$sections = $section;
-	
-	//turn into an array
-	$sections = explode(',', $sections);		
-	
+
+	//Extract the user-defined sections for the shortcode
+	$sections = array_map('trim',explode(",",$sections));	
 	ob_start();
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
@@ -30,7 +29,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	{
 		$ssorder = new MemberOrder();
 		$ssorder->getLastMemberOrder();
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' ORDER BY timestamp DESC LIMIT 6");		
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");		
 		?>	
 	<div id="pmpro_account">		
 		

@@ -66,9 +66,13 @@
 			<?php
 				}
 
+<<<<<<< HEAD
 			$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 			if($pmpro_include_billing_address_fields)
 			{ ?>
+=======
+			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields')) { ?>
+>>>>>>> upstream/v1.8.10
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -223,11 +227,13 @@
 			<?php } ?>
 
 			<?php
+			$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+			if($pmpro_include_billing_address_fields)
+			{
 				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 				$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 			?>
-
 			<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -249,6 +255,7 @@
 							<?php
 							}
 						?>
+<<<<<<< HEAD
 						<div>
 							<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
 							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
@@ -257,7 +264,57 @@
 								<?php } ?>
 							</select>
 						</div>
+=======
+						
+						<?php
+							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
+							if($pmpro_include_cardtype_field)
+							{
+							?>
+							<div class="pmpro_payment-card-type">
+								<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
+								<select id="CardType" name="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
+									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
+										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
+									<?php } ?>
+								</select>
+							</div>
+							<?php
+							}
+							else
+							{
+							?>
+							<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+							<script>
+								<!--
+								jQuery(document).ready(function() {
+										jQuery('#AccountNumber').validateCreditCard(function(result) {
+											var cardtypenames = {
+												"amex"                      : "American Express",
+												"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+												"diners_club_international" : "Diners Club International",
+												"discover"                  : "Discover",
+												"jcb"                       : "JCB",
+												"laser"                     : "Laser",
+												"maestro"                   : "Maestro",
+												"mastercard"                : "Mastercard",
+												"visa"                      : "Visa",
+												"visa_electron"             : "Visa Electron"
+											};
+>>>>>>> upstream/v1.8.10
 
+											if(result.card_type)
+												jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+											else
+												jQuery('#CardType').val('Unknown Card Type');
+										});
+								});
+								-->
+							</script>
+							<?php
+							}
+						?>
+						
 						<div>
 							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
 							<input id="AccountNumber" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="AccountNumber"<?php } ?> class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="number"<?php } ?> autocomplete="off" />
@@ -339,7 +396,9 @@
 					pmpro_updateBraintreeAccountNumber();
 					-->
 				</script>
-			<?php } ?>
+			<?php }
+				} // if false === $hide_cc_fields
+			?>
 
 			<div align="center">
 				<input type="hidden" name="update-billing" value="1" />

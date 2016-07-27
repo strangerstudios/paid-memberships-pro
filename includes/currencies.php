@@ -51,7 +51,8 @@
 			'JPY' => array(
 				'name' => __('Japanese Yen (&yen;)', 'pmpro'),
 				'symbol' => '&yen;',
-				'position' => 'right'
+				'position' => 'right',
+				'decimals' => 0,
 				),
 			'MYR' => __('Malaysian Ringgits', 'pmpro'),
 			'MXN' => __('Mexican Peso (&#36;)', 'pmpro'),
@@ -70,13 +71,19 @@
 				'symbol' => 'R ',
 				'position' => 'left'
 			),			
-			'KRW' => __('South Korean Won', 'pmpro'),
+			'KRW' => array(
+				'name' => __('South Korean Won', 'pmpro'),
+				'decimals' => 0,
+				),
 			'SEK' => __('Swedish Krona', 'pmpro'),
 			'CHF' => __('Swiss Franc', 'pmpro'),
 			'TWD' => __('Taiwan New Dollars', 'pmpro'),
 			'THB' => __('Thai Baht', 'pmpro'),
 			'TRY' => __('Turkish Lira', 'pmpro'),
-			'VND' => __('Vietnamese Dong', 'pmpro')
+			'VND' => array(
+				'name' => __('Vietnamese Dong', 'pmpro'),
+				'decimals' => 0,
+				),
 			);
 	
 	$pmpro_currencies = apply_filters("pmpro_currencies", $pmpro_currencies);

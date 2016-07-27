@@ -1,0 +1,2758 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pmpro\n"
+"POT-Creation-Date: 2014-01-31 10:16+0100\n"
+"PO-Revision-Date: 2016-07-16 15:03+0200\n"
+"Last-Translator: \n"
+"Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.8\n"
+"X-Poedit-KeywordsList: __;_;_e;_ex;_x;_n\n"
+"X-Poedit-Basepath: ..\n"
+"Language: en_GB\n"
+"X-Poedit-SearchPath-0: includes\n"
+"X-Poedit-SearchPath-1: .\n"
+"X-Poedit-SearchPath-2: classes\n"
+"X-Poedit-SearchPath-3: preheaders\n"
+"X-Poedit-SearchPath-4: pages\n"
+"X-Poedit-SearchPath-5: adminpages\n"
+"X-Poedit-SearchPath-6: classes/gateways\n"
+"X-Poedit-SearchPath-7: services\n"
+"X-Poedit-SearchPath-8: shortcodes\n"
+"X-Poedit-SearchPath-9: scheduled\n"
+
+#: includes/localization.php:23
+msgid "Day"
+msgstr "Dan"
+
+#: includes/localization.php:25
+msgid "Week"
+msgstr "Sedmica"
+
+#: includes/localization.php:27
+msgid "Month"
+msgstr "Mjesec"
+
+#: includes/localization.php:29
+msgid "Year"
+msgstr "Godina"
+
+#: includes/currencies.php:7 includes/currencies.php:44
+msgid "US Dollars (&#36;)"
+msgstr "Američki dolar"
+
+#: includes/currencies.php:8 includes/currencies.php:47
+msgid "Euros (&euro;)"
+msgstr "Evro"
+
+#: includes/currencies.php:9 includes/currencies.php:46
+msgid "Pounds Sterling (&pound;)"
+msgstr "Funta"
+
+#: includes/currencies.php:10
+msgid "Australian Dollars (&#36;)"
+msgstr "Australijski dolar"
+
+#: includes/currencies.php:11
+msgid "Brazilian Real (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:12 includes/currencies.php:45
+msgid "Canadian Dollars (&#36;)"
+msgstr "Kanadski dolar"
+
+#: includes/currencies.php:13
+msgid "Chinese Yuan"
+msgstr "Kineski jen"
+
+#: includes/currencies.php:14
+msgid "Czech Koruna"
+msgstr "Češka kruna"
+
+#: includes/currencies.php:15
+msgid "Danish Krone"
+msgstr "Danska kruna"
+
+#: includes/currencies.php:16
+msgid "Hong Kong Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:17
+msgid "Hungarian Forint"
+msgstr ""
+
+#: includes/currencies.php:18
+msgid "Indian Rupee"
+msgstr ""
+
+#: includes/currencies.php:19
+msgid "Indonesia Rupiah"
+msgstr ""
+
+#: includes/currencies.php:20
+msgid "Israeli Shekel"
+msgstr ""
+
+#: includes/currencies.php:21
+msgid "Japanese Yen (&yen;)"
+msgstr ""
+
+#: includes/currencies.php:22
+msgid "Malaysian Ringgits"
+msgstr ""
+
+#: includes/currencies.php:23
+msgid "Mexican Peso (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:24
+msgid "New Zealand Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:25
+msgid "Norwegian Krone"
+msgstr ""
+
+#: includes/currencies.php:26
+msgid "Philippine Pesos"
+msgstr ""
+
+#: includes/currencies.php:27
+msgid "Polish Zloty"
+msgstr ""
+
+#: includes/currencies.php:28
+msgid "Singapore Dollar (&#36;)"
+msgstr ""
+
+#: includes/currencies.php:29
+msgid "South African Rand"
+msgstr ""
+
+#: includes/currencies.php:30
+msgid "South Korean Won"
+msgstr ""
+
+#: includes/currencies.php:31
+msgid "Swedish Krona"
+msgstr ""
+
+#: includes/currencies.php:32
+msgid "Swiss Franc"
+msgstr ""
+
+#: includes/currencies.php:33
+msgid "Taiwan New Dollars"
+msgstr ""
+
+#: includes/currencies.php:34
+msgid "Thai Baht"
+msgstr ""
+
+#: includes/currencies.php:35
+msgid "Turkish Lira"
+msgstr ""
+
+#: includes/currencies.php:36
+msgid "Vietnamese Dong"
+msgstr ""
+
+#: includes/metaboxes.php:38
+msgid ""
+"This post is already protected for this level because it is within a category "
+"that requires membership."
+msgstr ""
+"Ovaj post je već zaštićen za ovaj nivo jer se nalazi u kategoriji za koju je "
+"potrebno članstvo."
+
+#: includes/metaboxes.php:99 includes/metaboxes.php:100
+msgid "Require Membership"
+msgstr "Potrebno Članstvo"
+
+#: includes/adminpages.php:9 includes/adminpages.php:39
+msgid "Memberships"
+msgstr "Članstvo"
+
+#: includes/adminpages.php:10 includes/adminpages.php:49
+msgid "Page Settings"
+msgstr "Postavke Stranice."
+
+#: includes/adminpages.php:11 includes/adminpages.php:54
+msgid "Payment Settings"
+msgstr "Postavke Plaćanja."
+
+#: includes/adminpages.php:12 includes/adminpages.php:59
+#: adminpages/emailsettings.php:60
+msgid "Email Settings"
+msgstr "Email postavke"
+
+#: includes/adminpages.php:13 includes/adminpages.php:64
+#: adminpages/advancedsettings.php:79
+msgid "Advanced Settings"
+msgstr "Napredne Postavke"
+
+#: includes/adminpages.php:14 includes/adminpages.php:69
+#: adminpages/admin_header.php:154
+msgid "Add Ons"
+msgstr "Dodaci"
+
+#: includes/adminpages.php:15 includes/adminpages.php:74
+#: adminpages/memberslist.php:25
+msgid "Members List"
+msgstr "Lista Članova"
+
+#: includes/adminpages.php:16 includes/adminpages.php:79
+msgid "Reports"
+msgstr "Izvještaji"
+
+#: includes/adminpages.php:17 includes/adminpages.php:84
+#: adminpages/orders.php:520
+msgid "Orders"
+msgstr "Narudžbe"
+
+#: includes/adminpages.php:18 includes/adminpages.php:89
+msgid "Discount Codes"
+msgstr "Kodovi za Popuste"
+
+#: includes/adminpages.php:44 adminpages/membershiplevels.php:496
+#: adminpages/admin_header.php:149
+msgid "Membership Levels"
+msgstr "Nivoi Članstva"
+
+#: includes/profile.php:27 pages/invoice.php:28 pages/invoice.php:51
+#: pages/checkout.php:33 pages/confirmation.php:47 pages/confirmation.php:64
+#: pages/confirmation.php:105 adminpages/orders.php:601
+msgid "Membership Level"
+msgstr "Nivo Članstva"
+
+#: includes/profile.php:36
+msgid "Current Level"
+msgstr "Trenutni Nivo"
+
+#: includes/profile.php:39
+msgid "None"
+msgstr "Nijedan"
+
+#: includes/profile.php:84
+msgid "User is not paying."
+msgstr "Korisnik ne plaća."
+
+#: includes/profile.php:120 adminpages/memberslist.php:159
+#: adminpages/discountcodes.php:550 adminpages/reports/login.php:145
+msgid "Expires"
+msgstr "Ističe"
+
+#: includes/profile.php:123 adminpages/membershiplevels.php:569
+#: adminpages/paymentsettings.php:448 adminpages/paymentsettings.php:473
+#: adminpages/advancedsettings.php:128 adminpages/advancedsettings.php:187
+#: adminpages/advancedsettings.php:199
+msgid "No"
+msgstr "Ne"
+
+#: includes/profile.php:124 adminpages/membershiplevels.php:569
+#: adminpages/paymentsettings.php:449 adminpages/paymentsettings.php:474
+#: adminpages/advancedsettings.php:188
+msgid "Yes"
+msgstr "Da"
+
+#: includes/functions.php:196
+#, php-format
+msgid "The price for membership is <strong>%s</strong> now"
+msgstr "Cijena članstva je <strong>%s</strong> sada"
+
+#: includes/functions.php:205
+#, php-format
+msgid " and then <strong>%s per %s for %d more %s</strong>."
+msgstr "pa onda <strong>%s po %s za %d više %s</strong>."
+
+#: includes/functions.php:209
+#, php-format
+msgid " and then <strong>%s every %d %s for %d more %s</strong>."
+msgstr "a onda <strong> %s svaki %d %s za %d više %s</strong>."
+
+#: includes/functions.php:214
+#, php-format
+msgid " and then <strong>%s after %d %s</strong>."
+msgstr "a ond <strong> %s poslije %d %s</string>."
+
+#: includes/functions.php:220
+#, php-format
+msgid " and then <strong>%s per %s</strong>."
+msgstr "a onda <strong>%s po %s</strong>."
+
+#: includes/functions.php:224
+#, php-format
+msgid " and then <strong>%s every %d %s</strong>."
+msgstr "a onda <strong> %s svaki %d %s</strong>."
+
+#: includes/functions.php:241 pages/levels.php:82
+msgid "After your initial payment, your first payment is Free."
+msgstr "Naredna uplaata nakon vaše početne uplate je besplatna"
+
+#: includes/functions.php:245 pages/levels.php:86
+#, php-format
+msgid "After your initial payment, your first %d payments are Free."
+msgstr "Poslije vaše prvobitne uplate, vaša naredna %d uplata je Besplatna."
+
+#: includes/functions.php:252 pages/levels.php:93
+#, php-format
+msgid "After your initial payment, your first payment will cost %s."
+msgstr "Nakon vaše prvobitne uplate, vaša naredna uplata će da iznosi %s."
+
+#: includes/functions.php:256 pages/levels.php:97
+#, php-format
+msgid "After your initial payment, your first %d payments will cost %s."
+msgstr "Nakon vaše prvobitne uplate , vaša naredna %d uplata će da iznosi %s."
+
+#: includes/functions.php:267
+#, php-format
+msgid "Customers in %s will be charged %s%% tax."
+msgstr "Korisnici u %s će biti naplaćeni %s%% tax."
+
+#: includes/functions.php:281
+#, php-format
+msgid "Membership expires after %d %s."
+msgstr "Članstvo ističe nakon %d %s."
+
+#: includes/functions.php:517
+msgid "User ID not found."
+msgstr "Korisnički ID nije pronađen."
+
+#: includes/functions.php:534
+msgid "Invalid level."
+msgstr "Nevažećo nivo."
+
+#: includes/functions.php:545
+msgid "not changing?"
+msgstr "Ne mijenjate?"
+
+#: includes/functions.php:562 includes/functions.php:609
+#: includes/functions.php:618
+msgid "Error interacting with database"
+msgstr "Greška u interakciji sa bazom podataka."
+
+#: includes/functions.php:659 includes/functions.php:698
+msgid "Membership level not found."
+msgstr "Nivo Članstva nije pronađen."
+
+#: includes/functions.php:1080
+msgid "The discount code could not be found."
+msgstr "Kod za popust nije pronađen."
+
+#: includes/functions.php:1096
+#, php-format
+msgid "This discount code goes into effect on %s."
+msgstr "Kod za popust važi za %s"
+
+#: includes/functions.php:1105
+#, php-format
+msgid "This discount code expired on %s."
+msgstr "Kod za popust je istekao %s."
+
+#: includes/functions.php:1117
+msgid "This discount code is no longer valid."
+msgstr "Kod za popust nije više važeći."
+
+#: includes/functions.php:1132
+msgid "This discount code does not apply to this membership level."
+msgstr "Kod za popust ne važi za ovaj nivo članstva."
+
+#: includes/functions.php:1140
+msgid "This discount code is okay."
+msgstr "Kod za popust je važeći."
+
+#: includes/functions.php:1164
+msgid "and"
+msgstr "i"
+
+#: includes/functions.php:1349
+msgid "Sign Up for !!name!! Now"
+msgstr "Prijavite Se za !!name!! Sada"
+
+#: includes/functions.php:1355
+msgid "Please specify a level id."
+msgstr "Molimo Vas da odredite ID nivoa."
+
+#: pages/invoice.php:22 pages/confirmation.php:41
+#, php-format
+msgid "Invoice #%s on %s"
+msgstr "Faktura #%s na %s"
+
+#: pages/invoice.php:27 pages/confirmation.php:46 pages/confirmation.php:104
+msgid "Account"
+msgstr "Nalog"
+
+#: pages/invoice.php:30 pages/account.php:29 pages/confirmation.php:49
+msgid "Membership Expires"
+msgstr "Članstvo ističe"
+
+#: pages/invoice.php:33 pages/checkout.php:66 pages/checkout.php:76
+#: pages/checkout.php:577 pages/confirmation.php:52
+#: classes/class.pmproemail.php:228 classes/class.pmproemail.php:237
+#: classes/class.pmproemail.php:246 classes/class.pmproemail.php:325
+#: classes/class.pmproemail.php:334 classes/class.pmproemail.php:645
+msgid "Discount Code"
+msgstr "Kod za Popust"
+
+#: pages/invoice.php:48 pages/account.php:90 pages/checkout.php:325
+#: pages/confirmation.php:61 pages/billing.php:58 adminpages/memberslist.php:150
+msgid "Billing Address"
+msgstr "Adresa za naplatu"
+
+#: pages/invoice.php:50 pages/account.php:105 pages/confirmation.php:63
+msgid "Payment Method"
+msgstr "Metoda plaćanja"
+
+#: pages/invoice.php:52 pages/invoice.php:109 pages/confirmation.php:65
+msgid "Total Billed"
+msgstr "Ukupno naplaćeno"
+
+#: pages/invoice.php:69 pages/confirmation.php:82
+msgid "ending in"
+msgstr "Ističe za"
+
+#: pages/invoice.php:70 pages/confirmation.php:83
+#: adminpages/membershiplevels.php:516
+msgid "Expiration"
+msgstr "Isticanje"
+
+#: pages/invoice.php:79
+msgid "Subtotal"
+msgstr "Suma stavke"
+
+#: pages/invoice.php:80 adminpages/orders.php:304
+msgid "Tax"
+msgstr "Porez"
+
+#: pages/invoice.php:82
+msgid "Coupon"
+msgstr "Kupon"
+
+#: pages/invoice.php:84 adminpages/orders.php:320 adminpages/orders.php:602
+msgid "Total"
+msgstr "Ukupno"
+
+#: pages/invoice.php:107 adminpages/orders.php:442 adminpages/orders.php:607
+msgid "Date"
+msgstr "Datum"
+
+#: pages/invoice.php:108
+msgid "Invoice #"
+msgstr "Faktura #"
+
+#: pages/invoice.php:122
+msgid "View Invoice"
+msgstr "Pregled Fakture"
+
+#: pages/invoice.php:134
+msgid "No invoices found."
+msgstr "Faktura nije pronađena"
+
+#: pages/invoice.php:141 pages/confirmation.php:113
+msgid "View Your Membership Account &rarr;"
+msgstr "Pregled vašeg naloga članstva &rarr;"
+
+#: pages/invoice.php:145
+msgid "&larr; View All Invoices"
+msgstr "&rarr; Prikaži sve Fakture"
+
+#: pages/account.php:10
+msgid "Your membership is <strong>active</strong>."
+msgstr "Vaše članstvo je <strong>aktivno</strong>."
+
+#: pages/account.php:12 pages/billing.php:16 pages/levels.php:13
+msgid "Level"
+msgstr "Nivo"
+
+#: pages/account.php:14 pages/billing.php:18
+msgid "Membership Fee"
+msgstr "Provizija za Članstvo"
+
+#: pages/account.php:25 pages/billing.php:29
+msgid "Duration"
+msgstr "Trajanje"
+
+#: pages/account.php:34
+#, php-format
+msgid "Your first payment will cost %s."
+msgstr "Vaša prva uplata će da iznosi %s."
+
+#: pages/account.php:38
+#, php-format
+msgid "Your first %d payments will cost %s."
+msgstr "Vaša prva %d uplata će da iznosi %s."
+
+#: pages/account.php:46
+msgid "My Account"
+msgstr "Moj Nalog"
+
+#: pages/account.php:51 pages/checkout.php:171 adminpages/memberslist.php:145
+msgid "Username"
+msgstr "Korisničko Ime"
+
+#: pages/account.php:52 adminpages/memberslist.php:148
+#: adminpages/admin_header.php:152
+msgid "Email"
+msgstr ""
+
+#: pages/account.php:55
+msgid "Edit Profile"
+msgstr "Uredi Profil"
+
+#: pages/account.php:56
+msgid "Change Password"
+msgstr "Promijnite Lozinku"
+
+#: pages/account.php:87
+msgid "Billing Information"
+msgstr "Informacije o Plaćanju"
+
+#: pages/account.php:114
+msgid "Edit Billing Information"
+msgstr "Uredi Informacije o Plaćanju"
+
+#: pages/account.php:125
+msgid "Past Invoices"
+msgstr "Stare Fakture"
+
+#: pages/account.php:140
+msgid "View All Invoices"
+msgstr "Prikaži Sve Fakture"
+
+#: pages/account.php:146
+msgid "Member Links"
+msgstr "Korisnički Linkovi"
+
+#: pages/account.php:152
+msgid "Update Billing Information"
+msgstr "Ažurirajte Informacije o Plaćanju"
+
+#: pages/account.php:155
+msgid "Change Membership Level"
+msgstr "Promijenite Nivo Članstva"
+
+#: pages/account.php:157
+msgid "Cancel Membership"
+msgstr "Otkažite Članstvo"
+
+#: pages/checkout.php:26
+msgid ""
+"Almost done. Review the membership information and pricing below then "
+"<strong>click the \"Complete Payment\" button</strong> to finish your order."
+msgstr ""
+"Još malo pa gotovo. Pregledajte informacije o članstvu i plaćanju pa <strong> "
+"kliknite na \"Dovršite Plaćanje\" dugme</strong> da završite Vašu narudžbu."
+
+#: pages/checkout.php:33
+msgid "change"
+msgstr "promijeniti"
+
+#: pages/checkout.php:41
+#, php-format
+msgid "You have selected the <strong>%s</strong> membership level."
+msgstr "Izabrali ste <strong>%s</strong> nivo članstva."
+
+#: pages/checkout.php:51
+#, php-format
+msgid ""
+"<p class=\"pmpro_level_discount_applied\">The <strong>%s</strong> code has "
+"been applied to your order.</p>"
+msgstr ""
+"<p class=\"pmpro_level_discount_applied\">The <strong>%s</strong> kod je "
+"primijenjen na Vašoj narudžbi."
+
+#: pages/checkout.php:62 services/applydiscountcode.php:75
+msgid "Click here to change your discount code"
+msgstr "Kliknote ovdje da promijenite kod za popust"
+
+#: pages/checkout.php:64
+msgid "Do you have a discount code?"
+msgstr "Da li imate kod za popust?"
+
+#: pages/checkout.php:64
+msgid "Click here to enter your discount code"
+msgstr "Kliknite ovdje da unestete Vaš kod za popust."
+
+#: pages/checkout.php:78 pages/checkout.php:579
+msgid "Apply"
+msgstr "Primijeniti"
+
+#: pages/checkout.php:163
+msgid "Already have an account?"
+msgstr "Već imate nalog?"
+
+#: pages/checkout.php:163
+msgid "Log in here"
+msgstr "Prijavite se ovdje"
+
+#: pages/checkout.php:163
+msgid "Account Information"
+msgstr "Informacije o Nalogu"
+
+#: pages/checkout.php:180 adminpages/paymentsettings.php:233
+msgid "Password"
+msgstr "Lozinka"
+
+#: pages/checkout.php:189
+msgid "Confirm Password"
+msgstr "Potvrdite Lozinku"
+
+#: pages/checkout.php:207 pages/checkout.php:464 pages/billing.php:193
+msgid "E-mail Address"
+msgstr "E-mail Adresa"
+
+#: pages/checkout.php:216
+msgid "Confirm E-mail Address"
+msgstr "Potvrdite E-mail Adresu"
+
+#: pages/checkout.php:235
+msgid "Full Name"
+msgstr "Puno Ime"
+
+#: pages/checkout.php:236
+msgid "LEAVE THIS BLANK"
+msgstr "OSTAVITE PRAZNO"
+
+#: pages/checkout.php:260
+#, php-format
+msgid ""
+"You are logged in as <strong>%s</strong>. If you would like to use a "
+"different account for this membership, <a href=\"%s\">log out now</a>."
+msgstr ""
+"Prijavljeni ste kao <strong>%s</strong>. Ako želite da koristite drugi nalog "
+"za ovo članstvo, <a href=\"%s\">odjavite se sada</a>."
+
+#: pages/checkout.php:288
+#, php-format
+msgid "I agree to the %s"
+msgstr "Saglasan sam sa %s"
+
+#: pages/checkout.php:303
+msgid "Choose your Payment Method"
+msgstr "Odaberite Vaš Način Plačanja"
+
+#: pages/checkout.php:311
+msgid "Check Out with a Credit Card Here"
+msgstr "Platite sa Kreditnom Karticom Ovdje"
+
+#: pages/checkout.php:313 pages/checkout.php:686
+msgid "Check Out with PayPal"
+msgstr "Platite sa Paypal"
+
+#: pages/checkout.php:332 pages/billing.php:65
+msgid "First Name"
+msgstr "Ime"
+
+#: pages/checkout.php:336 pages/billing.php:69
+msgid "Last Name"
+msgstr "Prezime"
+
+#: pages/checkout.php:340 pages/billing.php:73
+msgid "Address 1"
+msgstr "Adresa 1"
+
+#: pages/checkout.php:344 pages/billing.php:77
+msgid "Address 2"
+msgstr "Adresa 2"
+
+#: pages/checkout.php:354 pages/billing.php:87
+msgid "City"
+msgstr "Grad"
+
+#: pages/checkout.php:358 pages/billing.php:91
+msgid "State"
+msgstr "Oblast"
+
+#: pages/checkout.php:362 pages/billing.php:95
+msgid "Postal Code"
+msgstr "Poštanski Broj"
+
+#: pages/checkout.php:371 pages/billing.php:104
+msgid "City, State Zip"
+msgstr "Grad, Oblast Poštanski broj "
+
+#: pages/checkout.php:424 pages/billing.php:157
+msgid "Country"
+msgstr "Država"
+
+#: pages/checkout.php:449 pages/billing.php:182
+msgid "Phone"
+msgstr "Telefon"
+
+#: pages/checkout.php:473 pages/billing.php:197
+msgid "Confirm E-mail"
+msgstr "Potvrdite E-mail"
+
+#: pages/checkout.php:504
+#, php-format
+msgid "We Accept %s"
+msgstr "Mi Prihvatamo %s"
+
+#: pages/checkout.php:504
+msgid "Payment Information"
+msgstr "Informacije o Plaćanju"
+
+#: pages/checkout.php:521 pages/billing.php:234 adminpages/orders.php:339
+msgid "Card Type"
+msgstr "Tip Kartice"
+
+#: pages/checkout.php:531 pages/billing.php:244
+msgid "Card Number"
+msgstr "Broj Kartice"
+
+#: pages/checkout.php:536 pages/billing.php:249 adminpages/discountcodes.php:367
+msgid "Expiration Date"
+msgstr "Datum Isteka"
+
+#: pages/checkout.php:568 pages/billing.php:281
+msgid "CVV"
+msgstr "CVV (Sigurnosni broj)"
+
+#: pages/checkout.php:569 pages/billing.php:282
+msgid "what's this?"
+msgstr "šta je to?"
+
+#: pages/checkout.php:678
+msgid "Complete Payment"
+msgstr "Dovršite Plaćanje"
+
+#: pages/checkout.php:692
+msgid "Submit and Pay with 2CheckOut"
+msgstr "Podnesite i Platite sa 2CheckOut"
+
+#: pages/checkout.php:692
+msgid "Submit and Check Out"
+msgstr "Podnesite i Platite"
+
+#: pages/checkout.php:692
+msgid "Submit and Confirm"
+msgstr "Podnesite i Potvrdite"
+
+#: pages/checkout.php:698
+msgid "Processing..."
+msgstr "Obrada..."
+
+#: pages/cancel.php:14
+msgid "Are you sure you want to cancel your membership?"
+msgstr "Da li ste sigurni da želite da otkažete Vaše članstvo?"
+
+#: pages/cancel.php:17
+msgid "Yes, cancel my account"
+msgstr "Da, otkažite moje članstvo"
+
+#: pages/cancel.php:19
+msgid "No, keep my account"
+msgstr "Ne, zadržite moj nalog"
+
+#: pages/cancel.php:22
+msgid "Click here to go to the home page."
+msgstr "Klikite ovdje da odete na naslovnu stranu."
+
+#: pages/confirmation.php:12
+msgid ""
+"Your payment has been submitted. Your membership will be activated shortly."
+msgstr "Vaša uplata je podnesena. Vaše članstvo će uskoro biti aktivirano."
+
+#: pages/confirmation.php:14
+#, php-format
+msgid "Thank you for your membership to %s. Your %s membership is now active."
+msgstr ""
+"Hvala vam na Vašem učlanjivanju na %s. Vaše %s članstvo je sada aktivno."
+
+#: pages/confirmation.php:28
+#, php-format
+msgid ""
+"Below are details about your membership account and a receipt for your "
+"initial membership invoice. A welcome email with a copy of your initial "
+"membership invoice has been sent to %s."
+msgstr ""
+"Ispod su detalji o Vašem nalogu i račun za Vašu prvu člansku fakturu. E-mail "
+"dobrodošlice sa kopijom Vaše prve članske fakture je poslat na %s."
+
+#: pages/confirmation.php:43
+msgid "Print"
+msgstr "Štampaj"
+
+#: pages/confirmation.php:97
+#, php-format
+msgid ""
+"Below are details about your membership account. A welcome email with has "
+"been sent to %s."
+msgstr "Ispod su detalji o vašem nalogu. Email dobrodošlice je poslat na %s."
+
+#: pages/confirmation.php:105
+msgid "Pending"
+msgstr "Na čekanju"
+
+#: pages/confirmation.php:115
+msgid ""
+"If your account is not activated within a few minutes, please contact the "
+"site owner."
+msgstr ""
+"Ako Vaš nalog nije aktiviran unutar nekoliko minuta, molimo Vas da nas "
+"kontaktirate."
+
+#: pages/billing.php:14
+#, php-format
+msgid "Logged in as <strong>%s</strong>."
+msgstr "Prijavljen kao <strong>%s</strong>."
+
+#: pages/billing.php:14
+msgid "logout"
+msgstr "odjavi se"
+
+#: pages/billing.php:39
+msgid ""
+"Your payment subscription is managed by PayPal. Please <a href=\"http://www."
+"paypal.com\">login to PayPal here</a> to update your billing information."
+msgstr ""
+"Vašom pretplatom upravlja PayPal. Molim Vas <a href=\"http://www.paypal.com"
+"\"> prijavite se na PayPal ovdje</a> da ažurirate Vaše informacije o plaćanju."
+
+#: pages/billing.php:78 adminpages/paymentsettings.php:457
+msgid "optional"
+msgstr "opciono"
+
+#: pages/billing.php:217
+#, php-format
+msgid "We accept %s"
+msgstr "Mi prihvatamo %s"
+
+#: pages/billing.php:217
+msgid "Credit Card Information"
+msgstr "Informacije o Kreditnoj Kartici"
+
+#: pages/billing.php:294
+msgid "Update"
+msgstr "Ažuriraj"
+
+#: pages/billing.php:295 adminpages/orders.php:511
+msgid "Cancel"
+msgstr "Otkaži"
+
+#: pages/billing.php:309
+msgid ""
+"This subscription is not recurring. So you don't need to update your billing "
+"information."
+msgstr ""
+"Pretlata se ne ponavlja. Tako da ne treba da ažurirate Vaše informacije o "
+"plačanju"
+
+#: pages/levels.php:14 adminpages/membershiplevels.php:337
+#: adminpages/membershiplevels.php:513 adminpages/discountcodes.php:427
+msgid "Initial Payment"
+msgstr "Početna Uplata"
+
+#: pages/levels.php:15
+msgid "Subscription Information"
+msgstr "Informacije o Pretpalti"
+
+#: pages/levels.php:33
+msgid "--"
+msgstr ""
+
+#: pages/levels.php:43
+msgid "Free"
+msgstr "Besplatno"
+
+#: pages/levels.php:51
+#, php-format
+msgid "%s per %s for %d more %s."
+msgstr "%s po %s za %d više %s."
+
+#: pages/levels.php:55
+#, php-format
+msgid "%s every %d %s for %d more %s."
+msgstr "%s svaki %d %s za %d više %s."
+
+#: pages/levels.php:60
+#, php-format
+msgid "%s after %d %s."
+msgstr "%s poslije %d %s."
+
+#: pages/levels.php:66
+#, php-format
+msgid "%s per %s."
+msgstr "%s po %s."
+
+#: pages/levels.php:70
+#, php-format
+msgid "%s every %d %s."
+msgstr "%s svaki %d %s."
+
+#: pages/levels.php:113 pages/levels.php:115
+msgid "Select"
+msgstr "Izaberite"
+
+#: pages/levels.php:123
+msgid "Renew"
+msgstr "Obnovite"
+
+#: pages/levels.php:129
+msgid "Your&nbsp;Level"
+msgstr "Vaš&nbsp;Nivo"
+
+#: pages/levels.php:145
+msgid "&larr; Return to Your Account"
+msgstr "&larr; Vratite se na Vaš Nalog"
+
+#: pages/levels.php:147
+msgid "&larr; Return to Home"
+msgstr "&larr; Vratite se na Naslovnu"
+
+#: classes/class.memberorder.php:543
+#, php-format
+msgid ""
+"There was an error canceling the subscription for user with ID=%s. You will "
+"want to check your payment gateway to see if their subscription is still "
+"active."
+msgstr ""
+"Deslia se greška prilikom otkazivanja pretplateza korisnika sa ID=%s. Trebali "
+"bi da provjerite da li je pretplata još uvijek aktivna."
+
+#: classes/class.pmproemail.php:37
+#, php-format
+msgid "An Email From %s"
+msgstr "Email od %s"
+
+#: classes/class.pmproemail.php:122
+#, php-format
+msgid "Your membership at %s has been CANCELLED"
+msgstr "Vaša pretplata na %s  je OTKAZANA"
+
+#: classes/class.pmproemail.php:144
+#, php-format
+msgid "Membership for %s at %s has been CANCELLED"
+msgstr "Članstvo za %s na %s je OTKAZANO"
+
+#: classes/class.pmproemail.php:175
+#, php-format
+msgid "Your membership confirmation for %s"
+msgstr "Vaša potvrda članstva za %s"
+
+#: classes/class.pmproemail.php:253 classes/class.pmproemail.php:346
+#: classes/class.pmproemail.php:651
+#, php-format
+msgid "This membership will expire on %s."
+msgstr "Ovo članstvo će da istekne %s."
+
+#: classes/class.pmproemail.php:275
+#, php-format
+msgid "Member Checkout for %s at %s"
+msgstr "Korisnik Plaća za %s na %s"
+
+#: classes/class.pmproemail.php:363
+#, php-format
+msgid "Your billing information has been udpated at %s"
+msgstr "Vaše informacije o plaćanju su ažurirane na %s"
+
+#: classes/class.pmproemail.php:416
+#, php-format
+msgid "Billing information has been udpated for %s at %s"
+msgstr "Informacije o plaćanju su ažurirane za  %s na %s"
+
+#: classes/class.pmproemail.php:464
+#, php-format
+msgid "Membership Payment Failed at %s"
+msgstr "Plaćanje za članstvo neuspješno na %s"
+
+#: classes/class.pmproemail.php:510
+#, php-format
+msgid "Membership Payment Failed For %s at %s"
+msgstr "Plaćanje za članstvo neuspjećno za %s na%s"
+
+#: classes/class.pmproemail.php:557
+#, php-format
+msgid "Credit Card on File Expiring Soon at %s"
+msgstr "Kreditna Kartica Uskoro Ističe na %s"
+
+#: classes/class.pmproemail.php:605
+#, php-format
+msgid "INVOICE for %s membership"
+msgstr "Faktura za  %s članstvo"
+
+#: classes/class.pmproemail.php:676
+#, php-format
+msgid "Your trial at %s is ending soon"
+msgstr "Vaša proba na %s se uskoro završava"
+
+#: classes/class.pmproemail.php:710
+#, php-format
+msgid "Your membership at %s has ended"
+msgstr "Vaše članstvo na %s je isteklo"
+
+#: classes/class.pmproemail.php:735
+#, php-format
+msgid "Your membership at %s will end soon"
+msgstr "Vaše članstvo na %s uskoro ističe"
+
+#: classes/class.pmproemail.php:755
+#, php-format
+msgid "Your membership at %s has been changed"
+msgstr "Vaše članstvo na %s je promijenjeno"
+
+#: classes/class.pmproemail.php:759
+#, php-format
+msgid "The new level is %s."
+msgstr "Novi nivo je %s."
+
+#: classes/class.pmproemail.php:761
+msgid "Your membership has been cancelled"
+msgstr "Vaše članstvo je otkazano"
+
+#: classes/class.pmproemail.php:765 classes/class.pmproemail.php:803
+#, php-format
+msgid "This membership will expire on %s"
+msgstr "Ovo članstvo će da istekne na %s"
+
+#: classes/class.pmproemail.php:769 classes/class.pmproemail.php:807
+msgid "This membership does not expire"
+msgstr "Ovo članstvo nema rok za isticanje"
+
+#: classes/class.pmproemail.php:793
+#, php-format
+msgid "Membership for %s at %s has been changed"
+msgstr "Članstvo za %s na%s je promijenjeno"
+
+#: classes/class.pmproemail.php:797
+#, php-format
+msgid "The new level is %s. This membership is free"
+msgstr "Novi nivo je %s. Ovo članstvo je besplatno"
+
+#: classes/class.pmproemail.php:799
+msgid "membership has been cancelled"
+msgstr "članstvo je otkazano"
+
+#: classes/gateways/class.pmprogateway_check.php:60
+#: classes/gateways/class.pmprogateway_paypal.php:27
+#: classes/gateways/class.pmprogateway_authorizenet.php:55
+#: classes/gateways/class.pmprogateway_payflowpro.php:27
+#: classes/gateways/class.pmprogateway_sagepay.php:81
+#: classes/gateways/class.pmprogateway.php:55
+#: classes/gateways/class.pmprogateway_cybersource.php:57
+msgid "Unknown error: Authorization failed."
+msgstr "Nepoznata greška: Ovlašćenje nije uspijelo."
+
+#: classes/gateways/class.pmprogateway_check.php:111
+#: classes/gateways/class.pmprogateway_check.php:116
+#: classes/gateways/class.pmprogateway_check.php:134
+#: classes/gateways/class.pmprogateway_paypal.php:50
+#: classes/gateways/class.pmprogateway_authorizenet.php:106
+#: classes/gateways/class.pmprogateway_authorizenet.php:111
+#: classes/gateways/class.pmprogateway_authorizenet.php:128
+#: classes/gateways/class.pmprogateway_payflowpro.php:50
+#: classes/gateways/class.pmprogateway_payflowpro.php:55
+#: classes/gateways/class.pmprogateway_sagepay.php:140
+#: classes/gateways/class.pmprogateway_sagepay.php:145
+#: classes/gateways/class.pmprogateway_sagepay.php:168
+#: classes/gateways/class.pmprogateway.php:106
+#: classes/gateways/class.pmprogateway.php:111
+#: classes/gateways/class.pmprogateway.php:129
+#: classes/gateways/class.pmprogateway_cybersource.php:108
+#: classes/gateways/class.pmprogateway_cybersource.php:113
+#: classes/gateways/class.pmprogateway_cybersource.php:131
+msgid "Unknown error: Payment failed."
+msgstr "Nepoznata greška: Plaćanje nije uspijelo."
+
+#: classes/gateways/class.pmprogateway_check.php:118
+#: classes/gateways/class.pmprogateway_authorizenet.php:112
+#: classes/gateways/class.pmprogateway_sagepay.php:147
+#: classes/gateways/class.pmprogateway.php:113
+#: classes/gateways/class.pmprogateway_cybersource.php:115
+msgid ""
+"A partial payment was made that we could not void. Please contact the site "
+"owner immediately to correct this."
+msgstr ""
+"Izvršena je djelimična naplata koju nismo mogli poništiti. Molimo Vas da "
+"kontaktirate vlasnika što prije da bi riješili ovo."
+
+#: classes/gateways/class.pmprogateway_braintree.php:61
+#: classes/gateways/class.pmprogateway_stripe.php:53
+msgid "Unknown error: Initial payment failed."
+msgstr "Nepoznata greška: Početna uplata nije uspijela."
+
+#: classes/gateways/class.pmprogateway_braintree.php:120
+msgid "Error during settlement:"
+msgstr "Greška prilikom namirenja:"
+
+#: classes/gateways/class.pmprogateway_braintree.php:129
+msgid "Error during charge:"
+msgstr "Greška prilikom naplate:"
+
+#: classes/gateways/class.pmprogateway_braintree.php:198
+msgid "Failed to update customer."
+msgstr "Neuspjeh prilikom ažuriranja korisnika."
+
+#: classes/gateways/class.pmprogateway_braintree.php:246
+msgid "Failed to create customer."
+msgstr "Neuspjeh prilikom kreiranja korisnika"
+
+#: classes/gateways/class.pmprogateway_braintree.php:253
+msgid "Error creating customer record with Braintree:"
+msgstr "Greška prilikom kreiranja korisničkog zapisa sa Braintree:"
+
+#: classes/gateways/class.pmprogateway_braintree.php:344
+msgid "Error subscribing customer to plan with Braintree:"
+msgstr "Greška prilikom pretplaćivanja korisnika na Braintree:"
+
+#: classes/gateways/class.pmprogateway_braintree.php:359
+msgid "Failed to subscribe with Braintree:"
+msgstr "Neuspjeh prilikom pretplate na Braintree:"
+
+#: classes/gateways/class.pmprogateway_braintree.php:397
+#: classes/gateways/class.pmprogateway_braintree.php:410
+#: classes/gateways/class.pmprogateway_braintree.php:417
+#: classes/gateways/class.pmprogateway_stripe.php:344
+#: classes/gateways/class.pmprogateway_stripe.php:354
+msgid "Could not find the subscription."
+msgstr "Neuspjeh prilikom potrage za pretplatom."
+
+#: classes/gateways/class.pmprogateway_paypal.php:57
+#: classes/gateways/class.pmprogateway_payflowpro.php:57
+msgid ""
+"A partial payment was made that we could not refund. Please contact the site "
+"owner immediately to correct this."
+msgstr ""
+"Izvršena je djelimična naplata koja mogla biti povraćena. Molimo Vas da "
+"kontaktirate vlasknika što prije da bi riješili ovo."
+
+#: classes/gateways/class.pmprogateway_authorizenet.php:187
+#: adminpages/memberslist.php:151 adminpages/pagesettings.php:51
+#: adminpages/reports/login.php:143
+msgid "Membership"
+msgstr "Članstvo"
+
+#: classes/gateways/class.pmprogateway_authorizenet.php:787
+#: classes/gateways/class.pmprogateway_authorizenet.php:788
+msgid "Could not connect to Authorize.net"
+msgstr "Neupjeh prilikom uspostavljanja veze sa Authorize.net"
+
+#: classes/gateways/class.pmprogateway_stripe.php:192
+msgid "Error creating customer record with Stripe:"
+msgstr "Greška prilikom kreiranja korisničkog naloga Stripe:"
+
+#: classes/gateways/class.pmprogateway_stripe.php:279
+msgid "Error creating plan with Stripe:"
+msgstr "Greška prilikom kreiranja plana sa Stripe:"
+
+#: classes/gateways/class.pmprogateway_stripe.php:295
+msgid "Error subscribing customer to plan with Stripe:"
+msgstr "Greška prilikom pretplate korisnika na Stripe:"
+
+#: adminpages/membershiplevels.php:5 adminpages/orders.php:5
+#: adminpages/memberslist.php:5 adminpages/paymentsettings.php:5
+#: adminpages/pagesettings.php:5 adminpages/discountcodes.php:5
+#: adminpages/memberslist-csv.php:5 adminpages/addons.php:5
+#: adminpages/emailsettings.php:5 adminpages/advancedsettings.php:5
+#: adminpages/orders-csv.php:5
+msgid "You do not have permissions to perform this action."
+msgstr "Nemate ovlaščenje da izvršite ovu naredbu."
+
+#: adminpages/membershiplevels.php:118
+msgid "Membership level updated successfully."
+msgstr "Nivo članstva je uspješno ažuriran."
+
+#: adminpages/membershiplevels.php:124
+msgid "Error updating membership level."
+msgstr "Greška prilikom ažuriranja nivoa članstva."
+
+#: adminpages/membershiplevels.php:141
+msgid "Membership level added successfully."
+msgstr "Nivo članstva je uspješno dodat."
+
+#: adminpages/membershiplevels.php:146
+msgid "Error adding membership level."
+msgstr "Greška prilikom dodavanja nivoa članstva."
+
+#: adminpages/membershiplevels.php:179
+#, php-format
+msgid ""
+"There was an error canceling the subscription for user with ID=%d. You will "
+"want to check your payment gateway to see if their subscription is still "
+"active."
+msgstr ""
+"Došlo je do greške prilikom otkazivanja pretplate za korisnika sa ID=%d. "
+"Trebali bi da provjerite da li je njihova pretplata još uvijek aktivna."
+
+#: adminpages/membershiplevels.php:182
+msgid "Last Invoice"
+msgstr "Poslednja Faktura"
+
+#: adminpages/membershiplevels.php:196
+msgid "Membership level deleted successfully."
+msgstr "Nivo članstva je uspješno izbrisan."
+
+#: adminpages/membershiplevels.php:201 adminpages/membershiplevels.php:207
+msgid "Error deleting membership level."
+msgstr "Greška prilikom brisanja nivoa članstva."
+
+#: adminpages/membershiplevels.php:222
+msgid "Edit Membership Level"
+msgstr "Uredite Nivo Članstva"
+
+#: adminpages/membershiplevels.php:224
+msgid "Add New Membership Level"
+msgstr "Dodajte Novi Nivo Članstva"
+
+#: adminpages/membershiplevels.php:284 adminpages/membershiplevels.php:511
+#: adminpages/orders.php:597 adminpages/memberslist.php:144
+#: adminpages/discountcodes.php:306 adminpages/discountcodes.php:547
+#: adminpages/reports/login.php:140
+msgid "ID"
+msgstr ""
+
+#: adminpages/membershiplevels.php:291 adminpages/membershiplevels.php:512
+#: adminpages/reports/login.php:142
+msgid "Name"
+msgstr "Ime"
+
+#: adminpages/membershiplevels.php:296
+msgid "Description"
+msgstr "Opis"
+
+#: adminpages/membershiplevels.php:314
+msgid "Confirmation Message"
+msgstr "Potvrdna Poruka"
+
+#: adminpages/membershiplevels.php:333
+msgid "Billing Details"
+msgstr "Informacije o Plaćnju"
+
+#: adminpages/membershiplevels.php:338 adminpages/discountcodes.php:428
+msgid "The initial amount collected at registration."
+msgstr "Iznos prvobitne uplate prikupljen prilikom registracije."
+
+#: adminpages/membershiplevels.php:342 adminpages/discountcodes.php:432
+msgid "Recurring Subscription"
+msgstr "Ponavljajuća Pretplata"
+
+#: adminpages/membershiplevels.php:343 adminpages/discountcodes.php:433
+msgid "Check if this level has a recurring subscription payment."
+msgstr "Potvrdite ako ovaj nivo ima ponavljajuće plaćanje pretplate."
+
+#: adminpages/membershiplevels.php:347
+msgid "Billing Amount"
+msgstr "Iznost za Plaćanje"
+
+#: adminpages/membershiplevels.php:349
+msgid "per"
+msgstr "po"
+
+#: adminpages/membershiplevels.php:353
+msgid "Day(s)"
+msgstr "Dan(a)"
+
+#: adminpages/membershiplevels.php:353
+msgid "Week(s)"
+msgstr "Sedmica"
+
+#: adminpages/membershiplevels.php:353
+msgid "Month(s)"
+msgstr "Mjesec(i)"
+
+#: adminpages/membershiplevels.php:353
+msgid "Year(s)"
+msgstr "Godin(a)"
+
+#: adminpages/membershiplevels.php:362 adminpages/discountcodes.php:451
+msgid "The amount to be billed one cycle after the initial payment."
+msgstr "Iznos prve naplate prvog ciklusa poslije prvobitne naplate."
+
+#: adminpages/membershiplevels.php:364
+msgid ""
+"Stripe integration currently only supports billing periods of \"Week\", "
+"\"Month\" or \"Year\"."
+msgstr ""
+"Stripe integracija trenuto samo podržava periode naplate od \"Sedmica\", "
+"\"Mjesec\" ili \"Godina\"."
+
+#: adminpages/membershiplevels.php:366
+msgid ""
+"Braintree integration currently only supports billing periods of \"Month\" or "
+"\"Year\"."
+msgstr ""
+"Braintree integracija trenutno samo podržava periode naplate od \"Mjesec\" "
+"ili \"Godina\"."
+
+#: adminpages/membershiplevels.php:368
+msgid ""
+"Payflow integration currently only supports billing frequencies of 1 and "
+"billing periods of \"Week\", \"Month\" or \"Year\"."
+msgstr ""
+"Payflow integracija trenutno samo podržava učestalost naplate od 1 i periode "
+"naplate od \"Sedmica\", \"Mjesec\" ili \"Godina\""
+
+#: adminpages/membershiplevels.php:372 adminpages/membershiplevels.php:374
+#: adminpages/paymentsettings.php:179 adminpages/paymentsettings.php:184
+msgid "Note"
+msgstr "Obratite"
+
+#: adminpages/membershiplevels.php:372
+msgid ""
+"After saving this level, make note of the ID and create a \"Plan\" in your "
+"Braintree dashboard with the same settings and the \"Plan ID\" set to "
+"<em>pmpro_#</em>, where # is the level ID."
+msgstr ""
+
+#: adminpages/membershiplevels.php:374
+msgid ""
+"You will need to create a \"Plan\" in your Braintree dashboard with the same "
+"settings and the \"Plan ID\" set to"
+msgstr ""
+
+#: adminpages/membershiplevels.php:380 adminpages/discountcodes.php:456
+msgid "Billing Cycle Limit"
+msgstr "Granica Ciklusa Plaćanja"
+
+#: adminpages/membershiplevels.php:384 adminpages/discountcodes.php:459
+msgid ""
+"The <strong>total</strong> number of recurring billing cycles for this level, "
+"including the trial period (if applicable) but not including the initial "
+"payment. Set to zero if membership is indefinite."
+msgstr ""
+
+#: adminpages/membershiplevels.php:386
+msgid ""
+"Stripe integration currently does not support billing limits. You can still "
+"set an expiration date below."
+msgstr ""
+"Stripe integracija trenutno ne pordržava granice plaćanja. Međutim možete da "
+"podesite datum isteka ispod."
+
+#: adminpages/membershiplevels.php:393 adminpages/discountcodes.php:464
+msgid "Custom Trial"
+msgstr "Custom Proba"
+
+#: adminpages/membershiplevels.php:395 adminpages/discountcodes.php:465
+msgid "Check to add a custom trial period."
+msgstr "Potvrdite da dodate poseban probni period"
+
+#: adminpages/membershiplevels.php:398
+msgid ""
+"2Checkout integration does not support custom trials. You can do one period "
+"trials by setting an initial payment different from the billing amount."
+msgstr ""
+"2Checkout integracija ne podržaava posebne probne periode. Možete dodati "
+"jednokratne probne periode tako što ćete postaviti prvobitnu naplatu "
+"različitu od obične naplate."
+
+#: adminpages/membershiplevels.php:404 adminpages/discountcodes.php:469
+msgid "Trial Billing Amount"
+msgstr "Iznos Naplat Za Probni Period"
+
+#: adminpages/membershiplevels.php:407 adminpages/discountcodes.php:472
+msgid "for the first"
+msgstr "za prvi"
+
+#: adminpages/membershiplevels.php:409 adminpages/discountcodes.php:474
+msgid "subscription payments"
+msgstr "plaćanje pretplate"
+
+#: adminpages/membershiplevels.php:412
+msgid ""
+"Stripe integration currently does not support trial amounts greater than $0."
+msgstr "Stripe integracija trenutno ne podržava probne periode veće od $0."
+
+#: adminpages/membershiplevels.php:416
+msgid ""
+"Braintree integration currently does not support trial amounts greater than "
+"$0."
+msgstr "Braintree integracija trenutno ne podržava probne periode veće od $0."
+
+#: adminpages/membershiplevels.php:420
+msgid ""
+"Payflow integration currently does not support trial amounts greater than $0."
+msgstr "Payflow integracija trenutno ne podržava probne periode veće od $0."
+
+#: adminpages/membershiplevels.php:428
+msgid "Other Settings"
+msgstr "Druge Postavke"
+
+#: adminpages/membershiplevels.php:432
+msgid "Disable New Signups"
+msgstr "Onesposobi Nove Prijave"
+
+#: adminpages/membershiplevels.php:433
+msgid ""
+"Check to hide this level from the membership levels page and disable "
+"registration."
+msgstr ""
+"Potvrdi da sakrijete nivo sa strane nivoa članstva i onesposobite "
+"registraciju."
+
+#: adminpages/membershiplevels.php:437 adminpages/discountcodes.php:479
+msgid "Membership Expiration"
+msgstr "Isticanje Članstva"
+
+#: adminpages/membershiplevels.php:438 adminpages/discountcodes.php:480
+msgid "Check this to set when membership access expires."
+msgstr "Potvrdite ovo da postavite kada ističe članstvo."
+
+#: adminpages/membershiplevels.php:442 adminpages/discountcodes.php:484
+msgid "Expires In"
+msgstr "Ističe za"
+
+#: adminpages/membershiplevels.php:455 adminpages/discountcodes.php:497
+msgid ""
+"Set the duration of membership access. Note that the any future payments "
+"(recurring subscription, if any) will be cancelled when the membership "
+"expires."
+msgstr ""
+"Postavite trajanje članstva. Sva buduća plaćanja (pretplate ili drugo) će "
+"biti otkazana kada članstvo istekne."
+
+#: adminpages/membershiplevels.php:463
+msgid "Content Settings"
+msgstr "Postavke Sadržaja"
+
+#: adminpages/membershiplevels.php:467
+msgid "Categories"
+msgstr "Kategorije"
+
+#: adminpages/membershiplevels.php:496
+msgid "Add New Level"
+msgstr "Dodaj Novi Nivo"
+
+#: adminpages/membershiplevels.php:499 adminpages/membershiplevels.php:502
+msgid "Search Levels"
+msgstr "Pretraži Nivoe"
+
+#: adminpages/membershiplevels.php:514
+msgid "Billing Cycle"
+msgstr "Ciklus Plaćanja"
+
+#: adminpages/membershiplevels.php:515
+msgid "Trial Cycle"
+msgstr "Ciklus Probe"
+
+#: adminpages/membershiplevels.php:517
+msgid "Allow Signups"
+msgstr "Dopusti Registracije"
+
+#: adminpages/membershiplevels.php:540
+msgid "FREE"
+msgstr "BESPLATNO"
+
+#: adminpages/membershiplevels.php:549
+msgid "every"
+msgstr "svaki"
+
+#: adminpages/membershiplevels.php:551 adminpages/membershiplevels.php:559
+#: adminpages/reports/memberships.php:304 adminpages/reports/memberships.php:315
+#: adminpages/reports/sales.php:203 adminpages/reports/sales.php:214
+msgid "for"
+msgstr "za"
+
+#: adminpages/membershiplevels.php:566
+msgid "After"
+msgstr "Poslije"
+
+#: adminpages/membershiplevels.php:570 adminpages/orders.php:658
+#: adminpages/discountcodes.php:614
+msgid "edit"
+msgstr "uredi"
+
+#: adminpages/membershiplevels.php:571 adminpages/orders.php:661
+msgid "copy"
+msgstr "kopiraj"
+
+#: adminpages/membershiplevels.php:572
+#, php-format
+msgid ""
+"Are you sure you want to delete membership level %s? All subscriptions will "
+"be cancelled."
+msgstr ""
+"Da li ste sigurni da želite da obrišete nivo članstva %s? Sve pretplate će da "
+"budu otkazane."
+
+#: adminpages/membershiplevels.php:572 adminpages/orders.php:664
+#: adminpages/discountcodes.php:617
+msgid "delete"
+msgstr "obriši"
+
+#: adminpages/orders.php:26
+msgid "Order deleted successfully."
+msgstr "Narudžba uspješno obrisana."
+
+#: adminpages/orders.php:31
+msgid "Error deleting order."
+msgstr "Greška prilikom brisanja narudžbe."
+
+#: adminpages/orders.php:119
+msgid "Order saved successfully."
+msgstr "Narudžba je uspješno sačuvana."
+
+#: adminpages/orders.php:124
+msgid "Error updating order timestamp."
+msgstr "Greška prilikom ažuriranja vremenske oznake."
+
+#: adminpages/orders.php:130
+msgid "Error saving order."
+msgstr "Greška prilikom saviranja narudžbe."
+
+#: adminpages/orders.php:195
+msgid "Order"
+msgstr "Narudžba"
+
+#: adminpages/orders.php:197
+msgid "New Order"
+msgstr "Nova Narudžba"
+
+#: adminpages/orders.php:211 adminpages/discountcodes.php:307
+msgid "This will be generated when you save."
+msgstr "Ovo će da generiše kada sačuvate."
+
+#: adminpages/orders.php:215 adminpages/orders.php:598
+#: adminpages/discountcodes.php:311 adminpages/discountcodes.php:548
+msgid "Code"
+msgstr "Kod"
+
+#: adminpages/orders.php:220
+msgid "Randomly generated for you."
+msgstr "Nasumično generisan za Vas."
+
+#: adminpages/orders.php:225
+msgid "User ID"
+msgstr "Korisnički ID"
+
+#: adminpages/orders.php:234
+msgid "Membership Level ID"
+msgstr "ID Nivoa Članstva"
+
+#: adminpages/orders.php:243
+msgid "Billing Name"
+msgstr "Ime za Naplatu"
+
+#: adminpages/orders.php:251
+msgid "Billing Street"
+msgstr "Ime Ulice za Naplatu"
+
+#: adminpages/orders.php:258
+msgid "Billing City"
+msgstr "Ime Grada za Naplatu"
+
+#: adminpages/orders.php:265
+msgid "Billing State"
+msgstr "Ime Oblasti za Naplatu"
+
+#: adminpages/orders.php:272
+msgid "Billing Postal Code"
+msgstr "Poštanski broj"
+
+#: adminpages/orders.php:279
+msgid "Billing Country"
+msgstr "Ime Države za Naplatu"
+
+#: adminpages/orders.php:287
+msgid "Billing Phone"
+msgstr "Broj Telefona za Naplatu"
+
+#: adminpages/orders.php:296
+msgid "Sub Total"
+msgstr "Ukupna Suma"
+
+#: adminpages/orders.php:312
+msgid "Coupon Amount"
+msgstr "Iznos Kupona"
+
+#: adminpages/orders.php:325
+msgid "Should be subtotal + tax - couponamount."
+msgstr "Trebalo bi da bude ukupna suma + porez - iznoskupona"
+
+#: adminpages/orders.php:330
+msgid "Payment Type"
+msgstr "Tip Plaćanja"
+
+#: adminpages/orders.php:335
+msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
+msgstr "npr. PayPal Express, PayPal Standard, Credit Card."
+
+#: adminpages/orders.php:344
+msgid "e.g. Visa, MasterCard, AMEX, etc"
+msgstr "npr.  Visa, MasterCard, AMEX, etc"
+
+#: adminpages/orders.php:348 adminpages/paymentsettings.php:357
+msgid "Account Number"
+msgstr "Broj Računa"
+
+#: adminpages/orders.php:353
+msgid "Obscure all but last 4 digits."
+msgstr "Sve nejasno sem posljednje 4 cifre."
+
+#: adminpages/orders.php:358
+msgid "Expiration Month"
+msgstr "Mjesec Isteka"
+
+#: adminpages/orders.php:365
+msgid "Expiration Year"
+msgstr "Godina Isteka"
+
+#: adminpages/orders.php:373 adminpages/orders.php:606
+msgid "Status"
+msgstr "Status"
+
+#: adminpages/orders.php:394 adminpages/orders.php:604
+msgid "Gateway"
+msgstr "Prolaz za Plaćanje"
+
+#: adminpages/orders.php:398
+msgid "Testing Only"
+msgstr "Samo Testiram"
+
+#: adminpages/orders.php:399 adminpages/paymentsettings.php:163
+msgid "Pay by Check"
+msgstr "Plati Čekom"
+
+#: adminpages/orders.php:411 adminpages/paymentsettings.php:189
+msgid "Gateway Environment"
+msgstr "Okruženje Prolaza za Ppla ćanje"
+
+#: adminpages/orders.php:415 adminpages/paymentsettings.php:193
+msgid "Sandbox/Testing"
+msgstr "Sandbox/Testiranje"
+
+#: adminpages/orders.php:416 adminpages/paymentsettings.php:194
+msgid "Live/Production"
+msgstr "Uživo/Produkcija"
+
+#: adminpages/orders.php:423
+msgid "Payment Transaction ID"
+msgstr "ID Transakcije za Plaćanje"
+
+#: adminpages/orders.php:428
+msgid "Generated by the gateway. Useful to cross reference orders."
+msgstr "Generisano..."
+
+#: adminpages/orders.php:432
+msgid "Subscription Transaction ID"
+msgstr "ID Transakcije za Pretplatu"
+
+#: adminpages/orders.php:437
+msgid "Generated by the gateway. Useful to cross reference subscriptions."
+msgstr ""
+
+#: adminpages/orders.php:477
+msgid "Affiliate ID"
+msgstr "ID Partnera (Affiliate)"
+
+#: adminpages/orders.php:485
+msgid "Affiliate SubID"
+msgstr "SubID Partnera ( Affiliate)"
+
+#: adminpages/orders.php:495
+msgid "Notes"
+msgstr "Belješke"
+
+#: adminpages/orders.php:510
+msgid "Save Order"
+msgstr "Sačuvaj Narudžbu"
+
+#: adminpages/orders.php:521
+msgid "Add New Order"
+msgstr "Dodaj Novu Narudžbu"
+
+#: adminpages/orders.php:522 adminpages/memberslist.php:26
+msgid "Export to CSV"
+msgstr "Izvedi do CSV"
+
+#: adminpages/orders.php:535 adminpages/orders.php:538
+msgid "Search Orders"
+msgstr "Pretraži Narudžbe"
+
+#: adminpages/orders.php:590
+#, php-format
+msgid "%d orders found."
+msgstr "%d pronađene narudžbe"
+
+#: adminpages/orders.php:599 adminpages/paymentsettings.php:225
+#: adminpages/reports/login.php:141
+msgid "User"
+msgstr "Korisnik"
+
+#: adminpages/orders.php:603 adminpages/orders.php:651
+msgid "Payment"
+msgstr "Plaćanje"
+
+#: adminpages/orders.php:605
+msgid "Transaction IDs"
+msgstr "Transakcijski ID"
+
+#: adminpages/orders.php:630
+msgid "deleted"
+msgstr "obrisano"
+
+#: adminpages/orders.php:653
+msgid "Subscription"
+msgstr "Pretplata"
+
+#: adminpages/orders.php:664
+#, php-format
+msgid ""
+"Deleting orders is permanent and can affect active users. Are you sure you "
+"want to delete order %s?"
+msgstr ""
+"Brisanje narudžbi je trajno i može da utiče na aktivne korisnike. Da li ste "
+"sigurni da želite da obrišete narudžbu %s?"
+
+#: adminpages/orders.php:674
+msgid "No orders found."
+msgstr "Nijedna narudžba nije pronađena"
+
+#: adminpages/memberslist.php:30 adminpages/reports/memberships.php:292
+#: adminpages/reports/login.php:65 adminpages/reports/sales.php:193
+msgid "Show"
+msgstr "Prikaži"
+
+#: adminpages/memberslist.php:32 adminpages/reports/memberships.php:317
+#: adminpages/reports/login.php:67 adminpages/reports/sales.php:216
+msgid "All Levels"
+msgstr "Svi Nivoi"
+
+#: adminpages/memberslist.php:42
+msgid "Old Members"
+msgstr "Stari Članovi"
+
+#: adminpages/memberslist.php:47 adminpages/memberslist.php:50
+msgid "Search Members"
+msgstr "Pretraži Članove"
+
+#: adminpages/memberslist.php:136
+#, php-format
+msgid "%d members found."
+msgstr "%d članova pronađeno."
+
+#: adminpages/memberslist.php:146
+msgid "First&nbsp;Name"
+msgstr "Prvo&nbsp;Ime"
+
+#: adminpages/memberslist.php:147
+msgid "Last&nbsp;Name"
+msgstr "Zadnje&nbsp;Ime"
+
+#: adminpages/memberslist.php:152
+msgid "Fee"
+msgstr "Provizija"
+
+#: adminpages/memberslist.php:153 adminpages/reports/login.php:144
+msgid "Joined"
+msgstr "Učlanjen"
+
+#: adminpages/memberslist.php:157
+msgid "Ended"
+msgstr "Završen"
+
+#: adminpages/memberslist.php:212
+msgid "Never"
+msgstr "Nikad"
+
+#: adminpages/memberslist.php:223 adminpages/reports/login.php:210
+msgid "No members found."
+msgstr "Nijedan član nije pronađen."
+
+#: adminpages/memberslist.php:223 adminpages/reports/login.php:210
+msgid "Search all levels"
+msgstr "Pretraži sve nivoe."
+
+#: adminpages/paymentsettings.php:78
+msgid "Your payment settings have been updated."
+msgstr "Vaše informacije o plaćanju su ažurirane."
+
+#: adminpages/paymentsettings.php:150 adminpages/paymentsettings.php:158
+msgid "Payment Gateway"
+msgstr "Prolazi za Plaćanje (npr. PayPal)"
+
+#: adminpages/paymentsettings.php:150
+msgid "SSL Settings"
+msgstr "SSL Postavke"
+
+#: adminpages/paymentsettings.php:179
+msgid ""
+"This gateway option is in beta. Some functionality may not be available. "
+"Please contact Paid Memberships Pro with any issues you run into. "
+"<strong>Please be sure to upgrade Paid Memberships Pro to the latest versions "
+"when available.</strong>"
+msgstr ""
+
+#: adminpages/paymentsettings.php:184
+msgid ""
+"We do not recommend using PayPal Standard. We suggest using PayPal Express, "
+"Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target=\"_blank"
+"\" href=\"http://www.paidmembershipspro.com/2013/09/read-using-paypal-"
+"standard-paid-memberships-pro/\">More information on why can be found here.</"
+"a>"
+msgstr ""
+"Ne preporučujemo korišćenje PayPal Standrad. Preporučujemo korišćenje PayPal "
+"Express, Website Payments Pro (Legacy), or PayPalPro (Payflow Pro). <a target="
+"\"_blank\" href=\"http://www.paidmembershipspro.com/2013/09/read-using-paypal-"
+"standard-paid-memberships-pro/\">Za više informacija posjetite.</a>"
+
+#: adminpages/paymentsettings.php:209
+msgid "Partner"
+msgstr ""
+
+#: adminpages/paymentsettings.php:217
+msgid "Vendor"
+msgstr "Prodavač"
+
+#: adminpages/paymentsettings.php:241
+msgid "Gateway Account Email"
+msgstr "Email Prolaza za Plaćanje (npr. Email Paypal)"
+
+#: adminpages/paymentsettings.php:249 adminpages/paymentsettings.php:341
+msgid "API Username"
+msgstr "API Korisničko Ime"
+
+#: adminpages/paymentsettings.php:257 adminpages/paymentsettings.php:349
+msgid "API Password"
+msgstr "API Lozinka"
+
+#: adminpages/paymentsettings.php:265
+msgid "API Signature"
+msgstr "API Potpis"
+
+#: adminpages/paymentsettings.php:274
+msgid "Login Name"
+msgstr "Ime za Prijavu"
+
+#: adminpages/paymentsettings.php:282
+msgid "Transaction Key"
+msgstr "Ključ za Transakciju"
+
+#: adminpages/paymentsettings.php:291
+msgid "Secret Key"
+msgstr "Tajni Ključ"
+
+#: adminpages/paymentsettings.php:299
+msgid "Publishable Key"
+msgstr "Ključ koji se može objaviti"
+
+#: adminpages/paymentsettings.php:308 adminpages/paymentsettings.php:374
+msgid "Merchant ID"
+msgstr "ID Trgovca"
+
+#: adminpages/paymentsettings.php:316
+msgid "Public Key"
+msgstr "Javni Ključ"
+
+#: adminpages/paymentsettings.php:324
+msgid "Private Key"
+msgstr "Privatni Ključ"
+
+#: adminpages/paymentsettings.php:332
+msgid "Client-Side Encryption Key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:365
+msgid "Secret Word"
+msgstr "Tajna Riječ"
+
+#: adminpages/paymentsettings.php:382
+msgid "Transaction Security Key"
+msgstr "Sigurnosi Ključ za Transakciju"
+
+#: adminpages/paymentsettings.php:390
+msgid "Encryption key"
+msgstr ""
+
+#: adminpages/paymentsettings.php:400
+msgid "Currency"
+msgstr "Valuta"
+
+#: adminpages/paymentsettings.php:420
+msgid "Accepted Credit Card Types"
+msgstr "Odobreni Tipovi Kreditnih kartica"
+
+#: adminpages/paymentsettings.php:434
+msgid "Instructions"
+msgstr "Upustvo"
+
+#: adminpages/paymentsettings.php:438
+msgid ""
+"Who to write the check out to. Where to mail it. Shown on checkout, "
+"confirmation, and invoice pages."
+msgstr ""
+"Na koga osloviti ček. Gdje ga poslati. Prikaži na strani za provjeru, "
+"potvrđivanje i fakturi."
+
+#: adminpages/paymentsettings.php:444
+msgid "Show Billing Address Fields"
+msgstr "Prikaži Polja Adrese za Plaćanje"
+
+#: adminpages/paymentsettings.php:451
+msgid ""
+"Stripe doesn't require billing address fields. Choose 'No' to hide them on "
+"the checkout page.<br /><strong>If No, make sure you disable address "
+"verification in the Stripe dashboard settings.</strong>"
+msgstr "Stripe nije potrbna polja za adresu za plaćanje"
+
+#: adminpages/paymentsettings.php:457
+msgid "Sales Tax"
+msgstr "Porez Na Prodaju"
+
+#: adminpages/paymentsettings.php:460
+msgid "Tax State"
+msgstr "Stanje Poreza"
+
+#: adminpages/paymentsettings.php:461
+msgid "abbreviation, e.g. \"PA\""
+msgstr ""
+
+#: adminpages/paymentsettings.php:463
+msgid "decimal, e.g. \"0.06\""
+msgstr ""
+
+#: adminpages/paymentsettings.php:464
+msgid ""
+"US only. If values are given, tax will be applied for any members ordering "
+"from the selected state.<br />For non-US or more complex tax rules, use the "
+"<a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-"
+"taxes-paid-memberships-pro/\">pmpro_tax filter</a>."
+msgstr ""
+
+#: adminpages/paymentsettings.php:469
+msgid "Force SSL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:475
+msgid "Yes (with JavaScript redirects)"
+msgstr ""
+
+#: adminpages/paymentsettings.php:482
+msgid "SSL Seal Code"
+msgstr ""
+
+#: adminpages/paymentsettings.php:491
+msgid "HTTPS Nuclear Option"
+msgstr ""
+
+#: adminpages/paymentsettings.php:494
+msgid ""
+"Use the \"Nuclear Option\" to use secure (HTTPS) URLs on your secure pages. "
+"Check this if you are using SSL and have warnings on your checkout pages."
+msgstr ""
+
+#: adminpages/paymentsettings.php:499
+msgid "IPN Handler URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:502
+msgid "To fully integrate with PayPal, be sure to set your IPN Handler URL to "
+msgstr ""
+
+#: adminpages/paymentsettings.php:507
+msgid "TwoCheckout INS URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:510
+msgid ""
+"To fully integrate with 2Checkout, be sure to set your 2Checkout INS URL "
+msgstr ""
+
+#: adminpages/paymentsettings.php:515
+msgid "Silent Post URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:518
+msgid ""
+"To fully integrate with Authorize.net, be sure to set your Silent Post URL to"
+msgstr ""
+
+#: adminpages/paymentsettings.php:523 adminpages/paymentsettings.php:531
+msgid "Web Hook URL"
+msgstr ""
+
+#: adminpages/paymentsettings.php:526
+msgid "To fully integrate with Stripe, be sure to set your Web Hook URL to"
+msgstr ""
+
+#: adminpages/paymentsettings.php:535
+msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
+msgstr ""
+
+#: adminpages/paymentsettings.php:546 adminpages/pagesettings.php:223
+#: adminpages/advancedsettings.php:284
+msgid "Save Settings"
+msgstr "Sačuvaj promijene"
+
+#: adminpages/reports.php:37
+msgid "Details"
+msgstr "Detalji"
+
+#: adminpages/admin_header.php:25
+msgid "Add a membership level to get started."
+msgstr "Dodaj nivo članstva za početak"
+
+#: adminpages/admin_header.php:27
+msgid "Set up the membership pages"
+msgstr "Postavi strane za korisnike"
+
+#: adminpages/admin_header.php:29
+msgid "Set up your SSL certificate and payment gateway"
+msgstr ""
+
+#: adminpages/admin_header.php:38
+msgid ""
+"The billing details for some of your membership levels is not supported by "
+"Stripe."
+msgstr ""
+"Informacije o plaćanju za neke nivoe članstva nisu podržane od strane Stripe."
+
+#: adminpages/admin_header.php:46
+msgid ""
+"The billing details for this level are not supported by Stripe. Please review "
+"the notes in the Billing Details section below."
+msgstr ""
+"Informacije oplaćanju za ovaj nivo nisu podržane od strane Stripe. Molimo vas "
+"da provjerite unesene podatke ispod."
+
+#: adminpages/admin_header.php:50 adminpages/admin_header.php:70
+#: adminpages/admin_header.php:90 adminpages/admin_header.php:111
+msgid "The levels with issues are highlighted below."
+msgstr "Nivoi sa greškama su podvučeni ispod."
+
+#: adminpages/admin_header.php:52 adminpages/admin_header.php:72
+#: adminpages/admin_header.php:92 adminpages/admin_header.php:113
+msgid "Please edit your levels"
+msgstr "Molimo Vas da uredite vaše nivoe."
+
+#: adminpages/admin_header.php:58
+msgid ""
+"The billing details for some of your membership levels is not supported by "
+"Payflow."
+msgstr ""
+"Informacije o plaćanju za neke nivoe članstva nisu podržane od strane Payflow."
+
+#: adminpages/admin_header.php:66
+msgid ""
+"The billing details for this level are not supported by Payflow. Please "
+"review the notes in the Billing Details section below."
+msgstr ""
+"Informacije oplaćanju za ovaj nivo nisu podržane od strane Payfllow ."
+"Molimovas da provjerite unesene podatke ispod."
+
+#: adminpages/admin_header.php:78
+msgid ""
+"The billing details for some of your membership levels is not supported by "
+"Braintree."
+msgstr ""
+"Informacije o plaćanju za neke nivoe članstva nisu podržane od strane "
+"Braintree."
+
+#: adminpages/admin_header.php:86
+msgid ""
+"The billing details for this level are not supported by Braintree. Please "
+"review the notes in the Billing Details section below."
+msgstr ""
+"Informacije oplaćanju za ovaj nivo nisu podržane od strane Braintrree.Molimo "
+"vas da provjerite unesene podatke ispod."
+
+#: adminpages/admin_header.php:98
+msgid ""
+"The billing details for some of your membership levels is not supported by "
+"TwoCheckout."
+msgstr ""
+"Informacije o plaćanju za neke nivoe članstva nisu podržane od strane "
+"TwoCheckout."
+
+#: adminpages/admin_header.php:107
+msgid ""
+"The billing details for this level are not supported by 2Checkout. Please "
+"review the notes in the Billing Details section below."
+msgstr ""
+"Informacije oplaćanju za ovaj nivo nisu podržane od strane 2Checkout. Molimo "
+"vas da provjerite unesene podatke ispod."
+
+#: adminpages/admin_header.php:127
+msgid "Plugin Support"
+msgstr "Podrška za  Dodatak"
+
+#: adminpages/admin_header.php:127
+msgid "User Forum"
+msgstr "Forum za Korisnike"
+
+#: adminpages/admin_header.php:150 adminpages/pagesettings.php:92
+msgid "Pages"
+msgstr "Stranice"
+
+#: adminpages/admin_header.php:151
+msgid "Payment Gateway &amp; SSL"
+msgstr ""
+
+#: adminpages/admin_header.php:153
+msgid "Advanced"
+msgstr "Napredno"
+
+#: adminpages/pagesettings.php:83
+msgid "The following pages have been created for you"
+msgstr "Naredne stranice su kreirane za Vas"
+
+#: adminpages/pagesettings.php:98
+msgid ""
+"Manage the WordPress pages assigned to each required Paid Memberships Pro "
+"page."
+msgstr ""
+"Upravljaj stranicama dodeljenim za svaku potrebnu Paid Membership Pro "
+"stranicu."
+
+#: adminpages/pagesettings.php:104
+msgid ""
+"Assign the WordPress pages for each required Paid Memberships Pro page or"
+msgstr ""
+"Dodjeli svaku Wordpress stranicu za svaku potrebnu Paid Membership Pro "
+"stranicu ili"
+
+#: adminpages/pagesettings.php:104
+msgid "click here to let us generate them for you"
+msgstr "Kliknite ovdje dami generišemo stranice za vas"
+
+#: adminpages/pagesettings.php:112
+msgid "Account Page"
+msgstr "Stranica Naloga"
+
+#: adminpages/pagesettings.php:119 adminpages/pagesettings.php:134
+#: adminpages/pagesettings.php:149 adminpages/pagesettings.php:165
+#: adminpages/pagesettings.php:181 adminpages/pagesettings.php:197
+#: adminpages/pagesettings.php:213
+msgid "edit page"
+msgstr "uredi stranicu"
+
+#: adminpages/pagesettings.php:121 adminpages/pagesettings.php:136
+#: adminpages/pagesettings.php:151 adminpages/pagesettings.php:167
+#: adminpages/pagesettings.php:183 adminpages/pagesettings.php:199
+#: adminpages/pagesettings.php:215
+msgid "view page"
+msgstr "prikaži stranicu"
+
+#: adminpages/pagesettings.php:123 adminpages/pagesettings.php:138
+#: adminpages/pagesettings.php:153 adminpages/pagesettings.php:169
+#: adminpages/pagesettings.php:185 adminpages/pagesettings.php:201
+#: adminpages/pagesettings.php:217
+msgid "Include the shortcode"
+msgstr "Obuhvati i shortcode"
+
+#: adminpages/pagesettings.php:127
+msgid "Billing Information Page"
+msgstr "Stranica Za Informacije o Palćanju"
+
+#: adminpages/pagesettings.php:142
+msgid "Cancel Page"
+msgstr "Zatvori Stranicu"
+
+#: adminpages/pagesettings.php:158
+msgid "Checkout Page"
+msgstr ""
+
+#: adminpages/pagesettings.php:174
+msgid "Confirmation Page"
+msgstr "Stranica za Potvrdu"
+
+#: adminpages/pagesettings.php:190
+msgid "Invoice Page"
+msgstr "Stranica Za Frakturu"
+
+#: adminpages/pagesettings.php:206
+msgid "Levels Page"
+msgstr "Stranica za Nivoe"
+
+#: adminpages/discountcodes.php:48
+msgid "Discount code updated successfully."
+msgstr "Kod za popust je uspješno ažuriran."
+
+#: adminpages/discountcodes.php:55
+msgid "Error updating discount code. That code may already be in use."
+msgstr ""
+"Greška prilikom ažuriranja koda za popust. Taj kod je vjerovatno već "
+"iskoripćen."
+
+#: adminpages/discountcodes.php:64
+msgid "Discount code added successfully."
+msgstr "Kod za popust je uspješno dodat."
+
+#: adminpages/discountcodes.php:71
+msgid "Error adding discount code. That code may already be in use."
+msgstr ""
+"Greška prilikom dodavanja koda za popust. Taj kod je vjerovatno već "
+"iskorišćen-"
+
+#: adminpages/discountcodes.php:196
+#, php-format
+msgid "Error saving values for the %s level."
+msgstr "Greška prilikom saviranja vrijednosti za %s nivo"
+
+#: adminpages/discountcodes.php:204
+msgid "There were errors updating the level values: "
+msgstr "Doščo je dogreške prilikom ažuriranaj vrijednosti nivoa"
+
+#: adminpages/discountcodes.php:234
+#, php-format
+msgid "Code %s deleted successfully."
+msgstr "Kod %s  je uspješno izbrisan"
+
+#: adminpages/discountcodes.php:239
+msgid ""
+"Error deleting discount code. The code was only partially deleted. Please try "
+"again."
+msgstr ""
+"Greška prilikom brisanja koda za popust. Kod jes samo djelimično izbrisan. "
+"Pokušajte ponovo."
+
+#: adminpages/discountcodes.php:245
+msgid "Error deleting code. Please try again."
+msgstr "Greška prilikom brisanja koda. Pokušajte ponovo."
+
+#: adminpages/discountcodes.php:251
+msgid "Code not found."
+msgstr "Kod nije pronađen."
+
+#: adminpages/discountcodes.php:264
+msgid "Edit Discount Code"
+msgstr "Uredi Kod Za Popust"
+
+#: adminpages/discountcodes.php:266 adminpages/discountcodes.php:526
+msgid "Add New Discount Code"
+msgstr "Dodaj Novi Kod Za Popust"
+
+#: adminpages/discountcodes.php:349
+msgid "Start Date"
+msgstr "Datum Početka"
+
+#: adminpages/discountcodes.php:385 adminpages/discountcodes.php:551
+msgid "Uses"
+msgstr "Korisnici"
+
+#: adminpages/discountcodes.php:388
+msgid "Leave blank for unlimited uses."
+msgstr "Ostavi prazno za neograničeno korišćenje"
+
+#: adminpages/discountcodes.php:437
+msgid "Billing Ammount"
+msgstr "Iznos Naplate"
+
+#: adminpages/discountcodes.php:525
+msgid "Memberships Discount Codes"
+msgstr "Kodovi za Popust Itnosa Članstva"
+
+#: adminpages/discountcodes.php:535
+msgid "Search Discount Codes"
+msgstr "Pretraži kodove za popust"
+
+#: adminpages/discountcodes.php:538 adminpages/reports/login.php:81
+msgid "Search"
+msgstr "Pretraga"
+
+#: adminpages/discountcodes.php:549
+msgid "Starts"
+msgstr "Početak"
+
+#: adminpages/discountcodes.php:552
+msgid "Levels"
+msgstr "Nivoi"
+
+#: adminpages/discountcodes.php:570
+msgid ""
+"Discount codes allow you to offer your memberships at discounted prices to "
+"select customers."
+msgstr ""
+"Kodvi za popust dopuštaju da ponudiš članstvo na popustu za određene članove."
+
+#: adminpages/discountcodes.php:570
+msgid "Create your first discount code now"
+msgstr "Napravi prvi kod za popust sada"
+
+#: adminpages/discountcodes.php:617
+#, php-format
+msgid ""
+"Are you sure you want to delete the %s discount code? The subscriptions for "
+"existing users will not change, but new users will not be able to use this "
+"code anymore."
+msgstr ""
+"Da li ste sigurni da želite da obrišete %s kod za popust? Pretplata za "
+"postojeće članove se neće izmijeniti ali budući članovi neće moći da koriste "
+"ovaj kod."
+
+#: adminpages/addons.php:79
+msgid "Enabled"
+msgstr "Omogućeno"
+
+#: adminpages/addons.php:79
+msgid "Disabled"
+msgstr "Onemogućeno"
+
+#: adminpages/emailsettings.php:61
+msgid ""
+"By default, system generated emails are sent from "
+"<em><strong>wordpress@yourdomain.com</strong></em>. You can update this from "
+"address using the fields below."
+msgstr ""
+
+#: adminpages/emailsettings.php:63
+msgid ""
+"To modify the appearance of system generated emails, add the files "
+"<em>email_header.html</em> and <em>email_footer.html</em> to your theme's "
+"directory. This will modify both the WordPress default messages as well as "
+"messages generated by Paid Memberships Pro. <a title=\"Paid Memberships Pro - "
+"Member Communications\" target=\"_blank\" href=\"http://www."
+"paidmembershipspro.com/documentation/member-communications/\">Click here to "
+"learn more about Paid Memberships Pro emails</a>."
+msgstr ""
+
+#: adminpages/emailsettings.php:69
+msgid "From Email"
+msgstr ""
+
+#: adminpages/emailsettings.php:77
+msgid "From Name"
+msgstr ""
+
+#: adminpages/emailsettings.php:86
+msgid "Send the site admin emails"
+msgstr "Pošalji email adminu sajta"
+
+#: adminpages/emailsettings.php:92
+msgid "Checkout"
+msgstr ""
+
+#: adminpages/emailsettings.php:96
+msgid "when a member checks out."
+msgstr ""
+
+#: adminpages/emailsettings.php:101
+msgid "Admin Changes"
+msgstr "Promijene Admina"
+
+#: adminpages/emailsettings.php:105
+msgid "when an admin changes a user's membership level through the dashboard."
+msgstr "kada admin promijeni nivo korisnika preko nadzorne ploče."
+
+#: adminpages/emailsettings.php:110
+msgid "Cancellation"
+msgstr "Otkazivanje"
+
+#: adminpages/emailsettings.php:114
+msgid "when a user cancels his or her account."
+msgstr "kada korisnik ukine svoj  nalog"
+
+#: adminpages/emailsettings.php:119
+msgid "Bill Updates"
+msgstr "Ažuriranje informacije o plaćanju"
+
+#: adminpages/emailsettings.php:123
+msgid "when a user updates his or her billing information."
+msgstr "kada korisnik ažurira svoje informacije o plaćanju"
+
+#: adminpages/emailsettings.php:129
+msgid "Send members emails"
+msgstr "Pošalji korisnicima email"
+
+#: adminpages/emailsettings.php:135
+msgid "New Users"
+msgstr "Novi Korsinik"
+
+#: adminpages/emailsettings.php:139
+msgid ""
+"Default WP notification email. (Recommended: Leave unchecked. Members will "
+"still get an email confirmation from PMPro after checkout.)"
+msgstr "Zadan WP email notifikacija"
+
+#: adminpages/advancedsettings.php:35
+msgid "Your advanced settings have been updated."
+msgstr "Vaše napredne postavke su ažurirane."
+
+#: adminpages/advancedsettings.php:85
+msgid "Message for Logged-in Non-members"
+msgstr "Poruka za neprijavljene korisnike."
+
+#: adminpages/advancedsettings.php:89
+msgid ""
+"This message replaces the post content for non-members. Available variables"
+msgstr "Ova poruka zamijenjuje sadržaj posta za neprijavljene korisnike"
+
+#: adminpages/advancedsettings.php:94
+msgid "Message for Logged-out Users"
+msgstr "Poruka za odjavljene korisnike"
+
+#: adminpages/advancedsettings.php:98
+msgid "This message replaces the post content for logged-out visitors."
+msgstr "Ova poruka zamijnjuje sadržaj posta za odjavljene korisnike"
+
+#: adminpages/advancedsettings.php:103
+msgid "Message for RSS Feed"
+msgstr ""
+
+#: adminpages/advancedsettings.php:107
+msgid "This message replaces the post content in RSS feeds."
+msgstr ""
+
+#: adminpages/advancedsettings.php:113
+msgid "Show Excerpts to Non-Members?"
+msgstr ""
+
+#: adminpages/advancedsettings.php:117
+msgid "No - Hide excerpts."
+msgstr ""
+
+#: adminpages/advancedsettings.php:118
+msgid "Yes - Show excerpts."
+msgstr ""
+
+#: adminpages/advancedsettings.php:129
+msgid "Hide Ads From All Members"
+msgstr "Sakrij Reklame Od Svih Članova"
+
+#: adminpages/advancedsettings.php:130
+msgid "Hide Ads From Certain Members"
+msgstr "Sakrij Reklame od Određenih Korisnika"
+
+#: adminpages/advancedsettings.php:137
+msgid "Ads from the following plugins will be automatically turned off"
+msgstr "Reklame od sljedećih dodataka če automatski biti isključene"
+
+#: adminpages/advancedsettings.php:138
+msgid "To hide ads in your template code, use code like the following"
+msgstr "Da bi sakrili reklame u vašem html kodu koristite sljedeći kod"
+
+#: adminpages/advancedsettings.php:149
+msgid "Choose Levels to Hide Ads From"
+msgstr "Izaberi nivo od kojih da saktiješ reklame"
+
+#: adminpages/advancedsettings.php:183
+msgid "Redirect all traffic from registration page to /susbcription/?"
+msgstr ""
+"Preusmjeri sav saobraćaj na stranice za registraciju na stranicu za pretplatu?"
+
+#: adminpages/advancedsettings.php:183
+msgid "multisite only"
+msgstr ""
+
+#: adminpages/advancedsettings.php:195
+msgid "Use reCAPTCHA?"
+msgstr "Koristi reCAPTCHA?"
+
+#: adminpages/advancedsettings.php:200
+msgid "Yes - Free memberships only."
+msgstr "Da- samo besplatni korisnici."
+
+#: adminpages/advancedsettings.php:201
+msgid "Yes - All memberships."
+msgstr "Da - Svi korisnici"
+
+#: adminpages/advancedsettings.php:203
+msgid "A free reCAPTCHA key is required."
+msgstr "Besplatni reCAPTCHA kod je potreban."
+
+#: adminpages/advancedsettings.php:203
+msgid "Click here to signup for reCAPTCHA"
+msgstr "Klikni ovdje da se prijaviš za reCPATCHA"
+
+#: adminpages/advancedsettings.php:209
+msgid "reCAPTCHA Public Key"
+msgstr ""
+
+#: adminpages/advancedsettings.php:212
+msgid "reCAPTCHA Private Key"
+msgstr ""
+
+#: adminpages/advancedsettings.php:218
+msgid "Require Terms of Service on signups?"
+msgstr "Potrebni uslovi korišćenja na registaciji?"
+
+#: adminpages/advancedsettings.php:225
+msgid ""
+"If yes, create a WordPress page containing your TOS agreement and assign it "
+"using the dropdown above."
+msgstr ""
+"Ako da, onda kreiraj WP stranicu na kojoj ćete prikazati vaše uslove "
+"korišćenja."
+
+#: adminpages/reports/memberships.php:18 adminpages/reports/memberships.php:288
+msgid "Membership Stats"
+msgstr "Status Pretplate"
+
+#: adminpages/reports/memberships.php:294 adminpages/reports/sales.php:195
+msgid "Daily"
+msgstr "Dnevni"
+
+#: adminpages/reports/memberships.php:295 adminpages/reports/sales.php:196
+msgid "Monthly"
+msgstr "Mjesečni"
+
+#: adminpages/reports/memberships.php:296 adminpages/reports/sales.php:197
+msgid "Annual"
+msgstr "Godišnji"
+
+#: adminpages/reports/memberships.php:299
+msgid "Signups vs. Cancellations"
+msgstr "Prijave vs. Otkazivanja"
+
+#: adminpages/reports/memberships.php:331 adminpages/reports/sales.php:230
+msgid "Generate Report"
+msgstr "Generiši Izvještaj"
+
+#: adminpages/reports/login.php:16
+msgid "Visits, Views, and Logins"
+msgstr "Posjete, Pregledi, i Prijave"
+
+#: adminpages/reports/login.php:26
+msgid "Visits Today"
+msgstr "Posjete Danas"
+
+#: adminpages/reports/login.php:27 adminpages/reports/login.php:147
+msgid "Visits This Month"
+msgstr "Posjete Ovog Mjeseca"
+
+#: adminpages/reports/login.php:28
+msgid "Visits All Time"
+msgstr "Posjete od Početka"
+
+#: adminpages/reports/login.php:31
+msgid "Views Today"
+msgstr "Pregleda Danas"
+
+#: adminpages/reports/login.php:32 adminpages/reports/login.php:149
+msgid "Views This Month"
+msgstr "Pregleda Ovog Mjeseca"
+
+#: adminpages/reports/login.php:33
+msgid "Views All Time"
+msgstr "Pregleda Od Početka"
+
+#: adminpages/reports/login.php:36
+msgid "Logins Today"
+msgstr "Prijava Danas"
+
+#: adminpages/reports/login.php:37 adminpages/reports/login.php:152
+msgid "Logins This Month"
+msgstr "Prijava Ovog Mjeseca"
+
+#: adminpages/reports/login.php:38
+msgid "Logins All Time"
+msgstr "Prijava od Početka"
+
+#: adminpages/reports/login.php:61
+msgid "Visits, Views, and Logins Report"
+msgstr "Posjete, Pregledi, i Izvještaji Prijava"
+
+#: adminpages/reports/login.php:66
+msgid "All Users"
+msgstr "Svi Korisnici"
+
+#: adminpages/reports/login.php:146
+msgid "Last Visit"
+msgstr "Posljedna Posjeta"
+
+#: adminpages/reports/login.php:148
+msgid "Total Visits"
+msgstr "Ukupno Posjeta"
+
+#: adminpages/reports/login.php:150
+msgid "Total Views"
+msgstr "Ukupno Pregleda"
+
+#: adminpages/reports/login.php:151
+msgid "Last Login"
+msgstr "Posljednja Prijava"
+
+#: adminpages/reports/login.php:153
+msgid "Total Logins"
+msgstr "Ukupno Prijava"
+
+#: adminpages/reports/sales.php:18
+msgid "Sales and Revenue (Testing/Sandbox)"
+msgstr "Prodaje i Prihod (Testiranje/Sandbox)"
+
+#: adminpages/reports/sales.php:20 adminpages/reports/sales.php:189
+msgid "Sales and Revenue"
+msgstr "Prodaje i Prihod"
+
+#: adminpages/reports/sales.php:200
+msgid "Revenue"
+msgstr "Prijod"
+
+#: adminpages/reports/sales.php:201
+msgid "Sales"
+msgstr "Prodaje"
+
+#: scheduled/crons.php:31
+#, php-format
+msgid "Membership expired email sent to %s. "
+msgstr "Pretplata je istekla email poslat na %s."
+
+#: scheduled/crons.php:384 scheduled/crons.php:440
+#, php-format
+msgid "Membership expiring email sent to %s. "
+msgstr "Pretplata ističe email poslat na %s."
+
+#: scheduled/crons.php:509
+#, php-format
+msgid "Credit card expiring email sent to %s. "
+msgstr "Kreditna Kartica ističe email poslat na %s."
+
+#: scheduled/crons.php:562
+#, php-format
+msgid "Trial ending email sent to %s. "
+msgstr "Probni period se završava email poslat na %s."
+
+#: services/stripe-webhook.php:176
+#, php-format
+msgid ""
+"%s has had their payment subscription cancelled by Stripe. Please check that "
+"this user's membership is cancelled on your site if it should be."
+msgstr ""
+"%s je pretlata otkazana od strane Stripe. Molimo provjerite da li je "
+"pretplata ovog korisnika otkazana ako treba da bude."
+
+#: services/authnet-silent-post.php:133
+msgid ""
+"<p>A payment is being held for review within Authorize.net.</p><p>Payment "
+"Information From Authorize.net"
+msgstr ""
+
+#: services/applydiscountcode.php:64
+#, php-format
+msgid "The %s code has been applied to your order. "
+msgstr "Ovaj %s  kode je primenjen na vašoj narudžbi."
+
+#: services/applydiscountcode.php:83
+#, php-format
+msgid "The <strong>%s</strong> code has been applied to your order."
+msgstr " <strong>%s</strong>kod je primenjen na vašoj porudžbini."
+
+#: preheaders/account.php:7 preheaders/levels.php:19
+msgid "Your membership status has been updated - Thank you!"
+msgstr "Vaš status članstvaj je ažuriran - Hvala Vam!"
+
+#: preheaders/account.php:11 preheaders/levels.php:23
+msgid ""
+"Sorry, your request could not be completed - please try again in a few "
+"moments."
+msgstr ""
+"Oprostite, ali vađ zahtjev nije mogao biti dovršen - molmo da pokušate ponovo "
+"kasnije"
+
+#: preheaders/checkout.php:28 preheaders/checkout.php:509
+msgid "Invalid gateway."
+msgstr ""
+
+#: preheaders/checkout.php:96
+msgid "Checkout: Payment Information"
+msgstr "Informacije o Plaćanju"
+
+#: preheaders/checkout.php:109
+msgid "Set up Your Account"
+msgstr "Podesite Vaš Nalog"
+
+#: preheaders/checkout.php:482 preheaders/billing.php:258
+msgid "Please complete all required fields."
+msgstr "Molimo popunite sva polja."
+
+#: preheaders/checkout.php:486
+msgid "Your passwords do not match. Please try again."
+msgstr "Vaše lozinke se ne poklapaju. Pokušajte ponovo."
+
+#: preheaders/checkout.php:492 preheaders/billing.php:263
+msgid "Your email addresses do not match. Please try again."
+msgstr "Vaše email adrese se ne poklapaju. Pokušajte ponovo."
+
+#: preheaders/checkout.php:498 preheaders/billing.php:268
+msgid "The email address entered is in an invalid format. Please try again."
+msgstr "Unesena email adresa je nevažećg formata. Pokušajte ponovo."
+
+#: preheaders/checkout.php:504
+#, php-format
+msgid "Please check the box to agree to the %s."
+msgstr "Molmo potvrdite kvadratić da ste saglasni sa %s."
+
+#: preheaders/checkout.php:513
+msgid "Are you a spammer?"
+msgstr "Da li ste spamer?"
+
+#: preheaders/checkout.php:536
+msgid "That username is already taken. Please try another."
+msgstr "To korisničko ime je već iskorišćeno. Unesite drugo."
+
+#: preheaders/checkout.php:542
+msgid "That email address is already taken. Please try another."
+msgstr "Ta email adresa je već iskorišćena. Unesite drugu."
+
+#: preheaders/checkout.php:562
+#, php-format
+msgid "reCAPTCHA failed. (%s) Please try again."
+msgstr "reCAPTCHA neuspješno (%s) Pokušajte ponovo."
+
+#: preheaders/checkout.php:702
+msgid "Payment accepted."
+msgstr "Uplata prihvaćena."
+
+#: preheaders/checkout.php:710
+msgid ""
+"Unknown error generating account. Please contact us to set up your membership."
+msgstr ""
+"Nepoznata greška. Molmo kontaktirajte nas da vam uspostavimo račun manuelno."
+
+#: preheaders/checkout.php:754 preheaders/checkout.php:823
+msgid "The PayPal Token was lost."
+msgstr ""
+
+#: preheaders/checkout.php:860
+msgid ""
+"Your payment was accepted, but there was an error setting up your account. "
+"Please contact us."
+msgstr ""
+"Vaša uplata je prihvaćena, ali došlo je do greške prilikom upostavljnja vašeg "
+"računa. Molimo kontaktirajte nas."
+
+#: preheaders/checkout.php:1046
+msgid ""
+"IMPORTANT: Something went wrong during membership creation. Your credit card "
+"authorized, but we cancelled the order immediately. You should not try to "
+"submit this form again. Please contact the site owner to fix this issue."
+msgstr ""
+"BITNO: Nešto je krenulo naopako prilikom kreiranja pretplate. Vaša kreditna "
+"kartica je odobrena , ali je narudžba odmah odbijena. Nebi trebali da "
+"pokušavate da podnesete prijavu ponovo. Molimo kontaktirajte nas radi "
+"rješavanja datog problema."
+
+#: preheaders/checkout.php:1051
+msgid ""
+"IMPORTANT: Something went wrong during membership creation. Your credit card "
+"was charged, but we couldn't assign your membership. You should not submit "
+"this form again. Please contact the site owner to fix this issue."
+msgstr ""
+"BITNO: Nešto je krenulo naopako prilikom kreiranja pretplate. Vaša kreditna "
+"kartica je naplaćena ali nsimo uspijeli da vam dodjelimo članstvo. Ne bi "
+"trebali da podnesete ovu prijavu ponovo. Molimo da nas kontaktirate da "
+"riješimo pomenuti problem"
+
+#: preheaders/checkout.php:1064
+#, php-format
+msgid ""
+"You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will "
+"be processed."
+msgstr ""
+"Morate <a href=\"%s\">uspostaviti Prolaz za Plaćanje</a> prije nego ijedna "
+"naplata bude procesirana."
+
+#: preheaders/checkout.php:1066
+msgid "A Payment Gateway must be set up before any payments will be processed."
+msgstr ""
+"Prolaz za Plaćanje mora biti uspostavljen prije nego što ijedna naplata bude "
+"procesirana."
+
+#: preheaders/cancel.php:24
+msgid "Your membership has been cancelled."
+msgstr "Vaša pretplata je otkazana."
+
+#: preheaders/billing.php:274
+msgid "All good!"
+msgstr "Sve je dobro!"
+
+#: preheaders/billing.php:340
+#, php-format
+msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
+msgstr "Ažuriranje informacija. <a href=\"%s\">&laquo; nazad na moj nalog</a>"
+
+#: preheaders/billing.php:347
+msgid "Error updating billing information."
+msgstr "Greška prilikom ažuriranja informacija o plaćanju."

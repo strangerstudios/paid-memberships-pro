@@ -644,14 +644,12 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 	if(empty($user_id)) //no user_id passed, check the current user
 	{
 		$user_id = $current_user->ID;
-		$membership_levels = $current_user->membership_levels;
 	}
-	elseif(is_numeric($user_id)) //get membership levels for given user
-	{
+	
+	if(!empty($user_id) && is_numeric($user_id)) //get membership levels for given user
 		$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
-	}
 	else
-		return false;	//invalid user_id
+		$membership_levels = NULL; //non-users don't have levels
 
 	if($levels === "0" || $levels === 0) //if 0 was passed, return true if they have no level and false if they have any
 	{
@@ -668,18 +666,29 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 			$levels = array($levels);
 		}
 
-		if(empty($membership_levels))
+		if(empty($membership_levels))	//user has no levels just check if 0, L, -1, or e was sent in one of the levels
 		{
-			//user has no levels just check if 0, L, -1, or e was sent in one of the levels
-			if(in_array(0, $levels, true) || in_array("0", $levels))
-				$return = true;
+			//check for negative level
+			$negative_level = false;
+			foreach($levels as $level) {
+				if(intval($level) < 0) {
+					$negative_level = true;
+					break;
+				}
+			}
+
+			//are we looking for non-members or not?
+			if($negative_level)
+				return true;														//-1/etc, negative level
+			elseif(in_array(0, $levels, true) || in_array("0", $levels))
+				$return = true;														//0 level
 			elseif(in_array("L", $levels) || in_array("l", $levels))
-				$return = (!empty($user_id) && $user_id == $current_user->ID);
+				$return = (!empty($user_id) && $user_id == $current_user->ID);		//L, logged in users
 			elseif(in_array("-L", $levels) || in_array("-l", $levels))
-				$return = (empty($user_id) || $user_id != $current_user->ID);
+				$return = (empty($user_id) || $user_id != $current_user->ID);		//-L, not logged in users
 			elseif(in_array("E", $levels) || in_array("e", $levels)) {
 				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
-				$expired = $wpdb->get_var($sql);
+				$expired = $wpdb->get_var($sql);									//E, expired members
 				$return = !empty($expired);
 			}
 		}
@@ -699,7 +708,7 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 					if(empty($user_id) || $user_id != $current_user->ID)
 						$return = true;
 				}
-				elseif($level == "0" || strtoupper($level) == "E")
+				elseif($level === "0" || $level === 0 || strtoupper($level) === "E")
 				{
 					continue;	//user with levels so not a "non-member" or expired
 				}
@@ -709,6 +718,7 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 					$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
 					if(empty($level_obj)){continue;} //invalid level
 					$found_level = false;
+					
 					foreach($membership_levels as $membership_level)
 					{
 						if($membership_level->id == $level_obj->id) //found a match
