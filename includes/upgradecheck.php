@@ -196,6 +196,18 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.92;
 		pmpro_setOption("db_version", "1.92");
 	}
+
+	/*
+		v1.8.10.2 (db v1.93)
+
+		Run dbDelta again to fix broken/missing orders tables.
+	*/
+	if($pmpro_db_version < 1.93) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.93;
+		pmpro_setOption("db_version", "1.93");
+	}
 }
 
 function pmpro_db_delta()
@@ -288,7 +300,7 @@ function pmpro_db_delta()
 		  KEY `payment_transaction_id` (`payment_transaction_id`),
 		  KEY `subscription_transaction_id` (`subscription_transaction_id`),
 		  KEY `affiliate_id` (`affiliate_id`),
-		  KEY `affiliate_subid` (`affiliate_subid`)
+		  KEY `affiliate_subid` (`affiliate_subid`),
 		  KEY `checkout_id` (`checkout_id`)
 		);
 	";

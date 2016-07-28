@@ -133,6 +133,7 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `subtotal` varchar(16) NOT NULL DEFAULT '',
   `tax` varchar(16) NOT NULL DEFAULT '',
   `couponamount` varchar(16) NOT NULL DEFAULT '',
+  `checkout_id` int(11) NOT NULL DEFAULT '0',
   `certificate_id` int(11) NOT NULL DEFAULT '0',
   `certificateamount` varchar(16) NOT NULL DEFAULT '',
   `total` varchar(16) NOT NULL DEFAULT '',
@@ -162,7 +163,8 @@ CREATE TABLE `wp_pmpro_membership_orders` (
 	KEY `payment_transaction_id` (`payment_transaction_id`),
 	KEY `subscription_transaction_id` (`subscription_transaction_id`),
 	KEY `affiliate_id` (`affiliate_id`),
-	KEY `affiliate_subid` (`affiliate_subid`)
+	KEY `affiliate_subid` (`affiliate_subid`),
+	KEY `checkout_id` (`checkout_id`)
 );
 
 -- --------------------------------------------------------

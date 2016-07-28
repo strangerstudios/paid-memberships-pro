@@ -39,6 +39,7 @@
 			$order->subtotal = "";
 			$order->tax = "";
 			$order->couponamount = "";
+			$order->checkout_id = "";
 			$order->total = "";
 			$order->payment_type = "";
 			$order->cardtype = "";
@@ -116,6 +117,7 @@
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = $dbobj->tax;
 				$this->couponamount = $dbobj->couponamount;
+				$this->checkout_id = $dbobj->checkout_id;
 				$this->certificate_id = $dbobj->certificate_id;
 				$this->certificateamount = $dbobj->certificateamount;
 				$this->total = $dbobj->total;
