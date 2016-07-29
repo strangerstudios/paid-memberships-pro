@@ -120,6 +120,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issue where the orders table was not being created on brand new installs.
 * BUG: Fixed responsive styling of ReCaptcha.
 * ENHANCEMENT: Update to Italian translation. (Thanks again, Angelo Giammarresi)
+* ENHANCEMENT: Added a text domain and path to the plugin header.
 
 = 1.8.10.1 =
 * BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
