@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.8.10.2 =
 * BUG: Fixed bug in invoices query in the pmpro_account shortcode.
 * BUG: Fixed issue where the orders table was not being created on brand new installs.
+* BUG: Fixed responsive styling of ReCaptcha.
 
 = 1.8.10.1 =
 * BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
