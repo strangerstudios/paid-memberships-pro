@@ -29,7 +29,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	{
 		$ssorder = new MemberOrder();
 		$ssorder->getLastMemberOrder();
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");		
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");		
 		?>	
 	<div id="pmpro_account">		
 		

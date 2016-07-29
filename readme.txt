@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.5.3
-Stable tag: 1.8.10.1
+Stable tag: 1.8.10.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,8 +115,13 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 1.8.11 =
+= 1.8.10.2 =
+* BUG: Fixed bug in invoices query in the pmpro_account shortcode.
+* BUG: Fixed issue where the orders table was not being created on brand new installs.
+* BUG: Fixed responsive styling of ReCaptcha.
 * ENHANCEMENT: Added Hebrew language support. Thanks, Nadav Waisbrod.
+* ENHANCEMENT: Update to Italian translation. (Thanks again, Angelo Giammarresi)
+* ENHANCEMENT: Added a text domain and path to the plugin header.
 
 = 1.8.10.1 =
 * BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
