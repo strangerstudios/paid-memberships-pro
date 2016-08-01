@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.10.3 =
 * BUG: Fixed bug where users could not confirm PayPal Express payments if the main gateway was Stripe or Braintree.
+* BUG: Fixed issue where the billing address and/or credit card fields were not showing up on the Update Billing page.
 
 = 1.8.10.2 =
 * BUG: Fixed bug in invoices query in the pmpro_account shortcode.
