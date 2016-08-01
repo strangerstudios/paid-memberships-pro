@@ -57,7 +57,7 @@
 			//code to add at checkout if Braintree is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();			
-			if($default_gateway == "braintree" || $current_gateway == "braintree")
+			if($default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));

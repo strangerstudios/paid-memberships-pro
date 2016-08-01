@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.10.3 =
+* BUG: Fixed bug where users could not confirm PayPal Express payments if the main gateway was Stripe or Braintree.
+
 = 1.8.10.2 =
 * BUG: Fixed bug in invoices query in the pmpro_account shortcode.
 * BUG: Fixed issue where the orders table was not being created on brand new installs.

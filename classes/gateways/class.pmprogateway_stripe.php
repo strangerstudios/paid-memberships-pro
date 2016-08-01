@@ -108,7 +108,7 @@
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();			
-			if($default_gateway == "stripe" || $current_gateway == "stripe")
+			if(($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
