@@ -343,6 +343,8 @@ $pmpro_required_user_fields    = apply_filters( "pmpro_required_user_fields", $p
 //pmpro_confirmed is set to true later if payment goes through
 $pmpro_confirmed = false;
 
+$checkout_statuses = array();
+
 //check their fields if they clicked continue
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
@@ -481,7 +483,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
 
-				$checkout_statuses = array();
 				foreach($checkout_levels as $curlevel) {
 					//process checkout if required
 					if ( $pmpro_requirebilling ) {
