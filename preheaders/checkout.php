@@ -446,7 +446,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
 			global $recaptcha;
-			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_areLevelsFree( $checkout_levels ) ) ) ) {
 				global $recaptcha_privatekey;
 
 				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
