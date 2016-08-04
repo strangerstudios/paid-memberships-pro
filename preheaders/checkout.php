@@ -1,5 +1,6 @@
 <?php
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+global $checkout_levels;
 
 //make sure we know current user's membership level
 if ( $current_user->ID ) {
@@ -98,7 +99,9 @@ if (! empty( $_REQUEST['level'] ) ) {
 
 //filter the level(s) (for upgrades, etc) - for multiple levels, this will always be the first one.
 $pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
-array_splice($checkout_levels, 0, 1, $pmpro_level); // update the array post-filter to incorporate changes
+
+array_shift($checkout_levels); // update the array to account for any changes from the filter
+array_unshift($checkout_levels, $pmpro_level);
 
 if ( empty( $checkout_levels ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
