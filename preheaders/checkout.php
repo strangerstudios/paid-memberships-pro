@@ -855,6 +855,8 @@ foreach($checkout_statuses as $curstatus) {
 	}
 }
 
+do_action( "pmpro_after_all_checkouts", $user_id, $checkout_statuses);
+
 if(! empty( $submit ) && $canredirectaway) {
 	$success_levelids = array();
 	foreach($checkout_statuses as $curstatus) {
