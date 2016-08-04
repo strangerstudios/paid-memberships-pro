@@ -961,7 +961,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
-	if($old_levels)
+	$pmpro_deactivate_old_levels = true;
+	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
+	if($old_levels && $pmpro_deactivate_old_levels)
 	{
 		foreach($old_levels as $old_level) {
 
