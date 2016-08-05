@@ -346,6 +346,7 @@ $pmpro_required_user_fields    = apply_filters( "pmpro_required_user_fields", $p
 //pmpro_confirmed is set to true later if payment goes through
 $pmpro_confirmed = false;
 
+
 $checkout_statuses = array();
 
 //check their fields if they clicked continue
@@ -485,7 +486,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			//no errors yet
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
-
 				foreach($checkout_levels as $curlevel) {
 					//process checkout if required
 					if ( $pmpro_requirebilling ) {
@@ -554,7 +554,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$morder = apply_filters( "pmpro_checkout_order", $morder );
 
 						$pmpro_processed = $morder->process();
-
 						if ( ! empty( $pmpro_processed ) ) {
 							$pmpro_msg       = __( "Payment accepted.", "pmpro" );
 							$pmpro_msgt      = "pmpro_success";
@@ -744,7 +743,7 @@ foreach($checkout_statuses as $curstatus) {
 				//add an item to the history table, cancel old subscriptions
 				if ( ! empty( $curstatus['order'] ) ) {
 					$curstatus['order']->user_id       = $user_id;
-					$curstatus['order']->membership_id = $pmpro_level->id;
+					$curstatus['order']->membership_id = $curstatus['id'];
 					$curstatus['order']->saveOrder();
 				}
 
