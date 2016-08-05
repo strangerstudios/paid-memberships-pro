@@ -589,6 +589,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 }
 
 $canredirectaway = true;
+$checkoutid = 0;
 foreach($checkout_statuses as $curstatus) {
 	//Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 	$curstatus['confirmed'] = apply_filters( 'pmpro_checkout_confirmed', $curstatus['confirmed'], $curstatus['order'] );
@@ -742,9 +743,13 @@ foreach($checkout_statuses as $curstatus) {
 
 				//add an item to the history table, cancel old subscriptions
 				if ( ! empty( $curstatus['order'] ) ) {
+					if($checkoutid>0) {
+						$curstatus['order']->checkout_id = $checkoutid; // so they all have the same ID right now.
+					}
 					$curstatus['order']->user_id       = $user_id;
 					$curstatus['order']->membership_id = $curstatus['id'];
-					$curstatus['order']->saveOrder();
+					$theorder = $curstatus['order']->saveOrder();
+					if($checkoutid<1) { $checkoutid = $theorder->checkout_id; } // it'll asssign one if there wasn't one already there.
 				}
 
 				//update the current user
