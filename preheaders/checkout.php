@@ -748,8 +748,8 @@ foreach($checkout_statuses as $curstatus) {
 					}
 					$curstatus['order']->user_id       = $user_id;
 					$curstatus['order']->membership_id = $curstatus['id'];
-					$theorder = $curstatus['order']->saveOrder();
-					if($checkoutid<1) { $checkoutid = $theorder->checkout_id; } // it'll asssign one if there wasn't one already there.
+					$curstatus['order']->saveOrder();
+					if($checkoutid<1) { $checkoutid = $curstatus['order']->checkout_id; } // it'll asssign one if there wasn't one already there.
 				}
 
 				//update the current user
