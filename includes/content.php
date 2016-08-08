@@ -96,8 +96,13 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		}
 		elseif(!empty($myuser->ID))
 		{
-			$myuser->membership_level = pmpro_getMembershipLevelForUser($myuser->ID);
-			if(!empty($myuser->membership_level->ID) && in_array($myuser->membership_level->ID, $post_membership_levels_ids))
+			$myuser->membership_level = pmpro_getMembershipLevelForUser($myuser->ID); // kept in for legacy filter users below.
+			$myuser->membership_levels = pmpro_getMembershipLevelsForUser($myuser->ID);
+			$mylevelids = array();
+			foreach($myuser->membership_levels as $curlevel) {
+				$mylevelids[] = $curlevel->id;
+			}
+			if(count($myuser->membership_levels)>0 && count(array_intersect($mylevelids, $post_membership_levels_ids))>0)
 			{
 				//the users membership id is one that will grant access
 				$hasaccess = true;
