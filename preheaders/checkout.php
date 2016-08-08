@@ -590,6 +590,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 $canredirectaway = true;
 $checkoutid = 0;
+$ordersaved = false;
 foreach($checkout_statuses as $curstatus) {
 	//Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 	$curstatus['confirmed'] = apply_filters( 'pmpro_checkout_confirmed', $curstatus['confirmed'], $curstatus['order'] );
@@ -761,8 +762,8 @@ foreach($checkout_statuses as $curstatus) {
 
 				//add discount code use
 				if ( $discount_code && $use_discount_code ) {
-					if ( ! empty( $morder->id ) ) {
-						$code_order_id = $morder->id;
+					if ( ! empty( $curstatus['order']->id ) ) {
+						$code_order_id = $curstatus['order']->id;
 					} else {
 						$code_order_id = "";
 					}
@@ -826,21 +827,6 @@ foreach($checkout_statuses as $curstatus) {
 				//hook
 				do_action( "pmpro_after_checkout", $user_id, $curstatus['order'] );    //added $morder param in v2.0
 
-				//setup some values for the emails
-				if ( ! empty( $curstatus['order'] ) ) {
-					$invoice = new MemberOrder( $curstatus['id'] );
-				} else {
-					$invoice = null;
-				}
-				$current_user->membership_level = $curstatus['level']; //make sure they have the right level info
-
-				//send email to member
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutEmail( $current_user, $invoice );
-
-				//send email to admin
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
 			} else {
 
 				//uh oh. we charged them then the membership creation failed
@@ -861,6 +847,26 @@ foreach($checkout_statuses as $curstatus) {
 
 if(! empty($submit)) {
 	do_action( "pmpro_after_all_checkouts", $user_id, $checkout_statuses);
+	
+	$ordersaved = apply_filters( "pmpro_send_checkout_emails", $ordersaved);
+	
+	if($ordersaved && count($checkout_statuses)>0) { // After we process one or more successful orders, let's send the e-mails.
+		//setup some values for the emails
+		if ( ! empty( $checkout_statuses[0]['order'] ) ) {
+			$invoice = new MemberOrder( $checkout_statuses[0]['order']->id );
+		} else {
+			$invoice = null;
+		}
+		$current_user->membership_level = $checkout_statuses[0]['level']; //make sure they have the right level info
+
+		//send email to member
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutEmail( $current_user, $invoice );
+
+		//send email to admin
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
+	}
 }
 
 if(! empty( $submit ) && $canredirectaway) {
