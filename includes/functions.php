@@ -172,7 +172,7 @@ function pmpro_isLevelFree(&$level)
 function pmpro_areLevelsFree($levelarr) {
 	if(! is_array($levelarr)) { return false; }
 	foreach($levelarr as $curlevel) {
-		if(!empty($level) && ($level->initial_payment > 0 || $level->billing_amount > 0 || $level->trial_amount > 0)) {
+		if(!empty($curlevel) && ($curlevel->initial_payment > 0 || $curlevel->billing_amount > 0 || $curlevel->trial_amount > 0)) {
 			return false;
 		}
 	}
