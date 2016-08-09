@@ -115,6 +115,12 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.10.4 =
+* BUG: Fixed issue where non-decimal currencies (e.g. Japanese Yen) were sending invalid amounts to the Stripe gateway.
+* BUG: Fixed issue where payment could fail when using a discount code with the Pay by Check addon.
+* BUG/ENHANCEMENT: Fixed HTML validation issue in CVV field of the checkout page.
+* BUG/ENHANCEMENT: Now using the current_time function in profile.php to avoid off-by-one errors when changing members' expiration dates.
+
 = 1.8.10.3 =
 * BUG: Fixed bug where users could not confirm PayPal Express payments if the main gateway was Stripe or Braintree.
 * BUG: Fixed issue where the billing address and/or credit card fields were not showing up on the Update Billing page.
