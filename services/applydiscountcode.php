@@ -45,6 +45,9 @@
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_error');
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
 
+			var code_level;
+			code_level = false;
+			
 			//filter to insert your own code
 			<?php do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, $level_id, false); ?>
 		</script>

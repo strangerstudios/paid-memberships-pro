@@ -249,9 +249,7 @@
 					// this identifies your website in the createToken call below
 					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 
-					if (typeof code_level === 'undefined') {
-						var pmpro_require_billing = true;
-					}
+					pmpro_require_billing = true;
 
 					jQuery(document).ready(function() {
 						jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
