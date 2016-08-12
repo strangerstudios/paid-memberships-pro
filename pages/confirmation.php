@@ -33,7 +33,7 @@
 		
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);				
 		
-		echo apply_filters("the_content", $confirmation_message);		
+		echo wpautop( $confirmation_message );
 	?>
 	
 	
