@@ -113,7 +113,7 @@ form.pmpro_form .leftmar {
 	margin: 8px 0 0 210px;
 }
 form.pmpro_form .pmpro_captcha {
-	margin: 0 0 0 210px !important;
+	margin: 0 0 0 210px;
 }
 form.pmpro_form .pmpro_captcha div {
 	clear: none;
@@ -413,7 +413,7 @@ li.pmpro_more {
 		text-wrap: normal;
 		white-space: normal;
 	}
-	form.pmpro_form .leftmar {
+	form.pmpro_form .leftmar, form.pmpro_form .pmpro_captcha {
 		margin: 2px 0 0 0;
 	}
 	form.pmpro_form .pmpro_submit {

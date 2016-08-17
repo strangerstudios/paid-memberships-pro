@@ -85,19 +85,19 @@ function pmpro_membership_level_profile_fields($user)
 			$end_date = !empty($user->membership_level->enddate);
 			
 			//some vars for the dates
-			$current_day = date("j");			
+			$current_day = date("j", current_time('timestamp'));			
 			if($end_date)
 				$selected_expires_day = date("j", $user->membership_level->enddate);
 			else
 				$selected_expires_day = $current_day;
 				
-			$current_month = date("M");			
+			$current_month = date("M", current_time('timestamp'));			
 			if($end_date)
 				$selected_expires_month = date("m", $user->membership_level->enddate);
 			else
 				$selected_expires_month = date("m");
 				
-			$current_year = date("Y");									
+			$current_year = date("Y", current_time('timestamp'));									
 			if($end_date)
 				$selected_expires_year = date("Y", $user->membership_level->enddate);
 			else

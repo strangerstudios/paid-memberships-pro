@@ -69,10 +69,17 @@
 				}
 			?>
 
+<<<<<<< HEAD
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if($pmpro_include_billing_address_fields)
 				{
+=======
+			<?php 
+				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+				if($pmpro_include_billing_address_fields)
+				{ 
+>>>>>>> upstream/master
 			?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -228,8 +235,13 @@
 			<?php } ?>
 
 			<?php
-			$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-			if($pmpro_include_billing_address_fields)
+			//make sure gateways will show up credit card fields
+			global $pmpro_requirebilling;
+			$pmpro_requirebilling = true;
+			
+			//do we need to show the payment information (credit card) fields? gateways will override this
+			$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);						
+			if($pmpro_include_payment_information_fields)
 			{
 				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 				$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);

@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.5.3
-Stable tag: 1.8.10.1
+Stable tag: 1.8.10.4
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,8 +115,23 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.10.4 =
+* BUG: Fixed issue where non-decimal currencies (e.g. Japanese Yen) were sending invalid amounts to the Stripe gateway.
+* BUG/ENHANCEMENT: If an invalid discount code is applied at checkout, we now set the code_level JS var to false. Along with updates to the Pay by Check addon, this fixes issues with the Pay by Check addon where users could not checkout when using a discount code that reduced the price to free.
+* BUG/ENHANCEMENT: Fixed HTML validation issue in CVV field of the checkout page.
+* BUG/ENHANCEMENT: Now using the current_time function in profile.php to avoid off-by-one errors when changing members' expiration dates.
+
+= 1.8.10.3 =
+* BUG: Fixed bug where users could not confirm PayPal Express payments if the main gateway was Stripe or Braintree.
+* BUG: Fixed issue where the billing address and/or credit card fields were not showing up on the Update Billing page.
+
 = 1.8.10.2 =
 * BUG: Fixed bug in invoices query in the pmpro_account shortcode.
+* BUG: Fixed issue where the orders table was not being created on brand new installs.
+* BUG: Fixed responsive styling of ReCaptcha.
+* ENHANCEMENT: Added Hebrew language support. Thanks, Nadav Waisbrod.
+* ENHANCEMENT: Update to Italian translation. (Thanks again, Angelo Giammarresi)
+* ENHANCEMENT: Added a text domain and path to the plugin header.
 
 = 1.8.10.1 =
 * BUG: Fixed bugs in pmpro_hasMembershipLevel that caused shortcodes like [membership levels="0"] and [membership levels="-1"] to stop working.
