@@ -20,7 +20,9 @@
 	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress")); //default is oposite of the stripe_billingaddress setting
 
 	$level = $current_user->membership_level;
-	if($level)
+
+	//Make sure the $level object is a valid level definition
+	if(isset($level->id) && !empty($level->id))
 	{
 	?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", "pmpro"), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", "pmpro");?></a></small></p>
@@ -65,14 +67,13 @@
 				<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 			<?php
 				}
+			?>
 
-<<<<<<< HEAD
-			$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-			if($pmpro_include_billing_address_fields)
-			{ ?>
-=======
-			<?php if(empty($pmpro_stripe_lite) || $gateway != "stripe" || function_exists('pmproaffl_pmpro_required_billing_fields')) { ?>
->>>>>>> upstream/v1.8.10
+			<?php
+				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+				if($pmpro_include_billing_address_fields)
+				{
+			?>
 			<table id="pmpro_billing_address_fields" class="pmpro_checkout" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
@@ -255,16 +256,6 @@
 							<?php
 							}
 						?>
-<<<<<<< HEAD
-						<div>
-							<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
-							<select id="CardType" <?php if($gateway != "stripe") { ?>name="CardType"<?php } ?>>
-								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-									<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
-								<?php } ?>
-							</select>
-						</div>
-=======
 						
 						<?php
 							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
@@ -301,7 +292,6 @@
 												"visa"                      : "Visa",
 												"visa_electron"             : "Visa Electron"
 											};
->>>>>>> upstream/v1.8.10
 
 											if(result.card_type)
 												jQuery('#CardType').val(cardtypenames[result.card_type.name]);
