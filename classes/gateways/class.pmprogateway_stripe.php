@@ -251,6 +251,8 @@
 
 					pmpro_require_billing = true;
 
+					var tokenNum = 0;
+
 					jQuery(document).ready(function() {
 						jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
 
@@ -286,8 +288,11 @@
 							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
-							//create token
-							Stripe.createToken(args, stripeResponseHandler);
+							//create token(s)
+							var levelnums = jQuery("#level").val().split(",");
+							for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+								Stripe.createToken(args, stripeResponseHandler);
+							}
 
 							// prevent the form from submitting with the default action
 							return false;
@@ -313,8 +318,9 @@
 							// token contains id, last4, and card type
 							var token = response['id'];
 							// insert the token into the form so it gets submitted to the server
-							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-
+							form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
+							tokenNum++;
+							
 							//console.log(response);
 
 							//insert fields for other card fields
@@ -354,9 +360,21 @@
 		static function pmpro_checkout_order($morder)
 		{
 			//load up token values
-			if(isset($_REQUEST['stripeToken']))
+			if(isset($_REQUEST['stripeToken0']))
 			{
-				$morder->stripeToken = $_REQUEST['stripeToken'];
+				// find the highest one still around, and use it - then remove it from $_REQUEST.
+				$thetoken = "";
+				$tokennum = -1;
+				foreach($_REQUEST as $key => $param) {
+					if(preg_match('/stripeToken(\d+)/', $key, $matches)) {
+						if(intval($matches[1])>$tokennum) {
+							$thetoken = $param;
+							$tokennum = intval($matches[1]);
+						}
+					}
+				}
+				$morder->stripeToken = $thetoken;
+				unset($_REQUEST['stripeToken'.$tokennum]);
 			}
 
 			//stripe lite code to get name from other sources if available
@@ -1320,12 +1338,14 @@
 					//user not registered yet, queue it up
 					global $pmpro_stripe_customer_id;
 					$pmpro_stripe_customer_id = $this->customer->id;
-					function pmpro_user_register_stripe_customerid($user_id)
-					{
-						global $pmpro_stripe_customer_id;
-						update_user_meta($user_id, "pmpro_stripe_customerid", $pmpro_stripe_customer_id);
+					if(! function_exists('pmpro_user_register_stripe_customerid')) {
+						function pmpro_user_register_stripe_customerid($user_id)
+						{
+							global $pmpro_stripe_customer_id;
+							update_user_meta($user_id, "pmpro_stripe_customerid", $pmpro_stripe_customer_id);
+						}
+						add_action("user_register", "pmpro_user_register_stripe_customerid");
 					}
-					add_action("user_register", "pmpro_user_register_stripe_customerid");
 				}
 
                 return apply_filters('pmpro_stripe_create_customer', $this->customer);
