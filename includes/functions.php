@@ -406,6 +406,119 @@ function pmpro_getLevelCost(&$level, $tags = true, $short = false)
 	return $r;
 }
 
+// Similar to pmpro_getLevelCost, but loops through all levels in the incoming array and puts it all together.
+function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
+{
+	// let's build the array to work from to consolidate recurring info.
+	// recurpmts[cycle_period][cycle_number][billing_limit] = total_amount
+	$initpmt = 0;
+	$recurpmts = array();
+	$trialperiods = 0;
+	foreach($levels as $curlevel) {
+		$initpmt += $curlevel->initial_payment;
+		if($curlevel->billing_amount != '0.00') {
+			if(array_key_exists($curlevel->cycle_period, $recurpmts)) {
+				if(array_key_exists($curlevel->cycle_number, $recurpmts[$curlevel->cycle_period])) {
+					if(array_key_exists($curlevel->billing_limit, $recurpmts[$curlevel->cycle_period][$curlevel->cycle_number])) {
+						$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] += $curlevel->billing_amount;
+					} else {
+						$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+					}
+				} else {
+					$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number] = array();
+					$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+				}
+			} else {
+				$recurpmts[$curlevel->cycle_period] = array();
+				$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number] = array();
+				$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+			}
+		}
+		if($curlevel->trial_limit && intval($curlevel->trial_limit)>$trialperiods) {
+			$trialperiods = intval($curlevel->trial_limit);
+		}
+	}
+
+	// initial payment
+	if(!$short)
+		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($initpmt));
+	else
+		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($initpmt));
+
+	//recurring part
+	$billtextparts = array();
+	if(count($recurpmts)>0) {
+		foreach($recurpmts as $curperiod => $curpddata) {
+			foreach($curpddata as $curcyclenum => $curcycledata) {
+				foreach($curcycledata as $curbilllimit => $curtotal) {
+					if($curbilllimit > 1)
+					{
+						if($curcyclenum == '1')
+						{
+							$billtextparts[] = sprintf(__('<strong>%s per %s for %d more %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), pmpro_translate_billing_period($curperiod), $curbilllimit, pmpro_translate_billing_period($curperiod, $curbilllimit));
+						}
+						else
+						{
+							$billtextparts[] = sprintf(__('<strong>%s every %d %s for %d more payments</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum), $curbilllimit);
+						}
+					}
+					elseif($curbilllimit == 1)
+					{
+						$billtextparts[] = sprintf(__('<strong>%s after %d %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum));
+					}
+					else
+					{
+						if($curcyclenum == '1')
+						{
+							$billtextparts[] = sprintf(__('<strong>%s every %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), pmpro_translate_billing_period($curperiod));
+						}
+						else
+						{
+							$billtextparts[] = sprintf(__('<strong>%s every %d %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum));
+						}
+					}
+				}
+			}
+		}
+		$laststanza = array_pop($billtextparts);
+		if(count($billtextparts)>0) {
+			$r .= ", ";
+			$r .= implode(', ', $billtextparts);
+		}
+		$r .= ", and ".$laststanza.".";
+	} else {
+		$r .= ".";
+	}
+	
+
+	//add a space
+	$r .= ' ';
+
+	//trial part - not as detailed as the single-level counterpart. Could be improved in the future.
+	if($trialperiods>0) {
+		if($trialperiods==1) {
+			$r .= __('Trial pricing has been applied to the first payment.', 'mmpu');
+		} else {
+			$r .= sprintf(__('Trial pricing has been applied to the first %d payments.', 'mmpu'), $trialperiods);
+		}
+	}
+
+	//taxes part
+	$tax_state = pmpro_getOption("tax_state");
+	$tax_rate = pmpro_getOption("tax_rate");
+
+	if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
+	{
+		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));
+	}
+
+	if(!$tags)
+		$r = strip_tags($r);
+
+	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v1.8
+	return $r;
+}
+
 function pmpro_getLevelExpiration(&$level)
 {
 	if($level->expiration_number)
@@ -414,6 +527,36 @@ function pmpro_getLevelExpiration(&$level)
 	}
 	else
 		$expiration_text = "";
+
+	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+	return $expiration_text;
+}
+
+function pmpro_getLevelsExpiration(&$levels)
+{
+	$expirystrings = array();
+	$ongoinglevelnum = 0;
+	foreach($levels as $curlevel) {
+		if($curlevel->expiration_number) {
+			$expirystrings[] = sprintf(__("%s membership expires after %d %s", "pmpro"), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period($curlevel->expiration_period, $curlevel->expiration_number));
+		} else {
+			$ongoinglevelnum++;
+		}
+	}
+
+	$expiration_text = "";
+	if(count($expirystrings)>0) {
+		$laststanza = array_pop($expirystrings);
+		$expiration_text = implode(', ', $expirystrings);
+		if(count($expirystrings)>0) { $expiration_text .= ", and "; }
+		$expiration_text .= $laststanza;
+		$expiration_text .= ". ";
+		if($ongoinglevelnum>0) {
+			$expiration_text .= "The remaining membership";
+			if($ongoinglevelnum>1) { $expiration_text .= "s are"; } else { $expiration_text .= " is"; }
+			$expiration_text .= " ongoing.";
+		}
+	}
 
 	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
 	return $expiration_text;
@@ -807,7 +950,17 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
-	if($old_levels)
+	$pmpro_deactivate_old_levels = true;
+	/**
+	 * Filter whether old levels should be deactivated or not. This supports the MMPU.
+	 * Typically you'll want to hook into pmpro_before_change_membership_level 
+	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
+	 * 
+	 * @since  1.8.11
+	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
+	 */
+	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
+	if($old_levels && $pmpro_deactivate_old_levels)
 	{
 		foreach($old_levels as $old_level) {
 
