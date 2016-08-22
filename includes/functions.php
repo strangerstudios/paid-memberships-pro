@@ -168,6 +168,17 @@ function pmpro_isLevelFree(&$level)
 		return false;
 }
 
+// Given an array of levels, will return true if all of them are free.
+function pmpro_areLevelsFree($levelarr) {
+	if(! is_array($levelarr)) { return false; }
+	foreach($levelarr as $curlevel) {
+		if(!empty($curlevel) && ($curlevel->initial_payment > 0 || $curlevel->billing_amount > 0 || $curlevel->trial_amount > 0)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function pmpro_isLevelRecurring(&$level)
 {
 	if(!empty($level) && ($level->billing_amount > 0 || $level->trial_amount > 0))
@@ -1505,15 +1516,12 @@ function pmpro_getDiscountCode($seed = NULL)
 	return strtoupper($code);
 }
 
-//is a discount code valid
+//is a discount code valid - level_id could be a scalar or an array (or unset)
 function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false)
 {
 	global $wpdb;
 
 	$error = false;
-
-	//make sure level id is int for security
-	$level_id = intval($level_id);
 
 	//no code, no code
 	if(empty($code))
@@ -1568,7 +1576,14 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 		$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);
 		if(!empty($level_id) && $pmpro_check_discount_code_levels)
 		{
-			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id = '" . $level_id . "' LIMIT 1");
+			// clean up level id for security before the database call
+			if(is_array($level_id)) {
+				$levelnums = array_map('intval', $level_id);
+				$level_id = implode(',', $levelnums);
+			} else {
+				$level_id = intval($level_id);
+			}
+			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1");
 
 			if(empty($code_level))
 				$error = __("This discount code does not apply to this membership level.", "pmpro");
