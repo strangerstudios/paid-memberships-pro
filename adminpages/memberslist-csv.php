@@ -345,8 +345,6 @@
 			//process usermeta
 			$metavalues = new stdClass();
 
-			$theuser = apply_filters("pmpro_members_list_user", $theuser);
-
 			 // Returns array of meta keys containing array(s) of metavalues.
 			$um_values = get_user_meta($theuser->ID);
 
