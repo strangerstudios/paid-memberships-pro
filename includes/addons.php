@@ -121,7 +121,7 @@ function pmpro_update_plugins_filter( $value ) {
 			
 		//get data for plugin
 		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
-		$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;				
+		$plugin_file_abs = WP_PLUGIN_DIR . "/" . $plugin_file;				
 		
 		//couldn't find plugin, skip
 		if(!file_exists($plugin_file_abs))

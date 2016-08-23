@@ -249,7 +249,7 @@
 					// this identifies your website in the createToken call below
 					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 
-					var pmpro_require_billing = true;
+					pmpro_require_billing = true;
 
 					var tokenNum = 0;
 
@@ -1104,8 +1104,13 @@
 		 */
 		function charge(&$order)
 		{
-			global $pmpro_currency;
-
+			global $pmpro_currency, $pmpro_currencies;
+			$currency_unit_multiplier = 100; //ie 100 cents per USD
+			
+			//account for zero-decimal currencies like the Japanese Yen
+			if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
+				$currency_unit_multiplier = 1;
+			
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -1131,7 +1136,7 @@
 			try
 			{
 				$response = Stripe_Charge::create(array(
-				  "amount" => $amount * 100, # amount in cents, again
+				  "amount" => $amount * $currency_unit_multiplier, # amount in cents, again
 				  "currency" => strtolower($pmpro_currency),
 				  "customer" => $this->customer->id,
 				  "description" => "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")"
@@ -1419,7 +1424,13 @@
 		 */
 		function subscribe(&$order, $checkout = true)
 		{
-			global $pmpro_currency;
+			global $pmpro_currency, $pmpro_currencies;
+			
+			$currency_unit_multiplier = 100; //ie 100 cents per USD
+			
+			//account for zero-decimal currencies like the Japanese Yen
+			if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
+				$currency_unit_multiplier = 1;
 
 			//create a code for the order
 			if(empty($order->code))
@@ -1514,7 +1525,7 @@
 			try
 			{
                 $plan = array(
-                    "amount" => $amount * 100,
+                    "amount" => $amount * $currency_unit_multiplier,
                     "interval_count" => $order->BillingFrequency,
                     "interval" => strtolower($order->BillingPeriod),
                     "trial_period_days" => $trial_period_days,

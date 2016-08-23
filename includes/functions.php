@@ -962,6 +962,14 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
 	$pmpro_deactivate_old_levels = true;
+	/**
+	 * Filter whether old levels should be deactivated or not. This supports the MMPU.
+	 * Typically you'll want to hook into pmpro_before_change_membership_level 
+	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
+	 * 
+	 * @since  1.8.11
+	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
+	 */
 	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
 	if($old_levels && $pmpro_deactivate_old_levels)
 	{
