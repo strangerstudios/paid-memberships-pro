@@ -460,7 +460,7 @@
 				fwrite($loghandle, $logstr);
 				fclose($loghandle);
 			}
-			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG'))
+			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && false !== PMPRO_STRIPE_WEBHOOK_DEBUG )
 			{
 				//email
 				if(strpos(PMPRO_STRIPE_WEBHOOK_DEBUG, "@"))
