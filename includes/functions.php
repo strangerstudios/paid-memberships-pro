@@ -518,7 +518,7 @@ function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
 	$tax_state = pmpro_getOption("tax_state");
 	$tax_rate = pmpro_getOption("tax_rate");
 
-	if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
+	if($tax_state && $tax_rate && !pmpro_areLevelsFree($levels))
 	{
 		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));
 	}
@@ -526,7 +526,10 @@ function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
 	if(!$tags)
 		$r = strip_tags($r);
 
-	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v1.8
+	/**
+	 * Filter the levels cost text. Note the s in levels. Similar to pmpro_levels_cost_text
+	 */
+	$r = apply_filters("pmpro_levels_cost_text", $r, $levels, $tags, $short);
 	return $r;
 }
 
@@ -539,7 +542,7 @@ function pmpro_getLevelExpiration(&$level)
 	else
 		$expiration_text = "";
 
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $level);
 	return $expiration_text;
 }
 
@@ -569,7 +572,10 @@ function pmpro_getLevelsExpiration(&$levels)
 		}
 	}
 
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+	/**
+	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
+	 */
+	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $levels);
 	return $expiration_text;
 }
 
@@ -1873,6 +1879,63 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
 	}
 
 	return $pmpro_levels;
+}
+
+/**
+ * Get level at checkout and place into $pmpro_level global.
+ */
+function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
+	global $pmpro_level, $wpdb;
+	
+	//reset pmpro_level
+	$pmpro_level = NULL;
+	
+	//default to level passed in via URL
+	if(empty($level_id) && !empty($_REQUEST['level'])) {
+		$level_id = intval($_REQUEST['level']);
+	}
+	
+	//default to discount code passed in
+	if(empty($discount_code) && !empty($_REQUEST['discount_code'])) {
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	}
+			
+	//what level are they purchasing? (discount code passed)
+	if (!empty($level_id) && !empty($discount_code)) {		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
+
+		//check code
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		if ( $code_check[0] != false ) {			
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
+			$pmpro_level = $wpdb->get_row( $sqlQuery );
+
+			//if the discount code doesn't adjust the level, let's just get the straight level
+			if ( empty( $pmpro_level ) ) {
+				$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
+			}
+
+			//filter adjustments to the level
+			$pmpro_level->code_id = $discount_code_id;
+			$pmpro_level          = apply_filters( "pmpro_discount_code_level", $pmpro_level, $discount_code_id );
+		}
+	}
+
+	//what level are they purchasing? (no discount code)
+	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
+		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
+	} elseif ( empty( $pmpro_level ) ) {
+		//check if a level is defined in custom fields
+		$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
+		if ( ! empty( $default_level ) ) {
+			$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $default_level ) . "' AND allow_signups = 1 LIMIT 1" );
+		}
+	}
+
+	//filter the level (for upgrades, etc)
+	$pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
+	
+	return $pmpro_level;
 }
 
 function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)

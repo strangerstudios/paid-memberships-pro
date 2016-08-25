@@ -115,6 +115,13 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.11 =
+* ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
+* ENHANCEMENT: Added pmpro_getLevelsCost() - with an s - function to get the combined cost of multiple levels in an array.
+* ENHANCEMENT: Added pmpro_getLevelsExpiration() - with an s - function to get the combined expiration text for multiple levels in array.
+* ENHANCEMENT: Created the pmpro_getLevelAtCheckout function that modularizes some of the logic of creating the pmpro_level global at checkout.
+* ENHANCEMENT: Added pmpro_members_list_user filter used on the admin members list and members list CSV export.
+
 = 1.8.10.4 =
 * BUG: Fixed issue where non-decimal currencies (e.g. Japanese Yen) were sending invalid amounts to the Stripe gateway.
 * BUG/ENHANCEMENT: If an invalid discount code is applied at checkout, we now set the code_level JS var to false. Along with updates to the Pay by Check addon, this fixes issues with the Pay by Check addon where users could not checkout when using a discount code that reduced the price to free.
