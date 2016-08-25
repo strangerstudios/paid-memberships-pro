@@ -186,6 +186,7 @@
 				$count = 0;
 				foreach($theusers as $auser)
 				{
+					$auser = apply_filters("pmpro_members_list_user", $auser);
 					//get meta
 					$theuser = get_userdata($auser->ID);
 					?>
