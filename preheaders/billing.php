@@ -28,6 +28,9 @@ if (empty($user_order->gateway)) {
     $besecure = pmpro_getOption("use_ssl");
 }
 
+//enqueue some scripts
+wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+
 //code for stripe
 if ($gateway == "stripe") {
     //stripe js library

@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.11 =
+* BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
 * BUG: Fixed URL used when checking for addon updates.
 * ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
 * ENHANCEMENT: Added pmpro_getLevelsCost() - with an s - function to get the combined cost of multiple levels in an array.
