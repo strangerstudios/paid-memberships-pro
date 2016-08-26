@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.11 =
+* ENHANCEMENT: Now listing categories in hierarchical format in the Content Settings section of Membership Levels.
 * BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
 * BUG: Fixed URL used when checking for addon updates.
 * ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.

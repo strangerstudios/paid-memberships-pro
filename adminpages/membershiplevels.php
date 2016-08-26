@@ -495,20 +495,10 @@
 		<h3 class="topborder"><?php _e('Content Settings', 'pmpro');?></h3>
 		<table class="form-table">
 			<tbody>
-				<tr>
+				<tr class="membership_categories">
 					<th scope="row" valign="top"><label><?php _e('Categories', 'pmpro');?>:</label></th>
 					<td>
-						<?php
-						$categories = get_categories( array( 'hide_empty' => 0 ) );
-						echo "<ul>";
-						foreach ( $categories as $cat )
-						{
-							$checked = in_array( $cat->term_id, $level->categories ) ? "checked='checked'" : '';
-							$catclass = empty( $cat->category_parent ) ? '' : 'membershipcategory_hasparent';
-							echo "<li class='membershipcategory $catclass'><input id='membershipcategory_{$cat->term_id}' name='membershipcategory_{$cat->term_id}' type='checkbox' value='yes' $checked /> <label for='membershipcategory_{$cat->term_id}'>{$cat->name}</label></li>\n";
-						}
-						echo "</ul>";
-						?>
+						<?php pmpro_listCategories(0, $level->categories); ?>
 					</td>
 				</tr>
 			</tbody>

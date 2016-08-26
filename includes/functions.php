@@ -1140,6 +1140,37 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	return true;
 }
 
+/**
+ * Function to list WordPress categories in hierarchical format.
+ *
+ * This is a helper function for the Membership Categories section in adminpages/membershiplevels.php
+ *
+ * @since 1.8.11
+ *
+ * @param int $parent_id
+ * @param array $level_categories
+ */
+function pmpro_listCategories($parent_id = 0, $level_categories = array()) {
+
+	$args = array(
+		'parent' => $parent_id,
+		'hide_empty' => false,
+	);
+
+	$cats = get_categories(apply_filters('pmpro_list_categories_args', $args));
+
+	if($cats) {
+		foreach($cats as $cat) {
+			$name = 'membershipcategory_' . $cat->term_id;
+			if(!empty($level_categories))
+				$checked = checked(in_array($cat->term_id, $level_categories), true, false);
+			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
+			pmpro_listCategories($cat->term_id, $level_categories);
+			echo '</li></ul>';
+		}
+	}
+}
+
 /* pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
  * $level may either be the ID or name of the desired membership_level.
