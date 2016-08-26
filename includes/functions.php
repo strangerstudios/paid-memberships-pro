@@ -906,16 +906,30 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 	return $return;
 }
 
-/* pmpro_changeMembershipLevel() creates or updates the membership level of the given user to the given level.
+/**
+ * Wrapper for pmpro_changeMembershipLevel to cancel one level.
+ * @since 1.8.11
+ */
+function pmpro_cancelMembershipLevel($cancel_level, $user_id = NULL, $old_level_status = 'inactive') {
+	return pmpro_changeMembershipLevel(0, $user_id, $old_level_status, $cancel_level);
+} 
+
+/**
+ * Create, add, remove or updates the membership level of the given user to the given level.
  *
  * $level may either be the ID or name of the desired membership_level.
  * If $user_id is omitted, the value will be retrieved from $current_user.
+ *
+ * @param int $level ID of level to set as new level, use 0 to cancel membership
+ * @param int $user_id ID of the user to change levels for
+ * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
+ * $param int $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
  * Return values:
  *		Success returns boolean true.
  *		Failure returns boolean false.
  */
-function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive')
+function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive', $cancel_level = NULL)
 {
 	global $wpdb;
 	global $current_user, $pmpro_error;
@@ -977,6 +991,18 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
 	 */
 	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
+	
+	//make sure we deactivate the specified level if it's passed in
+	if(!empty($cancel_level) && !$pmpro_deactivate_old_levels) {
+		$pmpro_deactivate_old_levels = true;
+		foreach($old_levels as $key => $old_level) {
+			if($old_level->id == $cancel_level) {
+				$old_levels = array($old_levels[$key]);
+				break;
+			}
+		}
+	}
+	
 	if($old_levels && $pmpro_deactivate_old_levels)
 	{
 		foreach($old_levels as $old_level) {
@@ -1004,20 +1030,27 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
 	 * @param array $old_levels array of prior levels the user belonged to.
+	 * $param int $cancel_level ID of the level being cancelled if specified
 	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels);
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels, $cancel_level);
 
 	//should we cancel their gateway subscriptions?
-	$pmpro_cancel_previous_subscriptions = true;
-	if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
-		$pmpro_cancel_previous_subscriptions = false;
-	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
-
-	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-	if($pmpro_cancel_previous_subscriptions)
-	{
+	if(!empty($cancel_level)) {
+		$pmpro_cancel_previous_subscriptions = true;	//don't filter cause we're doing just the one
+		
+		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql($cancel_level) . "' ORDER BY id DESC");
+	} else {
+		$pmpro_cancel_previous_subscriptions = true;
+		if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
+			$pmpro_cancel_previous_subscriptions = false;
+		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
+		
 		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
-
+	}
+	
+	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
+	if($pmpro_cancel_previous_subscriptions && !empty($other_order_ids))
+	{		
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
@@ -1101,8 +1134,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
+	 * $param int $cancel_level ID of the level being cancelled if specified.
 	 */
-	do_action("pmpro_after_change_membership_level", $level_id, $user_id);
+	do_action("pmpro_after_change_membership_level", $level_id, $user_id, $cancel_level);
 	return true;
 }
 

@@ -2,7 +2,7 @@
 	global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user;
 	
 	if(isset($_REQUEST['level']))
-		$level = $_REQUEST['level'];
+		$level = preg_replace('[^0-9al]', '', $_REQUEST['level']);
 	else
 		$level = false;
 ?>
@@ -34,8 +34,8 @@
 				}
 			?>			
 			<div class="pmpro_actionlinks">
-				<a class="pmpro_btn pmpro_yeslink yeslink" href="<?php echo pmpro_url("cancel", "?confirm=true")?>"><?php _e('Yes, cancel my account', 'pmpro');?></a>
-				<a class="pmpro_btn pmpro_cancel pmpro_nolink nolink" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep my account', 'pmpro');?></a>
+				<a class="pmpro_btn pmpro_yeslink yeslink" href="<?php echo pmpro_url("cancel", "?level=" . $level . "&confirm=true")?>"><?php _e('Yes, cancel this membership', 'pmpro');?></a>
+				<a class="pmpro_btn pmpro_cancel pmpro_nolink nolink" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'pmpro');?></a>
 			</div>
 			<?php
 			}
@@ -55,22 +55,29 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td class="pmpro_cancel-membership-levelname">
-									<?php echo $current_user->membership_level->name?>
-								</td>
-								<td class="pmpro_cancel-membership-expiration">
-								<?php 
-									if($current_user->membership_level->enddate) 
-										echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate);
-									else
-										echo "---";
+							<?php
+								$current_user->membership_levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+								foreach($current_user->membership_levels as $level) {
 								?>
-								</td>
-								<td class="pmpro_cancel-membership-cancel">
-									<a href="<?php echo pmpro_url("cancel", "?level=" . $current_user->membership_level->id)?>"><?php _e("Cancel", "pmpro");?></a>
-								</td>
-							</tr>
+								<tr>
+									<td class="pmpro_cancel-membership-levelname">
+										<?php echo $level->name?>
+									</td>
+									<td class="pmpro_cancel-membership-expiration">
+									<?php 
+										if($level->enddate) 
+											echo date_i18n(get_option('date_format'), $level->enddate);
+										else
+											echo "---";
+									?>
+									</td>
+									<td class="pmpro_cancel-membership-cancel">
+										<a href="<?php echo pmpro_url("cancel", "?level=" . $level->id)?>"><?php _e("Cancel", "pmpro");?></a>
+									</td>
+								</tr>
+								<?php
+								}
+							?>
 						</tbody>
 					</table>				
 					<div class="pmpro_actionlinks">
