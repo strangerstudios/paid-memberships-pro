@@ -518,7 +518,7 @@ function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
 	$tax_state = pmpro_getOption("tax_state");
 	$tax_rate = pmpro_getOption("tax_rate");
 
-	if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
+	if($tax_state && $tax_rate && !pmpro_areLevelsFree($levels))
 	{
 		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));
 	}
@@ -526,7 +526,10 @@ function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
 	if(!$tags)
 		$r = strip_tags($r);
 
-	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v1.8
+	/**
+	 * Filter the levels cost text. Note the s in levels. Similar to pmpro_levels_cost_text
+	 */
+	$r = apply_filters("pmpro_levels_cost_text", $r, $levels, $tags, $short);
 	return $r;
 }
 
@@ -539,7 +542,7 @@ function pmpro_getLevelExpiration(&$level)
 	else
 		$expiration_text = "";
 
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $level);
 	return $expiration_text;
 }
 
@@ -569,7 +572,10 @@ function pmpro_getLevelsExpiration(&$levels)
 		}
 	}
 
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level);
+	/**
+	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
+	 */
+	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $levels);
 	return $expiration_text;
 }
 
@@ -900,16 +906,30 @@ function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
 	return $return;
 }
 
-/* pmpro_changeMembershipLevel() creates or updates the membership level of the given user to the given level.
+/**
+ * Wrapper for pmpro_changeMembershipLevel to cancel one level.
+ * @since 1.8.11
+ */
+function pmpro_cancelMembershipLevel($cancel_level, $user_id = NULL, $old_level_status = 'inactive') {
+	return pmpro_changeMembershipLevel(0, $user_id, $old_level_status, $cancel_level);
+} 
+
+/**
+ * Create, add, remove or updates the membership level of the given user to the given level.
  *
  * $level may either be the ID or name of the desired membership_level.
  * If $user_id is omitted, the value will be retrieved from $current_user.
+ *
+ * @param int $level ID of level to set as new level, use 0 to cancel membership
+ * @param int $user_id ID of the user to change levels for
+ * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
+ * $param int $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
  * Return values:
  *		Success returns boolean true.
  *		Failure returns boolean false.
  */
-function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive')
+function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive', $cancel_level = NULL)
 {
 	global $wpdb;
 	global $current_user, $pmpro_error;
@@ -963,7 +983,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
 	$pmpro_deactivate_old_levels = true;
 	/**
-	 * Filter whether old levels should be deactivated or not. This supports the MMPU.
+	 * Filter whether old levels should be deactivated or not. This supports the MMPU addon.
 	 * Typically you'll want to hook into pmpro_before_change_membership_level 
 	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
 	 * 
@@ -971,6 +991,18 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
 	 */
 	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
+	
+	//make sure we deactivate the specified level if it's passed in
+	if(!empty($cancel_level) && !$pmpro_deactivate_old_levels) {
+		$pmpro_deactivate_old_levels = true;
+		foreach($old_levels as $key => $old_level) {
+			if($old_level->id == $cancel_level) {
+				$old_levels = array($old_levels[$key]);
+				break;
+			}
+		}
+	}
+	
 	if($old_levels && $pmpro_deactivate_old_levels)
 	{
 		foreach($old_levels as $old_level) {
@@ -998,20 +1030,27 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
 	 * @param array $old_levels array of prior levels the user belonged to.
+	 * $param int $cancel_level ID of the level being cancelled if specified
 	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels);
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels, $cancel_level);
 
 	//should we cancel their gateway subscriptions?
-	$pmpro_cancel_previous_subscriptions = true;
-	if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
-		$pmpro_cancel_previous_subscriptions = false;
-	$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
-
-	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-	if($pmpro_cancel_previous_subscriptions)
-	{
+	if(!empty($cancel_level)) {
+		$pmpro_cancel_previous_subscriptions = true;	//don't filter cause we're doing just the one
+		
+		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql($cancel_level) . "' ORDER BY id DESC");
+	} else {
+		$pmpro_cancel_previous_subscriptions = true;
+		if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
+			$pmpro_cancel_previous_subscriptions = false;
+		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
+		
 		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
-
+	}
+	
+	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
+	if($pmpro_cancel_previous_subscriptions && !empty($other_order_ids))
+	{		
 		foreach($other_order_ids as $order_id)
 		{
 			$c_order = new MemberOrder($order_id);
@@ -1095,8 +1134,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
+	 * $param int $cancel_level ID of the level being cancelled if specified.
 	 */
-	do_action("pmpro_after_change_membership_level", $level_id, $user_id);
+	do_action("pmpro_after_change_membership_level", $level_id, $user_id, $cancel_level);
 	return true;
 }
 
@@ -1873,6 +1913,63 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
 	}
 
 	return $pmpro_levels;
+}
+
+/**
+ * Get level at checkout and place into $pmpro_level global.
+ */
+function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
+	global $pmpro_level, $wpdb;
+	
+	//reset pmpro_level
+	$pmpro_level = NULL;
+	
+	//default to level passed in via URL
+	if(empty($level_id) && !empty($_REQUEST['level'])) {
+		$level_id = intval($_REQUEST['level']);
+	}
+	
+	//default to discount code passed in
+	if(empty($discount_code) && !empty($_REQUEST['discount_code'])) {
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	}
+			
+	//what level are they purchasing? (discount code passed)
+	if (!empty($level_id) && !empty($discount_code)) {		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
+
+		//check code
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		if ( $code_check[0] != false ) {			
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
+			$pmpro_level = $wpdb->get_row( $sqlQuery );
+
+			//if the discount code doesn't adjust the level, let's just get the straight level
+			if ( empty( $pmpro_level ) ) {
+				$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
+			}
+
+			//filter adjustments to the level
+			$pmpro_level->code_id = $discount_code_id;
+			$pmpro_level          = apply_filters( "pmpro_discount_code_level", $pmpro_level, $discount_code_id );
+		}
+	}
+
+	//what level are they purchasing? (no discount code)
+	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
+		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
+	} elseif ( empty( $pmpro_level ) ) {
+		//check if a level is defined in custom fields
+		$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
+		if ( ! empty( $default_level ) ) {
+			$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $default_level ) . "' AND allow_signups = 1 LIMIT 1" );
+		}
+	}
+
+	//filter the level (for upgrades, etc)
+	$pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
+	
+	return $pmpro_level;
 }
 
 function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)
