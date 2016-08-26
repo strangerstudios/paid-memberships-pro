@@ -58,20 +58,24 @@ function pmpro_cron_expiration_warnings()
 
 	//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 	$sqlQuery = $wpdb->prepare(
-		"SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate
-		 FROM {$wpdb->pmpro_memberships_users} AS mu
-         	LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id AND um.meta_key = %s
-			INNER JOIN {$wpdb->users} AS u ON u.ID = mu.user_id AND (
-				mu.membership_id <> 0 OR
-				mu.membership_id <> NULL OR
-				mu.membership_id <> 'NULL'
-			)
-		 WHERE mu.status = 'active'
-      	 	AND mu.enddate IS NOT NULL
-			AND mu.enddate <> ''
-			AND mu.enddate <> '0000-00-00 00:00:00'
-			AND DATE_SUB(mu.enddate, INTERVAL %d Day) <= %s
-			AND (um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d Day) <= %s)
+		"SELECT
+		  mu.user_id,
+		  mu.membership_id,
+		  mu.startdate,
+		  mu.enddate
+		FROM {$wpdb->pmpro_memberships_users} AS mu
+		  LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id AND (
+    			um.meta_key = %s AND
+    			(um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) <= %s)
+      		  )
+		  INNER JOIN {$wpdb->users} AS u ON u.ID = mu.user_id AND (
+		    mu.membership_id <> 0 OR
+		    mu.membership_id <> NULL
+		  )
+		WHERE mu.status = 'active'
+		      AND mu.enddate IS NOT NULL
+		      AND mu.enddate <> '0000-00-00 00:00:00'
+		      AND DATE_SUB(mu.enddate, INTERVAL %d DAY) <= %s
 		ORDER BY mu.enddate",
 		"pmpro_expiration_notice",
 		$pmpro_email_days_before_expiration,
