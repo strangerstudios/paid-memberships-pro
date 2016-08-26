@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.11 =
+* BUG: Fixed URL used when checking for addon updates.
 * ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
 * ENHANCEMENT: Added pmpro_getLevelsCost() - with an s - function to get the combined cost of multiple levels in an array.
 * ENHANCEMENT: Added pmpro_getLevelsExpiration() - with an s - function to get the combined expiration text for multiple levels in array.
