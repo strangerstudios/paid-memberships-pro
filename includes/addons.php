@@ -41,7 +41,7 @@ function pmpro_getAddons()
         $timeout = apply_filters("pmpro_get_addons_timeout", 5);
 
         //get em
-		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "/addons/", $timeout);
+		$remote_addons = wp_remote_get(PMPRO_LICENSE_SERVER . "addons/", $timeout);
 
         //make sure we have at least an array to pass back
         if(empty($addons))
