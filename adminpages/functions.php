@@ -38,8 +38,8 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				foreach($levels as $level)
 				{
 					/*
-						Stripe currently does not support:				
-						* Billing Limits.					
+						Stripe currently does not support:
+						* Billing Limits.
 					*/
 					if($level->billing_limit > 0)
 					{
@@ -52,7 +52,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
 
 			//check this level
 			if($level->billing_limit > 0)
@@ -102,7 +102,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
 
 			//check this level
 			if($level->trial_amount > 0 ||
@@ -153,7 +153,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
 
 			//check this level
 			if($level->trial_amount > 0 ||
@@ -201,7 +201,7 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql($level) . "' LIMIT 1");
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
 
 			//check this level
 			if(pmpro_isLevelTrial($level))
