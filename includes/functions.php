@@ -550,6 +550,7 @@ function pmpro_getLevelsExpiration(&$levels)
 {
 	$expirystrings = array();
 	$ongoinglevelnum = 0;
+	if(!empty($levels) && !is_array($levels)) { $levels = array($levels); } elseif(empty($levels)) { $levels = array(); }
 	foreach($levels as $curlevel) {
 		if($curlevel->expiration_number) {
 			$expirystrings[] = sprintf(__("%s membership expires after %d %s", "pmpro"), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period($curlevel->expiration_period, $curlevel->expiration_number));
