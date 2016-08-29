@@ -766,21 +766,26 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//hook
 			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
 
-			//setup some values for the emails
-			if ( ! empty( $morder ) ) {
-				$invoice = new MemberOrder( $morder->id );
-			} else {
-				$invoice = null;
+			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
+	
+			if($sendemails) { // Send the e-mails only if the flag is set to true
+
+				//setup some values for the emails
+				if ( ! empty( $morder ) ) {
+					$invoice = new MemberOrder( $morder->id );
+				} else {
+					$invoice = null;
+				}
+				$current_user->membership_level = $pmpro_level; //make sure they have the right level info
+
+				//send email to member
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCheckoutEmail( $current_user, $invoice );
+
+				//send email to admin
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
 			}
-			$current_user->membership_level = $pmpro_level; //make sure they have the right level info
-
-			//send email to member
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail( $current_user, $invoice );
-
-			//send email to admin
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
 
 			//redirect to confirmation
 			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );
