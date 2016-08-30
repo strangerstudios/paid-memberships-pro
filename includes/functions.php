@@ -550,6 +550,7 @@ function pmpro_getLevelsExpiration(&$levels)
 {
 	$expirystrings = array();
 	$ongoinglevelnum = 0;
+	if(!empty($levels) && !is_array($levels)) { $levels = array($levels); } elseif(empty($levels)) { $levels = array(); }
 	foreach($levels as $curlevel) {
 		if($curlevel->expiration_number) {
 			$expirystrings[] = sprintf(__("%s membership expires after %d %s", "pmpro"), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period($curlevel->expiration_period, $curlevel->expiration_number));
@@ -2584,3 +2585,22 @@ function pmpro_generatePages($pages) {
 	else
 		return false;
  }
+
+/**
+ * Get an array of orders for a specific checkout ID
+ *
+ * @param int $checkout_id Checkout ID
+ * @since 1.8.11
+ */
+function pmpro_getMemberOrdersByCheckoutID($checkout_id) {
+	global $wpdb;
+	
+	$order_ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = %d", $checkout_id));
+	
+	$r = array();
+	foreach($order_ids as $order_id) {
+		$r[] = new MemberOrder($order_id);
+	}
+	
+	return $r;
+}

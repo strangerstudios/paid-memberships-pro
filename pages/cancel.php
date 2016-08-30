@@ -4,7 +4,7 @@
 	if(isset($_REQUEST['level']))
 		$level = preg_replace('[^0-9al]', '', $_REQUEST['level']);
 	else
-		$level = false;
+		$level = false;	
 ?>
 <div id="pmpro_cancel">		
 	<?php

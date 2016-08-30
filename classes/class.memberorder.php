@@ -444,7 +444,7 @@
 		 */
 		function saveOrder()
 		{
-			global $current_user, $wpdb;
+			global $current_user, $wpdb, $pmpro_checkout_id;
 
 			//get a random code to use for the public ID
 			if(empty($this->code))
@@ -527,6 +527,7 @@
 			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
+				$pmpro_checkout_id = $this->checkout_id;
 			}
 
 			//build query

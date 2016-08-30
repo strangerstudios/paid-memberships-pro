@@ -15,16 +15,17 @@
 	}
 	
 	//check if a level was passed in to cancel specifically
-	if(!empty($_REQUEST['level']))
+	if(!empty($_REQUEST['level']) && $_REQUEST['level'] != 'all') {
 		$old_level_id = intval($_REQUEST['level']);
-	else
-		$old_level_id = $current_user->membership_level->id;
-
-	//make sure the user has their old level
-	if(!pmpro_hasMembershipLevel($old_level_id)) {
-		wp_redirect(pmpro_url("levels"));
-		exit;
-	}
+		
+		//make sure the user has their old level
+		if(!pmpro_hasMembershipLevel($old_level_id)) {
+			wp_redirect(pmpro_url("levels"));
+			exit;
+		}
+	} else {
+		$old_level_id = false;	//cancel all levels
+	}			
 		
 	//are we confirming a cancellation?
 	if(isset($_REQUEST['confirm']))
@@ -33,8 +34,12 @@
 		$pmpro_confirm = false;
 
 	if($pmpro_confirm) {		
-        $worked = pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
-        if($worked === true && empty($pmpro_error))
+        if(!empty($old_level_id))
+			$worked = pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
+		else
+			$worked = pmpro_changeMembershipLevel(0, $current_user->ID, 'cancelled');
+        
+		if($worked === true && empty($pmpro_error))
 		{
 			$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
 			$pmpro_msgt = "pmpro_success";
