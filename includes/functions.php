@@ -2164,7 +2164,7 @@ function pmpro_setMessage($message, $type, $force = false)
 	//for now, we only show the first message generated
 	if($force || empty($pmpro_msg))
 	{
-		$pmpro_msg = $message;
+		$pmpro_msg = apply_filters('pmpro_set_message', $message, $type);
 		$pmpro_msgt = $type;
 	}
 }
