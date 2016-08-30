@@ -124,6 +124,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added a 4th parameter $cancel_level to pmpro_changeMembershipLevel(). If set, that level will definitely be cancelled locally and at the gateway. This parameter is also passed to the pmpro_before_change_membership_level and pmpro_after_change_membership_level hook.
 * ENHANCEMENT: Added a new function pmpro_cancelMembershipLevel($level_id, $user_id, $old_level_status) that acts as a wrapper to pass the $cancel_level param to pmpro_changeMembershipLevel().
 * ENHANCEMENT: Updated the cancel page on the frontend to support the Multiple Memberships per User addon. All memberships are shown. You can cancel individual memberships separately. The language of the confirm button mentions memberships vs account.
+* ENHANCEMENT: Added pmpro_getMemberOrdersByCheckoutID($checkout_id) function to support Multiple Memberships per User and others using the checkout_id.
 
 = 1.8.10.4 =
 * BUG: Fixed issue where non-decimal currencies (e.g. Japanese Yen) were sending invalid amounts to the Stripe gateway.

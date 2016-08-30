@@ -2554,3 +2554,22 @@ function pmpro_generatePages($pages) {
 	else
 		return false;
  }
+
+/**
+ * Get an array of orders for a specific checkout ID
+ *
+ * @param int $checkout_id Checkout ID
+ * @since 1.8.11
+ */
+function pmpro_getMemberOrdersByCheckoutID($checkout_id) {
+	global $wpdb;
+	
+	$order_ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = %d", $checkout_id));
+	
+	$r = array();
+	foreach($order_ids as $order_id) {
+		$r[] = new MemberOrder($order_id);
+	}
+	
+	return $r;
+}
