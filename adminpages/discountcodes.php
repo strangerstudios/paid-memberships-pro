@@ -43,7 +43,7 @@
 		//updating or new?
 		if($saveid > 0)
 		{
-			$sqlQuery = $wdbp->prepare( "UPDATE $wpdb->pmpro_discount_codes SET code = %s , starts = %s , expires = %s , uses = %d WHERE id = %d LIMIT 1", $code, $starts, $expires, $uses, $saveid);
+			$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_discount_codes SET code = %s , starts = %s , expires = %s , uses = %d WHERE id = %d LIMIT 1", $code, $starts, $expires, $uses, $saveid);
 
 			if($wpdb->query($sqlQuery) !== false)
 			{
