@@ -1775,4 +1775,82 @@
 						
 			return $timestamp;
 		}
+
+		/**
+		 * Refund a payment or invoice
+		 * @param  object &$order           Related PMPro order object.
+		 * @param  string $transaction_id   Payment or Invoice id to void.
+		 * @return bool                     True or false if the void worked
+		 */
+		function void(&$order, $transaction_id = null)
+		{
+			//stripe doesn't differentiate between voids and refunds, so let's just pass on to the refund function
+			return $this->refund($order, $transaction_id);
+		}
+
+		/**
+		 * Refund a payment or invoice
+		 * @param  object &$order         Related PMPro order object.
+		 * @param  string $transaction_id Payment or invoice id to void.
+		 * @return bool                   True or false if the refund worked.
+		 */
+		function refund(&$order, $transaction_id = NULL)
+		{
+			//default to using the payment id from the order
+			if(empty($transaction_id) && !empty($order->payment_transaction_id))
+				$transaction_id = $order->payment_transaction_id;
+
+			//need a transaction id
+			if(empty($transaction_id))
+				return false;
+
+			//if an invoice ID is passed, get the charge/payment id
+			if(strpos($transaction_id, "in_") !== false) {
+				$invoice = Stripe_Invoice::retrieve($transaction_id);
+
+				if(!empty($invoice) && !empty($invoice->payment))
+					$transaction_id = $invoice->payment;
+			}
+
+			//get the charge
+			$charge = Stripe_Charge::retrieve($transaction_id);
+
+			//can't find the charge?
+			if(empty($charge)) {
+				$order->status = "error";
+				$order->errorcode = "";
+				$order->error = "";
+				$order->shorterror = "";
+				
+				return false;
+			}
+
+			//attempt refund
+			try
+			{
+				$refund = $charge->refund();
+			}
+			catch (Exception $e)
+			{
+				//$order->status = "error";
+				$order->errorcode = true;
+				$order->error = __("Error: ", "pmpro") . $e->getMessage();
+				$order->shorterror = $order->error;
+				return false;
+			}
+
+			if($refund->status == "succeeded") {
+				$order->status = "refunded";
+				$order->saveOrder();
+
+				return true;
+			} else  {
+				$order->status = "error";
+				$order->errorcode = true;
+				$order->error = sprintf(__("Error: Unkown error while refunding charge #%s", "pmpro"), $transaction_id);
+				$order->shorterror = $order->error;
+				
+				return false;
+			}
+		}
 	}

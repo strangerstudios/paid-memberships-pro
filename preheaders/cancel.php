@@ -25,8 +25,8 @@
 		}
 	} else {
 		$old_level_id = false;	//cancel all levels
-	}			
-		
+	}
+	
 	//are we confirming a cancellation?
 	if(isset($_REQUEST['confirm']))
 		$pmpro_confirm = $_REQUEST['confirm'];
