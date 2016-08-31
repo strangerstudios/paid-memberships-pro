@@ -1563,6 +1563,7 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 	global $wpdb;
 
 	$error = false;
+	$dbcode = false;
 
 	//no code, no code
 	if(empty($code))
