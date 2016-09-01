@@ -2,7 +2,7 @@
 	global $besecure;
 	$besecure = false;
 
-	global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $pmpro_error;
+	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $pmpro_error;
 
 	//get level information for current user
 	if($current_user->ID)
