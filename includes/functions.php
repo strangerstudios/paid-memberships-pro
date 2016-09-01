@@ -994,16 +994,18 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
 	
 	//make sure we deactivate the specified level if it's passed in
-	if(!empty($cancel_level) && !$pmpro_deactivate_old_levels) {
+	if(!empty($cancel_level)) {
 		$pmpro_deactivate_old_levels = true;
+		$new_old_levels = array();
 		foreach($old_levels as $key => $old_level) {
 			if($old_level->id == $cancel_level) {
-				$old_levels = array($old_levels[$key]);
+				$new_old_levels[] = $old_levels[$key];
 				break;
 			}
 		}
+		$old_levels = $new_old_levels;
 	}
-	
+
 	if($old_levels && $pmpro_deactivate_old_levels)
 	{
 		foreach($old_levels as $old_level) {

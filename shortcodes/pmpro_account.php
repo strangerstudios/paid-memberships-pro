@@ -31,7 +31,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		$ssorder->getLastMemberOrder();
 		$mylevels = pmpro_getMembershipLevelsForUser();
 		$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");		
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 		?>	
 	<div id="pmpro_account">		
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
@@ -69,7 +69,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
 										<a href="<?php echo pmpro_url("levels")?>"><?php _e("Change", "pmpro");?></a>
 									<?php } ?>
-									<a href="<?php echo pmpro_url("cancel", "?level=" . $level->id)?>"><?php _e("Cancel", "pmpro");?></a>
+									<a href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>"><?php _e("Cancel", "pmpro");?></a>
 									<?php do_action("pmpro_member_action_links_after"); ?>
 								</div> <!-- end pmpro_actionlinks -->
 							</td>
