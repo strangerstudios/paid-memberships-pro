@@ -284,9 +284,9 @@ if ( $txn_type == "subscr_cancel" ) {
 				(2) The user doesn't currently have the level attached to this order.
 			*/
 
-			if ( $last_subscr_order->status == "cancelled" ) {
+			if ( isset($last_subsc_order->membership_id) && $last_subscr_order->status == "cancelled" ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
-			} elseif ( ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
+			} elseif ( isset($last_subsc_order->membership_id) && ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
 			} else {
 				pmpro_changeMembershipLevel( 0, $last_subscr_order->user_id, 'cancelled' );
@@ -481,6 +481,9 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 	Change the membership level. We also update the membership order to include filtered valus.
 */
 function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
+
+	global $wpdb;
+
 	//filter for level
 	$morder->membership_level = apply_filters( "pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id );
 
@@ -544,7 +547,17 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 		//add discount code use
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-			$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time( 'mysql' ) . "" );
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+						( code_id, user_id, order_id, timestamp ) 
+						VALUES( %d, %d, %s, %s )",
+					$discount_code_id),
+					$morder->user_id,
+					$morder->id,
+					current_time( 'mysql' )
+				);
 		}
 
 		//save first and last name fields
