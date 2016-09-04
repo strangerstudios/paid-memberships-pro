@@ -713,6 +713,9 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
 		$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
 
+		// Allow extraction of the IPN Track ID from the order notes (if needed)
+		$morder->notes = "{$morder->notes} [IPN_ID]{$ipn_id}[/IPN_ID]";
+
 		/**
 		 * Post processing for a specific subscription related IPN event ID
 		 *
