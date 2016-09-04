@@ -600,9 +600,9 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$morder          = new MemberOrder();
 	$morder->user_id = $last_order->user_id;
 
-	$user = new WP_User($last_order->user_id);
-	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
-	
+	$user                   = new WP_User( $last_order->user_id );
+	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
+
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
@@ -660,15 +660,18 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->payment_type = $last_order->payment_type;
 
 		//set amount based on which PayPal type
-		if ( $last_order->gateway == "paypal" ) {
-			$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['amount'];
-		} elseif ( $last_order->gateway == "paypalexpress" ) {
-			$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['amount'];
-		} elseif ( $last_order->gateway == "paypalstandard" ) {
-			$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['mc_gross'];
+		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
+
+			if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
+				$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['amount'];
+			} elseif ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
+				$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['mc_gross'];
+			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
+				$morder->InitialPayment = $_POST['payment_gross'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['payment_gross'];
+			}
 		}
 
 		$morder->FirstName = $_POST['first_name'];
