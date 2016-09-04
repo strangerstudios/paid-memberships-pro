@@ -115,6 +115,18 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.11 =
+* ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
+* ENHANCEMENT: Added pmpro_getLevelsCost() - with an s - function to get the combined cost of multiple levels in an array.
+* ENHANCEMENT: Added pmpro_getLevelsExpiration() - with an s - function to get the combined expiration text for multiple levels in array.
+* ENHANCEMENT: Created the pmpro_getLevelAtCheckout function that modularizes some of the logic of creating the pmpro_level global at checkout.
+* ENHANCEMENT: Added pmpro_members_list_user filter used on the admin members list and members list CSV export.
+* ENHANCEMENT: Added a 4th parameter $cancel_level to pmpro_changeMembershipLevel(). If set, that level will definitely be cancelled locally and at the gateway. This parameter is also passed to the pmpro_before_change_membership_level and pmpro_after_change_membership_level hook.
+* ENHANCEMENT: Added a new function pmpro_cancelMembershipLevel($level_id, $user_id, $old_level_status) that acts as a wrapper to pass the $cancel_level param to pmpro_changeMembershipLevel().
+* ENHANCEMENT: Updated the cancel page on the frontend to support the Multiple Memberships per User addon. All memberships are shown. You can cancel individual memberships separately. The language of the confirm button mentions memberships vs account.
+* ENHANCEMENT: Added pmpro_getMemberOrdersByCheckoutID($checkout_id) function to support Multiple Memberships per User and others using the checkout_id.
+* ENHANCEMENT: Added a refund($order, $transaction_id) method to the PMPro_stripe class. This will be used by the Multiple Memberships per User addon and eventually used in other areas by the core pluginn.
+
 = 1.8.10.4 =
 * BUG: Fixed issue where non-decimal currencies (e.g. Japanese Yen) were sending invalid amounts to the Stripe gateway.
 * BUG/ENHANCEMENT: If an invalid discount code is applied at checkout, we now set the code_level JS var to false. Along with updates to the Pay by Check addon, this fixes issues with the Pay by Check addon where users could not checkout when using a discount code that reduced the price to free.

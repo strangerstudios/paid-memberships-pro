@@ -39,7 +39,6 @@
 			$order->subtotal = "";
 			$order->tax = "";
 			$order->couponamount = "";
-			$order->checkout_id = "";
 			$order->total = "";
 			$order->payment_type = "";
 			$order->cardtype = "";
@@ -54,6 +53,7 @@
 			$order->affiliate_id = "";
 			$order->affiliate_subid = "";
 			$order->notes = "";
+			$order->checkout_id = 0;
 
 			$order->billing = new stdClass();
 			$order->billing->name = "";
@@ -117,7 +117,6 @@
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = $dbobj->tax;
 				$this->couponamount = $dbobj->couponamount;
-				$this->checkout_id = $dbobj->checkout_id;
 				$this->certificate_id = $dbobj->certificate_id;
 				$this->certificateamount = $dbobj->certificateamount;
 				$this->total = $dbobj->total;
@@ -141,6 +140,7 @@
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
 				$this->notes = $dbobj->notes;
+				$this->checkout_id = $dbobj->checkout_id;
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -444,7 +444,7 @@
 		 */
 		function saveOrder()
 		{
-			global $current_user, $wpdb;
+			global $current_user, $wpdb, $pmpro_checkout_id;
 
 			//get a random code to use for the public ID
 			if(empty($this->code))
@@ -523,6 +523,12 @@
 
 			if(empty($this->notes))
 				$this->notes = "";
+				
+			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
+				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
+				$this->checkout_id = intval($highestval)+1;
+				$pmpro_checkout_id = $this->checkout_id;
+			}
 
 			//build query
 			if(!empty($this->id))
@@ -563,7 +569,8 @@
 									`timestamp` = '" . esc_sql($this->datetime) . "',
 									`affiliate_id` = '" . esc_sql($this->affiliate_id) . "',
 									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
-									`notes` = '" . esc_sql($this->notes) . "'
+									`notes` = '" . esc_sql($this->notes) . "',
+									`checkout_id` = " . intval($this->checkout_id) . "
 									WHERE id = '" . $this->id . "'
 									LIMIT 1";
 			}
@@ -574,7 +581,7 @@
 				$after_action = "pmpro_added_order";
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`)
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
 									   " . intval($this->user_id) . ",
@@ -606,7 +613,8 @@
 									   '" . esc_sql($this->datetime) . "',
 									   '" . esc_sql($this->affiliate_id) . "',
 									   '" . esc_sql($this->affiliate_subid) . "',
-									    '" . esc_sql($this->notes) . "'
+										'" . esc_sql($this->notes) . "',
+									    " . intval($this->checkout_id) . "
 									   )";
 			}
 

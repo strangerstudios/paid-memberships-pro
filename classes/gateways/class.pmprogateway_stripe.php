@@ -251,6 +251,8 @@
 
 					pmpro_require_billing = true;
 
+					var tokenNum = 0;
+
 					jQuery(document).ready(function() {
 						jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
 
@@ -286,8 +288,11 @@
 							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
-							//create token
-							Stripe.createToken(args, stripeResponseHandler);
+							//create token(s)
+							var levelnums = jQuery("#level").val().split(",");
+							for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+								Stripe.createToken(args, stripeResponseHandler);
+							}
 
 							// prevent the form from submitting with the default action
 							return false;
@@ -313,8 +318,9 @@
 							// token contains id, last4, and card type
 							var token = response['id'];
 							// insert the token into the form so it gets submitted to the server
-							form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-
+							form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
+							tokenNum++;
+							
 							//console.log(response);
 
 							//insert fields for other card fields
@@ -354,9 +360,21 @@
 		static function pmpro_checkout_order($morder)
 		{
 			//load up token values
-			if(isset($_REQUEST['stripeToken']))
+			if(isset($_REQUEST['stripeToken0']))
 			{
-				$morder->stripeToken = $_REQUEST['stripeToken'];
+				// find the highest one still around, and use it - then remove it from $_REQUEST.
+				$thetoken = "";
+				$tokennum = -1;
+				foreach($_REQUEST as $key => $param) {
+					if(preg_match('/stripeToken(\d+)/', $key, $matches)) {
+						if(intval($matches[1])>$tokennum) {
+							$thetoken = $param;
+							$tokennum = intval($matches[1]);
+						}
+					}
+				}
+				$morder->stripeToken = $thetoken;
+				unset($_REQUEST['stripeToken'.$tokennum]);
 			}
 
 			//stripe lite code to get name from other sources if available
@@ -1320,12 +1338,14 @@
 					//user not registered yet, queue it up
 					global $pmpro_stripe_customer_id;
 					$pmpro_stripe_customer_id = $this->customer->id;
-					function pmpro_user_register_stripe_customerid($user_id)
-					{
-						global $pmpro_stripe_customer_id;
-						update_user_meta($user_id, "pmpro_stripe_customerid", $pmpro_stripe_customer_id);
+					if(! function_exists('pmpro_user_register_stripe_customerid')) {
+						function pmpro_user_register_stripe_customerid($user_id)
+						{
+							global $pmpro_stripe_customer_id;
+							update_user_meta($user_id, "pmpro_stripe_customerid", $pmpro_stripe_customer_id);
+						}
+						add_action("user_register", "pmpro_user_register_stripe_customerid");
 					}
-					add_action("user_register", "pmpro_user_register_stripe_customerid");
 				}
 
                 return apply_filters('pmpro_stripe_create_customer', $this->customer);
@@ -1754,5 +1774,83 @@
 			}
 						
 			return $timestamp;
+		}
+
+		/**
+		 * Refund a payment or invoice
+		 * @param  object &$order           Related PMPro order object.
+		 * @param  string $transaction_id   Payment or Invoice id to void.
+		 * @return bool                     True or false if the void worked
+		 */
+		function void(&$order, $transaction_id = null)
+		{
+			//stripe doesn't differentiate between voids and refunds, so let's just pass on to the refund function
+			return $this->refund($order, $transaction_id);
+		}
+
+		/**
+		 * Refund a payment or invoice
+		 * @param  object &$order         Related PMPro order object.
+		 * @param  string $transaction_id Payment or invoice id to void.
+		 * @return bool                   True or false if the refund worked.
+		 */
+		function refund(&$order, $transaction_id = NULL)
+		{
+			//default to using the payment id from the order
+			if(empty($transaction_id) && !empty($order->payment_transaction_id))
+				$transaction_id = $order->payment_transaction_id;
+
+			//need a transaction id
+			if(empty($transaction_id))
+				return false;
+
+			//if an invoice ID is passed, get the charge/payment id
+			if(strpos($transaction_id, "in_") !== false) {
+				$invoice = Stripe_Invoice::retrieve($transaction_id);
+
+				if(!empty($invoice) && !empty($invoice->payment))
+					$transaction_id = $invoice->payment;
+			}
+
+			//get the charge
+			$charge = Stripe_Charge::retrieve($transaction_id);
+
+			//can't find the charge?
+			if(empty($charge)) {
+				$order->status = "error";
+				$order->errorcode = "";
+				$order->error = "";
+				$order->shorterror = "";
+				
+				return false;
+			}
+
+			//attempt refund
+			try
+			{
+				$refund = $charge->refund();
+			}
+			catch (Exception $e)
+			{
+				//$order->status = "error";
+				$order->errorcode = true;
+				$order->error = __("Error: ", "pmpro") . $e->getMessage();
+				$order->shorterror = $order->error;
+				return false;
+			}
+
+			if($refund->status == "succeeded") {
+				$order->status = "refunded";
+				$order->saveOrder();
+
+				return true;
+			} else  {
+				$order->status = "error";
+				$order->errorcode = true;
+				$order->error = sprintf(__("Error: Unkown error while refunding charge #%s", "pmpro"), $transaction_id);
+				$order->shorterror = $order->error;
+				
+				return false;
+			}
 		}
 	}

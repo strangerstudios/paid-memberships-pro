@@ -29,10 +29,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	{
 		$ssorder = new MemberOrder();
 		$ssorder->getLastMemberOrder();
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");		
+		$mylevels = pmpro_getMembershipLevelsForUser();
+		$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 		?>	
 	<div id="pmpro_account">		
-		
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
 			<div id="pmpro_account-membership" class="pmpro_box">
 				
@@ -47,17 +48,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					</thead>
 					<tbody>
 						<?php
-							//TODO: v2.0 will loop through levels here
-							$level = $current_user->membership_level;
+							foreach($mylevels as $level) {
 						?>
 						<tr>
 							<td class="pmpro_account-membership-levelname">
-								<?php echo $current_user->membership_level->name?>
+								<?php echo $level->name?>
 								<div class="pmpro_actionlinks">
 									<?php do_action("pmpro_member_action_links_before"); ?>
 									
-									<?php if( $current_user->membership_level->allow_signups && pmpro_isLevelExpiringSoon( $current_user->membership_level) ) { ?>
-										<a href="<?php echo pmpro_url("checkout", "?level=" . $current_user->membership_level->id, "https")?>"><?php _e("Renew", "pmpro");?></a>
+									<?php if( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) ) { ?>
+										<a href="<?php echo pmpro_url("checkout", "?level=" . $level->id, "https")?>"><?php _e("Renew", "pmpro");?></a>
 									<?php } ?>
 
 									<?php if((isset($ssorder->status) && $ssorder->status == "success") && (isset($ssorder->gateway) && in_array($ssorder->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource")))) { ?>
@@ -69,7 +69,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
 										<a href="<?php echo pmpro_url("levels")?>"><?php _e("Change", "pmpro");?></a>
 									<?php } ?>
-									<a href="<?php echo pmpro_url("cancel", "?level=" . $current_user->membership_level->id)?>"><?php _e("Cancel", "pmpro");?></a>
+									<a href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>"><?php _e("Cancel", "pmpro");?></a>
 									<?php do_action("pmpro_member_action_links_after"); ?>
 								</div> <!-- end pmpro_actionlinks -->
 							</td>
@@ -78,13 +78,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							</td>
 							<td class="pmpro_account-membership-expiration">
 							<?php 
-								if($current_user->membership_level->enddate) 
-									echo date(get_option('date_format'), $current_user->membership_level->enddate);
+								if($level->enddate) 
+									echo date(get_option('date_format'), $level->enddate);
 								else
 									echo "---";
 							?>
 							</td>
 						</tr>
+						<?php } ?>
 					</tbody>
 				</table>
 				<?php //Todo: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>

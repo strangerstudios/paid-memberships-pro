@@ -36,49 +36,7 @@ if ( ! in_array( $gateway, $valid_gateways ) ) {
 }
 
 //what level are they purchasing? (discount code passed)
-if ( ! empty( $_REQUEST['level'] ) && ! empty( $_REQUEST['discount_code'] ) ) {
-	$discount_code    = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
-	$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
-
-	//check code
-	$code_check = pmpro_checkDiscountCode( $discount_code, (int) $_REQUEST['level'], true );
-	if ( $code_check[0] == false ) {
-		//error
-		$pmpro_msg  = $code_check[1];
-		$pmpro_msgt = "pmpro_error";
-
-		//don't use this code
-		$use_discount_code = false;
-	} else {
-		$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int) $_REQUEST['level'] . "' LIMIT 1";
-		$pmpro_level = $wpdb->get_row( $sqlQuery );
-
-		//if the discount code doesn't adjust the level, let's just get the straight level
-		if ( empty( $pmpro_level ) ) {
-			$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . (int) $_REQUEST['level'] . "' LIMIT 1" );
-		}
-
-		//filter adjustments to the level
-		$pmpro_level->code_id = $discount_code_id;
-		$pmpro_level          = apply_filters( "pmpro_discount_code_level", $pmpro_level, $discount_code_id );
-
-		$use_discount_code = true;
-	}
-}
-
-//what level are they purchasing? (no discount code)
-if ( empty( $pmpro_level ) && ! empty( $_REQUEST['level'] ) ) {
-	$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $_REQUEST['level'] ) . "' AND allow_signups = 1 LIMIT 1" );
-} elseif ( empty( $pmpro_level ) ) {
-	//check if a level is defined in custom fields
-	$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
-	if ( ! empty( $default_level ) ) {
-		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $default_level ) . "' AND allow_signups = 1 LIMIT 1" );
-	}
-}
-
-//filter the level (for upgrades, etc)
-$pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
+$pmpro_level = pmpro_getLevelAtCheckout();
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
@@ -253,7 +211,7 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 }
 
 if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = sanitize_text_field( $_REQUEST['discount_code'] );
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
 } else {
 	$discount_code = "";
 }
@@ -680,13 +638,26 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		 */
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
-		//update membership_user table.
+		//check code before adding it to the order
+		$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+		if ( $code_check[0] == false ) {
+			//error
+			$pmpro_msg  = $code_check[1];
+			$pmpro_msgt = "pmpro_error";
+
+			//don't use this code
+			$use_discount_code = false;
+		} else {
+			//all okay
+			$use_discount_code = false;
+		}
+		
+		//update membership_user table.		
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 		} else {
 			$discount_code_id = "";
 		}
-
 
 		$custom_level = array(
 			'user_id'         => $user_id,
@@ -795,21 +766,26 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//hook
 			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
 
-			//setup some values for the emails
-			if ( ! empty( $morder ) ) {
-				$invoice = new MemberOrder( $morder->id );
-			} else {
-				$invoice = null;
+			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
+	
+			if($sendemails) { // Send the e-mails only if the flag is set to true
+
+				//setup some values for the emails
+				if ( ! empty( $morder ) ) {
+					$invoice = new MemberOrder( $morder->id );
+				} else {
+					$invoice = null;
+				}
+				$current_user->membership_level = $pmpro_level; //make sure they have the right level info
+
+				//send email to member
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCheckoutEmail( $current_user, $invoice );
+
+				//send email to admin
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
 			}
-			$current_user->membership_level = $pmpro_level; //make sure they have the right level info
-
-			//send email to member
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail( $current_user, $invoice );
-
-			//send email to admin
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
 
 			//redirect to confirmation
 			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );

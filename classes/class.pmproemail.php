@@ -121,9 +121,9 @@
 			}		
 		}
 		
-		function sendCancelEmail($user = NULL)
+		function sendCancelEmail($user = NULL, $old_level_id = NULL)
 		{
-			global $current_user;
+			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -134,11 +134,21 @@
 			$this->subject = sprintf(__("Your membership at %s has been CANCELLED", "pmpro"), get_option("blogname"));			
 			$this->template = "cancel";
 			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
+
+			if(!empty($old_level_id)) {
+				if(!is_array($old_level_id))
+					$old_level_id = array($old_level_id);
+				$this->data['membership_id'] = $old_level_id[0];	//pass just the first as the level id
+				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
+			} else {
+				$this->data['membership_id'] = '';
+				$this->data['membership_level_name'] = __('All Levels', 'pmpro');
+			}
 			
 			return $this->sendEmail();
 		}
 		
-		function sendCancelAdminEmail($user = NULL, $old_level_id)
+		function sendCancelAdminEmail($user = NULL, $old_level_id = NULL)
 		{
 			global $wpdb, $current_user;
 			if(!$user)
@@ -156,21 +166,31 @@
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", "pmpro"), $user->user_login, get_option("blogname"));			
 			$this->template = "cancel_admin";
 			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
-			$this->data['membership_id'] = $old_level_id;
-			$this->data['membership_level_name'] = $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $old_level_id . "' LIMIT 1");
 			
-			//start and end date
-			$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
-			if(!empty($startdate))
-				$this->data['startdate'] = date_i18n(get_option('date_format'), $startdate);
-			else
-				$this->data['startdate'] = "";
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
-			if(!empty($enddate))
-				$this->data['enddate'] = date_i18n(get_option('date_format'), $enddate);
-			else
-				$this->data['enddate'] = "";	
-				
+			if(!empty($old_level_id)) {
+				if(!is_array($old_level_id))
+					$old_level_id = array($old_level_id);
+				$this->data['membership_id'] = $old_level_id[0];	//pass just the first as the level id
+				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
+
+				//start and end date
+				$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				if(!empty($startdate))
+					$this->data['startdate'] = date_i18n(get_option('date_format'), $startdate);
+				else
+					$this->data['startdate'] = "";
+				$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				if(!empty($enddate))
+					$this->data['enddate'] = date_i18n(get_option('date_format'), $enddate);
+				else
+					$this->data['enddate'] = "";
+			} else {
+				$this->data['membership_id'] = '';
+				$this->data['membership_level_name'] = __('All Levels', 'pmpro');
+				$this->data['startdate'] = '';
+				$this->data['enddate'] = '';
+			}
+	
 			return $this->sendEmail();
 		}
 		
