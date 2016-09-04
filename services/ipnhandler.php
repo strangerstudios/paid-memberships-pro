@@ -710,6 +710,23 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 			$morder->timestamp = strtotime( $_POST['payment_date'] );
 		}
 
+		// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
+		$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
+
+		/**
+		 * Post processing for a specific subscription related IPN event ID
+		 *
+		 * @param       string      $ipn_id     - The ipn_track_id from the PayPal IPN request
+		 * @param       MemberOrder $morder     - The completed Member Order object for the IPN request
+		 */
+		do_action('pmpro_subscription_ipn_event_processed', $ipn_id, $morder );
+
+		if ( ! is_null( $ipn_id ) ) {
+			if ( false === update_user_meta( $morder->user_id, "pmpro_last_{$morder->gateway}_ipn_id", $ipn_id )) {
+				ipnlog( "Unable to save the IPN event ID ({$ipn_id}) to usermeta for {$morder->user_id} " );
+			}
+		}
+
 		//save
 		$morder->saveOrder();
 		$morder->getMemberOrderByID( $morder->id );
