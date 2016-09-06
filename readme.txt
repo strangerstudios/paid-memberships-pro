@@ -116,6 +116,10 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.11 =
+* ENHANCEMENT: Added pmpro_set_message filter to edit PMPro error messages. Passes the message and type.
+* ENHANCEMENT: Now listing categories in hierarchical format in the Content Settings section of Membership Levels.
+* BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
+* BUG: Fixed URL used when checking for addon updates.
 * ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
 * ENHANCEMENT: Added pmpro_getLevelsCost() - with an s - function to get the combined cost of multiple levels in an array.
 * ENHANCEMENT: Added pmpro_getLevelsExpiration() - with an s - function to get the combined expiration text for multiple levels in array.
