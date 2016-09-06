@@ -116,8 +116,12 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.11 =
-* BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
 * BUG: Fixed URL used when checking for addon updates.
+* BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
+* BUG: Fixed issues where PayPal IPN updates would sometimes log $0 instead of the actual billing amount.
+* BUG: Fixed warnings in the PayPal IPN handler.
+* ENHANCEMENT: Now tracking IPN event ids in order notes for recurring orders.
+* ENHANCEMENT: Added pmpro_subscription_ipn_event_processed hook to IPN handler.
 * ENHANCEMENT: Added pmpro_set_message filter to edit PMPro error messages. Passes the message and type.
 * ENHANCEMENT: Now listing categories in hierarchical format in the Content Settings section of Membership Levels.
 * ENHANCEMENT: Added pmpro_areLevelsFree() function to check if all levels in an array of levels are free.
