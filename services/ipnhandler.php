@@ -284,9 +284,9 @@ if ( $txn_type == "subscr_cancel" ) {
 				(2) The user doesn't currently have the level attached to this order.
 			*/
 
-			if ( $last_subscr_order->status == "cancelled" ) {
+			if ( isset($last_subsc_order->membership_id) && $last_subscr_order->status == "cancelled" ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
-			} elseif ( ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
+			} elseif ( isset($last_subsc_order->membership_id) && ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
 			} else {
 				pmpro_changeMembershipLevel( 0, $last_subscr_order->user_id, 'cancelled' );
@@ -481,6 +481,9 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 	Change the membership level. We also update the membership order to include filtered valus.
 */
 function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
+
+	global $wpdb;
+
 	//filter for level
 	$morder->membership_level = apply_filters( "pmpro_ipnhandler_level", $morder->membership_level, $morder->user_id );
 
@@ -544,7 +547,17 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 		//add discount code use
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-			$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time( 'mysql' ) . "" );
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+						( code_id, user_id, order_id, timestamp ) 
+						VALUES( %d, %d, %s, %s )",
+					$discount_code_id),
+					$morder->user_id,
+					$morder->id,
+					current_time( 'mysql' )
+				);
 		}
 
 		//save first and last name fields
@@ -600,9 +613,9 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$morder          = new MemberOrder();
 	$morder->user_id = $last_order->user_id;
 
-	$user = new WP_User($last_order->user_id);
-	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
-	
+	$user                   = new WP_User( $last_order->user_id );
+	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
+
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
@@ -660,15 +673,18 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->payment_type = $last_order->payment_type;
 
 		//set amount based on which PayPal type
-		if ( $last_order->gateway == "paypal" ) {
-			$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['amount'];
-		} elseif ( $last_order->gateway == "paypalexpress" ) {
-			$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['amount'];
-		} elseif ( $last_order->gateway == "paypalstandard" ) {
-			$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
-			$morder->PaymentAmount  = $_POST['mc_gross'];
+		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
+
+			if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
+				$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['amount'];
+			} elseif ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
+				$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['mc_gross'];
+			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
+				$morder->InitialPayment = $_POST['payment_gross'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['payment_gross'];
+			}
 		}
 
 		$morder->FirstName = $_POST['first_name'];
@@ -705,6 +721,26 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		//figure out timestamp or default to none (today)
 		if ( ! empty( $_POST['payment_date'] ) ) {
 			$morder->timestamp = strtotime( $_POST['payment_date'] );
+		}
+
+		// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)
+		$ipn_id = isset($_POST['ipn_track_id']) ? sanitize_text_field( $_POST['ipn_track_id'] ) : null;
+
+		// Allow extraction of the IPN Track ID from the order notes (if needed)
+		$morder->notes = "{$morder->notes} [IPN_ID]{$ipn_id}[/IPN_ID]";
+
+		/**
+		 * Post processing for a specific subscription related IPN event ID
+		 *
+		 * @param       string      $ipn_id     - The ipn_track_id from the PayPal IPN request
+		 * @param       MemberOrder $morder     - The completed Member Order object for the IPN request
+		 */
+		do_action('pmpro_subscription_ipn_event_processed', $ipn_id, $morder );
+
+		if ( ! is_null( $ipn_id ) ) {
+			if ( false === update_user_meta( $morder->user_id, "pmpro_last_{$morder->gateway}_ipn_id", $ipn_id )) {
+				ipnlog( "Unable to save the IPN event ID ({$ipn_id}) to usermeta for {$morder->user_id} " );
+			}
 		}
 
 		//save
