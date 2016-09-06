@@ -69,7 +69,7 @@
 				}
 			?>
 
-			<?php 
+			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if($pmpro_include_billing_address_fields)
 				{ 
