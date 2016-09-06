@@ -53,7 +53,7 @@
 
 				<?php
 					if(!empty($pmpro_level->description))
-						echo apply_filters("the_content", stripslashes($pmpro_level->description));
+						echo wpautop( stripslashes( $pmpro_level->description ) );
 				?>
 
 				<div id="pmpro_level_cost">
