@@ -2283,7 +2283,7 @@ function pmpro_formatAddress($name, $address1, $address2, $city, $state, $zip, $
 	if($nl2br)
 		$address = nl2br($address);
 
-	return $address;
+	return apply_filters('pmpro_formatted_address', $address, $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br );
 }
 
 /*
