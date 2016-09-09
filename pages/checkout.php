@@ -52,8 +52,15 @@
 				</p>
 
 				<?php
-					if(!empty($pmpro_level->description))
-						echo apply_filters("the_content", stripslashes($pmpro_level->description));
+					/**
+					 * All devs to filter the level description at checkout.
+					 * We also have a function in includes/filters.php that applies the the_content filters to this description.
+					 * @param string $description The level description.
+					 * @param object $pmpro_level The PMPro Level object.
+					 */
+					$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
+					if(!empty($level_description))
+						echo $level_description;
 				?>
 
 				<div id="pmpro_level_cost">

@@ -27,13 +27,19 @@
 				
 		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro'), $pmpro_invoice->user->user_email) . "</p>";
 		
-		//check instructions		
+		//check instructions
 		if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
 			$confirmation_message .= wpautop(pmpro_getOption("instructions"));
 		
+		/**
+		 * All devs to filter the confirmation message.
+		 * We also have a function in includes/filters.php that applies the the_content filters to this message.
+		 * @param string $confirmation_message The confirmation message.
+		 * @param object $pmpro_invoice The PMPro Invoice/Order object.
+		 */
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, $pmpro_invoice);				
 		
-		echo apply_filters("the_content", $confirmation_message);		
+		echo $confirmation_message;
 	?>
 	
 	
@@ -96,6 +102,11 @@
 	{
 		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account. A welcome email has been sent to %s.', 'pmpro'), $current_user->user_email) . "</p>";
 		
+		/**
+		 * All devs to filter the confirmation message.
+		 * Documented above.
+		 * We also have a function in includes/filters.php that applies the the_content filters to this message.		 
+		 */
 		$confirmation_message = apply_filters("pmpro_confirmation_message", $confirmation_message, false);
 		
 		echo $confirmation_message;

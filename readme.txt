@@ -120,6 +120,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
 * BUG: Fixed issues where PayPal IPN updates would sometimes log $0 instead of the actual billing amount.
 * BUG: Fixed warnings in the PayPal IPN handler.
+* BUG/ENHANCEMENT: Added pmpro_checkout_level filter and now using that filter to apply the_content filters to the level description at checkout. This allows you to turn off the the_content filters (e.g. processing shortcodes) by using remove_filter('pmpro_checkout_level', 'pmpro_pmpro_checkout_level'); in a custom plugin.
+* BUG/ENHANCEMENT: Using the pmpro_confirmation_message filter on the confirmation page whether there is an invoice or not. Now also adding the the_content filters to the confirmation message. You can disable this by using remove_filter('pmpro_confirmation_message', 'pmpro_pmpro_confirmation_message'); in a custom plugin.
 * ENHANCEMENT: Now tracking IPN event ids in order notes for recurring orders.
 * ENHANCEMENT: Added pmpro_subscription_ipn_event_processed hook to IPN handler.
 * ENHANCEMENT: Added pmpro_set_message filter to edit PMPro error messages. Passes the message and type.
