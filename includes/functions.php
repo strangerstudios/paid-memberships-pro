@@ -1167,6 +1167,8 @@ function pmpro_listCategories($parent_id = 0, $level_categories = array()) {
 			$name = 'membershipcategory_' . $cat->term_id;
 			if(!empty($level_categories))
 				$checked = checked(in_array($cat->term_id, $level_categories), true, false);
+			else
+				$checked = "";
 			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
 			pmpro_listCategories($cat->term_id, $level_categories);
 			echo '</li></ul>';
