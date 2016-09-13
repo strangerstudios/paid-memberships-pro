@@ -41,82 +41,82 @@
 		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, current_time("timestamp")));
 
 		//updating or new?
-		if($saveid > 0)
-		{
-			$sqlQuery = $wpdb->prepare(
-			"UPDATE $wpdb->pmpro_discount_codes
-			SET code = %s,
-			starts = %s,
-			expires = %s,
-			uses = %d
-			WHERE id = %d LIMIT 1",
-			$code,
-			$starts,
-			$expires,
-			$uses,
-			$saveid
-		);
+	if($saveid > 0)
+	{
+		$sqlQuery = $wpdb->prepare(
+		"UPDATE $wpdb->pmpro_discount_codes
+		SET code = %s,
+		starts = %s,
+		expires = %s,
+		uses = %d
+		WHERE id = %d LIMIT 1",
+		$code,
+		$starts,
+		$expires,
+		$uses,
+		$saveid
+	);
 
-			if($wpdb->query($sqlQuery) !== false)
-			{
-				$pmpro_msg = __("Discount code updated successfully.", "pmpro");
-				$pmpro_msgt = "success";
-				$saved = true;
-				$edit = $saveid;
-			}
-			else
-			{
-				$pmpro_msg = __("Error updating discount code. That code may already be in use.", "pmpro");
-				$pmpro_msgt = "error";
-			}
+		if($wpdb->query($sqlQuery) !== false)
+		{
+			$pmpro_msg = __("Discount code updated successfully.", "pmpro");
+			$pmpro_msgt = "success";
+			$saved = true;
+			$edit = $saveid;
 		}
 		else
 		{
-			$sqlQuery = $wpdb->prepare(
-			"INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses)
-			VALUES( %s, %s, %s, %d)",
-			$code,
-			$starts,
-			$expires,
-			$uses
-		);
-
-			if($wpdb->query($sqlQuery) !== false)
-			{
-				$pmpro_msg = __("Discount code added successfully.", "pmpro");
-				$pmpro_msgt = "success";
-				$saved = true;
-				$edit = $wpdb->insert_id;
-				//$saveid = $edit;
-			}
-			else
-			{
-				$pmpro_msg = __("Error adding discount code. That code may already be in use.", "pmpro") . $wpdb->last_error;
-				$pmpro_msgt = "error";
-			}
+			$pmpro_msg = __("Error updating discount code. That code may already be in use.", "pmpro");
+			$pmpro_msgt = "error";
 		}
+	}
+	else
+	{
+		$sqlQuery = $wpdb->prepare(
+		"INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses)
+		VALUES( %s, %s, %s, %d)",
+		$code,
+		$starts,
+		$expires,
+		$uses
+	);
+
+	if($wpdb->query($sqlQuery) !== false)
+	{
+		$pmpro_msg = __("Discount code added successfully.", "pmpro");
+		$pmpro_msgt = "success";
+		$saved = true;
+		$edit = $wpdb->insert_id;
+		//$saveid = $edit;
+	}
+	else
+	{
+		$pmpro_msg = __("Error adding discount code. That code may already be in use.", "pmpro") . $wpdb->last_error;
+		$pmpro_msgt = "error";
+	}
+}
 
 		//now add the membership level rows
-		if($saved && $edit > 0)
-		{
-			//get the submitted values
-			$all_levels_a = $_REQUEST['all_levels'];
-			if(!empty($_REQUEST['levels']))
-				$levels_a = $_REQUEST['levels'];
-			else
-				$levels_a = array();
-			$initial_payment_a = $_REQUEST['initial_payment'];
-			if(!empty($_REQUEST['recurring']))
+	if($saved && $edit > 0)
+	{
+		//get the submitted values
+		$all_levels_a = $_REQUEST['all_levels'];
+		if(!empty($_REQUEST['levels']))
+			$levels_a = $_REQUEST['levels'];
+		else
+			$levels_a = array();
+		$initial_payment_a = $_REQUEST['initial_payment'];
+		if(!empty($_REQUEST['recurring']))
 			$recurring_a = $_REQUEST['recurring'];
 			$billing_amount_a = $_REQUEST['billing_amount'];
 			$cycle_number_a = $_REQUEST['cycle_number'];
 			$cycle_period_a = $_REQUEST['cycle_period'];
 			$billing_limit_a = $_REQUEST['billing_limit'];
-			if(!empty($_REQUEST['custom_trial']))
+		if(!empty($_REQUEST['custom_trial']))
 			$custom_trial_a = $_REQUEST['custom_trial'];
 			$trial_amount_a = $_REQUEST['trial_amount'];
 			$trial_limit_a = $_REQUEST['trial_limit'];
-			if(!empty($_REQUEST['expiration']))
+		if(!empty($_REQUEST['expiration']))
 			$expiration_a = $_REQUEST['expiration'];
 			$expiration_number_a = $_REQUEST['expiration_number'];
 			$expiration_period_a = $_REQUEST['expiration_period'];
