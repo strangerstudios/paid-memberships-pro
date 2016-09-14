@@ -102,7 +102,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
 			if($level->trial_amount > 0 ||
