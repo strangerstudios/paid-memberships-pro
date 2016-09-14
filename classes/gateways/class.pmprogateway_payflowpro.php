@@ -384,6 +384,7 @@
 			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			$nvpStr .= "&PAYPERIOD=" . $payperiod;
+			$nvpStr .= "&FREQUENCY=" . $order->BillingFrequency;
 
 			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;
 
