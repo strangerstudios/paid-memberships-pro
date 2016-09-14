@@ -52,7 +52,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
 			if($level->billing_limit > 0)
@@ -153,7 +153,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
 			if($level->trial_amount > 0 ||
@@ -201,7 +201,7 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 		{
 			//need to look it up?
 			if(is_numeric($level))
-				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" ), $level );
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
 			if(pmpro_isLevelTrial($level))
