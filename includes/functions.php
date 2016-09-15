@@ -1956,7 +1956,7 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
  * Get level at checkout and place into $pmpro_level global.
  */
 function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
-	global $pmpro_level, $wpdb;
+	global $pmpro_level, $wpdb, $post;
 	
 	//reset pmpro_level
 	$pmpro_level = NULL;

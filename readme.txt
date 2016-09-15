@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.11.1 =
+* BUG: Fixed issue introduced in 1.8.11 where the pmpro_default_level custom field was being ignored at checkout.
+
 = 1.8.11 =
 * BUG: Fixed URL used when checking for addon updates.
 * BUG: Now enqueueing the jquery.creditCardValidator.js file in Billing preheader.
