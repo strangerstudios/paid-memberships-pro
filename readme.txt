@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.12 =
+* ENHANCEMENT: Updated Italian translations. (Thanks, Angelo)
+
 = 1.8.11.1 =
 * BUG: Fixed issue introduced in 1.8.11 where the pmpro_default_level custom field was being ignored at checkout.
 * BUG: Fixed bugs in DB calls made for the compatibility checks for various gateways.
