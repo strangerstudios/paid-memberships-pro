@@ -43,8 +43,8 @@
 		//updating or new?
 	if($saveid > 0)
 	{
-		$sqlQuery = $wpdb->prepare(
-		"UPDATE $wpdb->pmpro_discount_codes
+		$sqlQuery = $wpdb->prepare("
+		UPDATE $wpdb->pmpro_discount_codes
 		SET code = %s,
 		starts = %s,
 		expires = %s,
@@ -72,8 +72,8 @@
 	}
 	else
 	{
-		$sqlQuery = $wpdb->prepare(
-		"INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses)
+		$sqlQuery = $wpdb->prepare("
+		INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses)
 		VALUES( %s, %s, %s, %d)",
 		$code,
 		$starts,
@@ -105,7 +105,7 @@
 			$levels_a = $_REQUEST['levels'];
 		else
 			$levels_a = array();
-		$initial_payment_a = $_REQUEST['initial_payment'];
+			$initial_payment_a = $_REQUEST['initial_payment'];
 		if(!empty($_REQUEST['recurring']))
 			$recurring_a = $_REQUEST['recurring'];
 			$billing_amount_a = $_REQUEST['billing_amount'];
@@ -207,8 +207,8 @@
 					}
 
 					//okay, do the insert
-					$sqlQuery = $wpdb->prepare(
-					"INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period)
+					$sqlQuery = $wpdb->prepare("
+					INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period)
 					VALUES(%d, %d, %f, %f, %d, %d, %d, %f, %d, %d, %d)",
 					$edit,
 					$level_id,
@@ -255,7 +255,7 @@
 	if(!empty($delete))
 	{
 		//is this a code?
-		$code = $wpdb->get_var( $wpdb->prepare("SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = %d LIMIT 1", $delete ) );
+		$code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE id = %d LIMIT 1", $delete ) );
 		if(!empty($code))
 		{
 			//action
@@ -316,8 +316,8 @@
 				// get the code...
 				if($edit > 0)
 				{
-					$code = $wpdb->get_row( $wpdb->prepare(
-					"SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+					$code = $wpdb->get_row( $wpdb->prepare("
+					SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
 					FROM $wpdb->pmpro_discount_codes
 					WHERE id = %d LIMIT 1",
 					$edit ),
@@ -325,8 +325,8 @@
 				);
 
 					$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
-					$levels = $wpdb->get_results( $wpdb->prepare(
-					"SELECT l.id, l.name, cl.initial_payment, cl.billing_amount, cl.cycle_number, cl.cycle_period, cl.billing_limit, cl.trial_amount, cl.trial_limit
+					$levels = $wpdb->get_results( $wpdb->prepare("
+					SELECT l.id, l.name, cl.initial_payment, cl.billing_amount, cl.cycle_number, cl.cycle_period, cl.billing_limit, cl.trial_amount, cl.trial_limit
 					FROM $wpdb->pmpro_membership_levels l
 					LEFT JOIN $wpdb->pmpro_discount_codes_levels cl
 					ON l.id = cl.level_id
@@ -337,8 +337,8 @@
 				}
 				elseif(!empty($copy) && $copy > 0)
 				{
-					$code = $wpdb->get_row( $wpdb->prepare(
-					"SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+					$code = $wpdb->get_row( $wpdb->prepare("
+					SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
 					FROM $wpdb->pmpro_discount_codes
 					WHERE id = %d LIMIT 1",
 					$copy ),
@@ -464,8 +464,8 @@
 					//if this level is already managed for this discount code, use the code values
 					if($edit > 0)
 					{
-						$code_level = $wpdb->get_row( $wpdb->prepare(
-						"SELECT l.id, cl.*, l.name, l.description, l.allow_signups
+						$code_level = $wpdb->get_row( $wpdb->prepare("
+						SELECT l.id, cl.*, l.name, l.description, l.allow_signups
 						FROM $wpdb->pmpro_discount_codes_levels cl
 						LEFT JOIN $wpdb->pmpro_membership_levels l
 						ON cl.level_id = l.id
@@ -639,10 +639,10 @@
 		<?php
 			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
 			if(!empty($s))
-				$sqlQuery .= $wpdb->prepare( "WHERE code LIKE %%s% ", $s); //look at this line.
-			$sqlQuery .= "ORDER BY id ASC";
+				$sqlQuery .= "WHERE code LIKE '%$s%' ";
+				$sqlQuery .= "ORDER BY id ASC";
 
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				$codes = $wpdb->get_results($sqlQuery, OBJECT);
 		?>
 		<table class="widefat">
 		<thead>
@@ -696,8 +696,8 @@
 						</td>
 						<td>
 							<?php
-								$sqlQuery = $wpdb->prepare(
-								"SELECT l.id, l.name
+								$sqlQuery = $wpdb->prepare("
+								SELECT l.id, l.name
 								FROM $wpdb->pmpro_membership_levels l
 								LEFT JOIN $wpdb->pmpro_discount_codes_levels cl
 								ON l.id = cl.level_id
