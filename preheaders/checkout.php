@@ -649,7 +649,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			$use_discount_code = false;
 		} else {
 			//all okay
-			$use_discount_code = false;
+			$use_discount_code = true;
 		}
 		
 		//update membership_user table.		
