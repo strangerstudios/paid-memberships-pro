@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.12 =
+* BUG: Fixed issue where pmpro_before_change_membership_level was running after membership level had already been changed.
 * ENHANCEMENT: Updated Italian translations. (Thanks, Angelo)
 
 = 1.8.11.1 =
