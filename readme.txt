@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.12 =
+* BUG: Now finding expiring members correctly.
 * ENHANCEMENT: Updated Italian translations. (Thanks, Angelo)
 
 = 1.8.11.1 =
