@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.6.1
-Stable tag: 1.8.11.1
+Stable tag: 1.8.11.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,8 +115,11 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 1.8.12 =
-* BUG: Now finding expiring members correctly.
+= 1.8.11.2 =
+* BUG: Fixed a bug introduced in 1.8.11 that kept PMPro from tracking coupon code uses. Any checkout with a discount code while running 1.8.11 won't have properly tracked the discount code use. You may want to adjust your "uses" numbers for your codes, and hand check any reporting/etc that relied on discount codes. Users of the Sponsored Members addon will have been affected too. Discount codes will need to be made manually for any sponsor who checked out.
+* BUG: Fix to the expiration warnings code. Making sure it finds all members who are expiring soon while also keeping track of when emails are sent so users don't get too many emails.
+* BUG: Fixed issue where pmpro_before_change_membership_level was running after levels had been changed.
+* BUG: Fixed some warnings.
 * ENHANCEMENT: Updated Italian translations. (Thanks, Angelo)
 
 = 1.8.11.1 =
