@@ -43,8 +43,6 @@ function pmpro_cron_expire_memberships()
 	}
 }
 
-add_action('admin_init', 'pmpro_cron_expiration_warnings', 99);
-
 /*
 	Expiration Warning Emails
 */
@@ -89,10 +87,6 @@ function pmpro_cron_expiration_warnings()
 		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
 
 	$expiring_soon = $wpdb->get_results($sqlQuery);
-
-	d($expiring_soon);
-	d($wpdb);
-	exit;
 
 	foreach($expiring_soon as $e)
 	{
