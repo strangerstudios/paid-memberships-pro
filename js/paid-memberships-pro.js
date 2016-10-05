@@ -1,9 +1,10 @@
 function askfirst(text, url)
 {
-	var answer = confirm (text);
+	var answer = window.confirm(text);
 
-	if (answer)
-		window.location=url;
+	if (answer) {
+		window.location = url;
+	}
 }
 
 //provide a random timestamp with each call to foil caching
