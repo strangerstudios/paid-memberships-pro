@@ -9,10 +9,11 @@ function pmpro_init()
 	require_once(PMPRO_DIR . "/includes/states.php");
 	require_once(PMPRO_DIR . "/includes/currencies.php");
 
-	wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
 
 	if(is_admin())
 	{
+		wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
+
 		$admin_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
 			$admin_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin.css";
