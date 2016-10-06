@@ -119,6 +119,14 @@ if ( $txn_type == "subscr_payment" ) {
 
 			//Check that the corresponding order has the same amount as what we're getting from PayPal
 			$amount = $_POST['mc_gross'];
+			
+			//Adjust gross for tax if provided
+			if(!empty($_POST['tax']) && !empty((float)$_POST['tax'])) {
+				$amount = (float)$amount - (float)$_POST['tax'];
+			
+				//TODO: We should maybe update the order to reflect the tax amount and new total
+			}
+			
 			if ( (float) $amount != (float) $morder->total ) {
 				ipnlog( "ERROR: PayPal transaction #" . $_POST['tnx_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 			} else {
@@ -161,6 +169,14 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 
 		//Check that the corresponding order has the same amount
 		$amount = $_POST['mc_gross'];
+		
+		//Adjust gross for tax if provided
+		if(!empty($_POST['tax']) && !empty((float)$_POST['tax'])) {
+			$amount = (float)$amount - (float)$_POST['tax'];
+		
+			//TODO: We should maybe update the order to reflect the tax amount and new total
+		}
+				
 		if ( (float) $amount != (float) $morder->total ) {
 			ipnlog( "ERROR: PayPal transaction #" . $_POST['txn_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 		} else {
