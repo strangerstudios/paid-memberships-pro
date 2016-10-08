@@ -606,7 +606,7 @@
 			}
 		?>
 
-		<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="<?php echo add_query_arg( array( 'page' => '', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
+		<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
 		<form id="posts-filter" method="get" action="">			
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'pmpro');?>:</label>
