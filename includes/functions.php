@@ -543,6 +543,7 @@ function pmpro_getLevelExpiration(&$level)
 		$expiration_text = "";
 
 	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $level);
+	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level); // Backwards compatible
 	return $expiration_text;
 }
 
@@ -577,6 +578,7 @@ function pmpro_getLevelsExpiration(&$levels)
 	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
 	 */
 	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $levels);
+	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $levels); // Backwards compatible
 	return $expiration_text;
 }
 
