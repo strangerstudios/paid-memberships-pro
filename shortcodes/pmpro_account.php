@@ -79,7 +79,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							<td class="pmpro_account-membership-expiration">
 							<?php 
 								if($level->enddate) 
-									echo date(get_option('date_format'), $level->enddate);
+									echo date_i18n(get_option('date_format'), $level->enddate);
 								else
 									echo "---";
 							?>
@@ -142,7 +142,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						$invoice->getMembershipLevel();						
 						?>
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
-							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date(get_option("date_format"), $invoice->timestamp)?></td>
+							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?></td>
 							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", "pmpro");?></td>
 							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
 						</tr>
