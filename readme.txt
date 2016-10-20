@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.11.3 =
+* BUG: Fixed issue where PayPal Standard IPN requests were being rejected if a tax amount was set in PayPal.
+
 = 1.8.11.2 =
 * BUG: Fixed a bug introduced in 1.8.11 that kept PMPro from tracking coupon code uses. Any checkout with a discount code while running 1.8.11 won't have properly tracked the discount code use. You may want to adjust your "uses" numbers for your codes, and hand check any reporting/etc that relied on discount codes. Users of the Sponsored Members addon will have been affected too. Discount codes will need to be made manually for any sponsor who checked out.
 * BUG: Fix to the expiration warnings code. Making sure it finds all members who are expiring soon while also keeping track of when emails are sent so users don't get too many emails.
