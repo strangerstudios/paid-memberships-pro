@@ -1809,7 +1809,7 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 		 *
 		 * @param object $level Level object.
 		 */
-		$all_membership_levels[$user_id] = apply_filters('pmpro_get_membership_level_for_user', $all_membership_levels[$user_id]);
+		$all_membership_levels[$user_id] = apply_filters('pmpro_get_membership_level_for_user', $all_membership_levels[$user_id], $user_id);
 
 		return $all_membership_levels[$user_id];
 	}
@@ -1872,7 +1872,7 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 	 *
 	 * @param array $levels Array of level objects.
 	 */
-	$levels = apply_filters('pmpro_get_membership_levels_for_user', $levels);
+	$levels = apply_filters('pmpro_get_membership_levels_for_user', $levels, $user_id);
 
 	return $levels;
 }
