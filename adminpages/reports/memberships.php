@@ -546,7 +546,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 			$levels = array($levels);
 		}
 
-		$sqlQuery .= "AND membership_id IN(" . implode(", ", $levels) . ") ";
+		$sqlQuery .= "AND mu1.membership_id IN(" . implode(", ", $levels) . ") ";
 	}
 	
 	/**
