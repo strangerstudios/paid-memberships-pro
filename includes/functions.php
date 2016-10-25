@@ -635,7 +635,7 @@ function pmpro_next_payment($user_id = NULL, $order_status = "success", $format 
 		if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
 		{
 			//last payment date
-			$lastdate = date("Y-m-d", $order->timestamp);
+			$lastdate = date_i18n("Y-m-d", $order->timestamp);
 
 			//next payment date
 			$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
@@ -666,9 +666,9 @@ function pmpro_next_payment($user_id = NULL, $order_status = "success", $format 
 	elseif($format == "timestamp")
 		return $r;
 	elseif($format == "date_format")
-		return date(get_option('date_format'), $r);
+		return date_i18n(get_option('date_format'), $r);
 	else
-		return date($format, $r);	//assume a PHP date format	
+		return date_i18n($format, $r);	//assume a PHP date format	
 }
 
 if(!function_exists("last4"))
@@ -1628,14 +1628,14 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 
 		//has this code started yet?
 		if(!empty($dbcode->starts) && $dbcode->starts > $today)
-			$error = sprintf(__("This discount code goes into effect on %s.", "pmpro"), date(get_option('date_format'), $dbcode->starts));
+			$error = sprintf(__("This discount code goes into effect on %s.", "pmpro"), date_i18n(get_option('date_format'), $dbcode->starts));
 	}
 
 	//check if the code is expired
 	if(!$error)
 	{
 		if(!empty($dbcode->expires) && $dbcode->expires < $today)
-			$error = sprintf(__("This discount code expired on %s.", "pmpro"), date(get_option('date_format'), $dbcode->expires));
+			$error = sprintf(__("This discount code expired on %s.", "pmpro"), date_i18n(get_option('date_format'), $dbcode->expires));
 	}
 
 	//have we run out of uses?

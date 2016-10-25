@@ -33,25 +33,25 @@ if ( isset( $_REQUEST['start-day'] ) ) {
 if ( isset( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
-	$start_year = date( "Y" );
+	$start_year = date_i18n( "Y" );
 }
 
 if ( isset( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
-	$end_month = date( "n" );
+	$end_month = date_i18n( "n" );
 }
 
 if ( isset( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
-	$end_day = date( "j" );
+	$end_day = date_i18n( "j" );
 }
 
 if ( isset( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
-	$end_year = date( "Y" );
+	$end_year = date_i18n( "Y" );
 }
 
 if ( isset( $_REQUEST['predefined-date'] ) ) {
@@ -111,19 +111,19 @@ if ( empty( $filter ) || $filter === "all" ) {
 	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == "predefined-date-range" ) {
 	if ( $predefined_date == "Last Month" ) {
-		$start_date = date( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "This Month" ) {
-		$start_date = date( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "This Year" ) {
-		$year       = date( 'Y' );
-		$start_date = date( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$year       = date_i18n( 'Y' );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "Last Year" ) {
-		$year       = date( 'Y' ) - 1;
-		$start_date = date( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$year       = date_i18n( 'Y' ) - 1;
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	}
 
 	//add times to dates
@@ -167,7 +167,7 @@ if ( ! empty( $_REQUEST['delete'] ) ) {
 	}
 }
 
-$thisyear = date( "Y" );
+$thisyear = date_i18n( "Y" );
 
 //this array stores fields that should be read only
 $read_only_fields = apply_filters( "pmpro_orders_read_only_fields", array(
@@ -710,7 +710,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="ts_month"><?php _e( 'Date', 'pmpro' ); ?>:</label></th>
 				<td>
 					<?php if ( in_array( "timestamp", $read_only_fields ) && $order_id > 0 ) {
-						echo date( get_option( 'date_format' ) . " " . get_option( 'time_format' ), $order->timestamp );
+						echo date_i18n( get_option( 'date_format' ) . " " . get_option( 'time_format' ), $order->timestamp );
 					} else { ?>
 						<?php
 						//set up date vars
@@ -719,16 +719,16 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						} else {
 							$timestamp = current_time( 'timestamp' );
 						}
-						$year  = date( "Y", $timestamp );
-						$month = date( "n", $timestamp );
-						$day   = date( "j", $timestamp );
+						$year  = date_i18n( "Y", $timestamp );
+						$month = date_i18n( "n", $timestamp );
+						$day   = date_i18n( "j", $timestamp );
 						?>
 						<select id="ts_month" name="ts_month">
 							<?php
 							for ( $i = 1; $i < 13; $i ++ ) {
 								?>
 								<option value="<?php echo $i ?>"
-								        <?php if ( $i == $month ) { ?>selected="selected"<?php } ?>><?php echo date( "M", strtotime( $i . "/1/" . $year, current_time( "timestamp" ) ) ) ?></option>
+								        <?php if ( $i == $month ) { ?>selected="selected"<?php } ?>><?php echo date_i18n( "M", strtotime( $i . "/1/" . $year, current_time( "timestamp" ) ) ) ?></option>
 								<?php
 							}
 							?>
@@ -894,7 +894,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<select id="start-month" name="start-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date_i18n( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -909,7 +909,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<select id="end-month" name="end-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date_i18n( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1232,8 +1232,8 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					</td>
 					<td><?php echo $order->status; ?></td>
 					<td>
-						<?php echo date( get_option( 'date_format' ), $order->timestamp ); ?><br/>
-						<?php echo date( get_option( 'time_format' ), $order->timestamp ); ?>
+						<?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?><br/>
+						<?php echo date_i18n( get_option( 'time_format' ), $order->timestamp ); ?>
 					</td>
 					<td align="center">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php _e( 'edit', 'pmpro' ); ?></a>

@@ -85,21 +85,21 @@ function pmpro_membership_level_profile_fields($user)
 			$end_date = !empty($user->membership_level->enddate);
 			
 			//some vars for the dates
-			$current_day = date("j", current_time('timestamp'));			
+			$current_day = date_i18n("j", current_time('timestamp'));			
 			if($end_date)
-				$selected_expires_day = date("j", $user->membership_level->enddate);
+				$selected_expires_day = date_i18n("j", $user->membership_level->enddate);
 			else
 				$selected_expires_day = $current_day;
 				
-			$current_month = date("M", current_time('timestamp'));			
+			$current_month = date_i18n("M", current_time('timestamp'));			
 			if($end_date)
-				$selected_expires_month = date("m", $user->membership_level->enddate);
+				$selected_expires_month = date_i18n("m", $user->membership_level->enddate);
 			else
-				$selected_expires_month = date("m");
+				$selected_expires_month = date_i18n("m");
 				
-			$current_year = date("Y", current_time('timestamp'));									
+			$current_year = date_i18n("Y", current_time('timestamp'));									
 			if($end_date)
-				$selected_expires_year = date("Y", $user->membership_level->enddate);
+				$selected_expires_year = date_i18n("Y", $user->membership_level->enddate);
 			else
 				$selected_expires_year = (int)$current_year + 1;
 		?>
@@ -117,7 +117,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>

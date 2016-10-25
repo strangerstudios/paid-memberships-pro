@@ -8,7 +8,7 @@ function pmpro_cron_expire_memberships()
 	global $wpdb;
 
 	//make sure we only run once a day
-	$today = date("Y-m-d", current_time("timestamp"));
+	$today = date_i18n("Y-m-d", current_time("timestamp"));
 
 	//look for memberships that expired before today
 	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . $today . "' ORDER BY mu.enddate";
@@ -52,7 +52,7 @@ function pmpro_cron_expiration_warnings()
 	global $wpdb;
 
 	//make sure we only run once a day
-	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
+	$today = date_i18n("Y-m-d 00:00:00", current_time("timestamp"));
 
 	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
 
@@ -117,7 +117,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 {
 	global $wpdb;
 
-	$next_month_date = date("Y-m-01", strtotime("+2 months", current_time("timestamp")));
+	$next_month_date = date_i18n("Y-m-01", strtotime("+2 months", current_time("timestamp")));
 
 	$sqlQuery = "SELECT mu.user_id
 					FROM  $wpdb->pmpro_memberships_users mu
@@ -198,7 +198,7 @@ function pmpro_cron_trial_ending_warnings()
 	global $wpdb;
 
 	//make sure we only run once a day
-	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
+	$today = date_i18n("Y-m-d 00:00:00", current_time("timestamp"));
 
 	$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);
 

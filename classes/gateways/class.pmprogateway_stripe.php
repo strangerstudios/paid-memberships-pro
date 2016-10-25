@@ -534,7 +534,7 @@
 								<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
 							</select>/<select id="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
 								<?php
-									for($i = date("Y"); $i < date("Y") + 10; $i++)
+									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
 									{
 								?>
 									<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
@@ -586,8 +586,8 @@
 			global $wpdb, $current_user, $pmpro_currency_symbol;
 
 			$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
-			$current_year = date("Y");
-			$current_month = date("m");
+			$current_year = date_i18n("Y");
+			$current_month = date_i18n("m");
 
 			//make sure the current user has privileges
 			$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
@@ -672,7 +672,7 @@
 											{
 											?>
 											<option value="<?php echo str_pad($i, 2, "0", STR_PAD_LEFT);?>" <?php if(!empty($update['date_month']) && $update['date_month'] == $i) { ?>selected="selected"<?php } ?>>
-												<?php echo date("M", strtotime($i . "/1/" . $current_year));?>
+												<?php echo date_i18n("M", strtotime($i . "/1/" . $current_year));?>
 											</option>
 											<?php
 											}
@@ -856,7 +856,7 @@
 					$update_order->membership_name = $user_level->name;
 					$update_order->InitialPayment = 0;
 					$update_order->PaymentAmount = $update['billing_amount'];
-					$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
+					$update_order->ProfileStartDate = date_i18n("Y-m-d", $end_timestamp);
 					$update_order->BillingPeriod = $update['cycle_period'];
 					$update_order->BillingFrequency = $update['cycle_number'];
 
@@ -940,7 +940,7 @@
 						 WHERE meta_key = 'pmpro_stripe_next_on_date_update'
 							AND meta_value IS NOT NULL
 							AND meta_value <> ''
-							AND meta_value < '" . date("Y-m-d", strtotime("+1 day")) . "'";
+							AND meta_value < '" . date_i18n("Y-m-d", strtotime("+1 day")) . "'";
 			$updates = $wpdb->get_results($sqlQuery);
 			
 			if(!empty($updates))
@@ -971,7 +971,7 @@
 						foreach($user_updates as $key => $update)
 						{
 							if($update['when'] == 'date' &&
-								$update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] <= date("Y-m-d")
+								$update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] <= date_i18n("Y-m-d")
 							)
 							{
 								//get level for user
@@ -1004,7 +1004,7 @@
 								$update_order->membership_name = $user_level->name;
 								$update_order->InitialPayment = 0;
 								$update_order->PaymentAmount = $update['billing_amount'];
-								$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
+								$update_order->ProfileStartDate = date_i18n("Y-m-d", $end_timestamp);
 								$update_order->BillingPeriod = $update['cycle_period'];
 								$update_order->BillingFrequency = $update['cycle_number'];
 
@@ -1479,7 +1479,7 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 
 			//convert to a profile start date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);

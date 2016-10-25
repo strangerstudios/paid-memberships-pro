@@ -162,13 +162,13 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 					$wpdb->query($sqlQuery);
 				}
 			} else {
-				$startdate = date( "Y-m-d", $user->membership_level->startdate );
+				$startdate = date_i18n( "Y-m-d", $user->membership_level->startdate );
 			}
 			
 			//calculate and fix the end date
 			if(empty($user->membership_level->enddate)) {
 				if ( ! empty( $pmpro_level->expiration_number ) ) {
-					$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, $last_order->timestamp ) );
+					$enddate =  date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, $last_order->timestamp ) );
 				} else {
 					$enddate = "NULL";
 				}

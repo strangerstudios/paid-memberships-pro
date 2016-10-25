@@ -165,7 +165,7 @@ class Braintree_CreditCard extends Braintree
      */
     public static function expiringBetween($startDate, $endDate)
     {
-        $queryPath = '/payment_methods/all/expiring_ids?start=' . date('mY', $startDate) . '&end=' . date('mY', $endDate);
+        $queryPath = '/payment_methods/all/expiring_ids?start=' . date_i18n('mY', $startDate) . '&end=' . date_i18n('mY', $endDate);
         $response = Braintree_Http::post($queryPath);
         $pager = array(
             'className' => __CLASS__,
@@ -178,7 +178,7 @@ class Braintree_CreditCard extends Braintree
 
     public static function fetchExpiring($startDate, $endDate, $ids)
     {
-        $queryPath = '/payment_methods/all/expiring?start=' . date('mY', $startDate) . '&end=' . date('mY', $endDate);
+        $queryPath = '/payment_methods/all/expiring?start=' . date_i18n('mY', $startDate) . '&end=' . date_i18n('mY', $endDate);
         $response = Braintree_Http::post($queryPath, array('search' => array('ids' => $ids)));
 
         return Braintree_Util::extractAttributeAsArray(
