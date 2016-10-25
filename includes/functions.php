@@ -1620,11 +1620,11 @@ function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false
 	if(!$error)
 	{
 		//fix the date timestamps
-		$dbcode->starts = strtotime(date("m/d/Y", $dbcode->starts));
-		$dbcode->expires = strtotime(date("m/d/Y", $dbcode->expires));
+		$dbcode->starts = strtotime(date_i18n("m/d/Y", $dbcode->starts));
+		$dbcode->expires = strtotime(date_i18n("m/d/Y", $dbcode->expires));
 
 		//today
-		$today = strtotime(date("m/d/Y 00:00:00", current_time("timestamp")));
+		$today = strtotime(date_i18n("m/d/Y 00:00:00", current_time("timestamp")));
 
 		//has this code started yet?
 		if(!empty($dbcode->starts) && $dbcode->starts > $today)
@@ -2502,12 +2502,12 @@ function pmpro_getGateway()
 function pmpro_isDateThisMonth($str)
 {
 	$now = current_time('timestamp');
-	$this_month = intval(date("n", $now));
-	$this_year = intval(date("Y", $now));
+	$this_month = intval(date_i18n("n", $now));
+	$this_year = intval(date_i18n("Y", $now));
 
 	$date = strtotime($str, $now);
-	$date_month = intval(date("n", $date));
-	$date_year = intval(date("Y", $date));
+	$date_month = intval(date_i18n("n", $date));
+	$date_year = intval(date_i18n("Y", $date));
 
 	if($date_month === $this_month && $date_year === $this_year)
 		return true;

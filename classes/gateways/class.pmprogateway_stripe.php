@@ -1485,7 +1485,7 @@
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time("timestamp")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time("timestamp")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//for free trials, just push the start date of the subscription back
 			if(!empty($order->TrialBillingCycles) && $order->TrialAmount == 0)

@@ -617,8 +617,8 @@ function pmpro_getMRR($period, $levels = 'all')
 	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . date_i18n("Ym") . "', '" . date_i18n("Ym", $first_order_timestamp) . "')");
 	
 	/* this works in PHP 5.3+ without using MySQL to get the diff
-	$date1 = new DateTime(date("Y-m-d", $first_order_timestamp));
-	$date2 = new DateTime(date("Y-m-d"));	
+	$date1 = new DateTime(date_i18n("Y-m-d", $first_order_timestamp));
+	$date2 = new DateTime(date_i18n("Y-m-d"));
 	$interval = $date1->diff($date2);
 	$years = intval($interval->format('%y'));
 	$months = $years*12 + intval($interval->format('%m'));
