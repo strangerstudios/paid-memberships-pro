@@ -113,7 +113,7 @@ function pmpro_ssl_javascript_redirect()
 add_action('wp_print_scripts', 'pmpro_ssl_javascript_redirect');
 
 //If the site URL starts with https:, then force SSL/besecure to true. (Added 1.5.2)
-function pmpro_check_site_url_for_https($besecure)
+function pmpro_check_site_url_for_https($besecure = NULL)
 {	
 	global $wpdb, $pmpro_siteurl;
 

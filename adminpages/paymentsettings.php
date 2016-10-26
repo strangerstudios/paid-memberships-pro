@@ -206,12 +206,24 @@
 					<label for="use_ssl"><?php _e('Force SSL', 'pmpro');?>:</label>
 				</th>
 				<td>
-					<select id="use_ssl" name="use_ssl">
-						<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-						<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
-						<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'pmpro');?></option>
-					</select>
-					<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'pmpro'); ?></small>
+					<?php
+						if( pmpro_check_site_url_for_https() ) {
+							//entire site is over HTTPS
+							?>
+							<p><?php _e( 'Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS.' , 'pmpro' ); ?></p>
+							<?php
+						} else {
+							//site is not over HTTPS, show setting
+							?>
+							<select id="use_ssl" name="use_ssl">
+								<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
+								<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
+								<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'pmpro');?></option>
+							</select>
+							<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'pmpro'); ?></small>
+							<?php 
+						} 
+					?>
 				</td>
 			</tr>
 			<tr>

@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.12 =
+* ENHANCEMENT: Replaced the Force SSL option with an explanation if the entire site is over HTTPS. We are already ignoring the option in these cases.
+
 = 1.8.11.3 =
 * BUG: Fixed issue where PayPal Standard IPN requests were being rejected if a tax amount was set in PayPal.
 
