@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.12 =
 * ENHANCEMENT: Replaced the Force SSL option with an explanation if the entire site is over HTTPS. We are already ignoring the option in these cases.
+* BUG: Fixed setting in PayPal/PayPal Express API calls from AUTOBILLAMT to AUTOBILLOUTAMT. This setting is set to AddToNextBilling, meaning that failed payment amounts are added to the next billing cycle's amount if left unpaid. In most cases, a retry of the original billed amount goes through or the user's subscription is cancelled. But just in case, this makes sure that outstanding balances are paid. (Thanks, jubstuff on GitHub)
 
 = 1.8.11.3 =
 * BUG: Fixed issue where PayPal Standard IPN requests were being rejected if a tax amount was set in PayPal.
