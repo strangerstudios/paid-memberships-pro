@@ -56,31 +56,34 @@ function pmpro_cron_expiration_warnings()
 
 	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
 
+	// Configure the interval to select records from
+	$interval_start = $today;
+	$interval_end = date_i18n( 'Y-m-d 00:00:00', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+
 	//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 	$sqlQuery = $wpdb->prepare(
-		"SELECT
-				mu.user_id,
-				mu.membership_id,
-				mu.startdate,
-				mu.enddate,
-                um.meta_value notified
-			FROM {$wpdb->pmpro_memberships_users} mu
-            LEFT JOIN {$wpdb->usermeta} um
-            ON um.user_id = mu.user_id
-              	AND um.meta_key = %s
-			WHERE mu.status = 'active'
-				AND mu.enddate IS NOT NULL
-				AND mu.enddate <> '0000-00-00 00:00:00'
-				AND DATE_SUB(mu.enddate, INTERVAL %d DAY) <= %s
-				AND mu.membership_id <> 0
-				AND mu.membership_id IS NOT NULL
-                AND (um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) <= %s)
-			ORDER BY mu.enddate",
+		"SELECT DISTINCT
+  				mu.user_id,
+  				mu.membership_id,
+  				mu.startdate,
+ 				mu.enddate,
+ 				um.meta_value AS notice 			  
+ 			FROM {$wpdb->pmpro_memberships_users} AS mu
+ 			  LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
+            	AND ( um.meta_key IS NULL OR um.meta_key = %s )
+			WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )  
+				AND ( mu.status = 'active' )		   
+ 			    AND ( mu.enddate IS NOT NULL )
+ 			    AND ( mu.enddate <> '0000-00-00 00:00:00' )
+ 			    AND ( mu.enddate BETWEEN %s AND %s )		  
+ 			    AND ( mu.membership_id <> 0 OR mu.membership_id <> NULL )
+			ORDER BY mu.enddate
+			",
 		"pmpro_expiration_notice",
 		$pmpro_email_days_before_expiration,
 		$today,
-		$pmpro_email_days_before_expiration,
-		$today
+		$interval_start,
+		$interval_end
 	);
 
 	if(defined('PMPRO_CRON_LIMIT'))
