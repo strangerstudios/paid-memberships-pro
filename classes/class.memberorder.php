@@ -172,14 +172,14 @@
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
 
 			if(class_exists($classname))
-				$this->Gateway = new $classname($this->gateway);
+				$this->gateway = new $classname($this->gateway);
 			else
 			{
 				$error = new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
 				//die("Could not locate the gateway class file with class name = " . $classname . ".");
 			}
 
-			return $this->Gateway;
+			return $this->gateway;
 		}
 
 		/**
