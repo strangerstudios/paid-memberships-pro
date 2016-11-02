@@ -981,24 +981,6 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	//get all active membershipships for this user
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 
-
-		//get level id
-	if(is_array($level))
-		$level_id = $level['membership_id'];	//custom level
-	else
-		$level_id = $level;	//just id
-
-	/**
-	 * Action to run before the membership level changes.
-	 *
-	 * @param int $level_id ID of the level changed to.
-	 * @param int $user_id ID of the user changed.
-	 * @param array $old_levels array of prior levels the user belonged to.
-	 * $param int $cancel_level ID of the level being cancelled if specified
-	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels, $cancel_level);
-
-	
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
 	$pmpro_deactivate_old_levels = true;
 	/**
@@ -1038,6 +1020,22 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			}
 		}
 	}
+
+	//get level id
+	if(is_array($level))
+		$level_id = $level['membership_id'];	//custom level
+	else
+		$level_id = $level;	//just id
+
+	/**
+	 * Action to run before the membership level changes.
+	 *
+	 * @param int $level_id ID of the level changed to.
+	 * @param int $user_id ID of the user changed.
+	 * @param array $old_levels array of prior levels the user belonged to.
+	 * $param int $cancel_level ID of the level being cancelled if specified
+	 */
+	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels, $cancel_level);
 
 	//should we cancel their gateway subscriptions?
 	if(!empty($cancel_level)) {
