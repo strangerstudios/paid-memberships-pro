@@ -52,7 +52,7 @@
 		 *
 		 * @since 1.8.9.1
 		 */
-		static function http_api_curl($handle) {
+		static function http_api_curl($handle, $r, $url) {
 			if(strpos($url, 'paypal.com') !== false)
 				curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
