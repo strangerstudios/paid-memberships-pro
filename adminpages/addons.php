@@ -71,7 +71,7 @@
 	?>
 	
 	<p>
-		<?php printf(__('Last checked on %s at %s.', 'pmpro'), date(get_option('date_format'), $addons_timestamp), date(get_option('time_format'), $addons_timestamp));?> &nbsp;	
+		<?php printf(__('Last checked on %s at %s.', 'pmpro'), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;	
 		<a class="button" href="<?php echo admin_url("admin.php?page=pmpro-addons&force-check=1&plugin_status=" . $status);?>"><?php _e('Check Again', 'pmpro'); ?></a>
 	</p>
 

@@ -344,7 +344,7 @@ function pmpro_ipnExit() {
 
 	//for log
 	if ( $logstr ) {
-		$logstr = "Logged On: " . date( "m/d/Y H:i:s" ) . "\n" . $logstr . "\n-------------\n";
+		$logstr = "Logged On: " . date_i18n( "m/d/Y H:i:s" ) . "\n" . $logstr . "\n-------------\n";
 
 		echo $logstr;
 
@@ -508,7 +508,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 	//fix expiration date
 	if ( ! empty( $morder->membership_level->expiration_number ) ) {
-		$enddate = "'" . date( "Y-m-d", strtotime( "+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
 	} else {
 		$enddate = "NULL";
 	}

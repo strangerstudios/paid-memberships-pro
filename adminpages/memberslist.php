@@ -242,11 +242,11 @@
 									-
 								<?php } ?>
 							</td>
-							<td><?php echo date(get_option("date_format"), strtotime($theuser->user_registered, current_time("timestamp")))?></td>
+							<td><?php echo date_i18n(get_option("date_format"), strtotime($theuser->user_registered, current_time("timestamp")))?></td>
 							<td>
 								<?php
 									if($auser->enddate)
-										echo apply_filters("pmpro_memberslist_expires_column", date(get_option('date_format'), $auser->enddate), $auser);
+										echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
 									else
 										echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
 								?>

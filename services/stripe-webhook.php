@@ -200,7 +200,7 @@
 								$update_order->membership_name = $user->membership_level->name;
 								$update_order->InitialPayment = 0;
 								$update_order->PaymentAmount = $update['billing_amount'];
-								$update_order->ProfileStartDate = date("Y-m-d", $end_timestamp);
+								$update_order->ProfileStartDate = date_i18n("Y-m-d", $end_timestamp);
 								$update_order->BillingPeriod = $update['cycle_period'];
 								$update_order->BillingFrequency = $update['cycle_number'];
 
@@ -453,7 +453,7 @@
 		//for log
 		if($logstr)
 		{
-			$logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
+			$logstr = "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
 			echo $logstr;
 

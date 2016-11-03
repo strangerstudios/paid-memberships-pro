@@ -175,7 +175,7 @@
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 						$order->TrialBillingPeriod = $order->BillingPeriod;
 						$order->TrialBillingFrequency = $order->BillingFrequency;													
 						$order->TrialBillingCycles = 1;
@@ -188,7 +188,7 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 						$order->TrialBillingCycles++;
 						
 						//add a billing cycle to make up for the trial, if applicable
@@ -198,7 +198,7 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					}
 					
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -222,7 +222,7 @@
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 							$order->TrialBillingPeriod = $order->BillingPeriod;
 							$order->TrialBillingFrequency = $order->BillingFrequency;													
 							$order->TrialBillingCycles = 1;
@@ -235,7 +235,7 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
@@ -245,7 +245,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
 						
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);

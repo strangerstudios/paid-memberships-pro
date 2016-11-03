@@ -505,7 +505,7 @@
 		</table>				
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'pmpro'); ?>" /> 					
-			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro'); ?>" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels')?>';" /> 					
+			<input name="cancel" type="button" value="<?php _e('Cancel', 'pmpro'); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
 		</p>
 	</form>
 	</div>
@@ -606,7 +606,7 @@
 			}
 		?>
 
-		<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="admin.php?page=pmpro-membershiplevels&edit=-1" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
+		<h2 class="alignleft"><?php _e('Membership Levels', 'pmpro');?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'pmpro');?></a></h2>
 		<form id="posts-filter" method="get" action="">			
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'pmpro');?>:</label>
@@ -644,7 +644,7 @@
 			?>
 			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">			
 				<td><?php echo $level->id?></td>
-				<td class="level_name"><a href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>"><?php echo $level->name?></a></td>
+				<td class="level_name"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php esc_attr_e( $level->name ); ?></a></td>
 				<td>
 					<?php if(pmpro_isLevelFree($level)) { ?>
 						<?php _e('FREE', 'pmpro');?>
@@ -659,9 +659,9 @@
 						<?php _e('After', 'pmpro');?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
 				</td>
-				<td><?php if($level->allow_signups) { ?><a href="<?php echo pmpro_url("checkout", "?level=" . $level->id);?>"><?php _e('Yes', 'pmpro');?></a><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
+				<td><?php if($level->allow_signups) { ?><a href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'pmpro');?></a><?php } else { ?><?php _e('No', 'pmpro');?><?php } ?></td>
 
-				<td><a title="<?php _e('edit','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&edit=<?php echo $level->id?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="admin.php?page=pmpro-membershiplevels&copy=<?php echo $level->id?>&edit=-1" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript: askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name));?>','admin.php?page=pmpro-membershiplevels&action=delete_membership_level&deleteid=<?php echo $level->id?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
+				<td><a title="<?php _e('edit','pmpro'); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e('edit','pmpro'); ?></a>&nbsp;<a title="<?php _e('copy','pmpro'); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'copy' => $level->id ), admin_url( 'admin.php' ) ); ?>" class="button-secondary"><?php _e('copy','pmpro'); ?></a>&nbsp;<a title="<?php _e('delete','pmpro'); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", "pmpro"), $level->name));?>', '<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ); ?>'); void(0);" class="button-secondary"><?php _e('delete','pmpro'); ?></a></td>
 			</tr>
 			<?php
 				}

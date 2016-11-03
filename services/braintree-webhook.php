@@ -380,7 +380,7 @@ function pmpro_braintreeWebhookExit()
     //for log
     if($logstr)
     {
-        $logstr = "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
+        $logstr = "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
         echo $logstr;
 
