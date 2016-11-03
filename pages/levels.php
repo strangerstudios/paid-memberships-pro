@@ -1,14 +1,8 @@
 <?php 
 global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user;
-global $pmpro_levels;
-global $pmpro_level_order;
 
-if (empty( $pmpro_levels ) ) {
-	$pmpro_levels = pmpro_getAllLevels( false, true );
-}
-if ( empty( $pmpro_level_order ) ) {
-	$pmpro_level_order = pmpro_getOption( 'level_order' );
-}
+$pmpro_levels = pmpro_getAllLevels(false, true);
+$pmpro_level_order = pmpro_getOption('level_order');
 
 if(!empty($pmpro_level_order))
 {
