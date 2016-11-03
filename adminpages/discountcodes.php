@@ -37,8 +37,8 @@
 		$uses = intval($_POST['uses']);
 		
 		//fix up dates		
-		$starts = date("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, current_time("timestamp")));
-		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, current_time("timestamp")));
+		$starts = date_i18n("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, current_time("timestamp")));
+		$expires = date_i18n("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, current_time("timestamp")));
 		
 		//updating or new?
 		if($saveid > 0)
@@ -319,33 +319,33 @@
                     
 					<?php
 						//some vars for the dates
-						$current_day = date("j");
+						$current_day = date_i18n("j");
 						if(!empty($code->starts))
-							$selected_starts_day = date("j", $code->starts);
+							$selected_starts_day = date_i18n("j", $code->starts);
 						else
 							$selected_starts_day = $current_day;
 						if(!empty($code->expires))
-							$selected_expires_day = date("j", $code->expires);
+							$selected_expires_day = date_i18n("j", $code->expires);
 						else
 							$selected_expires_day = $current_day;
 							
-						$current_month = date("M");
+						$current_month = date_i18n("M");
 						if(!empty($code->starts))
-							$selected_starts_month = date("m", $code->starts);
+							$selected_starts_month = date_i18n("m", $code->starts);
 						else
-							$selected_starts_month = date("m");
+							$selected_starts_month = date_i18n("m");
 						if(!empty($code->expires))
-							$selected_expires_month = date("m", $code->expires);
+							$selected_expires_month = date_i18n("m", $code->expires);
 						else
-							$selected_expires_month = date("m");
+							$selected_expires_month = date_i18n("m");
 							
-						$current_year = date("Y");						
+						$current_year = date_i18n("Y");						
 						if(!empty($code->starts))
-							$selected_starts_year = date("Y", $code->starts);
+							$selected_starts_year = date_i18n("Y", $code->starts);
 						else
 							$selected_starts_year = $current_year;
 						if(!empty($code->expires))
-							$selected_expires_year = date("Y", $code->expires);
+							$selected_expires_year = date_i18n("Y", $code->expires);
 						else
 							$selected_expires_year = (int)$current_year + 1;
 					?>
@@ -358,7 +358,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>
@@ -376,7 +376,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>
@@ -617,10 +617,10 @@
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>
 						</td>
 						<td>
-							<?php echo date(get_option('date_format'), $code->starts)?>
+							<?php echo date_i18n(get_option('date_format'), $code->starts)?>
 						</td>
 						<td>
-							<?php echo date(get_option('date_format'), $code->expires)?>
+							<?php echo date_i18n(get_option('date_format'), $code->expires)?>
 						</td>				
 						<td>
 							<?php

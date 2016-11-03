@@ -14,7 +14,7 @@ $start_time = microtime(true);
 
 if (true === PMPRO_BENCHMARK)
 {
-	error_log(str_repeat('-', 10) . date('Y-m-d H:i:s') . str_repeat('-', 10));
+	error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
 }
 
 /**
@@ -59,25 +59,25 @@ if ( isset( $_REQUEST['start-day'] ) ) {
 if ( isset( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
-	$start_year = date( "Y" );
+	$start_year = date_i18n( "Y" );
 }
 
 if ( isset( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
-	$end_month = date( "n" );
+	$end_month = date_i18n( "n" );
 }
 
 if ( isset( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
-	$end_day = date( "j" );
+	$end_day = date_i18n( "j" );
 }
 
 if ( isset( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
-	$end_year = date( "Y" );
+	$end_year = date_i18n( "Y" );
 }
 
 if ( isset( $_REQUEST['predefined-date'] ) ) {
@@ -133,19 +133,19 @@ if ( $filter == "all" || ! $filter ) {
 	$condition = "timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
 } elseif ( $filter == "predefined-date-range" ) {
 	if ( $predefined_date == "Last Month" ) {
-		$start_date = date( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "This Month" ) {
-		$start_date = date( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "This Year" ) {
-		$year       = date( 'Y' );
-		$start_date = date( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$year       = date_i18n( 'Y' );
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	} elseif ( $predefined_date == "Last Year" ) {
-		$year       = date( 'Y' ) - 1;
-		$start_date = date( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$year       = date_i18n( 'Y' ) - 1;
+		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
+		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	}
 
 	//add times to dates
@@ -468,7 +468,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		}
 
 		//timestamp
-		$ts = date( $dateformat, $order->timestamp );
+		$ts = date_i18n( $dateformat, $order->timestamp );
 		array_push( $csvoutput, pmpro_enclose( $ts ) );
 
 		//any extra columns

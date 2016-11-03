@@ -346,7 +346,7 @@
 				else
 				{
 					//we can try to work in any change in ProfileStartDate
-					$psd = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+					$psd = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					$adjusted_psd = apply_filters("pmpro_profile_start_date", $psd, $order);
 					if($psd != $adjusted_psd)
 					{

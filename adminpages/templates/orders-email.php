@@ -15,7 +15,7 @@
 	</tr>
 	<tr>
 		<td>
-			<?php echo __( 'Date:', 'pmpro' ) . '&nbsp;' . date( 'Y-m-d', $order->timestamp ) ?>
+			<?php echo __( 'Date:', 'pmpro' ) . '&nbsp;' . date_i18n( 'Y-m-d', $order->timestamp ) ?>
 		</td>
 	</tr>
 	<?php if(!empty($order->billing->name)): ?>

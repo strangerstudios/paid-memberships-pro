@@ -61,7 +61,7 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		$startdate = $wpdb->get_var($sqlQuery);
 
 		//adjust start date to 12AM
-		$startdate = strtotime(date("Y-m-d", $startdate));
+		$startdate = strtotime(date_i18n("Y-m-d", $startdate));
 
 		if(empty($startdate))
 		{

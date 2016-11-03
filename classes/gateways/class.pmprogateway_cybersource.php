@@ -136,7 +136,7 @@
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 						$order->TrialBillingPeriod = $order->BillingPeriod;
 						$order->TrialBillingFrequency = $order->BillingFrequency;													
 						$order->TrialBillingCycles = 1;
@@ -149,7 +149,7 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 						$order->TrialBillingCycles++;
 						
 						//add a billing cycle to make up for the trial, if applicable
@@ -159,7 +159,7 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					}
 					
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -183,7 +183,7 @@
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 							$order->TrialBillingPeriod = $order->BillingPeriod;
 							$order->TrialBillingFrequency = $order->BillingFrequency;													
 							$order->TrialBillingCycles = 1;
@@ -196,7 +196,7 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
@@ -206,7 +206,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
 						
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -583,13 +583,13 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 				
 			//convert to a profile start date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						
@@ -606,7 +606,7 @@
 			}
 			
 			//convert back into a date
-			$profile_start_date = date("Ymd", strtotime("+ " . $trial_period_days . " Days"));
+			$profile_start_date = date_i18n("Ymd", strtotime("+ " . $trial_period_days . " Days"));
 			
 			//figure out the frequency
 			if($order->BillingPeriod == "Year")

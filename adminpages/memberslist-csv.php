@@ -10,7 +10,7 @@
 
 	if (PMPRO_BENCHMARK)
 	{
-		error_log(str_repeat('-', 10) . date('Y-m-d H:i:s') . str_repeat('-', 10));
+		error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
 		$start_time = microtime(true);
 		$start_memory = memory_get_usage(true);
 	}
@@ -401,7 +401,7 @@
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date($dateformat, $theuser->enddate), $theuser)));
+					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
 				else
 					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
 			}
@@ -463,9 +463,9 @@
 			$memory_used = $end_of_iteration_memory - $start_iteration_memory;
 
 			error_log("PMPRO_BENCHMARK - For iteration #{$ic} of {$iterations} - Records processed: " . count($usr_data));
-			error_log("PMPRO_BENCHMARK - \tTime processing whole iteration: " . date("H:i:s", $iteration_sec) . ".{$iteration_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date("H:i:s", $udata_sec) . ".{$udata_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime flushing cache: " . date("H:i:s", $flush_sec) . ".{$flush_usec}");
+			error_log("PMPRO_BENCHMARK - \tTime processing whole iteration: " . date_i18n("H:i:s", $iteration_sec) . ".{$iteration_sec}");
+			error_log("PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date_i18n("H:i:s", $udata_sec) . ".{$udata_sec}");
+			error_log("PMPRO_BENCHMARK - \tTime flushing cache: " . date_i18n("H:i:s", $flush_sec) . ".{$flush_usec}");
 			error_log("PMPRO_BENCHMARK - \tAdditional memory used during iteration: ".number_format($memory_used, 2, '.', ',') . " bytes");
 		}
 

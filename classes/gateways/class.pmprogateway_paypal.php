@@ -52,7 +52,7 @@
 		 *
 		 * @since 1.8.9.1
 		 */
-		static function http_api_curl($handle) {
+		static function http_api_curl($handle, $r, $url) {
 			if(strpos($url, 'paypal.com') !== false)
 				curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
@@ -262,7 +262,7 @@
 				if($authorization_id)
 				{
 					$this->void($order, $authorization_id);
-					$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+					$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
@@ -281,7 +281,7 @@
 					//set up recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{

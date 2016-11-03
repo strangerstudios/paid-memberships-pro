@@ -427,7 +427,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->discount_code    = $discount_code;
 					$morder->InitialPayment   = $pmpro_level->initial_payment;
 					$morder->PaymentAmount    = $pmpro_level->billing_amount;
-					$morder->ProfileStartDate = date( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+					$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
 					$morder->BillingPeriod    = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 
@@ -621,7 +621,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			$enddate =  date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
 			$enddate = "NULL";
 		}
