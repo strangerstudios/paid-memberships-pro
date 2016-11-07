@@ -1278,7 +1278,6 @@
 				$email = $order->Email;
 			else
 				$email = "";
-			$email = $order->Email;
 			if(empty($email) && !empty($user->ID) && !empty($user->user_email))
 			{
 				$email = $user->user_email;
