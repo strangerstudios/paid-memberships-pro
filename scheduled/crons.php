@@ -70,7 +70,7 @@ function pmpro_cron_expiration_warnings()
  				um.meta_value AS notice 			  
  			FROM {$wpdb->pmpro_memberships_users} AS mu
  			  LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
-            	AND ( um.meta_key IS NULL OR um.meta_key = %s )
+            	AND um.meta_key = %s
 			WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )  
 				AND ( mu.status = 'active' )		   
  			    AND ( mu.enddate IS NOT NULL )
@@ -88,7 +88,7 @@ function pmpro_cron_expiration_warnings()
 
 	if(defined('PMPRO_CRON_LIMIT'))
 		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
-
+	
 	$expiring_soon = $wpdb->get_results($sqlQuery);
 
 	foreach($expiring_soon as $e)
@@ -107,6 +107,9 @@ function pmpro_cron_expiration_warnings()
 				echo ". ";
 		}
 
+		//delete all user meta for this key to prevent duplicate user meta rows
+		delete_user_meta($e->user_id, "pmpro_expiration_notice");
+		
 		//update user meta so we don't email them again
 		update_user_meta($e->user_id, "pmpro_expiration_notice", $today);
 	}
