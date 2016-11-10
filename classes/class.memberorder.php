@@ -170,7 +170,7 @@
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
 			}
 
-			if(class_exists($classname) && !empty($this->gateway)) {
+			if(class_exists($classname) && isset($this->gateway)) {
 				$this->Gateway = new $classname($this->gateway);
 			} else {
 				$this->Gateway = null;	//null out any current gateway

@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.12.1 =
+* BUG: Fixed bug when using the testing gateway.
+
 = 1.8.12 =
 * BUG: Fixed issue where "expiring soon" emails were sometimes sent more than needed.
 * BUG: Fixed issue where PayPal Standard IPN requests were being rejected if a tax amount was set in PayPal.
