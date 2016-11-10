@@ -151,7 +151,7 @@ function pmpro_search_filter($query)
     }
 
     //hide member pages from non-members (make sure they aren't hidden from members)    
-	if(is_user_logged_in() &&
+	if(function_exists('is_user_logged_in') && is_user_logged_in() &&
 	   !$query->is_admin &&
 	   !$query->is_singular && 
 	   empty($query->query['post_parent']) &&

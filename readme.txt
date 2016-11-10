@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.
+* BUG: Avoiding issues where is_user_logged in is not yet available for the pmpro_search_filter() function. (Thanks, d_enajetic)
 * ENHANCEMENT: Updated Italian translation. (Thanks again, Angelo)
 
 = 1.8.12 =
