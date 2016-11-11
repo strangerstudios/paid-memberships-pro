@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug when using the testing gateway.
 * BUG: Avoiding issues where is_user_logged in is not yet available for the pmpro_search_filter() function. (Thanks, d_enajetic)
 * ENHANCEMENT: Updated Italian translation. (Thanks again, Angelo)
+* ENHANCEMENT: You can now define('PMPRO_USE_SESSIONS', false); in your wp-config.php to force PMPro to skip the call to session_start. Note that PayPal Express and some addons require sessions to function.
 
 = 1.8.12 =
 * BUG: Fixed issue where "expiring soon" emails were sometimes sent more than needed.
