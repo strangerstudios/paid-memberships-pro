@@ -387,8 +387,6 @@
 								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently only supports billing periods of "Week", "Month" or "Year".', 'pmpro');?>
 							<?php } elseif($gateway == "braintree") { ?>
 								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'pmpro');?>						
-							<?php } elseif($gateway == "payflowpro") { ?>
-								<br /><strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Payflow integration currently only supports billing frequencies of 1 and billing periods of "Week", "Month" or "Year".', 'pmpro');?>
 							<?php } ?>
 						</small>	
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
