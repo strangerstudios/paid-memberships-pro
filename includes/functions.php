@@ -78,8 +78,8 @@ function pmpro_br2nl($text, $tags = "br")
 
 	foreach($tags as $tag)
 	{
-		$text = eregi_replace("<" . $tag . "[^>]*>", "\n", $text);
-		$text = eregi_replace("</" . $tag . "[^>]*>", "\n", $text);
+		$text = preg_replace("/<{$tag}[^>]*>/", "\n", $text);
+		$text = preg_replace("/<\/{$tag}[^>]*>/", "\n", $text);
 	}
 
 	return($text);
