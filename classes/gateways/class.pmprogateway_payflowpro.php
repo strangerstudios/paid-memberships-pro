@@ -568,8 +568,8 @@
 		 * PAYPAL Function
 		 * Send HTTP POST Request
 		 *
-		 * @param	string	The API method name
-		 * @param	string	The POST Message fields in &name=value pair format
+		 * @param	string	$methodName_    The API method name
+		 * @param	string	$nvpStr_         The POST Message fields in &name=value pair format
 		 * @return	array	Parsed HTTP Response body
 		 */
 		function PPHttpPost($methodName_, $nvpStr_) {
@@ -599,12 +599,13 @@
 			    )
 			);
 
+			$httpParsedResponseAr = array();
+
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   die( "methodName_ failed: $error_message" );
+			   wp_die( "{$methodName_} failed: $error_message" );
 			} else {
 				//extract the response details
-				$httpParsedResponseAr = array();
 				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
 				//check for valid response
