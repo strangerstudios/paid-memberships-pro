@@ -289,7 +289,7 @@
 		do_action('pmpro_checkout_boxes');
 	?>
 
-	<?php if(pmpro_getGateway() == "paypal" && empty($pmpro_review)) { ?>
+	<?php if(pmpro_getGateway() == "paypal" && empty($pmpro_review) && true === apply_filters('pmpro_include_payment_option_for_paypal', true ) ) { ?>
 		<table id="pmpro_payment_method" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 		<thead>
 			<tr>
