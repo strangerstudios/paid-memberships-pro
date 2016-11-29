@@ -168,16 +168,6 @@ function pmpro_license_deactivation() {
 }
 register_deactivation_hook(__FILE__, 'pmpro_deactivation');
 
-function init_test_license()
-{
-	if(!empty($_REQUEST['testlicense']))
-	{
-		pmpro_license_check_key();
-		exit;
-	}
-}
-add_action('init', 'init_test_license');
-
 //check keys with PMPro once a month
 function pmpro_license_check_key($key = NULL) {
 	//get key
