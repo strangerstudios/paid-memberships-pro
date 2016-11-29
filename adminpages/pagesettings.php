@@ -196,7 +196,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                            class="button button-secondary pmpro_page_view"><?php _e('view page', 'pmpro'); ?></a>
                     <?php } ?>
                     <br/>
-                    <small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro'); ?>[pmpro_confirmation].
+                    <small class="pmpro_lite"><?php _e('Include the shortcode', 'pmpro'); ?> [pmpro_confirmation].
                     </small>
                 </td>
             </tr>
