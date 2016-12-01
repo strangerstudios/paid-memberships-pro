@@ -7,6 +7,9 @@ function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
 
+	$server_tz = date_default_timezone_get();
+	date_default_timezone_set( get_option( 'timezone_string' ) );
+
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
@@ -79,11 +82,25 @@ function pmpro_membership_level_profile_fields($user)
 		$show_expiration = true;
 		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
 		if($show_expiration)
-		{					
+		{
+			date_default_timezone_set( get_option( 'timezone_string' ) );
+
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
-			$end_date = !empty($user->membership_level->enddate);
-			
+			$end_date = !empty($user->membership_level->enddate); // Returned as UTC timestamp
+
+			if (WP_DEBUG) {
+				error_log("Loaded timestamp from DB: {$user->membership_level->enddate}");
+				error_log("Date: " . date_i18n('Y-m-d H:i:s', $user->membership_level->enddate));
+			}
+
+			// Convert UTC to local time
+			$user->membership_level->enddate = strtotime( get_option( 'timezone_string' ), $user->membership_level->enddate );
+
+			if (WP_DEBUG) {
+			    error_log("Converted timestamp: {$user->membership_level->enddate}");
+				error_log("Date: " . date_i18n('Y-m-d H:i:s', $user->membership_level->enddate));
+            }
 			//some vars for the dates
 			$current_day = date_i18n("j", current_time('timestamp'));			
 			if($end_date)
@@ -235,7 +252,9 @@ function pmpro_membership_level_profile_fields($user)
         });
     </script>
 <?php
-	do_action("pmpro_after_membership_level_profile_fields", $user);	
+	do_action("pmpro_after_membership_level_profile_fields", $user);
+
+	date_default_timezone_set( $server_tz );
 }
 
 /*
