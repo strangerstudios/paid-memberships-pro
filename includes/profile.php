@@ -83,7 +83,6 @@ function pmpro_membership_level_profile_fields($user)
 		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
 		if($show_expiration)
 		{
-			date_default_timezone_set( get_option( 'timezone_string' ) );
 
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
