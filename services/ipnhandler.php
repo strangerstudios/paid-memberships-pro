@@ -121,7 +121,7 @@ if ( $txn_type == "subscr_payment" ) {
 			$amount = $_POST['mc_gross'];
 			
 			//Adjust gross for tax if provided
-			if(!empty($_POST['tax']) && !empty((float)$_POST['tax'])) {
+			if( !empty($_POST['tax']) ) {
 				$amount = (float)$amount - (float)$_POST['tax'];
 			
 				//TODO: We should maybe update the order to reflect the tax amount and new total
@@ -171,7 +171,7 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 		$amount = $_POST['mc_gross'];
 		
 		//Adjust gross for tax if provided
-		if(!empty($_POST['tax']) && !empty((float)$_POST['tax'])) {
+		if(!empty($_POST['tax']) ) {
 			$amount = (float)$amount - (float)$_POST['tax'];
 		
 			//TODO: We should maybe update the order to reflect the tax amount and new total
