@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.13 =
+* ENHANCEMENT: Updating stylesheet for WordPress 4.7 and new Twenty Seventeen theme support.
+
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.
 * BUG: Avoiding issues where is_user_logged in is not yet available for the pmpro_search_filter() function. (Thanks, d_enajetic)

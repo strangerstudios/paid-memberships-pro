@@ -8,6 +8,8 @@
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
 	color: #444;
 	cursor: pointer;
 	display: inline-block;
@@ -31,8 +33,10 @@
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px;
 }
-.pmpro_btn:hover, .pmpro_btn:focus, .pmpro_content_message a:focus, .pmpro_content_message a:hover {
+.pmpro_btn:hover, .pmpro_btn:focus, .pmpro_checkout .pmpro_btn:hover, .pmpro_checkout .pmpro_btn:focus, .pmpro_content_message a:focus, .pmpro_content_message a:hover {
 	background-color: #FAFAFA;
+	-webkit-box-shadow: none;
+	box-shadow: none;
 	color: #000;
 	text-decoration: none;
 }
@@ -110,17 +114,17 @@ form.pmpro_form .lite {
 	color: #666;
 }
 form.pmpro_form .leftmar {
-	margin: 8px 0 0 210px;
+	margin: 8px 0 0 220px;
 }
 form.pmpro_form .pmpro_captcha {
-	margin: 0 0 0 210px;
+	margin: 0 0 0 220px;
 }
 form.pmpro_form .pmpro_captcha div {
 	clear: none;
 	margin: 0;
 }
 form.pmpro_form .pmpro_submit {
-	margin-left: 210px;
+	margin-left: 220px;
 }
 form.pmpro_form .pmpro_submit span {
 	float: left;
@@ -195,7 +199,7 @@ select.pmpro_error {
 	padding: 10px;
 }
 .pmpro_checkout tr.odd td {
-	background: rgba(125,125,125,.1);
+	background: rgba(239,239,239,0.25);
 }
 .pmpro_checkout tr.selected td {
 	background: #FFC;
@@ -268,9 +272,26 @@ a.pmpro_radio {
 	text-decoration: none;
 }
 /*---------------------------------------
+	Membership Confirmation
+---------------------------------------*/
+body.pmpro-confirmation .entry-content ul {
+	margin-left: 1.5em;
+}
+/*---------------------------------------
 	Membership Invoice
 ---------------------------------------*/
-.pmpro_invoice { }
+body.pmpro-invoice .entry-content ul {
+	margin-left: 1.5em;
+}
+.pmpro_invoice thead th, .pmpro_invoice tbody td, #pmpro_account-invoices thead th, #pmpro_account-invoices tbody td {
+	padding: 10px;
+}
+.pmpro_invoice tbody td:nth-child(first), #pmpro_account-invoices tbody td:nth-child(first) {
+	padding-left: 10px;
+}
+.pmpro_invoice tbody tr:nth-child(odd) td, #pmpro_account-invoices tbody tr:nth-child(odd) td {
+	background: rgba(239,239,239,0.25);
+}
 /*---------------------------------------
 	Membership Account
 ---------------------------------------*/
@@ -291,6 +312,7 @@ a.pmpro_radio {
 }
 #pmpro_account .pmpro_box ul {
 	margin-bottom: 0;
+	margin-left: 1.5em;
 }
 #pmpro_account #pmpro_account-membership { }
 #pmpro_account #pmpro_account-profile { }
