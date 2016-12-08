@@ -150,8 +150,10 @@ function pmpro_url($page = NULL, $querystring = "", $scheme = NULL)
 
 	//figure out querystring
 	if(strpos($url, "?"))
-		$querystring = str_replace("?", "&", $querystring);
-	$url .= $querystring;
+	{
+		parse_str( parse_url( $url, PHP_URL_QUERY ), $query_args );
+		$url = add_query_arg( $query_args, $url );
+	}
 
 	//figure out scheme
 	if(is_ssl())
