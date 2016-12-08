@@ -22,6 +22,11 @@
 		$saveid = intval($_POST['saveid']);
 	else
 		$saveid = false;			
+
+	if(isset($_REQUEST['s']))
+		$s = sanitize_text_field($_REQUEST['s']);
+	else
+		$s = "";
 	
 	if($saveid)
 	{
