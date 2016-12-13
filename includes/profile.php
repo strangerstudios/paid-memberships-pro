@@ -84,6 +84,10 @@ function pmpro_membership_level_profile_fields($user)
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			$end_date = !empty($user->membership_level->enddate);
 			
+			//Manually set the timezone by getting the WordPress option
+			$orig_time_zone = date_default_timezone_get();
+			date_default_timezone_set(get_option('timezone_string'));
+			
 			//some vars for the dates
 			$current_day = date_i18n("j", current_time('timestamp'));			
 			if($end_date)
@@ -102,6 +106,9 @@ function pmpro_membership_level_profile_fields($user)
 				$selected_expires_year = date_i18n("Y", $user->membership_level->enddate);
 			else
 				$selected_expires_year = (int)$current_year + 1;
+			
+			//Reset the timezone	
+			date_default_timezone_set($orig_time_zone);
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", "pmpro"); ?></label></th>
