@@ -116,7 +116,14 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.13 =
+* BUG: Fixed various bugs in the PayPal IPN handler.
+* BUG: Fixed search on discount codes page in dashboard. (Thanks, Debjit Saha)
+* BUG: Fixed bug in Cancellations report where all-time cancellations were always 0.
+* BUG: Fixed link to payment settings on checkout notice. (Thanks, Coen Jacobs)
+* BUG/ENHANCEMENT: Now using add_query_arg in the pmpro_url() function. (Thanks, Debjit Saha)
 * ENHANCEMENT: Updating stylesheet for WordPress 4.7 and new Twenty Seventeen theme support.
+* ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1. 
+* ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
 
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.
