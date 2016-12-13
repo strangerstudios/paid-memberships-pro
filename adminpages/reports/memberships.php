@@ -515,7 +515,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	{
 		//all time
 		$startdate = '1970-01-01';	//all time (no point in using a value prior to the start of the UNIX epoch)
-		$enddate = strval(intval($year)+1) . '-01-01';
+		$enddate = "'".strval(intval($year)+1) . "-01-01'";
 	}
 		
 	/*
