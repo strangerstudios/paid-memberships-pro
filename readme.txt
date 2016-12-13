@@ -120,10 +120,13 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed search on discount codes page in dashboard. (Thanks, Debjit Saha)
 * BUG: Fixed bug in Cancellations report where all-time cancellations were always 0.
 * BUG: Fixed link to payment settings on checkout notice. (Thanks, Coen Jacobs)
+* BUG: Timezone magic on edit user page in the dashboard to make sure the expiration date you select is the one set.
+* BUG: Swapped out deprecated uses of eregi_replace and split.
 * BUG/ENHANCEMENT: Now using add_query_arg in the pmpro_url() function. (Thanks, Debjit Saha)
 * ENHANCEMENT: Updating stylesheet for WordPress 4.7 and new Twenty Seventeen theme support.
 * ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1. 
 * ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
+* ENHANCEMENT: Added pmpro_include_payment_option_for_paypal filter, which can be set to false to use PayPal WPP without the PayPal Express option.
 
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.
