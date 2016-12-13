@@ -370,7 +370,9 @@
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
-			if($order->BillingPeriod == "Week")
+			if($order->BillingPeriod == "Day")
+				$payperiod = "DAYS";
+			elseif($order->BillingPeriod == "Week")
 				$payperiod = "WEEK";
 			elseif($order->BillingPeriod == "Month")
 				$payperiod = "MONT";

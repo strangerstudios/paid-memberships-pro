@@ -87,11 +87,9 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 					/*
 						Payflow currently does not support:
 						* Trial Amounts > 0.
-						* Daily billing periods.
 					*/
 
-					if($level->trial_amount > 0 ||
-					    $level->cycle_number > 1)
+					if($level->trial_amount > 0)
 					{
 						return false;
 					}
@@ -105,9 +103,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
-			if($level->trial_amount > 0 ||
-			   $level->cycle_number > 1 ||
-			   ($level->cycle_number == 1 && $level->cycle_period == "Day"))
+			if($level->trial_amount > 0)
 			{
 				return false;
 			}
