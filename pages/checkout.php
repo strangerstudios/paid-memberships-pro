@@ -289,7 +289,7 @@
 		do_action('pmpro_checkout_boxes');
 	?>
 
-	<?php if(pmpro_getGateway() == "paypal" && empty($pmpro_review)) { ?>
+	<?php if(pmpro_getGateway() == "paypal" && empty($pmpro_review) && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) { ?>
 		<table id="pmpro_payment_method" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 		<thead>
 			<tr>
@@ -595,7 +595,7 @@
 							<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
 						</select>/<select id="ExpirationYear" name="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
 							<?php
-								for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
+								for($i = date_i18n("Y"); $i < intval( date_i18n("Y") ) + 10; $i++)
 								{
 							?>
 								<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>

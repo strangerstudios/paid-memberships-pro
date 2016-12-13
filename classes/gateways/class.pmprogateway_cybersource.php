@@ -534,7 +534,7 @@
 		
 		function subscribe(&$order)
 		{
-			global $currency;
+			global $pmpro_currency;
 			
 			//create a code for the order
 			if(empty($order->code))
