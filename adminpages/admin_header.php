@@ -32,6 +32,7 @@
 			$msg = false;
 	}
 	
+	//check level compatibility
 	if(!pmpro_checkLevelForStripeCompatibility())
 	{		
 		$msg = -1;
@@ -111,6 +112,14 @@
 			$msgt .= " " . __("The levels with issues are highlighted below.", "pmpro");
 		else
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", "pmpro") . "</a>.";			
+	}
+	
+	//check gateway dependencies	
+	$gateway = pmpro_getOption('gateway');
+	if($gateway == "stripe") {
+		PMProGateway_stripe::dependencies();
+	} elseif($gateway == "braintree") {
+		PMProGateway_braintree::dependencies();
 	}
 	
 	if(!empty($msg))

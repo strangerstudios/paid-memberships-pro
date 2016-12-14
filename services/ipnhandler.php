@@ -362,8 +362,8 @@ function pmpro_ipnExit() {
 			else {
 				$log_email = get_option( "admin_email" );
 			}
-
-			wp_mail( $log_email, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );
+			
+			wp_mail( $log_email, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );			
 		}
 	}
 

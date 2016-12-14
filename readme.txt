@@ -127,6 +127,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1. 
 * ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
 * ENHANCEMENT: Added pmpro_include_payment_option_for_paypal filter, which can be set to false to use PayPal WPP without the PayPal Express option.
+* ENHANCEMENT: Better dependency checking for Stripe and Braintree gateways.
 
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.
