@@ -325,7 +325,7 @@
 						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $old_order->id . ", Subscription Transaction ID #" . $old_order->subscription_transaction_id . ")";
 					} else {
 						//if the initial payment failed, cancel with status error instead of cancelled					
-						pmpro_changeMembershipLevel( 0, $old_order->user_id, 'cancelled' );
+						pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
 
 						$logstr .= "Cancelled membership for user with id = " . $old_order->user_id . ". Subscription transaction id = " . $old_order->subscription_transaction_id . ".";
 

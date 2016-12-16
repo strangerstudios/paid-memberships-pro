@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.13 =
+* FEATURE: The Stripe Webhook has been updated to process subscriptions cancelled from Stripe. PMPro will now cancel memberships for these users instead of sending an email to the admin.
 * BUG: Fixed various bugs in the PayPal IPN handler.
 * BUG: Fixed search on discount codes page in dashboard. (Thanks, Debjit Saha)
 * BUG: Fixed bug in Cancellations report where all-time cancellations were always 0.
@@ -128,6 +129,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
 * ENHANCEMENT: Added pmpro_include_payment_option_for_paypal filter, which can be set to false to use PayPal WPP without the PayPal Express option.
 * ENHANCEMENT: Better dependency checking for Stripe and Braintree gateways.
+* ENHANCEMENT: Updated IPN handler and Stripe Webhook handler to use pmpro_cancelMembershipLevel instead of pmpro_changeMembershipLevele. This improves support for the MMPU addon.
 
 = 1.8.12.1 =
 * BUG: Fixed bug when using the testing gateway.

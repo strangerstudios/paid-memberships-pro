@@ -254,9 +254,9 @@ if ( $txn_type == "recurring_payment_profile_cancel" ) {
 			} else {
 				//if the initial payment failed, cancel with status error instead of cancelled
 				if ( $initial_payment_status === "Failed" ) {
-					pmpro_changeMembershipLevel( 0, $last_subscr_order->user_id, 'error' );
+					pmpro_cancelMembershipLevel( $last_subscr_order->membership_id, $last_subscr_order->user_id, 'error' );
 				} else {
-					pmpro_changeMembershipLevel( 0, $last_subscr_order->user_id, 'cancelled' );
+					pmpro_cancelMembershipLevel( $last_subscr_order->membership_id, $last_subscr_order->user_id, 'cancelled' );
 				}
 
 				ipnlog( "Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
