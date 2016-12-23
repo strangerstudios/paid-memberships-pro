@@ -12,20 +12,52 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			$this->loadBraintreeLibrary();		
-			
-			//convert to braintree nomenclature
-			$environment = $this->gateway_environment;
-			if($environment == "live")
-				$environment = "production";
-			
-			Braintree_Configuration::environment($environment);
-			Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
-			Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
-			Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
-			
+			if($this->dependencies()) {
+				$this->loadBraintreeLibrary();		
+				
+				//convert to braintree nomenclature
+				$environment = $this->gateway_environment;
+				if($environment == "live")
+					$environment = "production";
+				
+				Braintree_Configuration::environment($environment);
+				Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
+				Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
+				Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
+			} else {
+				return false;
+			}
+				
 			return $this->gateway;
 		}										
+		/**
+		 * Warn if required extensions aren't loaded.
+		 *
+		 * @return bool
+		 * @since 1.8.6.8.1
+		 */
+		public static function dependencies()
+		{
+			global $msg, $msgt, $pmpro_braintree_error;
+
+			$modules = array('xmlwriter', 'SimpleXML', 'openssl', 'dom', 'hash', 'curl');
+
+			foreach($modules as $module){
+				if(!extension_loaded($module)){
+					$pmpro_braintree_error = true;					
+					$msg = -1;
+					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", "pmpro"), 'Braintree', $module);
+					
+					//throw error on checkout page
+					if(!is_admin())
+						pmpro_setMessage($msgt, 'pmpro_error');
+					
+					return false;
+				}
+			}
+			
+			return true;
+		}
 		
 		/**
 		 * Load the Braintree API library.
@@ -111,7 +143,7 @@
 		 */
 		static function pmpro_payment_options($options)
 		{			
-			//get stripe options
+			//get Braintree options
 			$braintree_options = PMProGateway_braintree::getGatewayOptions();
 			
 			//merge with others.
@@ -527,7 +559,7 @@
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);	
 			}
 						
-			//check for an existing stripe customer
+			//check for an existing Braintree customer
 			if(!empty($customer_id))
 			{
 				try 
@@ -679,7 +711,7 @@
 				since we are doing the first payment as a separate transaction.
 				The second part is the actual "trial" set by the admin.
 				
-				Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
+				Braintree only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
 			*/
 			//figure out the trial length (first payment handled by initial charge)			
 			if($order->BillingPeriod == "Year")

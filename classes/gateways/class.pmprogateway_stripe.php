@@ -28,11 +28,13 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
-			$this->dependencies();
-
-			$this->loadStripeLibrary();
-			Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-			Stripe::setAPIVersion("2015-07-13");
+			if($this->dependencies()) {
+				$this->loadStripeLibrary();
+				Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+				Stripe::setAPIVersion("2015-07-13");
+			} else {
+				return false;
+			}
 			
 			return $this->gateway;
 		}
@@ -40,21 +42,30 @@
 		/**
 		 * Warn if required extensions aren't loaded.
 		 *
+		 * @return bool
 		 * @since 1.8.6.8.1
 		 */
-		public function dependencies()
+		public static function dependencies()
 		{
 			global $msg, $msgt, $pmpro_stripe_error;
 
-			$modules = array('curl');
+			$modules = array('curl', 'mbstring');
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
-					$pmpro_stripe_error = true;
+					$pmpro_stripe_error = true;					
 					$msg = -1;
-					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it", "pmpro"), $this->gateway, $module);
+					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", "pmpro"), 'Stripe', $module);
+					
+					//throw error on checkout page
+					if(!is_admin())
+						pmpro_setMessage($msgt, 'pmpro_error');
+					
+					return false;
 				}
 			}
+			
+			return true;
 		}
 
 		/**
