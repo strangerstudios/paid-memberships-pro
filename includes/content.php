@@ -66,7 +66,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	else
 	{
 		//are any membership levels associated with this page?
-		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $post_id . "'";
+		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "'";
 	}
 
 
