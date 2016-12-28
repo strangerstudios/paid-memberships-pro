@@ -115,6 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.14 =
+* BUG: Fixed issue where the filtered $mypost object was not being used in the content filter if the post type was "page". (Thanks, James)
+
 = 1.8.13 =
 * FEATURE: The Stripe Webhook has been updated to process subscriptions cancelled from Stripe. PMPro will now cancel memberships for these users instead of sending an email to the admin.
 * BUG: Fixed various bugs in the PayPal IPN handler.
