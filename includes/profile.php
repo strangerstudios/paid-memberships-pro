@@ -7,8 +7,14 @@ function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
 
-	$server_tz = date_default_timezone_get();	
-	date_default_timezone_set( get_option( 'timezone_string' ) );
+	$server_tz = date_default_timezone_get();
+	$wp_tz =  get_option( 'timezone_string' );
+	
+	//option "timezone_string" is empty if set to UTC+0
+	if(empty($wp_tz))
+		$wp_tz = 'UTC';
+	
+	date_default_timezone_set($wp_tz);
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -89,7 +95,7 @@ function pmpro_membership_level_profile_fields($user)
 			$end_date = !empty($user->membership_level->enddate); // Returned as UTC timestamp
 						
 			// Convert UTC to local time
-			$user->membership_level->enddate = strtotime( get_option( 'timezone_string' ), $user->membership_level->enddate );
+			$user->membership_level->enddate = strtotime($wp_tz, $user->membership_level->enddate );
 						
 			//some vars for the dates
 			$current_day = date_i18n("j", current_time('timestamp'));			
