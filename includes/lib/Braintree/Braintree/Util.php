@@ -136,7 +136,9 @@ class Braintree_Util
      */
     public static function delimiterToCamelCase($string, $delimiter = '[\-\_]')
     {
-        return preg_replace('/' . $delimiter . '(\w)/e', 'strtoupper("$1")',$string);
+        return preg_replace_callback('/' . $delimiter . '(\w)/',function($matches) {
+            return strtoupper($matches[1]);
+        }, $string);
     }
 
     /**
@@ -161,7 +163,9 @@ class Braintree_Util
      */
     public static function camelCaseToDelimiter($string, $delimiter = '-')
     {
-        return preg_replace('/([A-Z])/e', '"' . $delimiter . '" . strtolower("$1")', $string);
+        return preg_replace_callback('/([A-Z])/',function($matches) use ($delimiter) {
+            return $delimiter.strtolower($matches[1]);
+        }, $string);
     }
 
     /**
