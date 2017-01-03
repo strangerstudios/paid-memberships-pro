@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.7
-Stable tag: 1.8.13
+Stable tag: 1.8.13.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,7 +115,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 1.8.14 =
+= 1.8.13.1 =
+* BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
+* BUG: Fixed warnings in the Braintree PHP library. (Thanks, Travis Shivers)
 * BUG: Fixed issue where the filtered $mypost object was not being used in the content filter if the post type was "page". (Thanks, James)
 
 = 1.8.13 =
