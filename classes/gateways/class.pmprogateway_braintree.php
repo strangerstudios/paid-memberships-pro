@@ -494,7 +494,7 @@
 			{
 				//$order->status = "error";
 				$order->errorcode = true;
-				$order->error = "Error: " . $e->getMessage();
+				$order->error = "Error: " . $e->getMessage() . " (" . get_class($e) . ")";
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -669,7 +669,7 @@
 				}
 				catch (Exception $e)
 				{					
-					$order->error = __("Error creating customer record with Braintree:", "pmpro") . " " . $e->getMessage();
+					$order->error = __("Error creating customer record with Braintree:", "pmpro") . $e->getMessage() . " (" . get_class($e) . ")";
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -769,7 +769,7 @@
 			}
 			catch (Exception $e)
 			{				
-				$order->error = __("Error subscribing customer to plan with Braintree:", "pmpro") . " " . $e->getMessage();
+				$order->error = __("Error subscribing customer to plan with Braintree:", "pmpro") . " " . $e->getMessage() . " (" . get_class($e) . ")";
 				//return error
 				$order->shorterror = $order->error;
 				return false;
