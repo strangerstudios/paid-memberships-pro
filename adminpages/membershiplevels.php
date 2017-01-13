@@ -37,8 +37,7 @@
 	if(isset($_REQUEST['deleteid']))
 		$deleteid = intval($_REQUEST['deleteid']);
 
-	if($action == "save_membershiplevel")
-	{
+	if($action == "save_membershiplevel") {
 		$ml_name = stripslashes($_REQUEST['name']);
 		$ml_description = stripslashes($_REQUEST['description']);
 		$ml_confirmation = stripslashes($_REQUEST['confirmation']);
@@ -71,119 +70,86 @@
 		else
 			$ml_allow_signups = 0;
 
-		foreach ( $_REQUEST as $key => $value )
-		{
-			if ( $value == 'yes' && preg_match( '/^membershipcategory_(\d+)$/i', $key, $matches ) )
-			{
+		foreach ( $_REQUEST as $key => $value ) {
+			if ( $value == 'yes' && preg_match( '/^membershipcategory_(\d+)$/i', $key, $matches ) ) {
 				$ml_categories[] = $matches[1];
 			}
 		}
 
 		//clearing out values if checkboxes aren't checked
-		if(empty($ml_recurring))
-		{
+		if(empty($ml_recurring)) {
 			$ml_billing_amount = $ml_cycle_number = $ml_cycle_period = $ml_billing_limit = $ml_trial_amount = $ml_trial_limit = 0;
-		}
-		elseif(empty($ml_custom_trial))
-		{
+		} elseif(empty($ml_custom_trial)) {
 			$ml_trial_amount = $ml_trial_limit = 0;
 		}
-		if(empty($ml_expiration))
-		{
+		if(empty($ml_expiration)) {
 			$ml_expiration_number = $ml_expiration_period = 0;
 		}
 
-		if($saveid > 0)
-		{
-			$sqlQuery = $wpdb->prepare("
-				UPDATE {$wpdb->pmpro_membership_levels}
-				SET name = %s,
-				description = %s,
-				confirmation = %s,
-				initial_payment = %f,
-				billing_amount = %f,
-				cycle_number = %d,
-				cycle_period = %d,
-				billing_limit = %f,
-				trial_amount = %f,
-				trial_limit = %d,
-				expiration_number = %d,
-				expiration_period = %d,
-				allow_signups = %d
-				WHERE id = %d LIMIT 1",
-				$ml_name,
-				$ml_description,
-				$ml_confirmation,
-				$ml_initial_payment,
-				$ml_billing_amount,
-				$ml_cycle_number,
-				$ml_cycle_period,
-				$ml_billing_limit,
-				$ml_trial_amount,
-				$ml_trial_limit,
-				$ml_expiration_number,
-				$ml_expiration_period,
-				$ml_allowsignups,
-				$saveid
-			);
-			$wpdb->query($sqlQuery);
+		$wpdb->replace(
+			$wpdb->pmpro_membership_levels,
+			array(
+				'id'=>max($saveid, 0),
+				'name' => $ml_name,
+				'description' => $ml_description,
+				'confirmation' => $ml_confirmation,
+				'initial_payment' => $ml_initial_payment,
+				'billing_amount' => $ml_billing_amount,
+				'cycle_number' => $ml_cycle_number,
+				'cycle_period' => $ml_cycle_period,
+				'billing_limit' => $ml_billing_limit,
+				'trial_amount' => $ml_trial_amount,
+				'trial_limit' => $ml_trial_limit,
+				'expiration_number' => $ml_expiration_number,
+				'expiration_period' => $ml_expiration_period,
+				'allow_signups' => $ml_allow_signups
+			),
+			array(
+				'%d',		//id
+				'%s',		//name
+				'%s',		//description
+				'%s',		//confirmation
+				'%f',		//initial_payment
+				'%f',		//billing_amount
+				'%d',		//cycle_number
+				'%s',		//cycle_period
+				'%d',		//billing_limit
+				'%f',		//trial_amount
+				'%d',		//trial_limit
+				'%d',		//expiration_number
+				'%s',		//expiration_period
+				'%d',		//allow_signups
+			)
+		);
+
+		if($saveid < 1) {
+			//added a level
+			$saveid = $wpdb->insert_id;
 
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			if(empty($wpdb->last_error))
-			{
-				$edit = false;
-				$msg = 2;
-				$msgt = __("Membership level updated successfully.", "pmpro");
-			}
-			else
-			{
-				$msg = -2;
-				$msg = true;
-				$msgt = __("Error updating membership level.", "pmpro");
-			}
-		}
-		else
-		{
-			// $sqlQuery = " INSERT INTO {$wpdb->pmpro_membership_levels}
-			// 			( name, description, confirmation, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period, allow_signups)
-			// 			VALUES
-			// 			( '" . esc_sql($ml_name) . "', '" . esc_sql($ml_description) . "', '" . esc_sql($ml_confirmation) . "', '" . esc_sql($ml_initial_payment) . "', '" . esc_sql($ml_billing_amount) . "', '" . esc_sql($ml_cycle_number) . "', '" . esc_sql($ml_cycle_period) . "', '" . esc_sql($ml_billing_limit) . "', '" . esc_sql($ml_trial_amount) . "', '" . esc_sql($ml_trial_limit) . "', '" . esc_sql($ml_expiration_number) . "', '" . esc_sql($ml_expiration_period) . "', '" . esc_sql($ml_allow_signups) . "' )";
-
-			$sqlQuery = $wpdb->prepare("
-			INSERT INTO {$wpdb->pmpro_membership_levels}
-				(	name,	description, confirmation, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period, allow_signups	)
-			VALUES
-				(	%s, %s, %s, %f, %f, %d, %d, %d, %f, %d, %d, %d, %d )",
-				$ml_name,
-				$ml_description,
-				$ml_confirmation,
-				$ml_initial_payment,
-				$ml_billing_amount,
-				$ml_cycle_number,
-				$ml_cycle_period,
-				$ml_billing_limit,
-				$ml_trial_amount,
-				$ml_trial_limit,
-				$ml_expiration_number,
-				$ml_expirations_period,
-				$ml_allow_signups
-			);
-
-			$wpdb->query($sqlQuery);
-
-			if(empty($wpdb->last_error))
-			{
+			
+			if(empty($wpdb->last_error)) {
 				$saveid = $wpdb->insert_id;
 				pmpro_updateMembershipCategories( $saveid, $ml_categories );
 
 				$edit = false;
 				$msg = 1;
 				$msgt = __("Membership level added successfully.", "pmpro");
-			}
-			else
-			{
+			} else {
 				$msg = -1;
 				$msgt = __("Error adding membership level.", "pmpro");
+			}
+		} else {
+			pmpro_updateMembershipCategories( $saveid, $ml_categories );
+
+			if(empty($wpdb->last_error)) {
+				$edit = false;
+				$msg = 2;
+				$msgt = __("Membership level updated successfully.", "pmpro");
+			} else {
+				$msg = -2;
+				$msg = true;
+				$msgt = __("Error updating membership level.", "pmpro");
 			}
 		}
 
@@ -195,8 +161,7 @@
 
 		$ml_id = intval($_REQUEST['deleteid']);
 
-		if($ml_id > 0)
-		{
+		if($ml_id > 0) {
 			do_action("pmpro_delete_membership_level", $ml_id);
 
 			//remove any categories from the ml
@@ -216,15 +181,12 @@
 				AND status = 'active'",
 			 	$ml_id
 			) );
-			foreach($user_ids as $user_id)
-			{
+
+			foreach($user_ids as $user_id) {
 				//change there membership level to none. that will handle the cancel
-				if(pmpro_changeMembershipLevel(0, $user_id))
-				{
+				if(pmpro_changeMembershipLevel(0, $user_id)) {
 					//okay
-				}
-				else
-				{
+				} else {
 					//couldn't delete the subscription
 					//we should probably notify the admin
 					$pmproemail = new PMProEmail();
@@ -251,19 +213,15 @@
 			);
 			$r3 = $wpdb->query($sqlQuery);
 
-			if($r1 !== FALSE && $r2 !== FALSE && $r3 !== FALSE)
-			{
+			if($r1 !== FALSE && $r2 !== FALSE && $r3 !== FALSE) {
 				$msg = 3;
 				$msgt = __("Membership level deleted successfully.", "pmpro");
-			}
-			else
-			{
+			} else {
 				$msg = -3;
 				$msgt = __("Error deleting membership level.", "pmpro");
 			}
 		}
-		else
-		{
+		else {
 			$msg = -3;
 			$msgt = __("Error deleting membership level.", "pmpro");
 		}
@@ -273,8 +231,7 @@
 ?>
 
 <?php
-	if($edit)
-	{
+	if($edit) {
 	?>
 
 	<h2>
@@ -289,8 +246,7 @@
 	<div>
 		<?php
 			// get the level...
-			if(!empty($edit) && $edit > 0)
-			{
+			if(!empty($edit) && $edit > 0) {
 				$level = $wpdb->get_row( $wpdb->prepare( "
 					SELECT * FROM $wpdb->pmpro_membership_levels
 					WHERE id = %d LIMIT 1",
@@ -299,9 +255,7 @@
 					OBJECT
 				);
 				$temp_id = $level->id;
-			}
-			elseif(!empty($copy) && $copy > 0)
-			{
+			} elseif(!empty($copy) && $copy > 0) {
 				$level = $wpdb->get_row( $wpdb->prepare( "
 					SELECT * FROM $wpdb->pmpro_membership_levels
 					WHERE id = %d LIMIT 1",
@@ -315,8 +269,7 @@
 			else
 
 			// didn't find a membership level, let's add a new one...
-			if(empty($level))
-			{
+			if(empty($level)) {
 				$level = new stdClass();
 				$level->id = NULL;
 				$level->name = NULL;
@@ -333,8 +286,7 @@
 			}
 
 			//defaults for new levels
-			if(empty($copy) && $edit == -1)
-			{
+			if(empty($copy) && $edit == -1) {
 				$level->cycle_number = 1;
 				$level->cycle_period = "Month";
 			}
