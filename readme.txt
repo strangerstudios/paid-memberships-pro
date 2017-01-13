@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.7
-Stable tag: 1.8.13
+Stable tag: 1.8.13.1
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,13 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.13.1 =
+* BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
+* BUG: Fixed warnings in the Braintree PHP library. (Thanks, Travis Shivers)
+* BUG: Fixed issue where the filtered $mypost object was not being used in the content filter if the post type was "page". (Thanks, James)
+* BUG: Removed the extra class="input" attribute on the CVV field when the Stripe gateway is used. (Thanks, Rafe Colton)
+* BUG/ENHANCEMENT: Changed the number of X placeholders for masked credit cards to 12 (+ the last 4 stored) instead of 13. (Thanks, Rafe Colton)
+
 = 1.8.13 =
 * FEATURE: The Stripe Webhook has been updated to process subscriptions cancelled from Stripe. PMPro will now cancel memberships for these users instead of sending an email to the admin.
 * BUG: Fixed various bugs in the PayPal IPN handler.
