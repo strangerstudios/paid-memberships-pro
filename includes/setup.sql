@@ -106,8 +106,8 @@ CREATE TABLE `wp_pmpro_membership_levelmeta` (
   `meta_key` varchar(255) NOT NULL,
   `meta_value` longtext,
   PRIMARY KEY (`meta_id`),
-  KEY (`pmpro_membership_level_id`),
-  KEY (`meta_key`)
+  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+  KEY `meta_key` (`meta_key`)
 );
 
 -- --------------------------------------------------------
