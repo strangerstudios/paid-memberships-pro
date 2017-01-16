@@ -28,6 +28,9 @@ add_action( 'init', 'pmpro_report_memberships_init' );
 //widget
 function pmpro_report_memberships_widget() {
 	global $wpdb;
+	
+	//get levels to show stats on first 3
+	$levels = pmpro_getAllLevels(true, true);
 ?>
 <span id="pmpro_report_memberships">	
 	<table class="wp-list-table widefat fixed striped">
@@ -38,30 +41,59 @@ function pmpro_report_memberships_widget() {
 			<th scope="col"><?php _e('All Cancellations','pmpro'); ?></th>
 		</tr>
 	</thead>
-	<tbody>
-		<tr>
-			<th scope="row"><?php _e('Today','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('today')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('today')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Month','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('this month')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('this month')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Year','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('this year')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('this year')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('All Time','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('all time')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('all time')); ?></td>
-		</tr>
-	</tbody>
+	<?php
+		$reports = array(
+			'today'=> __('Today', 'pmpro'),
+			'this month'=> __('This Month', 'pmpro'),
+			'this year'=> __('This Year', 'pmpro'),
+			'all time'=> __('All Time', 'pmpro'),
+		);
+		
+		foreach($reports as $report_type => $report_name) {
+		?>
+		<tbody>
+			<tr class="pmpro_report_tr">
+				<th scope="row"><button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button></th>
+				<td><?php echo number_format_i18n(pmpro_getSignups($report_type)); ?></td>
+				<td><?php echo number_format_i18n(pmpro_getCancellations($report_type)); ?></td>
+			</tr>
+			<?php
+				//level stats
+				$count = 0;
+				foreach($levels as $level) { 
+					if($count++ > 2) break;
+			?>
+				<tr class="pmpro_report_tr_sub" style="display: none;">
+					<th scope="row">- <?php echo $level->name;?></th>
+					<td><?php echo number_format_i18n(pmpro_getSignups($report_type, $level->id)); ?></td>
+					<td><?php echo number_format_i18n(pmpro_getCancellations($report_type, $level->id)); ?></td>
+				</tr>
+			<?php 
+				} 
+			?>
+		</tbody>
+		<?php
+		}
+	?>
 	</table>
 </span>
+<script>
+	jQuery(document).ready(function() {
+		jQuery('.pmpro_report_th ').click(function() {
+			//toggle sub rows
+			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
+			
+			//change arrow
+			if(jQuery(this).hasClass('pmpro_report_th_closed')) {
+				jQuery(this).removeClass('pmpro_report_th_closed');
+				jQuery(this).addClass('pmpro_report_th_opened');
+			} else {
+				jQuery(this).removeClass('pmpro_report_th_opened');
+				jQuery(this).addClass('pmpro_report_th_closed');
+			}
+		});
+	});
+</script>
 <?php
 }
 

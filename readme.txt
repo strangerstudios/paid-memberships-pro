@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed SQL warnings when generating the pmpro_membership_levelmeta table. (Thanks, itibet on GitHub)
 * ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
 * ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
+* ENHANCEMENT: You can now click on a heading in the Membership Stats report widget to see data for up to 3 of your levels. The first 3 levels per the level ordering are shown.
 
 = 1.8.13.1 =
 * BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
