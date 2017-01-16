@@ -213,10 +213,7 @@ function pmpro_report_memberships_page()
 	if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" )
 	{
 		$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
-		FROM $wpdb->pmpro_memberships_users mu1
-		LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
-		mu2.modified > mu1.enddate AND
-		DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate ";
+		FROM $wpdb->pmpro_memberships_users mu1 ";
 		if ( $type === "signup_v_cancel")
 			$sqlQuery .= "WHERE mu1.status IN('inactive','cancelled','cancelled_admin') ";
 		elseif($type === "signup_v_expiration")
@@ -526,10 +523,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 
         $sqlQuery = "
 	SELECT COUNT( DISTINCT mu1.user_id )
-	FROM {$wpdb->pmpro_memberships_users} AS mu1
-		LEFT JOIN {$wpdb->pmpro_memberships_users} AS mu2 ON mu1.user_id = mu2.user_id AND
-	mu2.modified > mu1.enddate AND
-	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate	
+	FROM {$wpdb->pmpro_memberships_users} AS mu1		
 	WHERE mu1.status IN('" . implode("','", $status) . "')
 		AND mu1.enddate >= '" . $startdate . "'
 		AND mu1.enddate <= " . $enddate . "
