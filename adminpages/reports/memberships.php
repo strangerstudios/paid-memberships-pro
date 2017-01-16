@@ -224,8 +224,7 @@ function pmpro_report_memberships_page()
 		else
 			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','cancelled_admin') ";
 			
-		$sqlQuery .= "AND mu2.id IS NULL 
-		AND mu1.startdate >= '" . $startdate . "' 
+		$sqlQuery .= "AND mu1.startdate >= '" . $startdate . "' 
 		AND mu1.startdate < '" . $enddate . "' ";
 		 
 		//restrict by level
@@ -480,7 +479,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
  * @param array(string) $status - Array of statuses to fetch data for
  * @return null|int - The # of cancellations for the period specified
  */
-function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','cancelled_admin') )
+function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','admin_cancelled') )
 {
 	//make sure status is an array
 	if(!is_array($status))
@@ -525,14 +524,13 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	*/
 	global $wpdb;
 
-	$sqlQuery = "
-	SELECT COUNT(mu1.id)
+        $sqlQuery = "
+	SELECT COUNT( DISTINCT mu1.user_id )
 	FROM {$wpdb->pmpro_memberships_users} AS mu1
 		LEFT JOIN {$wpdb->pmpro_memberships_users} AS mu2 ON mu1.user_id = mu2.user_id AND
 	mu2.modified > mu1.enddate AND
-	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
+	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate	
 	WHERE mu1.status IN('" . implode("','", $status) . "')
-		AND mu2.id IS NULL
 		AND mu1.enddate >= '" . $startdate . "'
 		AND mu1.enddate <= " . $enddate . "
 	";
