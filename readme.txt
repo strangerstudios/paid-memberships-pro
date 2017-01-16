@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= NEXT =
+* ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
+* ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
+
 = 1.8.13.1 =
 * BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
 * BUG: Fixed warnings in the Braintree PHP library. (Thanks, Travis Shivers)

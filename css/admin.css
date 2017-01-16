@@ -115,6 +115,7 @@ h2.nav-tab-wrapper {margin-bottom: 1em; }
 
 /* reports */
 .pmpro_reports-holder { }
+.pmpro_reports-holder .js .postbox .hndle, .pmpro_reports-holder .js .widget .widget-top {cursor: pointer; }
 .pmpro_clickable {cursor: pointer;}
 .js .postbox.pmpro_clickable h3 {cursor: pointer;}
 .pmpro_reports-holder .wp-list-table tbody td {font-size: 1.2rem; font-weight: bold; }
