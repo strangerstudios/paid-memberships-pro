@@ -190,8 +190,9 @@
 		 *
 		 * @param int $user_id ID of user to find order for.
 		 * @param string $status Limit search to only orders with this status. Defaults to "success".
-		 * @param id $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param int $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
 		 *
+		 * @return MemberOrder
 		 */
 		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL, $gateway = NULL, $gateway_environment = NULL)
 		{
