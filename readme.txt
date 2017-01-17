@@ -117,6 +117,8 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.8.13.2 =
 * BUG: Fixed bug with updating credit cards through Braintree.
+* BUG: Fixed bug with updating credit cards through Stripe.
+* BUG/ENHANCEMENT: Moved some update billing and checkout related code from the preheaders and page templates into the Braintree and Stripe classes.
 * ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order. 
 * ENHANCEMENT: Added pmpro_billing_before_submit_button hook that functions similar to the pmpro_checkout_before_submit_button hook.
 
