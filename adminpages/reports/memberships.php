@@ -28,6 +28,9 @@ add_action( 'init', 'pmpro_report_memberships_init' );
 //widget
 function pmpro_report_memberships_widget() {
 	global $wpdb;
+	
+	//get levels to show stats on first 3
+	$levels = pmpro_getAllLevels(true, true);
 ?>
 <span id="pmpro_report_memberships">	
 	<table class="wp-list-table widefat fixed striped">
@@ -38,30 +41,59 @@ function pmpro_report_memberships_widget() {
 			<th scope="col"><?php _e('All Cancellations','pmpro'); ?></th>
 		</tr>
 	</thead>
-	<tbody>
-		<tr>
-			<th scope="row"><?php _e('Today','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('today')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('today')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Month','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('this month')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('this month')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Year','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('this year')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('this year')); ?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('All Time','pmpro'); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSignups('all time')); ?></td>
-			<td><?php echo number_format_i18n(pmpro_getCancellations('all time')); ?></td>
-		</tr>
-	</tbody>
+	<?php
+		$reports = array(
+			'today'=> __('Today', 'pmpro'),
+			'this month'=> __('This Month', 'pmpro'),
+			'this year'=> __('This Year', 'pmpro'),
+			'all time'=> __('All Time', 'pmpro'),
+		);
+		
+		foreach($reports as $report_type => $report_name) {
+		?>
+		<tbody>
+			<tr class="pmpro_report_tr">
+				<th scope="row"><button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button></th>
+				<td><?php echo number_format_i18n(pmpro_getSignups($report_type)); ?></td>
+				<td><?php echo number_format_i18n(pmpro_getCancellations($report_type)); ?></td>
+			</tr>
+			<?php
+				//level stats
+				$count = 0;
+				foreach($levels as $level) { 
+					if($count++ > 2) break;
+			?>
+				<tr class="pmpro_report_tr_sub" style="display: none;">
+					<th scope="row">- <?php echo $level->name;?></th>
+					<td><?php echo number_format_i18n(pmpro_getSignups($report_type, $level->id)); ?></td>
+					<td><?php echo number_format_i18n(pmpro_getCancellations($report_type, $level->id)); ?></td>
+				</tr>
+			<?php 
+				} 
+			?>
+		</tbody>
+		<?php
+		}
+	?>
 	</table>
 </span>
+<script>
+	jQuery(document).ready(function() {
+		jQuery('.pmpro_report_th ').click(function() {
+			//toggle sub rows
+			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
+			
+			//change arrow
+			if(jQuery(this).hasClass('pmpro_report_th_closed')) {
+				jQuery(this).removeClass('pmpro_report_th_closed');
+				jQuery(this).addClass('pmpro_report_th_opened');
+			} else {
+				jQuery(this).removeClass('pmpro_report_th_opened');
+				jQuery(this).addClass('pmpro_report_th_closed');
+			}
+		});
+	});
+</script>
 <?php
 }
 
@@ -213,10 +245,7 @@ function pmpro_report_memberships_page()
 	if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type === "signup_v_all" )
 	{
 		$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
-		FROM $wpdb->pmpro_memberships_users mu1
-		LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON mu1.user_id = mu2.user_id AND
-		mu2.modified > mu1.enddate AND
-		DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate ";
+		FROM $wpdb->pmpro_memberships_users mu1 ";
 		if ( $type === "signup_v_cancel")
 			$sqlQuery .= "WHERE mu1.status IN('inactive','cancelled','cancelled_admin') ";
 		elseif($type === "signup_v_expiration")
@@ -224,8 +253,7 @@ function pmpro_report_memberships_page()
 		else
 			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','cancelled_admin') ";
 			
-		$sqlQuery .= "AND mu2.id IS NULL 
-		AND mu1.startdate >= '" . $startdate . "' 
+		$sqlQuery .= "AND mu1.startdate >= '" . $startdate . "' 
 		AND mu1.startdate < '" . $enddate . "' ";
 		 
 		//restrict by level
@@ -480,7 +508,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
  * @param array(string) $status - Array of statuses to fetch data for
  * @return null|int - The # of cancellations for the period specified
  */
-function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','cancelled_admin') )
+function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','admin_cancelled') )
 {
 	//make sure status is an array
 	if(!is_array($status))
@@ -525,14 +553,10 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	*/
 	global $wpdb;
 
-	$sqlQuery = "
-	SELECT COUNT(mu1.id)
-	FROM {$wpdb->pmpro_memberships_users} AS mu1
-		LEFT JOIN {$wpdb->pmpro_memberships_users} AS mu2 ON mu1.user_id = mu2.user_id AND
-	mu2.modified > mu1.enddate AND
-	DATE_ADD(mu1.modified, INTERVAL 1 DAY) > mu2.startdate
+        $sqlQuery = "
+	SELECT COUNT( DISTINCT mu1.user_id )
+	FROM {$wpdb->pmpro_memberships_users} AS mu1		
 	WHERE mu1.status IN('" . implode("','", $status) . "')
-		AND mu2.id IS NULL
 		AND mu1.enddate >= '" . $startdate . "'
 		AND mu1.enddate <= " . $enddate . "
 	";

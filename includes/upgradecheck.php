@@ -418,8 +418,8 @@ function pmpro_db_delta()
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
-		  KEY (`pmpro_membership_level_id`),
-		  KEY (`meta_key`)
+		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+		  KEY `meta_key` (`meta_key`)
 		);
 	";
 	dbDelta($sqlQuery);
