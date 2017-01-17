@@ -102,7 +102,8 @@
 			//old global RE showing billing address or not
 			global $pmpro_stripe_lite;
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
-
+			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
+			
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
@@ -122,6 +123,7 @@
 			if(($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
+				add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
@@ -265,8 +267,11 @@
 					var tokenNum = 0;
 
 					jQuery(document).ready(function() {
-						jQuery("#pmpro_form, .pmpro_form").submit(function(event) {
-
+						jQuery(".pmpro_form").submit(function(event) {
+						
+						// prevent the form from submitting with the default action
+						event.preventDefault();
+						
 						//double check in case a discount code made the level free
 						if(pmpro_require_billing)
 						{
@@ -300,12 +305,16 @@
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
 
 							//create token(s)
-							var levelnums = jQuery("#level").val().split(",");
-							for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+							if (jQuery('#level').length) {
+								var levelnums = jQuery("#level").val().split(",");
+								for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+									Stripe.createToken(args, stripeResponseHandler);
+								}
+							} else {
 								Stripe.createToken(args, stripeResponseHandler);
 							}
-
-							// prevent the form from submitting with the default action
+								
+							// prevent the form from submitting with the default action							
 							return false;
 						}
 						else
@@ -316,7 +325,7 @@
 					function stripeResponseHandler(status, response) {
 						if (response.error) {
 							// re-enable the submit button
-							jQuery('.pmpro_btn-submit-checkout').removeAttr("disabled");
+							jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
 
 							//hide processing message
 							jQuery('#pmpro_processing_message').css('visibility', 'hidden');
@@ -338,7 +347,7 @@
 							if(jQuery('#CardType[name=CardType]').length)
 								jQuery('#CardType').val(response['card']['brand']);
 							else
-								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
+								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");							
 							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
 							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
 							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
@@ -361,6 +370,35 @@
 				}
 				add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
 			}
+		}
+		
+		/**
+		 * Don't require the CVV.
+		 * Don't require address fields if they are set to hide.
+		 */
+		static function pmpro_required_billing_fields($fields)
+		{
+			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;			
+			
+			//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
+			unset($fields['CVV']);	
+			
+			//if using stripe lite, remove some fields from the required array			
+			if ($pmpro_stripe_lite) {
+				//some fields to remove
+				$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
+				//if a user is logged in, don't require bemail either
+				if (!empty($current_user->user_email)) {
+					$remove[] = 'bemail';
+					$bemail = $current_user->user_email;
+					$bconfirmemail = $bemail;
+				}
+				//remove the fields
+				foreach ($remove as $field)
+					unset($fields[$field]);
+			}
+			
+			return $fields;
 		}
 
 		/**
