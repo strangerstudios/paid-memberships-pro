@@ -115,6 +115,11 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+= 1.8.13.2 =
+* BUG: Fixed bug with updating credit cards through Braintree.
+* ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order. 
+* ENHANCEMENT: Added pmpro_billing_before_submit_button hook that functions similar to the pmpro_checkout_before_submit_button hook.
+
 = 1.8.13.1 =
 * BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
 * BUG: Fixed warnings in the Braintree PHP library. (Thanks, Travis Shivers)

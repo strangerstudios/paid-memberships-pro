@@ -328,7 +328,16 @@ if ($submit) {
             //$gateway = pmpro_getOption("gateway");
             $morder->gateway = $gateway;
             $morder->setGateway();
-
+			
+			/**
+			 * Filter the order object.
+			 *
+			 * @since 1.8.13.2
+			 *
+			 * @param object $order the order object used to update billing			 
+			 */
+			$morder = apply_filters( "pmpro_billing_order", $morder );
+			
             $worked = $morder->updateBilling();
 
             if ($worked) {

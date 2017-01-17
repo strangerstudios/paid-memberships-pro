@@ -92,7 +92,9 @@
 			if($default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
+				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
+				add_filter('pmpro_billing_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_braintree', 'pmpro_required_billing_fields'));				
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_braintree', 'pmpro_include_payment_information_fields'));
 			}			
@@ -613,7 +615,7 @@
 							return $this->customer;
 						}
 						else
-						{
+						{							
 							$order->error = __("Failed to update customer.", "pmpro") . " " . $response->message;
 							$order->shorterror = $order->error;
 							return false;
@@ -791,7 +793,7 @@
 		}	
 		
 		function update(&$order)
-		{
+		{			
 			//we just have to run getCustomer which will look for the customer and update it with the new token
 			$this->getCustomer($order, true);
 						
