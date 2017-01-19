@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 3.5
 Tested up to: 4.7
-Stable tag: 1.8.13.1
+Stable tag: 1.8.13.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,18 +115,17 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= NEXT =
-* BUG: Fixed SQL warnings when generating the pmpro_membership_levelmeta table. (Thanks, itibet on GitHub)
-* ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
-* ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
-* ENHANCEMENT: You can now click on a heading in the Membership Stats report widget to see data for up to 3 of your levels. The first 3 levels per the level ordering are shown.
 
 = 1.8.13.2 =
 * BUG: Fixed bug with updating credit cards through Braintree.
 * BUG: Fixed bug with updating credit cards through Stripe.
+* BUG: Fixed SQL warnings when generating the pmpro_membership_levelmeta table. (Thanks, itibet on GitHub)
 * BUG/ENHANCEMENT: Moved some update billing and checkout related code from the preheaders and page templates into the Braintree and Stripe classes.
 * ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order. 
 * ENHANCEMENT: Added pmpro_billing_before_submit_button hook that functions similar to the pmpro_checkout_before_submit_button hook.
+* ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
+* ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
+* ENHANCEMENT: You can now click on a heading in the Membership Stats report widget to see data for up to 3 of your levels. The first 3 levels per the level ordering are shown.
 
 = 1.8.13.1 =
 * BUG: Fixed issue where end dates were being set/saved incorrectly from the edit user/profile page in the dashboard.
