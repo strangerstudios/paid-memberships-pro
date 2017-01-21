@@ -273,8 +273,7 @@
 						event.preventDefault();
 						
 						//double check in case a discount code made the level free
-						if(pmpro_require_billing)
-						{
+						if(pmpro_require_billing) {
 							//build array for creating token
 							var args = {
 								number: jQuery('#AccountNumber').val(),								
@@ -316,9 +315,10 @@
 								
 							// prevent the form from submitting with the default action							
 							return false;
-						}
-						else
+						} else {
+							this.submit();
 							return true;	//not using Stripe anymore
+						}													
 						});
 					});
 
