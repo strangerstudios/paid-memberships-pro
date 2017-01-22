@@ -92,15 +92,13 @@ function pmpro_membership_level_profile_fields($user)
 
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
-			$end_date = !empty($user->membership_level->enddate); // Returned as UTC timestamp
+			$end_date = (!empty($user->membership_level) && !empty($user->membership_level->enddate)); // Returned as UTC timestamp
 						
 			// Convert UTC to local time
             if ( $end_date ) {
 	            $user->membership_level->enddate = strtotime( $wp_tz, $user->membership_level->enddate );
-            } else {
-	            $user->membership_level->enddate = strtotime( $wp_tz );
             }
-						
+
 			//some vars for the dates
 			$current_day = date_i18n("j", current_time('timestamp'));			
 			if($end_date)

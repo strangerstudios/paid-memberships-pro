@@ -28,109 +28,11 @@ if (empty($user_order->gateway)) {
     $besecure = pmpro_getOption("use_ssl");
 }
 
+//action to run extra code for gateways/etc
+do_action( 'pmpro_billing_preheader' );
+
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
-
-//code for stripe
-if ($gateway == "stripe") {
-    //stripe js library
-    wp_enqueue_script("stripe", "https://js.stripe.com/v1/", array(), "");
-
-    //stripe js code for checkout
-    function pmpro_stripe_javascript()
-    {
-        ?>
-        <script type="text/javascript">
-            // this identifies your website in the createToken call below
-            Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-            jQuery(document).ready(function () {
-                jQuery(".pmpro_form").submit(function (event) {
-
-					//build array for creating token
-                    var args = {
-                        number: jQuery('#AccountNumber').val(),
-                        cvc: jQuery('#CVV').val(),
-                        exp_month: jQuery('#ExpirationMonth').val(),
-                        exp_year: jQuery('#ExpirationYear').val()
-                        <?php
-                            $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", true);
-                            if(!empty($pmpro_stripe_verify_address))
-                            {
-                            ?>, address_line1: jQuery('#baddress1').val(),
-                        address_line2: jQuery('#baddress2').val(),
-                        address_city: jQuery('#bcity').val(),
-                        address_state: jQuery('#bstate').val(),
-                        address_zip: jQuery('#bzipcode').val(),
-                        address_country: jQuery('#bcountry').val()
-                        <?php
-                            }
-                        ?>
-					};
-
-					if (jQuery('#bfirstname').length && jQuery('#blastname').length)
-                            args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
-
-					//create token
-					Stripe.createToken(args, stripeResponseHandler);
-
-                    // prevent the form from submitting with the default action
-                    return false;
-                });
-            });
-
-            function stripeResponseHandler(status, response) {
-                if (response.error) {
-                    // re-enable the submit button
-                    jQuery('.pmpro_btn-submit').removeAttr("disabled");
-
-                    // show the errors on the form
-                    alert(response.error.message);
-                    jQuery(".payment-errors").text(response.error.message);
-                } else {
-                    var form$ = jQuery(".pmpro_form");
-                    // token contains id, last4, and card type
-                    var token = response['id'];
-                    // insert the token into the form so it gets submitted to the server
-                    form$.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-
-                    //insert fields for other card fields
-                    form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
-                    form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-                    form$.append("<input type='hidden' name='ExpirationMonth' value='" + response['card']['exp_month'] + "'/>");
-                    form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
-
-                    // and submit
-                    form$.get(0).submit();
-                }
-            }
-        </script>
-    <?php
-    }
-
-    add_action("wp_head", "pmpro_stripe_javascript");
-
-    //don't require the CVV
-    function pmpro_stripe_dont_require_CVV($fields)
-    {
-        unset($fields['CVV']);
-        return $fields;
-    }
-
-    add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
-}
-
-//code for Braintree
-if ($gateway == "braintree") {
-    //don't require the CVV, but look for cvv (lowercase) that braintree sends
-    function pmpro_braintree_dont_require_CVV($fields)
-    {
-        unset($fields['CVV']);
-        $fields['cvv'] = true;
-        return $fields;
-    }
-
-    add_filter("pmpro_required_billing_fields", "pmpro_braintree_dont_require_CVV");
-}
 
 //_x stuff in case they clicked on the image button with their mouse
 if (isset($_REQUEST['update-billing']))
@@ -181,19 +83,7 @@ if ($submit) {
         $ExpirationYear = $_REQUEST['ExpirationYear'];
     if (isset($_REQUEST['CVV']))
         $CVV = trim($_REQUEST['CVV']);
-
-    //for stripe, load up token values
-    if (isset($_REQUEST['stripeToken'])) {
-        $stripeToken = $_REQUEST['stripeToken'];
-    }
-
-    //for Braintree, load up values
-    if (isset($_REQUEST['number']) && isset($_REQUEST['expiration_date']) && isset($_REQUEST['cvv'])) {
-        $braintree_number = $_REQUEST['number'];
-        $braintree_expiration_date = $_REQUEST['expiration_date'];
-        $braintree_cvv = $_REQUEST['cvv'];
-    }
-
+    
     //avoid warnings for the required fields
     if (!isset($bfirstname))
         $bfirstname = "";
@@ -240,35 +130,17 @@ if ($submit) {
         "ExpirationYear" => $ExpirationYear,
         "CVV" => $CVV
     );
-
-    //if using stripe lite, remove some fields from the required array
-    $pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", false);
-    if ($pmpro_stripe_lite && $gateway == "stripe") {
-        //some fields to remove
-        $remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
-
-        //if a user is logged in, don't require bemail either
-        if (!empty($current_user->user_email)) {
-            $remove[] = 'bemail';
-            $bemail = $current_user->user_email;
-            $bconfirmemail = $bemail;
-        }
-
-        //remove the fields
-        foreach ($remove as $field)
-            unset($pmpro_required_billing_fields[$field]);
-    }
-
+    
     //filter
     $pmpro_required_billing_fields = apply_filters("pmpro_required_billing_fields", $pmpro_required_billing_fields);
-
+	
     foreach ($pmpro_required_billing_fields as $key => $field) {
-        if (!$field) {
-            $missing_billing_field = true;
+        if (!$field) {            
+			$missing_billing_field = true;
             break;
         }
     }
-
+	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'pmpro');
         $pmpro_msgt = "pmpro_error";
@@ -294,19 +166,7 @@ if ($submit) {
             $morder->ExpirationDate = $ExpirationMonth . $ExpirationYear;
             $morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
             $morder->CVV2 = $CVV;
-
-            //stripeToken
-            if (isset($stripeToken))
-                $morder->stripeToken = $stripeToken;
-
-            //Braintree values
-            if (isset($braintree_number)) {
-                $morder->braintree = new stdClass();
-                $morder->braintree->number = $braintree_number;
-                $morder->braintree->expiration_date = $braintree_expiration_date;
-                $morder->braintree->cvv = $braintree_cvv;
-            }
-
+            
             //not saving email in order table, but the sites need it
             $morder->Email = $bemail;
 
@@ -328,7 +188,16 @@ if ($submit) {
             //$gateway = pmpro_getOption("gateway");
             $morder->gateway = $gateway;
             $morder->setGateway();
-
+			
+			/**
+			 * Filter the order object.
+			 *
+			 * @since 1.8.13.2
+			 *
+			 * @param object $order the order object used to update billing			 
+			 */
+			$morder = apply_filters( "pmpro_billing_order", $morder );
+			
             $worked = $morder->updateBilling();
 
             if ($worked) {

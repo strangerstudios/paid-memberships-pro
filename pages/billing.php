@@ -16,9 +16,6 @@
 	
 	$gateway = pmpro_getOption("gateway");
 
-	//set to true via filter to have Stripe use the minimal billing fields
-	$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress")); //default is oposite of the stripe_billingaddress setting
-
 	$level = $current_user->membership_level;
 
 	//Make sure the $level object is a valid level definition
@@ -312,12 +309,12 @@
 						
 						<div>
 							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
-							<input id="AccountNumber" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="AccountNumber"<?php } ?> class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="number"<?php } ?> autocomplete="off" />
+							<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
 						</div>
 
 						<div>
 							<label for="ExpirationMonth"><?php _e('Expiration Date', 'pmpro');?></label>
-							<select id="ExpirationMonth" <?php if($gateway != "stripe") { ?>name="ExpirationMonth"<?php } ?>>
+							<select id="ExpirationMonth" name="ExpirationMonth">
 								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
 								<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
 								<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
@@ -330,7 +327,7 @@
 								<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
 								<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
 								<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-							</select>/<select id="ExpirationYear" <?php if($gateway != "stripe") { ?>name="ExpirationYear"<?php } ?>>
+							</select>/<select id="ExpirationYear" name="ExpirationYear">
 								<?php
 									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
 									{
@@ -355,7 +352,7 @@
 						?>
 						<div>
 							<label for="CVV"><?php _e('CVV', 'pmpro');?></label>
-							<input class="input" id="CVV" <?php if($gateway != "stripe" && $gateway != "braintree") { ?>name="CVV"<?php } ?> type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" <?php if($gateway == "braintree") { ?>data-encrypted-name="cvv"<?php } ?> />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter($cvv_template); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'pmpro');?></a>)</small>
+							<input class="input" id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter($cvv_template); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'pmpro');?></a>)</small>
 						</div>
 						<?php
 							}
@@ -363,43 +360,11 @@
 					</td>
 				</tr>
 			</tbody>
-			</table>
-
-			<?php if($gateway == "braintree") { ?>
-				<input type='hidden' data-encrypted-name='expiration_date' id='credit_card_exp' />
-				<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
-				<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
-				<script type="text/javascript">
-					<!--
-					//setup braintree encryption
-					var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
-					braintree.onSubmitEncryptForm('pmpro_form');
-
-					//pass expiration dates in original format
-					function pmpro_updateBraintreeCardExp()
-					{
-						jQuery('#credit_card_exp').val(jQuery('#ExpirationMonth').val() + "/" + jQuery('#ExpirationYear').val());
-					}
-					jQuery('#ExpirationMonth, #ExpirationYear').change(function() {
-						pmpro_updateBraintreeCardExp();
-					});
-					pmpro_updateBraintreeCardExp();
-
-					//pass last 4 of credit card
-					function pmpro_updateBraintreeAccountNumber()
-					{
-						jQuery('#BraintreeAccountNumber').val('XXXXXXXXXXXXX' + jQuery('#AccountNumber').val().substr(jQuery('#AccountNumber').val().length - 4));
-					}
-					jQuery('#AccountNumber').change(function() {
-						pmpro_updateBraintreeAccountNumber();
-					});
-					pmpro_updateBraintreeAccountNumber();
-					-->
-				</script>
-			<?php }
-				} // if false === $hide_cc_fields
-			?>
-
+			</table>			
+			<?php } // if($pmpro_include_payment_information_fields) ?>
+			
+			<?php do_action("pmpro_billing_before_submit_button"); ?>
+		
 			<div align="center">
 				<input type="hidden" name="update-billing" value="1" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update', 'pmpro');?>" />

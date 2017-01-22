@@ -2,15 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pmpro\n"
 "POT-Creation-Date: 2013-08-01 05:01-0500\n"
-"PO-Revision-Date: 2013-08-22 03:37-0800\n"
+"PO-Revision-Date: 2017-01-17 17:14+0100\n"
 "Last-Translator: \n"
 "Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-KeywordsList: __;_;_e;_ex;_x;_n\n"
-"X-Poedit-Basepath: ../\n"
+"X-Poedit-Basepath: ..\n"
+"Language: es_ES\n"
 "X-Poedit-SearchPath-0: includes\n"
 "X-Poedit-SearchPath-1: .\n"
 "X-Poedit-SearchPath-2: classes\n"
@@ -70,7 +71,7 @@ msgstr "Códigos de Descuento"
 #: includes/adminpages.php:44 adminpages/admin_header.php:128
 #: adminpages/membershiplevels.php:490
 msgid "Membership Levels"
-msgstr "Niveles de Membresía"
+msgstr "Tipos de Suscripción"
 
 #: includes/cleanup.php:24
 #, php-format
@@ -80,8 +81,8 @@ msgid ""
 "active."
 msgstr ""
 "Hubo un error cancelando la subscripcion para el usuario con ID=%s. Deberías "
-"comprobar tu procesamiento de pagos (payment gateway) y ver si tu "
-"suscripción sigue activa."
+"comprobar tu procesamiento de pagos (payment gateway) y ver si tu suscripción "
+"sigue activa."
 
 #: includes/currencies.php:7 includes/currencies.php:37
 msgid "US Dollars (&#36;)"
@@ -178,32 +179,32 @@ msgstr "baht tailandés"
 #: includes/functions.php:160
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
-msgstr "El precio por la membresía es <strong>%s</strong> ahora"
+msgstr "El precio por la suscripción es <strong>%s</strong> ahora"
 
 #: includes/functions.php:169
 #, php-format
 msgid " and then <strong>%s per %s for %d more %s</strong>."
-msgstr "y después <strong>%s por %s durante %d %s mas </strong>."
+msgstr " y después <strong>%s por %s durante %d %s mas </strong>."
 
 #: includes/functions.php:173
 #, php-format
 msgid " and then <strong>%s every %d %s for %d more %s</strong>."
-msgstr "y después <strong>%s cada %d %s por %d durante %s más </strong>."
+msgstr " y después <strong>%s cada %d %s por %d durante %s más </strong>."
 
 #: includes/functions.php:178
 #, php-format
 msgid " and then <strong>%s after %d %s</strong>."
-msgstr "y luego <strong>%s después %d %s</strong>."
+msgstr " y luego <strong>%s después %d %s</strong>."
 
 #: includes/functions.php:184
 #, php-format
 msgid " and then <strong>%s per %s</strong>."
-msgstr "y despues  <strong>%s por %s</strong>."
+msgstr " y después  <strong>%s por %s</strong>. "
 
 #: includes/functions.php:188
 #, php-format
 msgid " and then <strong>%s every %d %s</strong>."
-msgstr "y después <strong>%s cada %d %s</strong>."
+msgstr " y después <strong>%s cada %d %s</strong>."
 
 #: includes/functions.php:202 pages/levels.php:82
 msgid "After your initial payment, your first payment is Free."
@@ -232,7 +233,7 @@ msgstr "A los clientes en %s se les cobrará %s%% de impuestos."
 #: includes/functions.php:242
 #, php-format
 msgid "Membership expires after %d %s."
-msgstr "La membresía expira despues de %d %s."
+msgstr "La suscripción expira despues de %d %s."
 
 #: includes/functions.php:491
 msgid "User ID not found."
@@ -253,7 +254,7 @@ msgstr "Error interactuando con la base de datos"
 
 #: includes/functions.php:629 includes/functions.php:668
 msgid "Membership level not found."
-msgstr "Nivel de membresía no encontrado."
+msgstr "Tipo de suscripción no encontrado."
 
 #: includes/functions.php:1050
 msgid "The discount code could not be found."
@@ -275,7 +276,7 @@ msgstr "Éste cupón de descuento ya no es válido."
 
 #: includes/functions.php:1102
 msgid "This discount code does not apply to this membership level."
-msgstr "Este cupón de descuento no se puede aplicar a este nivel de membresía."
+msgstr "Este cupón de descuento no se puede aplicar a este tipo de suscripción."
 
 #: includes/functions.php:1110
 msgid "This discount code is okay."
@@ -327,21 +328,21 @@ msgstr "Años"
 
 #: includes/metaboxes.php:38
 msgid ""
-"This post is already protected for this level because it is within a "
-"category that requires membership."
+"This post is already protected for this level because it is within a category "
+"that requires membership."
 msgstr ""
-"Esta entrada ya esta protegida para este nivel por que pertenece a una "
-"categoría que requiere membresía."
+"Esta entrada ya esta protegida para este nivel porque pertenece a una "
+"categoría que requiere suscripción."
 
 #: includes/metaboxes.php:99 includes/metaboxes.php:100
 msgid "Require Membership"
-msgstr "Requerir membresía"
+msgstr "Requerir suscripción"
 
 #: includes/profile.php:25 adminpages/orders.php:601 pages/checkout.php:34
 #: pages/confirmation.php:46 pages/confirmation.php:62
 #: pages/confirmation.php:103 pages/invoice.php:27 pages/invoice.php:49
 msgid "Membership Level"
-msgstr "Nivel de membresía"
+msgstr "Tipo de suscripción"
 
 #: includes/profile.php:34
 msgid "Current Level"
@@ -391,11 +392,11 @@ msgstr "Desactivado"
 
 #: adminpages/admin_header.php:25
 msgid "Add a membership level to get started."
-msgstr "Añade un nivel de membresía para comenzar."
+msgstr "Añade un tipo de suscripción para comenzar."
 
 #: adminpages/admin_header.php:27
 msgid "Set up the membership pages"
-msgstr "Configura las paginas de membresía"
+msgstr "Configura las paginas de suscripción"
 
 #: adminpages/admin_header.php:29
 msgid "Set up your SSL certificate and payment gateway"
@@ -406,13 +407,13 @@ msgid ""
 "The billing details for some of your membership levels is not supported by "
 "Stripe."
 msgstr ""
-"Los detalles de facturación para alguna de tus niveles de membresía no esta "
+"Los detalles de facturación para alguno de tus tipos de suscripción no esta "
 "soportado por Stripe."
 
 #: adminpages/admin_header.php:46
 msgid ""
-"The billing details for this level are not supported by Stripe. Please "
-"review the notes in the Billing Details section below."
+"The billing details for this level are not supported by Stripe. Please review "
+"the notes in the Billing Details section below."
 msgstr ""
 "Los detalles de facturación para este nivel no estan soportados por Stripe. "
 "Por favor revisa las notas en la sección Detalles de Facturación aqui debajo."
@@ -432,7 +433,7 @@ msgid ""
 "The billing details for some of your membership levels is not supported by "
 "Payflow."
 msgstr ""
-"Los detalles de facturación de tus niveles de membresa no estan soportados "
+"Los detalles de facturación de tus tipos de suscripción no estan soportados "
 "por Payflow."
 
 #: adminpages/admin_header.php:66
@@ -448,7 +449,7 @@ msgid ""
 "The billing details for some of your membership levels is not supported by "
 "Braintree."
 msgstr ""
-"Los detalles de facturación para alguno de tus niveles de membresía no estan "
+"Los detalles de facturación para alguno de tus tipos de suscripción no estan "
 "soportados por Braintree."
 
 #: adminpages/admin_header.php:86
@@ -497,8 +498,8 @@ msgstr "Mensaje para no-miembros logeados"
 msgid ""
 "This message replaces the post content for non-members. Available variables"
 msgstr ""
-"Este mensaje reemplaza el contenido de la entrada para no-miembros. "
-"Variables disponibles"
+"Este mensaje reemplaza el contenido de la entrada para no-miembros. Variables "
+"disponibles"
 
 #: adminpages/advancedsettings.php:94
 msgid "Message for Logged-out Users"
@@ -565,11 +566,11 @@ msgstr "Usar reCAPTCHA?"
 
 #: adminpages/advancedsettings.php:200
 msgid "Yes - Free memberships only."
-msgstr "Si - Solo membresías gratuitas."
+msgstr "Sí - Solo suscripciones gratuitas."
 
 #: adminpages/advancedsettings.php:201
 msgid "Yes - All memberships."
-msgstr "Si - Todas las membresías."
+msgstr "Sí - Todas las suscripciones."
 
 #: adminpages/advancedsettings.php:203
 msgid "A free reCAPTCHA key is required."
@@ -611,8 +612,8 @@ msgstr "Cupón de descuento actualizado correctamente."
 #: adminpages/discountcodes.php:55
 msgid "Error updating discount code. That code may already be in use."
 msgstr ""
-"Error actualizando el cupón de descuento. Es posible que el cupón "
-"introducido ya este en uso."
+"Error actualizando el cupón de descuento. Es posible que el cupón introducido "
+"ya este en uso."
 
 #: adminpages/discountcodes.php:64
 msgid "Discount code added successfully."
@@ -639,8 +640,8 @@ msgstr "Cupón %s borrado correctamente."
 
 #: adminpages/discountcodes.php:239
 msgid ""
-"Error deleting discount code. The code was only partially deleted. Please "
-"try again."
+"Error deleting discount code. The code was only partially deleted. Please try "
+"again."
 msgstr ""
 "Error borrando cupón de descuento. El cupón fue parcialmente eliminado. Por "
 "favor inténtelo de nuevo."
@@ -681,8 +682,7 @@ msgstr "Cupón"
 msgid "Start Date"
 msgstr "Fecha de inicio"
 
-#: adminpages/discountcodes.php:367 pages/billing.php:249
-#: pages/checkout.php:525
+#: adminpages/discountcodes.php:367 pages/billing.php:249 pages/checkout.php:525
 msgid "Expiration Date"
 msgstr "Fecha de expiración"
 
@@ -725,9 +725,9 @@ msgstr "Límite del ciclo de facturación"
 
 #: adminpages/discountcodes.php:459 adminpages/membershiplevels.php:384
 msgid ""
-"The <strong>total</strong> number of recurring billing cycles for this "
-"level, including the trial period (if applicable) but not including the "
-"initial payment. Set to zero if membership is indefinite."
+"The <strong>total</strong> number of recurring billing cycles for this level, "
+"including the trial period (if applicable) but not including the initial "
+"payment. Set to zero if membership is indefinite."
 msgstr ""
 "El número <strong>total</strong>de ciclos recurrentes para este nivel, "
 "incluyendo el periodo de prueba ( si existe) pero no incluyendo el pago "
@@ -755,7 +755,7 @@ msgstr "pagos  de susbscipción"
 
 #: adminpages/discountcodes.php:479 adminpages/membershiplevels.php:431
 msgid "Membership Expiration"
-msgstr "Expiración de la membresía"
+msgstr "Caducidad de la suscripción"
 
 #: adminpages/discountcodes.php:480
 msgid "Check this to set an expiration date for new sign ups."
@@ -767,15 +767,15 @@ msgstr "Expira en"
 
 #: adminpages/discountcodes.php:497
 msgid ""
-"How long before the expiration expires. Note that any future payments will "
-"be cancelled when the membership expires."
+"How long before the expiration expires. Note that any future payments will be "
+"cancelled when the membership expires."
 msgstr ""
-"Cuanto tiempo ha de pasar antes de que la expiración expire. Ten en cuenta "
-"que los pagos futuros serán cancelados cuando la membresía expire."
+"Cuanto tiempo ha de pasar antes de que la caducidad expire. Ten en cuenta que "
+"los pagos futuros serán cancelados cuando la suscripción caduque."
 
 #: adminpages/discountcodes.php:525
 msgid "Memberships Discount Codes"
-msgstr "Cupónes de descuento de membresías"
+msgstr "Cupónes de descuento de suscripciones"
 
 #: adminpages/discountcodes.php:535
 msgid "Search Discount Codes"
@@ -798,8 +798,8 @@ msgid ""
 "Discount codes allow you to offer your memberships at discounted prices to "
 "select customers."
 msgstr ""
-"Los cupones de descuento te permiten ofrecer tus membresías a precios "
-"descontados para cierto clientes."
+"Los cupones de descuento te permiten ofrecer tus suscripciones a precios con "
+"descuento para ciertos clientes."
 
 #: adminpages/discountcodes.php:570
 msgid "Create your first discount code now"
@@ -841,8 +841,8 @@ msgid ""
 "To modify the appearance of system generated emails, add the files "
 "<em>email_header.html</em> and <em>email_footer.html</em> to your theme's "
 "directory. This will modify both the WordPress default messages as well as "
-"messages generated by Paid Memberships Pro. <a title=\"Paid Memberships Pro "
-"- Member Communications\" target=\"_blank\" href=\"http://www."
+"messages generated by Paid Memberships Pro. <a title=\"Paid Memberships Pro - "
+"Member Communications\" target=\"_blank\" href=\"http://www."
 "paidmembershipspro.com/documentation/member-communications/\">Click here to "
 "learn more about Paid Memberships Pro emails</a>."
 msgstr ""
@@ -850,9 +850,9 @@ msgstr ""
 "los archivos <em>email_header.html</em> y <em>email_footer.html</em> al "
 "directorio de tu tema. Esto modificará los mensajes originales de wordpress "
 "tanto como los mensajes generados por Paid Memberships Pro. <a title=\"Paid "
-"Memberships Pro - Comunicaciones a miembros\" target=\"_blank\" href="
-"\"http://www.paidmembershipspro.com/documentation/member-communications/"
-"\">Haz click aquí para aprender sobre los emails de Paid Memberships Pro</a>."
+"Memberships Pro - Comunicaciones a miembros\" target=\"_blank\" href=\"http://"
+"www.paidmembershipspro.com/documentation/member-communications/\">Haz click "
+"aquí para aprender sobre los emails de Paid Memberships Pro</a>."
 
 #: adminpages/emailsettings.php:69
 msgid "From Email"
@@ -881,8 +881,7 @@ msgstr "Cambios por el Admin"
 #: adminpages/emailsettings.php:105
 msgid "when an admin changes a user's membership level through the dashboard."
 msgstr ""
-"cuando un administrador cambia el nivel de un usuario a traves del "
-"Escritorio."
+"cuando un administrador cambia el nivel de un usuario a traves del Escritorio."
 
 #: adminpages/emailsettings.php:110
 msgid "Cancellation"
@@ -919,19 +918,19 @@ msgstr ""
 
 #: adminpages/membershiplevels.php:118
 msgid "Membership level updated successfully."
-msgstr "Nivel de membresa actualizado correctamente."
+msgstr "Tipo de suscripción actualizado correctamente."
 
 #: adminpages/membershiplevels.php:124
 msgid "Error updating membership level."
-msgstr "Error actualizando el nivel de membresa."
+msgstr "Error actualizando el tipo de suscripción."
 
 #: adminpages/membershiplevels.php:141
 msgid "Membership level added successfully."
-msgstr "Nivel de membresa añadido correctamente."
+msgstr "Tipo de suscripción añadido correctamente."
 
 #: adminpages/membershiplevels.php:146
 msgid "Error adding membership level."
-msgstr "Error añadiendo nivel de membresía."
+msgstr "Error añadiendo tipo de suscripción."
 
 #: adminpages/membershiplevels.php:179
 #, php-format
@@ -953,15 +952,15 @@ msgstr "Nivel de mebresa eliminado correctamente."
 
 #: adminpages/membershiplevels.php:201 adminpages/membershiplevels.php:207
 msgid "Error deleting membership level."
-msgstr "Error eliminando nivel de membresía."
+msgstr "Error eliminando tipo de suscripción."
 
 #: adminpages/membershiplevels.php:222
 msgid "Edit Membership Level"
-msgstr "Editar nivel de membresía"
+msgstr "Editar tipo de suscripción"
 
 #: adminpages/membershiplevels.php:224
 msgid "Add New Membership Level"
-msgstr "Añade un nuevo nivel de membresía"
+msgstr "Añade un nuevo tipo de suscripción"
 
 #: adminpages/membershiplevels.php:291 adminpages/membershiplevels.php:506
 #: adminpages/reports/login.php:142
@@ -1014,11 +1013,11 @@ msgstr ""
 
 #: adminpages/membershiplevels.php:366
 msgid ""
-"Braintree integration currently only supports billing periods of \"Month\" "
-"or \"Year\"."
+"Braintree integration currently only supports billing periods of \"Month\" or "
+"\"Year\"."
 msgstr ""
-"La integración con Braintree actualmente solo soporta periodos de "
-"facturación \"mensuales \" o  \"anuales \"."
+"La integración con Braintree actualmente solo soporta periodos de facturación "
+"\"mensuales \" o  \"anuales \"."
 
 #: adminpages/membershiplevels.php:368
 msgid ""
@@ -1056,8 +1055,8 @@ msgid ""
 "Stripe integration currently does not support billing limits. You can still "
 "set an expiration date below."
 msgstr ""
-"La integración con Stripe actualmente no soporta límites de facturación. "
-"Pero puedes elegir una fecha de expiración aqui abajo."
+"La integración con Stripe actualmente no soporta límites de facturación. Pero "
+"puedes elegir una fecha de expiración aqui abajo."
 
 #: adminpages/membershiplevels.php:406
 msgid ""
@@ -1094,12 +1093,12 @@ msgid ""
 "Check to hide this level from the membership levels page and disable "
 "registration."
 msgstr ""
-"Marcar para esconder este nivel de la página de membresías y desactivar "
+"Marcar para esconder este nivel de la página de suscripciones y desactivar "
 "registro."
 
 #: adminpages/membershiplevels.php:432
 msgid "Check this to set when membership access expires."
-msgstr "Marcar esto para elegir cuando termina el acceso a la membresía."
+msgstr "Marcar esto para elegir cuando termina el acceso a la suscripción."
 
 #: adminpages/membershiplevels.php:449
 msgid ""
@@ -1107,9 +1106,9 @@ msgid ""
 "(recurring subscription, if any) will be cancelled when the membership "
 "expires."
 msgstr ""
-"Elige la duración de acceso para la membresía. Ten en cuenta que cualquier "
-"futuro pago ( subscripciones recurrentes, si las hay) serán canceladas "
-"cuando la membresía expire."
+"Elige la duración de acceso para la suscripción. Ten en cuenta que cualquier "
+"futuro pago ( subscripciones recurrentes, si las hay) serán canceladas cuando "
+"la suscripción expire."
 
 #: adminpages/membershiplevels.php:457
 msgid "Content Settings"
@@ -1171,7 +1170,7 @@ msgid ""
 "Are you sure you want to delete membership level %s? All subscriptions will "
 "be cancelled."
 msgstr ""
-"¿Seguro que quieres borrar el nivel de membresía %s? Todas las "
+"¿Seguro que quieres borrar el nivel de suscripción %s? Todas las "
 "subscripciones serán canceladas."
 
 #: adminpages/memberslist.php:26 adminpages/orders.php:522
@@ -1278,7 +1277,7 @@ msgstr "ID de usuario"
 
 #: adminpages/orders.php:234
 msgid "Membership Level ID"
-msgstr "ID de nivel de membresía"
+msgstr "ID de nivel de suscripción"
 
 #: adminpages/orders.php:243
 msgid "Billing Name"
@@ -1553,8 +1552,8 @@ msgstr "Opciones SSL"
 
 #: adminpages/paymentsettings.php:170
 msgid ""
-"Payflow Pro currently only supports one-time payments. Users will not be "
-"able to checkout for levels with recurring payments."
+"Payflow Pro currently only supports one-time payments. Users will not be able "
+"to checkout for levels with recurring payments."
 msgstr ""
 "Payflow Pro actualmente solo soporta pagos  on-time. Los usuarios no podrán "
 "darse de alta en niveles con pagos recurrentes."
@@ -1712,8 +1711,8 @@ msgstr "Silent Post URL"
 msgid ""
 "To fully integrate with Authorize.net, be sure to set your Silent Post URL to"
 msgstr ""
-"Para integrar completamente con Authorize.net, asegurate de asignar tu "
-"Silent Post URL a"
+"Para integrar completamente con Authorize.net, asegurate de asignar tu Silent "
+"Post URL a"
 
 #: adminpages/paymentsettings.php:462 adminpages/paymentsettings.php:470
 msgid "Web Hook URL"
@@ -1722,8 +1721,7 @@ msgstr "Web Hook URL"
 #: adminpages/paymentsettings.php:465
 msgid "To fully integrate with Stripe, be sure to set your Web Hook URL to"
 msgstr ""
-"Para integrar completamente con Stripe, asegurate de asignar tu Web Hook URL "
-"a"
+"Para integrar completamente con Stripe, asegurate de asignar tu Web Hook URL a"
 
 #: adminpages/paymentsettings.php:474
 msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
@@ -1843,7 +1841,7 @@ msgstr "Un email de %s"
 #: classes/class.pmproemail.php:120
 #, php-format
 msgid "Your membership at %s has been CANCELLED"
-msgstr "Tu membresía %s ha sido CANCELADA"
+msgstr "Tu suscripción %s ha sido CANCELADA"
 
 #: classes/class.pmproemail.php:142
 #, php-format
@@ -1853,7 +1851,7 @@ msgstr "Membresía para %s en %s ha sido CANCELADA"
 #: classes/class.pmproemail.php:172
 #, php-format
 msgid "Your membership confirmation for %s"
-msgstr "Confirmación de membresía para %s"
+msgstr "Confirmación de suscripción para %s"
 
 #: classes/class.pmproemail.php:216 classes/class.pmproemail.php:225
 #: classes/class.pmproemail.php:234 classes/class.pmproemail.php:304
@@ -1867,7 +1865,7 @@ msgstr "Cupón de descuento"
 #: classes/class.pmproemail.php:538
 #, php-format
 msgid "This membership will expire on %s."
-msgstr "Esta membresía caducará en %s"
+msgstr "Esta suscripción caducará en %s"
 
 #: classes/class.pmproemail.php:263
 #, php-format
@@ -1887,12 +1885,12 @@ msgstr "La información de facturacion para %s ha sido actualizada a %s"
 #: classes/class.pmproemail.php:425
 #, php-format
 msgid "Membership Payment Failed at %s"
-msgstr "Pago de membresía ha fallado a %s"
+msgstr "Pago de suscripción ha fallado a %s"
 
 #: classes/class.pmproemail.php:462
 #, php-format
 msgid "Membership Payment Failed For %s at %s"
-msgstr "Pago de membresía ha fallado para %s a %s"
+msgstr "Pago de suscripción ha fallado para %s a %s"
 
 #: classes/class.pmproemail.php:501
 #, php-format
@@ -1907,44 +1905,44 @@ msgstr "Tu periodo de prueba en %s se acaba pronto"
 #: classes/class.pmproemail.php:596
 #, php-format
 msgid "Your membership at %s has ended"
-msgstr "Tu membresía en %s ha terminado"
+msgstr "Tu suscripción en %s ha terminado"
 
 #: classes/class.pmproemail.php:621
 #, php-format
 msgid "Your membership at %s will end soon"
-msgstr "Tu membresía en %s acabará pronto"
+msgstr "Tu suscripción en %s acabará pronto"
 
 #: classes/class.pmproemail.php:641
 #, php-format
 msgid "Your membership at %s has been changed"
-msgstr "Tu membresía en %s ha cambiado"
+msgstr "Tu suscripción en %s ha cambiado"
 
 #: classes/class.pmproemail.php:645 classes/class.pmproemail.php:683
 #, php-format
 msgid "The new level is %s. This membership is free"
-msgstr "El nuevo nivel es %s. Esta membresa es gratuita"
+msgstr "El nuevo nivel es %s. Esta suscripción es gratuita"
 
 #: classes/class.pmproemail.php:647
 msgid "Your membership has been cancelled"
-msgstr "Tu membresa ha sido cancelada"
+msgstr "Tu suscripción ha sido cancelada"
 
 #: classes/class.pmproemail.php:651 classes/class.pmproemail.php:689
 #, php-format
 msgid "This membership will expire on %s"
-msgstr "Esta membresía terminará en %s"
+msgstr "Esta suscripción terminará en %s"
 
 #: classes/class.pmproemail.php:655 classes/class.pmproemail.php:693
 msgid "This membership does not expire"
-msgstr "Esta membresa no caduca"
+msgstr "Esta suscripción no caduca"
 
 #: classes/class.pmproemail.php:679
 #, php-format
 msgid "Membership for %s at %s has been changed"
-msgstr "La membresía para %s en %s ha cambiado"
+msgstr "La suscripción para %s en %s ha cambiado"
 
 #: classes/class.pmproemail.php:685
 msgid "membership has been cancelled"
-msgstr "La membresía ha sido cancelada"
+msgstr "La suscripción ha sido cancelada"
 
 #: classes/gateways/class.pmprogateway.php:55
 #: classes/gateways/class.pmprogateway_authorizenet.php:55
@@ -2048,7 +2046,7 @@ msgstr "Error subscribiendo al cliente al plan con Stripe:"
 
 #: pages/account.php:10
 msgid "Your membership is <strong>active</strong>."
-msgstr "Tu membresía esta <strong>activa</strong>."
+msgstr "Tu suscripción esta <strong>activa</strong>."
 
 #: pages/account.php:12 pages/billing.php:16 pages/levels.php:13
 msgid "Level"
@@ -2056,7 +2054,7 @@ msgstr "Nivel"
 
 #: pages/account.php:14 pages/billing.php:18
 msgid "Membership Fee"
-msgstr "Cuota de membresía"
+msgstr "Cuota de suscripción"
 
 #: pages/account.php:25 pages/billing.php:29
 msgid "Duration"
@@ -2064,7 +2062,7 @@ msgstr "Duración"
 
 #: pages/account.php:29 pages/confirmation.php:48 pages/invoice.php:29
 msgid "Membership Expires"
-msgstr "La membresía expira"
+msgstr "La suscripción expira"
 
 #: pages/account.php:34
 #, php-format
@@ -2114,11 +2112,11 @@ msgstr "Actualizar información de facturación"
 
 #: pages/account.php:155
 msgid "Change Membership Level"
-msgstr "Cambiar nivel de membresía."
+msgstr "Cambiar nivel de suscripción."
 
 #: pages/account.php:157
 msgid "Cancel Membership"
-msgstr "Cancelar membresía"
+msgstr "Cancelar suscripción"
 
 #: pages/billing.php:14
 #, php-format
@@ -2221,7 +2219,7 @@ msgstr ""
 
 #: pages/cancel.php:14
 msgid "Are you sure you want to cancel your membership?"
-msgstr "¿Estas seguro de que quieres cancelar tu membresía?"
+msgstr "¿Estas seguro de que quieres cancelar tu suscripción?"
 
 #: pages/cancel.php:17
 msgid "Yes, cancel my account"
@@ -2240,7 +2238,7 @@ msgid ""
 "Almost done. Review the membership information and pricing below then "
 "<strong>click the \"Complete Payment\" button</strong> to finish your order."
 msgstr ""
-"Casi has terminado. Revisa la información de la membresía y precios aqui "
+"Casi has terminado. Revisa la información de la suscripción y precios aqui "
 "abajo y después <strong>haz click en el botón \"Completar pago\" </strong> "
 "para finalizar."
 
@@ -2251,7 +2249,7 @@ msgstr "cambiar"
 #: pages/checkout.php:42
 #, php-format
 msgid "You have selected the <strong>%s</strong> membership level."
-msgstr "Has seleccionado el nivel de membresía <strong>%s</strong>."
+msgstr "Has seleccionado el nivel de suscripción <strong>%s</strong>."
 
 #: pages/checkout.php:52
 #, php-format
@@ -2309,7 +2307,7 @@ msgid ""
 "different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr ""
 "Estas logeado como <strong>%s</strong>. Si deseas usar una cuenta diferente "
-"para esta membresía,<a href=\"%s\">deslogeate ahora</a>."
+"para esta suscripción,<a href=\"%s\">deslogeate ahora</a>."
 
 #: pages/checkout.php:277
 #, php-format
@@ -2357,13 +2355,14 @@ msgstr "Procesando..."
 msgid ""
 "Your payment has been submitted to PayPal. Your membership will be activated "
 "shortly."
-msgstr "Tu pago ha sido enviado a PayPal. Tu membresía será activada en breve."
+msgstr ""
+"Tu pago ha sido enviado a PayPal. Tu suscripción será activada en breve."
 
 #: pages/confirmation.php:14
 #, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr ""
-"Gracias por hacerte miembro en %s. Tu membresía %s ahora esta activada."
+"Gracias por hacerte miembro en %s. Tu suscripción %s ahora esta activada."
 
 #: pages/confirmation.php:28
 #, php-format
@@ -2372,9 +2371,9 @@ msgid ""
 "initial membership invoice. A welcome email with a copy of your initial "
 "membership invoice has been sent to %s."
 msgstr ""
-"Debajo estan los detalles sobre tu cuenta de membresía y un recibo por la "
+"Debajo estan los detalles sobre tu cuenta de suscripción y un recibo por la "
 "factura de tu pago inicial. Un email de bienvenida y una copia de la factura "
-"de tu membresía inicial ha sido enviado a %s."
+"de tu suscripción inicial ha sido enviado a %s."
 
 #: pages/confirmation.php:41 pages/invoice.php:22
 #, php-format
@@ -2501,7 +2500,7 @@ msgstr "&larr; Volver a la página principal"
 
 #: preheaders/account.php:7 preheaders/levels.php:19
 msgid "Your membership status has been updated - Thank you!"
-msgstr "El estado de tu membresa ha sido actualizado - Gracias!"
+msgstr "El estado de tu suscripción ha sido actualizado - ¡Gracias!"
 
 #: preheaders/account.php:11 preheaders/levels.php:23
 msgid ""
@@ -2540,7 +2539,7 @@ msgstr "Error actualizando la información de facturación."
 
 #: preheaders/cancel.php:24
 msgid "Your membership has been cancelled."
-msgstr "Tu membresía ha sido cancelada."
+msgstr "Tu suscripción ha sido cancelada."
 
 #: preheaders/checkout.php:28 preheaders/checkout.php:491
 msgid "Invalid gateway."
@@ -2588,8 +2587,8 @@ msgstr "Pago aceptado."
 msgid ""
 "Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
-"Error desconocido generando tu cuenta. Por favor contactanos para que "
-"podamos configurar tu membresía."
+"Error desconocido generando tu cuenta. Por favor contactanos para que podamos "
+"configurar tu suscripción."
 
 #: preheaders/checkout.php:735 preheaders/checkout.php:803
 msgid "The PayPal Token was lost."
@@ -2609,7 +2608,7 @@ msgid ""
 "authorized, but we cancelled the order immediately. You should not try to "
 "submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
-"IMPORTANTE: Algún error ocurrió durante la creación de tu membresía. Tu "
+"IMPORTANTE: Algún error ocurrió durante la creación de tu suscripción. Tu "
 "tarjeta de crédito fue autorizada, pero hemos cancelado el pago "
 "inmediatamente. No envíes este formulario de nuevo. Ponte en contacto con el "
 "administrador del sitio para arreglar este problema."
@@ -2620,9 +2619,9 @@ msgid ""
 "was charged, but we couldn't assign your membership. You should not submit "
 "this form again. Please contact the site owner to fix this issue."
 msgstr ""
-"IMPORTANTE: Algún error ocurrió durante la creación de tu membresía. Tu "
+"IMPORTANTE: Algún error ocurrió durante la creación de tu suscripción. Tu "
 "tarjeta de crédito ha recibito un cargo, pero no hemos podido asignarte la "
-"membresía. No envíes este formulario de nuevo. Ponte en contacto con el "
+"suscripción. No envíes este formulario de nuevo. Ponte en contacto con el "
 "administrador del sitio para arreglar este problema."
 
 #: preheaders/checkout.php:1001
@@ -2643,12 +2642,12 @@ msgstr ""
 #: scheduled/crons.php:27
 #, php-format
 msgid "Membership expiring email sent to %s. "
-msgstr "Emails de expiración de membresía enviados a %s."
+msgstr "Emails de expiración de suscripción enviados a %s."
 
 #: scheduled/crons.php:61
 #, php-format
 msgid "Membership expired email sent to %s. "
-msgstr "Email de membresía expirada enviado a %s."
+msgstr "Email de suscripción expirada enviado a %s."
 
 #: scheduled/crons.php:104
 #, php-format
@@ -2675,4 +2674,4 @@ msgid ""
 "this user's membership is cancelled on your site if it should be."
 msgstr ""
 "Stripe ha cancelado la subscripción de pago para %s. Por favor asegurate que "
-"la membresía de este usuario es cancelada en tu sitio si es necesario."
+"la suscripción de este usuario es cancelada en tu sitio si es necesario."
