@@ -45,91 +45,83 @@
 		$starts = date_i18n("Y-m-d", strtotime($starts_month . "/" . $starts_day . "/" . $starts_year, current_time("timestamp")));
 		$expires = date_i18n("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, current_time("timestamp")));
 		
-		//updating or new?
-		if($saveid > 0)
-		{
-			$sqlQuery = $wpdb->prepare("
-			UPDATE $wpdb->pmpro_discount_codes
-			SET code = %s,
-			starts = %s,
-			expires = %s,
-			uses = %d
-			WHERE id = %d LIMIT 1",
-			$code,
-			$starts,
-			$expires,
-			$uses,
-			$saveid
+		//insert/update/replace discount code
+		$wpdb->replace(
+			$wpdb->pmpro_discount_codes,
+			array(
+				'id'=>max($saveid, 0),
+				'code' => $code,
+				'starts' => $starts,
+				'expires' => $expires,
+				'uses' => $uses				
+			),
+			array(
+				'%d',
+				'%s',
+				'%s',
+				'%s',
+				'%d'
+			)
 		);
-
-		if($wpdb->query($sqlQuery) !== false)
-		{
-			$pmpro_msg = __("Discount code updated successfully.", "pmpro");
-			$pmpro_msgt = "success";
-			$saved = true;
-			$edit = $saveid;
-		}
-		else
-		{
-			$pmpro_msg = __("Error updating discount code. That code may already be in use.", "pmpro");
-			$pmpro_msgt = "error";
-		}
-	}
-	else
-	{
-		$sqlQuery = $wpdb->prepare("
-		INSERT INTO $wpdb->pmpro_discount_codes (code, starts, expires, uses)
-		VALUES( %s, %s, %s, %d)",
-		$code,
-		$starts,
-		$expires,
-		$uses
-	);
-
-	if($wpdb->query($sqlQuery) !== false)
-	{
-		$pmpro_msg = __("Discount code added successfully.", "pmpro");
-		$pmpro_msgt = "success";
-		$saved = true;
-		$edit = $wpdb->insert_id;
-		//$saveid = $edit;
-	}
-	else
-	{
-		$pmpro_msg = __("Error adding discount code. That code may already be in use.", "pmpro") . $wpdb->last_error;
-		$pmpro_msgt = "error";
-	}
-}
+		
+		//check for errors and show appropriate message if inserted or updated
+		if(empty($wpdb->last_error)) {
+			if($saveid < 1) {
+				//insert
+				$pmpro_msg = __("Discount code added successfully.", "pmpro");
+				$pmpro_msgt = "success";
+				$saved = true;
+				$edit = $wpdb->insert_id;
+			} else {
+				//updated
+				$pmpro_msg = __("Discount code updated successfully.", "pmpro");
+				$pmpro_msgt = "success";
+				$saved = true;
+				$edit = $saveid;
+			}
+		} else {
+			if($saveid < 1) {
+				//error inserting
+				$pmpro_msg = __("Error adding discount code. That code may already be in use.", "pmpro") . $wpdb->last_error;
+				$pmpro_msgt = "error";
+			} else {
+				//error updating
+				$pmpro_msg = __("Error updating discount code. That code may already be in use.", "pmpro");
+				$pmpro_msgt = "error";
+			}
+		}				
 
 		//now add the membership level rows
-	if($saved && $edit > 0)
-	{
-		//get the submitted values
-		$all_levels_a = $_REQUEST['all_levels'];
-		if(!empty($_REQUEST['levels']))
-			$levels_a = $_REQUEST['levels'];
-		else
-			$levels_a = array();
+		if($saved && $edit > 0)
+		{
+			//get the submitted values
+			$all_levels_a = $_REQUEST['all_levels'];
+			if(!empty($_REQUEST['levels']))
+				$levels_a = $_REQUEST['levels'];
+			else
+				$levels_a = array();
 			$initial_payment_a = $_REQUEST['initial_payment'];
-		if(!empty($_REQUEST['recurring']))
-			$recurring_a = $_REQUEST['recurring'];
+			
+			if(!empty($_REQUEST['recurring']))
+				$recurring_a = $_REQUEST['recurring'];				
 			$billing_amount_a = $_REQUEST['billing_amount'];
 			$cycle_number_a = $_REQUEST['cycle_number'];
 			$cycle_period_a = $_REQUEST['cycle_period'];
 			$billing_limit_a = $_REQUEST['billing_limit'];
-		if(!empty($_REQUEST['custom_trial']))
-			$custom_trial_a = $_REQUEST['custom_trial'];
+			
+			if(!empty($_REQUEST['custom_trial']))
+				$custom_trial_a = $_REQUEST['custom_trial'];
 			$trial_amount_a = $_REQUEST['trial_amount'];
 			$trial_limit_a = $_REQUEST['trial_limit'];
-		if(!empty($_REQUEST['expiration']))
-			$expiration_a = $_REQUEST['expiration'];
+			
+			if(!empty($_REQUEST['expiration']))
+				$expiration_a = $_REQUEST['expiration'];
 			$expiration_number_a = $_REQUEST['expiration_number'];
 			$expiration_period_a = $_REQUEST['expiration_period'];
 
 			//clear the old rows
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = %d", $edit ) );
-			$wpdb->query($sqlQuery);
-
+			$wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id' => $edit), array('%d'));
+						
 			//add a row for each checked level
 			if(!empty($levels_a))
 			{
@@ -211,31 +203,46 @@
 						$expiration_period = 'Month';
 					}
 
+					
+					
 					//okay, do the insert
-					$sqlQuery = $wpdb->prepare("
-					INSERT INTO $wpdb->pmpro_discount_codes_levels (code_id, level_id, initial_payment, billing_amount, cycle_number, cycle_period, billing_limit, trial_amount, trial_limit, expiration_number, expiration_period)
-					VALUES(%d, %d, %f, %f, %d, %d, %d, %f, %d, %d, %d)",
-					$edit,
-					$level_id,
-					$initial_payment,
-					$billing_amount,
-					$cycle_number,
-					$cycle_period,
-					$billing_limit,
-					$trial_amount,
-					$trial_limit,
-					$expiration_number,
-					$expiration_period
-				);
-
-					if($wpdb->query($sqlQuery) !== false)
+					$wpdb->insert(
+						$wpdb->pmpro_discount_codes_levels,
+						array(
+							'code_id' => $edit,
+							'level_id' => $level_id,
+							'initial_payment' => $initial_payment,
+							'billing_amount' => $billing_amount,
+							'cycle_number' => $cycle_number,
+							'cycle_period' => $cycle_period,
+							'billing_limit' => $billing_limit,
+							'trial_amount' => $trial_amount,
+							'expiration_number' => $expiration_number,
+							'expiration_period' => $expiration_period
+						),
+						array(
+							'%d',
+							'%d',
+							'%f',
+							'%f',
+							'%d',
+							'%s',
+							'%d',
+							'%f',
+							'%d',
+							'%s'
+						)
+					);
+										
+					if(empty($wpdb->last_error))
 					{
 						//okay
 						do_action("pmpro_save_discount_code_level", $edit, $level_id);
 					}
 					else
 					{
-						$level_errors[] = sprintf(__("Error saving values for the %s level.", "pmpro"), $wpdb->get_var("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1"));
+						$level = pmpro_getLevel($level_id);
+						$level_errors[] = sprintf(__("Error saving values for the %s level.", "pmpro"), $level->name);
 					}
 				}
 			}
@@ -267,13 +274,13 @@
 			do_action("pmpro_delete_discount_code", $delete);
 
 			//delete the code levels
-			$r1 = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = %d ", $delete ) );
+			$r1 = $wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id'=>$delete), array('%d'));
 
 			if($r1 !== false)
 			{
 				//delete the code
-				$r2 = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_discount_codes WHERE id = %d LIMIT 1", $delete ) );
-
+				$r2 = $wpdb->delete($wpdb->pmpro_discount_codes, array('id'=>$delete), array('%d'));
+				
 				if($r2 !== false)
 				{
 					$pmpro_msg = sprintf(__("Code %s deleted successfully.", "pmpro"), $code);
@@ -321,13 +328,14 @@
 				// get the code...
 				if($edit > 0)
 				{
-					$code = $wpdb->get_row( $wpdb->prepare("
-					SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
-					FROM $wpdb->pmpro_discount_codes
-					WHERE id = %d LIMIT 1",
-					$edit ),
-					OBJECT
-				);
+					$code = $wpdb->get_row(
+						$wpdb->prepare("
+						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						FROM $wpdb->pmpro_discount_codes
+						WHERE id = %d LIMIT 1",
+						$edit ),
+						OBJECT
+					);
 
 					$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
 					$levels = $wpdb->get_results( $wpdb->prepare("
@@ -702,13 +710,13 @@
 						<td>
 							<?php
 								$sqlQuery = $wpdb->prepare("
-								SELECT l.id, l.name
-								FROM $wpdb->pmpro_membership_levels l
-								LEFT JOIN $wpdb->pmpro_discount_codes_levels cl
-								ON l.id = cl.level_id
-								WHERE cl.code_id = %d",
-								$code->id
-							 );
+									SELECT l.id, l.name
+									FROM $wpdb->pmpro_membership_levels l
+									LEFT JOIN $wpdb->pmpro_discount_codes_levels cl
+									ON l.id = cl.level_id
+									WHERE cl.code_id = %d",
+									$code->id
+								);
 								$levels = $wpdb->get_results($sqlQuery);
 
 								$level_names = array();
