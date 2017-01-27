@@ -14,7 +14,7 @@
  * @subpackage Exception
  * @see        Braintree_Configuration
  */
-class Braintree_Exception_Configuration extends Braintree_Exception
-{
+class Braintree_Exception_Configuration extends Braintree_Exception {
+
 
 }

@@ -1,33 +1,30 @@
 <?php
-class Braintree_WebhookTesting
-{
-    public static function sampleNotification($kind, $id)
-    {
-        $payload = base64_encode(self::_sampleXml($kind, $id));
-        $signature = Braintree_Configuration::publicKey() . "|" . Braintree_Digest::hexDigest($payload);
+class Braintree_WebhookTesting {
 
-        return array(
-            'signature' => $signature,
-            'payload' => $payload
-        );
-    }
+	public static function sampleNotification( $kind, $id ) {
+		$payload = base64_encode( self::_sampleXml( $kind, $id ) );
+		$signature = Braintree_Configuration::publicKey() . '|' . Braintree_Digest::hexDigest( $payload );
 
-    private static function _sampleXml($kind, $id)
-    {
-        $subjectXml = self::_subscriptionSampleXml($id);
-        $timestamp = self::_timestamp();
-        return "
+		return array(
+			'signature' => $signature,
+			'payload' => $payload,
+		);
+	}
+
+	private static function _sampleXml( $kind, $id ) {
+		$subjectXml = self::_subscriptionSampleXml( $id );
+		$timestamp = self::_timestamp();
+		return "
         <notification>
             <timestamp type=\"datetime\">{$timestamp}</timestamp>
             <kind>{$kind}</kind>
             <subject>{$subjectXml}</subject>
         </notification>
         ";
-    }
+	}
 
-    private static function _subscriptionSampleXml($id)
-    {
-        return "
+	private static function _subscriptionSampleXml( $id ) {
+		return "
         <subscription>
             <id>{$id}</id>
             <transactions type=\"array\">
@@ -38,15 +35,15 @@ class Braintree_WebhookTesting
             </discounts>
         </subscription>
         ";
-    }
+	}
 
-    private static function _timestamp()
-    {
-        $originalZone = date_default_timezone_get();
-        date_default_timezone_set('UTC');
-        $timestamp = strftime('%Y-%m-%dT%TZ');
-        date_default_timezone_set($originalZone);
+	private static function _timestamp() {
 
-        return $timestamp;
-    }
+		$originalZone = date_default_timezone_get();
+		date_default_timezone_set( 'UTC' );
+		$timestamp = strftime( '%Y-%m-%dT%TZ' );
+		date_default_timezone_set( $originalZone );
+
+		return $timestamp;
+	}
 }

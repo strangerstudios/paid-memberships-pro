@@ -1,55 +1,53 @@
 <?php
-class Braintree_Plan extends Braintree
-{
-    public static function all()
-    {
-        $response = Braintree_Http::get('/plans');
-        if (key_exists('plans', $response)){
-            $plans = array("plan" => $response['plans']);
-        } else {
-            $plans = array("plan" => array());
-        }
+class Braintree_Plan extends Braintree {
 
-        return Braintree_Util::extractAttributeAsArray(
-            $plans,
-            'plan'
-        );
-    }
+	public static function all() {
 
-    public static function factory($attributes)
-    {
-        $instance = new self();
-        $instance->_initialize($attributes);
+		$response = Braintree_Http::get( '/plans' );
+		if ( key_exists( 'plans', $response ) ) {
+			$plans = array( 'plan' => $response['plans'] );
+		} else {
+			$plans = array( 'plan' => array() );
+		}
 
-        return $instance;
-    }
+		return Braintree_Util::extractAttributeAsArray(
+			$plans,
+			'plan'
+		);
+	}
 
-    protected function _initialize($attributes)
-    {
-        $this->_attributes = $attributes;
+	public static function factory( $attributes ) {
+		$instance = new self();
+		$instance->_initialize( $attributes );
 
-        $addOnArray = array();
-        if (isset($attributes['addOns'])) {
-            foreach ($attributes['addOns'] AS $addOn) {
-                $addOnArray[] = Braintree_AddOn::factory($addOn);
-            }
-        }
-        $this->_attributes['addOns'] = $addOnArray;
+		return $instance;
+	}
 
-        $discountArray = array();
-        if (isset($attributes['discounts'])) {
-            foreach ($attributes['discounts'] AS $discount) {
-                $discountArray[] = Braintree_Discount::factory($discount);
-            }
-        }
-        $this->_attributes['discounts'] = $discountArray;
+	protected function _initialize( $attributes ) {
+		$this->_attributes = $attributes;
 
-        $planArray = array();
-        if (isset($attributes['plans'])) {
-            foreach ($attributes['plans'] AS $plan) {
-                $planArray[] = Braintree_Plan::factory($plan);
-            }
-        }
-        $this->_attributes['plans'] = $planArray;
-    }
+		$addOnArray = array();
+		if ( isset( $attributes['addOns'] ) ) {
+			foreach ( $attributes['addOns'] as $addOn ) {
+				$addOnArray[] = Braintree_AddOn::factory( $addOn );
+			}
+		}
+		$this->_attributes['addOns'] = $addOnArray;
+
+		$discountArray = array();
+		if ( isset( $attributes['discounts'] ) ) {
+			foreach ( $attributes['discounts'] as $discount ) {
+				$discountArray[] = Braintree_Discount::factory( $discount );
+			}
+		}
+		$this->_attributes['discounts'] = $discountArray;
+
+		$planArray = array();
+		if ( isset( $attributes['plans'] ) ) {
+			foreach ( $attributes['plans'] as $plan ) {
+				$planArray[] = Braintree_Plan::factory( $plan );
+			}
+		}
+		$this->_attributes['plans'] = $planArray;
+	}
 }

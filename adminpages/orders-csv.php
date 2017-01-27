@@ -1,20 +1,19 @@
 <?php
 //only admins can get this
-if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_orderscsv" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", "pmpro" ) );
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orderscsv' ) ) ) {
+	die( __( 'You do not have permissions to perform this action.', 'pmpro' ) );
 }
 
-define('PMPRO_BENCHMARK', true);
+define( 'PMPRO_BENCHMARK', true );
 
-if (!defined('PMPRO_BENCHMARK'))
-	define('PMPRO_BENCHMARK', false);
+if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
+	define( 'PMPRO_BENCHMARK', false ); }
 
-$start_memory = memory_get_usage(true);;
-$start_time = microtime(true);
+$start_memory = memory_get_usage( true );;
+$start_time = microtime( true );
 
-if (true === PMPRO_BENCHMARK)
-{
-	error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
+if ( true === PMPRO_BENCHMARK ) {
+	error_log( str_repeat( '-', 10 ) . date_i18n( 'Y-m-d H:i:s' ) . str_repeat( '-', 10 ) );
 }
 
 /**
@@ -35,7 +34,7 @@ global $wpdb;
 if ( isset( $_REQUEST['s'] ) ) {
 	$s = sanitize_text_field( $_REQUEST['s'] );
 } else {
-	$s = "";
+	$s = '';
 }
 
 if ( isset( $_REQUEST['l'] ) ) {
@@ -47,55 +46,55 @@ if ( isset( $_REQUEST['l'] ) ) {
 if ( isset( $_REQUEST['start-month'] ) ) {
 	$start_month = intval( $_REQUEST['start-month'] );
 } else {
-	$start_month = "1";
+	$start_month = '1';
 }
 
 if ( isset( $_REQUEST['start-day'] ) ) {
 	$start_day = intval( $_REQUEST['start-day'] );
 } else {
-	$start_day = "1";
+	$start_day = '1';
 }
 
 if ( isset( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
-	$start_year = date_i18n( "Y" );
+	$start_year = date_i18n( 'Y' );
 }
 
 if ( isset( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
-	$end_month = date_i18n( "n" );
+	$end_month = date_i18n( 'n' );
 }
 
 if ( isset( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
-	$end_day = date_i18n( "j" );
+	$end_day = date_i18n( 'j' );
 }
 
 if ( isset( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
-	$end_year = date_i18n( "Y" );
+	$end_year = date_i18n( 'Y' );
 }
 
 if ( isset( $_REQUEST['predefined-date'] ) ) {
 	$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
 } else {
-	$predefined_date = "This Month";
+	$predefined_date = 'This Month';
 }
 
 if ( isset( $_REQUEST['status'] ) ) {
 	$status = sanitize_text_field( $_REQUEST['status'] );
 } else {
-	$status = "";
+	$status = '';
 }
 
 if ( isset( $_REQUEST['filter'] ) ) {
 	$filter = sanitize_text_field( $_REQUEST['filter'] );
 } else {
-	$filter = "all";
+	$filter = 'all';
 }
 
 //some vars for the search
@@ -120,42 +119,42 @@ if ( $limit ) {
 }
 
 //filters
-if ( $filter == "all" || ! $filter ) {
-	$condition = "1=1";
-} elseif ( $filter == "within-a-date-range" ) {
-	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
-	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
+if ( $filter == 'all' || ! $filter ) {
+	$condition = '1=1';
+} elseif ( $filter == 'within-a-date-range' ) {
+	$start_date = $start_year . '-' . $start_month . '-' . $start_day;
+	$end_date   = $end_year . '-' . $end_month . '-' . $end_day;
 
 	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	$start_date = $start_date . ' 00:00:00';
+	$end_date   = $end_date . ' 23:59:59';
 
 	$condition = "timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
-} elseif ( $filter == "predefined-date-range" ) {
-	if ( $predefined_date == "Last Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Year" ) {
+} elseif ( $filter == 'predefined-date-range' ) {
+	if ( $predefined_date == 'Last Month' ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of last month', current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'This Month' ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of this month', current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'This Year' ) {
 		$year       = date_i18n( 'Y' );
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "Last Year" ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'Last Year' ) {
 		$year       = date_i18n( 'Y' ) - 1;
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
 	}
 
 	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	$start_date = $start_date . ' 00:00:00';
+	$end_date   = $end_date . ' 23:59:59';
 
 	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-} elseif ( $filter == "within-a-level" ) {
-	$condition = "membership_id = " . esc_sql( $l );
-} elseif ( $filter == "within-a-status" ) {
+} elseif ( $filter == 'within-a-level' ) {
+	$condition = 'membership_id = ' . esc_sql( $l );
+} elseif ( $filter == 'within-a-status' ) {
 	$condition = "status = '" . esc_sql( $status ) . "' ";
 }
 
@@ -168,50 +167,50 @@ if ( ! empty( $s ) ) {
 			LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id
 		";
 
-	$join_with_usermeta = apply_filters( "pmpro_orders_search_usermeta", false );
+	$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
 
 	if ( ! empty( $join_with_usermeta ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 	}
 
-	$sqlQuery .= "WHERE (1=2 ";
+	$sqlQuery .= 'WHERE (1=2 ';
 
 	$fields = array(
-		"o.id",
-		"o.code",
-		"o.billing_name",
-		"o.billing_street",
-		"o.billing_city",
-		"o.billing_state",
-		"o.billing_zip",
-		"o.billing_phone",
-		"o.payment_type",
-		"o.cardtype",
-		"o.accountnumber",
-		"o.status",
-		"o.gateway",
-		"o.gateway_environment",
-		"o.payment_transaction_id",
-		"o.subscription_transaction_id",
-		"u.user_login",
-		"u.user_email",
-		"u.display_name",
-		"l.name"
+		'o.id',
+		'o.code',
+		'o.billing_name',
+		'o.billing_street',
+		'o.billing_city',
+		'o.billing_state',
+		'o.billing_zip',
+		'o.billing_phone',
+		'o.payment_type',
+		'o.cardtype',
+		'o.accountnumber',
+		'o.status',
+		'o.gateway',
+		'o.gateway_environment',
+		'o.payment_transaction_id',
+		'o.subscription_transaction_id',
+		'u.user_login',
+		'u.user_email',
+		'u.display_name',
+		'l.name',
 	);
 
 	if ( ! empty( $join_with_usermeta ) ) {
-		$fields[] = "um.meta_value";
+		$fields[] = 'um.meta_value';
 	}
 
-	$fields = apply_filters( "pmpro_orders_search_fields", $fields );
+	$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
 
 	foreach ( $fields as $field ) {
-		$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
+		$sqlQuery .= ' OR ' . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
 	}
 
-	$sqlQuery .= ") ";
-	$sqlQuery .= "AND " . $condition . " ";
-	$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
+	$sqlQuery .= ') ';
+	$sqlQuery .= 'AND ' . $condition . ' ';
+	$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 
 } else {
 	$sqlQuery = "
@@ -227,12 +226,12 @@ if ( ! empty( $start ) && ! empty( $limit ) ) {
 }
 
 $headers   = array();
-$headers[] = "Content-Type: text/csv";
-$headers[] = "Cache-Control: max-age=0, no-cache, no-store";
-$headers[] = "Pragma: no-cache";
-$headers[] = "Connection: close";
+$headers[] = 'Content-Type: text/csv';
+$headers[] = 'Cache-Control: max-age=0, no-cache, no-store';
+$headers[] = 'Pragma: no-cache';
+$headers[] = 'Connection: close';
 
-$filename = "orders.csv";
+$filename = 'orders.csv';
 /*
 	Insert logic here for building filename from $filter and other values.
 */
@@ -240,84 +239,84 @@ $filename  = apply_filters( 'pmpro_orders_csv_export_filename', $filename );
 $headers[] = "Content-Disposition: attachment; filename={$filename};";
 
 $csv_file_header_array = array(
-	"id",
-	"user_id",
-	"user_login",
-	"first_name",
-	"last_name",
-	"user_email",
-	"billing_name",
-	"billing_street",
-	"billing_city",
-	"billing_state",
-	"billing_zip",
-	"billing_country",
-	"billing_phone",
-	"membership_id",
-	"level_name",
-	"subtotal",
-	"tax",
-	"couponamount",
-	"total",
-	"payment_type",
-	"cardtype",
-	"accountnumber",
-	"expirationmonth",
-	"expirationyear",
-	"status",
-	"gateway",
-	"gateway_environment",
-	"payment_transaction_id",
-	"subscription_transaction_id",
-	"discount_code_id",
-	"discount_code",
-	"timestamp"
+	'id',
+	'user_id',
+	'user_login',
+	'first_name',
+	'last_name',
+	'user_email',
+	'billing_name',
+	'billing_street',
+	'billing_city',
+	'billing_state',
+	'billing_zip',
+	'billing_country',
+	'billing_phone',
+	'membership_id',
+	'level_name',
+	'subtotal',
+	'tax',
+	'couponamount',
+	'total',
+	'payment_type',
+	'cardtype',
+	'accountnumber',
+	'expirationmonth',
+	'expirationyear',
+	'status',
+	'gateway',
+	'gateway_environment',
+	'payment_transaction_id',
+	'subscription_transaction_id',
+	'discount_code_id',
+	'discount_code',
+	'timestamp',
 );
 
 //these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 $default_columns = array(
-	array( "order", "id" ),
-	array( "user", "ID" ),
-	array( "user", "user_login" ),
-	array( "user", "first_name" ),
-	array( "user", "last_name" ),
-	array( "user", "user_email" ),
-	array( "order", "billing", "name" ),
-	array( "order", "billing", "street" ),
-	array( "order", "billing", "city" ),
-	array( "order", "billing", "state" ),
-	array( "order", "billing", "zip" ),
-	array( "order", "billing", "country" ),
-	array( "order", "billing", "phone" ),
-	array( "order", "membership_id" ),
-	array( "level", "name" ),
-	array( "order", "subtotal" ),
-	array( "order", "tax" ),
-	array( "order", "couponamount" ),
-	array( "order", "total" ),
-	array( "order", "payment_type" ),
-	array( "order", "cardtype" ),
-	array( "order", "accountnumber" ),
-	array( "order", "expirationmonth" ),
-	array( "order", "expirationyear" ),
-	array( "order", "status" ),
-	array( "order", "gateway" ),
-	array( "order", "gateway_environment" ),
-	array( "order", "payment_transaction_id" ),
-	array( "order", "subscription_transaction_id" ),
-	array( "discount_code", "id" ),
-	array( "discount_code", "code" )
+	array( 'order', 'id' ),
+	array( 'user', 'ID' ),
+	array( 'user', 'user_login' ),
+	array( 'user', 'first_name' ),
+	array( 'user', 'last_name' ),
+	array( 'user', 'user_email' ),
+	array( 'order', 'billing', 'name' ),
+	array( 'order', 'billing', 'street' ),
+	array( 'order', 'billing', 'city' ),
+	array( 'order', 'billing', 'state' ),
+	array( 'order', 'billing', 'zip' ),
+	array( 'order', 'billing', 'country' ),
+	array( 'order', 'billing', 'phone' ),
+	array( 'order', 'membership_id' ),
+	array( 'level', 'name' ),
+	array( 'order', 'subtotal' ),
+	array( 'order', 'tax' ),
+	array( 'order', 'couponamount' ),
+	array( 'order', 'total' ),
+	array( 'order', 'payment_type' ),
+	array( 'order', 'cardtype' ),
+	array( 'order', 'accountnumber' ),
+	array( 'order', 'expirationmonth' ),
+	array( 'order', 'expirationyear' ),
+	array( 'order', 'status' ),
+	array( 'order', 'gateway' ),
+	array( 'order', 'gateway_environment' ),
+	array( 'order', 'payment_transaction_id' ),
+	array( 'order', 'subscription_transaction_id' ),
+	array( 'discount_code', 'id' ),
+	array( 'discount_code', 'code' ),
 );
 
-$default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
+$default_columns = apply_filters( 'pmpro_order_list_csv_default_columns', $default_columns );
 
-$csv_file_header_array = apply_filters( "pmpro_order_list_csv_export_header_array", $csv_file_header_array );
+$csv_file_header_array = apply_filters( 'pmpro_order_list_csv_export_header_array', $csv_file_header_array );
 
 $dateformat = apply_filters( 'pmpro_order_list_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 
 //any extra columns
-$extra_columns = apply_filters( "pmpro_orders_csv_extra_columns", array() );	//the original filter
-$extra_columns = apply_filters( "pmpro_order_list_csv_extra_columns", $extra_columns );	//in case anyone used the typo'd filter
+$extra_columns = apply_filters( 'pmpro_orders_csv_extra_columns', array() );	//the original filter
+$extra_columns = apply_filters( 'pmpro_order_list_csv_extra_columns', $extra_columns );	//in case anyone used the typo'd filter
 
 if ( ! empty( $extra_columns ) ) {
 	foreach ( $extra_columns as $heading => $callback ) {
@@ -345,13 +344,12 @@ if ( empty( $order_ids ) ) {
 	pmpro_transmit_order_content( $csv_fh, $filename, $headers );
 }
 
-if (PMPRO_BENCHMARK)
-{
-	$pre_action_time = microtime(true);
-	$pre_action_memory = memory_get_usage(true);
+if ( PMPRO_BENCHMARK ) {
+	$pre_action_time = microtime( true );
+	$pre_action_memory = memory_get_usage( true );
 }
 
-do_action('pmpro_before_order_list_csv_export', $order_ids);
+do_action( 'pmpro_before_order_list_csv_export', $order_ids );
 
 $i_start    = 0;
 $i_limit    = 0;
@@ -365,20 +363,18 @@ if ( $orders_found >= $max_orders_per_loop ) {
 $end        = 0;
 $time_limit = ini_get( 'max_execution_time' );
 
-if (PMPRO_BENCHMARK)
-{
-	error_log("PMPRO_BENCHMARK - Total records to process: {$orders_found}");
-	error_log("PMPRO_BENCHMARK - Will process {$iterations} iterations of max {$max_orders_per_loop} records per iteration.");
-	$pre_iteration_time = microtime(true);
-	$pre_iteration_memory = memory_get_usage(true);
+if ( PMPRO_BENCHMARK ) {
+	error_log( "PMPRO_BENCHMARK - Total records to process: {$orders_found}" );
+	error_log( "PMPRO_BENCHMARK - Will process {$iterations} iterations of max {$max_orders_per_loop} records per iteration." );
+	$pre_iteration_time = microtime( true );
+	$pre_iteration_memory = memory_get_usage( true );
 }
 
 for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
-	if (PMPRO_BENCHMARK)
-	{
-		$start_iteration_time = microtime(true);
-		$start_iteration_memory = memory_get_usage(true);
+	if ( PMPRO_BENCHMARK ) {
+		$start_iteration_time = microtime( true );
+		$start_iteration_memory = memory_get_usage( true );
 	}
 
 	// avoiding timeouts (modify max run-time for export)
@@ -413,10 +409,9 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	// get the order list we should process
 	$order_list = array_slice( $order_ids, $i_start, ( $i_start + ( $max_orders_per_loop - 1 ) ) );
 
-	if (PMPRO_BENCHMARK)
-	{
-		$pre_orderdata_time = microtime(true);
-		$pre_orderdata_memory = memory_get_usage(true);
+	if ( PMPRO_BENCHMARK ) {
+		$pre_orderdata_time = microtime( true );
+		$pre_orderdata_memory = memory_get_usage( true );
 	}
 
 	foreach ( $order_list as $order_id ) {
@@ -484,7 +479,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		$line = implode( ',', $csvoutput ) . "\n";
 
 		//output
-		fprintf( $csv_fh, "%s", $line );
+		fprintf( $csv_fh, '%s', $line );
 
 		$line      = null;
 		$csvoutput = null;
@@ -493,18 +488,17 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 	} // end of foreach orders
 
-	if (PMPRO_BENCHMARK)
-	{
-		$after_data_time = microtime(true);
-		$after_data_memory = memory_get_peak_usage(true);
+	if ( PMPRO_BENCHMARK ) {
+		$after_data_time = microtime( true );
+		$after_data_memory = memory_get_peak_usage( true );
 
 		$time_processing_data = $after_data_time - $start_time;
 		$memory_processing_data = $after_data_memory - $start_memory;
 
-		list($sec, $usec) = explode('.', $time_processing_data);
+		list($sec, $usec) = explode( '.', $time_processing_data );
 
-		error_log("PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds");
-		error_log("PMPRO_BENCHMARK - Peak memory usage: " . number_format($memory_processing_data, false, '.', ',') . " bytes");
+		error_log( "PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds" );
+		error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 	}
 
 	$order_list = null;
@@ -514,7 +508,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 pmpro_transmit_order_content( $csv_fh, $filename, $headers );
 
 function pmpro_enclose( $s ) {
-	return "\"" . str_replace( "\"", "\\\"", $s ) . "\"";
+	return '"' . str_replace( '"', '\\"', $s ) . '"';
 }
 
 
@@ -537,15 +531,15 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 		echo str_repeat( '-', 75 ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( "=", 75 ) . "<br/>\n";
+		echo str_repeat( '=', 75 ) . "<br/>\n";
 		echo file_get_contents( $filename );
-		echo str_repeat( "=", 75 ) . "<br/>\n";
+		echo str_repeat( '=', 75 ) . "<br/>\n";
 	}
 
 	//transmission
 	if ( ! empty( $headers ) ) {
 		//set the download size
-		$headers[] = "Content-Length: " . filesize( $filename );
+		$headers[] = 'Content-Length: ' . filesize( $filename );
 
 		//set headers
 		foreach ( $headers as $header ) {

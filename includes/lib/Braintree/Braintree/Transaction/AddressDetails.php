@@ -26,7 +26,7 @@
  * @property-read string $countryName
  * @uses Braintree_Instance inherits methods
  */
-class Braintree_Transaction_AddressDetails extends Braintree_Instance
-{
-    protected $_attributes = array();
+class Braintree_Transaction_AddressDetails extends Braintree_Instance {
+
+	protected $_attributes = array();
 }

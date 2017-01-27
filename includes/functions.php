@@ -17,20 +17,17 @@ Further documentation for customizing Paid Memberships Pro can be found here:
 http://www.paidmembershipspro.com/documentation/
 
  ****************************************************************/
-if(!function_exists("sornot"))
-{
-	function sornot($t, $n)
-	{
-		if($n == 1)
-			return $t;
-		else
-			return $t . "s";
+if ( ! function_exists( 'sornot' ) ) {
+	function sornot( $t, $n ) {
+		if ( $n == 1 ) {
+			return $t; } else {
+			return $t . 's'; }
 	}
 }
 
 //set up wpdb for the tables we need
-function pmpro_setDBTables()
-{
+function pmpro_setDBTables() {
+
 	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
@@ -47,7 +44,7 @@ pmpro_setDBTables();
 
 //from: http://stackoverflow.com/questions/5266945/wordpress-how-detect-if-current-page-is-the-login-page/5892694#5892694
 function pmpro_is_login_page() {
-	return (in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php')) || is_page("login"));
+	return (in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ));
 }
 
 //thanks: http://wordpress.org/support/topic/is_plugin_active
@@ -56,153 +53,129 @@ function pmpro_is_plugin_active( $plugin ) {
 }
 
 //scraping - override n if you have more than 1 group of matches and don't want the first group
-function pmpro_getMatches($p, $s, $firstvalue = FALSE, $n = 1)
-{
-	$ok = preg_match_all($p, $s, $matches);
+function pmpro_getMatches( $p, $s, $firstvalue = false, $n = 1 ) {
+	$ok = preg_match_all( $p, $s, $matches );
 
-	if(!$ok)
-		return false;
-	else
-	{
-		if($firstvalue)
-			return $matches[$n][0];
-		else
-			return $matches[$n];
-	}
+	if ( ! $ok ) {
+		return false; } else {
+		if ( $firstvalue ) {
+			return $matches[ $n ][0]; } else {
+			return $matches[ $n ]; }
+		}
 }
 
-function pmpro_br2nl($text, $tags = "br")
-{
-	if(!is_array($tags))
-		$tags = explode(" ", $tags);
+function pmpro_br2nl( $text, $tags = 'br' ) {
+	if ( ! is_array( $tags ) ) {
+		$tags = explode( ' ', $tags ); }
 
-	foreach($tags as $tag)
-	{
-		$text = preg_replace("/<{$tag}[^>]*>/", "\n", $text);
-		$text = preg_replace("/<\/{$tag}[^>]*>/", "\n", $text);
+	foreach ( $tags as $tag ) {
+		$text = preg_replace( "/<{$tag}[^>]*>/", "\n", $text );
+		$text = preg_replace( "/<\/{$tag}[^>]*>/", "\n", $text );
 	}
 
 	return($text);
 }
 
-function pmpro_getOption($s, $force = false)
-{
-	if(get_option("pmpro_" . $s))
-		return get_option("pmpro_" . $s);
-	else
-		return "";
+function pmpro_getOption( $s, $force = false ) {
+	if ( get_option( 'pmpro_' . $s ) ) {
+		return get_option( 'pmpro_' . $s ); } else {
+		return ''; }
 }
 
-function pmpro_setOption($s, $v = NULL)
-{
+function pmpro_setOption( $s, $v = null ) {
 	//no value is given, set v to the p var
-	if($v === NULL && isset($_POST[$s]))
-		$v = $_POST[$s];
+	if ( $v === null && isset( $_POST[ $s ] ) ) {
+		$v = $_POST[ $s ]; }
 
-	if(is_array($v))
-		$v = implode(",", $v);
-	else
-		$v = trim($v);
+	if ( is_array( $v ) ) {
+		$v = implode( ',', $v ); } else {
+		$v = trim( $v ); }
 
-	return update_option("pmpro_" . $s, $v);
+		return update_option( 'pmpro_' . $s, $v );
 }
 
-function pmpro_get_slug($post_id)
-{
+function pmpro_get_slug( $post_id ) {
 	global $pmpro_slugs, $wpdb;
 
 	//make sure post id is int for security
-	$post_id = intval($post_id);
+	$post_id = intval( $post_id );
 
-	if(!$pmpro_slugs[$post_id])
-		$pmpro_slugs[$post_id] = $wpdb->get_var("SELECT post_name FROM $wpdb->posts WHERE ID = '" . $post_id . "' LIMIT 1");
+	if ( ! $pmpro_slugs[ $post_id ] ) {
+		$pmpro_slugs[ $post_id ] = $wpdb->get_var( "SELECT post_name FROM $wpdb->posts WHERE ID = '" . $post_id . "' LIMIT 1" ); }
 
-	return $pmpro_slugs[$post_id];
+	return $pmpro_slugs[ $post_id ];
 }
 
-function pmpro_url($page = NULL, $querystring = "", $scheme = NULL)
-{
+function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 	global $besecure;
-	$besecure = apply_filters("besecure", $besecure);
+	$besecure = apply_filters( 'besecure', $besecure );
 
-	if(!$scheme && $besecure)
-		$scheme = "https";
-	elseif(!$scheme)
-		$scheme = "http";
+	if ( ! $scheme && $besecure ) {
+		$scheme = 'https'; } elseif ( ! $scheme ) {
+		$scheme = 'http'; }
 
-	if(!$page)
-		$page = "levels";
+		if ( ! $page ) {
+			$page = 'levels'; }
 
-	global $pmpro_pages;
+		global $pmpro_pages;
 
-	//start with the permalink
-	$url = get_permalink($pmpro_pages[$page]);
+		//start with the permalink
+		$url = get_permalink( $pmpro_pages[ $page ] );
 
-	//WPML/etc support
-	if(function_exists("icl_object_id") && defined("ICL_LANGUAGE_CODE"))
-	{
-		$trans_id = icl_object_id($pmpro_pages[$page], "page", false, ICL_LANGUAGE_CODE);
-		if(!empty($trans_id))
-		{
-			$url = get_permalink($trans_id);
+		//WPML/etc support
+		if ( function_exists( 'icl_object_id' ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
+			$trans_id = icl_object_id( $pmpro_pages[ $page ], 'page', false, ICL_LANGUAGE_CODE );
+			if ( ! empty( $trans_id ) ) {
+				$url = get_permalink( $trans_id );
+			}
 		}
-	}
 
-	//figure out querystring
-	$querystring = str_replace("?", "", $querystring);
-	parse_str( $querystring, $query_args );
-	$url = esc_url_raw( add_query_arg( $query_args, $url ) );
+		//figure out querystring
+		$querystring = str_replace( '?', '', $querystring );
+		parse_str( $querystring, $query_args );
+		$url = esc_url_raw( add_query_arg( $query_args, $url ) );
 
-	//figure out scheme
-	if(is_ssl())
-		$url = str_replace("http:", "https:", $url);
+		//figure out scheme
+		if ( is_ssl() ) {
+			$url = str_replace( 'http:', 'https:', $url ); }
 
-	return $url;
+		return $url;
 }
 
-function pmpro_isLevelFree(&$level)
-{
-	if(!empty($level) && $level->initial_payment <= 0 && $level->billing_amount <= 0 && $level->trial_amount <= 0)
-		return true;
-	else
-		return false;
+function pmpro_isLevelFree( &$level ) {
+	if ( ! empty( $level ) && $level->initial_payment <= 0 && $level->billing_amount <= 0 && $level->trial_amount <= 0 ) {
+		return true; } else {
+		return false; }
 }
 
 // Given an array of levels, will return true if all of them are free.
-function pmpro_areLevelsFree($levelarr) {
-	if(! is_array($levelarr)) { return false; }
-	foreach($levelarr as $curlevel) {
-		if(!empty($curlevel) && ($curlevel->initial_payment > 0 || $curlevel->billing_amount > 0 || $curlevel->trial_amount > 0)) {
+function pmpro_areLevelsFree( $levelarr ) {
+	if ( ! is_array( $levelarr ) ) { return false; }
+	foreach ( $levelarr as $curlevel ) {
+		if ( ! empty( $curlevel ) && ($curlevel->initial_payment > 0 || $curlevel->billing_amount > 0 || $curlevel->trial_amount > 0) ) {
 			return false;
 		}
 	}
 	return true;
 }
 
-function pmpro_isLevelRecurring(&$level)
-{
-	if(!empty($level) && ($level->billing_amount > 0 || $level->trial_amount > 0))
-		return true;
-	else
-		return false;
+function pmpro_isLevelRecurring( &$level ) {
+	if ( ! empty( $level ) && ($level->billing_amount > 0 || $level->trial_amount > 0) ) {
+		return true; } else {
+		return false; }
 }
 
-function pmpro_isLevelTrial(&$level)
-{
-	if(!empty($level) && !empty($level->trial_limit) && $level->trial_limit > 0)
-	{
+function pmpro_isLevelTrial( &$level ) {
+	if ( ! empty( $level ) && ! empty( $level->trial_limit ) && $level->trial_limit > 0 ) {
 		return true;
-	}
-	else
-		return false;
+	} else {
+		return false; }
 }
 
-function pmpro_isLevelExpiring(&$level)
-{
-	if(!empty($level) && (!empty($level->expiration_number) && $level->expiration_number > 0) || !empty($level->enddate))
-		return true;
-	else
-		return false;
+function pmpro_isLevelExpiring( &$level ) {
+	if ( ! empty( $level ) && ( ! empty( $level->expiration_number ) && $level->expiration_number > 0) || ! empty( $level->enddate ) ) {
+		return true; } else {
+		return false; }
 }
 
 /**
@@ -213,38 +186,32 @@ function pmpro_isLevelExpiring(&$level)
  * @param object $level PMPro Level Object to test
  */
 function pmpro_isLevelExpiringSoon( &$level ) {
-	if( !pmpro_isLevelExpiring( $level ) || empty( $level->enddate ) )
-		$r = false;
-	else {
+	if ( ! pmpro_isLevelExpiring( $level ) || empty( $level->enddate ) ) {
+		$r = false; } else {
 		//days til expiration for the standard level
 		$standard = pmpro_getLevel( $level->id );
 
-		if( !empty( $standard->expiration_number ) ){
-			if( $standard->expiration_period == 'Day' )
-				$days = $level->expiration_number;
-			elseif( $standard->expiration_period == 'Week' )
-				$days = $level->expiration_number * 7;
-			elseif( $standard->expiration_period == 'Month' )
-				$days = $level->expiration_number * 30;
-			elseif( $standard->expiration_period == 'Year' )
-				$days = $level->expiration_number * 365;
-		}
-		else
-			$days = 30;
+		if ( ! empty( $standard->expiration_number ) ) {
+			if ( $standard->expiration_period == 'Day' ) {
+				$days = $level->expiration_number; } elseif ( $standard->expiration_period == 'Week' ) {
+				$days = $level->expiration_number * 7; } elseif ( $standard->expiration_period == 'Month' ) {
+					$days = $level->expiration_number * 30; } elseif ( $standard->expiration_period == 'Year' ) {
+					$days = $level->expiration_number * 365; }
+		} else {
+			$days = 30; }
 
 		//are we within the days til expiration?
-		$now = current_time('timestamp');
-		
-		if( $now + ($days*3600*24) >= $level->enddate )
-			$r = true;
-		else
-			$r = false;
-	}
+		$now = current_time( 'timestamp' );
 
-	//filter
-	$r = apply_filters('pmpro_is_level_expiring_soon', $r, $level);
+		if ( $now + ($days * 3600 * 24) >= $level->enddate ) {
+			$r = true; } else {
+			$r = false; }
+		}
 
-	return $r;
+		//filter
+		$r = apply_filters( 'pmpro_is_level_expiring_soon', $r, $level );
+
+		return $r;
 }
 
 /**
@@ -260,23 +227,22 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  *
  * @since 1.8.9
  */
-function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages', $ext = 'php' )
-{
+function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+
 	// called from page handler shortcode
-	if (is_null($page_name))
-	{
+	if ( is_null( $page_name ) ) {
 		global $pmpro_page_name;
 		$page_name = $pmpro_page_name;
 	}
 
-	if ($where == 'local') {
+	if ( $where == 'local' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
 			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
 			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
 			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
-	} elseif( $where == 'url' ) {
+	} elseif ( $where == 'url' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
 			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
@@ -286,23 +252,21 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 
 	}
 	// Valid types: 'email', 'pages'
-	$templates = apply_filters("pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext);
-	$user_templates = array_diff($templates, $default_templates);
+	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
+	$user_templates = array_diff( $templates, $default_templates );
 
 	//user specified a custom template path, so it has priority.
-	if (!empty($user_templates))
-		$templates = $user_templates;
+	if ( ! empty( $user_templates ) ) {
+		$templates = $user_templates; }
 
 	//last element included in the array is the most first one we try to load
-	$templates = array_reverse($templates);
+	$templates = array_reverse( $templates );
 
 	// look for template file to include
 	ob_start();
-	foreach($templates as $template_path)
-	{		
+	foreach ( $templates as $template_path ) {
 		// If loading a local file, check if it exists first
-		if($where == 'url' || file_exists($template_path))
-		{
+		if ( $where == 'url' || file_exists( $template_path ) ) {
 			include $template_path;
 			break;
 		}
@@ -313,272 +277,222 @@ function pmpro_loadTemplate($page_name = null, $where = 'local', $type = 'pages'
 	return $template;
 }
 
-function pmpro_getLevelCost(&$level, $tags = true, $short = false)
-{
+function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	//initial payment
-	if(!$short)
-		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
-	else
-		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($level->initial_payment));
+	if ( ! $short ) {
+		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ) ); } else {
+		$r = sprintf( __( '<strong>%s</strong> now', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ) ); }
 
-	//recurring part
-	if($level->billing_amount != '0.00')
-	{
-		if($level->billing_limit > 1)
-		{
-			if($level->cycle_number == '1')
-			{
-				$r .= sprintf(__(' and then <strong>%s per %s for %d more %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period), $level->billing_limit, pmpro_translate_billing_period($level->cycle_period, $level->billing_limit));
-			}
-			else
-			{
-				$r .= sprintf(__(' and then <strong>%s every %d %s for %d more payments</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number), $level->billing_limit);
-			}
-		}
-		elseif($level->billing_limit == 1)
-		{
-			$r .= sprintf(__(' and then <strong>%s after %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
-		}
-		else
-		{
-			if( $level->billing_amount === $level->initial_payment ) {
-				if($level->cycle_number == '1')
-				{
-					if(!$short)
-						$r = sprintf(__('The price for membership is <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
-					else
-						$r = sprintf(__('<strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), pmpro_translate_billing_period($level->cycle_period) );
+		//recurring part
+		if ( $level->billing_amount != '0.00' ) {
+			if ( $level->billing_limit > 1 ) {
+				if ( $level->cycle_number == '1' ) {
+					$r .= sprintf( __( ' and then <strong>%1$s per %1$s for %3$d more %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit ) );
+				} else {
+					$r .= sprintf( __( ' and then <strong>%1$s every %2$d %1$s for %2$d more payments</strong>.', 'pmpro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ), $level->billing_limit );
 				}
-				else
-				{
-					if(!$short)
-						$r = sprintf(__('The price for membership is <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
-					else
-						$r = sprintf(__('<strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->initial_payment), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number) );
+			} elseif ( $level->billing_limit == 1 ) {
+				$r .= sprintf( __( ' and then <strong>%1$s after %2$d %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+			} else {
+				if ( $level->billing_amount === $level->initial_payment ) {
+					if ( $level->cycle_number == '1' ) {
+						if ( ! $short ) {
+							$r = sprintf( __( 'The price for membership is <strong>%1$s per %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) ); } else {
+							$r = sprintf( __( '<strong>%1$s per %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ), pmpro_translate_billing_period( $level->cycle_period ) ); }
+					} else {
+						if ( ! $short ) {
+							$r = sprintf( __( 'The price for membership is <strong>%1$s every %2$d %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) ); } else {
+							$r = sprintf( __( '<strong>%1$s every %2$d %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->initial_payment ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) ); }
+					}
+				} else {
+					if ( $level->cycle_number == '1' ) {
+						$r .= sprintf( __( ' and then <strong>%1$s per %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ) );
+					} else {
+						$r .= sprintf( __( ' and then <strong>%1$s every %2$d %1$s</strong>.', 'pmpro' ), pmpro_formatPrice( $level->billing_amount ), $level->cycle_number, pmpro_translate_billing_period( $level->cycle_period, $level->cycle_number ) );
+					}
+				}
+			}
+		} else {
+			$r .= '.'; }
+
+		//add a space
+		$r .= ' ';
+
+		//trial part
+		if ( $level->trial_limit ) {
+			if ( $level->trial_amount == '0.00' ) {
+				if ( $level->trial_limit == '1' ) {
+					$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'pmpro' );
+				} else {
+					$r .= ' ' . sprintf( __( 'After your initial payment, your first %d payments are Free.', 'pmpro' ), $level->trial_limit );
 				}
 			} else {
-				if($level->cycle_number == '1')
-				{
-					$r .= sprintf(__(' and then <strong>%s per %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
-				}
-				else
-				{
-					$r .= sprintf(__(' and then <strong>%s every %d %s</strong>.', 'pmpro'), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+				if ( $level->trial_limit == '1' ) {
+					$r .= ' ' . sprintf( __( 'After your initial payment, your first payment will cost %s.', 'pmpro' ), pmpro_formatPrice( $level->trial_amount ) );
+				} else {
+					$r .= ' ' . sprintf( __( 'After your initial payment, your first %1$d payments will cost %2$s.', 'pmpro' ), $level->trial_limit, pmpro_formatPrice( $level->trial_amount ) );
 				}
 			}
 		}
-	}
-	else
-		$r .= '.';
 
-	//add a space
-	$r .= ' ';
+		//taxes part
+		$tax_state = pmpro_getOption( 'tax_state' );
+		$tax_rate = pmpro_getOption( 'tax_rate' );
 
-	//trial part
-	if($level->trial_limit)
-	{
-		if($level->trial_amount == '0.00')
-		{
-			if($level->trial_limit == '1')
-			{
-				$r .= ' ' . __('After your initial payment, your first payment is Free.', 'pmpro');
-			}
-			else
-			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments are Free.', 'pmpro'), $level->trial_limit);
-			}
+		if ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) {
+			$r .= sprintf( __( 'Customers in %1$s will be charged %1$s%3$% tax.', 'pmpro' ), $tax_state, round( $tax_rate * 100, 2 ) );
 		}
-		else
-		{
-			if($level->trial_limit == '1')
-			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first payment will cost %s.', 'pmpro'), pmpro_formatPrice($level->trial_amount));
-			}
-			else
-			{
-				$r .= ' ' . sprintf(__('After your initial payment, your first %d payments will cost %s.', 'pmpro'), $level->trial_limit, pmpro_formatPrice($level->trial_amount));
-			}
-		}
-	}
 
-	//taxes part
-	$tax_state = pmpro_getOption("tax_state");
-	$tax_rate = pmpro_getOption("tax_rate");
+		if ( ! $tags ) {
+			$r = strip_tags( $r ); }
 
-	if($tax_state && $tax_rate && !pmpro_isLevelFree($level))
-	{
-		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));
-	}
-
-	if(!$tags)
-		$r = strip_tags($r);
-
-	$r = apply_filters("pmpro_level_cost_text", $r, $level, $tags, $short);	//passing $tags and $short since v1.8
-	return $r;
+		$r = apply_filters( 'pmpro_level_cost_text', $r, $level, $tags, $short );	//passing $tags and $short since v1.8
+		return $r;
 }
 
 // Similar to pmpro_getLevelCost, but loops through all levels in the incoming array and puts it all together.
-function pmpro_getLevelsCost(&$levels, $tags = true, $short = false)
-{
+function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	// let's build the array to work from to consolidate recurring info.
 	// recurpmts[cycle_period][cycle_number][billing_limit] = total_amount
 	$initpmt = 0;
 	$recurpmts = array();
 	$trialperiods = 0;
-	foreach($levels as $curlevel) {
+	foreach ( $levels as $curlevel ) {
 		$initpmt += $curlevel->initial_payment;
-		if($curlevel->billing_amount != '0.00') {
-			if(array_key_exists($curlevel->cycle_period, $recurpmts)) {
-				if(array_key_exists($curlevel->cycle_number, $recurpmts[$curlevel->cycle_period])) {
-					if(array_key_exists($curlevel->billing_limit, $recurpmts[$curlevel->cycle_period][$curlevel->cycle_number])) {
-						$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] += $curlevel->billing_amount;
+		if ( $curlevel->billing_amount != '0.00' ) {
+			if ( array_key_exists( $curlevel->cycle_period, $recurpmts ) ) {
+				if ( array_key_exists( $curlevel->cycle_number, $recurpmts[ $curlevel->cycle_period ] ) ) {
+					if ( array_key_exists( $curlevel->billing_limit, $recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ] ) ) {
+						$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ][ $curlevel->billing_limit ] += $curlevel->billing_amount;
 					} else {
-						$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+						$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ][ $curlevel->billing_limit ] = $curlevel->billing_amount;
 					}
 				} else {
-					$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number] = array();
-					$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+					$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ] = array();
+					$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ][ $curlevel->billing_limit ] = $curlevel->billing_amount;
 				}
 			} else {
-				$recurpmts[$curlevel->cycle_period] = array();
-				$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number] = array();
-				$recurpmts[$curlevel->cycle_period][$curlevel->cycle_number][$curlevel->billing_limit] = $curlevel->billing_amount;
+				$recurpmts[ $curlevel->cycle_period ] = array();
+				$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ] = array();
+				$recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ][ $curlevel->billing_limit ] = $curlevel->billing_amount;
 			}
 		}
-		if($curlevel->trial_limit && intval($curlevel->trial_limit)>$trialperiods) {
-			$trialperiods = intval($curlevel->trial_limit);
+		if ( $curlevel->trial_limit && intval( $curlevel->trial_limit ) > $trialperiods ) {
+			$trialperiods = intval( $curlevel->trial_limit );
 		}
 	}
 
 	// initial payment
-	if(!$short)
-		$r = sprintf(__('The price for membership is <strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($initpmt));
-	else
-		$r = sprintf(__('<strong>%s</strong> now', 'pmpro'), pmpro_formatPrice($initpmt));
+	if ( ! $short ) {
+		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'pmpro' ), pmpro_formatPrice( $initpmt ) ); } else {
+		$r = sprintf( __( '<strong>%s</strong> now', 'pmpro' ), pmpro_formatPrice( $initpmt ) ); }
 
-	//recurring part
-	$billtextparts = array();
-	if(count($recurpmts)>0) {
-		foreach($recurpmts as $curperiod => $curpddata) {
-			foreach($curpddata as $curcyclenum => $curcycledata) {
-				foreach($curcycledata as $curbilllimit => $curtotal) {
-					if($curbilllimit > 1)
-					{
-						if($curcyclenum == '1')
-						{
-							$billtextparts[] = sprintf(__('<strong>%s per %s for %d more %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), pmpro_translate_billing_period($curperiod), $curbilllimit, pmpro_translate_billing_period($curperiod, $curbilllimit));
-						}
-						else
-						{
-							$billtextparts[] = sprintf(__('<strong>%s every %d %s for %d more payments</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum), $curbilllimit);
-						}
-					}
-					elseif($curbilllimit == 1)
-					{
-						$billtextparts[] = sprintf(__('<strong>%s after %d %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum));
-					}
-					else
-					{
-						if($curcyclenum == '1')
-						{
-							$billtextparts[] = sprintf(__('<strong>%s every %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), pmpro_translate_billing_period($curperiod));
-						}
-						else
-						{
-							$billtextparts[] = sprintf(__('<strong>%s every %d %s</strong>', 'pmpro'), pmpro_formatPrice($curtotal), $curcyclenum, pmpro_translate_billing_period($curperiod, $curcyclenum));
+		//recurring part
+		$billtextparts = array();
+		if ( count( $recurpmts ) > 0 ) {
+			foreach ( $recurpmts as $curperiod => $curpddata ) {
+				foreach ( $curpddata as $curcyclenum => $curcycledata ) {
+					foreach ( $curcycledata as $curbilllimit => $curtotal ) {
+						if ( $curbilllimit > 1 ) {
+							if ( $curcyclenum == '1' ) {
+								$billtextparts[] = sprintf( __( '<strong>%1$s per %1$s for %3$d more %1$s</strong>', 'pmpro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ), $curbilllimit, pmpro_translate_billing_period( $curperiod, $curbilllimit ) );
+							} else {
+								$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %1$s for %2$d more payments</strong>', 'pmpro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ), $curbilllimit );
+							}
+						} elseif ( $curbilllimit == 1 ) {
+							$billtextparts[] = sprintf( __( '<strong>%1$s after %2$d %1$s</strong>', 'pmpro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
+						} else {
+							if ( $curcyclenum == '1' ) {
+								$billtextparts[] = sprintf( __( '<strong>%1$s every %1$s</strong>', 'pmpro' ), pmpro_formatPrice( $curtotal ), pmpro_translate_billing_period( $curperiod ) );
+							} else {
+								$billtextparts[] = sprintf( __( '<strong>%1$s every %2$d %1$s</strong>', 'pmpro' ), pmpro_formatPrice( $curtotal ), $curcyclenum, pmpro_translate_billing_period( $curperiod, $curcyclenum ) );
+							}
 						}
 					}
 				}
 			}
-		}
-		$laststanza = array_pop($billtextparts);
-		if(count($billtextparts)>0) {
-			$r .= ", ";
-			$r .= implode(', ', $billtextparts);
-		}
-		$r .= ", and ".$laststanza.".";
-	} else {
-		$r .= ".";
-	}
-	
-
-	//add a space
-	$r .= ' ';
-
-	//trial part - not as detailed as the single-level counterpart. Could be improved in the future.
-	if($trialperiods>0) {
-		if($trialperiods==1) {
-			$r .= __('Trial pricing has been applied to the first payment.', 'mmpu');
+			$laststanza = array_pop( $billtextparts );
+			if ( count( $billtextparts ) > 0 ) {
+				$r .= ', ';
+				$r .= implode( ', ', $billtextparts );
+			}
+			$r .= ', and ' . $laststanza . '.';
 		} else {
-			$r .= sprintf(__('Trial pricing has been applied to the first %d payments.', 'mmpu'), $trialperiods);
+			$r .= '.';
 		}
-	}
 
-	//taxes part
-	$tax_state = pmpro_getOption("tax_state");
-	$tax_rate = pmpro_getOption("tax_rate");
+		//add a space
+		$r .= ' ';
 
-	if($tax_state && $tax_rate && !pmpro_areLevelsFree($levels))
-	{
-		$r .= sprintf(__('Customers in %s will be charged %s%% tax.', 'pmpro'), $tax_state, round($tax_rate * 100, 2));
-	}
+		//trial part - not as detailed as the single-level counterpart. Could be improved in the future.
+		if ( $trialperiods > 0 ) {
+			if ( $trialperiods == 1 ) {
+				$r .= __( 'Trial pricing has been applied to the first payment.', 'mmpu' );
+			} else {
+				$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'mmpu' ), $trialperiods );
+			}
+		}
 
-	if(!$tags)
-		$r = strip_tags($r);
+		//taxes part
+		$tax_state = pmpro_getOption( 'tax_state' );
+		$tax_rate = pmpro_getOption( 'tax_rate' );
 
-	/**
+		if ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) {
+			$r .= sprintf( __( 'Customers in %1$s will be charged %1$s%3$% tax.', 'pmpro' ), $tax_state, round( $tax_rate * 100, 2 ) );
+		}
+
+		if ( ! $tags ) {
+			$r = strip_tags( $r ); }
+
+		/**
 	 * Filter the levels cost text. Note the s in levels. Similar to pmpro_levels_cost_text
 	 */
-	$r = apply_filters("pmpro_levels_cost_text", $r, $levels, $tags, $short);
-	return $r;
+		$r = apply_filters( 'pmpro_levels_cost_text', $r, $levels, $tags, $short );
+		return $r;
 }
 
-function pmpro_getLevelExpiration(&$level)
-{
-	if($level->expiration_number)
-	{
-		$expiration_text = sprintf(__("Membership expires after %d %s.", "pmpro"), $level->expiration_number, pmpro_translate_billing_period($level->expiration_period, $level->expiration_number));
-	}
-	else
-		$expiration_text = "";
+function pmpro_getLevelExpiration( &$level ) {
+	if ( $level->expiration_number ) {
+		$expiration_text = sprintf( __( "Membership expires after %1$d %2$s.", 'pmpro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
+	} else {
+		$expiration_text = ''; }
 
-	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $level);
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $level); // Backwards compatible
+	$expiration_text = apply_filters( 'pmpro_levels_expiration_text', $expiration_text, $level );
+	$expiration_text = apply_filters( 'pmpro_level_expiration_text', $expiration_text, $level ); // Backwards compatible
 	return $expiration_text;
 }
 
-function pmpro_getLevelsExpiration(&$levels)
-{
+function pmpro_getLevelsExpiration( &$levels ) {
 	$expirystrings = array();
 	$ongoinglevelnum = 0;
-	if(!empty($levels) && !is_array($levels)) { $levels = array($levels); } elseif(empty($levels)) { $levels = array(); }
-	foreach($levels as $curlevel) {
-		if($curlevel->expiration_number) {
-			$expirystrings[] = sprintf(__("%s membership expires after %d %s", "pmpro"), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period($curlevel->expiration_period, $curlevel->expiration_number));
+	if ( ! empty( $levels ) && ! is_array( $levels ) ) { $levels = array( $levels ); } elseif ( empty( $levels ) ) { $levels = array(); }
+	foreach ( $levels as $curlevel ) {
+		if ( $curlevel->expiration_number ) {
+			$expirystrings[] = sprintf( __( "%1$s membership expires after %2$d %1$s", 'pmpro' ), $curlevel->name, $curlevel->expiration_number, pmpro_translate_billing_period( $curlevel->expiration_period, $curlevel->expiration_number ) );
 		} else {
 			$ongoinglevelnum++;
 		}
 	}
 
-	$expiration_text = "";
-	if(count($expirystrings)>0) {
-		$laststanza = array_pop($expirystrings);
-		$expiration_text = implode(', ', $expirystrings);
-		if(count($expirystrings)>0) { $expiration_text .= ", and "; }
+	$expiration_text = '';
+	if ( count( $expirystrings ) > 0 ) {
+		$laststanza = array_pop( $expirystrings );
+		$expiration_text = implode( ', ', $expirystrings );
+		if ( count( $expirystrings ) > 0 ) { $expiration_text .= ', and '; }
 		$expiration_text .= $laststanza;
-		$expiration_text .= ". ";
-		if($ongoinglevelnum>0) {
-			$expiration_text .= "The remaining membership";
-			if($ongoinglevelnum>1) { $expiration_text .= "s are"; } else { $expiration_text .= " is"; }
-			$expiration_text .= " ongoing.";
+		$expiration_text .= '. ';
+		if ( $ongoinglevelnum > 0 ) {
+			$expiration_text .= 'The remaining membership';
+			if ( $ongoinglevelnum > 1 ) { $expiration_text .= 's are'; } else { $expiration_text .= ' is'; }
+			$expiration_text .= ' ongoing.';
 		}
 	}
 
 	/**
 	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
 	 */
-	$expiration_text = apply_filters("pmpro_levels_expiration_text", $expiration_text, $levels);
-	$expiration_text = apply_filters("pmpro_level_expiration_text", $expiration_text, $levels); // Backwards compatible
+	$expiration_text = apply_filters( 'pmpro_levels_expiration_text', $expiration_text, $levels );
+	$expiration_text = apply_filters( 'pmpro_level_expiration_text', $expiration_text, $levels ); // Backwards compatible
 	return $expiration_text;
 }
 
@@ -587,69 +501,63 @@ function pmpro_getLevelsExpiration(&$levels)
  *
  * @ssince 1.8.6.5
 */
-function add_pmpro_membership_level_meta($level_id, $meta_key, $meta_value, $unique = false) {	
-	return add_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique);
+function add_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $unique = false ) {
+	return add_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_level_meta($level_id, $key, $single = false) {
-	return get_metadata('pmpro_membership_level', $level_id, $key, $single);
+function get_pmpro_membership_level_meta( $level_id, $key, $single = false ) {
+	return get_metadata( 'pmpro_membership_level', $level_id, $key, $single );
 }
 
-function update_pmpro_membership_level_meta($level_id, $meta_key, $meta_value, $prev_value = '') {		
-	return update_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value, $prev_value);
+function update_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $prev_value );
 }
 
-function delete_pmpro_membership_level_meta($level_id, $meta_key, $meta_value = '') {		
-	return delete_metadata('pmpro_membership_level', $level_id, $meta_key, $meta_value);
+function delete_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value = '' ) {
+	return delete_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value );
 }
 
-function pmpro_hideAds()
-{
+function pmpro_hideAds() {
+
 	global $pmpro_display_ads;
-	return !$pmpro_display_ads;
+	return ! $pmpro_display_ads;
 }
 
-function pmpro_displayAds()
-{
+function pmpro_displayAds() {
+
 	global $pmpro_display_ads;
 	return $pmpro_display_ads;
 }
 
-function pmpro_next_payment($user_id = NULL, $order_status = "success", $format = "timestamp")
-{
+function pmpro_next_payment( $user_id = null, $order_status = 'success', $format = 'timestamp' ) {
 	global $wpdb, $current_user;
-	if(!$user_id)
-		$user_id = $current_user->ID;
+	if ( ! $user_id ) {
+		$user_id = $current_user->ID; }
 
-	if(!$user_id)
-		$r = false;
-	else
-	{
+	if ( ! $user_id ) {
+		$r = false; } else {
 		//get last order
 		$order = new MemberOrder();
-		$order->getLastMemberOrder($user_id, $order_status);
+		$order->getLastMemberOrder( $user_id, $order_status );
 
 		//get current membership level
-		$level = pmpro_getMembershipLevelForUser($user_id);
+		$level = pmpro_getMembershipLevelForUser( $user_id );
 
-		if(!empty($order) && !empty($order->id) && !empty($level) && !empty($level->id) && !empty($level->cycle_number))
-		{
+		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
 			//last payment date
-			$lastdate = date_i18n("Y-m-d", $order->timestamp);
+			$lastdate = date_i18n( 'Y-m-d', $order->timestamp );
 
 			//next payment date
-			$nextdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . " " . $level->cycle_period . ")");
+			$nextdate = $wpdb->get_var( "SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . ' ' . $level->cycle_period . ')' );
 
 			$r = $nextdate;
-		}
-		else
-		{
+		} else {
 			//no order or level found, or level was not recurring
 			$r = false;
 		}
-	}
+		}
 
-	/**
+		/**
 	 * Filter the next payment date.
 	 *
 	 * @since 1.8.5
@@ -658,48 +566,36 @@ function pmpro_next_payment($user_id = NULL, $order_status = "success", $format 
 	 * @param int $user_id The user id to get the next payment date for
 	 * @param string $order_status Status or array of statuses to find the last order based on.
 	 */
-	$r = apply_filters('pmpro_next_payment', $r, $user_id, $order_status);
+		$r = apply_filters( 'pmpro_next_payment', $r, $user_id, $order_status );
 
-	//return in desired format
-	if($r === false)
-		return false;				//always return false when no date found
-	elseif($format == "timestamp")
-		return $r;
-	elseif($format == "date_format")
-		return date_i18n(get_option('date_format'), $r);
-	else
-		return date_i18n($format, $r);	//assume a PHP date format	
-}
+		//return in desired format
+		if ( $r === false ) {
+			return false;				//always return false when no date found
+		} elseif ( $format == 'timestamp' ) {
+				return $r; } elseif ( $format == 'date_format' ) {
+				return date_i18n( get_option( 'date_format' ), $r ); } else { 		return date_i18n( $format, $r );	//assume a PHP date format
+				}}
 
-if(!function_exists("last4"))
-{
-	function last4($t)
-	{
-		return substr($t, strlen($t) - 4, 4);
+if ( ! function_exists( 'last4' ) ) {
+	function last4( $t ) {
+		return substr( $t, strlen( $t ) - 4, 4 );
 	}
 }
 
-if(!function_exists("hideCardNumber"))
-{
-	function hideCardNumber($c, $dashes = true)
-	{
-		if($c)
-		{
-			if($dashes)
-				return "XXXX-XXXX-XXXX-" . substr($c, strlen($c) - 4, 4);
-			else
-				return "XXXXXXXXXXXX" . substr($c, strlen($c) - 4, 4);
-		}
-		else
-		{
-			return "";
+if ( ! function_exists( 'hideCardNumber' ) ) {
+	function hideCardNumber( $c, $dashes = true ) {
+		if ( $c ) {
+			if ( $dashes ) {
+				return 'XXXX-XXXX-XXXX-' . substr( $c, strlen( $c ) - 4, 4 ); } else {
+				return 'XXXXXXXXXXXX' . substr( $c, strlen( $c ) - 4, 4 ); }
+		} else {
+			return '';
 		}
 	}
 }
 
 //check for existing functions since we didn't use a prefix for this function
-if(!function_exists("cleanPhone"))
-{
+if ( ! function_exists( 'cleanPhone' ) ) {
 	/**
 	 * Function to remove special characters from a phone number.
 	 * NOTE: Could probably replace with preg_replace("[^0-9]", "", $phone)
@@ -708,24 +604,22 @@ if(!function_exists("cleanPhone"))
 	 *
 	 * @param string $phone The phone number to clean.
 	 */
-	function cleanPhone($phone)
-	{
+	function cleanPhone( $phone ) {
 		//if a + is passed, just pass it along
-		if(strpos($phone, "+") !== false)
-			return $phone;
+		if ( strpos( $phone, '+' ) !== false ) {
+			return $phone; }
 		//clean the phone
-		$phone = str_replace("-", "", $phone);
-		$phone = str_replace(".", "", $phone);
-		$phone = str_replace("(", "", $phone);
-		$phone = str_replace(")", "", $phone);
-		$phone = str_replace(" ", "", $phone);
+		$phone = str_replace( '-', '', $phone );
+		$phone = str_replace( '.', '', $phone );
+		$phone = str_replace( '(', '', $phone );
+		$phone = str_replace( ')', '', $phone );
+		$phone = str_replace( ' ', '', $phone );
 		return $phone;
 	}
 }
 
 //check for existing functions since we didn't use a prefix for this function
-if(!function_exists("formatPhone"))
-{
+if ( ! function_exists( 'formatPhone' ) ) {
 	/**
 	 * Function to format a phone number.
 	 *
@@ -733,18 +627,15 @@ if(!function_exists("formatPhone"))
 	 *
 	 * @param string $phone The phone number to format.
 	 */
-	function formatPhone($phone)
-	{
-		$r = cleanPhone($phone);
+	function formatPhone( $phone ) {
+		$r = cleanPhone( $phone );
 
-		if(strlen($r) == 11)
-			$r = substr($r, 0, 1) . " (" . substr($r, 1, 3) . ") " . substr($r, 4, 3) . "-" . substr($r, 7, 4);
-		elseif(strlen($r) == 10)
-			$r = "(" . substr($r, 0, 3) . ") " . substr($r, 3, 3) . "-" . substr($r, 6, 4);
-		elseif(strlen($r) == 7)
-			$r = substr($r, 0, 3) . "-" . substr($r, 3, 4);
+		if ( strlen( $r ) == 11 ) {
+			$r = substr( $r, 0, 1 ) . ' (' . substr( $r, 1, 3 ) . ') ' . substr( $r, 4, 3 ) . '-' . substr( $r, 7, 4 ); } elseif ( strlen( $r ) == 10 ) {
+			$r = '(' . substr( $r, 0, 3 ) . ') ' . substr( $r, 3, 3 ) . '-' . substr( $r, 6, 4 ); } elseif ( strlen( $r ) == 7 ) {
+				$r = substr( $r, 0, 3 ) . '-' . substr( $r, 3, 4 ); }
 
-		/**
+			/**
 		 * Filter to do more or less cleaning of phone numbers.
 		 *
 		 * @since 1.8.4.4
@@ -752,30 +643,25 @@ if(!function_exists("formatPhone"))
 		 * @param string $r The formatted phone number.
 		 * @param string $phone The original phone number.
 		 */
-		return apply_filters('pmpro_format_phone', $r, $phone);
+			return apply_filters( 'pmpro_format_phone', $r, $phone );
 	}
 }
 
-function pmpro_showRequiresMembershipMessage()
-{
+function pmpro_showRequiresMembershipMessage() {
+
 	//TODO $current_user $post_membership_levels_names are undefined variables
 	//get the correct message
-	if(is_feed())
-	{
-		$content = pmpro_getOption("rsstext");
-		$content = str_replace("!!levels!!", implode(", ", $post_membership_levels_names), $content);
-	}
-	elseif($current_user->ID)
-	{
+	if ( is_feed() ) {
+		$content = pmpro_getOption( 'rsstext' );
+		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
+	} elseif ( $current_user->ID ) {
 		//not a member
-		$content = pmpro_getOption("nonmembertext");
-		$content = str_replace("!!levels!!", implode(", ", $post_membership_levels_names), $content);
-	}
-	else
-	{
+		$content = pmpro_getOption( 'nonmembertext' );
+		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
+	} else {
 		//not logged in!
-		$content = pmpro_getOption("notloggedintext");
-		$content = str_replace("!!levels!!", implode(", ", $post_membership_levels_names), $content);
+		$content = pmpro_getOption( 'notloggedintext' );
+		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	}
 }
 
@@ -798,124 +684,97 @@ function pmpro_showRequiresMembershipMessage()
  *
  * @return bool Result of membership query.
  */
-function pmpro_hasMembershipLevel($levels = NULL, $user_id = NULL)
-{
+function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 	global $current_user, $wpdb;
 
 	$return = false;
 
-	if(empty($user_id)) //no user_id passed, check the current user
-	{
+	if ( empty( $user_id ) ) { //no user_id passed, check the current user
 		$user_id = $current_user->ID;
 	}
-	
-	if(!empty($user_id) && is_numeric($user_id)) //get membership levels for given user
-		$membership_levels = pmpro_getMembershipLevelsForUser($user_id);
-	else
-		$membership_levels = NULL; //non-users don't have levels
 
-	if($levels === "0" || $levels === 0) //if 0 was passed, return true if they have no level and false if they have any
-	{
-		$return = empty($membership_levels);
-	}
-	elseif(empty($levels)) //if no level var was passed, we're just checking if they have any level
-	{
-		$return = !empty($membership_levels);
-	}
-	else
-	{
-		if(!is_array($levels)) //make an array out of a single element so we can use the same code
-		{
-			$levels = array($levels);
+	if ( ! empty( $user_id ) && is_numeric( $user_id ) ) { //get membership levels for given user
+		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id ); } else { 		$membership_levels = null; //non-users don't have levels
 		}
-
-		if(empty($membership_levels))	//user has no levels just check if 0, L, -1, or e was sent in one of the levels
-		{
-			//check for negative level
-			$negative_level = false;
-			foreach($levels as $level) {
-				if(intval($level) < 0) {
-					$negative_level = true;
-					break;
-				}
+		if ( $levels === '0' || $levels === 0 ) { //if 0 was passed, return true if they have no level and false if they have any
+			$return = empty( $membership_levels );
+		} elseif ( empty( $levels ) ) { //if no level var was passed, we're just checking if they have any level
+			$return = ! empty( $membership_levels );
+		} else {
+			if ( ! is_array( $levels ) ) { //make an array out of a single element so we can use the same code
+				$levels = array( $levels );
 			}
 
-			//are we looking for non-members or not?
-			if($negative_level)
-				return true;														//-1/etc, negative level
-			elseif(in_array(0, $levels, true) || in_array("0", $levels))
-				$return = true;														//0 level
-			elseif(in_array("L", $levels) || in_array("l", $levels))
-				$return = (!empty($user_id) && $user_id == $current_user->ID);		//L, logged in users
-			elseif(in_array("-L", $levels) || in_array("-l", $levels))
-				$return = (empty($user_id) || $user_id != $current_user->ID);		//-L, not logged in users
-			elseif(in_array("E", $levels) || in_array("e", $levels)) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
-				$expired = $wpdb->get_var($sql);									//E, expired members
-				$return = !empty($expired);
-			}
-		}
-		else
-		{
-			foreach($levels as $level)
-			{
-				if(strtoupper($level) == "L")
-				{
-					//checking if user is logged in
-					if(!empty($user_id) && $user_id == $current_user->ID)
-						$return = true;
+			if ( empty( $membership_levels ) ) {	//user has no levels just check if 0, L, -1, or e was sent in one of the levels
+				//check for negative level
+				$negative_level = false;
+				foreach ( $levels as $level ) {
+					if ( intval( $level ) < 0 ) {
+						$negative_level = true;
+						break;
+					}
 				}
-				elseif(strtoupper($level) == "-L")
-				{
-					//checking if user is logged out
-					if(empty($user_id) || $user_id != $current_user->ID)
-						$return = true;
+
+				//are we looking for non-members or not?
+				if ( $negative_level ) {
+					return true;														//-1/etc, negative level
+				} elseif ( in_array( 0, $levels, true ) || in_array( '0', $levels ) ) {
+					$return = true;														//0 level
+				} elseif ( in_array( 'L', $levels ) || in_array( 'l', $levels ) ) {
+							$return = ( ! empty( $user_id ) && $user_id == $current_user->ID);		//L, logged in users
+				} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
+							$return = (empty( $user_id ) || $user_id != $current_user->ID);		//-L, not logged in users
+				} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
+							$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+							$expired = $wpdb->get_var( $sql );									//E, expired members
+							$return = ! empty( $expired );
 				}
-				elseif($level === "0" || $level === 0 || strtoupper($level) === "E")
-				{
-					continue;	//user with levels so not a "non-member" or expired
-				}
-				else
-				{
-					//checking a level id
-					$level_obj = pmpro_getLevel(is_numeric($level) ? abs(intval($level)) : $level); //make sure our level is in a proper format
-					if(empty($level_obj)){continue;} //invalid level
-					$found_level = false;
-					
-					foreach($membership_levels as $membership_level)
-					{
-						if($membership_level->id == $level_obj->id) //found a match
-						{
-							$found_level = true;
+			} else {
+				foreach ( $levels as $level ) {
+					if ( strtoupper( $level ) == 'L' ) {
+						//checking if user is logged in
+						if ( ! empty( $user_id ) && $user_id == $current_user->ID ) {
+							$return = true; }
+					} elseif ( strtoupper( $level ) == '-L' ) {
+						//checking if user is logged out
+						if ( empty( $user_id ) || $user_id != $current_user->ID ) {
+							$return = true; }
+					} elseif ( $level === '0' || $level === 0 || strtoupper( $level ) === 'E' ) {
+						continue;	//user with levels so not a "non-member" or expired
+					} else {
+						//checking a level id
+						$level_obj = pmpro_getLevel( is_numeric( $level ) ? abs( intval( $level ) ) : $level ); //make sure our level is in a proper format
+						if ( empty( $level_obj ) ) { continue;} //invalid level
+						$found_level = false;
+
+						foreach ( $membership_levels as $membership_level ) {
+							if ( $membership_level->id == $level_obj->id ) { //found a match
+								$found_level = true;
+							}
 						}
-					}
 
-					if(is_numeric($level) && intval($level) < 0 && !$found_level) //checking for the absence of this level and they don't have it
-					{
-						$return = true;
+						if ( is_numeric( $level ) && intval( $level ) < 0 && ! $found_level ) { //checking for the absence of this level and they don't have it
+							$return = true;
+						} elseif ( is_numeric( $level ) && intval( $level ) > 0 && $found_level ) { //checking for the presence of this level and they have it
+							$return = true;
+						} elseif ( ! is_numeric( $level ) ) {	//if a level name was passed
+							$return = $found_level; }
 					}
-					elseif(is_numeric($level) && intval($level) > 0 && $found_level) //checking for the presence of this level and they have it
-					{
-						$return = true;
-					}
-					elseif(!is_numeric($level))	//if a level name was passed
-						$return = $found_level;
 				}
 			}
 		}
-	}
 
-	$return = apply_filters("pmpro_has_membership_level", $return, $user_id, $levels);
-	return $return;
+		$return = apply_filters( 'pmpro_has_membership_level', $return, $user_id, $levels );
+		return $return;
 }
 
 /**
  * Wrapper for pmpro_changeMembershipLevel to cancel one level.
  * @since 1.8.11
  */
-function pmpro_cancelMembershipLevel($cancel_level, $user_id = NULL, $old_level_status = 'inactive') {
-	return pmpro_changeMembershipLevel(0, $user_id, $old_level_status, $cancel_level);
-} 
+function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level_status = 'inactive' ) {
+	return pmpro_changeMembershipLevel( 0, $user_id, $old_level_status, $cancel_level );
+}
 
 /**
  * Create, add, remove or updates the membership level of the given user to the given level.
@@ -932,64 +791,52 @@ function pmpro_cancelMembershipLevel($cancel_level, $user_id = NULL, $old_level_
  *		Success returns boolean true.
  *		Failure returns boolean false.
  */
-function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status = 'inactive', $cancel_level = NULL)
-{
+function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status = 'inactive', $cancel_level = null ) {
 	global $wpdb;
 	global $current_user, $pmpro_error;
 
-	if(empty($user_id))
-	{
+	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
 	}
 
-	if(empty($user_id))
-	{
-		$pmpro_error = __("User ID not found.", "pmpro");
+	if ( empty( $user_id ) ) {
+		$pmpro_error = __( 'User ID not found.', 'pmpro' );
 		return false;
 	}
 
 	//make sure user id is int for security
-	$user_id = intval($user_id);
+	$user_id = intval( $user_id );
 
-	if(empty($level)) //cancelling membership
-	{
+	if ( empty( $level ) ) { //cancelling membership
 		$level = 0;
-	}
-	else if(is_array($level))
-	{
+	} elseif ( is_array( $level ) ) {
 		//custom level
-	}
-	else
-	{
-		$level_obj = pmpro_getLevel($level);
-		if(empty($level_obj))
-		{
-			$pmpro_error = __("Invalid level.", "pmpro");
+	} else {
+		$level_obj = pmpro_getLevel( $level );
+		if ( empty( $level_obj ) ) {
+			$pmpro_error = __( 'Invalid level.', 'pmpro' );
 			return false;
 		}
 		$level = $level_obj->id;
 	}
 
 	//if it's a custom level, they're changing
-	if(!is_array($level))
-	{
+	if ( ! is_array( $level ) ) {
 		//are they even changing?
-		if(pmpro_hasMembershipLevel($level, $user_id)) {
-			$pmpro_error = __("not changing?", "pmpro");
+		if ( pmpro_hasMembershipLevel( $level, $user_id ) ) {
+			$pmpro_error = __( 'not changing?', 'pmpro' );
 			return false; //not changing
 		}
 	}
 
 	//get all active membershipships for this user
-	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
-
+	$old_levels = pmpro_getMembershipLevelsForUser( $user_id );
 
 		//get level id
-	if(is_array($level))
+	if ( is_array( $level ) ) {
 		$level_id = $level['membership_id'];	//custom level
-	else
-		$level_id = $level;	//just id
-
+	} else { 		$level_id = $level;	//just id
+	}
 	/**
 	 * Action to run before the membership level changes.
 	 *
@@ -998,43 +845,40 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @param array $old_levels array of prior levels the user belonged to.
 	 * $param int $cancel_level ID of the level being cancelled if specified
 	 */
-	do_action("pmpro_before_change_membership_level", $level_id, $user_id, $old_levels, $cancel_level);
+	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $old_levels, $cancel_level );
 
-	
 	//deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
 	$pmpro_deactivate_old_levels = true;
 	/**
 	 * Filter whether old levels should be deactivated or not. This supports the MMPU addon.
-	 * Typically you'll want to hook into pmpro_before_change_membership_level 
+	 * Typically you'll want to hook into pmpro_before_change_membership_level
 	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
-	 * 
+	 *
 	 * @since  1.8.11
 	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
 	 */
-	$pmpro_deactivate_old_levels = apply_filters("pmpro_deactivate_old_levels", $pmpro_deactivate_old_levels);
-	
+	$pmpro_deactivate_old_levels = apply_filters( 'pmpro_deactivate_old_levels', $pmpro_deactivate_old_levels );
+
 	//make sure we deactivate the specified level if it's passed in
-	if(!empty($cancel_level)) {
+	if ( ! empty( $cancel_level ) ) {
 		$pmpro_deactivate_old_levels = true;
 		$new_old_levels = array();
-		foreach($old_levels as $key => $old_level) {
-			if($old_level->id == $cancel_level) {
-				$new_old_levels[] = $old_levels[$key];
+		foreach ( $old_levels as $key => $old_level ) {
+			if ( $old_level->id == $cancel_level ) {
+				$new_old_levels[] = $old_levels[ $key ];
 				break;
 			}
 		}
 		$old_levels = $new_old_levels;
 	}
 
-	if($old_levels && $pmpro_deactivate_old_levels)
-	{
-		foreach($old_levels as $old_level) {
+	if ( $old_levels && $pmpro_deactivate_old_levels ) {
+		foreach ( $old_levels as $old_level ) {
 
-			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . current_time('mysql') . "' WHERE `id`=".$old_level->subscription_id;
+			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . current_time( 'mysql' ) . "' WHERE `id`=" . $old_level->subscription_id;
 
-			if(!$wpdb->query($sql))
-			{
-				$pmpro_error = __("Error interacting with database", "pmpro") . ": ".($wpdb->last_error?$wpdb->last_error:'unavailable');
+			if ( ! $wpdb->query( $sql ) ) {
+				$pmpro_error = __( 'Error interacting with database', 'pmpro' ) . ': ' . ($wpdb->last_error?$wpdb->last_error:'unavailable');
 
 				return false;
 			}
@@ -1042,49 +886,45 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	}
 
 	//should we cancel their gateway subscriptions?
-	if(!empty($cancel_level)) {
+	if ( ! empty( $cancel_level ) ) {
 		$pmpro_cancel_previous_subscriptions = true;	//don't filter cause we're doing just the one
-		
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql($cancel_level) . "' ORDER BY id DESC");
+
+		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC" );
 	} else {
 		$pmpro_cancel_previous_subscriptions = true;
-		if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
-			$pmpro_cancel_previous_subscriptions = false;
-		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
-		
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
+		if ( isset( $_REQUEST['cancel_membership'] ) && $_REQUEST['cancel_membership'] == false ) {
+			$pmpro_cancel_previous_subscriptions = false; }
+		$pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );
+
+		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC" );
 	}
-	
+
 	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
-	if($pmpro_cancel_previous_subscriptions && !empty($other_order_ids))
-	{		
-		foreach($other_order_ids as $order_id)
-		{
-			$c_order = new MemberOrder($order_id);
+	if ( $pmpro_cancel_previous_subscriptions && ! empty( $other_order_ids ) ) {
+		foreach ( $other_order_ids as $order_id ) {
+			$c_order = new MemberOrder( $order_id );
 			$c_order->cancel();
 
-			if(!empty($c_order->error))
-				$pmpro_error = $c_order->error;
+			if ( ! empty( $c_order->error ) ) {
+				$pmpro_error = $c_order->error; }
 		}
 	}
 
 	//insert current membership
-	if(!empty($level)) //are we getting a new one or just cancelling the old ones
-	{		
+	if ( ! empty( $level ) ) { //are we getting a new one or just cancelling the old ones
 		//make sure the dates are in good formats
-		if(is_array($level))
-		{
+		if ( is_array( $level ) ) {
 			//Better support mySQL Strict Mode by passing  a proper enum value for cycle_period
-			if ($level['cycle_period'] == '') { $level['cycle_period'] = 0; }
+			if ( $level['cycle_period'] == '' ) { $level['cycle_period'] = 0; }
 
 			// clean up date formatting (string/not string)
-			$level['startdate'] = preg_replace('/\'/', '', $level['startdate']);
-			$level['enddate'] = preg_replace('/\'/', '', $level['enddate']);
+			$level['startdate'] = preg_replace( '/\'/', '', $level['startdate'] );
+			$level['enddate'] = preg_replace( '/\'/', '', $level['enddate'] );
 
 			$sql = $wpdb->prepare("
-					INSERT INTO {$wpdb->pmpro_memberships_users}
-					(`user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
-					VALUES
+                    INSERT INTO {$wpdb->pmpro_memberships_users}
+                    (`user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
+                    VALUES
 					( %d, %d, %d, %s, %s, %d, %s, %d, %s, %d, %s, %s )",
 				$level['user_id'], // integer
 				$level['membership_id'], // integer
@@ -1099,13 +939,11 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 				$level['startdate'], // string (date)
 				$level['enddate'] // string (date)
 			);
-		}
-		else
-		{
+		} else {
 			$sql = $wpdb->prepare("
-				INSERT INTO {$wpdb->pmpro_memberships_users}
-				( `user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
-					VALUES 
+                INSERT INTO {$wpdb->pmpro_memberships_users}
+                ( `user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
+                    VALUES 
 					( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s )",
 				$user_id,
 				$level_id,
@@ -1117,21 +955,20 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 				'0',
 				'0',
 				'0',
-				current_time('mysql'),
+				current_time( 'mysql' ),
 				'0000-00-00 00:00:00'
 			);
 		}
 
-		if( false === $wpdb->query($sql) )
-		{
-			$pmpro_error = sprintf( __("Error interacting with database: %s", "pmpro"), (!empty($wpdb->last_error)  ? $wpdb->last_error : 'unavailable' ));
+		if ( false === $wpdb->query( $sql ) ) {
+			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'pmpro' ), ( ! empty( $wpdb->last_error )  ? $wpdb->last_error : 'unavailable' ) );
 			return false;
-		}		
+		}
 	}
 
 	//remove cached level
 	global $all_membership_levels;
-	unset($all_membership_levels[$user_id]);
+	unset( $all_membership_levels[ $user_id ] );
 
 	//update user data and call action
 	pmpro_set_current_user();
@@ -1143,7 +980,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	 * @param int $user_id ID of the user changed.
 	 * $param int $cancel_level ID of the level being cancelled if specified.
 	 */
-	do_action("pmpro_after_change_membership_level", $level_id, $user_id, $cancel_level);
+	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, $cancel_level );
 	return true;
 }
 
@@ -1157,25 +994,24 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
  * @param int $parent_id
  * @param array $level_categories
  */
-function pmpro_listCategories($parent_id = 0, $level_categories = array()) {
+function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 
 	$args = array(
 		'parent' => $parent_id,
 		'hide_empty' => false,
 	);
 
-	$cats = get_categories(apply_filters('pmpro_list_categories_args', $args));
+	$cats = get_categories( apply_filters( 'pmpro_list_categories_args', $args ) );
 
-	if($cats) {
-		foreach($cats as $cat) {
+	if ( $cats ) {
+		foreach ( $cats as $cat ) {
 			$name = 'membershipcategory_' . $cat->term_id;
-			if(!empty($level_categories))
-				$checked = checked(in_array($cat->term_id, $level_categories), true, false);
-			else
-				$checked = "";
-			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
-			pmpro_listCategories($cat->term_id, $level_categories);
-			echo '</li></ul>';
+			if ( ! empty( $level_categories ) ) {
+				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false ); } else {
+				$checked = ''; }
+				echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
+				pmpro_listCategories( $cat->term_id, $level_categories );
+				echo '</li></ul>';
 		}
 	}
 }
@@ -1186,34 +1022,29 @@ function pmpro_listCategories($parent_id = 0, $level_categories = array()) {
  * $category must be a valid post category ID.
  *
  * Return values:
- *		Success returns boolean true.
- *		Failure returns a string containing the error message.
+ *      Success returns boolean true.
+ *      Failure returns a string containing the error message.
  */
-function pmpro_toggleMembershipCategory( $level, $category, $value )
-{
-	global $wpdb;
-	$category = intval($category);
+function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
-	if ( ($level = intval($level)) <= 0 )
-	{
-		$safe = addslashes($level);
-		if ( ($level = intval($wpdb->get_var("SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1"))) <= 0 )
-		{
-			return __("Membership level not found.", "pmpro");
+	global $wpdb;
+	$category = intval( $category );
+
+	if ( ($level = intval( $level )) <= 0 ) {
+		$safe = addslashes( $level );
+		if ( ($level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1" ) )) <= 0 ) {
+			return __( 'Membership level not found.', 'pmpro' );
 		}
 	}
 
-	if ( $value )
-	{
+	if ( $value ) {
 		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
-		$wpdb->query($sql);
-		if($wpdb->last_error) return $wpdb->last_error;
-	}
-	else
-	{
+		$wpdb->query( $sql );
+		if ( $wpdb->last_error ) { return $wpdb->last_error; }
+	} else {
 		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
-		$wpdb->query($sql);
-		if($wpdb->last_error) return $wpdb->last_error;
+		$wpdb->query( $sql );
+		if ( $wpdb->last_error ) { return $wpdb->last_error; }
 	}
 
 	return true;
@@ -1226,32 +1057,27 @@ function pmpro_toggleMembershipCategory( $level, $category, $value )
 * $categories is an array of post category IDs
 *
 * Return values:
-*		Success returns boolean true.
-*		Failure returns a string containing the error message.
+*       Success returns boolean true.
+*       Failure returns a string containing the error message.
 */
-function pmpro_updateMembershipCategories($level, $categories)
-{
+function pmpro_updateMembershipCategories( $level, $categories ) {
 	global $wpdb;
 
-	if(!is_numeric($level))
-	{
-		$level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");
-		if(empty($level))
-		{
-			return __("Membership level not found.", "pmpro");
+	if ( ! is_numeric( $level ) ) {
+		$level = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql( $level ) . "' LIMIT 1" );
+		if ( empty( $level ) ) {
+			return __( 'Membership level not found.', 'pmpro' );
 		}
 	}
 
 	// remove all existing links...
-	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql($level) . "'";
-	$wpdb->query($sqlQuery);
-	if($wpdb->last_error) return $wpdb->last_error;
+	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql( $level ) . "'";
+	$wpdb->query( $sqlQuery );
+	if ( $wpdb->last_error ) { return $wpdb->last_error; }
 
 	// add the given links [back?] in...
-	foreach($categories as $cat)
-	{
-		if(is_string($r = pmpro_toggleMembershipCategory( $level, $cat, true)))
-		{
+	foreach ( $categories as $cat ) {
+		if ( is_string( $r = pmpro_toggleMembershipCategory( $level, $cat, true ) ) ) {
 			//uh oh, error
 			return $r;
 		}
@@ -1266,64 +1092,52 @@ function pmpro_updateMembershipCategories($level, $categories)
 * $level_id is a valid membership level ID
 *
 * Return values:
-*		Success returns boolean true.
-*		Failure returns boolean false.
+*       Success returns boolean true.
+*       Failure returns boolean false.
 */
-function pmpro_getMembershipCategories($level_id)
-{
-	$level_id = intval($level_id);
+function pmpro_getMembershipCategories( $level_id ) {
+	$level_id = intval( $level_id );
 
 	global $wpdb;
 	$categories = $wpdb->get_col("SELECT c.category_id
-										FROM {$wpdb->pmpro_memberships_categories} AS c
+                                        FROM {$wpdb->pmpro_memberships_categories} AS c
 										WHERE c.membership_id = '" . $level_id . "'");
 
 	return $categories;
 }
 
 
-function pmpro_isAdmin($user_id = NULL)
-{
+function pmpro_isAdmin( $user_id = null ) {
 	global $current_user, $wpdb;
-	if(!$user_id)
-		$user_id = $current_user->ID;
+	if ( ! $user_id ) {
+		$user_id = $current_user->ID; }
 
-	if(!$user_id)
-		return false;
+	if ( ! $user_id ) {
+		return false; }
 
-	$admincap = user_can($user_id, "manage_options");
-	if($admincap)
-		return true;
-	else
-		return false;
+	$admincap = user_can( $user_id, 'manage_options' );
+	if ( $admincap ) {
+		return true; } else {
+		return false; }
 }
 
-function pmpro_replaceUserMeta($user_id, $meta_keys, $meta_values, $prev_values = NULL)
-{
+function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values = null ) {
 	//expects all arrays for last 3 params or all strings
-	if(!is_array($meta_keys))
-	{
-		$meta_keys = array($meta_keys);
-		$meta_values = array($meta_values);
-		$prev_values = array($prev_values);
+	if ( ! is_array( $meta_keys ) ) {
+		$meta_keys = array( $meta_keys );
+		$meta_values = array( $meta_values );
+		$prev_values = array( $prev_values );
 	}
 
-	for($i = 0; $i < count($meta_values); $i++)
-	{
-		if($prev_values[$i])
-		{
-			update_user_meta($user_id, $meta_keys[$i], $meta_values[$i], $prev_values[$i]);
-		}
-		else
-		{
-			$old_value = get_user_meta($user_id, $meta_keys[$i], true);
-			if($old_value)
-			{
-				update_user_meta($user_id, $meta_keys[$i], $meta_values[$i], $old_value);
-			}
-			else
-			{
-				update_user_meta($user_id, $meta_keys[$i], $meta_values[$i]);
+	for ( $i = 0; $i < count( $meta_values ); $i++ ) {
+		if ( $prev_values[ $i ] ) {
+			update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $prev_values[ $i ] );
+		} else {
+			$old_value = get_user_meta( $user_id, $meta_keys[ $i ], true );
+			if ( $old_value ) {
+				update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $old_value );
+			} else {
+				update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ] );
 			}
 		}
 	}
@@ -1331,245 +1145,207 @@ function pmpro_replaceUserMeta($user_id, $meta_keys, $meta_values, $prev_values 
 	return $i;
 }
 
-function pmpro_getMetavalues($query)
-{
+function pmpro_getMetavalues( $query ) {
 	global $wpdb;
 
-	$results = $wpdb->get_results($query);
+	$results = $wpdb->get_results( $query );
 	$r = new stdClass();
-	foreach($results as $result)
-	{
-		if(!empty($r) && !empty($result->key))
-			$r->{$result->key} = $result->value;
+	foreach ( $results as $result ) {
+		if ( ! empty( $r ) && ! empty( $result->key ) ) {
+			$r->{$result->key} = $result->value; }
 	}
 
 	return $r;
 }
 
 //function to return the pagination string
-function pmpro_getPaginationString($page = 1, $totalitems, $limit = 15, $adjacents = 1, $targetpage = "/", $pagestring = "&pn=")
-{
+function pmpro_getPaginationString( $page = 1, $totalitems, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
 	//defaults
-	if(!$adjacents) $adjacents = 1;
-	if(!$limit) $limit = 15;
-	if(!$page) $page = 1;
-	if(!$targetpage) $targetpage = "/";
+	if ( ! $adjacents ) { $adjacents = 1; }
+	if ( ! $limit ) { $limit = 15; }
+	if ( ! $page ) { $page = 1; }
+	if ( ! $targetpage ) { $targetpage = '/'; }
 
 	//other vars
 	$prev = $page - 1;									//previous page is page - 1
 	$next = $page + 1;									//next page is page + 1
-	$lastpage = ceil($totalitems / $limit);				//lastpage is = total items / items per page, rounded up.
+	$lastpage = ceil( $totalitems / $limit );				//lastpage is = total items / items per page, rounded up.
 	$lpm1 = $lastpage - 1;								//last page minus 1
 
 	/*
-		Now we apply our rules and draw the pagination object.
-		We're actually saving the code to a variable in case we want to draw it more than once.
+        Now we apply our rules and draw the pagination object.
+        We're actually saving the code to a variable in case we want to draw it more than once.
 	*/
-	$pagination = "";
-	if($lastpage > 1)
-	{
-		$pagination .= "<div class=\"pmpro_pagination\"";
-		if(!empty($margin) || !empty($padding))
-		{
-			$pagination .= " style=\"";
-			if($margin)
-				$pagination .= "margin: $margin;";
-			if($padding)
-				$pagination .= "padding: $padding;";
-			$pagination .= "\"";
+	$pagination = '';
+	if ( $lastpage > 1 ) {
+		$pagination .= '<div class="pmpro_pagination"';
+		if ( ! empty( $margin ) || ! empty( $padding ) ) {
+			$pagination .= ' style="';
+			if ( $margin ) {
+				$pagination .= "margin: $margin;"; }
+			if ( $padding ) {
+				$pagination .= "padding: $padding;"; }
+			$pagination .= '"';
 		}
-		$pagination .= ">";
+		$pagination .= '>';
 
 		//previous button
-		if ($page > 1)
-			$pagination .= "<a href=\"$targetpage$pagestring$prev\">&laquo; prev</a>";
-		else
-			$pagination .= "<span class=\"disabled\">&laquo; prev</span>";
+		if ( $page > 1 ) {
+			$pagination .= "<a href=\"$targetpage$pagestring$prev\">&laquo; prev</a>"; } else {
+			$pagination .= '<span class="disabled">&laquo; prev</span>'; }
 
-		//pages
-		if ($lastpage < 7 + ($adjacents * 2))	//not enough pages to bother breaking it up
-		{
-			for ($counter = 1; $counter <= $lastpage; $counter++)
-			{
-				if ($counter == $page)
-					$pagination .= "<span class=\"current\">$counter</span>";
-				else
-					$pagination .= "<a href=\"" . $targetpage . $pagestring . $counter . "\">$counter</a>";
-			}
-		}
-		elseif($lastpage >= 7 + ($adjacents * 2))	//enough pages to hide some
-		{
-			//close to beginning; only hide later pages
-			if($page < 1 + ($adjacents * 3))
-			{
-				for ($counter = 1; $counter < 4 + ($adjacents * 2); $counter++)
-				{
-					if ($counter == $page)
-						$pagination .= "<span class=\"current\">$counter</span>";
-					else
-						$pagination .= "<a href=\"" . $targetpage . $pagestring . $counter . "\">$counter</a>";
+			//pages
+			if ( $lastpage < 7 + ($adjacents * 2) ) {	//not enough pages to bother breaking it up
+				for ( $counter = 1; $counter <= $lastpage; $counter++ ) {
+					if ( $counter == $page ) {
+						$pagination .= "<span class=\"current\">$counter</span>"; } else {
+						$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>"; }
 				}
-				$pagination .= "...";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
-			}
-			//in middle; hide some front and some back
-			elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2))
-			{
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . "1\">1</a>";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . "2\">2</a>";
-				$pagination .= "...";
-				for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++)
-				{
-					if ($counter == $page)
-						$pagination .= "<span class=\"current\">$counter</span>";
-					else
-						$pagination .= "<a href=\"" . $targetpage . $pagestring . $counter . "\">$counter</a>";
-				}
-				$pagination .= "...";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
-			}
-			//close to end; only hide early pages
-			else
-			{
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . "1\">1</a>";
-				$pagination .= "<a href=\"" . $targetpage . $pagestring . "2\">2</a>";
-				$pagination .= "...";
-				for ($counter = $lastpage - (1 + ($adjacents * 3)); $counter <= $lastpage; $counter++)
-				{
-					if ($counter == $page)
-						$pagination .= "<span class=\"current\">$counter</span>";
-					else
-						$pagination .= "<a href=\"" . $targetpage . $pagestring . $counter . "\">$counter</a>";
+			} elseif ( $lastpage >= 7 + ($adjacents * 2) ) {	//enough pages to hide some
+				//close to beginning; only hide later pages
+				if ( $page < 1 + ($adjacents * 3) ) {
+					for ( $counter = 1; $counter < 4 + ($adjacents * 2); $counter++ ) {
+						if ( $counter == $page ) {
+							$pagination .= "<span class=\"current\">$counter</span>"; } else {
+							$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>"; }
+					}
+					$pagination .= '...';
+					$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
+					$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				} //in middle; hide some front and some back
+				elseif ( $lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2) ) {
+					$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
+					$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
+					$pagination .= '...';
+					for ( $counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++ ) {
+						if ( $counter == $page ) {
+							$pagination .= "<span class=\"current\">$counter</span>"; } else {
+							$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>"; }
+					}
+					$pagination .= '...';
+					$pagination .= '<a href="' . $targetpage . $pagestring . $lpm1 . "\">$lpm1</a>";
+					$pagination .= '<a href="' . $targetpage . $pagestring . $lastpage . "\">$lastpage</a>";
+				} //close to end; only hide early pages
+				else {
+					$pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>';
+					$pagination .= '<a href="' . $targetpage . $pagestring . '2">2</a>';
+					$pagination .= '...';
+					for ( $counter = $lastpage - (1 + ($adjacents * 3)); $counter <= $lastpage; $counter++ ) {
+						if ( $counter == $page ) {
+							$pagination .= "<span class=\"current\">$counter</span>"; } else {
+							$pagination .= '<a href="' . $targetpage . $pagestring . $counter . "\">$counter</a>"; }
+					}
 				}
 			}
-		}
 
-		//next button
-		if ($page < $counter - 1)
-			$pagination .= "<a href=\"" . $targetpage . $pagestring . $next . "\">next &raquo;</a>";
-		else
-			$pagination .= "<span class=\"disabled\">next &raquo;</span>";
-		$pagination .= "</div>\n";
+			//next button
+			if ( $page < $counter - 1 ) {
+				$pagination .= '<a href="' . $targetpage . $pagestring . $next . '">next &raquo;</a>'; } else {
+				$pagination .= '<span class="disabled">next &raquo;</span>'; }
+				$pagination .= "</div>\n";
 	}
 
 	return $pagination;
 
 }
 
-function pmpro_calculateInitialPaymentRevenue($s = NULL, $l = NULL)
-{
+function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 	global $wpdb;
 
 	//if we're limiting users by search
-	if($s || $l)
-	{
+	if ( $s || $l ) {
 		$user_ids_query = "SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
-		if($s)
-			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%$" . esc_sql(s) . "%') ";
-		if($l)
-			$user_ids_query .= "AND mu.membership_id = '" . esc_sql($l) . "' ";
+		if ( $s ) {
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%$" . esc_sql( s ) . "%') "; }
+		if ( $l ) {
+			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' "; }
 	}
 
 	//query to sum initial payments
 	$sqlQuery = "SELECT SUM(initial_payment) FROM $wpdb->pmpro_memberships_users WHERE `status` = 'active' ";
-	if(!empty($user_ids_query))
-		$sqlQuery .= "AND user_id IN(" . $user_ids_query . ") ";
+	if ( ! empty( $user_ids_query ) ) {
+		$sqlQuery .= 'AND user_id IN(' . $user_ids_query . ') '; }
 
-	$total = $wpdb->get_var($sqlQuery);
+	$total = $wpdb->get_var( $sqlQuery );
 
-	return (double)$total;
+	return (double) $total;
 }
 
-function pmpro_calculateRecurringRevenue($s, $l)
-{
+function pmpro_calculateRecurringRevenue( $s, $l ) {
 	global $wpdb;
 
 	//if we're limiting users by search
-	if($s || $l)
-	{
+	if ( $s || $l ) {
 		$user_ids_query = "AND user_id IN(SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
-		if($s)
-			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
-		if($l)
-			$user_ids_query .= "AND mu.membership_id = '" . esc_sql($l) . "' ";
-		$user_ids_query .= ")";
-	}
-	else
-		$user_ids_query = "";
+		if ( $s ) {
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%') "; }
+		if ( $l ) {
+			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' "; }
+		$user_ids_query .= ')';
+	} else {
+		$user_ids_query = ''; }
 
 	//4 queries to get annual earnings for each cycle period. currently ignoring trial periods and billing limits.
 	$sqlQuery = "
-		SELECT SUM((12/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Month' AND cycle_number <> 12 $user_ids_query
-			UNION
-		SELECT SUM((365/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Day' AND cycle_number <> 365 $user_ids_query
-			UNION
-		SELECT SUM((52/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Week' AND cycle_number <> 52 $user_ids_query
-			UNION
-		SELECT SUM(billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Year' $user_ids_query
+        SELECT SUM((12/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Month' AND cycle_number <> 12 $user_ids_query
+            UNION
+        SELECT SUM((365/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Day' AND cycle_number <> 365 $user_ids_query
+            UNION
+        SELECT SUM((52/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Week' AND cycle_number <> 52 $user_ids_query
+            UNION
+        SELECT SUM(billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Year' $user_ids_query
 	";
 
-	$annual_revenues = $wpdb->get_col($sqlQuery);
+	$annual_revenues = $wpdb->get_col( $sqlQuery );
 
 	$total = 0;
-	foreach($annual_revenues as $r)
-	{
+	foreach ( $annual_revenues as $r ) {
 		$total += $r;
 	}
 
 	return $total;
 }
 
-function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
-{
+function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) {
 	global $wpdb;
 
 	//try first initial + last name, firstname, lastname
-	$firstname = preg_replace("/[^A-Za-z]/", "", $firstname);
-	$lastname = preg_replace("/[^A-Za-z]/", "", $lastname);
-	if($firstname && $lastname)
-	{
-		$username = substr($firstname, 0, 1) . $lastname;
-	}
-	elseif($firstname)
-	{
+	$firstname = preg_replace( '/[^A-Za-z]/', '', $firstname );
+	$lastname = preg_replace( '/[^A-Za-z]/', '', $lastname );
+	if ( $firstname && $lastname ) {
+		$username = substr( $firstname, 0, 1 ) . $lastname;
+	} elseif ( $firstname ) {
 		$username = $firstname;
-	}
-	elseif($lastname)
-	{
+	} elseif ( $lastname ) {
 		$username = $lastname;
 	}
 
 	//is it taken?
-	$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
+	$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
 
-	if(!$taken)
-		return $username;
+	if ( ! $taken ) {
+		return $username; }
 
 	//try the beginning of the email address
-	$emailparts = explode("@", $email);
-	if(is_array($emailparts))
-		$email = preg_replace("/[^A-Za-z]/", "", $emailparts[0]);
+	$emailparts = explode( '@', $email );
+	if ( is_array( $emailparts ) ) {
+		$email = preg_replace( '/[^A-Za-z]/', '', $emailparts[0] ); }
 
-	if(!empty($email))
-	{
+	if ( ! empty( $email ) ) {
 		$username = $email;
 	}
 
 	//is this taken? if not, add numbers until it works
 	$taken = true;
 	$count = 0;
-	while($taken)
-	{
+	while ( $taken ) {
 		//add a # to the end
-		if($count)
-		{
-			$username = preg_replace("/[0-9]/", "", $username) . $count;
+		if ( $count ) {
+			$username = preg_replace( '/[0-9]/', '', $username ) . $count;
 		}
 
 		//taken?
-		$taken = $wpdb->get_var("SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql($username) . "' LIMIT 1");
+		$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
 
 		//increment the number
 		$count++;
@@ -1580,168 +1356,150 @@ function pmpro_generateUsername($firstname = "", $lastname = "", $email = "")
 }
 
 //get a new random code for discount codes
-function pmpro_getDiscountCode($seed = NULL)
-{
+function pmpro_getDiscountCode( $seed = null ) {
 	global $wpdb;
 
-	while(empty($code))
-	{
-		$scramble = md5(AUTH_KEY . current_time('timestamp') . $seed . SECURE_AUTH_KEY);
-		$code = substr($scramble, 0, 10);
-		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($code) . "' LIMIT 1");
-		if($check || is_numeric($code))
-			$code = NULL;
+	while ( empty( $code ) ) {
+		$scramble = md5( AUTH_KEY . current_time( 'timestamp' ) . $seed . SECURE_AUTH_KEY );
+		$code = substr( $scramble, 0, 10 );
+		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
+		if ( $check || is_numeric( $code ) ) {
+			$code = null; }
 	}
 
-	return strtoupper($code);
+	return strtoupper( $code );
 }
 
 //is a discount code valid - level_id could be a scalar or an array (or unset)
-function pmpro_checkDiscountCode($code, $level_id = NULL, $return_errors = false)
-{
+function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = false ) {
 	global $wpdb;
 
 	$error = false;
 	$dbcode = false;
 
 	//no code, no code
-	if(empty($code))
-		$error = __("No code was given to check.", "pmpro");
+	if ( empty( $code ) ) {
+		$error = __( 'No code was given to check.', 'pmpro' ); }
 
 	//get code from db
-	if(!$error)
-	{
-		$dbcode = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql($code) . "' LIMIT 1");
+	if ( ! $error ) {
+		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		//did we find it?
-		if(empty($dbcode->id))
-			$error = __("The discount code could not be found.", "pmpro");
+		if ( empty( $dbcode->id ) ) {
+			$error = __( 'The discount code could not be found.', 'pmpro' ); }
 	}
 
 	//check if the code has started
-	if(!$error)
-	{
+	if ( ! $error ) {
 		//fix the date timestamps
-		$dbcode->starts = strtotime(date_i18n("m/d/Y", $dbcode->starts));
-		$dbcode->expires = strtotime(date_i18n("m/d/Y", $dbcode->expires));
+		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', $dbcode->starts ) );
+		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
 
 		//today
-		$today = strtotime(date_i18n("m/d/Y 00:00:00", current_time("timestamp")));
+		$today = strtotime( date_i18n( 'm/d/Y 00:00:00', current_time( 'timestamp' ) ) );
 
 		//has this code started yet?
-		if(!empty($dbcode->starts) && $dbcode->starts > $today)
-			$error = sprintf(__("This discount code goes into effect on %s.", "pmpro"), date_i18n(get_option('date_format'), $dbcode->starts));
+		if ( ! empty( $dbcode->starts ) && $dbcode->starts > $today ) {
+			$error = sprintf( __( 'This discount code goes into effect on %s.', 'pmpro' ), date_i18n( get_option( 'date_format' ), $dbcode->starts ) ); }
 	}
 
 	//check if the code is expired
-	if(!$error)
-	{
-		if(!empty($dbcode->expires) && $dbcode->expires < $today)
-			$error = sprintf(__("This discount code expired on %s.", "pmpro"), date_i18n(get_option('date_format'), $dbcode->expires));
+	if ( ! $error ) {
+		if ( ! empty( $dbcode->expires ) && $dbcode->expires < $today ) {
+			$error = sprintf( __( 'This discount code expired on %s.', 'pmpro' ), date_i18n( get_option( 'date_format' ), $dbcode->expires ) ); }
 	}
 
 	//have we run out of uses?
-	if(!$error)
-	{
-		if($dbcode->uses > 0)
-		{
-			$used = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'");
-			if($used >= $dbcode->uses)
-				$error = __("This discount code is no longer valid.", "pmpro");
+	if ( ! $error ) {
+		if ( $dbcode->uses > 0 ) {
+			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'" );
+			if ( $used >= $dbcode->uses ) {
+				$error = __( 'This discount code is no longer valid.', 'pmpro' ); }
 		}
 	}
 
 	//if a level was passed check if this code applies
-	if(!$error)
-	{
-		$pmpro_check_discount_code_levels = apply_filters("pmpro_check_discount_code_levels", true, $dbcode->id);
-		if(!empty($level_id) && $pmpro_check_discount_code_levels)
-		{
+	if ( ! $error ) {
+		$pmpro_check_discount_code_levels = apply_filters( 'pmpro_check_discount_code_levels', true, $dbcode->id );
+		if ( ! empty( $level_id ) && $pmpro_check_discount_code_levels ) {
 			// clean up level id for security before the database call
-			if(is_array($level_id)) {
-				$levelnums = array_map('intval', $level_id);
-				$level_id = implode(',', $levelnums);
+			if ( is_array( $level_id ) ) {
+				$levelnums = array_map( 'intval', $level_id );
+				$level_id = implode( ',', $levelnums );
 			} else {
-				$level_id = intval($level_id);
+				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row("SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1");
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ') LIMIT 1' );
 
-			if(empty($code_level))
-				$error = __("This discount code does not apply to this membership level.", "pmpro");
+			if ( empty( $code_level ) ) {
+				$error = __( 'This discount code does not apply to this membership level.', 'pmpro' ); }
 		}
 	}
 
 	/**
-	 * Filter the results of the discount code check.	 
+	 * Filter the results of the discount code check.
 	 * @since 1.7.13.1
 	 *
 	 * @param bool $okay true if code check is okay or false if there was an error
 	 * @param object $dbcode Object containing code data from the database row
 	 * @param int $level_id ID of the level the user is checking out for.
 	 * @param string $code Discount code string.
-	 * 
+	 *
 	 * @return mixed $okay true if okay, false or error message string if not okay
 	 */
-	$okay = !$error;
-	$pmpro_check_discount_code = apply_filters("pmpro_check_discount_code", $okay, $dbcode, $level_id, $code);
-	if(is_string($pmpro_check_discount_code))
+	$okay = ! $error;
+	$pmpro_check_discount_code = apply_filters( 'pmpro_check_discount_code', $okay, $dbcode, $level_id, $code );
+	if ( is_string( $pmpro_check_discount_code ) ) {
 		$error = $pmpro_check_discount_code;	//string returned, this is an error
-	elseif(!$pmpro_check_discount_code && !$error)
+	} elseif ( ! $pmpro_check_discount_code && ! $error ) {
 		$error = true;							//no error before, but filter returned error
-	elseif($pmpro_check_discount_code)
+	} elseif ( $pmpro_check_discount_code ) {
 		$error = false;							//filter is true, so error false
-
-	//return
-	if($error)
-	{
-		//there was an error
-		if(!empty($return_errors))
-			return array(false, $error);
-		else
-			return false;
 	}
-	else
-	{
+	//return
+	if ( $error ) {
+		//there was an error
+		if ( ! empty( $return_errors ) ) {
+			return array( false, $error ); } else {
+			return false; }
+	} else {
 		//guess we're all good
-		if(!empty($return_errors))
-			return array(true, __("This discount code is okay.", "pmpro"));
-		else
-			return true;
+		if ( ! empty( $return_errors ) ) {
+			return array( true, __( 'This discount code is okay.', 'pmpro' ) ); } else {
+			return true; }
 	}
 }
 
-function pmpro_no_quotes($s, $quotes = array("'", '"'))
-{
-	return str_replace($quotes, "", $s);
+function pmpro_no_quotes( $s, $quotes = array( "'", '"' ) ) {
+	return str_replace( $quotes, '', $s );
 }
 
 //from: http://www.php.net/manual/en/function.implode.php#86845
-function pmpro_implodeToEnglish($array, $conjunction = 'and')
-{
+function pmpro_implodeToEnglish( $array, $conjunction = 'and' ) {
 	// sanity check
-	if (!$array || !count ($array))
-		return '';
+	if ( ! $array || ! count( $array ) ) {
+		return ''; }
 
 	// get last element
-	$last = array_pop ($array);
+	$last = array_pop( $array );
 
 	// if it was the only element - return it
-	if (!count ($array))
-		return $last;
+	if ( ! count( $array ) ) {
+		return $last; }
 
 	//possibly translate the conjunction
-	if($conjunction == 'and')
-		$conjunction = __('and', 'pmpro');
+	if ( $conjunction == 'and' ) {
+		$conjunction = __( 'and', 'pmpro' ); }
 
-	return implode (', ', $array).' ' . $conjunction . ' '.$last;
+	return implode( ', ', $array ) . ' ' . $conjunction . ' ' . $last;
 }
 
 //from yoast wordpress seo
-function pmpro_text_limit( $text, $limit, $finish = '&hellip;')
-{
-	if( strlen( $text ) > $limit ) {
+function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
+	if ( strlen( $text ) > $limit ) {
 		$text = substr( $text, 0, $limit );
-		$text = substr( $text, 0, - ( strlen( strrchr( $text,' ') ) ) );
+		$text = substr( $text, 0, - ( strlen( strrchr( $text,' ' ) ) ) );
 		$text .= $finish;
 	}
 	return $text;
@@ -1752,56 +1510,50 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;')
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
  * Return values:
- *		Success returns the level object.
- *		Failure returns false.
+ *      Success returns the level object.
+ *      Failure returns false.
  */
-function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
-{
-	if(empty($user_id))
-	{
+function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
+	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
-	if(empty($user_id))
-	{
+	if ( empty( $user_id ) ) {
 		return false;
 	}
 
 	//make sure user id is int for security
-	$user_id = intval($user_id);
+	$user_id = intval( $user_id );
 
 	global $all_membership_levels;
 
-	if(isset($all_membership_levels[$user_id]) && !$force)
-	{
-		return $all_membership_levels[$user_id];
-	}
-	else
-	{
+	if ( isset( $all_membership_levels[ $user_id ] ) && ! $force ) {
+		return $all_membership_levels[ $user_id ];
+	} else {
 		global $wpdb;
-		$all_membership_levels[$user_id] = $wpdb->get_row("SELECT
-															l.id AS ID,
-															l.id as id,
-															mu.id as subscription_id,
-															l.name AS name,
-															l.description,
-															l.expiration_number,
-															l.expiration_period,
-															l.allow_signups,
-															mu.initial_payment,
-															mu.billing_amount,
-															mu.cycle_number,
-															mu.cycle_period,
-															mu.billing_limit,
-															mu.trial_amount,
-															mu.trial_limit,
-															mu.code_id as code_id,
-															UNIX_TIMESTAMP(startdate) as startdate,
-															UNIX_TIMESTAMP(enddate) as enddate
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = $user_id AND mu.status = 'active'
+		$all_membership_levels[ $user_id ] = $wpdb->get_row("SELECT
+                                                            l.id AS ID,
+                                                            l.id as id,
+                                                            mu.id as subscription_id,
+                                                            l.name AS name,
+                                                            l.description,
+                                                            l.expiration_number,
+                                                            l.expiration_period,
+                                                            l.allow_signups,
+                                                            mu.initial_payment,
+                                                            mu.billing_amount,
+                                                            mu.cycle_number,
+                                                            mu.cycle_period,
+                                                            mu.billing_limit,
+                                                            mu.trial_amount,
+                                                            mu.trial_limit,
+                                                            mu.code_id as code_id,
+                                                            UNIX_TIMESTAMP(startdate) as startdate,
+                                                            UNIX_TIMESTAMP(enddate) as enddate
+                                                        FROM {$wpdb->pmpro_membership_levels} AS l
+                                                        JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+                                                        WHERE mu.user_id = $user_id AND mu.status = 'active'
 														LIMIT 1");
 
 		/**
@@ -1813,9 +1565,9 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 		 *
 		 * @param object $level Level object.
 		 */
-		$all_membership_levels[$user_id] = apply_filters('pmpro_get_membership_level_for_user', $all_membership_levels[$user_id], $user_id);
+		$all_membership_levels[ $user_id ] = apply_filters( 'pmpro_get_membership_level_for_user', $all_membership_levels[ $user_id ], $user_id );
 
-		return $all_membership_levels[$user_id];
+		return $all_membership_levels[ $user_id ];
 	}
 }
 
@@ -1825,48 +1577,45 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
  * By default it only includes actvie memberships.
  *
  * Return values:
- *		Success returns an array of level objects.
- *		Failure returns false.
+ *      Success returns an array of level objects.
+ *      Failure returns false.
  */
-function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = false)
-{
-	if(empty($user_id))
-	{
+function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
+	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
-	if(empty($user_id))
-	{
+	if ( empty( $user_id ) ) {
 		return false;
 	}
 
 	//make sure user id is int for security
-	$user_id = intval($user_id);
+	$user_id = intval( $user_id );
 
 	global $wpdb;
 
 	$levels = $wpdb->get_results("SELECT
-								l.id AS ID,
-								l.id as id,
-								mu.id as subscription_id,
-								l.name,
-								l.description,
-								l.expiration_number,
-								l.expiration_period,
-								mu.initial_payment,
-								mu.billing_amount,
-								mu.cycle_number,
-								mu.cycle_period,
-								mu.billing_limit,
-								mu.trial_amount,
-								mu.trial_limit,
-								mu.code_id as code_id,
-								UNIX_TIMESTAMP(startdate) as startdate,
-								UNIX_TIMESTAMP(enddate) as enddate
-							FROM {$wpdb->pmpro_membership_levels} AS l
-							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-							WHERE mu.user_id = $user_id".($include_inactive?"":" AND mu.status = 'active'"));
+                                l.id AS ID,
+                                l.id as id,
+                                mu.id as subscription_id,
+                                l.name,
+                                l.description,
+                                l.expiration_number,
+                                l.expiration_period,
+                                mu.initial_payment,
+                                mu.billing_amount,
+                                mu.cycle_number,
+                                mu.cycle_period,
+                                mu.billing_limit,
+                                mu.trial_amount,
+                                mu.trial_limit,
+                                mu.code_id as code_id,
+                                UNIX_TIMESTAMP(startdate) as startdate,
+                                UNIX_TIMESTAMP(enddate) as enddate
+                            FROM {$wpdb->pmpro_membership_levels} AS l
+                            JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+							WHERE mu.user_id = $user_id" . ($include_inactive?'':" AND mu.status = 'active'"));
 	/**
 	 * pmpro_get_membership_levels_for_user filter.
 	 *
@@ -1876,7 +1625,7 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 	 *
 	 * @param array $levels Array of level objects.
 	 */
-	$levels = apply_filters('pmpro_get_membership_levels_for_user', $levels, $user_id);
+	$levels = apply_filters( 'pmpro_get_membership_levels_for_user', $levels, $user_id );
 
 	return $levels;
 }
@@ -1886,71 +1635,61 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
  * $level may be the level id or name
  *
  * Return values:
- *		Success returns the level object.
- *		Failure returns false.
+ *      Success returns the level object.
+ *      Failure returns false.
  */
-function pmpro_getLevel($level)
-{
+function pmpro_getLevel( $level ) {
 	global $pmpro_levels;
 
-	if(is_object($level) && !empty($level->id))
-		$level = $level->id;
+	if ( is_object( $level ) && ! empty( $level->id ) ) {
+		$level = $level->id; }
 
 	//was a name passed? (Todo: make sure level names have at least one non-numeric character.
-	if(is_numeric($level))
-	{
-		$level_id = intval($level);
-		if(isset($pmpro_levels[$level_id]))
-		{
-			return $pmpro_levels[$level_id];
-		}
-		else
-		{
+	if ( is_numeric( $level ) ) {
+		$level_id = intval( $level );
+		if ( isset( $pmpro_levels[ $level_id ] ) ) {
+			return $pmpro_levels[ $level_id ];
+		} else {
 			global $wpdb;
-			$pmpro_levels[$level_id] = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1");
-			return $pmpro_levels[$level_id];
+			$pmpro_levels[ $level_id ] = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
+			return $pmpro_levels[ $level_id ];
 		}
-	}
-	else
-	{
+	} else {
 		global $wpdb;
-		$level_obj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql($level) . "' LIMIT 1");
+		$level_obj = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql( $level ) . "' LIMIT 1" );
 
-		if(!empty($level_obj))
-			$level_id = $level_obj->id;
-		else
-			return false;
+		if ( ! empty( $level_obj ) ) {
+			$level_id = $level_obj->id; } else {
+			return false; }
 
-		$pmpro_levels[$level_id] = $level_obj;
-		return $pmpro_levels[$level_id];
+			$pmpro_levels[ $level_id ] = $level_obj;
+			return $pmpro_levels[ $level_id ];
 	}
 }
 
 /*
-	Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest.
-	This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
+    Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest.
+    This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
 */
-function pmpro_getAllLevels($include_hidden = false, $force = false)
-{
+function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 	global $pmpro_levels, $wpdb;
 
 	//just use what's cached (doesn't take into account include_hidden setting)
-	if(!empty($pmpro_levels) && !$force)
-		return $pmpro_levels;
+	if ( ! empty( $pmpro_levels ) && ! $force ) {
+		return $pmpro_levels; }
 
 	//build query
 	$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
-	if(!$include_hidden)
-		$sqlQuery .= " WHERE allow_signups = 1 ORDER BY id";
+	if ( ! $include_hidden ) {
+		$sqlQuery .= ' WHERE allow_signups = 1 ORDER BY id'; }
 
 	//get levels from the DB
-	$raw_levels = $wpdb->get_results($sqlQuery);
+	$raw_levels = $wpdb->get_results( $sqlQuery );
 
 	//lets put them into an array where the key is the id of the level
 	$pmpro_levels = array();
-	foreach($raw_levels as $raw_level)
-	{
-		$pmpro_levels[$raw_level->id] = $raw_level;
+	foreach ( $raw_levels as $raw_level ) {
+		$pmpro_levels[ $raw_level->id ] = $raw_level;
 	}
 
 	return $pmpro_levels;
@@ -1959,29 +1698,29 @@ function pmpro_getAllLevels($include_hidden = false, $force = false)
 /**
  * Get level at checkout and place into $pmpro_level global.
  */
-function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
+function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-	
+
 	//reset pmpro_level
-	$pmpro_level = NULL;
-	
+	$pmpro_level = null;
+
 	//default to level passed in via URL
-	if(empty($level_id) && !empty($_REQUEST['level'])) {
-		$level_id = intval($_REQUEST['level']);
+	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
+		$level_id = intval( $_REQUEST['level'] );
 	}
-	
+
 	//default to discount code passed in
-	if(empty($discount_code) && !empty($_REQUEST['discount_code'])) {
-		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
 	}
-			
+
 	//what level are they purchasing? (discount code passed)
-	if (!empty($level_id) && !empty($discount_code)) {		
+	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
 
 		//check code
 		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
-		if ( $code_check[0] != false ) {			
+		if ( $code_check[0] != false ) {
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
 
@@ -1992,7 +1731,7 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 
 			//filter adjustments to the level
 			$pmpro_level->code_id = $discount_code_id;
-			$pmpro_level          = apply_filters( "pmpro_discount_code_level", $pmpro_level, $discount_code_id );
+			$pmpro_level          = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
 		}
 	}
 
@@ -2001,55 +1740,52 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	} elseif ( empty( $pmpro_level ) ) {
 		//check if a level is defined in custom fields
-		$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
+		$default_level = get_post_meta( $post->ID, 'pmpro_default_level', true );
 		if ( ! empty( $default_level ) ) {
 			$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $default_level ) . "' AND allow_signups = 1 LIMIT 1" );
 		}
 	}
 
 	//filter the level (for upgrades, etc)
-	$pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
-	
+	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
 	return $pmpro_level;
 }
 
-function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL)
-{
-	if(empty($button_text))
-		$button_text = __("Sign Up for !!name!! Now", "pmpro");
+function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = null ) {
+	if ( empty( $button_text ) ) {
+		$button_text = __( 'Sign Up for !!name!! Now', 'pmpro' ); }
 
-	if(empty($classes))
-		$classes = "pmpro_btn";
+	if ( empty( $classes ) ) {
+		$classes = 'pmpro_btn'; }
 
-	if(empty($level_id))
-		$r = __("Please specify a level id.", "pmpro");
-	else
-	{
+	if ( empty( $level_id ) ) {
+		$r = __( 'Please specify a level id.', 'pmpro' ); } else {
 		//get level
-		$level = pmpro_getLevel($level_id);
+		$level = pmpro_getLevel( $level_id );
 
 		//replace vars
 		$replacements = array(
-			"!!id!!" => $level->id,
-			"!!name!!" => $level->name,
-			"!!description!!" => $level->description,
-			"!!confirmation!!" => $level->confirmation,
-			"!!initial_payment!!" => $level->initial_payment,
-			"!!billing_amount!!" => $level->billing_amount,
-			"!!cycle_number!!" => $level->cycle_number,
-			"!!cycle_period!!" => $level->cycle_period,
-			"!!billing_limit!!" => $level->billing_limit,
-			"!!trial_amount!!" => $level->trial_amount,
-			"!!trial_limit!!" => $level->trial_limit,
-			"!!expiration_number!!" => $level->expiration_number,
-			"!!expiration_period!!" => $level->expiration_period
+			'!!id!!' => $level->id,
+			'!!name!!' => $level->name,
+			'!!description!!' => $level->description,
+			'!!confirmation!!' => $level->confirmation,
+			'!!initial_payment!!' => $level->initial_payment,
+			'!!billing_amount!!' => $level->billing_amount,
+			'!!cycle_number!!' => $level->cycle_number,
+			'!!cycle_period!!' => $level->cycle_period,
+			'!!billing_limit!!' => $level->billing_limit,
+			'!!trial_amount!!' => $level->trial_amount,
+			'!!trial_limit!!' => $level->trial_limit,
+			'!!expiration_number!!' => $level->expiration_number,
+			'!!expiration_period!!' => $level->expiration_period,
 		);
-		$button_text = str_replace(array_keys($replacements), $replacements, $button_text);
+		$button_text = str_replace( array_keys( $replacements ), $replacements, $button_text );
 
 		//button text
-		$r = "<a href=\"" . pmpro_url("checkout", "?level=" . $level_id) . "\" class=\"" . $classes . "\">" . $button_text . "</a>";
-	}
-	return $r;
+		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		}
+		return $r;
 }
 
 /**
@@ -2058,36 +1794,27 @@ function pmpro_getCheckoutButton($level_id, $button_text = NULL, $classes = NULL
  * @param string $url The URL to parse. (generally pass site_url() in WP)
  * @return string The domain.
  */
-function pmpro_getDomainFromURL($url = NULL)
-{
-	$domainparts = parse_url($url);
-	$domainparts = explode(".", $domainparts['host']);
-	if(count($domainparts) > 1)
-	{
+function pmpro_getDomainFromURL( $url = null ) {
+	$domainparts = parse_url( $url );
+	$domainparts = explode( '.', $domainparts['host'] );
+	if ( count( $domainparts ) > 1 ) {
 		//check for ips
 		$isip = true;
-		foreach($domainparts as $part)
-		{
-			if(!is_numeric($part))
-			{
+		foreach ( $domainparts as $part ) {
+			if ( ! is_numeric( $part ) ) {
 				$isip = false;
 				break;
 			}
 		}
 
-		if($isip)
-		{
+		if ( $isip ) {
 			//ip, e.g. 127.1.1.1
-			$domain = implode(".", $domainparts);
-		}
-		else
-		{
+			$domain = implode( '.', $domainparts );
+		} else {
 			//www.something.com, etc.
-			$domain = $domainparts[count($domainparts)-2] . "." . $domainparts[count($domainparts)-1];
+			$domain = $domainparts[ count( $domainparts ) -2 ] . '.' . $domainparts[ count( $domainparts ) -1 ];
 		}
-	}
-	else
-	{
+	} else {
 		//localhost or another single word domain
 		$domain = $domainparts[0];
 	}
@@ -2096,84 +1823,71 @@ function pmpro_getDomainFromURL($url = NULL)
 }
 
 /*
-	Get a member's start date... either in general or for a specific level_id.
+    Get a member's start date... either in general or for a specific level_id.
 */
-if(!function_exists("pmpro_getMemberStartdate"))
-{
-	function pmpro_getMemberStartdate($user_id = NULL, $level_id = 0)
-	{
-		if(empty($user_id))
-		{
+if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
+	function pmpro_getMemberStartdate( $user_id = null, $level_id = 0 ) {
+		if ( empty( $user_id ) ) {
 			global $current_user;
 			$user_id = $current_user->ID;
 		}
 
 		//make sure user and level id are int for security
-		$user_id = intval($user_id);
-		$level_id = intval($level_id);
+		$user_id = intval( $user_id );
+		$level_id = intval( $level_id );
 
 		global $pmpro_startdates;	//for cache
-		if(empty($pmpro_startdates[$user_id][$level_id]))
-		{
+		if ( empty( $pmpro_startdates[ $user_id ][ $level_id ] ) ) {
 			global $wpdb;
 
-			if(!empty($level_id))
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql($level_id) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
-			else
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+			if ( ! empty( $level_id ) ) {
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1"; } else {
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1"; }
 
-			$startdate = apply_filters("pmpro_member_startdate", $wpdb->get_var($sqlQuery), $user_id, $level_id);
+				$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
 
-			$pmpro_startdates[$user_id][$level_id] = $startdate;
+				$pmpro_startdates[ $user_id ][ $level_id ] = $startdate;
 		}
 
-		return $pmpro_startdates[$user_id][$level_id];
+		return $pmpro_startdates[ $user_id ][ $level_id ];
 	}
 }
 
 /*
-	How long has this member been a member
+    How long has this member been a member
 */
-if(!function_exists("pmpro_getMemberDays"))
-{
-	function pmpro_getMemberDays($user_id = NULL, $level_id = 0)
-	{
-		if(empty($user_id))
-		{
+if ( ! function_exists( 'pmpro_getMemberDays' ) ) {
+	function pmpro_getMemberDays( $user_id = null, $level_id = 0 ) {
+		if ( empty( $user_id ) ) {
 			global $current_user;
 			$user_id = $current_user->ID;
 		}
 
 		global $pmpro_member_days;
-		if(empty($pmpro_member_days[$user_id][$level_id]))
-		{
-			$startdate = pmpro_getMemberStartdate($user_id, $level_id);
+		if ( empty( $pmpro_member_days[ $user_id ][ $level_id ] ) ) {
+			$startdate = pmpro_getMemberStartdate( $user_id, $level_id );
 
 			//check that there was a startdate at all
-			if(empty($startdate))
-				$pmpro_member_days[$user_id][$level_id] = 0;
-			else
-			{
-				$now = current_time('timestamp');
-				$days = ($now - $startdate)/3600/24;
+			if ( empty( $startdate ) ) {
+				$pmpro_member_days[ $user_id ][ $level_id ] = 0; } else {
+				$now = current_time( 'timestamp' );
+				$days = ($now - $startdate) / 3600 / 24;
 
-				$pmpro_member_days[$user_id][$level_id] = $days;
-			}
+				$pmpro_member_days[ $user_id ][ $level_id ] = $days;
+				}
 		}
 
-		return $pmpro_member_days[$user_id][$level_id];
+		return $pmpro_member_days[ $user_id ][ $level_id ];
 	}
 }
 
 //the start of a message handling script
-function pmpro_setMessage($message, $type, $force = false)
-{
+function pmpro_setMessage( $message, $type, $force = false ) {
 	global $pmpro_msg, $pmpro_msgt;
 
 	//for now, we only show the first message generated
-	if($force || empty($pmpro_msg))
-	{
-		$pmpro_msg = apply_filters('pmpro_set_message', $message, $type);
+	if ( $force || empty( $pmpro_msg ) ) {
+		$pmpro_msg = apply_filters( 'pmpro_set_message', $message, $type );
 		$pmpro_msgt = $type;
 	}
 }
@@ -2183,13 +1897,12 @@ function pmpro_setMessage($message, $type, $force = false)
  *
  * @since 1.8.5
  */
-function pmpro_showMessage()
-{
+function pmpro_showMessage() {
+
 	global $pmpro_msg, $pmpro_msgt;
 
-	if(!empty($pmpro_msg))
-	{
-		?>
+	if ( ! empty( $pmpro_msg ) ) {
+	?>
 		<div class="<?php echo $pmpro_msgt;?>">
 			<p><?php echo $pmpro_msg;?></p>
 		</div>
@@ -2198,207 +1911,160 @@ function pmpro_showMessage()
 }
 
 //used in class definitions for input fields to see if there was an error
-function pmpro_getClassForField($field)
-{
+function pmpro_getClassForField( $field ) {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
 	$classes = array();
 
 	//error on this field?
-	if(!empty($pmpro_error_fields) && in_array($field, $pmpro_error_fields))
-	{
-		$classes[] = "pmpro_error";
+	if ( ! empty( $pmpro_error_fields ) && in_array( $field, $pmpro_error_fields ) ) {
+		$classes[] = 'pmpro_error';
 	}
 
-	if(is_array($pmpro_required_billing_fields) && is_array($pmpro_required_user_fields))
-		$required_fields = array_merge(array_keys($pmpro_required_billing_fields), array_keys($pmpro_required_user_fields));
-	elseif(is_array($pmpro_required_billing_fields))
-		$required_fields = array_keys($pmpro_required_billing_fields);
-	elseif(is_array($pmpro_required_user_fields))
-		$required_fields = array_keys($pmpro_required_user_fields);
-	else
-		$required_fields = array();
+	if ( is_array( $pmpro_required_billing_fields ) && is_array( $pmpro_required_user_fields ) ) {
+		$required_fields = array_merge( array_keys( $pmpro_required_billing_fields ), array_keys( $pmpro_required_user_fields ) ); } elseif ( is_array( $pmpro_required_billing_fields ) ) {
+		$required_fields = array_keys( $pmpro_required_billing_fields ); } elseif ( is_array( $pmpro_required_user_fields ) ) {
+			$required_fields = array_keys( $pmpro_required_user_fields ); } else {
+			$required_fields = array(); }
 
-	//required?
-	if(in_array($field, $required_fields))
-	{
-		$classes[] = "pmpro_required";
-	}
+			//required?
+			if ( in_array( $field, $required_fields ) ) {
+				$classes[] = 'pmpro_required';
+			}
 
-	$classes = apply_filters("pmpro_field_classes", $classes, $field);
+			$classes = apply_filters( 'pmpro_field_classes', $classes, $field );
 
-	if(!empty($classes))
-		return implode(" ", $classes);
-	else
-		return "";
+			if ( ! empty( $classes ) ) {
+				return implode( ' ', $classes ); } else {
+				return ''; }
 }
 
 //get a var from $_GET or $_POST
-function pmpro_getParam($index, $method = "REQUEST", $default = "")
-{
-	if($method == "REQUEST")
-	{
-		if(!empty($_REQUEST[$index]))
-			return $_REQUEST[$index];
-	}
-	elseif($method == "POST")
-	{
-		if(!empty($_POST[$index]))
-			return $_POST[$index];
-	}
-	elseif($method == "GET")
-	{
-		if(!empty($_GET[$index]))
-			return $_GET[$index];
+function pmpro_getParam( $index, $method = 'REQUEST', $default = '' ) {
+	if ( $method == 'REQUEST' ) {
+		if ( ! empty( $_REQUEST[ $index ] ) ) {
+			return $_REQUEST[ $index ]; }
+	} elseif ( $method == 'POST' ) {
+		if ( ! empty( $_POST[ $index ] ) ) {
+			return $_POST[ $index ]; }
+	} elseif ( $method == 'GET' ) {
+		if ( ! empty( $_GET[ $index ] ) ) {
+			return $_GET[ $index ]; }
 	}
 
 	return $default;
 }
 
 /*
-	Format an address from address, city, state, zip, country, and phone
+    Format an address from address, city, state, zip, country, and phone
 */
-function pmpro_formatAddress($name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br = true)
-{
-	$address = "";
+function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br = true ) {
+	$address = '';
 
-	if(!empty($name))
-		$address .= $name . "\n";
+	if ( ! empty( $name ) ) {
+		$address .= $name . "\n"; }
 
-	if(!empty($address1))
-		$address .= $address1 . "\n";
+	if ( ! empty( $address1 ) ) {
+		$address .= $address1 . "\n"; }
 
-	if(!empty($address2))
-		$address .= $address2 . "\n";
+	if ( ! empty( $address2 ) ) {
+		$address .= $address2 . "\n"; }
 
-	if(!empty($city) && !empty($state))
-	{
-		$address .= $city . ", " . $state;
+	if ( ! empty( $city ) && ! empty( $state ) ) {
+		$address .= $city . ', ' . $state;
 
-		if(!empty($zip))
-			$address .= " " . $zip;
+		if ( ! empty( $zip ) ) {
+			$address .= ' ' . $zip; }
 
 		$address .= "\n";
 	}
 
-	if(!empty($country))
-		$address .= $country . "\n";
+	if ( ! empty( $country ) ) {
+		$address .= $country . "\n"; }
 
-	if(!empty($phone))
-		$address .= formatPhone($phone);
+	if ( ! empty( $phone ) ) {
+		$address .= formatPhone( $phone ); }
 
-	if($nl2br)
-		$address = nl2br($address);
+	if ( $nl2br ) {
+		$address = nl2br( $address ); }
 
-	return apply_filters('pmpro_formatted_address', $address, $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br );
+	return apply_filters( 'pmpro_formatted_address', $address, $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br );
 }
 
 /*
-	Checks if all required settings are set.
+    Checks if all required settings are set.
 */
-function pmpro_is_ready()
-{
+function pmpro_is_ready() {
+
 	global $wpdb, $pmpro_pages, $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
 
 	//check if there is at least one level
-	$pmpro_level_ready = (bool)$wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels LIMIT 1");
+	$pmpro_level_ready = (bool) $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_levels LIMIT 1" );
 
 	//check if the gateway settings are good. first check if it's needed (is there paid membership level)
-	$paid_membership_level = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_levels WHERE allow_signups = 1 AND (initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0) LIMIT 1");
-	$paid_user_subscription = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1");
+	$paid_membership_level = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_levels WHERE allow_signups = 1 AND (initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0) LIMIT 1" );
+	$paid_user_subscription = $wpdb->get_var( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE initial_payment > 0 OR billing_amount > 0 OR trial_amount > 0 LIMIT 1" );
 
-	if(empty($paid_membership_level) && empty($paid_user_subscription))
-	{
+	if ( empty( $paid_membership_level ) && empty( $paid_user_subscription ) ) {
 		//no paid membership level now or attached to a user. we don't need the gateway setup
 		$pmpro_gateway_ready = true;
-	}
-	else
-	{
-		$gateway = pmpro_getOption("gateway");
-		if($gateway == "authorizenet")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("loginname") && pmpro_getOption("transactionkey"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "paypal" || $gateway == "paypalexpress")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email") && pmpro_getOption("apiusername") && pmpro_getOption("apipassword") && pmpro_getOption("apisignature"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "paypalstandard")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("gateway_email"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "payflowpro")
-		{
-			if(pmpro_getOption("payflow_partner") && pmpro_getOption("payflow_vendor") && pmpro_getOption("payflow_user") && pmpro_getOption("payflow_pwd"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "stripe")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("stripe_secretkey") && pmpro_getOption("stripe_publishablekey"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "braintree")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("braintree_merchantid") && pmpro_getOption("braintree_publickey") && pmpro_getOption("braintree_privatekey"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "twocheckout")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("twocheckout_apiusername") && pmpro_getOption("twocheckout_apipassword"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "cybersource")
-		{
-			if(pmpro_getOption("gateway_environment") && pmpro_getOption("cybersource_merchantid") && pmpro_getOption("cybersource_securitykey"))
-				$pmpro_gateway_ready = true;
-			else
-				$pmpro_gateway_ready = false;
-		}
-		elseif($gateway == "check")
-		{
+	} else {
+		$gateway = pmpro_getOption( 'gateway' );
+		if ( $gateway == 'authorizenet' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'loginname' ) && pmpro_getOption( 'transactionkey' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'paypal' || $gateway == 'paypalexpress' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'gateway_email' ) && pmpro_getOption( 'apiusername' ) && pmpro_getOption( 'apipassword' ) && pmpro_getOption( 'apisignature' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'paypalstandard' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'gateway_email' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'payflowpro' ) {
+			if ( pmpro_getOption( 'payflow_partner' ) && pmpro_getOption( 'payflow_vendor' ) && pmpro_getOption( 'payflow_user' ) && pmpro_getOption( 'payflow_pwd' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'stripe' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'stripe_secretkey' ) && pmpro_getOption( 'stripe_publishablekey' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'braintree' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'braintree_merchantid' ) && pmpro_getOption( 'braintree_publickey' ) && pmpro_getOption( 'braintree_privatekey' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'twocheckout' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'twocheckout_apiusername' ) && pmpro_getOption( 'twocheckout_apipassword' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'cybersource' ) {
+			if ( pmpro_getOption( 'gateway_environment' ) && pmpro_getOption( 'cybersource_merchantid' ) && pmpro_getOption( 'cybersource_securitykey' ) ) {
+				$pmpro_gateway_ready = true; } else {
+				$pmpro_gateway_ready = false; }
+		} elseif ( $gateway == 'check' ) {
 			$pmpro_gateway_ready = true;
-		}
-		else
-		{
+		} else {
 			$pmpro_gateway_ready = false;
 		}
 	}
 
 	//check if we have all pages
-	if($pmpro_pages["account"] &&
-	   $pmpro_pages["billing"] &&
-	   $pmpro_pages["cancel"] &&
-	   $pmpro_pages["checkout"] &&
-	   $pmpro_pages["confirmation"] &&
-	   $pmpro_pages["invoice"] &&
-	   $pmpro_pages["levels"])
-		$pmpro_pages_ready = true;
-	else
-		$pmpro_pages_ready = false;
+	if ( $pmpro_pages['account'] &&
+	   $pmpro_pages['billing'] &&
+	   $pmpro_pages['cancel'] &&
+	   $pmpro_pages['checkout'] &&
+	   $pmpro_pages['confirmation'] &&
+	   $pmpro_pages['invoice'] &&
+	   $pmpro_pages['levels'] ) {
+		$pmpro_pages_ready = true; } else {
+		$pmpro_pages_ready = false; }
 
-	//now check both
-	if($pmpro_gateway_ready && $pmpro_pages_ready)
-		$r = true;
-	else
-		$r = false;
+		//now check both
+		if ( $pmpro_gateway_ready && $pmpro_pages_ready ) {
+			$r = true; } else {
+			$r = false; }
 
-	/**
+			/**
 	 * Filter to determine if PMPro setup is complete or
 	 * if notices or warnings need to be shown in the PMPro settings.
 	 *
@@ -2409,9 +2075,9 @@ function pmpro_is_ready()
 	 *
 	 * @param bool $r ready?
 	 */
-	$r = apply_filters('pmpro_is_ready', $r);
+			$r = apply_filters( 'pmpro_is_ready', $r );
 
-	return $r;
+			return $r;
 }
 
 /**
@@ -2419,34 +2085,29 @@ function pmpro_is_ready()
  *
  * @since  1.7.15
  */
-function pmpro_formatPrice($price)
-{
+function pmpro_formatPrice( $price ) {
 	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
 
 	//start with the price formatted with two decimals
-	$formatted = number_format((double)$price, 2);
+	$formatted = number_format( (double) $price, 2 );
 
 	//settings stored in array?
-	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
-	{
+	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		//format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format($price,
-			(isset($pmpro_currencies[$pmpro_currency]['decimals']) ? (int)$pmpro_currencies[$pmpro_currency]['decimals'] : 2),
-			(isset($pmpro_currencies[$pmpro_currency]['decimal_separator']) ? $pmpro_currencies[$pmpro_currency]['decimal_separator'] : '.'),
-			(isset($pmpro_currencies[$pmpro_currency]['thousands_separator']) ? $pmpro_currencies[$pmpro_currency]['thousands_separator'] : ',')
+			(isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2),
+			(isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.'),
+			(isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',')
 		);
 
 		//which side is the symbol on?
-		if(!empty($pmpro_currencies[$pmpro_currency]['position']) && $pmpro_currencies[$pmpro_currency]['position']== 'left')
-			$formatted = $pmpro_currency_symbol . $formatted;
-		else
-			$formatted = $formatted . $pmpro_currency_symbol;
+		if ( ! empty( $pmpro_currencies[ $pmpro_currency ]['position'] ) && $pmpro_currencies[ $pmpro_currency ]['position'] == 'left' ) {
+			$formatted = $pmpro_currency_symbol . $formatted; } else {
+			$formatted = $formatted . $pmpro_currency_symbol; }
+	} else { 		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left
 	}
-	else
-		$formatted = $pmpro_currency_symbol . $formatted;	//default to symbol on the left
-
 	//filter
-	return apply_filters('pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol);
+	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
 }
 
 /**
@@ -2454,14 +2115,13 @@ function pmpro_formatPrice($price)
  *
  * @since  1.7.15
  */
-function pmpro_getCurrencyPosition()
-{
+function pmpro_getCurrencyPosition() {
+
 	global $pmpro_currency, $pmpro_currencies;
 
-	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]) && !empty($pmpro_currencies[$pmpro_currency]['position']))
-		return $pmpro_currencies[$pmpro_currency]['position'];
-	else
-		return "left";
+	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) && ! empty( $pmpro_currencies[ $pmpro_currency ]['position'] ) ) {
+		return $pmpro_currencies[ $pmpro_currency ]['position']; } else {
+		return 'left'; }
 }
 
 /*
@@ -2469,30 +2129,28 @@ function pmpro_getCurrencyPosition()
  *
  * @since 1.8
  */
-function pmpro_getGateway()
-{
+function pmpro_getGateway() {
+
 	//grab from param or options
-	if (!empty($_REQUEST['gateway']))
+	if ( ! empty( $_REQUEST['gateway'] ) ) {
 		$gateway = $_REQUEST['gateway'];		//gateway passed as param
-	elseif (!empty($_REQUEST['review']))
-		$gateway = "paypalexpress";				//if review param assume paypalexpress
-	else
-		$gateway = pmpro_getOption("gateway");  //get from options
-
+	} elseif ( ! empty( $_REQUEST['review'] ) ) {
+		$gateway = 'paypalexpress';				//if review param assume paypalexpress
+	} else { 		$gateway = pmpro_getOption( 'gateway' );  //get from options
+	}
 	//set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-	if(pmpro_getOption("gateway", true) == "paypal")
-		$valid_gateways = apply_filters("pmpro_valid_gateways", array("paypal", "paypalexpress"));
-	else
-		$valid_gateways = apply_filters("pmpro_valid_gateways", array(pmpro_getOption("gateway", true)));
+	if ( pmpro_getOption( 'gateway', true ) == 'paypal' ) {
+		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) ); } else {
+		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( pmpro_getOption( 'gateway', true ) ) ); }
 
-	//make sure it's valid
-	if(!in_array($gateway, $valid_gateways))
-		$gateway = false;
+		//make sure it's valid
+		if ( ! in_array( $gateway, $valid_gateways ) ) {
+			$gateway = false; }
 
-	//filter for good measure
-	$gateway = apply_filters('pmpro_get_gateway', $gateway, $valid_gateways);
+		//filter for good measure
+		$gateway = apply_filters( 'pmpro_get_gateway', $gateway, $valid_gateways );
 
-	return $gateway;
+		return $gateway;
 }
 
 /*
@@ -2501,20 +2159,18 @@ function pmpro_getGateway()
  *
  * @since 1.8.3
  */
-function pmpro_isDateThisMonth($str)
-{
-	$now = current_time('timestamp');
-	$this_month = intval(date_i18n("n", $now));
-	$this_year = intval(date_i18n("Y", $now));
+function pmpro_isDateThisMonth( $str ) {
+	$now = current_time( 'timestamp' );
+	$this_month = intval( date_i18n( 'n', $now ) );
+	$this_year = intval( date_i18n( 'Y', $now ) );
 
-	$date = strtotime($str, $now);
-	$date_month = intval(date_i18n("n", $date));
-	$date_year = intval(date_i18n("Y", $date));
+	$date = strtotime( $str, $now );
+	$date_month = intval( date_i18n( 'n', $date ) );
+	$date_year = intval( date_i18n( 'Y', $date ) );
 
-	if($date_month === $this_month && $date_year === $this_year)
-		return true;
-	else
-		return false;
+	if ( $date_month === $this_month && $date_year === $this_year ) {
+		return true; } else {
+		return false; }
 }
 
 /**
@@ -2529,21 +2185,21 @@ function pmpro_isDateThisMonth($str)
  * @return array $created_pages Created page IDs.
  * @since 1.8.5
  */
-function pmpro_generatePages($pages) {
+function pmpro_generatePages( $pages ) {
 
 	global $pmpro_pages;
 
 	$pages_created = array();
 
-	if(!empty($pages)) {
-		foreach($pages as $name => $page) {
+	if ( ! empty( $pages ) ) {
+		foreach ( $pages as $name => $page ) {
 
 			//does it already exist?
-			if(!empty($pmpro_pages[$name]))
-				continue;
+			if ( ! empty( $pmpro_pages[ $name ] ) ) {
+				continue; }
 
 			//no id set. create an array to store the page info
-			if(is_array($page)) {
+			if ( is_array( $page ) ) {
 				$title = $page['title'];
 				$content = $page['content'];
 			} else {
@@ -2557,20 +2213,20 @@ function pmpro_generatePages($pages) {
 				'post_type' => 'page',
 				'post_content' => $content,
 				'comment_status' => 'closed',
-				'ping_status' => 'closed'
+				'ping_status' => 'closed',
 			);
 
 			//make non-account pages a subpage of account
-			if ($name != "account") {
+			if ( $name != 'account' ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
 			}
 
 			//create the page
-			$pmpro_pages[$name] = wp_insert_post($insert);
+			$pmpro_pages[ $name ] = wp_insert_post( $insert );
 
 			//update the option too
-			pmpro_setOption($name . "_page_id", $pmpro_pages[$name]);
-			$pages_created[] = $pmpro_pages[$name];
+			pmpro_setOption( $name . '_page_id', $pmpro_pages[ $name ] );
+			$pages_created[] = $pmpro_pages[ $name ];
 		}
 	}
 
@@ -2587,13 +2243,12 @@ function pmpro_generatePages($pages) {
  * @return false|void False when an event is not scheduled.
  * @since 1.8.7.3
  */
- function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array()) {
-	$next = wp_next_scheduled($hook, $args);
-	if(empty($next))
-		return wp_schedule_event($timestamp, $recurrence, $hook, $args);
-	else
-		return false;
- }
+function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
+	$next = wp_next_scheduled( $hook, $args );
+	if ( empty( $next ) ) {
+		return wp_schedule_event( $timestamp, $recurrence, $hook, $args ); } else {
+		return false; }
+}
 
 /**
  * Get an array of orders for a specific checkout ID
@@ -2601,15 +2256,15 @@ function pmpro_generatePages($pages) {
  * @param int $checkout_id Checkout ID
  * @since 1.8.11
  */
-function pmpro_getMemberOrdersByCheckoutID($checkout_id) {
+function pmpro_getMemberOrdersByCheckoutID( $checkout_id ) {
 	global $wpdb;
-	
-	$order_ids = $wpdb->get_col($wpdb->prepare("SELECT id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = %d", $checkout_id));
-	
+
+	$order_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE checkout_id = %d", $checkout_id ) );
+
 	$r = array();
-	foreach($order_ids as $order_id) {
-		$r[] = new MemberOrder($order_id);
+	foreach ( $order_ids as $order_id ) {
+		$r[] = new MemberOrder( $order_id );
 	}
-	
+
 	return $r;
 }

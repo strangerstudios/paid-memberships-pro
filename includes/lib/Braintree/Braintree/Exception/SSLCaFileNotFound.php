@@ -14,7 +14,7 @@
  * @subpackage Exception
  * @copyright  2011 Braintree Payment Solutions
  */
-class Braintree_Exception_SSLCaFileNotFound extends Braintree_Exception
-{
+class Braintree_Exception_SSLCaFileNotFound extends Braintree_Exception {
+
 
 }

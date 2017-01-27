@@ -1,74 +1,66 @@
 <?php
-class Braintree_SettlementBatchSummary extends Braintree
-{
-    public static function generate($settlement_date, $groupByCustomField = NULL)
-    {
-        $criteria = array('settlement_date' => $settlement_date);
-        if (isset($groupByCustomField))
-        {
-            $criteria['group_by_custom_field'] = $groupByCustomField;
-        }
-        $params = array('settlement_batch_summary' => $criteria);
-        $response = Braintree_Http::post('/settlement_batch_summary', $params);
+class Braintree_SettlementBatchSummary extends Braintree {
 
-        if (isset($groupByCustomField))
-        {
-            $response['settlementBatchSummary']['records'] = self::_underscoreCustomField(
-                $groupByCustomField,
-                $response['settlementBatchSummary']['records']
-            );
-        }
+	public static function generate( $settlement_date, $groupByCustomField = null ) {
+		$criteria = array( 'settlement_date' => $settlement_date );
+		if ( isset( $groupByCustomField ) ) {
+			$criteria['group_by_custom_field'] = $groupByCustomField;
+		}
+		$params = array( 'settlement_batch_summary' => $criteria );
+		$response = Braintree_Http::post( '/settlement_batch_summary', $params );
 
-        return self::_verifyGatewayResponse($response);
-    }
+		if ( isset( $groupByCustomField ) ) {
+			$response['settlementBatchSummary']['records'] = self::_underscoreCustomField(
+				$groupByCustomField,
+				$response['settlementBatchSummary']['records']
+			);
+		}
 
-    private static function _underscoreCustomField($groupByCustomField, $records)
-    {
-        $updatedRecords = array();
+		return self::_verifyGatewayResponse( $response );
+	}
 
-        foreach ($records as $record)
-        {
-            $camelized = Braintree_Util::delimiterToCamelCase($groupByCustomField);
-            $record[$groupByCustomField] = $record[$camelized];
-            unset($record[$camelized]);
-            $updatedRecords[] = $record;
-        }
+	private static function _underscoreCustomField( $groupByCustomField, $records ) {
+		$updatedRecords = array();
 
-        return $updatedRecords;
-    }
+		foreach ( $records as $record ) {
+			$camelized = Braintree_Util::delimiterToCamelCase( $groupByCustomField );
+			$record[ $groupByCustomField ] = $record[ $camelized ];
+			unset( $record[ $camelized ] );
+			$updatedRecords[] = $record;
+		}
 
-    private static function _verifyGatewayResponse($response)
-    {
-        if (isset($response['settlementBatchSummary'])) {
-            return new Braintree_Result_Successful(
-                self::factory($response['settlementBatchSummary'])
-            );
-        } else if (isset($response['apiErrorResponse'])) {
-            return new Braintree_Result_Error($response['apiErrorResponse']);
-        } else {
-            throw new Braintree_Exception_Unexpected(
-                "Expected settlementBatchSummary or apiErrorResponse"
-            );
-        }
-    }
+		return $updatedRecords;
+	}
 
-    public static function factory($attributes)
-    {
-        $instance = new self();
-        $instance->_initialize($attributes);
-        return $instance;
-    }
+	private static function _verifyGatewayResponse( $response ) {
+		if ( isset( $response['settlementBatchSummary'] ) ) {
+			return new Braintree_Result_Successful(
+				self::factory( $response['settlementBatchSummary'] )
+			);
+		} elseif ( isset( $response['apiErrorResponse'] ) ) {
+			return new Braintree_Result_Error( $response['apiErrorResponse'] );
+		} else {
+			throw new Braintree_Exception_Unexpected(
+				'Expected settlementBatchSummary or apiErrorResponse'
+			);
+		}
+	}
 
-    /**
-     * @ignore
-     */
-    protected function _initialize($attributes)
-    {
-        $this->_attributes = $attributes;
-    }
+	public static function factory( $attributes ) {
+		$instance = new self();
+		$instance->_initialize( $attributes );
+		return $instance;
+	}
 
-    public function records()
-    {
-        return $this->_attributes['records'];
-    }
+	/**
+	 * @ignore
+	 */
+	protected function _initialize( $attributes ) {
+		$this->_attributes = $attributes;
+	}
+
+	public function records() {
+
+		return $this->_attributes['records'];
+	}
 }

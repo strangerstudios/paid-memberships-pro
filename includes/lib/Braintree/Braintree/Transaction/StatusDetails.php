@@ -20,6 +20,6 @@
  * @property-read string $user
  * @uses Braintree_Instance inherits methods
  */
-class Braintree_Transaction_StatusDetails extends Braintree_Instance
-{
+class Braintree_Transaction_StatusDetails extends Braintree_Instance {
+
 }

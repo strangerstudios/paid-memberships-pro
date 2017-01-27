@@ -1,19 +1,17 @@
 <?php
 
-	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslistcsv")))
-	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
-	}
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_memberslistcsv' )) ) {
+	die( __( 'You do not have permissions to perform this action.', 'pmpro' ) );
+}
 
-	if (!defined('PMPRO_BENCHMARK'))
-		define('PMPRO_BENCHMARK', false);
+if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
+	define( 'PMPRO_BENCHMARK', false ); }
 
-	if (PMPRO_BENCHMARK)
-	{
-		error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
-		$start_time = microtime(true);
-		$start_memory = memory_get_usage(true);
-	}
+if ( PMPRO_BENCHMARK ) {
+	error_log( str_repeat( '-', 10 ) . date_i18n( 'Y-m-d H:i:s' ) . str_repeat( '-', 10 ) );
+	$start_time = microtime( true );
+	$start_memory = memory_get_usage( true );
+}
 
 
 	/**
@@ -30,273 +28,244 @@
 	 * @since 1.8.7
 	 */
 	//set the number of users we'll load to try and protect ourselves from OOM errors
-	$max_users_per_loop = apply_filters('pmpro_set_max_user_per_export_loop', 2000);
+	$max_users_per_loop = apply_filters( 'pmpro_set_max_user_per_export_loop', 2000 );
 
 	global $wpdb;
 
 	//get users (search input field)
-	if(isset($_REQUEST['s']))
-		$s = sanitize_text_field($_REQUEST['s']);
-	else
-		$s = "";
+if ( isset( $_REQUEST['s'] ) ) {
+	$s = sanitize_text_field( $_REQUEST['s'] ); } else { 		$s = ''; }
 
 	// requested a level id
-	if(isset($_REQUEST['l']))
-		$l = sanitize_text_field($_REQUEST['l']);
-	else
-		$l = false;
+if ( isset( $_REQUEST['l'] ) ) {
+	$l = sanitize_text_field( $_REQUEST['l'] ); } else { 		$l = false; }
 
 	//some vars for the search
-	if(!empty($_REQUEST['pn']))
-		$pn = intval($_REQUEST['pn']);
-	else
-		$pn = 1;
+if ( ! empty( $_REQUEST['pn'] ) ) {
+	$pn = intval( $_REQUEST['pn'] ); } else { 		$pn = 1; }
 
-	if(!empty($_REQUEST['limit']))
-		$limit = intval($_REQUEST['limit']);
-	else
-		$limit = false;
+if ( ! empty( $_REQUEST['limit'] ) ) {
+	$limit = intval( $_REQUEST['limit'] ); } else { 		$limit = false; }
 
-	if($limit)
-	{
-		$end = $pn * $limit;
-		$start = $end - $limit;
-	}
-	else
-	{
-		$end = NULL;
-		$start = NULL;
-	}
+if ( $limit ) {
+	$end = $pn * $limit;
+	$start = $end - $limit;
+} else {
+	$end = null;
+	$start = null;
+}
 
 	$headers = array();
-	$headers[] = "Content-Type: text/csv";
-	$headers[] = "Cache-Control: max-age=0, no-cache, no-store";
-	$headers[] = "Pragma: no-cache";
-	$headers[] = "Connection: close";
+	$headers[] = 'Content-Type: text/csv';
+	$headers[] = 'Cache-Control: max-age=0, no-cache, no-store';
+	$headers[] = 'Pragma: no-cache';
+	$headers[] = 'Connection: close';
 
-	if($s && $l == "oldmembers")
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name($s) . '.csv"';
-	elseif($s && $l)
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval($l) . '_level_' . sanitize_file_name($s) . '.csv"';
-	elseif($s)
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name($s) . '.csv"';
-	elseif($l == "oldmembers")
-		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"';
-	else
-		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
+if ( $s && $l == 'oldmembers' ) {
+	$headers[] = 'Content-Disposition: attachment; filename="members_list_expired_' . sanitize_file_name( $s ) . '.csv"'; } elseif ( $s && $l ) {
+	$headers[] = 'Content-Disposition: attachment; filename="members_list_' . intval( $l ) . '_level_' . sanitize_file_name( $s ) . '.csv"'; } elseif ( $s ) {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_' . sanitize_file_name( $s ) . '.csv"'; } elseif ( $l == 'oldmembers' ) {
+		$headers[] = 'Content-Disposition: attachment; filename="members_list_expired.csv"'; } else { 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"'; }
 
-	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
+		//set default CSV file headers, using comma as delimiter
+		$csv_file_header = 'id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined';
 
-	if($l == "oldmembers")
-		$csv_file_header .= ",ended";
-	else
-		$csv_file_header .= ",expires";
+		if ( $l == 'oldmembers' ) {
+			$csv_file_header .= ',ended'; } else { 		$csv_file_header .= ',expires'; }
 
-	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
-	$default_columns = array(
-		array("theuser", "ID"),
-		array("theuser", "user_login"),
-		array("metavalues", "first_name"),
-		array("metavalues", "last_name"),
-		array("theuser", "user_email"),
-		array("metavalues", "pmpro_bfirstname"),
-		array("metavalues", "pmpro_blastname"),
-		array("metavalues", "pmpro_baddress1"),
-		array("metavalues", "pmpro_baddress2"),
-		array("metavalues", "pmpro_bcity"),
-		array("metavalues", "pmpro_bstate"),
-		array("metavalues", "pmpro_bzipcode"),
-		array("metavalues", "pmpro_bcountry"),
-		array("metavalues", "pmpro_bphone"),
-		array("theuser", "membership"),
-		array("theuser", "initial_payment"),
-		array("theuser", "billing_amount"),
-		array("theuser", "cycle_period"),
-		array("discount_code", "id"),
-		array("discount_code", "code")
+		//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
+		$default_columns = array(
+		array( 'theuser', 'ID' ),
+		array( 'theuser', 'user_login' ),
+		array( 'metavalues', 'first_name' ),
+		array( 'metavalues', 'last_name' ),
+		array( 'theuser', 'user_email' ),
+		array( 'metavalues', 'pmpro_bfirstname' ),
+		array( 'metavalues', 'pmpro_blastname' ),
+		array( 'metavalues', 'pmpro_baddress1' ),
+		array( 'metavalues', 'pmpro_baddress2' ),
+		array( 'metavalues', 'pmpro_bcity' ),
+		array( 'metavalues', 'pmpro_bstate' ),
+		array( 'metavalues', 'pmpro_bzipcode' ),
+		array( 'metavalues', 'pmpro_bcountry' ),
+		array( 'metavalues', 'pmpro_bphone' ),
+		array( 'theuser', 'membership' ),
+		array( 'theuser', 'initial_payment' ),
+		array( 'theuser', 'billing_amount' ),
+		array( 'theuser', 'cycle_period' ),
+		array( 'discount_code', 'id' ),
+		array( 'discount_code', 'code' ),
 		//joindate and enddate are handled specifically below
-	);
+		);
 
-	//filter
-	$default_columns = apply_filters("pmpro_members_list_csv_default_columns", $default_columns);
+		//filter
+		$default_columns = apply_filters( 'pmpro_members_list_csv_default_columns', $default_columns );
 
-	//set the preferred date format:
-	$dateformat = apply_filters("pmpro_memberslist_csv_dateformat","Y-m-d");
+		//set the preferred date format:
+		$dateformat = apply_filters( 'pmpro_memberslist_csv_dateformat','Y-m-d' );
 
-	//any extra columns
-	$extra_columns = apply_filters("pmpro_members_list_csv_extra_columns", array());
-	if(!empty($extra_columns))
-	{
-		foreach($extra_columns as $heading => $callback)
-		{
-			$csv_file_header .= "," . $heading;
+		//any extra columns
+		$extra_columns = apply_filters( 'pmpro_members_list_csv_extra_columns', array() );
+		if ( ! empty( $extra_columns ) ) {
+			foreach ( $extra_columns as $heading => $callback ) {
+				$csv_file_header .= ',' . $heading;
+			}
 		}
-	}
 
-	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
-	$csv_file_header .= "\n";
+		$csv_file_header = apply_filters( 'pmpro_members_list_csv_heading', $csv_file_header );
+		$csv_file_header .= "\n";
 
-	//generate SQL for list of users to process
-	$sqlQuery = "
+		//generate SQL for list of users to process
+		$sqlQuery = "
 		SELECT
 			DISTINCT u.ID
 		FROM $wpdb->users u ";
 
-	if ($s)
-		$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
+		if ( $s ) {
+			$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id "; }
 
-	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
-	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
+		$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
+		$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
 
-	$former_members = in_array($l, array( "oldmembers", "expired", "cancelled"));
-	$former_member_join = null;
+		$former_members = in_array( $l, array( 'oldmembers', 'expired', 'cancelled' ) );
+		$former_member_join = null;
 
-	if($former_members)
-	{
-		$former_member_join = "LEFT JOIN {$wpdb->pmpro_memberships_users} mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
-		$sqlQuery .= $former_member_join;
-	}
+		if ( $former_members ) {
+			$former_member_join = "LEFT JOIN {$wpdb->pmpro_memberships_users} mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
+			$sqlQuery .= $former_member_join;
+		}
 
-	$sqlQuery .= "WHERE mu.membership_id > 0 ";
+		$sqlQuery .= 'WHERE mu.membership_id > 0 ';
 
-	// looking for a specific user
-	if($s)
-		$sqlQuery .= "AND (u.user_login LIKE '%". esc_sql($s) ."%' OR u.user_email LIKE '%". esc_sql($s) ."%' OR um.meta_value LIKE '%". esc_sql($s) ."%') ";
+		// looking for a specific user
+		if ( $s ) {
+			$sqlQuery .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%') "; }
 
-	// if ($former_members)
+		// if ($former_members)
 		// $sqlQuery .= "AND mu2.status = 'active' ";
 
-	$filter = null;
+		$filter = null;
 
-	//records where the user is NOT an active member
-	//if $l == "oldmembers"
-	$filter = ($l == "oldmembers" ? " AND mu.status <> 'active' AND mu2.status IS NULL " : $filter);
+		//records where the user is NOT an active member
+		//if $l == "oldmembers"
+		$filter = ($l == 'oldmembers' ? " AND mu.status <> 'active' AND mu2.status IS NULL " : $filter);
 
-	// prepare the status to use in the filter
-	//           elseif ($l == "expired")                elseif ($l == "cancelled")
-	$f_status = ($l == "expired" ? array( 'expired' ) : ( $l == "cancelled" ? array('cancelled', 'admin_cancelled') : null));
+		// prepare the status to use in the filter
+		//           elseif ($l == "expired")                elseif ($l == "cancelled")
+		$f_status = ($l == 'expired' ? array( 'expired' ) : ( $l == 'cancelled' ? array( 'cancelled', 'admin_cancelled' ) : null));
 
-	//records where the user is expired or cancelled
-	$filter = ( ($l == "expired" || $l == "cancelled") && is_null($filter)) ? "AND mu.status IN ('" . implode("','", $f_status) . "') AND mu2.status IS NULL " : $filter;
+		//records where the user is expired or cancelled
+		$filter = ( ($l == 'expired' || $l == 'cancelled') && is_null( $filter )) ? "AND mu.status IN ('" . implode( "','", $f_status ) . "') AND mu2.status IS NULL " : $filter;
 
-	//records for active users with the requested membership level
-	// elseif($l)
-	$filter = ( (is_null($filter) && is_numeric($l)) ? " AND mu.status = 'active' AND mu.membership_id = " . esc_sql($l) . " " : $filter);
+		//records for active users with the requested membership level
+		// elseif($l)
+		$filter = ( (is_null( $filter ) && is_numeric( $l )) ? " AND mu.status = 'active' AND mu.membership_id = " . esc_sql( $l ) . ' ' : $filter);
 
-	//any active users
-	// else
-	$filter = (is_null($filter) ? " AND mu.status = 'active' " : $filter);
+		//any active users
+		// else
+		$filter = (is_null( $filter ) ? " AND mu.status = 'active' " : $filter);
 
-	//add the filter
-	$sqlQuery .= $filter;
+		//add the filter
+		$sqlQuery .= $filter;
 
-	//process based on limit value(s).
-	$sqlQuery .= "ORDER BY u.ID ";
+		//process based on limit value(s).
+		$sqlQuery .= 'ORDER BY u.ID ';
 
-	if(!empty($limit))
-		$sqlQuery .= "LIMIT {$start}, {$limit}";
+		if ( ! empty( $limit ) ) {
+			$sqlQuery .= "LIMIT {$start}, {$limit}"; }
 
-	/**
+		/**
 	* Filter to change/manipulate the SQL for the list of members export
 	* @since v1.9.0    Re-introduced
 	*/
-	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
+		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
 
-	// Generate a temporary file to store the data in.
-	$tmp_dir = sys_get_temp_dir();
-	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
+		// Generate a temporary file to store the data in.
+		$tmp_dir = sys_get_temp_dir();
+		$filename = tempnam( $tmp_dir, 'pmpro_ml_' );
 
-	// open in append mode
-	$csv_fh = fopen($filename, 'a');
+		// open in append mode
+		$csv_fh = fopen( $filename, 'a' );
 
-	//write the CSV header to the file
-	fprintf($csv_fh, '%s', $csv_file_header );
+		//write the CSV header to the file
+		fprintf( $csv_fh, '%s', $csv_file_header );
 
-	//get users
-	$theusers = $wpdb->get_col($sqlQuery);
+		//get users
+		$theusers = $wpdb->get_col( $sqlQuery );
 
-	//if no records just transmit file with only CSV header as content
-	if (empty($theusers)) {
+		//if no records just transmit file with only CSV header as content
+		if ( empty( $theusers ) ) {
 
-		// send the data to the remote browser
-		pmpro_transmit_content($csv_fh, $filename, $headers);
-	}
-
-	$users_found = count($theusers);
-
-	if (PMPRO_BENCHMARK)
-	{
-		$pre_action_time = microtime(true);
-		$pre_action_memory = memory_get_usage(true);
-	}
-
-	do_action('pmpro_before_members_list_csv_export', $theusers);
-
-	$i_start = 0;
-	$i_limit = 0;
-	$iterations = 1;
-
-	$csvoutput = array();
-
-	if($users_found >= $max_users_per_loop)
-	{
-		$iterations = ceil($users_found / $max_users_per_loop);
-		$i_limit = $max_users_per_loop;
-	}
-
-	$end = 0;
-	$time_limit = ini_get('max_execution_time');
-
-	if (PMPRO_BENCHMARK)
-	{
-		error_log("PMPRO_BENCHMARK - Total records to process: {$users_found}");
-		error_log("PMPRO_BENCHMARK - Will process {$iterations} iterations of max {$max_users_per_loop} records per iteration.");
-		$pre_iteration_time = microtime(true);
-		$pre_iteration_memory = memory_get_usage(true);
-	}
-
-	//to manage memory footprint, we'll iterate through the membership list multiple times
-	for ( $ic = 1 ; $ic <= $iterations ; $ic++ ) {
-
-		if (PMPRO_BENCHMARK)
-		{
-			$start_iteration_time = microtime(true);
-			$start_iteration_memory = memory_get_usage(true);
+			// send the data to the remote browser
+			pmpro_transmit_content( $csv_fh, $filename, $headers );
 		}
 
-		//make sure we don't timeout
-		if ($end != 0) {
+		$users_found = count( $theusers );
 
-			$iteration_diff = $end - $start;
-			$new_time_limit = ceil($iteration_diff*$iterations * 1.2);
+		if ( PMPRO_BENCHMARK ) {
+			$pre_action_time = microtime( true );
+			$pre_action_memory = memory_get_usage( true );
+		}
 
-			if ($time_limit < $new_time_limit )
-			{
-				$time_limit = $new_time_limit;
-				set_time_limit( $time_limit );
+		do_action( 'pmpro_before_members_list_csv_export', $theusers );
+
+		$i_start = 0;
+		$i_limit = 0;
+		$iterations = 1;
+
+		$csvoutput = array();
+
+		if ( $users_found >= $max_users_per_loop ) {
+			$iterations = ceil( $users_found / $max_users_per_loop );
+			$i_limit = $max_users_per_loop;
+		}
+
+		$end = 0;
+		$time_limit = ini_get( 'max_execution_time' );
+
+		if ( PMPRO_BENCHMARK ) {
+			error_log( "PMPRO_BENCHMARK - Total records to process: {$users_found}" );
+			error_log( "PMPRO_BENCHMARK - Will process {$iterations} iterations of max {$max_users_per_loop} records per iteration." );
+			$pre_iteration_time = microtime( true );
+			$pre_iteration_memory = memory_get_usage( true );
+		}
+
+		//to manage memory footprint, we'll iterate through the membership list multiple times
+		for ( $ic = 1 ; $ic <= $iterations ; $ic++ ) {
+
+			if ( PMPRO_BENCHMARK ) {
+				$start_iteration_time = microtime( true );
+				$start_iteration_memory = memory_get_usage( true );
 			}
-		}
 
-		$start = current_time('timestamp');
+			//make sure we don't timeout
+			if ( $end != 0 ) {
 
-		// get first and last user ID to use
-		$first_uid = $theusers[$i_start];
+				$iteration_diff = $end - $start;
+				$new_time_limit = ceil( $iteration_diff * $iterations * 1.2 );
 
-		//get last UID, will depend on which iteration we're on.
-		if ( $ic != $iterations )
-			$last_uid = $theusers[($i_start + ( $max_users_per_loop - 1))];
-		else
-			// Final iteration, so last UID is the last record in the users array
-			$last_uid = $theusers[($users_found - 1)];
+				if ( $time_limit < $new_time_limit ) {
+					$time_limit = $new_time_limit;
+					set_time_limit( $time_limit );
+				}
+			}
 
-		//increment starting position
-		if(0 < $iterations)
-		{
-			$i_start += $max_users_per_loop;
-		}
+			$start = current_time( 'timestamp' );
 
-		$userSql = $wpdb->prepare("
+			// get first and last user ID to use
+			$first_uid = $theusers[ $i_start ];
+
+			//get last UID, will depend on which iteration we're on.
+			if ( $ic != $iterations ) {
+				$last_uid = $theusers[ ($i_start + ( $max_users_per_loop - 1)) ]; } else { 			// Final iteration, so last UID is the last record in the users array
+				$last_uid = $theusers[ ($users_found - 1) ]; }
+
+				//increment starting position
+				if ( 0 < $iterations ) {
+					$i_start += $max_users_per_loop;
+				}
+
+				$userSql = $wpdb->prepare("
 	        SELECT
 				DISTINCT u.ID,
 				u.user_login,
@@ -322,43 +291,42 @@
 			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter}
 			-- GROUP BY u.ID
 			ORDER BY u.ID",
-				$first_uid,
-				$last_uid
-		);
+					$first_uid,
+					$last_uid
+				);
 
-		// TODO: Only return the latest record for the user(s) current (and prior) levels IDs?
+				// TODO: Only return the latest record for the user(s) current (and prior) levels IDs?
 
-		$usr_data = $wpdb->get_results($userSql);
-		$userSql = null;
+				$usr_data = $wpdb->get_results( $userSql );
+				$userSql = null;
 
-		if (PMPRO_BENCHMARK)
-		{
-			$pre_userdata_time = microtime(true);
-			$pre_userdata_memory = memory_get_usage(true);
-		}
+				if ( PMPRO_BENCHMARK ) {
+					$pre_userdata_time = microtime( true );
+					$pre_userdata_memory = memory_get_usage( true );
+				}
 
-		// process the actual data we want to export
-		foreach($usr_data as $theuser) {
+				// process the actual data we want to export
+				foreach ( $usr_data as $theuser ) {
 
-			$csvoutput = array();
+					$csvoutput = array();
 
-			//process usermeta
-			$metavalues = new stdClass();
+					//process usermeta
+					$metavalues = new stdClass();
 
-			 // Returns array of meta keys containing array(s) of metavalues.
-			$um_values = get_user_meta($theuser->ID);
+					 // Returns array of meta keys containing array(s) of metavalues.
+					$um_values = get_user_meta( $theuser->ID );
 
-			foreach( $um_values as $key => $value ) {
+					foreach ( $um_values as $key => $value ) {
 
-				$metavalues->{$key} = $value[0];
-			}
+						$metavalues->{$key} = $value[0];
+					}
 
-			$theuser->metavalues = $metavalues;
+					$theuser->metavalues = $metavalues;
 
-			$um_values = null;
+					$um_values = null;
 
-			//grab discount code info
-			$disSql = $wpdb->prepare("
+					//grab discount code info
+					$disSql = $wpdb->prepare("
 				SELECT
 					c.id,
 					c.code
@@ -367,193 +335,174 @@
 				WHERE cu.user_id = %d
 				ORDER BY c.id DESC
 				LIMIT 1",
-				$theuser->ID
-			);
+						$theuser->ID
+					);
 
-			$discount_code = $wpdb->get_row($disSql);
+					$discount_code = $wpdb->get_row( $disSql );
 
-			//make sure there's data for the discount code info
-			if (empty($discount_code))
-			{
-				$empty_dc = new stdClass();
-				$empty_dc->id = '';
-				$empty_dc->code = '';
-				$discount_code = $empty_dc;
-			}
+					//make sure there's data for the discount code info
+					if ( empty( $discount_code ) ) {
+						$empty_dc = new stdClass();
+						$empty_dc->id = '';
+						$empty_dc->code = '';
+						$discount_code = $empty_dc;
+					}
 
-			unset($disSql);
+					unset( $disSql );
 
-			//default columns
-			if(!empty($default_columns))
-			{
-				$count = 0;
-				foreach($default_columns as $col)
-				{
-					//checking $object->property. note the double $$
-					$val = isset(${$col[0]}->{$col[1]}) ? ${$col[0]}->{$col[1]} : null;
-					array_push($csvoutput, pmpro_enclose($val));	//output the value
+					//default columns
+					if ( ! empty( $default_columns ) ) {
+						$count = 0;
+						foreach ( $default_columns as $col ) {
+							//checking $object->property. note the double $$
+							$val = isset( ${$col[0]}->{$col[1]} ) ? ${$col[0]}->{$col[1]} : null;
+							array_push( $csvoutput, pmpro_enclose( $val ) );	//output the value
+						}
+					}
+
+					//joindate and enddate
+					array_push( $csvoutput, pmpro_enclose( date( $dateformat, $theuser->joindate ) ) );
+
+					if ( $theuser->membership_id ) {
+						if ( $theuser->enddate ) {
+							array_push( $csvoutput, pmpro_enclose( apply_filters( 'pmpro_memberslist_expires_column', date_i18n( $dateformat, $theuser->enddate ), $theuser ) ) ); } else { 					array_push( $csvoutput, pmpro_enclose( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $theuser ) ) ); }
+					} elseif ( $l == 'oldmembers' && $theuser->enddate ) {
+						array_push( $csvoutput, pmpro_enclose( date( $dateformat, $theuser->enddate ) ) );
+					} else { 				array_push( $csvoutput, 'N/A' ); }
+
+					//any extra columns
+					if ( ! empty( $extra_columns ) ) {
+						foreach ( $extra_columns as $heading => $callback ) {
+							$val = call_user_func( $callback, $theuser, $heading );
+							$val = ! empty( $val ) ? $val : null;
+							array_push( $csvoutput, pmpro_enclose( $val ) );
+						}
+					}
+
+					//free memory for user records
+					$metavalues = null;
+					$discount_code = null;
+					$theuser = null;
+
+					// $csvoutput .= "\n";
+					$line = implode( ',', $csvoutput ) . "\n";
+
+					fprintf( $csv_fh, '%s', $line );
+
+					//reset
+					$line = null;
+					$csvoutput = null;
+				} // end of foreach usr_data
+
+				if ( PMPRO_BENCHMARK ) {
+					$end_of_iteration_time = microtime( true );
+					$end_of_iteration_memory = memory_get_usage( true );
 				}
-			}
 
-			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->joindate)));
+				//keep memory consumption low(ish)
+				wp_cache_flush();
 
-			if($theuser->membership_id)
-			{
-				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
-				else
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
-			}
-			elseif($l == "oldmembers" && $theuser->enddate)
-			{
-				array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->enddate)));
-			}
-			else
-				array_push($csvoutput, "N/A");
+				if ( PMPRO_BENCHMARK ) {
+					$after_flush_time = microtime( true );
+					$after_flush_memory = memory_get_usage( true );
 
-			//any extra columns
-			if(!empty($extra_columns))
-			{
-				foreach($extra_columns as $heading => $callback)
-				{
-					$val = call_user_func($callback, $theuser, $heading);
-					$val = !empty($val) ? $val : null;
-					array_push( $csvoutput, pmpro_enclose($val) );
+					$time_in_iteration = $end_of_iteration_time - $start_iteration_time;
+					$time_flushing = $after_flush_time - $end_of_iteration_time;
+					$userdata_time = $end_of_iteration_time - $pre_userdata_time;
+
+					list($iteration_sec, $iteration_usec) = explode( '.', $time_in_iteration );
+					list($udata_sec, $udata_usec) = explode( '.', $userdata_time );
+					list($flush_sec, $flush_usec) = explode( '.', $time_flushing );
+
+					$memory_used = $end_of_iteration_memory - $start_iteration_memory;
+
+					error_log( "PMPRO_BENCHMARK - For iteration #{$ic} of {$iterations} - Records processed: " . count( $usr_data ) );
+					error_log( "PMPRO_BENCHMARK - \tTime processing whole iteration: " . date_i18n( 'H:i:s', $iteration_sec ) . ".{$iteration_sec}" );
+					error_log( "PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date_i18n( 'H:i:s', $udata_sec ) . ".{$udata_sec}" );
+					error_log( "PMPRO_BENCHMARK - \tTime flushing cache: " . date_i18n( 'H:i:s', $flush_sec ) . ".{$flush_usec}" );
+					error_log( "PMPRO_BENCHMARK - \tAdditional memory used during iteration: " . number_format( $memory_used, 2, '.', ',' ) . ' bytes' );
 				}
-			}
 
-			//free memory for user records
-			$metavalues = null;
-			$discount_code = null;
-			$theuser = null;
+				//need to increase max running time?
+				$end = current_time( 'timestamp' );
 
-			// $csvoutput .= "\n";
-			$line = implode(',', $csvoutput) . "\n";
+		} // end of foreach iteration
 
-			fprintf($csv_fh, "%s", $line);
+		if ( PMPRO_BENCHMARK ) {
+			$after_data_time = microtime( true );
+			$after_data_memory = memory_get_peak_usage( true );
 
-			//reset
-			$line = null;
-			$csvoutput = null;
-		} // end of foreach usr_data
+			$time_processing_data = $after_data_time - $start_time;
+			$memory_processing_data = $after_data_memory - $start_memory;
 
-		if (PMPRO_BENCHMARK)
-		{
-			$end_of_iteration_time = microtime(true);
-			$end_of_iteration_memory = memory_get_usage(true);
+			list($sec, $usec) = explode( '.', $time_processing_data );
+
+			error_log( "PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds" );
+			error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 		}
 
-		//keep memory consumption low(ish)
-		wp_cache_flush();
+		// free memory
+		$usr_data = null;
 
-		if (PMPRO_BENCHMARK)
-		{
-			$after_flush_time = microtime(true);
-			$after_flush_memory = memory_get_usage(true);
+		// send the data to the remote browser
+		pmpro_transmit_content( $csv_fh, $filename, $headers );
 
-			$time_in_iteration = $end_of_iteration_time - $start_iteration_time;
-			$time_flushing = $after_flush_time - $end_of_iteration_time;
-			$userdata_time = $end_of_iteration_time - $pre_userdata_time;
-
-			list($iteration_sec, $iteration_usec) = explode('.', $time_in_iteration);
-			list($udata_sec, $udata_usec) = explode('.', $userdata_time);
-			list($flush_sec, $flush_usec) = explode('.', $time_flushing);
-
-			$memory_used = $end_of_iteration_memory - $start_iteration_memory;
-
-			error_log("PMPRO_BENCHMARK - For iteration #{$ic} of {$iterations} - Records processed: " . count($usr_data));
-			error_log("PMPRO_BENCHMARK - \tTime processing whole iteration: " . date_i18n("H:i:s", $iteration_sec) . ".{$iteration_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date_i18n("H:i:s", $udata_sec) . ".{$udata_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime flushing cache: " . date_i18n("H:i:s", $flush_sec) . ".{$flush_usec}");
-			error_log("PMPRO_BENCHMARK - \tAdditional memory used during iteration: ".number_format($memory_used, 2, '.', ',') . " bytes");
-		}
-
-		//need to increase max running time?
-		$end = current_time('timestamp');
-
-	} // end of foreach iteration
-
-	if (PMPRO_BENCHMARK)
-	{
-		$after_data_time = microtime(true);
-		$after_data_memory = memory_get_peak_usage(true);
-
-		$time_processing_data = $after_data_time - $start_time;
-		$memory_processing_data = $after_data_memory - $start_memory;
-
-		list($sec, $usec) = explode('.', $time_processing_data);
-
-		error_log("PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds");
-		error_log("PMPRO_BENCHMARK - Peak memory usage: " . number_format($memory_processing_data, false, '.', ',') . " bytes");
-	}
-
-	// free memory
-	$usr_data = null;
-
-	// send the data to the remote browser
-	pmpro_transmit_content($csv_fh, $filename, $headers);
-
-	exit;
-
-	function pmpro_enclose($s)
-	{
-		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
-	}
-
-	// responsible for trasnmitting content of file to remote browser
-	function pmpro_transmit_content( $csv_fh, $filename, $headers = array() ) {
-
-		//close the temp file
-		fclose($csv_fh);
-
-		if (version_compare(phpversion(), '5.3.0', '>')) {
-
-			//make sure we get the right file size
-			clearstatcache( true, $filename );
-		} else {
-			// for any PHP version prior to v5.3.0
-			clearstatcache();
-		}
-
-		//did we accidentally send errors/warnings to browser?
-		if (headers_sent())
-		{
-			echo str_repeat('-', 75) . "<br/>\n";
-			echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
-			echo 'the <a href="http://paidmembershipspro.com/support/" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-			echo str_repeat("=", 75) . "<br/>\n";
-			echo file_get_contents($filename);
-			echo str_repeat("=", 75) . "<br/>\n";
-		}
-
-		//transmission
-		if (! empty($headers) )
-		{
-			//set the download size
-			$headers[] = "Content-Length: " . filesize($filename);
-
-			//set headers
-			foreach($headers as $header)
-			{
-				header($header . "\r\n");
-			}
-
-			// disable compression for the duration of file download
-			if(ini_get('zlib.output_compression')){
-				ini_set('zlib.output_compression', 'Off');
-			}
-
-			// open and send the file contents to the remote location
-			$fh = fopen( $filename, 'rb' );
-			fpassthru($fh);
-			fclose($fh);
-
-			// remove the temp file
-			unlink($filename);
-		}
-
-		//allow user to clean up after themselves
-		do_action('pmpro_after_members_list_csv_export');
 		exit;
-	}
+
+		function pmpro_enclose( $s ) {
+			return '"' . str_replace( '"', '\\"', $s ) . '"';
+		}
+
+		// responsible for trasnmitting content of file to remote browser
+		function pmpro_transmit_content( $csv_fh, $filename, $headers = array() ) {
+
+			//close the temp file
+			fclose( $csv_fh );
+
+			if ( version_compare( phpversion(), '5.3.0', '>' ) ) {
+
+				//make sure we get the right file size
+				clearstatcache( true, $filename );
+			} else {
+				// for any PHP version prior to v5.3.0
+				clearstatcache();
+			}
+
+			//did we accidentally send errors/warnings to browser?
+			if ( headers_sent() ) {
+				echo str_repeat( '-', 75 ) . "<br/>\n";
+				echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
+				echo 'the <a href="http://paidmembershipspro.com/support/" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
+				echo str_repeat( '=', 75 ) . "<br/>\n";
+				echo file_get_contents( $filename );
+				echo str_repeat( '=', 75 ) . "<br/>\n";
+			}
+
+			//transmission
+			if ( ! empty( $headers ) ) {
+				//set the download size
+				$headers[] = 'Content-Length: ' . filesize( $filename );
+
+				//set headers
+				foreach ( $headers as $header ) {
+					header( $header . "\r\n" );
+				}
+
+				// disable compression for the duration of file download
+				if ( ini_get( 'zlib.output_compression' ) ) {
+					ini_set( 'zlib.output_compression', 'Off' );
+				}
+
+				// open and send the file contents to the remote location
+				$fh = fopen( $filename, 'rb' );
+				fpassthru( $fh );
+				fclose( $fh );
+
+				// remove the temp file
+				unlink( $filename );
+			}
+
+			//allow user to clean up after themselves
+			do_action( 'pmpro_after_members_list_csv_export' );
+			exit;
+		}

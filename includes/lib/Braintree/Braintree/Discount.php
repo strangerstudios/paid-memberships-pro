@@ -1,15 +1,15 @@
 <?php
-class Braintree_Discount extends Braintree_Modification
-{
-    public static function all()
-    {
-        $response = Braintree_Http::get('/discounts');
+class Braintree_Discount extends Braintree_Modification {
 
-        $discounts = array("discount" => $response['discounts']);
+	public static function all() {
 
-        return Braintree_Util::extractAttributeAsArray(
-            $discounts,
-            'discount'
-        );
-    }
+		$response = Braintree_Http::get( '/discounts' );
+
+		$discounts = array( 'discount' => $response['discounts'] );
+
+		return Braintree_Util::extractAttributeAsArray(
+			$discounts,
+			'discount'
+		);
+	}
 }

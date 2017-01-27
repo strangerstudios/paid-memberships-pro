@@ -26,18 +26,17 @@
  * @property-read string $token
  * @uses Braintree_Instance inherits methods
  */
-class Braintree_Transaction_CreditCardDetails extends Braintree_Instance
-{
-    protected $_attributes = array();
+class Braintree_Transaction_CreditCardDetails extends Braintree_Instance {
 
-    /**
-     * @ignore
-     */
-    public function __construct($attributes)
-    {
-        parent::__construct($attributes);
-        $this->_attributes['expirationDate'] = $this->expirationMonth . '/' . $this->expirationYear;
-        $this->_attributes['maskedNumber'] = $this->bin . '******' . $this->last4;
+	protected $_attributes = array();
 
-    }
+	/**
+	 * @ignore
+	 */
+	public function __construct( $attributes ) {
+		parent::__construct( $attributes );
+		$this->_attributes['expirationDate'] = $this->expirationMonth . '/' . $this->expirationYear;
+		$this->_attributes['maskedNumber'] = $this->bin . '******' . $this->last4;
+
+	}
 }

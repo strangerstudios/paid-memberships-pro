@@ -1,4 +1,4 @@
 <?php
-class Braintree_Descriptor extends Braintree_Instance
-{
+class Braintree_Descriptor extends Braintree_Instance {
+
 }

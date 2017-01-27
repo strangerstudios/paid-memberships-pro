@@ -1,41 +1,38 @@
 <?php
-class Braintree_CreditCardVerification extends Braintree_Result_CreditCardVerification
-{
-    public static function factory($attributes)
-    {
-        $instance = new self($attributes);
-        return $instance;
-    }
+class Braintree_CreditCardVerification extends Braintree_Result_CreditCardVerification {
 
-    public static function fetch($query, $ids)
-    {
-        $criteria = array();
-        foreach ($query as $term) {
-            $criteria[$term->name] = $term->toparam();
-        }
-        $criteria["ids"] = Braintree_CreditCardVerificationSearch::ids()->in($ids)->toparam();
-        $response = braintree_http::post('/verifications/advanced_search', array('search' => $criteria));
+	public static function factory( $attributes ) {
+		$instance = new self( $attributes );
+		return $instance;
+	}
 
-        return braintree_util::extractattributeasarray(
-            $response['creditCardVerifications'],
-            'verification'
-        );
-    }
+	public static function fetch( $query, $ids ) {
+		$criteria = array();
+		foreach ( $query as $term ) {
+			$criteria[ $term->name ] = $term->toparam();
+		}
+		$criteria['ids'] = Braintree_CreditCardVerificationSearch::ids()->in( $ids )->toparam();
+		$response = braintree_http::post( '/verifications/advanced_search', array( 'search' => $criteria ) );
 
-    public static function search($query)
-    {
-        $criteria = array();
-        foreach ($query as $term) {
-            $criteria[$term->name] = $term->toparam();
-        }
+		return braintree_util::extractattributeasarray(
+			$response['creditCardVerifications'],
+			'verification'
+		);
+	}
 
-        $response = braintree_http::post('/verifications/advanced_search_ids', array('search' => $criteria));
-        $pager = array(
-            'className' => __CLASS__,
-            'classMethod' => 'fetch',
-            'methodArgs' => array($query)
-            );
+	public static function search( $query ) {
+		$criteria = array();
+		foreach ( $query as $term ) {
+			$criteria[ $term->name ] = $term->toparam();
+		}
 
-        return new Braintree_ResourceCollection($response, $pager);
-    }
+		$response = braintree_http::post( '/verifications/advanced_search_ids', array( 'search' => $criteria ) );
+		$pager = array(
+			'className' => __CLASS__,
+			'classMethod' => 'fetch',
+			'methodArgs' => array( $query ),
+			);
+
+		return new Braintree_ResourceCollection( $response, $pager );
+	}
 }

@@ -17,29 +17,29 @@ $pmpro_required_user_fields    = array();
 if ( ! empty( $_REQUEST['gateway'] ) ) {
 	$gateway = $_REQUEST['gateway'];
 } elseif ( ! empty( $_REQUEST['review'] ) ) {
-	$gateway = "paypalexpress";
+	$gateway = 'paypalexpress';
 } else {
-	$gateway = pmpro_getOption( "gateway" );
+	$gateway = pmpro_getOption( 'gateway' );
 }
 
 //set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-if ( pmpro_getOption( "gateway", true ) == "paypal" ) {
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( "paypal", "paypalexpress" ) );
+if ( pmpro_getOption( 'gateway', true ) == 'paypal' ) {
+	$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) );
 } else {
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( pmpro_getOption( "gateway", true ) ) );
+	$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( pmpro_getOption( 'gateway', true ) ) );
 }
 
 //let's add an error now, if an invalid gateway is set
 if ( ! in_array( $gateway, $valid_gateways ) ) {
-	$pmpro_msg  = __( "Invalid gateway.", 'pmpro' );
-	$pmpro_msgt = "pmpro_error";
+	$pmpro_msg  = __( 'Invalid gateway.', 'pmpro' );
+	$pmpro_msgt = 'pmpro_error';
 }
 
 //what level are they purchasing? (discount code passed)
 $pmpro_level = pmpro_getLevelAtCheckout();
 
 if ( empty( $pmpro_level->id ) ) {
-	wp_redirect( pmpro_url( "levels" ) );
+	wp_redirect( pmpro_url( 'levels' ) );
 	exit( 0 );
 }
 
@@ -51,12 +51,12 @@ global $wpdb, $current_user, $pmpro_requirebilling;
 
 if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	//require billing and ssl
-	$pagetitle            = __( "Checkout: Payment Information", 'pmpro' );
+	$pagetitle            = __( 'Checkout: Payment Information', 'pmpro' );
 	$pmpro_requirebilling = true;
-	$besecure             = pmpro_getOption( "use_ssl" );
+	$besecure             = pmpro_getOption( 'use_ssl' );
 } else {
 	//no payment so we don't need ssl
-	$pagetitle            = __( "Set Up Your Account", 'pmpro' );
+	$pagetitle            = __( 'Set Up Your Account', 'pmpro' );
 	$pmpro_requirebilling = false;
 	$besecure             = false;
 }
@@ -79,7 +79,7 @@ if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
 } else {
 	$pmpro_show_discount_code = false;
 }
-$pmpro_show_discount_code = apply_filters( "pmpro_show_discount_code", $pmpro_show_discount_code );
+$pmpro_show_discount_code = apply_filters( 'pmpro_show_discount_code', $pmpro_show_discount_code );
 
 //by default we show the account fields if the user isn't logged in
 if ( $current_user->ID ) {
@@ -88,11 +88,11 @@ if ( $current_user->ID ) {
 	$skip_account_fields = false;
 }
 //in case people want to have an account created automatically
-$skip_account_fields = apply_filters( "pmpro_skip_account_fields", $skip_account_fields, $current_user );
+$skip_account_fields = apply_filters( 'pmpro_skip_account_fields', $skip_account_fields, $current_user );
 
 //some options
 global $tospage;
-$tospage = pmpro_getOption( "tospage" );
+$tospage = pmpro_getOption( 'tospage' );
 if ( $tospage ) {
 	$tospage = get_post( $tospage );
 }
@@ -103,17 +103,17 @@ global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $b
 if ( isset( $_REQUEST['order_id'] ) ) {
 	$order_id = intval( $_REQUEST['order_id'] );
 } else {
-	$order_id = "";
+	$order_id = '';
 }
 if ( isset( $_REQUEST['bfirstname'] ) ) {
 	$bfirstname = sanitize_text_field( stripslashes( $_REQUEST['bfirstname'] ) );
 } else {
-	$bfirstname = "";
+	$bfirstname = '';
 }
 if ( isset( $_REQUEST['blastname'] ) ) {
 	$blastname = sanitize_text_field( stripslashes( $_REQUEST['blastname'] ) );
 } else {
-	$blastname = "";
+	$blastname = '';
 }
 if ( isset( $_REQUEST['fullname'] ) ) {
 	$fullname = $_REQUEST['fullname'];
@@ -121,23 +121,23 @@ if ( isset( $_REQUEST['fullname'] ) ) {
 if ( isset( $_REQUEST['baddress1'] ) ) {
 	$baddress1 = sanitize_text_field( stripslashes( $_REQUEST['baddress1'] ) );
 } else {
-	$baddress1 = "";
+	$baddress1 = '';
 }
 if ( isset( $_REQUEST['baddress2'] ) ) {
 	$baddress2 = sanitize_text_field( stripslashes( $_REQUEST['baddress2'] ) );
 } else {
-	$baddress2 = "";
+	$baddress2 = '';
 }
 if ( isset( $_REQUEST['bcity'] ) ) {
 	$bcity = sanitize_text_field( stripslashes( $_REQUEST['bcity'] ) );
 } else {
-	$bcity = "";
+	$bcity = '';
 }
 
 if ( isset( $_REQUEST['bstate'] ) ) {
 	$bstate = sanitize_text_field( stripslashes( $_REQUEST['bstate'] ) );
 } else {
-	$bstate = "";
+	$bstate = '';
 }
 
 //convert long state names to abbreviations
@@ -154,24 +154,24 @@ if ( ! empty( $bstate ) ) {
 if ( isset( $_REQUEST['bzipcode'] ) ) {
 	$bzipcode = sanitize_text_field( stripslashes( $_REQUEST['bzipcode'] ) );
 } else {
-	$bzipcode = "";
+	$bzipcode = '';
 }
 if ( isset( $_REQUEST['bcountry'] ) ) {
 	$bcountry = sanitize_text_field( stripslashes( $_REQUEST['bcountry'] ) );
 } else {
-	$bcountry = "";
+	$bcountry = '';
 }
 if ( isset( $_REQUEST['bphone'] ) ) {
 	$bphone = sanitize_text_field( stripslashes( $_REQUEST['bphone'] ) );
 } else {
-	$bphone = "";
+	$bphone = '';
 }
-if ( isset ( $_REQUEST['bemail'] ) ) {
+if ( isset( $_REQUEST['bemail'] ) ) {
 	$bemail = sanitize_email( stripslashes( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
 } else {
-	$bemail = "";
+	$bemail = '';
 }
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
@@ -180,62 +180,62 @@ if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
 } else {
-	$bconfirmemail = "";
+	$bconfirmemail = '';
 }
 
 if ( isset( $_REQUEST['CardType'] ) && ! empty( $_REQUEST['AccountNumber'] ) ) {
 	$CardType = sanitize_text_field( $_REQUEST['CardType'] );
 } else {
-	$CardType = "";
+	$CardType = '';
 }
 if ( isset( $_REQUEST['AccountNumber'] ) ) {
 	$AccountNumber = sanitize_text_field( $_REQUEST['AccountNumber'] );
 } else {
-	$AccountNumber = "";
+	$AccountNumber = '';
 }
 
 if ( isset( $_REQUEST['ExpirationMonth'] ) ) {
 	$ExpirationMonth = sanitize_text_field( $_REQUEST['ExpirationMonth'] );
 } else {
-	$ExpirationMonth = "";
+	$ExpirationMonth = '';
 }
 if ( isset( $_REQUEST['ExpirationYear'] ) ) {
 	$ExpirationYear = sanitize_text_field( $_REQUEST['ExpirationYear'] );
 } else {
-	$ExpirationYear = "";
+	$ExpirationYear = '';
 }
 if ( isset( $_REQUEST['CVV'] ) ) {
 	$CVV = sanitize_text_field( $_REQUEST['CVV'] );
 } else {
-	$CVV = "";
+	$CVV = '';
 }
 
 if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
 } else {
-	$discount_code = "";
+	$discount_code = '';
 }
 if ( isset( $_REQUEST['username'] ) ) {
 	$username = sanitize_user( $_REQUEST['username'] );
 } else {
-	$username = "";
+	$username = '';
 }
 if ( isset( $_REQUEST['password'] ) ) {
 	$password = $_REQUEST['password'];
 } else {
-	$password = "";
+	$password = '';
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
 } elseif ( isset( $_REQUEST['password2'] ) ) {
 	$password2 = $_REQUEST['password2'];
 } else {
-	$password2 = "";
+	$password2 = '';
 }
 if ( isset( $_REQUEST['tos'] ) ) {
 	$tos = intval( $_REQUEST['tos'] );
 } else {
-	$tos = "";
+	$tos = '';
 }
 
 //_x stuff in case they clicked on the image button with their mouse
@@ -245,7 +245,7 @@ if ( isset( $_REQUEST['submit-checkout'] ) ) {
 if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
 	$submit = $_REQUEST['submit-checkout_x'];
 }
-if ( isset( $submit ) && $submit === "0" ) {
+if ( isset( $submit ) && $submit === '0' ) {
 	$submit = true;
 } elseif ( ! isset( $submit ) ) {
 	$submit = false;
@@ -253,40 +253,40 @@ if ( isset( $submit ) && $submit === "0" ) {
 
 //require fields
 $pmpro_required_billing_fields = array(
-	"bfirstname"      => $bfirstname,
-	"blastname"       => $blastname,
-	"baddress1"       => $baddress1,
-	"bcity"           => $bcity,
-	"bstate"          => $bstate,
-	"bzipcode"        => $bzipcode,
-	"bphone"          => $bphone,
-	"bemail"          => $bemail,
-	"bcountry"        => $bcountry,
-	"CardType"        => $CardType,
-	"AccountNumber"   => $AccountNumber,
-	"ExpirationMonth" => $ExpirationMonth,
-	"ExpirationYear"  => $ExpirationYear,
-	"CVV"             => $CVV
+	'bfirstname'      => $bfirstname,
+	'blastname'       => $blastname,
+	'baddress1'       => $baddress1,
+	'bcity'           => $bcity,
+	'bstate'          => $bstate,
+	'bzipcode'        => $bzipcode,
+	'bphone'          => $bphone,
+	'bemail'          => $bemail,
+	'bcountry'        => $bcountry,
+	'CardType'        => $CardType,
+	'AccountNumber'   => $AccountNumber,
+	'ExpirationMonth' => $ExpirationMonth,
+	'ExpirationYear'  => $ExpirationYear,
+	'CVV'             => $CVV,
 );
-$pmpro_required_billing_fields = apply_filters( "pmpro_required_billing_fields", $pmpro_required_billing_fields );
+$pmpro_required_billing_fields = apply_filters( 'pmpro_required_billing_fields', $pmpro_required_billing_fields );
 $pmpro_required_user_fields    = array(
-	"username"      => $username,
-	"password"      => $password,
-	"password2"     => $password2,
-	"bemail"        => $bemail,
-	"bconfirmemail" => $bconfirmemail
+	'username'      => $username,
+	'password'      => $password,
+	'password2'     => $password2,
+	'bemail'        => $bemail,
+	'bconfirmemail' => $bconfirmemail,
 );
-$pmpro_required_user_fields    = apply_filters( "pmpro_required_user_fields", $pmpro_required_user_fields );
+$pmpro_required_user_fields    = apply_filters( 'pmpro_required_user_fields', $pmpro_required_user_fields );
 
 //pmpro_confirmed is set to true later if payment goes through
 $pmpro_confirmed = false;
 
 //check their fields if they clicked continue
-if ( $submit && $pmpro_msgt != "pmpro_error" ) {
+if ( $submit && $pmpro_msgt != 'pmpro_error' ) {
 
 	//make sure javascript is ok
-	if ( apply_filters( "pmpro_require_javascript_for_checkout", true ) && ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
-		pmpro_setMessage( __( "There are JavaScript errors on the page. Please contact the webmaster.", "pmpro" ), "pmpro_error" );
+	if ( apply_filters( 'pmpro_require_javascript_for_checkout', true ) && ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
+		pmpro_setMessage( __( 'There are JavaScript errors on the page. Please contact the webmaster.', 'pmpro' ), 'pmpro_error' );
 	}
 
 	//if we're skipping the account fields and there is no user, we need to create a username and password
@@ -319,40 +319,40 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 
 	if ( ! empty( $pmpro_error_fields ) ) {
-		pmpro_setMessage( __( "Please complete all required fields.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( 'Please complete all required fields.', 'pmpro' ), 'pmpro_error' );
 	}
 	if ( ! empty( $password ) && $password != $password2 ) {
-		pmpro_setMessage( __( "Your passwords do not match. Please try again.", "pmpro" ), "pmpro_error" );
-		$pmpro_error_fields[] = "password";
-		$pmpro_error_fields[] = "password2";
+		pmpro_setMessage( __( 'Your passwords do not match. Please try again.', 'pmpro' ), 'pmpro_error' );
+		$pmpro_error_fields[] = 'password';
+		$pmpro_error_fields[] = 'password2';
 	}
 	if ( ! empty( $bemail ) && $bemail != $bconfirmemail ) {
-		pmpro_setMessage( __( "Your email addresses do not match. Please try again.", "pmpro" ), "pmpro_error" );
-		$pmpro_error_fields[] = "bemail";
-		$pmpro_error_fields[] = "bconfirmemail";
+		pmpro_setMessage( __( 'Your email addresses do not match. Please try again.', 'pmpro' ), 'pmpro_error' );
+		$pmpro_error_fields[] = 'bemail';
+		$pmpro_error_fields[] = 'bconfirmemail';
 	}
 	if ( ! empty( $bemail ) && ! is_email( $bemail ) ) {
-		pmpro_setMessage( __( "The email address entered is in an invalid format. Please try again.", "pmpro" ), "pmpro_error" );
-		$pmpro_error_fields[] = "bemail";
-		$pmpro_error_fields[] = "bconfirmemail";
+		pmpro_setMessage( __( 'The email address entered is in an invalid format. Please try again.', 'pmpro' ), 'pmpro_error' );
+		$pmpro_error_fields[] = 'bemail';
+		$pmpro_error_fields[] = 'bconfirmemail';
 	}
 	if ( ! empty( $tospage ) && empty( $tos ) ) {
-		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", "pmpro" ), $tospage->post_title ), "pmpro_error" );
-		$pmpro_error_fields[] = "tospage";
+		pmpro_setMessage( sprintf( __( 'Please check the box to agree to the %s.', 'pmpro' ), $tospage->post_title ), 'pmpro_error' );
+		$pmpro_error_fields[] = 'tospage';
 	}
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
-		pmpro_setMessage( __( "Invalid gateway.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( 'Invalid gateway.', 'pmpro' ), 'pmpro_error' );
 	}
 	if ( ! empty( $fullname ) ) {
-		pmpro_setMessage( __( "Are you a spammer?", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( 'Are you a spammer?', 'pmpro' ), 'pmpro_error' );
 	}
 
-	if ( $pmpro_msgt == "pmpro_error" ) {
+	if ( $pmpro_msgt == 'pmpro_error' ) {
 		$pmpro_continue_registration = false;
 	} else {
 		$pmpro_continue_registration = true;
 	}
-	$pmpro_continue_registration = apply_filters( "pmpro_registration_checks", $pmpro_continue_registration );
+	$pmpro_continue_registration = apply_filters( 'pmpro_registration_checks', $pmpro_continue_registration );
 
 	if ( $pmpro_continue_registration ) {
 		//if creating a new user, check that the email and username are available
@@ -361,62 +361,62 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			$oldem_user = get_user_by( 'email', $bemail );
 
 			//this hook can be used to allow multiple accounts with the same email address
-			$oldemail = apply_filters( "pmpro_checkout_oldemail", ( false !== $oldem_user ? $oldem_user->user_email : null ) );
+			$oldemail = apply_filters( 'pmpro_checkout_oldemail', ( false !== $oldem_user ? $oldem_user->user_email : null ) );
 		}
 
 		if ( ! empty( $ouser->user_login ) ) {
-			pmpro_setMessage( __( "That username is already taken. Please try another.", "pmpro" ), "pmpro_error" );
-			$pmpro_error_fields[] = "username";
+			pmpro_setMessage( __( 'That username is already taken. Please try another.', 'pmpro' ), 'pmpro_error' );
+			$pmpro_error_fields[] = 'username';
 		}
 
 		if ( ! empty( $oldemail ) ) {
-			pmpro_setMessage( __( "That email address is already taken. Please try another.", "pmpro" ), "pmpro_error" );
-			$pmpro_error_fields[] = "bemail";
-			$pmpro_error_fields[] = "bconfirmemail";
+			pmpro_setMessage( __( 'That email address is already taken. Please try another.', 'pmpro' ), 'pmpro_error' );
+			$pmpro_error_fields[] = 'bemail';
+			$pmpro_error_fields[] = 'bconfirmemail';
 		}
 
 		//only continue if there are no other errors yet
-		if ( $pmpro_msgt != "pmpro_error" ) {
+		if ( $pmpro_msgt != 'pmpro_error' ) {
 			//check recaptcha first
 			global $recaptcha;
 			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
 				global $recaptcha_privatekey;
 
-				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
+				if ( isset( $_POST['recaptcha_challenge_field'] ) ) {
 					//using older recaptcha lib
 					$resp = recaptcha_check_answer( $recaptcha_privatekey,
-						$_SERVER["REMOTE_ADDR"],
-						$_POST["recaptcha_challenge_field"],
-						$_POST["recaptcha_response_field"] );
+						$_SERVER['REMOTE_ADDR'],
+						$_POST['recaptcha_challenge_field'],
+					$_POST['recaptcha_response_field'] );
 
 					$recaptcha_valid  = $resp->is_valid;
 					$recaptcha_errors = $resp->error;
 				} else {
 					//using newer recaptcha lib
 					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-					$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
+					$resp      = $reCaptcha->verifyResponse( $_SERVER['REMOTE_ADDR'], $_POST['g-recaptcha-response'] );
 
 					$recaptcha_valid  = $resp->success;
 					$recaptcha_errors = $resp->errorCodes;
 				}
 
 				if ( ! $recaptcha_valid ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", "pmpro" ), $recaptcha_errors );
-					$pmpro_msgt = "pmpro_error";
+					$pmpro_msg  = sprintf( __( 'reCAPTCHA failed. (%s) Please try again.', 'pmpro' ), $recaptcha_errors );
+					$pmpro_msgt = 'pmpro_error';
 				} else {
 					// Your code here to handle a successful verification
-					if ( $pmpro_msgt != "pmpro_error" ) {
-						$pmpro_msg = "All good!";
+					if ( $pmpro_msgt != 'pmpro_error' ) {
+						$pmpro_msg = 'All good!';
 					}
 				}
 			} else {
-				if ( $pmpro_msgt != "pmpro_error" ) {
-					$pmpro_msg = "All good!";
+				if ( $pmpro_msgt != 'pmpro_error' ) {
+					$pmpro_msg = 'All good!';
 				}
 			}
 
 			//no errors yet
-			if ( $pmpro_msgt != "pmpro_error" ) {
+			if ( $pmpro_msgt != 'pmpro_error' ) {
 				do_action( 'pmpro_checkout_before_processing' );
 
 				//process checkout if required
@@ -427,7 +427,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->discount_code    = $discount_code;
 					$morder->InitialPayment   = $pmpro_level->initial_payment;
 					$morder->PaymentAmount    = $pmpro_level->billing_amount;
-					$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+					$morder->ProfileStartDate = date_i18n( 'Y-m-d', current_time( 'timestamp' ) ) . 'T0:0:0';
 					$morder->BillingPeriod    = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 
@@ -448,7 +448,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->expirationmonth       = $ExpirationMonth;
 					$morder->expirationyear        = $ExpirationYear;
 					$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
-					$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
+					$morder->ExpirationDate_YdashM = $ExpirationYear . '-' . $ExpirationMonth;
 					$morder->CVV2                  = $CVV;
 
 					//not saving email in order table, but the sites need it
@@ -462,8 +462,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 					//other values
 					$morder->billing          = new stdClass();
-					$morder->billing->name    = $bfirstname . " " . $blastname;
-					$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
+					$morder->billing->name    = $bfirstname . ' ' . $blastname;
+					$morder->billing->street  = trim( $baddress1 . ' ' . $baddress2 );
 					$morder->billing->city    = $bcity;
 					$morder->billing->state   = $bstate;
 					$morder->billing->country = $bcountry;
@@ -476,29 +476,28 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 					//setup level var
 					$morder->getMembershipLevel();
-					$morder->membership_level = apply_filters( "pmpro_checkout_level", $morder->membership_level );
+					$morder->membership_level = apply_filters( 'pmpro_checkout_level', $morder->membership_level );
 
 					//tax
 					$morder->subtotal = $morder->InitialPayment;
 					$morder->getTax();
 
 					//filter for order, since v1.8
-					$morder = apply_filters( "pmpro_checkout_order", $morder );
+					$morder = apply_filters( 'pmpro_checkout_order', $morder );
 
 					$pmpro_processed = $morder->process();
 
 					if ( ! empty( $pmpro_processed ) ) {
-						$pmpro_msg       = __( "Payment accepted.", "pmpro" );
-						$pmpro_msgt      = "pmpro_success";
+						$pmpro_msg       = __( 'Payment accepted.', 'pmpro' );
+						$pmpro_msgt      = 'pmpro_success';
 						$pmpro_confirmed = true;
 					} else {
 						$pmpro_msg = $morder->error;
 						if ( empty( $pmpro_msg ) ) {
-							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", "pmpro" );
+							$pmpro_msg = __( 'Unknown error generating account. Please contact us to set up your membership.', 'pmpro' );
 						}
-						$pmpro_msgt = "pmpro_error";
+						$pmpro_msgt = 'pmpro_error';
 					}
-
 				} else // !$pmpro_requirebilling
 				{
 					//must have been a free membership, continue
@@ -528,9 +527,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	//do we need to create a user account?
 	if ( ! $current_user->ID ) {
 		/*
-			create user
+            create user
 		*/
-		if ( version_compare( $wp_version, "3.1" ) < 0 ) {
+		if ( version_compare( $wp_version, '3.1' ) < 0 ) {
 			require_once( ABSPATH . WPINC . '/registration.php' );
 		}    //need this for WP versions before 3.1
 
@@ -549,11 +548,11 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//insert user
 		$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
-				"user_login" => $username,
-				"user_pass"  => $password,
-				"user_email" => $bemail,
-				"first_name" => $first_name,
-				"last_name"  => $last_name
+				'user_login' => $username,
+				'user_pass'  => $password,
+				'user_email' => $bemail,
+				'first_name' => $first_name,
+				'last_name'  => $last_name,
 			)
 		);
 
@@ -569,13 +568,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$e_msg = $user_id->get_error_message();
 			}
 
-			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro" ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
-			$pmpro_msgt = "pmpro_error";
+			$pmpro_msg  = __( 'Your payment was accepted, but there was an error setting up your account. Please contact us.', 'pmpro' ) . sprintf( ' %s', $e_msg ); // Dirty 'don't break translation hack.
+			$pmpro_msgt = 'pmpro_error';
 		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
 
 			//check pmpro_wp_new_user_notification filter before sending the default WP email
-			if ( apply_filters( "pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id ) ) {
-				if ( version_compare( $wp_version, "4.3.0" ) >= 0 ) {
+			if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $pmpro_level->id ) ) {
+				if ( version_compare( $wp_version, '4.3.0' ) >= 0 ) {
 					wp_new_user_notification( $user_id, null, 'both' );
 				} else {
 					wp_new_user_notification( $user_id, $new_user_array['user_pass'] );
@@ -606,7 +605,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
 		//start date is NOW() but filterable below
-		$startdate = current_time( "mysql" );
+		$startdate = current_time( 'mysql' );
 
 		/**
 		 * Filter the start date for the membership/subscription.
@@ -617,13 +616,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		 * @param int $user_id , ID of the user checking out
 		 * @param object $pmpro_level , object of level being checked out for
 		 */
-		$startdate = apply_filters( "pmpro_checkout_start_date", $startdate, $user_id, $pmpro_level );
+		$startdate = apply_filters( 'pmpro_checkout_start_date', $startdate, $user_id, $pmpro_level );
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			$enddate = date_i18n( 'Y-m-d', strtotime( '+ ' . $pmpro_level->expiration_number . ' ' . $pmpro_level->expiration_period, current_time( 'timestamp' ) ) );
 		} else {
-			$enddate = "NULL";
+			$enddate = 'NULL';
 		}
 
 		/**
@@ -636,14 +635,14 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		 * @param object $pmpro_level , object of level being checked out for
 		 * @param string $startdate , startdate calculated above
 		 */
-		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
+		$enddate = apply_filters( 'pmpro_checkout_end_date', $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
 		$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
 		if ( $code_check[0] == false ) {
 			//error
 			$pmpro_msg  = $code_check[1];
-			$pmpro_msgt = "pmpro_error";
+			$pmpro_msgt = 'pmpro_error';
 
 			//don't use this code
 			$use_discount_code = false;
@@ -651,12 +650,12 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//all okay
 			$use_discount_code = true;
 		}
-		
-		//update membership_user table.		
+
+		//update membership_user table.
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 		} else {
-			$discount_code_id = "";
+			$discount_code_id = '';
 		}
 
 		$custom_level = array(
@@ -671,7 +670,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			'trial_amount'    => $pmpro_level->trial_amount,
 			'trial_limit'     => $pmpro_level->trial_limit,
 			'startdate'       => $startdate,
-			'enddate'         => $enddate
+			'enddate'         => $enddate,
 		);
 
 		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
@@ -681,9 +680,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$morder                 = new MemberOrder();
 				$morder->InitialPayment = 0;
 				$morder->Email          = $bemail;
-				$morder->gateway        = "free";
+				$morder->gateway        = 'free';
 
-				$morder = apply_filters( "pmpro_checkout_order_free", $morder );
+				$morder = apply_filters( 'pmpro_checkout_order_free', $morder );
 			}
 
 			//add an item to the history table, cancel old subscriptions
@@ -705,28 +704,28 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				if ( ! empty( $morder->id ) ) {
 					$code_order_id = $morder->id;
 				} else {
-					$code_order_id = "";
+					$code_order_id = '';
 				}
 
-				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( 'mysql' ) . "')" );
 			}
 
 			//save billing info ect, as user meta
 			$meta_keys   = array(
-				"pmpro_bfirstname",
-				"pmpro_blastname",
-				"pmpro_baddress1",
-				"pmpro_baddress2",
-				"pmpro_bcity",
-				"pmpro_bstate",
-				"pmpro_bzipcode",
-				"pmpro_bcountry",
-				"pmpro_bphone",
-				"pmpro_bemail",
-				"pmpro_CardType",
-				"pmpro_AccountNumber",
-				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear"
+				'pmpro_bfirstname',
+				'pmpro_blastname',
+				'pmpro_baddress1',
+				'pmpro_baddress2',
+				'pmpro_bcity',
+				'pmpro_bstate',
+				'pmpro_bzipcode',
+				'pmpro_bcountry',
+				'pmpro_bphone',
+				'pmpro_bemail',
+				'pmpro_CardType',
+				'pmpro_AccountNumber',
+				'pmpro_ExpirationMonth',
+				'pmpro_ExpirationYear',
 			);
 			$meta_values = array(
 				$bfirstname,
@@ -742,21 +741,21 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$CardType,
 				hideCardNumber( $AccountNumber ),
 				$ExpirationMonth,
-				$ExpirationYear
+				$ExpirationYear,
 			);
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
 			if ( ! empty( $bfirstname ) ) {
-				$old_firstname = get_user_meta( $user_id, "first_name", true );
+				$old_firstname = get_user_meta( $user_id, 'first_name', true );
 				if ( empty( $old_firstname ) ) {
-					update_user_meta( $user_id, "first_name", $bfirstname );
+					update_user_meta( $user_id, 'first_name', $bfirstname );
 				}
 			}
 			if ( ! empty( $blastname ) ) {
-				$old_lastname = get_user_meta( $user_id, "last_name", true );
+				$old_lastname = get_user_meta( $user_id, 'last_name', true );
 				if ( empty( $old_lastname ) ) {
-					update_user_meta( $user_id, "last_name", $blastname );
+					update_user_meta( $user_id, 'last_name', $blastname );
 				}
 			}
 
@@ -764,11 +763,11 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			$ordersaved = true;
 
 			//hook
-			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
+			do_action( 'pmpro_after_checkout', $user_id, $morder );    //added $morder param in v2.0
 
-			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
-	
-			if($sendemails) { // Send the e-mails only if the flag is set to true
+			$sendemails = apply_filters( 'pmpro_send_checkout_emails', true );
+
+			if ( $sendemails ) { // Send the e-mails only if the flag is set to true
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {
@@ -788,8 +787,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			}
 
 			//redirect to confirmation
-			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );
-			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
+			$rurl = pmpro_url( 'confirmation', '?level=' . $pmpro_level->id );
+			$rurl = apply_filters( 'pmpro_confirmation_url', $rurl, $user_id, $pmpro_level );
 			wp_redirect( $rurl );
 			exit;
 		} else {
@@ -799,10 +798,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			// test that the order object contains data
 			$test = (array) $morder;
 			if ( ! empty( $test ) && $morder->cancel() ) {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", "pmpro" );
+				$pmpro_msg = __( 'IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.', 'pmpro' );
 				$morder    = null;
 			} else {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", "pmpro" );
+				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'pmpro' );
 			}
 		}
 	}
@@ -811,36 +810,36 @@ if ( ! empty( $pmpro_confirmed ) ) {
 //default values
 if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
-	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
+	if ( $pmpro_requirebilling && ! pmpro_getOption( 'gateway', true ) ) {
 		if ( pmpro_isAdmin() ) {
 			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'pmpro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
-			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", "pmpro" );
+			$pmpro_msg = __( 'A Payment Gateway must be set up before any payments will be processed.', 'pmpro' );
 		}
-		$pmpro_msgt = "";
+		$pmpro_msgt = '';
 	}
 
 	//default values from DB
 	if ( ! empty( $current_user->ID ) ) {
-		$bfirstname    = get_user_meta( $current_user->ID, "pmpro_bfirstname", true );
-		$blastname     = get_user_meta( $current_user->ID, "pmpro_blastname", true );
-		$baddress1     = get_user_meta( $current_user->ID, "pmpro_baddress1", true );
-		$baddress2     = get_user_meta( $current_user->ID, "pmpro_baddress2", true );
-		$bcity         = get_user_meta( $current_user->ID, "pmpro_bcity", true );
-		$bstate        = get_user_meta( $current_user->ID, "pmpro_bstate", true );
-		$bzipcode      = get_user_meta( $current_user->ID, "pmpro_bzipcode", true );
-		$bcountry      = get_user_meta( $current_user->ID, "pmpro_bcountry", true );
-		$bphone        = get_user_meta( $current_user->ID, "pmpro_bphone", true );
-		$bemail        = get_user_meta( $current_user->ID, "pmpro_bemail", true );
+		$bfirstname    = get_user_meta( $current_user->ID, 'pmpro_bfirstname', true );
+		$blastname     = get_user_meta( $current_user->ID, 'pmpro_blastname', true );
+		$baddress1     = get_user_meta( $current_user->ID, 'pmpro_baddress1', true );
+		$baddress2     = get_user_meta( $current_user->ID, 'pmpro_baddress2', true );
+		$bcity         = get_user_meta( $current_user->ID, 'pmpro_bcity', true );
+		$bstate        = get_user_meta( $current_user->ID, 'pmpro_bstate', true );
+		$bzipcode      = get_user_meta( $current_user->ID, 'pmpro_bzipcode', true );
+		$bcountry      = get_user_meta( $current_user->ID, 'pmpro_bcountry', true );
+		$bphone        = get_user_meta( $current_user->ID, 'pmpro_bphone', true );
+		$bemail        = get_user_meta( $current_user->ID, 'pmpro_bemail', true );
 		$bconfirmemail = $bemail;    //as of 1.7.5, just setting to bemail
-		$CardType      = get_user_meta( $current_user->ID, "pmpro_CardType", true );
+		$CardType      = get_user_meta( $current_user->ID, 'pmpro_CardType', true );
 		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-		$ExpirationMonth = get_user_meta( $current_user->ID, "pmpro_ExpirationMonth", true );
-		$ExpirationYear  = get_user_meta( $current_user->ID, "pmpro_ExpirationYear", true );
+		$ExpirationMonth = get_user_meta( $current_user->ID, 'pmpro_ExpirationMonth', true );
+		$ExpirationYear  = get_user_meta( $current_user->ID, 'pmpro_ExpirationYear', true );
 	}
 }
 
 //clear out XXXX numbers (e.g. with Stripe)
-if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
-	$AccountNumber = "";
+if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, 'XXXX' ) === 0 ) {
+	$AccountNumber = '';
 }

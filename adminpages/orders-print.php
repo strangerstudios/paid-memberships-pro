@@ -8,8 +8,8 @@
  */
 
 //only admins can get this
-if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_ordersprint" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", "pmpro" ) );
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_ordersprint' ) ) ) {
+	die( __( 'You do not have permissions to perform this action.', 'pmpro' ) );
 }
 
 // Do we have an order ID?
@@ -19,8 +19,8 @@ if ( empty( $_REQUEST['order'] ) ) {
 }
 
 // Get order and membership level.
-$order = new MemberOrder($_REQUEST['order']);
-$level = pmpro_getLevel($order->membership_id);
+$order = new MemberOrder( $_REQUEST['order'] );
+$level = pmpro_getLevel( $order->membership_id );
 
 // Load template
 if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {

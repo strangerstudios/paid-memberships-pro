@@ -24,6 +24,6 @@
  * @property-read string $website
  * @uses Braintree_Instance inherits methods
  */
-class Braintree_Transaction_CustomerDetails extends Braintree_Instance
-{
+class Braintree_Transaction_CustomerDetails extends Braintree_Instance {
+
 }

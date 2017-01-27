@@ -1,138 +1,130 @@
 <?php
 
-abstract class Stripe_ApiResource extends Stripe_Object
-{
-  protected static function _scopedRetrieve($class, $id, $apiKey=null)
-  {
-    $instance = new $class($id, $apiKey);
-    $instance->refresh();
-    return $instance;
-  }
+abstract class Stripe_ApiResource extends Stripe_Object {
 
-  /**
-   * @returns Stripe_ApiResource The refreshed resource.
-   */
-  public function refresh()
-  {
-    $requestor = new Stripe_ApiRequestor($this->_apiKey);
-    $url = $this->instanceUrl();
+	protected static function _scopedRetrieve( $class, $id, $apiKey = null ) {
+		$instance = new $class($id, $apiKey);
+		$instance->refresh();
+		return $instance;
+	}
 
-    list($response, $apiKey) = $requestor->request(
-        'get',
-        $url,
-        $this->_retrieveOptions
-    );
-    $this->refreshFrom($response, $apiKey);
-    return $this;
-  }
+	/**
+	* @returns Stripe_ApiResource The refreshed resource.
+	*/
+	public function refresh() {
 
-  /**
-   * @param string $class
-   *
-   * @returns string The name of the class, with namespacing and underscores
-   *    stripped.
-   */
-  public static function className($class)
-  {
-    // Useful for namespaces: Foo\Stripe_Charge
-    if ($postfix = strrchr($class, '\\'))
-      $class = substr($postfix, 1);
-    if (substr($class, 0, strlen('Stripe')) == 'Stripe')
-      $class = substr($class, strlen('Stripe'));
-    $class = str_replace('_', '', $class);
-    $name = urlencode($class);
-    $name = strtolower($name);
-    return $name;
-  }
+		$requestor = new Stripe_ApiRequestor( $this->_apiKey );
+		$url = $this->instanceUrl();
 
-  /**
-   * @param string $class
-   *
-   * @returns string The endpoint URL for the given class.
-   */
-  public static function classUrl($class)
-  {
-    $base = self::_scopedLsb($class, 'className', $class);
-    return "/v1/${base}s";
-  }
+		list($response, $apiKey) = $requestor->request(
+			'get',
+			$url,
+			$this->_retrieveOptions
+		);
+		$this->refreshFrom( $response, $apiKey );
+		return $this;
+	}
 
-  /**
-   * @returns string The full API URL for this API resource.
-   */
-  public function instanceUrl()
-  {
-    $id = $this['id'];
-    $class = get_class($this);
-    if (!$id) {
-      $message = "Could not determine which URL to request: "
-               . "$class instance has invalid ID: $id";
-      throw new Stripe_InvalidRequestError($message, null);
-    }
-    $id = Stripe_ApiRequestor::utf8($id);
-    $base = $this->_lsb('classUrl', $class);
-    $extn = urlencode($id);
-    return "$base/$extn";
-  }
+	/**
+	* @param string $class
+	*
+	* @returns string The name of the class, with namespacing and underscores
+	*    stripped.
+	*/
+	public static function className( $class ) {
+		// Useful for namespaces: Foo\Stripe_Charge
+		if ( $postfix = strrchr( $class, '\\' ) ) {
+			$class = substr( $postfix, 1 ); }
+		if ( substr( $class, 0, strlen( 'Stripe' ) ) == 'Stripe' ) {
+			$class = substr( $class, strlen( 'Stripe' ) ); }
+		$class = str_replace( '_', '', $class );
+		$name = urlencode( $class );
+		$name = strtolower( $name );
+		return $name;
+	}
 
-  private static function _validateCall($method, $params=null, $apiKey=null)
-  {
-    if ($params && !is_array($params)) {
-      $message = "You must pass an array as the first argument to Stripe API "
-               . "method calls.  (HINT: an example call to create a charge "
-               . "would be: \"StripeCharge::create(array('amount' => 100, "
-               . "'currency' => 'usd', 'card' => array('number' => "
-               . "4242424242424242, 'exp_month' => 5, 'exp_year' => 2015)))\")";
-      throw new Stripe_Error($message);
-    }
+	/**
+	* @param string $class
+	*
+	* @returns string The endpoint URL for the given class.
+	*/
+	public static function classUrl( $class ) {
+		$base = self::_scopedLsb( $class, 'className', $class );
+		return "/v1/${base}s";
+	}
 
-    if ($apiKey && !is_string($apiKey)) {
-      $message = 'The second argument to Stripe API method calls is an '
-               . 'optional per-request apiKey, which must be a string.  '
-               . '(HINT: you can set a global apiKey by '
-               . '"Stripe::setApiKey(<apiKey>)")';
-      throw new Stripe_Error($message);
-    }
-  }
+	/**
+	* @returns string The full API URL for this API resource.
+	*/
+	public function instanceUrl() {
 
-  protected static function _scopedAll($class, $params=null, $apiKey=null)
-  {
-    self::_validateCall('all', $params, $apiKey);
-    $requestor = new Stripe_ApiRequestor($apiKey);
-    $url = self::_scopedLsb($class, 'classUrl', $class);
-    list($response, $apiKey) = $requestor->request('get', $url, $params);
-    return Stripe_Util::convertToStripeObject($response, $apiKey);
-  }
+		$id = $this['id'];
+		$class = get_class( $this );
+		if ( ! $id ) {
+			$message = 'Could not determine which URL to request: '
+			   . "$class instance has invalid ID: $id";
+			throw new Stripe_InvalidRequestError( $message, null );
+		}
+		$id = Stripe_ApiRequestor::utf8( $id );
+		$base = $this->_lsb( 'classUrl', $class );
+		$extn = urlencode( $id );
+		return "$base/$extn";
+	}
 
-  protected static function _scopedCreate($class, $params=null, $apiKey=null)
-  {
-    self::_validateCall('create', $params, $apiKey);
-    $requestor = new Stripe_ApiRequestor($apiKey);
-    $url = self::_scopedLsb($class, 'classUrl', $class);
-    list($response, $apiKey) = $requestor->request('post', $url, $params);
-    return Stripe_Util::convertToStripeObject($response, $apiKey);
-  }
+	private static function _validateCall( $method, $params = null, $apiKey = null ) {
+		if ( $params && ! is_array( $params ) ) {
+			$message = 'You must pass an array as the first argument to Stripe API '
+			   . 'method calls.  (HINT: an example call to create a charge '
+			   . "would be: \"StripeCharge::create(array('amount' => 100, "
+			   . "'currency' => 'usd', 'card' => array('number' => "
+			   . "4242424242424242, 'exp_month' => 5, 'exp_year' => 2015)))\")";
+			throw new Stripe_Error( $message );
+		}
 
-  protected function _scopedSave($class, $apiKey=null)
-  {
-    self::_validateCall('save');
-    $requestor = new Stripe_ApiRequestor($apiKey);
-    $params = $this->serializeParameters();
+		if ( $apiKey && ! is_string( $apiKey ) ) {
+			$message = 'The second argument to Stripe API method calls is an '
+			   . 'optional per-request apiKey, which must be a string.  '
+			   . '(HINT: you can set a global apiKey by '
+			   . '"Stripe::setApiKey(<apiKey>)")';
+			throw new Stripe_Error( $message );
+		}
+	}
 
-    if (count($params) > 0) {
-      $url = $this->instanceUrl();
-      list($response, $apiKey) = $requestor->request('post', $url, $params);
-      $this->refreshFrom($response, $apiKey);
-    }
-    return $this;
-  }
+	protected static function _scopedAll( $class, $params = null, $apiKey = null ) {
+		self::_validateCall( 'all', $params, $apiKey );
+		$requestor = new Stripe_ApiRequestor( $apiKey );
+		$url = self::_scopedLsb( $class, 'classUrl', $class );
+		list($response, $apiKey) = $requestor->request( 'get', $url, $params );
+		return Stripe_Util::convertToStripeObject( $response, $apiKey );
+	}
 
-  protected function _scopedDelete($class, $params=null)
-  {
-    self::_validateCall('delete');
-    $requestor = new Stripe_ApiRequestor($this->_apiKey);
-    $url = $this->instanceUrl();
-    list($response, $apiKey) = $requestor->request('delete', $url, $params);
-    $this->refreshFrom($response, $apiKey);
-    return $this;
-  }
+	protected static function _scopedCreate( $class, $params = null, $apiKey = null ) {
+		self::_validateCall( 'create', $params, $apiKey );
+		$requestor = new Stripe_ApiRequestor( $apiKey );
+		$url = self::_scopedLsb( $class, 'classUrl', $class );
+		list($response, $apiKey) = $requestor->request( 'post', $url, $params );
+		return Stripe_Util::convertToStripeObject( $response, $apiKey );
+	}
+
+	protected function _scopedSave( $class, $apiKey = null ) {
+		self::_validateCall( 'save' );
+		$requestor = new Stripe_ApiRequestor( $apiKey );
+		$params = $this->serializeParameters();
+
+		if ( count( $params ) > 0 ) {
+			$url = $this->instanceUrl();
+			list($response, $apiKey) = $requestor->request( 'post', $url, $params );
+			$this->refreshFrom( $response, $apiKey );
+		}
+		return $this;
+	}
+
+	protected function _scopedDelete( $class, $params = null ) {
+		self::_validateCall( 'delete' );
+		$requestor = new Stripe_ApiRequestor( $this->_apiKey );
+		$url = $this->instanceUrl();
+		list($response, $apiKey) = $requestor->request( 'delete', $url, $params );
+		$this->refreshFrom( $response, $apiKey );
+		return $this;
+	}
 }

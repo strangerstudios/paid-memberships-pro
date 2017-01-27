@@ -47,7 +47,7 @@
 		<div class="right">
 			<table>
 				<tr>
-					<td><?php echo __('Invoice #: ', 'pmpro') . '&nbsp;' . $order->code; ?></td>
+					<td><?php echo __( 'Invoice #: ', 'pmpro' ) . '&nbsp;' . $order->code; ?></td>
 				</tr>
 				<tr>
 					<td>
@@ -72,9 +72,9 @@
 		</p>
 		<table class="invoice">
 			<tr>
-				<th><?php _e('ID', 'pmpro'); ?></th>
-				<th><?php _e('Item', 'pmpro'); ?></th>
-				<th><?php _e('Price', 'pmpro'); ?></th>
+				<th><?php _e( 'ID', 'pmpro' ); ?></th>
+				<th><?php _e( 'Item', 'pmpro' ); ?></th>
+				<th><?php _e( 'Price', 'pmpro' ); ?></th>
 			</tr>
 			<tr>
 				<td class="aligncenter"><?php echo $level->id; ?></td>
@@ -82,15 +82,15 @@
 				<td class="alignright"><?php echo $order->subtotal; ?></td>
 			</tr>
 			<tr>
-				<th colspan="2" class="alignright"><?php _e('Subtotal', 'pmpro'); ?></th>
+				<th colspan="2" class="alignright"><?php _e( 'Subtotal', 'pmpro' ); ?></th>
 				<td class="alignright"><?php echo $order->subtotal; ?></td>
 			</tr>
 			<tr>
-				<th colspan="2" class="alignright"><?php _e('Tax', 'pmpro'); ?></th>
+				<th colspan="2" class="alignright"><?php _e( 'Tax', 'pmpro' ); ?></th>
 				<td class="alignright"><?php echo $order->tax; ?></td>
 			</tr>
 			<tr>
-				<th colspan="2" class="alignright"><?php _e('Total', 'pmpro'); ?></th>
+				<th colspan="2" class="alignright"><?php _e( 'Total', 'pmpro' ); ?></th>
 				<th class="alignright"><?php echo pmpro_formatPrice( $order->total ); ?></th>
 			</tr>
 		</table>

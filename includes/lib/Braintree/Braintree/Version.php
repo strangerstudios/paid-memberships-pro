@@ -11,29 +11,29 @@
  *
  * @copyright  2010 Braintree Payment Solutions
  */
-final class Braintree_Version
-{
-    /**
-     * class constants
-     */
-    const MAJOR = 2;
-    const MINOR = 19;
-    const TINY = 0;
+final class Braintree_Version {
 
-    /**
-     * @ignore
-     * @access protected
-     */
-    protected function  __construct()
-    {
-    }
+	/**
+	 * class constants
+	 */
+	const MAJOR = 2;
+	const MINOR = 19;
+	const TINY = 0;
 
-    /**
-     *
-     * @return string the current library version
-     */
-    public static function get()
-    {
-        return self::MAJOR.'.'.self::MINOR.'.'.self::TINY;
-    }
+	/**
+	 * @ignore
+	 * @access protected
+	 */
+	protected function __construct() {
+
+	}
+
+	/**
+	 *
+	 * @return string the current library version
+	 */
+	public static function get() {
+
+		return self::MAJOR . '.' . self::MINOR . '.' . self::TINY;
+	}
 }

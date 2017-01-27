@@ -15,7 +15,7 @@
  * @subpackage Exception
  * @copyright  2010 Braintree Payment Solutions
  */
-class Braintree_Exception_Authentication extends Braintree_Exception
-{
+class Braintree_Exception_Authentication extends Braintree_Exception {
+
 
 }

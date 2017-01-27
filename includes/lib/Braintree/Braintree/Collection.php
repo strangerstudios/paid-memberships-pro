@@ -18,142 +18,133 @@
  * @package   Braintree
  * @subpackage Utility
  */
-class Braintree_Collection implements Countable, IteratorAggregate, ArrayAccess
-{
-    /**
-     *
-     * @var array $_collection collection storage
-     */
-    protected $_collection = array();
+class Braintree_Collection implements Countable, IteratorAggregate, ArrayAccess {
 
-    /**
-     * Add a value into the collection
-     * @param string $value
-     */
-    public function add($value)
-    {
-        $this->_collection[] = $value;
-    }
+	/**
+	 *
+	 * @var array $_collection collection storage
+	 */
+	protected $_collection = array();
 
-    /**
-     * Set index's value
-     * @param integer $index
-     * @param mixed $value
-     * @throws OutOfRangeException
-     */
-    public function set($index, $value)
-    {
-        if($index >= $this->count())
-            throw new OutOfRangeException('Index out of range');
+	/**
+	 * Add a value into the collection
+	 * @param string $value
+	 */
+	public function add( $value ) {
+		$this->_collection[] = $value;
+	}
 
-        $this->_collection[$index] = $value;
-    }
+	/**
+	 * Set index's value
+	 * @param integer $index
+	 * @param mixed $value
+	 * @throws OutOfRangeException
+	 */
+	public function set( $index, $value ) {
+		if ( $index >= $this->count() ) {
+			throw new OutOfRangeException( 'Index out of range' ); }
 
-    /**
-     * Remove a value from the collection
-     * @param integer $index index to remove
-     * @throws OutOfRangeException if index is out of range
-     */
-    public function remove($index)
-    {
-        if($index >= $this->count())
-            throw new OutOfRangeException('Index out of range');
+		$this->_collection[ $index ] = $value;
+	}
 
-        array_splice($this->_collection, $index, 1);
-    }
+	/**
+	 * Remove a value from the collection
+	 * @param integer $index index to remove
+	 * @throws OutOfRangeException if index is out of range
+	 */
+	public function remove( $index ) {
+		if ( $index >= $this->count() ) {
+			throw new OutOfRangeException( 'Index out of range' ); }
 
-    /**
-     * Return value at index
-     * @param integer $index
-     * @return mixed
-     * @throws OutOfRangeException
-     */
-    public function get($index)
-    {
-        if($index >= $this->count())
-            throw new OutOfRangeException('Index out of range');
+		array_splice( $this->_collection, $index, 1 );
+	}
 
-        return $this->_collection[$index];
-    }
+	/**
+	 * Return value at index
+	 * @param integer $index
+	 * @return mixed
+	 * @throws OutOfRangeException
+	 */
+	public function get( $index ) {
+		if ( $index >= $this->count() ) {
+			throw new OutOfRangeException( 'Index out of range' ); }
 
-    /**
-     * Determine if index exists
-     * @param integer $index
-     * @return boolean
-     */
-    public function exists($index)
-    {
-        if($index >= $this->count())
-            return false;
+		return $this->_collection[ $index ];
+	}
 
-        return true;
-    }
-    /**
-     * Return count of items in collection
-     * Implements countable
-     * @return integer
-     */
-    public function count()
-    {
-        return count($this->_collection);
-    }
+	/**
+	 * Determine if index exists
+	 * @param integer $index
+	 * @return boolean
+	 */
+	public function exists( $index ) {
+		if ( $index >= $this->count() ) {
+			return false; }
+
+		return true;
+	}
+	/**
+	 * Return count of items in collection
+	 * Implements countable
+	 * @return integer
+	 */
+	public function count() {
+
+		return count( $this->_collection );
+	}
 
 
-    /**
-     * Return an iterator
-     * Implements IteratorAggregate
-     * @return ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->_collection);
-    }
+	/**
+	 * Return an iterator
+	 * Implements IteratorAggregate
+	 * @return ArrayIterator
+	 */
+	public function getIterator() {
 
-    /**
-     * Set offset to value
-     * Implements ArrayAccess
-     * @see set
-     * @param integer $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->set($offset, $value);
-    }
+		return new ArrayIterator( $this->_collection );
+	}
 
-    /**
-     * Unset offset
-     * Implements ArrayAccess
-     * @see remove
-     * @param integer $offset
-     */
-    public function offsetUnset($offset)
-    {
-        $this->remove($offset);
-    }
+	/**
+	 * Set offset to value
+	 * Implements ArrayAccess
+	 * @see set
+	 * @param integer $offset
+	 * @param mixed $value
+	 */
+	public function offsetSet( $offset, $value ) {
+		$this->set( $offset, $value );
+	}
 
-    /**
-     * get an offset's value
-     * Implements ArrayAccess
-     * @see get
-     * @param integer $offset
-     * @return mixed
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
+	/**
+	 * Unset offset
+	 * Implements ArrayAccess
+	 * @see remove
+	 * @param integer $offset
+	 */
+	public function offsetUnset( $offset ) {
+		$this->remove( $offset );
+	}
 
-    /**
-     * Determine if offset exists
-     * Implements ArrayAccess
-     * @see exists
-     * @param integer $offset
-     * @return boolean
-     */
-    public function offsetExists($offset)
-    {
-        return $this->exists($offset);
-    }
+	/**
+	 * get an offset's value
+	 * Implements ArrayAccess
+	 * @see get
+	 * @param integer $offset
+	 * @return mixed
+	 */
+	public function offsetGet( $offset ) {
+		return $this->get( $offset );
+	}
+
+	/**
+	 * Determine if offset exists
+	 * Implements ArrayAccess
+	 * @see exists
+	 * @param integer $offset
+	 * @return boolean
+	 */
+	public function offsetExists( $offset ) {
+		return $this->exists( $offset );
+	}
 
 }
