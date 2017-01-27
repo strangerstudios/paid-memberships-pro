@@ -2,7 +2,7 @@
 /*
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
-Description: Plugin to Handle Memberships
+Description: Plugin to Handle Memberships = No network Activation
 Version: 1.8.13.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
@@ -37,6 +37,12 @@ if(!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
 	Includes
 */
 define("PMPRO_DIR", dirname(__FILE__));
+
+
+define( 'DENY_PLUGIN_BASE_FILE', __FILE__ );
+require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );
+
+
 require_once(PMPRO_DIR . "/includes/localization.php");			//localization functions
 require_once(PMPRO_DIR . "/includes/lib/name-parser.php");		//parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once(PMPRO_DIR . "/includes/functions.php");			//misc functions used by the plugin
