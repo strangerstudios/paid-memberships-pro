@@ -9,18 +9,25 @@ function pmpro_notifications()
 		$pmpro_notification = get_transient("pmpro_notification_" . PMPRO_VERSION);
 		if(empty($pmpro_notification))
 		{
+			//set to NULL in case the below times out or fails, this way we only check once a day
+			set_transient("pmpro_notification_" . PMPRO_VERSION, 'NULL', 86400);
+			
+			//figure out which server to get from
 			if(is_ssl())
 			{
-				$remote_notification = wp_remote_get("https://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION);
+				$remote_notification = wp_remote_get("https://notifications.paidmembershipspro.com/?v=" . PMPRO_VERSION);
 			}
 			else
 			{
-				$remote_notification = wp_remote_get("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION);
+				$remote_notification = wp_remote_get("http://notifications.paidmembershipspro.com/?v=" . PMPRO_VERSION);
 			}						
 			
+			//get notification
 			$pmpro_notification = wp_remote_retrieve_body($remote_notification);
-						
-			set_transient("pmpro_notification_" . PMPRO_VERSION, $pmpro_notification, 86400);
+			
+			//update transient if we got something
+			if(!empty($pmpro_notification))
+				set_transient("pmpro_notification_" . PMPRO_VERSION, $pmpro_notification, 86400);
 		}
 		
 		if($pmpro_notification && $pmpro_notification != "NULL")
