@@ -168,6 +168,8 @@ class PMProUsageData {
 	/**
 	 * Send the data
 	 *
+	 * NOTE: Only checks if it's been less than a day since sent, NOT if allowed. pmro_maybeSendUsage() is safest way to call this since it checks if allowed.
+	 *
 	 * @since 1.9
 	 *
 	 * @return array|bool|WP_Error Returns false if trying to send more than once in a day. Or will return what wp_remote_response() returns from API call

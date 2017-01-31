@@ -6,6 +6,8 @@ add_action( 'admin_notices', 'pmro_addUsageOptinNotice' );
 //check for request to optin/optout
 add_action( 'admin_init', 'pmpro_listenForUsageOptin' );
 
+//triggered by wp_cron to send tracking
+add_action( 'pmpro_cron_send_usage_stats', 'pmro_maybeSendUsage' );
 
 /**
  * Get all plugins with version
@@ -80,10 +82,12 @@ function pmro_addUsageOptinNotice() {
 }
 
 /**
- * Trigger send of stats if needed
+ * Trigger send of stats if needed and allowed
  *
  * @since 1.9
  */
 function pmro_maybeSendUsage(){
-	PMProUsageData::get_main_instance()->send();
+	if ( PMProUsageData::get_main_instance()->canTrack() ) {
+		PMProUsageData::get_main_instance()->send();
+	}
 }

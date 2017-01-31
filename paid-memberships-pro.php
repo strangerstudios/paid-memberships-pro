@@ -165,6 +165,7 @@ function pmpro_activation() {
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
 	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_send_usage_stats');
 
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 
@@ -178,6 +179,7 @@ function pmpro_deactivation() {
 	wp_clear_scheduled_hook('pmpro_cron_trial_ending_warnings');
 	wp_clear_scheduled_hook('pmpro_cron_expire_memberships');
 	wp_clear_scheduled_hook('pmpro_cron_credit_card_expiring_warnings');
+	wp_clear_scheduled_hook('pmpro_cron_send_usage_stats');
 
 	//remove caps from admin role
 	pmpro_set_capabilities_for_role('administrator', 'disable');
