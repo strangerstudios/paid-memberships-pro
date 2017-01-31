@@ -64,17 +64,21 @@ function pmro_addUsageOptinNotice() {
 	?>
 	<div class="notice notice-success ">
 		<p>
-			<?php _e( 'Would you like to share usage data with Paid Memberships Pro?', 'pmpro' ); ?>
+			<?php esc_html_e( 'Would you like to share usage data with Paid Memberships Pro?', 'pmpro' ); ?>
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept" href="<?php echo esc_url_raw( add_query_arg( array(
 				'_pmpro_optin'       => 'true',
 				'_pmpro_optin_nonce' => $nonce,
 				admin_url()
-			) ) ); ?>">Yes</a>
+			) ) ); ?>">
+				<?php esc_html_e( 'Yes', 'pmpro' ); ?>
+			</a>
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline" href="<?php echo esc_url_raw( add_query_arg( array(
 				'_pmpro_optin'       => 'false',
 				'_pmpro_optin_nonce' => $nonce,
 				admin_url()
-			) ) ); ?>">No</a>
+			) ) ); ?>">
+				<?php esc_html_e( 'No', 'pmpro' ); ?>
+			</a>
 		</p>
 	</div>
 	<?php
