@@ -2,7 +2,9 @@
 
 
 /**
- * Get all plugins, bu
+ * Get all plugins with version
+ *
+ * @since 1.9
  *
  * @return array
  */
@@ -17,5 +19,37 @@ function pmpro_getPlugins(){
 	}
 
 	return $plugins;
+
+}
+
+/**
+ * Check if we have a request to optin/out and handle it
+ *
+ * @uses "admin_init"
+ *
+ * @since 1.9
+ */
+function pmpro_listenForUsageOptin(){
+
+}
+
+/**
+ * If needed add an optin notice
+ *
+ * @uses "admin_notices"
+ *
+ * @since 1.9
+ */
+function pmro_addUsageOptinNotice() {
+
+
+}
+
+/**
+ * Trigger send of stats if needed
+ *
+ * @since 1.9
+ */
+function pmro_maybeSendUsage(){
 
 }

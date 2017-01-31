@@ -121,6 +121,9 @@
 	} elseif($gateway == "braintree") {
 		PMProGateway_braintree::dependencies();
 	}
+
+	//Check if usage tracking needs to send today
+	pmro_maybeSendUsage();
 	
 	if(!empty($msg))
 	{
