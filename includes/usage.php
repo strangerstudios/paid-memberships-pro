@@ -38,12 +38,17 @@ function pmpro_getPlugins(){
  * @since 1.9
  */
 function pmpro_listenForUsageOptin(){
-	if( current_user_can( 'manage_options' ) &&  isset( $_POST, $_POST[ '_pmpro_optin' ], $_POST[ '_pmpro_optin_nonce' ] ) && wp_verify_nonce( $_POST[ '_pmpro_optin_nonce' ], '_pmpro_optin_nonce' ) ){
-		if(  $_POST[ '_pmpro_optin' ] ){
+	if( current_user_can( 'manage_options' ) &&  isset( $_GET, $_GET[ '_pmpro_optin' ], $_GET[ '_pmpro_optin_nonce' ] ) && wp_verify_nonce( $_GET[ '_pmpro_optin_nonce' ], '_pmpro_optin_nonce' ) ){
+		if(  $_GET[ '_pmpro_optin' ] ){
 			PMProUsageData::get_main_instance()->optin();
 		}else{
 			PMProUsageData::get_main_instance()->optOut();
 		}
+
+		wp_redirect( esc_url_raw( add_query_arg( array(
+			'page'               => 'pmpro-membershiplevels'
+		), admin_url() ) ) );
+		exit;
 	}
 
 }
@@ -71,18 +76,20 @@ function pmro_addUsageOptinNotice() {
 	<div class="notice notice-success ">
 		<p>
 			<?php esc_html_e( 'Would you like to share usage data with Paid Memberships Pro?', 'pmpro' ); ?>
-			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept" href="<?php echo esc_url_raw( add_query_arg( array(
-				'_pmpro_optin'       => 'true',
-				'_pmpro_optin_nonce' => $nonce,
-				admin_url( 'page=pmpro-membershiplevels' )
-			) ) ); ?>">
+			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept"
+			   href="<?php echo esc_url_raw( add_query_arg( array(
+				   '_pmpro_optin'       => 'true',
+				   '_pmpro_optin_nonce' => $nonce,
+				   'page'               => 'pmpro-membershiplevels'
+			   ), admin_url() ) ); ?>">
 				<?php esc_html_e( 'Yes', 'pmpro' ); ?>
 			</a>
-			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline" href="<?php echo esc_url_raw( add_query_arg( array(
-				'_pmpro_optin'       => 'false',
-				'_pmpro_optin_nonce' => $nonce,
-				admin_url( 'page=pmpro-membershiplevels' )
-			) ) ); ?>">
+			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline"
+			   href="<?php echo esc_url_raw( add_query_arg( array(
+				   '_pmpro_optin'       => 'false',
+				   '_pmpro_optin_nonce' => $nonce,
+				   'page'               => 'pmpro-membershiplevels'
+			   ), admin_url() ) ); ?>">
 				<?php esc_html_e( 'No', 'pmpro' ); ?>
 			</a>
 		</p>
@@ -98,6 +105,6 @@ function pmro_addUsageOptinNotice() {
  */
 function pmro_maybeSendUsage(){
 	if ( PMProUsageData::get_main_instance()->canTrack() ) {
-		PMProUsageData::get_main_instance()->send();
+		//PMProUsageData::get_main_instance()->send();
 	}
 }
