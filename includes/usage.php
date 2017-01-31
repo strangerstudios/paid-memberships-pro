@@ -47,7 +47,7 @@ function pmpro_listenForUsageOptin(){
 
 		wp_redirect( esc_url_raw( add_query_arg( array(
 			'page'               => 'pmpro-membershiplevels'
-		), admin_url() ) ) );
+		), get_admin_url() ) ) );
 		exit;
 	}
 
@@ -82,7 +82,7 @@ function pmro_addUsageOptinNotice() {
 				   '_pmpro_optin'       => 'true',
 				   '_pmpro_optin_nonce' => $nonce,
 				   'page'               => 'pmpro-membershiplevels'
-			   ), admin_url() ) ); ?>">
+			   ), get_admin_url() ) ); ?>">
 				<?php esc_html_e( 'Yes', 'pmpro' ); ?>
 			</a>
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline"
@@ -90,7 +90,7 @@ function pmro_addUsageOptinNotice() {
 				   '_pmpro_optin'       => 'false',
 				   '_pmpro_optin_nonce' => $nonce,
 				   'page'               => 'pmpro-membershiplevels'
-			   ), admin_url() ) ); ?>">
+			   ), get_admin_url() ) ); ?>">
 				<?php esc_html_e( 'No', 'pmpro' ); ?>
 			</a>
 		</p>
