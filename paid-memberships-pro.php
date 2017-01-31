@@ -88,6 +88,10 @@ require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalstandard.ph
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_twocheckout.php");
 
+//usage tracking
+require_once(PMPRO_DIR . "/classes/class.pmprousagedata.php");
+require_once(PMPRO_DIR . "/includes/usage.php");
+
 /*
 	Setup the DB and check for upgrades
 */
