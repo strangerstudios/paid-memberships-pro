@@ -60,6 +60,12 @@ function pmro_addUsageOptinNotice() {
 	if( ! current_user_can( 'manage_options' ) || ! PMProUsageData::get_main_instance()->shouldAskForOption() ){
 		return;
 	}
+
+	//only show in PMPro admin
+	$screen = get_current_screen();
+	if( ! is_object( $screen ) || 'pmpro-membershiplevels' != $screen->parent_base ){
+		return;
+	}
 	$nonce = wp_create_nonce( '_pmpro_optin_nonce' );
 	?>
 	<div class="notice notice-success ">
@@ -68,14 +74,14 @@ function pmro_addUsageOptinNotice() {
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept" href="<?php echo esc_url_raw( add_query_arg( array(
 				'_pmpro_optin'       => 'true',
 				'_pmpro_optin_nonce' => $nonce,
-				admin_url()
+				admin_url( 'page=pmpro-membershiplevels' )
 			) ) ); ?>">
 				<?php esc_html_e( 'Yes', 'pmpro' ); ?>
 			</a>
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline" href="<?php echo esc_url_raw( add_query_arg( array(
 				'_pmpro_optin'       => 'false',
 				'_pmpro_optin_nonce' => $nonce,
-				admin_url()
+				admin_url( 'page=pmpro-membershiplevels' )
 			) ) ); ?>">
 				<?php esc_html_e( 'No', 'pmpro' ); ?>
 			</a>
