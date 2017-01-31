@@ -43,6 +43,16 @@ class PMProUsageData {
 	 */
 	protected $trackingKey = '_pmpro_tracking_last_sent';
 
+
+	/**
+	 * The "main" instance
+	 *
+	 * @since 1.9
+	 *
+	 * @var PMProUsageData
+	 */
+	protected static $instance;
+
 	/**
 	 * PMProUsageData constructor.
 	 *
@@ -50,6 +60,26 @@ class PMProUsageData {
 	 */
 	public function __construct()
 	{
+		//NOTE: this doesn't need to do anything, but implies that you can reuse this class, mainly so you can extend it for other data sets
+	}
+
+	/**
+	 * Get "main" instance of this class
+	 *
+	 * NOTE: Not a true-singleton, can make multiple instances.
+	 *
+	 * @since 1.9
+	 *
+	 * @return  PMProUsageData
+	 */
+	public static function get_main_instance()
+	{
+		if( ! is_object( self::$instance ) ){
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+
 	}
 
 	/**
@@ -68,6 +98,7 @@ class PMProUsageData {
 		}
 
 		return $this->stats;
+
 	}
 
 	/**

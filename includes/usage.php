@@ -1,5 +1,11 @@
 <?php
 
+//Show usage tracking optin notice
+add_action( 'admin_notices', 'pmro_addUsageOptinNotice' );
+
+//check for request to optin/optout
+add_action( 'admin_init', 'pmpro_listenForUsageOptin' );
+
 
 /**
  * Get all plugins with version
@@ -30,6 +36,13 @@ function pmpro_getPlugins(){
  * @since 1.9
  */
 function pmpro_listenForUsageOptin(){
+	if( current_user_can( 'manage_options' ) &&  isset( $_POST, $_POST[ '_pmpro_optin' ], $_POST[ '_pmpro_optin_nonce' ] ) && wp_verify_nonce( $_POST[ '_pmpro_optin_nonce' ], '_pmpro_optin_nonce' ) ){
+		if(  $_POST[ '_pmpro_optin' ] ){
+			PMProUsageData::get_main_instance()->optin();
+		}else{
+			PMProUsageData::get_main_instance()->optOut();
+		}
+	}
 
 }
 
@@ -41,7 +54,28 @@ function pmpro_listenForUsageOptin(){
  * @since 1.9
  */
 function pmro_addUsageOptinNotice() {
-
+	//If they have optin in or out return with no notice displayed
+	if( ! current_user_can( 'manage_options' ) || ! PMProUsageData::get_main_instance()->shouldAskForOption() ){
+		return;
+	}
+	$nonce = wp_create_nonce( '_pmpro_optin_nonce' );
+	?>
+	<div class="notice notice-success ">
+		<p>
+			<?php _e( 'Would you like to share usage data with Paid Memberships Pro?', 'pmpro' ); ?>
+			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept" href="<?php echo esc_url_raw( add_query_arg( array(
+				'_pmpro_optin'       => 'true',
+				'_pmpro_optin_nonce' => $nonce,
+				admin_url()
+			) ) ); ?>">Yes</a>
+			<a class="button pmpro-optin-button" id="pmpro-optin-button-decline" href="<?php echo esc_url_raw( add_query_arg( array(
+				'_pmpro_optin'       => 'false',
+				'_pmpro_optin_nonce' => $nonce,
+				admin_url()
+			) ) ); ?>">No</a>
+		</p>
+	</div>
+	<?php
 
 }
 
@@ -51,5 +85,5 @@ function pmro_addUsageOptinNotice() {
  * @since 1.9
  */
 function pmro_maybeSendUsage(){
-
+	PMProUsageData::get_main_instance()->send();
 }
