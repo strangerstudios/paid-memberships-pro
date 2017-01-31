@@ -73,13 +73,44 @@ class PMProUsageData {
 	/**
 	 * Collect the usage data
 	 *
-	 * @TODO this!
-	 *
 	 * @since 1.9
 	 */
 	protected function collectStats()
 	{
-		$this->stats = array();
+		global  $wp_version;
+		//@TODO Jason - populate this with array one index per level, with number of members array( 0 => 42, 1 => 3, 2 =>  400000 );
+		//BTW Array keys probably should be level ID.
+		$levels = array();
+
+		//@TODO Jason - populate this with array of gateways array( 0 => 'stripe', 1 => 'paypal' );
+		$gateways = array();
+
+		//@TODO Jason give this total numbers of sales
+		$sales = array(
+			'live' => 0,
+			'test' => 0
+		);
+
+
+		$this->stats = array(
+			'url' =>home_url() ,
+			'email' => get_option( 'admin_email' ),
+			'plugins' => pmpro_getPlugins(),
+			'wp_version' => $wp_version,
+			'php_version' => PHP_VERSION,
+			'pmpro_num_levels' => count( $levels ),
+			'pmpro_members_per_level' => $levels,
+			'pmpro_gatway' => $gateways,
+			//@TODO
+			'pmpro_license' => '',
+			//@TODO
+			'pmpro_num_users' => 0,
+			//@TODO
+			'pmpro_environment' => 'sandbox',
+			//@TODO
+			'pmpro_total_revenue' => 0
+		);
+
 	}
 
 	/**
