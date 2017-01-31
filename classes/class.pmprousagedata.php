@@ -35,7 +35,7 @@ class PMProUsageData {
 	/**
 	 * Name of option key for tracking last time things were sent
 	 *
-	 * Stored as unix timestamp $this->getLastSent() is public getter and can translate to MySQL format
+	 * Stored as unix timestamp $this->getLastSent() is public getter and can translate to a human readable format
 	 *
 	 * @since 1.9
 	 *
@@ -60,7 +60,7 @@ class PMProUsageData {
 	 */
 	public function __construct()
 	{
-		//NOTE: this doesn't need to do anything, but implies that you can reuse this class, mainly so you can extend it for other data sets
+		//NOTE: This doesn't do anything right now, but implies that you can reuse this class, mainly so you can extend it for other data sets
 	}
 
 	/**
@@ -121,7 +121,6 @@ class PMProUsageData {
 			'live' => 0,
 			'test' => 0
 		);
-
 
 		$this->stats = array(
 			'url' =>home_url() ,
@@ -214,6 +213,7 @@ class PMProUsageData {
 		}
 
 		return false;
+
 	}
 
 	/**
@@ -233,6 +233,7 @@ class PMProUsageData {
 		}
 
 		return $time;
+
 	}
 
 	/**
@@ -245,6 +246,7 @@ class PMProUsageData {
 	protected function getOptinStatus()
 	{
 		return get_option( $this->optinKey, null );
+
 	}
 
 	/**
@@ -261,6 +263,7 @@ class PMProUsageData {
 		}
 
 		update_option( $this->trackingKey, $time );
+
 	}
 
 	/**
@@ -287,4 +290,5 @@ class PMProUsageData {
 		return $r;
 
 	}
+
 }

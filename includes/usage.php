@@ -61,19 +61,20 @@ function pmpro_listenForUsageOptin(){
  * @since 1.9
  */
 function pmro_addUsageOptinNotice() {
-	//If they have optin in or out return with no notice displayed
-	if( ! current_user_can( 'manage_options' ) || ! PMProUsageData::get_main_instance()->shouldAskForOption() ){
-		return;
-	}
-
 	//only show in PMPro admin
 	$screen = get_current_screen();
 	if( ! is_object( $screen ) || 'pmpro-membershiplevels' != $screen->parent_base ){
 		return;
 	}
+
+	//If they have already opted in or out OR are not an admin, return
+	if( ! current_user_can( 'manage_options' ) || ! PMProUsageData::get_main_instance()->shouldAskForOption() ){
+		return;
+	}
+
 	$nonce = wp_create_nonce( '_pmpro_optin_nonce' );
 	?>
-	<div class="notice notice-success ">
+	<div class="notice notice-success" id="pmpro-usage-optin-notice">
 		<p>
 			<?php esc_html_e( 'Would you like to share usage data with Paid Memberships Pro?', 'pmpro' ); ?>
 			<a class="button pmpro-optin-button" id="pmpro-optin-button-accept"
@@ -105,6 +106,7 @@ function pmro_addUsageOptinNotice() {
  */
 function pmro_maybeSendUsage(){
 	if ( PMProUsageData::get_main_instance()->canTrack() ) {
-		//PMProUsageData::get_main_instance()->send();
+		PMProUsageData::get_main_instance()->send();
 	}
+
 }
