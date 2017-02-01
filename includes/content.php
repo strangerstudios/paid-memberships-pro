@@ -151,8 +151,7 @@ function pmpro_search_filter($query)
     }
 
     //hide member pages from non-members (make sure they aren't hidden from members)    
-	if(function_exists('is_user_logged_in') && is_user_logged_in() &&
-	   !$query->is_admin &&
+	if(!$query->is_admin &&
 	   !$query->is_singular && 
 	   empty($query->query['post_parent']) &&
 	   (
@@ -162,7 +161,10 @@ function pmpro_search_filter($query)
 	)
     {		
 		//get page ids that are in my levels
-        $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+        if(!empty($current_user->ID))
+			$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+		else
+			$levels = false;
         $my_pages = array();
 		$member_pages = array();
 
