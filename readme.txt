@@ -116,6 +116,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.13.6 =
+* BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
 * BUG: Fixed bug when updating billing with Stripe.
 
 = 1.8.13.5 =
