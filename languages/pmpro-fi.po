@@ -1802,12 +1802,12 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:388 pages/checkout.php:494
 #, php-format
 msgid "We Accept %s"
-msgstr ""
+msgstr "Maksuvälineenä käyvät %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:283
 #: classes/gateways/class.pmprogateway_stripe.php:388 pages/checkout.php:494
 msgid "Payment Information"
-msgstr ""
+msgstr "Maksutiedot"
 
 #: classes/gateways/class.pmprogateway_braintree.php:316
 #: classes/gateways/class.pmprogateway_stripe.php:450 pages/billing.php:257
@@ -2360,7 +2360,7 @@ msgstr ""
 #: includes/functions.php:202
 #, php-format
 msgid "<strong>%s</strong> now"
-msgstr ""
+msgstr "<strong>%s</strong> nyt"
 
 #: includes/functions.php:211
 #, php-format
@@ -2596,7 +2596,7 @@ msgstr "﻿uloskirjaus"
 #: pages/billing.php:25 pages/cancel.php:52 pages/invoice.php:109 pages/levels.php:13
 #: shortcodes/pmpro_account.php:44 shortcodes/pmpro_account.php:123
 msgid "Level"
-msgstr ""
+msgstr "Taso"
 
 #: pages/billing.php:27
 msgid "Membership Fee"
@@ -2750,7 +2750,7 @@ msgstr ""
 
 #: pages/checkout.php:172
 msgid "Already have an account?"
-msgstr ""
+msgstr "Onko sinulla jo tili?"
 
 #: pages/checkout.php:172
 msgid "Log in here"
@@ -2781,7 +2781,7 @@ msgstr "JÄTÄ TYHJÄKSI"
 msgid ""
 "You are logged in as <strong>%s</strong>. If you would like to use a different "
 "account for this membership, <a href=\"%s\">log out now</a>."
-msgstr ""
+msgstr "Olet kirjautunut sisään käyttäjänä <strong>%s</strong>. Jos haluat käyttää eri tiliä, <a href=\"%s\">kirjaudu ulos</a>."
 
 #: pages/checkout.php:285
 msgid "Choose your Payment Method"
