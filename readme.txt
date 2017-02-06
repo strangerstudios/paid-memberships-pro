@@ -120,6 +120,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug when updating billing with Stripe.
 * BUG: Fixed bug where the archive/search filter was not running for logged out users.
 * ENHANCEMENT: Updated Finnish translations. (Thanks, JP Jakonen)
+* ENHANCEMENT: Add filter for modifying the order description in Stripe. (Thanks, Rafe Colton)
 
 = 1.8.13.5 =
 * BUG: Fixed notifications.php to make sure it really only checks once per day. Also updated the URL checked to notifications.paidmembershipspro.com, which runs on its own server.
