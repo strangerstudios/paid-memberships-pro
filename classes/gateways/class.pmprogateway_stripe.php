@@ -1189,7 +1189,7 @@
 				  "amount" => $amount * $currency_unit_multiplier, # amount in cents, again
 				  "currency" => strtolower($pmpro_currency),
 				  "customer" => $this->customer->id,
-				  "description" => "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")"
+				  "description" => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order)
 				  )
 				);
 			}

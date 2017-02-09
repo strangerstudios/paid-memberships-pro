@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 4
 Tested up to: 4.7.2
-Stable tag: 1.8.13.5
+Stable tag: 1.8.13.6
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -116,8 +116,11 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 1.8.13.6 =
+* BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
 * BUG: Fixed bug when updating billing with Stripe.
 * BUG: Fixed bug where the archive/search filter was not running for logged out users.
+* ENHANCEMENT: Updated Finnish translations. (Thanks, JP Jakonen)
+* ENHANCEMENT: Added filter for modifying the order description in Stripe. (Thanks, Rafe Colton)
 
 = 1.8.13.5 =
 * BUG: Fixed notifications.php to make sure it really only checks once per day. Also updated the URL checked to notifications.paidmembershipspro.com, which runs on its own server.

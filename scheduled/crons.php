@@ -168,7 +168,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 			//make sure they are using a credit card type billing method for their current membership level (check the last order)
 			$last_order = new MemberOrder();
 			$last_order->getLastMemberOrder($euser->ID);
-			if(empty($last_order->accountnumber))
+			if(empty($last_order->accountnumber) && 'XXXXXXXXXXXXXXXX' != $last_order->accountnumber)
 				continue;
 
 			//okay send them an email
