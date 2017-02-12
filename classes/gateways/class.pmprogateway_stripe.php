@@ -1,9 +1,9 @@
 <?php
     // For compatibility with old library (Namespace Alias)
-    use \Stripe\Customer as Stripe_Customer;
-    use \Stripe\Invoice as Stripe_Invoice;
-    use \Stripe\Plan as Stripe_Plan;
-    use \Stripe\Charge as Stripe_Charge;
+    use Stripe\Customer as Stripe_Customer;
+    use Stripe\Invoice as Stripe_Invoice;
+    use Stripe\Plan as Stripe_Plan;
+    use Stripe\Charge as Stripe_Charge;
 
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
@@ -24,6 +24,7 @@
 	 */
 	class PMProGateway_stripe extends PMProGateway
 	{
+	    static $is_loaded = false;
 		/**
 		 * Stripe Class Constructor
 		 *
@@ -34,10 +35,10 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
-			if($this->dependencies()) {
+			if( true === ( self::$is_loaded = $this->dependencies() ) ) {
 				$this->loadStripeLibrary();
-				\Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				\Stripe\Stripe::setAPIVersion("2015-07-13");
+				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+				Stripe\Stripe::setAPIVersion("2015-07-13");
 			} else {
 				return false;
 			}
@@ -56,6 +57,19 @@
 		{
 			global $msg, $msgt, $pmpro_stripe_error;
 
+			if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+
+			    $pmpro_stripe_error = true;
+			    $msg = -1;
+			    $msgt = __("The Stripe Gateway requires PHP 5.3.29 or greater. Please enable it, or ask your hosting provider to enable it", "pmpro" );
+
+			    if ( !is_admin() ) {
+	                pmpro_setMessage( $msgt, "pmpro_error" );
+                }
+
+				return false;
+			}
+
 			$modules = array( 'curl', 'mbstring', 'json' );
 
 			foreach($modules as $module){
@@ -71,7 +85,7 @@
 					return false;
 				}
 			}
-			
+
 			return true;
 		}
 
@@ -128,7 +142,7 @@
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();			
-			if(($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
+			if( true === self::$is_loaded && ($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
@@ -686,7 +700,7 @@
 				<?php
 				}
 			}
-			else
+			elseif ( true === self::$is_loaded )
 			{
 			?>
 			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
@@ -1148,9 +1162,18 @@
 				}
 				else
 				{
-					if(empty($order->error))
-						$order->error = __("Unknown error: Initial payment failed.", "pmpro");
-					return false;
+					if(empty($order->error)) {
+						if ( ! self::$is_loaded ) {
+
+							$order->error = __( "Payment error: Please contact the webmaster (stripe-load-error)", "pmpro" );
+
+						} else {
+
+							$order->error = __( "Unknown error: Initial payment failed.", "pmpro" );
+						}
+					}
+
+                    return false;
 				}
 			}
 		}
