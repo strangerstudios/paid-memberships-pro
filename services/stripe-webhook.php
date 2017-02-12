@@ -21,8 +21,7 @@
 	}
 
 	if(!class_exists("\\Stripe")) {
-		require_once( PMPRO_DIR . "/includes/lib/Stripe-4.4/init.php" );
-		// require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
+		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
 
