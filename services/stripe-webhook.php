@@ -1,7 +1,11 @@
 <?php
+	if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+		return;
+	}
+
 	// For compatibility with old library (Namespace Alias)
-	use \Stripe\Invoice as Stripe_Invoice;
-	use \Stripe\Event as Stripe_Event;
+	use Stripe\Invoice as Stripe_Invoice;
+	use Stripe\Event as Stripe_Event;
 
 	global $isapage;
 	$isapage = true;
