@@ -7,14 +7,17 @@
 	
 	class PMProGateway_braintree extends PMProGateway
 	{
-	    static $is_loaded = false;
+		/**
+		 * @var bool    Is the Braintree/PHP Library loaded
+		 */
+		private static $is_loaded = false;
 
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			if( true === ( self::$is_loaded = $this->dependencies() )) {
+			if( true === $this->dependencies() ) {
 				$this->loadBraintreeLibrary();		
 				
 				//convert to braintree nomenclature
@@ -26,8 +29,7 @@
 				Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
 				Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
 				Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
-			} else {
-				return false;
+				self::$is_loaded = true;
 			}
 				
 			return $this->gateway;
@@ -66,7 +68,8 @@
 					return false;
 				}
 			}
-			
+
+			self::$is_loaded = true;
 			return true;
 		}
 		
@@ -100,7 +103,7 @@
 			//code to add at checkout if Braintree is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();			
-			if( true === self::$is_loaded && ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
+			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
@@ -108,7 +111,7 @@
 				add_filter('pmpro_billing_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_braintree', 'pmpro_required_billing_fields'));				
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_braintree', 'pmpro_include_payment_information_fields'));
-			}			
+			}
 		}
 		
 		/**
@@ -172,7 +175,7 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-			?>
+        ?>
 		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<?php _e('Braintree Settings', 'pmpro'); ?>
