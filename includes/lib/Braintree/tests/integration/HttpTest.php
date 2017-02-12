@@ -1,0 +1,100 @@
+<?php
+namespace Test\Integration;
+
+require_once dirname(__DIR__) . '/Setup.php';
+
+use Test\Setup;
+use Braintree;
+
+class HttpTest extends Setup
+{
+    public function testProductionSSL()
+    {
+        try {
+            Braintree\Configuration::environment('production');
+            $this->setExpectedException('Braintree\Exception\Authentication');
+            $http = new Braintree\Http(Braintree\Configuration::$global);
+            $http->get('/');
+        } catch (Braintree\Exception $e) {
+            Braintree\Configuration::environment('development');
+            throw $e;
+        }
+        Braintree\Configuration::environment('development');
+    }
+
+    public function testSandboxSSL()
+    {
+        try {
+            Braintree\Configuration::environment('sandbox');
+            $this->setExpectedException('Braintree\Exception\Authentication');
+            $http = new Braintree\Http(Braintree\Configuration::$global);
+            $http->get('/');
+        } catch (Braintree\Exception $e) {
+            Braintree\Configuration::environment('development');
+            throw $e;
+        }
+        Braintree\Configuration::environment('development');
+    }
+
+    public function testSandboxSSLWithExplicitVersionSet()
+    {
+        try {
+            Braintree\Configuration::environment('sandbox');
+            Braintree\Configuration::sslVersion(6);
+            $this->setExpectedException('Braintree\Exception\Authentication');
+            $http = new Braintree\Http(Braintree\Configuration::$global);
+            $http->get('/');
+        } catch (Braintree\Exception $e) {
+            Braintree\Configuration::environment('development');
+            Braintree\Configuration::sslVersion(null);
+            throw $e;
+        }
+        Braintree\Configuration::environment('development');
+        Braintree\Configuration::sslVersion(null);
+    }
+
+    public function testSandboxSSLFailsWithIncompatibleSSLVersion()
+    {
+        try {
+            Braintree\Configuration::environment('sandbox');
+            Braintree\Configuration::sslVersion(3);
+            $this->setExpectedException('Braintree\Exception\SSLCertificate');
+            $http = new Braintree\Http(Braintree\Configuration::$global);
+            $http->get('/');
+        } catch (Braintree\Exception $e) {
+            Braintree\Configuration::environment('development');
+            Braintree\Configuration::sslVersion(null);
+            throw $e;
+        }
+        Braintree\Configuration::environment('development');
+        Braintree\Configuration::sslVersion(null);
+    }
+
+    public function testSslError()
+    {
+        try {
+            Braintree\Configuration::environment('sandbox');
+            $this->setExpectedException('Braintree\Exception\SSLCertificate');
+            $http = new Braintree\Http(Braintree\Configuration::$global);
+            $http->_doUrlRequest('get', '/malformed_url');
+        } catch (Braintree\Exception $e) {
+            Braintree\Configuration::environment('development');
+            throw $e;
+        }
+        Braintree\Configuration::environment('development');
+    }
+
+    public function testAuthorizationWithConfig()
+    {
+        $config = new Braintree\Configuration([
+            'environment' => 'development',
+            'merchant_id' => 'integration_merchant_id',
+            'publicKey' => 'badPublicKey',
+            'privateKey' => 'badPrivateKey'
+        ]);
+
+        $http = new Braintree\Http($config);
+        $result = $http->_doUrlRequest('GET', $config->baseUrl() . '/merchants/integration_merchant_id/customers');
+        $this->assertEquals(401, $result['status']);
+    }
+}
