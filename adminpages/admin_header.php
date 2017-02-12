@@ -116,12 +116,21 @@
 	
 	//check gateway dependencies	
 	$gateway = pmpro_getOption('gateway');
-	if($gateway == "stripe") {
+	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 		PMProGateway_stripe::dependencies();
-	} elseif($gateway == "braintree") {
+	} elseif($gateway == "braintree" && ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) ) {
 		PMProGateway_braintree::dependencies();
-	}
-	
+	} elseif($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '<' ) ) {
+        $msg = -1;
+        $msgt = __("The Stripe Gateway requires PHP 5.3.29 or greater. Please enable it, or ask your hosting provider to enable it", "pmpro" );
+    } elseif($gateway == "braintree" && version_compare( PHP_VERSION, '5.4.45', '<' ) ) {
+        $msg = -1;
+        $msgt = __("The Braintree Gateway requires PHP 5.4.45 or greater. Please enable it, or ask your hosting provider to enable it", "pmpro" );
+    }
+
+	if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
+
+    }
 	if(!empty($msg))
 	{
 	?>
