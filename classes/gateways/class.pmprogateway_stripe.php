@@ -218,9 +218,6 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-			if ( false == self::$is_loaded) {
-				return;
-			}
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
