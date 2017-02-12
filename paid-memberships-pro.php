@@ -78,14 +78,22 @@ require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded b
 
 //load payment gateway class
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_authorizenet.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php");
+
+if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_check.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_cybersource.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_payflowpro.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypal.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalexpress.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalstandard.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php");
+
+if ( version_compare( PHP_VERSION, '5.3.29', '>=' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_twocheckout.php");
 
 /*
