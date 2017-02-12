@@ -679,7 +679,7 @@
 			$sub = false;
 
 			//check that gateway is Stripe
-			if($last_order->gateway == "stripe")
+			if($last_order->gateway == "stripe" && self::$is_loaded )
 			{
 				//is there a customer?
 				$sub = $last_order->Gateway->getSubscription($last_order);
@@ -696,7 +696,7 @@
 				if(!empty($last_order) && $last_order->gateway == "stripe" && !empty($last_order->subscription_transaction_id) && strpos($last_order->subscription_transaction_id, "sub_") !== false)
 				{
 				?>
-				<p><strong>Note:</strong> Subscription <strong><?php echo $last_order->subscription_transaction_id;?></strong> could not be found at Stripe. It might have been deleted.</p>
+				<p><?php printf( __('%1$sNote:%2$s Subscription %3$s%4$s%5$s could not be found at Stripe. It may have been deleted.', 'pmpro'), '<strong>', '</strong>', '<strong>', esc_attr($last_order->subscription_transaction_id), '</strong>' ); ?></p>
 				<?php
 				}
 			}
