@@ -1,4 +1,10 @@
 <?php
+    // For compatibility with old library (Namespace Alias)
+    use \Stripe\Customer as Stripe_Customer;
+    use \Stripe\Invoice as Stripe_Invoice;
+    use \Stripe\Plan as Stripe_Plan;
+    use \Stripe\Charge as Stripe_Charge;
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -30,8 +36,8 @@
 
 			if($this->dependencies()) {
 				$this->loadStripeLibrary();
-				Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe::setAPIVersion("2015-07-13");
+				\Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+				\Stripe\Stripe::setAPIVersion("2015-07-13");
 			} else {
 				return false;
 			}
@@ -44,12 +50,13 @@
 		 *
 		 * @return bool
 		 * @since 1.8.6.8.1
+         * @since 1.8.13.6 - Add json dependency
 		 */
 		public static function dependencies()
 		{
 			global $msg, $msgt, $pmpro_stripe_error;
 
-			$modules = array('curl', 'mbstring');
+			$modules = array( 'curl', 'mbstring', 'json' );
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
@@ -77,8 +84,9 @@
 		function loadStripeLibrary()
 		{
 			//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
-			if(!class_exists("Stripe"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+			if(!class_exists("\\Stripe")) {
+                require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
+			}
 		}
 
 		/**
