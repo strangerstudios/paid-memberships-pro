@@ -79,7 +79,7 @@ require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded b
 //load payment gateway class
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_authorizenet.php");
 
-if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
+if ( version_compare( PHP_VERSION, '5.4.45', '>=' )) {
 	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php" );
 }
 
