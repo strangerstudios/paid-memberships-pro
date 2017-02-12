@@ -24,7 +24,10 @@
 	 */
 	class PMProGateway_stripe extends PMProGateway
 	{
-	    static $is_loaded = false;
+		/**
+		 * @var bool    Is the Stripe/PHP Library loaded
+		 */
+	    private static $is_loaded = false;
 		/**
 		 * Stripe Class Constructor
 		 *
@@ -35,12 +38,11 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
-			if( true === ( self::$is_loaded = $this->dependencies() ) ) {
+			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
 				Stripe\Stripe::setAPIVersion("2015-07-13");
-			} else {
-				return false;
+                self::$is_loaded = true;
 			}
 			
 			return $this->gateway;
@@ -86,6 +88,7 @@
 				}
 			}
 
+			self::$is_loaded = true;
 			return true;
 		}
 
@@ -141,8 +144,9 @@
 			
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
-			$current_gateway = pmpro_getGateway();			
-			if( true === self::$is_loaded && ($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
+			$current_gateway = pmpro_getGateway();
+
+			if( ($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review'] ) )	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
@@ -214,6 +218,9 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
+			if ( false == self::$is_loaded) {
+				return;
+			}
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
