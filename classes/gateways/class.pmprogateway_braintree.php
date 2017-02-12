@@ -1,4 +1,4 @@
-<?php	
+<?php
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
@@ -7,12 +7,14 @@
 	
 	class PMProGateway_braintree extends PMProGateway
 	{
+	    static $is_loaded = false;
+
 		function __construct($gateway = NULL)
-		{			
+		{
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			if($this->dependencies()) {
+			if( true === ( self::$is_loaded = $this->dependencies() )) {
 				$this->loadBraintreeLibrary();		
 				
 				//convert to braintree nomenclature
@@ -39,6 +41,15 @@
 		public static function dependencies()
 		{
 			global $msg, $msgt, $pmpro_braintree_error;
+
+			if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
+
+				$msg = -1;
+				$msgt = __("The Braintree Gateway requires PHP 5.4.45 or greater. Please enable it, or ask your hosting provider to enable it", "pmpro" );
+
+				pmpro_setMessage( $msgt, "pmpro_error" );
+				return false;
+			}
 
 			$modules = array('xmlwriter', 'SimpleXML', 'openssl', 'dom', 'hash', 'curl');
 
@@ -68,8 +79,8 @@
 		function loadBraintreeLibrary()
 		{
 			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
-			if(!class_exists("Braintree"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Braintree/Braintree.php");
+			if(!class_exists("\\Braintree"))
+				require_once( PMPRO_DIR . "/includes/lib/Braintree-3.21.1/lib/Braintree.php");
 		}		
 		
 		/**
@@ -89,7 +100,7 @@
 			//code to add at checkout if Braintree is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();			
-			if($default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
+			if( true === self::$is_loaded && ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
@@ -161,7 +172,7 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-		?>
+			?>
 		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<?php _e('Braintree Settings', 'pmpro'); ?>
@@ -303,7 +314,8 @@
 		 * @since 1.8
 		 */
 		static function pmpro_include_payment_information_fields($include)
-		{			
+		{
+
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 			
@@ -455,8 +467,18 @@
 				}
 				else
 				{					
-					if(empty($order->error))
-						$order->error = __("Unknown error: Initial payment failed.", "pmpro");
+					if(empty($order->error)) {
+
+					    if ( !self::$is_loaded ) {
+
+					        $order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+
+                        } else {
+
+						    $order->error = __( "Unknown error: Initial payment failed.", "pmpro" );
+					    }
+                    }
+
 					return false;
 				}
 			}				
@@ -464,6 +486,12 @@
 		
 		function charge(&$order)
 		{
+		    if ( ! self::$is_loaded ) {
+
+                $order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+                return false;
+            }
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -541,6 +569,11 @@
 		*/
 		function getCustomer(&$order, $force = false)
 		{
+            if ( ! self::$is_loaded ) {
+	            $order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+	            return false;
+            }
+
 			global $current_user;
 			
 			//already have it?
@@ -694,6 +727,11 @@
 		
 		function subscribe(&$order)
 		{
+			if ( ! self::$is_loaded ) {
+				$order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+				return false;
+			}
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -793,7 +831,12 @@
 		}	
 		
 		function update(&$order)
-		{			
+		{
+			if ( ! self::$is_loaded ) {
+				$order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+				return false;
+			}
+
 			//we just have to run getCustomer which will look for the customer and update it with the new token
 			$this->getCustomer($order, true);
 						
@@ -809,6 +852,11 @@
 		
 		function cancel(&$order)
 		{
+			if ( ! self::$is_loaded ) {
+				$order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "pmpro");
+				return false;
+			}
+
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
