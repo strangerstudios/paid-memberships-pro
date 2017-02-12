@@ -350,7 +350,7 @@
 
 			foreach( $um_values as $key => $value ) {
 
-				$metavalues->{$key} = $value[0];
+				$metavalues->{$key} = isset( $value[0] ) ? $value[0] : null;
 			}
 
 			$theuser->metavalues = $metavalues;
