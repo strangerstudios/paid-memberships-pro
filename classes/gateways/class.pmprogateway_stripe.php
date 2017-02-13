@@ -203,7 +203,7 @@
 		static function pmpro_payment_options($options)
 		{
 			//get stripe options
-			$stripe_options = PMProGateway_stripe::getGatewayOptions();
+			$stripe_options = self::getGatewayOptions();
 
 			//merge with others.
 			$options = array_merge($stripe_options, $options);

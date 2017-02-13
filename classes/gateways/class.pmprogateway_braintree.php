@@ -160,7 +160,7 @@
 		static function pmpro_payment_options($options)
 		{			
 			//get Braintree options
-			$braintree_options = PMProGateway_braintree::getGatewayOptions();
+			$braintree_options = self::getGatewayOptions();
 			
 			//merge with others.
 			$options = array_merge($braintree_options, $options);
