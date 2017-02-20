@@ -79,6 +79,9 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		}
 	}
 
+	// force check against all other access add-ons & filters
+	$has_access = apply_filters("pmpro_has_membership_access_filter", $hasaccess, null, null, false);
+	
 	//to show or not to show
 	if($hasaccess)
 		return do_shortcode($content);	//show content
