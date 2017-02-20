@@ -359,13 +359,13 @@
 			//no matter what happens below, we're going to cancel the order in our system
 			$order->updateStatus("cancelled");
 
-			//require a subscription id
-			if(empty($order->subscription_transaction_id))
+			//require a payment transaction id
+			if(empty($order->payment_transaction_id))
 				return false;
 
 			//build api params
 			$params = array();
-			$params['sale_id'] = $order->subscription_transaction_id;
+			$params['sale_id'] = $order->payment_transaction_id;
 			
 			// Demo mode?
 			if(empty($order->gateway_environment))
