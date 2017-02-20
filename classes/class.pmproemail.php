@@ -132,7 +132,7 @@
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been CANCELLED", "pmpro"), get_option("blogname"));			
-			$this->template = "cancel";
+
 			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
 
 			if(!empty($old_level_id)) {
@@ -144,7 +144,8 @@
 				$this->data['membership_id'] = '';
 				$this->data['membership_level_name'] = __('All Levels', 'pmpro');
 			}
-			
+
+			$this->template = apply_filters("pmpro_email_template", "cancel", $this);
 			return $this->sendEmail();
 		}
 		
@@ -164,7 +165,7 @@
 			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", "pmpro"), $user->user_login, get_option("blogname"));			
-			$this->template = "cancel_admin";
+
 			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			
 			if(!empty($old_level_id)) {
@@ -190,7 +191,9 @@
 				$this->data['startdate'] = '';
 				$this->data['enddate'] = '';
 			}
-	
+
+			$this->template = apply_filters("pmpro_email_template", "cancel_admin", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -233,6 +236,10 @@
 					$this->template = "checkout_trial";
 				else
 					$this->template = "checkout_paid";
+
+				//BUG: Didn't apply template filter before it was being used in sendEmail()
+				$this->template = apply_filters("pmpro_email_template", $this->template, $this);
+
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
@@ -330,6 +337,9 @@
 					$this->template = "checkout_trial_admin";
 				else
 					$this->template = "checkout_paid_admin";
+
+				$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
+
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
@@ -393,8 +403,7 @@
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your billing information has been updated at %s", "pmpro"), get_option("blogname"));	
-			$this->template = "billing";
-			
+
 			$this->data = array(
 								"subject" => $this->subject, 
 								"name" => $user->display_name, 
@@ -426,7 +435,9 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
-		
+
+			$this->template = apply_filters( "pmpro_email_template", "billing", $this );
+
 			return $this->sendEmail();
 		}
 		
@@ -445,8 +456,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "pmpro"), $user->user_login, get_option("blogname"));	
-			$this->template = "billing_admin";
+			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "pmpro"), $user->user_login, get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -479,7 +489,9 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
-		
+
+			$this->template = apply_filters( "pmpro_email_template", "billing_admin", $this );
+
 			return $this->sendEmail();
 		}
 		
@@ -493,8 +505,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Membership Payment Failed at %s", "pmpro"), get_option("blogname"));	
-			$this->template = "billing_failure";
+			$this->subject = sprintf(__("Membership Payment Failed at %s", "pmpro"), get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -527,7 +538,9 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
-		
+
+			$this->template = apply_filters("pmpro_email_template", "billing_failure", $this);
+
 			return $this->sendEmail();
 		}				
 		
@@ -539,8 +552,7 @@
 			$user = get_userdata($invoice->user_id);
 			
 			$this->email = $email;
-			$this->subject = sprintf(__("Membership Payment Failed For %s at %s", "pmpro"), $user->display_name, get_option("blogname"));	
-			$this->template = "billing_failure_admin";
+			$this->subject = sprintf(__("Membership Payment Failed For %s at %s", "pmpro"), $user->display_name, get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -572,7 +584,9 @@
 																 $invoice->billing->state,
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
-																 $invoice->billing->phone);		
+																 $invoice->billing->phone);
+			$this->template = apply_filters("pmpro_email_template", "billing_failure_admin", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -586,8 +600,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", "pmpro"), get_option("blogname"));	
-			$this->template = "credit_card_expiring";
+			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", "pmpro"), get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -620,7 +633,9 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
-		
+
+			$this->template = apply_filters("pmpro_email_template", "credit_card_expiring", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -636,9 +651,8 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("INVOICE for %s membership", "pmpro"), get_option("blogname"));	
-			$this->template = "invoice";
-			
+			$this->subject = sprintf(__("INVOICE for %s membership", "pmpro"), get_option("blogname"));
+
 			$this->data = array(
 								"subject" => $this->subject, 
 								"name" => $user->display_name, 
@@ -685,7 +699,10 @@
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
-				
+
+
+			$this->template = apply_filters("pmpro_email_template", "invoice", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -708,7 +725,7 @@
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your trial at %s is ending soon", "pmpro"), get_option("blogname"));
-			$this->template = "trial_ending";
+
 			$this->data = array(
 				"subject" => $this->subject, 
 				"name" => $user->display_name, 
@@ -726,8 +743,10 @@
 				"trial_amount" => pmpro_formatPrice($user->membership_level->trial_amount), 
 				"trial_limit" => $user->membership_level->trial_limit,
 				"trial_end" => date_i18n(get_option('date_format'), strtotime(date_i18n("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period), current_time("timestamp"))
-			);			
-			
+			);
+
+			$this->template = apply_filters("pmpro_email_template", "trial_ending", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -742,9 +761,11 @@
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has ended", "pmpro"), get_option("blogname"));			
-			$this->template = "membership_expired";
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));			
-			
+
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));
+
+			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -767,9 +788,11 @@
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s will end soon", "pmpro"), get_option("blogname"));
-			$this->template = "membership_expiring";
+
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
-			
+
+			$this->template = apply_filters("pmpro_email_template", "membership_expiring", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -787,12 +810,14 @@
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been changed", "pmpro"), get_option("blogname"));
-			$this->template = "admin_change";
+
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
+
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
 			else
 				$this->data["membership_change"] = __("Your membership has been cancelled", "pmpro");
+
 			if(!empty($user->membership_level->enddate))
 			{
 					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
@@ -801,7 +826,9 @@
 			{
 				$this->data["membership_change"] .= ". " . __("This membership does not expire", "pmpro");
 			}
-			
+
+			$this->template = apply_filters("pmpro_email_template", "admin_change", $this);
+
 			return $this->sendEmail();
 		}
 		
@@ -824,7 +851,7 @@
 						
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "pmpro"), $user->user_login, get_option("blogname"));
-			$this->template = "admin_change_admin";
+
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
@@ -839,7 +866,9 @@
 			{
 				$this->data["membership_change"] .= ". " . __("This membership does not expire", "pmpro");
 			}
-			
+
+			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
+
 			return $this->sendEmail();
 		}
 
@@ -867,7 +896,7 @@
 
 			$this->email = $user->user_email;
 			$this->subject = __('Invoice for Order #: ', 'pmpro') . $order->code;
-			$this->template = "billable_invoice";
+
 
 			// Load invoice template
 			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
@@ -890,6 +919,8 @@
 				'invoice_link' => wp_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
 				'invoice' => $invoice
 			);
+
+			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);
 
 			return $this->sendEmail();
 		}
