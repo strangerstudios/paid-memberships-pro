@@ -19,18 +19,18 @@
 		?>
 		
 		<h3>
-			<?php printf(__('Invoice #%s on %s', 'pmpro'), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>	
+			<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>	
 		</h3>
-		<a class="pmpro_a-print" href="javascript:window.print()"><?php _e('Print', 'pmpro'); ?></a>
+		<a class="pmpro_a-print" href="javascript:window.print()"><?php _e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
-			<li><strong><?php _e('Account', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
-			<li><strong><?php _e('Membership Level', 'pmpro');?>:</strong> <?php echo $current_user->membership_level->name?></li>
+			<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
+			<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $current_user->membership_level->name?></li>
 			<?php if($current_user->membership_level->enddate) { ?>
-				<li><strong><?php _e('Membership Expires', 'pmpro');?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
+				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 			<?php } ?>
 			<?php if($pmpro_invoice->getDiscountCode()) { ?>
-				<li><strong><?php _e('Discount Code', 'pmpro');?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
+				<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 			<?php } ?>
 			<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 		</ul>
@@ -45,11 +45,11 @@
 			<thead>
 				<tr>
 					<?php if(!empty($pmpro_invoice->billing->name)) { ?>
-						<th><?php _e('Billing Address', 'pmpro');?></th>
+						<th><?php _e('Billing Address', 'paid-memberships-pro' );?></th>
 					<?php } ?>
-					<th><?php _e('Payment Method', 'pmpro');?></th>
-					<th><?php _e('Membership Level', 'pmpro');?></th>
-					<th align="center"><?php _e('Total Billed', 'pmpro');?></th>
+					<th><?php _e('Payment Method', 'paid-memberships-pro' );?></th>
+					<th><?php _e('Membership Level', 'paid-memberships-pro' );?></th>
+					<th align="center"><?php _e('Total Billed', 'paid-memberships-pro' );?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,8 +66,8 @@
 					<?php } ?>
 					<td>
 						<?php if($pmpro_invoice->accountnumber) { ?>
-							<?php echo $pmpro_invoice->cardtype?> <?php echo __('ending in', 'pmpro');?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
-							<small><?php _e('Expiration', 'pmpro');?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
+							<?php echo $pmpro_invoice->cardtype?> <?php echo __('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
+							<small><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
 						<?php } elseif($pmpro_invoice->payment_type) { ?>
 							<?php echo $pmpro_invoice->payment_type?>
 						<?php } ?>
@@ -76,12 +76,12 @@
 					<td align="center">
 						<?php if($pmpro_invoice->total != '0.00') { ?>
 							<?php if(!empty($pmpro_invoice->tax)) { ?>
-								<?php _e('Subtotal', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
-								<?php _e('Tax', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
+								<?php _e('Subtotal', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
+								<?php _e('Tax', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
 								<?php if(!empty($pmpro_invoice->couponamount)) { ?>
-									<?php _e('Coupon', 'pmpro');?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
+									<?php _e('Coupon', 'paid-memberships-pro' );?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
 								<?php } ?>
-								<strong><?php _e('Total', 'pmpro');?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
+								<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
 							<?php } else { ?>
 								<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
 							<?php } ?>						
@@ -104,10 +104,10 @@
 			<table id="pmpro_invoices_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
-					<th><?php _e('Date', 'pmpro'); ?></th>
-					<th><?php _e('Invoice #', 'pmpro'); ?></th>
-					<th><?php _e('Level', 'pmpro'); ?></th>
-					<th><?php _e('Total Billed', 'pmpro'); ?></th>					
+					<th><?php _e('Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php _e('Invoice #', 'paid-memberships-pro' ); ?></th>
+					<th><?php _e('Level', 'paid-memberships-pro' ); ?></th>
+					<th><?php _e('Total Billed', 'paid-memberships-pro' ); ?></th>					
 				</tr>
 			</thead>
 			<tbody>
@@ -131,18 +131,18 @@
 		else
 		{
 			?>
-			<p><?php _e('No invoices found.', 'pmpro');?></p>
+			<p><?php _e('No invoices found.', 'paid-memberships-pro' );?></p>
 			<?php
 		}
 	} 
 ?>
 <nav id="nav-below" class="navigation" role="navigation">
 	<div class="nav-next alignright">
-		<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro');?></a>
+		<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
 	</div>
 	<?php if($pmpro_invoice) { ?>
 		<div class="nav-prev alignleft">
-			<a href="<?php echo pmpro_url("invoice")?>"><?php _e('&larr; View All Invoices', 'pmpro');?></a>
+			<a href="<?php echo pmpro_url("invoice")?>"><?php _e('&larr; View All Invoices', 'paid-memberships-pro' );?></a>
 		</div>
 	<?php } ?>
 </nav>

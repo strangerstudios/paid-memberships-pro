@@ -56,7 +56,7 @@
         
 		if($worked === true && empty($pmpro_error))
 		{
-			$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member

@@ -142,17 +142,17 @@ if ($submit) {
     }
 	
     if (!empty($missing_billing_field)) {
-        $pmpro_msg = __("Please complete all required fields.", 'pmpro');
+        $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
     } elseif ($bemail != $bconfirmemail) {
-        $pmpro_msg = __("Your email addresses do not match. Please try again.", 'pmpro');
+        $pmpro_msg = __("Your email addresses do not match. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
     } elseif (!is_email($bemail)) {
-        $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'pmpro');
+        $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
     } else {
         //all good. update billing info.
-        $pmpro_msg = __("All good!", 'pmpro');
+        $pmpro_msg = __("All good!", 'paid-memberships-pro' );
 
         //change this
         $order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY id DESC LIMIT 1");
@@ -219,13 +219,13 @@ if ($submit) {
             pmpro_replaceUserMeta($current_user->ID, $meta_keys, $meta_values);
 
             //message
-            $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'pmpro'), pmpro_url("account"));
+            $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
             $pmpro_msgt = "pmpro_success";
         } else {
             $pmpro_msg = $morder->error;
 
             if (!$pmpro_msg)
-                $pmpro_msg = __("Error updating billing information.", 'pmpro');
+                $pmpro_msg = __("Error updating billing information.", 'paid-memberships-pro' );
             $pmpro_msgt = "pmpro_error";
         }
     }

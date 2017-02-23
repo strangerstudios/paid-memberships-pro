@@ -52,7 +52,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", "pmpro");
+						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
 					return false;
 				}
 			}
@@ -103,14 +103,14 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 								
-								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
 							}
 							
 							return false;								
@@ -126,7 +126,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Payment failed.", "pmpro");
+						$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 					
 					return false;
 				}	

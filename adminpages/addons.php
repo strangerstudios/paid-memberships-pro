@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_addons")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}	
 	
 	global $wpdb, $msg, $msgt, $pmpro_addons;
@@ -64,23 +64,23 @@
 			$addons_uninstalled[] = $addon;
 	}
 	?>
-	<h2><?php _e('Add Ons', 'pmpro'); ?></h2>
+	<h2><?php _e('Add Ons', 'paid-memberships-pro' ); ?></h2>
 
 	<?php
 		pmpro_showMessage();
 	?>
 	
 	<p>
-		<?php printf(__('Last checked on %s at %s.', 'pmpro'), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;	
-		<a class="button" href="<?php echo admin_url("admin.php?page=pmpro-addons&force-check=1&plugin_status=" . $status);?>"><?php _e('Check Again', 'pmpro'); ?></a>
+		<?php printf(__('Last checked on %s at %s.', 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;	
+		<a class="button" href="<?php echo admin_url("admin.php?page=pmpro-addons&force-check=1&plugin_status=" . $status);?>"><?php _e('Check Again', 'paid-memberships-pro' ); ?></a>
 	</p>
 
 	<ul class="subsubsub">
-		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'pmpro'); ?> <span class="count">(<?php echo count($addons);?>)</span></a> |</li>
-		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'pmpro'); ?> <span class="count">(<?php echo count($addons_active);?>)</span></a> |</li>
-		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'pmpro'); ?> <span class="count">(<?php echo count($addons_inactive);?>)</span></a> |</li>
-		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'pmpro'); ?> <span class="count">(<?php echo count($addons_update);?>)</span></a> |</li>
-		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'pmpro'); ?> <span class="count">(<?php echo count($addons_uninstalled);?>)</span></a></li>
+		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons);?>)</span></a> |</li>
+		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_active);?>)</span></a> |</li>
+		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_inactive);?>)</span></a> |</li>
+		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_update);?>)</span></a> |</li>
+		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_uninstalled);?>)</span></a></li>
 	</ul>
 
 	<br /><br />
@@ -93,9 +93,9 @@
 			<label class="screen-reader-text" for="cb-select-all-1"><?php _e('Select All'); ?></label><input id="cb-select-all-1" type="checkbox">
 			*/ ?>
 		</th>	
-		<th scope="col" id="name" class="manage-column column-name" style=""><?php _e('Add On Name','pmpro'); ?></th>
-		<th scope="col" id="type" class="manage-column column-type" style=""><?php _e('Type', 'pmpro'); ?></th>
-		<th scope="col" id="description" class="manage-column column-description" style=""><?php _e('Description', 'pmpro'); ?></th>		
+		<th scope="col" id="name" class="manage-column column-name" style=""><?php _e('Add On Name', 'paid-memberships-pro' ); ?></th>
+		<th scope="col" id="type" class="manage-column column-type" style=""><?php _e('Type', 'paid-memberships-pro' ); ?></th>
+		<th scope="col" id="description" class="manage-column column-description" style=""><?php _e('Description', 'paid-memberships-pro' ); ?></th>		
 	</tr>
 	</thead>
 	<tbody id="the-list">
@@ -118,7 +118,7 @@
 			?>
 			<tr>
 				<td></td>
-				<td colspan="3"><p><?php _e('No Add Ons found.', 'pmpro'); ?></p></td>	
+				<td colspan="3"><p><?php _e('No Add Ons found.', 'paid-memberships-pro' ); ?></p></td>	
 			</tr>
 			<?php
 			}
@@ -179,31 +179,31 @@
 								if($plugin_data['License'] == 'wordpress.org')
 								{
 									//wordpress.org
-									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
+									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'paid-memberships-pro' ) . '</a></span>';
 								}
 								elseif($plugin_data['License'] == 'free')
 								{
 									//free
-									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
-									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'pmpro') . '</a></span>';
+									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
 								elseif(empty($pmpro_license_key))
 								{
 									//no key
-									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'pmpro') . '</a></span>';
-									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'pmpro') . '</a></span>';
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
 								elseif(pmpro_license_isValid($pmpro_license_key, $plugin_data['License']))
 								{
 									//valid key
-									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'pmpro') . '</a></span>';
-									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'pmpro') . '</a></span>';									
+									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['Download'] . '?key=' . $pmpro_license_key . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';									
 								}
 								else
 								{
 									//invalid key
-									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'pmpro') . '</a></span>';
-									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'pmpro') . '</a></span>';
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
 							}
 							elseif($context === 'active' || $context === 'active update')
@@ -223,15 +223,15 @@
 					<td class="column-type">
 						<?php
 							if($addon['License'] == 'free')
-								_e("PMPro Free", "pmpro");
+								_e("PMPro Free", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'core')
-								_e("PMPro Core", "pmpro");
+								_e("PMPro Core", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'plus')
-								_e("PMPro Plus", "pmpro");
+								_e("PMPro Plus", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'wordpress.org')
-								_e("WordPress.org", "pmpro");
+								_e("WordPress.org", 'paid-memberships-pro' );
 							else
-								_e("N/A", "pmpro");
+								_e("N/A", 'paid-memberships-pro' );
 						?>
 					</td>
 					<td class="column-description desc">

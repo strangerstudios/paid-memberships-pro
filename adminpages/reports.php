@@ -38,7 +38,7 @@
 				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
 				<?php if(function_exists('pmpro_report_' . $report . '_page')) { ?>
 				<p style="text-align:center;">
-					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
+					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
 				</p>
 				<?php } ?>
 			</div>
@@ -60,7 +60,7 @@
 		call_user_func("pmpro_report_" . $report . "_page");
 		?>
 		<hr />
-		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'pmpro');?></a>
+		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'paid-memberships-pro' );?></a>
 		<?php
 	}
 	

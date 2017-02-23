@@ -23,23 +23,23 @@ function pmpro_translate_billing_period($period, $number = 1)
 	if($number == 1)
 	{
 		if($period == "Day")
-			return __("Day", "pmpro");
+			return __("Day", 'paid-memberships-pro' );
 		elseif($period == "Week")
-			return __("Week", "pmpro");
+			return __("Week", 'paid-memberships-pro' );
 		elseif($period == "Month")
-			return __("Month", "pmpro");
+			return __("Month", 'paid-memberships-pro' );
 		elseif($period == "Year")
-			return __("Year", "pmpro");
+			return __("Year", 'paid-memberships-pro' );
 	}
 	else
 	{
 		if($period == "Day")
-			return __("Days", "pmpro");
+			return __("Days", 'paid-memberships-pro' );
 		elseif($period == "Week")
-			return __("Weeks", "pmpro");
+			return __("Weeks", 'paid-memberships-pro' );
 		elseif($period == "Month")
-			return __("Months", "pmpro");
+			return __("Months", 'paid-memberships-pro' );
 		elseif($period == "Year")
-			return __("Years", "pmpro");
+			return __("Years", 'paid-memberships-pro' );
 	}
 }

@@ -107,8 +107,8 @@ function pmpro_updates_notice() {
 <div class="update-nag">
 	<p>
 	<?php 
-		echo __( 'Paid Memberships Pro Data Update Required', 'pmpro' ) . '. ';
-		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'pmpro'), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
+		echo __( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
+		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
 	?>
 	</p>
 </div>
@@ -129,7 +129,7 @@ function pmpro_updates_notice_complete() {
 <div class="updated notice notice-success is-dismissible">
 	<p>
 	<?php 
-		echo __('All Paid Memberships Pro updates have finished.', 'pmpro' );
+		echo __('All Paid Memberships Pro updates have finished.', 'paid-memberships-pro' );
 	?>
 	</p>	
 </div>

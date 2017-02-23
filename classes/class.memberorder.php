@@ -717,7 +717,7 @@
 					//we should probably notify the admin
 					$pmproemail = new PMProEmail();
 					$pmproemail->template = "subscription_cancel_error";
-					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", "pmpro"), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
+					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
 					$pmproemail->data["body"] .= "<p>Associated Order:<br />" . nl2br(var_export($this, true)) . "</p>";
 					$pmproemail->sendEmail(get_bloginfo("admin_email"));
 

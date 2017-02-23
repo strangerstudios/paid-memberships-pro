@@ -34,7 +34,7 @@
 				$this->fromname = pmpro_getOption("from_name");
 			
 			if(!$this->subject)
-				$this->subject = sprintf(__("An Email From %s", "pmpro"), get_option("blogname"));
+				$this->subject = sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
 			
 			//decode the subject line in case there are apostrophes/etc in it
 			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
@@ -131,7 +131,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has been CANCELLED", "pmpro"), get_option("blogname"));			
+			$this->subject = sprintf(__("Your membership at %s has been CANCELLED", 'paid-memberships-pro' ), get_option("blogname"));			
 			$this->template = "cancel";
 			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
 
@@ -142,7 +142,7 @@
 				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
 			} else {
 				$this->data['membership_id'] = '';
-				$this->data['membership_level_name'] = __('All Levels', 'pmpro');
+				$this->data['membership_level_name'] = __('All Levels', 'paid-memberships-pro' );
 			}
 			
 			return $this->sendEmail();
@@ -163,7 +163,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", "pmpro"), $user->user_login, get_option("blogname"));			
+			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", 'paid-memberships-pro' ), $user->user_login, get_option("blogname"));			
 			$this->template = "cancel_admin";
 			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			
@@ -186,7 +186,7 @@
 					$this->data['enddate'] = "";
 			} else {
 				$this->data['membership_id'] = '';
-				$this->data['membership_level_name'] = __('All Levels', 'pmpro');
+				$this->data['membership_level_name'] = __('All Levels', 'paid-memberships-pro' );
 				$this->data['startdate'] = '';
 				$this->data['enddate'] = '';
 			}
@@ -204,7 +204,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership confirmation for %s", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("Your membership confirmation for %s", 'paid-memberships-pro' ), get_option("blogname"));	
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -257,7 +257,7 @@
 																	 $invoice->billing->phone);
 				
 				if($invoice->getDiscountCode())
-					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code->code . "</p>\n";
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
 				else
 					$this->data["discount_code"] = "";
 			}
@@ -266,7 +266,7 @@
 				$this->template = "checkout_free";		
 				global $discount_code;
 				if(!empty($discount_code))
-					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $discount_code . "</p>\n";		
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
 				else
 					$this->data["discount_code"] = "";		
 			}						
@@ -275,14 +275,14 @@
 				$this->template = "checkout_freetrial";
 				global $discount_code;
 				if(!empty($discount_code))
-					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $discount_code . "</p>\n";		
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
 				else
 					$this->data["discount_code"] = "";	
 			}
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 			
@@ -304,7 +304,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Member Checkout for %s at %s", "pmpro"), $user->membership_level->name, get_option("blogname"));	
+			$this->subject = sprintf(__("Member Checkout for %s at %s", 'paid-memberships-pro' ), $user->membership_level->name, get_option("blogname"));	
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -354,7 +354,7 @@
 																	 $invoice->billing->phone);
 				
 				if($invoice->getDiscountCode())
-					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code->code . "</p>\n";
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
 				else
 					$this->data["discount_code"] = "";
 			}
@@ -363,7 +363,7 @@
 				$this->template = "checkout_free_admin";		
 				global $discount_code;
 				if(!empty($discount_code))
-					$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $discount_code . "</p>\n";		
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
 				else
 					$this->data["discount_code"] = "";	
 			}						
@@ -375,7 +375,7 @@
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 			
@@ -392,7 +392,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your billing information has been updated at %s", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("Your billing information has been updated at %s", 'paid-memberships-pro' ), get_option("blogname"));	
 			$this->template = "billing";
 			
 			$this->data = array(
@@ -445,7 +445,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "pmpro"), $user->user_login, get_option("blogname"));	
+			$this->subject = sprintf(__("Billing information has been updated for %s at %s", 'paid-memberships-pro' ), $user->user_login, get_option("blogname"));	
 			$this->template = "billing_admin";
 			
 			$this->data = array(
@@ -493,7 +493,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Membership Payment Failed at %s", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("Membership Payment Failed at %s", 'paid-memberships-pro' ), get_option("blogname"));	
 			$this->template = "billing_failure";
 			
 			$this->data = array(
@@ -539,7 +539,7 @@
 			$user = get_userdata($invoice->user_id);
 			
 			$this->email = $email;
-			$this->subject = sprintf(__("Membership Payment Failed For %s at %s", "pmpro"), $user->display_name, get_option("blogname"));	
+			$this->subject = sprintf(__("Membership Payment Failed For %s at %s", 'paid-memberships-pro' ), $user->display_name, get_option("blogname"));	
 			$this->template = "billing_failure_admin";
 			
 			$this->data = array(
@@ -586,7 +586,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", 'paid-memberships-pro' ), get_option("blogname"));	
 			$this->template = "credit_card_expiring";
 			
 			$this->data = array(
@@ -636,7 +636,7 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("INVOICE for %s membership", "pmpro"), get_option("blogname"));	
+			$this->subject = sprintf(__("INVOICE for %s membership", 'paid-memberships-pro' ), get_option("blogname"));	
 			$this->template = "invoice";
 			
 			$this->data = array(
@@ -676,13 +676,13 @@
 																 $invoice->billing->phone);
 		
 			if($invoice->getDiscountCode())
-				$this->data["discount_code"] = "<p>" . __("Discount Code", "pmpro") . ": " . $invoice->discount_code . "</p>\n";
+				$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code . "</p>\n";
 			else
 				$this->data["discount_code"] = "";
 		
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
-				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", "pmpro"), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
+				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
 				$this->data["membership_expiration"] = "";
 				
@@ -707,7 +707,7 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 						
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your trial at %s is ending soon", "pmpro"), get_option("blogname"));
+			$this->subject = sprintf(__("Your trial at %s is ending soon", 'paid-memberships-pro' ), get_option("blogname"));
 			$this->template = "trial_ending";
 			$this->data = array(
 				"subject" => $this->subject, 
@@ -741,7 +741,7 @@
 				return false;						
 						
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has ended", "pmpro"), get_option("blogname"));			
+			$this->subject = sprintf(__("Your membership at %s has ended", 'paid-memberships-pro' ), get_option("blogname"));			
 			$this->template = "membership_expired";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));			
 			
@@ -766,7 +766,7 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 						
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s will end soon", "pmpro"), get_option("blogname"));
+			$this->subject = sprintf(__("Your membership at %s will end soon", 'paid-memberships-pro' ), get_option("blogname"));
 			$this->template = "membership_expiring";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
 			
@@ -786,20 +786,20 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has been changed", "pmpro"), get_option("blogname"));
+			$this->subject = sprintf(__("Your membership at %s has been changed", 'paid-memberships-pro' ), get_option("blogname"));
 			$this->template = "admin_change";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 			if($user->membership_level->ID)
-				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
 			else
-				$this->data["membership_change"] = __("Your membership has been cancelled", "pmpro");
+				$this->data["membership_change"] = __("Your membership has been cancelled", 'paid-memberships-pro' );
 			if(!empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
-				$this->data["membership_change"] .= ". " . __("This membership does not expire", "pmpro");
+				$this->data["membership_change"] .= ". " . __("This membership does not expire", 'paid-memberships-pro' );
 			}
 			
 			return $this->sendEmail();
@@ -823,21 +823,21 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Membership for %s at %s has been changed", "pmpro"), $user->user_login, get_option("blogname"));
+			$this->subject = sprintf(__("Membership for %s at %s has been changed", 'paid-memberships-pro' ), $user->user_login, get_option("blogname"));
 			$this->template = "admin_change_admin";
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
 			if($user->membership_level->ID)
-				$this->data["membership_change"] = sprintf(__("The new level is %s", "pmpro"), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
 			else
-				$this->data["membership_change"] = __("Membership has been cancelled", "pmpro");
+				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );
 			
 			if(!empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", "pmpro"), date_i18n(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
-				$this->data["membership_change"] .= ". " . __("This membership does not expire", "pmpro");
+				$this->data["membership_change"] .= ". " . __("This membership does not expire", 'paid-memberships-pro' );
 			}
 			
 			return $this->sendEmail();
@@ -866,7 +866,7 @@
 			$level = pmpro_getLevel($order->membership_id);
 
 			$this->email = $user->user_email;
-			$this->subject = __('Invoice for Order #: ', 'pmpro') . $order->code;
+			$this->subject = __('Invoice for Order #: ', 'paid-memberships-pro' ) . $order->code;
 			$this->template = "billable_invoice";
 
 			// Load invoice template
