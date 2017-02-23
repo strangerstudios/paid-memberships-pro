@@ -6,7 +6,7 @@ Description: Plugin to Handle Memberships
 Version: 1.8.13.6
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
-Text Domain: pmpro
+Text Domain: paid-memberships-pro
 Domain Path: /languages
 */
 /*

@@ -2,7 +2,7 @@
 function pmpro_load_textdomain()
 {
     //get the locale
-	$locale = apply_filters("plugin_locale", get_locale(), "pmpro");
+	$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 	$mofile = "pmpro-" . $locale . ".mo";
 
 	//paths to local (plugin) and global (WP) language files
@@ -10,10 +10,10 @@ function pmpro_load_textdomain()
 	$mofile_global = WP_LANG_DIR . '/pmpro/' . $mofile;
 
 	//load global first
-    load_textdomain("pmpro", $mofile_global);
+    load_textdomain("paid-memberships-pro", $mofile_global);
 
 	//load local second
-	load_textdomain("pmpro", $mofile_local);
+	load_textdomain("paid-memberships-pro", $mofile_local);
 }
 add_action("init", "pmpro_load_textdomain", 1);
 
