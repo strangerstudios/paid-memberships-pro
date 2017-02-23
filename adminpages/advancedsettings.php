@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_advancedsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	global $wpdb, $msg, $msgt;
@@ -40,7 +40,7 @@
 
 		//assume success
 		$msg = true;
-		$msgt = __("Your advanced settings have been updated.", "pmpro");
+		$msgt = __("Your advanced settings have been updated.", 'paid-memberships-pro' );
 	}
 
 	$nonmembertext = pmpro_getOption("nonmembertext");
@@ -65,17 +65,17 @@
 	//default settings
 	if(!$nonmembertext)
 	{
-		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Register here</a>.', 'pmpro' ), wp_login_url() . "?action=register" );
+		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Register here</a>.', 'paid-memberships-pro' ), wp_login_url() . "?action=register" );
 		pmpro_setOption("nonmembertext", $nonmembertext);
 	}
 	if(!$notloggedintext)
 	{
-		$notloggedintext = sprintf( __( 'Please <a href="%s">login</a> to view this content. (<a href="%s">Register here</a>.)', 'pmpro' ), wp_login_url( get_permalink() ), wp_login_url() . "?action=register" );
+		$notloggedintext = sprintf( __( 'Please <a href="%s">login</a> to view this content. (<a href="%s">Register here</a>.)', 'paid-memberships-pro' ), wp_login_url( get_permalink() ), wp_login_url() . "?action=register" );
 		pmpro_setOption("notloggedintext", $notloggedintext);
 	}
 	if(!$rsstext)
 	{
-		$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'pmpro' );
+		$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
 		pmpro_setOption("rsstext", $rsstext);
 	}
 
@@ -85,77 +85,77 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">
-		<h2><?php _e('Advanced Settings', 'pmpro');?></h2>
+		<h2><?php _e('Advanced Settings', 'paid-memberships-pro' );?></h2>
 
 		<table class="form-table">
 		<tbody>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="nonmembertext"><?php _e('Message for Logged-in Non-members', 'pmpro');?>:</label>
+					<label for="nonmembertext"><?php _e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content for non-members. Available variables', 'pmpro');?>: !!levels!!, !!referrer!!</small>
+					<small class="litegray"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: !!levels!!, !!referrer!!</small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="notloggedintext"><?php _e('Message for Logged-out Users', 'pmpro');?>:</label>
+					<label for="notloggedintext"><?php _e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content for logged-out visitors.', 'pmpro');?></small>
+					<small class="litegray"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?></small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="rsstext"><?php _e('Message for RSS Feed', 'pmpro');?>:</label>
+					<label for="rsstext"><?php _e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content in RSS feeds.', 'pmpro');?></small>
+					<small class="litegray"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?></small>
 				</td>
 			</tr>
 
 			<tr>
 				<th scope="row" valign="top">
-					<label for="filterqueries"><?php _e("Filter searches and archives?", 'pmpro');?></label>
+					<label for="filterqueries"><?php _e("Filter searches and archives?", 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
 					<select id="filterqueries" name="filterqueries">
-						<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php _e('No - Non-members will see restricted posts/pages in searches and archives.', 'pmpro');?></option>
-						<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Only members will see restricted posts/pages in searches and archives.', 'pmpro');?></option>
+						<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php _e('No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' );?></option>
+						<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' );?></option>
 					</select>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="showexcerpts"><?php _e('Show Excerpts to Non-Members?', 'pmpro');?></label>
+					<label for="showexcerpts"><?php _e('Show Excerpts to Non-Members?', 'paid-memberships-pro' );?></label>
             </th>
             <td>
                 <select id="showexcerpts" name="showexcerpts">
-                    <option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php _e('No - Hide excerpts.', 'pmpro');?></option>
-                    <option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Show excerpts.', 'pmpro');?></option>
+                    <option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php _e('No - Hide excerpts.', 'paid-memberships-pro' );?></option>
+                    <option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Show excerpts.', 'paid-memberships-pro' );?></option>
                 </select>
             </td>
             </tr>
             <tr>
 				<th scope="row" valign="top">
-					<label for="hideads"><?php _e("Hide Ads From Members?", 'pmpro');?></label>
+					<label for="hideads"><?php _e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
 					<select id="hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
-						<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-						<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From All Members', 'pmpro');?></option>
-						<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From Certain Members', 'pmpro');?></option>
+						<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+						<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From All Members', 'paid-memberships-pro' );?></option>
+						<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>><?php _e('Hide Ads From Certain Members', 'paid-memberships-pro' );?></option>
 					</select>
 				</td>
 			</tr>
 			<tr id="hideads_explanation" <?php if($hideads < 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
-					<p class="top0em"><?php _e('Ads from the following plugins will be automatically turned off', 'pmpro');?>: <em>Easy Adsense</em>, ...</p>
-					<p><?php _e('To hide ads in your template code, use code like the following', 'pmpro');?>:</p>
+					<p class="top0em"><?php _e('Ads from the following plugins will be automatically turned off', 'paid-memberships-pro' );?>: <em>Easy Adsense</em>, ...</p>
+					<p><?php _e('To hide ads in your template code, use code like the following', 'paid-memberships-pro' );?>:</p>
 				<pre lang="PHP">
 if(pmpro_displayAds())
 {
@@ -166,7 +166,7 @@ if(pmpro_displayAds())
 			</tr>
 			<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'pmpro');?>:</label>
+					<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<div class="checkbox_box" <?php if(count($levels) > 5) { ?>style="height: 100px; overflow: auto;"<?php } ?>>
@@ -200,49 +200,49 @@ if(pmpro_displayAds())
 			<?php if(is_multisite()) { ?>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="redirecttosubscription"><?php _e('Redirect all traffic from registration page to /susbcription/?', 'pmpro');?>: <em>(<?php _e('multisite only', 'pmpro');?>)</em></label>
+					<label for="redirecttosubscription"><?php _e('Redirect all traffic from registration page to /susbcription/?', 'paid-memberships-pro' );?>: <em>(<?php _e('multisite only', 'paid-memberships-pro' );?>)</em></label>
 				</th>
 				<td>
 					<select id="redirecttosubscription" name="redirecttosubscription">
-						<option value="0" <?php if(!$redirecttosubscription) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-						<option value="1" <?php if($redirecttosubscription == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
+						<option value="0" <?php if(!$redirecttosubscription) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+						<option value="1" <?php if($redirecttosubscription == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'paid-memberships-pro' );?></option>
 					</select>
 				</td>
 			</tr>
 			<?php } ?>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'pmpro');?>:</label>
+					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
-						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'pmpro');?></option>
-						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'pmpro');?></option>
+						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'paid-memberships-pro' );?></option>
+						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
 					</select><br />
-					<small><?php _e('A free reCAPTCHA key is required.', 'pmpro');?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'pmpro');?></a>.</small>
+					<small><?php _e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</small>
 				</td>
 			</tr>
 			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
-					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'pmpro');?>:</label>
+					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />
-					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'pmpro');?>:</label>
+					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'pmpro');?></label>
+					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
 					<?php
 						wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
 					?>
 					<br />
-					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'pmpro');?></small>
+					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></small>
 				</td>
 			</tr>
 
@@ -282,7 +282,7 @@ if(pmpro_displayAds())
                                     <option value="<?php _e($option, 'pmpro'); ?>"
                                         <?php
                                         if ($option == pmpro_getOption($field['field_name'])) {
-                                            _e('selected', 'pmpro');
+                                            _e('selected', 'paid-memberships-pro' );
                                         }
                                         ?>
                                         ><?php _e($option, 'pmpro'); ?></option>
@@ -365,7 +365,7 @@ if(pmpro_displayAds())
 		</script>
 
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'pmpro');?>" />
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
 

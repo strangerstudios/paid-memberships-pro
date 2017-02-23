@@ -36,7 +36,7 @@ function pmpro_cron_expire_memberships()
 			$pmproemail->sendMembershipExpiredEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}
@@ -102,7 +102,7 @@ function pmpro_cron_expiration_warnings()
 			$pmproemail->sendMembershipExpiringEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Membership expiring email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}
@@ -181,7 +181,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
 				if(current_user_can('manage_options'))
-					printf(__("Credit card expiring email sent to %s. ", "pmpro"), $euser->user_email);
+					printf(__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 				else
 					echo ". ";
 			}
@@ -237,7 +237,7 @@ function pmpro_cron_trial_ending_warnings()
 			$pmproemail->sendTrialEndingEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Trial ending email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}

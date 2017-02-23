@@ -146,7 +146,7 @@
 		{
 			//response 4? send an email to the admin
 			$pmproemail = new PMProEmail();
-			$pmproemail->data = array("body"=>__("<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net", "pmpro") . ":<br />" . nl2br(var_export($fields, true)));
+			$pmproemail->data = array("body"=>__("<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($fields, true)));
 			$pmproemail->sendEmail(get_bloginfo("admin_email"));
 		}
 	}

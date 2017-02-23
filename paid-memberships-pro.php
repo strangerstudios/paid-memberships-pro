@@ -123,17 +123,17 @@ $gateway_environment = pmpro_getOption("gateway_environment");
 // Returns a list of all available gateway
 function pmpro_gateways(){
 	$pmpro_gateways = array(
-		'' 					=> __('Testing Only', 'pmpro'),
-		'check' 			=> __('Pay by Check', 'pmpro'),
-		'stripe' 			=> __('Stripe', 'pmpro'),
-		'paypalexpress' 	=> __('PayPal Express', 'pmpro'),
-		'paypal' 			=> __('PayPal Website Payments Pro', 'pmpro'),
-		'payflowpro' 		=> __('PayPal Payflow Pro/PayPal Pro', 'pmpro'),
-		'paypalstandard' 	=> __('PayPal Standard', 'pmpro'),
-		'authorizenet' 		=> __('Authorize.net', 'pmpro'),
-		'braintree' 		=> __('Braintree Payments', 'pmpro'),
-		'twocheckout' 		=> __('2Checkout', 'pmpro'),
-		'cybersource' 		=> __('Cybersource', 'pmpro')
+		'' 					=> __('Testing Only', 'paid-memberships-pro' ),
+		'check' 			=> __('Pay by Check', 'paid-memberships-pro' ),
+		'stripe' 			=> __('Stripe', 'paid-memberships-pro' ),
+		'paypalexpress' 	=> __('PayPal Express', 'paid-memberships-pro' ),
+		'paypal' 			=> __('PayPal Website Payments Pro', 'paid-memberships-pro' ),
+		'payflowpro' 		=> __('PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
+		'paypalstandard' 	=> __('PayPal Standard', 'paid-memberships-pro' ),
+		'authorizenet' 		=> __('Authorize.net', 'paid-memberships-pro' ),
+		'braintree' 		=> __('Braintree Payments', 'paid-memberships-pro' ),
+		'twocheckout' 		=> __('2Checkout', 'paid-memberships-pro' ),
+		'cybersource' 		=> __('Cybersource', 'paid-memberships-pro' )
 	);
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );

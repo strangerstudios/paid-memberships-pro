@@ -39,7 +39,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['cybersource']))
-				$gateways['cybersource'] = __('CyberSource', 'pmpro');
+				$gateways['cybersource'] = __('CyberSource', 'paid-memberships-pro' );
 		
 			return $gateways;
 		}
@@ -93,17 +93,17 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('CyberSource Settings', 'pmpro'); ?>
+				<?php _e('CyberSource Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'pmpro');?>
+				<strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'paid-memberships-pro' );?>
 			</td>	
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
+				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" size="60" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" />
@@ -111,7 +111,7 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'pmpro');?>:</label>
+				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>					
@@ -168,7 +168,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", "pmpro");
+						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
 					return false;
 				}
 			}
@@ -219,14 +219,14 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 								
-								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
 							}
 							
 							return false;								
@@ -242,7 +242,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Payment failed.", "pmpro");
+						$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 					
 					return false;
 				}	

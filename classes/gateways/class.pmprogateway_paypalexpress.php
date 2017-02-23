@@ -81,7 +81,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['paypalexpress']))
-				$gateways['paypalexpress'] = __('PayPal Express', 'pmpro');
+				$gateways['paypalexpress'] = __('PayPal Express', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -137,17 +137,17 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('PayPal Settings', 'pmpro'); ?>
+				<?php _e('PayPal Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'pmpro');?>
+				<strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'paid-memberships-pro' );?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="gateway_email"><?php _e('Gateway Account Email', 'pmpro');?>:</label>
+				<label for="gateway_email"><?php _e('Gateway Account Email', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="gateway_email" name="gateway_email" size="60" value="<?php echo esc_attr($values['gateway_email'])?>" />
@@ -155,7 +155,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apiusername"><?php _e('API Username', 'pmpro');?>:</label>
+				<label for="apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apiusername" name="apiusername" size="60" value="<?php echo esc_attr($values['apiusername'])?>" />
@@ -163,7 +163,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apipassword"><?php _e('API Password', 'pmpro');?>:</label>
+				<label for="apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apipassword" name="apipassword" size="60" value="<?php echo esc_attr($values['apipassword'])?>" />
@@ -171,7 +171,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apisignature"><?php _e('API Signature', 'pmpro');?>:</label>
+				<label for="apisignature"><?php _e('API Signature', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apisignature" name="apisignature" size="60" value="<?php echo esc_attr($values['apisignature'])?>" />
@@ -179,7 +179,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="paypalexpress_skip_confirmation"><?php _e('Confirmation Step', 'pmpro');?>:</label>
+				<label for="paypalexpress_skip_confirmation"><?php _e('Confirmation Step', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
@@ -190,10 +190,10 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
+				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
 			</td>
 		</tr>
 		<?php
@@ -298,7 +298,7 @@
 				}
 				else
 				{
-					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
@@ -354,7 +354,7 @@
 				}
 				else
 				{
-					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
@@ -435,12 +435,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
 			
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -774,7 +774,7 @@
 			{
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
-				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", "pmpro");
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
 				return false;

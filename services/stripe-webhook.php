@@ -190,7 +190,7 @@
 									{
 										//email admin that the old subscription could not be canceled
 										$pmproemail = new PMProEmail();
-										$pmproemail->data = array("body"=>"<p>" . sprintf(__("While processing an update to the subscription for %s, we failed to cancel their old subscription in Stripe. Please check that this user's original subscription (%s) is cancelled in the Stripe dashboard.", "pmpro"), $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ")", $old_subscription->id) . "</p>");
+										$pmproemail->data = array("body"=>"<p>" . sprintf(__("While processing an update to the subscription for %s, we failed to cancel their old subscription in Stripe. Please check that this user's original subscription (%s) is cancelled in the Stripe dashboard.", 'paid-memberships-pro' ), $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ")", $old_subscription->id) . "</p>");
 										$pmproemail->sendEmail(get_bloginfo("admin_email"));
 									}
 								}

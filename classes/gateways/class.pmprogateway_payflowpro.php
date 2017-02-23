@@ -36,7 +36,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['payflowpro']))
-				$gateways['payflowpro'] = __('Payflow Pro/PayPal Pro', 'pmpro');
+				$gateways['payflowpro'] = __('Payflow Pro/PayPal Pro', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -92,12 +92,12 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Payflow Pro Settings', 'pmpro'); ?>
+				<?php _e('Payflow Pro Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_partner"><?php _e('Partner', 'pmpro');?>:</label>
+				<label for="payflow_partner"><?php _e('Partner', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_partner" name="payflow_partner" size="60" value="<?php echo esc_attr($values['payflow_partner'])?>" />
@@ -105,7 +105,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_vendor"><?php _e('Vendor', 'pmpro');?>:</label>
+				<label for="payflow_vendor"><?php _e('Vendor', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_vendor" name="payflow_vendor" size="60" value="<?php echo esc_attr($values['payflow_vendor'])?>" />
@@ -113,7 +113,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_user"><?php _e('User', 'pmpro');?>:</label>
+				<label for="payflow_user"><?php _e('User', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_user" name="payflow_user" size="60" value="<?php echo esc_attr($values['payflow_user'])?>" />
@@ -121,7 +121,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_pwd"><?php _e('Password', 'pmpro');?>:</label>
+				<label for="payflow_pwd"><?php _e('Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="password" id="payflow_pwd" name="payflow_pwd" size="60" value="<?php echo esc_attr($values['payflow_pwd'])?>" />
@@ -129,12 +129,12 @@
 	    </tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler', 'pmpro');?>:</label>
+				<label><?php _e('IPN Handler', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<p><?php
 					$addon_url = "http://www.paidmembershipspro.com/add-ons/plugins-on-github/payflow-recurring-orders-addon/";
-					printf(__('Payflow does not use IPN. To sync recurring subscriptions, please see <a target="_blank" href="%s">this addon</a>.', 'pmpro'), $addon_url);?>
+					printf(__('Payflow does not use IPN. To sync recurring subscriptions, please see <a target="_blank" href="%s">this addon</a>.', 'paid-memberships-pro' ), $addon_url);?>
 				</p>
 			</td>
 		</tr>
@@ -161,7 +161,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", "pmpro");
+						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
 					return false;
 				}
 			}
@@ -184,14 +184,14 @@
 							if($this->void($order, $order->payment_transaction_id))
 							{
 								if(empty($order->error))
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 							}
 							else
 							{
 								if(empty($order->error))
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 
-								$order->error .= " " . __("A partial payment was made that we could not refund. Please contact the site owner immediately to correct this.", "pmpro");
+								$order->error .= " " . __("A partial payment was made that we could not refund. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
 							}
 
 							return false;
