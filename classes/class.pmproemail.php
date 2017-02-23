@@ -60,13 +60,15 @@
 			elseif(file_exists(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in parent theme
 			elseif(file_exists(get_template_directory() . "/membership-email-" . $this->template . ".html"))
-				$this->body = file_get_contents(get_template_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in parent theme
+				$this->body = file_get_contents(get_template_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in parent theme			
 			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html"))
 				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html");				//localized email folder in WP language folder
 			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html"))
 				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");								//email folder in WP language folder
 			elseif(file_exists(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
+			elseif($this->getDefaultEmailTemplate($this->template))
+				$this->body = $this->getDefaultEmailTemplate($this->template);
 			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");										//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
@@ -892,5 +894,34 @@
 			);
 
 			return $this->sendEmail();
+		}
+		
+		/**
+		 * Load the text for each default email template.
+		 * This overrides the old /email/*.html templates.
+		 */
+		function getDefaultEmailTemplate( $template = null ) {
+			if( empty( $template ) && !empty( $this->template ) )
+				$template = $this->template;
+			
+			if( empty( $template ) )
+				return false;
+			
+			$r = '';
+			
+			switch($template) {
+				case "admin_change":
+					$r = __( "<p>An administrator at !!sitename!! has changed your membership level.</p>
+
+<p>!!membership_change!!.</p>
+
+<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
+
+<p>Log in to your membership account here: !!login_link!!</p>", 'paid-memberships-pro' );
+					break;
+				//repeat above for each template
+			}
+			
+			return $r;
 		}
 	}
