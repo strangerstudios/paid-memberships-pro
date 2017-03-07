@@ -1993,6 +1993,9 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 			//filter adjustments to the level
 			$pmpro_level->code_id = $discount_code_id;
 			$pmpro_level          = apply_filters( "pmpro_discount_code_level", $pmpro_level, $discount_code_id );
+		} else {
+			//error with discount code, we want to halt checkout
+			pmpro_setMessage($code_check[1], 'pmpro_error');
 		}
 	}
 
