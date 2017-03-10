@@ -50,7 +50,7 @@
 			}
         }
 		else {
-			$old_level_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND status = 'active'");
+			$old_level_ids = $wpdb->get_col("SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND status = 'active'");
 			$worked = pmpro_changeMembershipLevel(0, $current_user->ID, 'cancelled');
 		}
         
