@@ -1809,7 +1809,7 @@
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
 				
-				//check if this is a paypal express order with a subscription transaction id
+				//check if this is a Stripe order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
 				{
 					//get the subscription and return the current_period end or false
