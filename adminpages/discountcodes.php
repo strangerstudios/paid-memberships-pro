@@ -217,6 +217,7 @@
 							'cycle_period' => $cycle_period,
 							'billing_limit' => $billing_limit,
 							'trial_amount' => $trial_amount,
+							'trial_limit' => $trial_limit,
 							'expiration_number' => $expiration_number,
 							'expiration_period' => $expiration_period
 						),
@@ -229,6 +230,7 @@
 							'%s',
 							'%d',
 							'%f',
+							'%d',
 							'%d',
 							'%s'
 						)
