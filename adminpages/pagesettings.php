@@ -21,6 +21,7 @@ global $pmpro_pages;
  * @since 1.8.5
  */
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
+$post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
 if (!empty($_REQUEST['savesettings'])) {
     //page ids
@@ -148,7 +149,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "cancel_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['cancel']));
+                    wp_dropdown_pages(array("name" => "cancel_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['cancel'], "post_types" => $post_types ) );
                     ?>
                     <?php if (!empty($pmpro_pages['cancel'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel'] ?>&action=edit"
@@ -167,7 +168,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "checkout_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['checkout']));
+                    wp_dropdown_pages(array("name" => "checkout_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['checkout'], "post_types" => $post_types ));
                     ?>
                     <?php if (!empty($pmpro_pages['checkout'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout'] ?>&action=edit"
@@ -186,7 +187,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "confirmation_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['confirmation']));
+                    wp_dropdown_pages(array("name" => "confirmation_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['confirmation'], "post_types" => $post_types));
                     ?>
                     <?php if (!empty($pmpro_pages['confirmation'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation'] ?>&action=edit"
@@ -206,7 +207,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "invoice_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['invoice']));
+                    wp_dropdown_pages(array("name" => "invoice_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['invoice'], "post_types" => $post_types));
                     ?>
                     <?php if (!empty($pmpro_pages['invoice'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice'] ?>&action=edit"
@@ -225,7 +226,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "levels_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['levels']));
+                    wp_dropdown_pages(array("name" => "levels_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['levels'], "post_types" => $post_types));
                     ?>
                     <?php if (!empty($pmpro_pages['levels'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels'] ?>&action=edit"

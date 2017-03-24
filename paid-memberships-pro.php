@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.8.13.6
+Version: 1.9.0
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 Text Domain: paid-memberships-pro
@@ -15,7 +15,7 @@ Domain Path: /languages
 */
 
 //version constant
-define("PMPRO_VERSION", "1.8.13.6");
+define("PMPRO_VERSION", "1.9.0");
 define("PMPRO_USER_AGENT", "Paid Memberships Pro v" . PMPRO_VERSION . "; " . site_url());
 
 //if the session has been started yet, start it (ignore if running from command line)
@@ -79,14 +79,22 @@ require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded b
 
 //load payment gateway class
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_authorizenet.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php");
+
+if ( version_compare( PHP_VERSION, '5.4.45', '>=' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_check.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_cybersource.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_payflowpro.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypal.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalexpress.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalstandard.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php");
+
+if ( version_compare( PHP_VERSION, '5.3.29', '>=' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_twocheckout.php");
 
 /*

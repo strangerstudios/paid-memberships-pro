@@ -20,8 +20,15 @@
 	//globals
 	global $wpdb;
 
-	//load Braintree library, gateway class constructor does config
-	require_once(dirname(__FILE__) . "/../classes/gateways/class.pmprogateway_braintree.php");
+	// Don't run this with wrong PHP version
+	if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
+		return;
+	}
+
+//load Braintree library, gateway class constructor does config
+	if ( ! class_exists( '\\Braintree' )) {
+		require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php" );
+	}
 	$gateway = new PMProGateway_braintree();
 
 	//verify

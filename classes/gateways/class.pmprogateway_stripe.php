@@ -1,4 +1,10 @@
 <?php
+    // For compatibility with old library (Namespace Alias)
+    use Stripe\Customer as Stripe_Customer;
+    use Stripe\Invoice as Stripe_Invoice;
+    use Stripe\Plan as Stripe_Plan;
+    use Stripe\Charge as Stripe_Charge;
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -19,6 +25,10 @@
 	class PMProGateway_stripe extends PMProGateway
 	{
 		/**
+		 * @var bool    Is the Stripe/PHP Library loaded
+		 */
+	    private static $is_loaded = false;
+		/**
 		 * Stripe Class Constructor
 		 *
 		 * @since 1.4
@@ -28,12 +38,11 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
-			if($this->dependencies()) {
+			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
-				Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe::setAPIVersion("2015-07-13");
-			} else {
-				return false;
+				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+				Stripe\Stripe::setAPIVersion("2015-07-13");
+                self::$is_loaded = true;
 			}
 			
 			return $this->gateway;
@@ -44,12 +53,26 @@
 		 *
 		 * @return bool
 		 * @since 1.8.6.8.1
+         * @since 1.8.13.6 - Add json dependency
 		 */
 		public static function dependencies()
 		{
 			global $msg, $msgt, $pmpro_stripe_error;
 
-			$modules = array('curl', 'mbstring');
+			if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+
+			    $pmpro_stripe_error = true;
+			    $msg = -1;
+			    $msgt = __("The Stripe Gateway requires PHP 5.3.29 or greater. Please enable it, or ask your hosting provider to enable it", 'paid-memberships-pro' );
+
+			    if ( !is_admin() ) {
+	                pmpro_setMessage( $msgt, "pmpro_error" );
+                }
+
+				return false;
+			}
+
+			$modules = array( 'curl', 'mbstring', 'json' );
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
@@ -64,7 +87,8 @@
 					return false;
 				}
 			}
-			
+
+			self::$is_loaded = true;
 			return true;
 		}
 
@@ -77,8 +101,9 @@
 		function loadStripeLibrary()
 		{
 			//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
-			if(!class_exists("Stripe"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+			if(!class_exists("\\Stripe")) {
+                require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
+			}
 		}
 
 		/**
@@ -119,8 +144,9 @@
 			
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
-			$current_gateway = pmpro_getGateway();			
-			if(($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
+			$current_gateway = pmpro_getGateway();
+
+			if( ($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review'] ) )	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
@@ -177,7 +203,7 @@
 		static function pmpro_payment_options($options)
 		{
 			//get stripe options
-			$stripe_options = PMProGateway_stripe::getGatewayOptions();
+			$stripe_options = self::getGatewayOptions();
 
 			//merge with others.
 			$options = array_merge($stripe_options, $options);
@@ -457,7 +483,7 @@
 
 			if($gateway == "stripe")
 			{
-				if(!empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				if(static::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
 				{
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
@@ -657,7 +683,7 @@
 			$sub = false;
 
 			//check that gateway is Stripe
-			if($last_order->gateway == "stripe")
+			if($last_order->gateway == "stripe" && self::$is_loaded )
 			{
 				//is there a customer?
 				$sub = $last_order->Gateway->getSubscription($last_order);
@@ -674,11 +700,11 @@
 				if(!empty($last_order) && $last_order->gateway == "stripe" && !empty($last_order->subscription_transaction_id) && strpos($last_order->subscription_transaction_id, "sub_") !== false)
 				{
 				?>
-				<p><strong>Note:</strong> Subscription <strong><?php echo $last_order->subscription_transaction_id;?></strong> could not be found at Stripe. It might have been deleted.</p>
+				<p><?php printf( __('%1$sNote:%2$s Subscription %3$s%4$s%5$s could not be found at Stripe. It may have been deleted.', 'paid-memberships-pro'), '<strong>', '</strong>', '<strong>', esc_attr($last_order->subscription_transaction_id), '</strong>' ); ?></p>
 				<?php
 				}
 			}
-			else
+			elseif ( true === self::$is_loaded )
 			{
 			?>
 			<h3><?php _e("Subscription Updates", 'paid-memberships-pro' ); ?></h3>
@@ -1140,9 +1166,18 @@
 				}
 				else
 				{
-					if(empty($order->error))
-						$order->error = __("Unknown error: Initial payment failed.", 'paid-memberships-pro' );
-					return false;
+					if(empty($order->error)) {
+						if ( ! self::$is_loaded ) {
+
+							$order->error = __( "Payment error: Please contact the webmaster (stripe-load-error)", 'paid-memberships-pro' );
+
+						} else {
+
+							$order->error = __( "Unknown error: Initial payment failed.", 'paid-memberships-pro' );
+						}
+					}
+
+                    return false;
 				}
 			}
 		}

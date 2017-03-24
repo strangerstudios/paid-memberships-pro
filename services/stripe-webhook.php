@@ -1,4 +1,12 @@
 <?php
+	if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+		return;
+	}
+
+	// For compatibility with old library (Namespace Alias)
+	use Stripe\Invoice as Stripe_Invoice;
+	use Stripe\Event as Stripe_Event;
+
 	global $isapage;
 	$isapage = true;
 
@@ -16,11 +24,13 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 
-	if(!class_exists("Stripe"))
-		require_once(dirname(__FILE__) . "/../includes/lib/Stripe/Stripe.php");
+	if(!class_exists("\\Stripe")) {
+		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
+	}
+
 
 	try {
-		Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
+		\Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
 	} catch ( Exception $e ) {
 		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
 		pmpro_stripeWebhookExit();
