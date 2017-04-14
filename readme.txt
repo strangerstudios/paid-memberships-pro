@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
 * BUG: Fixed bug when updating billing with Stripe.
 * BUG: Fixed bug where the archive/search filter was not running for logged out users.
+* BUG: Fixed bug where settings added via the pmpro_custom_advanced_settings were not being saved to DB unless they were prefixed with custom_.
 * ENHANCEMENT: Updated Finnish translations. (Thanks, JP Jakonen)
 * ENHANCEMENT: Added filter for modifying the order description in Stripe. (Thanks, Rafe Colton)
 
