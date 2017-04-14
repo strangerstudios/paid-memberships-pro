@@ -119,6 +119,9 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issue with cancelling 2Checkout recurring subscriptions. Now using the payment_transaction_id to find/cancel the sale's recurring subscription since no subscription_transaction_id is being saved.
 * BUG: Fixed issue where old membership levels were not listed correctly in the cancellation email. (Thanks, Mike from Migrating Eye)
 * BUG: Fixed issue where "custom trial" values were not saving for discount codes.
+* BUG: Fixed issue where checkouts were still processing even if there were errors with the discount code used.
+* BUG: Fixed bug where settings added via the pmpro_custom_advanced_settings were not being saved to DB unless they were prefixed with custom_.
+* BUG: Fixed other formatting issues with settings added via pmpro_custom_advanced_settings.
 * ENHANCEMENT: Added pmpro_account_membership_expiration_text filter to filter the expiration text that shows ona  user's membership account page.
 * ENHANCEMENT: Updated our Stripe and Braintree libraries to use their latest versions. This update allows our gateway integrations to support PHP7 and also removes support for PHP 5.2 and 5.3.
 
@@ -126,7 +129,6 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
 * BUG: Fixed bug when updating billing with Stripe.
 * BUG: Fixed bug where the archive/search filter was not running for logged out users.
-* BUG: Fixed issue where checkouts were still processing even if there were errors with the discount code used.
 * ENHANCEMENT: Updated Finnish translations. (Thanks, JP Jakonen)
 * ENHANCEMENT: Added filter for modifying the order description in Stripe. (Thanks, Rafe Colton)
 
