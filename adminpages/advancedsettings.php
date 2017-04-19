@@ -267,17 +267,18 @@ if(pmpro_displayAds())
 	                            ?>
 	                            <select id="<?php _e($field['field_name'], 'pmpro'); ?>"
 	                                    name="<?php _e($field['field_name'], 'pmpro'); ?>">
-	                                <?php foreach ($field['options'] as $option) {
-	                                    ?>
-	                                    <option value="<?php _e($option, 'pmpro'); ?>"
-	                                        <?php
-	                                        if ($option == pmpro_getOption($field['field_name'])) {
-	                                            _e('selected', 'paid-memberships-pro' );
-	                                        }
-	                                        ?>
-	                                        ><?php _e($option, 'pmpro'); ?></option>
-	                                <?php
-	                                } ?>
+	                                <?php 
+	                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
+	                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
+	                                	foreach ($field['options'] as $key => $option) {
+	                                    	if(!$is_associative) $key = $option;
+	                                    	?>
+	                                    	<option value="<?php echo esc_attr($key);?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
+	                                    		<?php echo esc_textarea($option); ?>
+	                                    	</option>
+	                               			<?php
+	                                	} 
+	                                ?>
 	                            </select>
 	                            <?php
 	                            break;
