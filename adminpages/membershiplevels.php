@@ -416,7 +416,7 @@
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
 							<p class="pmpro_message"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' );?></p>
 						<?php } elseif($gateway == "braintree") { ?>
-							<p class="pmpro_message"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to', 'paid-memberships-pro' );?> <em>pmpro_<?php echo $level->id;?></em>.</p>
+							<p class="pmpro_message <?php if(!PMProGateway_braintree::checkLevelForPlan($level->id)) {?>pmpro_error<?php } ?>"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to', 'paid-memberships-pro' );?> <em>pmpro_<?php echo $level->id;?></em>.</p>
 						<?php } ?>
 					</td>
 				</tr>

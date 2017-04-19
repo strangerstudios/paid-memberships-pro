@@ -147,6 +147,12 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 			{
 				return false;
 			}
+			
+			//check for plan
+			if(pmpro_isLevelRecurring($level)) {
+				if(!PMProGateway_braintree::checkLevelForPlan($level->id))
+					return false;
+			}
 		}
 	}
 

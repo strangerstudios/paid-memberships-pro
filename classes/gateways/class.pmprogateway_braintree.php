@@ -87,6 +87,53 @@
 		}		
 		
 		/**
+		 * Get a collection of plans available for this Braintree account.
+		 */
+		function getPlans($force = false) {
+			//check for cache
+			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
+			
+			$plans = get_transient($cache_key);
+			
+			//check Braintree if no transient found
+			if($plans === false) {
+				$plans = Braintree_Plan::all();
+				
+				set_transient($cache_key, $plans);
+			}
+			
+			return $plans;
+		}
+		
+		/**
+		 * Search for a plan by id
+		 */
+		function getPlanByID($id) {
+			$plans = $this->getPlans();
+						
+			if(!empty($plans)) {
+				foreach($plans as $plan) {
+					if($plan->id == $id)
+						return $plan;
+				}
+			}
+				
+			return false;
+		}
+		
+		/**
+		 * Checks if a level has an associated plan.
+		 */
+		static function checkLevelForPlan($level_id) {
+			$Gateway = new PMProGateway_braintree();
+			$plan = $Gateway->getPlanByID('pmpro_' . $level_id);
+			if(!empty($plan))
+				return true;
+			else
+				return false;
+		}
+		
+		/**
 		 * Run on WP init
 		 *		 
 		 * @since 1.8
