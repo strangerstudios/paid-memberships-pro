@@ -15,8 +15,9 @@ Domain Path: /languages
 */
 
 //version constant
-define("PMPRO_VERSION", "1.9.0");
-define("PMPRO_USER_AGENT", "Paid Memberships Pro v" . PMPRO_VERSION . "; " . site_url());
+define('PMPRO_VERSION', '1.9');
+define('PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url());
+define('PMPRO_MIN_PHP_VERSION', '5.6');
 
 //if the session has been started yet, start it (ignore if running from command line)
 if(!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
