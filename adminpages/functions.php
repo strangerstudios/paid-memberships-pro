@@ -11,10 +11,10 @@
 	If you were asked to insert code into "your functions.php file", it was meant that you edit the functions.php
 	in the root folder of your active theme. e.g. /wp-content/themes/twentytwelve/functions.php
 	You can also create a custom plugin to place customization code into. Instructions are here:
-	http://www.paidmembershipspro.com/2012/08/create-a-plugin-for-pmpro-customizations/
+	https://www.paidmembershipspro.com/create-a-plugin-for-pmpro-customizations/
 
 	Further documentation for customizing Paid Memberships Pro can be found here:
-	http://www.paidmembershipspro.com/documentation/
+	https://www.paidmembershipspro.com/documentation/
 
 ****************************************************************/
 
