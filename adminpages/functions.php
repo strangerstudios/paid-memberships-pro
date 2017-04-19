@@ -20,6 +20,9 @@
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.
+	
+	Stripe currently does not support:
+	* Billing Limits.
 */
 function pmpro_checkLevelForStripeCompatibility($level = NULL)
 {
@@ -37,14 +40,8 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			{
 				foreach($levels as $level)
 				{
-					/*
-						Stripe currently does not support:
-						* Billing Limits.
-					*/
-					if($level->billing_limit > 0)
-					{
+					if(!pmpro_checkLevelForStripeCompatibility($level))
 						return false;
-					}
 				}
 			}
 		}
@@ -67,6 +64,9 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.
+	
+	Payflow currently does not support:
+	* Trial Amounts > 0.
 */
 function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 {
@@ -83,16 +83,9 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 			if(!empty($levels))
 			{
 				foreach($levels as $level)
-				{
-					/*
-						Payflow currently does not support:
-						* Trial Amounts > 0.
-					*/
-
-					if($level->trial_amount > 0)
-					{
+				{					
+					if(!pmpro_checkLevelForPayflowCompatibility($level))
 						return false;
-					}
 				}
 			}
 		}
@@ -115,6 +108,11 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.
+	
+	Braintree currently does not support:
+	* Trial Amounts > 0.
+	* Daily or Weekly billing periods.
+	* Also check that a plan has been created at Braintree
 */
 function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 {
@@ -132,16 +130,8 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 			{
 				foreach($levels as $level)
 				{
-					/*
-						Braintree currently does not support:
-						* Trial Amounts > 0.
-						* Daily or Weekly billing periods.
-					*/
-					if($level->trial_amount > 0 ||
-					   ($level->cycle_number > 0 && ($level->cycle_period == "Day" || $level->cycle_period == "Week")))
-					{
+					if(!pmpro_checkLevelForBraintreeCompatibility($level))
 						return false;
-					}
 				}
 			}
 		}
@@ -165,6 +155,9 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 
 /*
 	Checks if PMPro settings are complete or if there are any errors.
+	
+	2Checkout currently does not support:
+	* Trial amounts less than or greater than the absolute value of amonthly recurring amount.
 */
 function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 {
@@ -181,15 +174,9 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 			if(!empty($levels))
 			{
 				foreach($levels as $level)
-				{
-					/*
-						2Checkout currently does not support:
-						* Trial amounts less than or greater than the absolute value of amonthly recurring amount.
-					*/
-					if(pmpro_isLevelTrial($level))
-					{
+				{					
+					if(!pmpro_checkLevelForTwoCheckoutCompatibility($level))
 						return false;
-					}
 				}
 			}
 		}
