@@ -23,7 +23,7 @@
 /*
 	Constants
 */
-define('PMPRO_LICENSE_SERVER', 'http://license.paidmembershipspro.com/');
+define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/');
 
 /*
 	Add license settings page.
