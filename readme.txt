@@ -122,6 +122,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG: Fixed issue where checkouts were still processing even if there were errors with the discount code used.
 * BUG: Fixed bug where settings added via the pmpro_custom_advanced_settings were not being saved to DB unless they were prefixed with custom_.
 * BUG: Fixed other formatting issues with settings added via pmpro_custom_advanced_settings.
+* BUG: Fixed issue where the sendInvoiceEmail method of the email class was expecting $order->discount_code to be a string, but it was sometimes a discount code object. (Thanks, Bill Stoltz)
 * ENHANCEMENT: Added pmpro_account_membership_expiration_text filter to filter the expiration text that shows ona  user's membership account page.
 * ENHANCEMENT: Updated our Stripe and Braintree libraries to use their latest versions. This update allows our gateway integrations to support PHP7 and also removes support for PHP 5.2 and 5.3.
 * ENHANCEMENT: The Braintree level compatibility check now also looks for a properly named plan.

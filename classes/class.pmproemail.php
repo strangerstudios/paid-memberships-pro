@@ -691,10 +691,14 @@
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
 		
-			if($invoice->getDiscountCode())
-				$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code . "</p>\n";
-			else
+			if($invoice->getDiscountCode()) {
+				if(!empty($invoice->discount_code->code))
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
+				else
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code . "</p>\n";
+			} else {
 				$this->data["discount_code"] = "";
+			}
 		
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
