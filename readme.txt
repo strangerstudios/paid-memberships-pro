@@ -130,6 +130,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Improved Italian translation. (Thanks, Francesco Pezzotti)
 * ENHANCEMENT: Improved German tranlsation. (Thanks, Simon)
 * ENHANCEMENT: Added a Sweedish tranlsation. (Thanks, Mathias Persson)
+* ENHANCEMENT: Added a "Chinese/Cantonese (Hong Kong SAR China)" tranlsation. (Thanks, Kai Chan)
 
 = 1.8.13.6 =
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
