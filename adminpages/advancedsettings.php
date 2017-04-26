@@ -258,22 +258,22 @@ if(pmpro_displayAds())
 	            <tr>
 	                <th valign="top" scope="row">
 	                    <label
-	                        for="<?php esc_attr_e( $field['field_name'] ); ?>"><?php esc_attr_e( $field['label'] ); ?></label>
+	                        for="<?php echo esc_attr( $field['field_name'] ); ?>"><?php echo esc_textarea( $field['label'] ); ?></label>
 	                </th>
 	                <td>
 	                    <?php
 	                    switch ($field['field_type']) {
 	                        case 'select':
 	                            ?>
-	                            <select id="<?php esc_attr_e( $field['field_name'] ); ?>"
-	                                    name="<?php esc_attr_e( $field['field_name'] ); ?>">
+	                            <select id="<?php echo esc_attr( $field['field_name'] ); ?>"
+	                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
 	                                <?php 
 	                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
 	                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
 	                                	foreach ($field['options'] as $key => $option) {
 	                                    	if(!$is_associative) $key = $option;
 	                                    	?>
-	                                    	<option value="<?php esc_attr_e($key); ?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
+	                                    	<option value="<?php echo esc_attr($key); ?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
 	                                    		<?php echo esc_textarea($option); ?>
 	                                    	</option>
 	                               			<?php
@@ -284,16 +284,16 @@ if(pmpro_displayAds())
 	                            break;
 	                        case 'text':
 	                            ?>
-	                            <input id="<?php esc_attr_e( $field['field_name'] ); ?>"
-	                                   name="<?php esc_attr_e( $field['field_name'] ); ?>"
-	                                   type="<?php esc_attr_e( $field['field_type'] ); ?>"
-	                                   value="<?php esc_attr_e(pmpro_getOption($field['field_name'])); ?> ">
+	                            <input id="<?php echo esc_attr( $field['field_name'] ); ?>"
+	                                   name="<?php echo esc_attr( $field['field_name'] ); ?>"
+	                                   type="<?php echo esc_attr( $field['field_type'] ); ?>"
+	                                   value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> ">
 	                            <?php
 	                            break;
 	                        case 'textarea':
 	                            ?>
-	                            <textarea id="<?php esc_attr_e( $field['field_name'] ); ?>"
-	                                      name="<?php esc_attr_e( $field['field_name'] ); ?>">
+	                            <textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
+	                                      name="<?php echo esc_attr( $field['field_name'] ); ?>">
 	                                <?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
 	                            </textarea>
 	                            <?php
@@ -304,7 +304,7 @@ if(pmpro_displayAds())
 	                    if (!empty($field['description'])) {
 	                        ?>
 	                        <br>
-	                        <small><?php esc_attr_e( $field['description'] ); ?></small>
+	                        <small><?php echo esc_textarea( $field['description'] ); ?></small>
 	                    <?php
 	                    }
 	                    ?>
