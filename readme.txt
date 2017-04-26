@@ -128,6 +128,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: The Braintree level compatibility check now also looks for a properly named plan.
 * ENHANCEMENT: Better error handling when trying to update plugins that update against the PMPro license server.
 * ENHANCEMENT: Improved Italian translation. (Thanks, Francesco Pezzotti)
+* ENHANCEMENT: Improved German tranlsation. (Thanks, Simon)
 
 = 1.8.13.6 =
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
