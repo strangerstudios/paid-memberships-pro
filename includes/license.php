@@ -17,7 +17,7 @@
 /*
 	Developers, add this line to your wp-config.php to remove PMPro license nags even if no license has been purchased.
 	
-	define('PMPRO_LICENSE_NAG', true);	//consider purchasing a license at http://www.paidmembershipspro.com/support-license/
+	define('PMPRO_LICENSE_NAG', false);	//consider purchasing a license at http://www.paidmembershipspro.com/support-license/
 */
 
 /*
@@ -41,6 +41,9 @@ function pmpro_license_settings_page() {
 	{
 		$key = preg_replace("/[^a-zA-Z0-9]/", "", $_REQUEST['pmpro-license-key']);
 					
+		//erase the old key
+		delete_option('pmpro_license_key');
+		
 		//check key
 		$valid = pmpro_license_isValid($key, NULL, true);
 		
@@ -66,7 +69,7 @@ function pmpro_license_settings_page() {
 		}
 		
 		//update key
-		update_option('pmpro_license_key', $key);
+		update_option('pmpro_license_key', $key, 'no');
 	}	
 	
 	//get saved license
@@ -235,8 +238,8 @@ add_action('pmpro_license_check_key', 'pmpro_license_check_key');
 */
 function pmpro_license_pause() {
 	if(!empty($_REQUEST['pmpro_nag_paused']) && current_user_can('manage_options')) {
-		$pmpro_nag_paused = current_time('timestamp')*3600*24*7;
-		update_option('pmpro_nag_paused', $pmpro_nag_paused);
+		$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
+		update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
 		
 		return;
 	}
@@ -260,13 +263,23 @@ function pmpro_license_nag() {
 	//blocked by constant?
 	if(defined('PMPRO_LICENSE_NAG') && !PMPRO_LICENSE_NAG)
 		return;
-
+	
+	//don't load on the license page
+	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro_license_settings')
+		return;
+	
 	//valid license?
 	if(pmpro_license_isValid())
-		return;	
+		return;
 	
-	//are we paused?
-	$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);
+	//always show on updates page
+	/*
+	$screen = get_current_screen();	
+	if($screen->id == 'update-core')
+		$pmpro_nag_paused = false;	
+	else
+	*/
+		$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);		
 		
 	if(current_time('timestamp') < $pmpro_nag_paused && $pmpro_nag_paused < current_time('timestamp')*3600*24*8)
 		return;
@@ -281,3 +294,4 @@ function pmpro_license_nag() {
 	</div>
 	<?php
 }
+add_action('admin_notices', 'pmpro_license_nag');
