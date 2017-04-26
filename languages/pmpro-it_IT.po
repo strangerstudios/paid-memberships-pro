@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.8.12\n"
 
 #: adminpages/addons.php:5 adminpages/advancedsettings.php:5
 #: adminpages/discountcodes.php:5 adminpages/emailsettings.php:5
@@ -22,7 +22,7 @@ msgstr ""
 #: adminpages/orders-csv.php:5 adminpages/orders.php:5
 #: adminpages/pagesettings.php:5
 msgid "You do not have permissions to perform this action."
-msgstr "Permessi insufficienti per eseguire questa azione."
+msgstr "Non disponi dei permessi necessari per eseguire l’operazione."
 
 #: adminpages/addons.php:67 adminpages/admin_header.php:170
 #: includes/adminpages.php:53 includes/adminpages.php:151
@@ -32,7 +32,7 @@ msgstr "Permessi insufficienti per eseguire questa azione."
 #: includes/adminpages.php:69 includes/adminpages.php:135
 #: includes/adminpages.php:142 includes/adminpages.php:146
 msgid "Add Ons"
-msgstr "Addons"
+msgstr "Add On"
 
 #: adminpages/addons.php:74 adminpages/addons.php:71 adminpages/addons.php:87
 #, php-format
@@ -41,12 +41,11 @@ msgstr "Ultimo controllo il %s alle %s"
 
 #: adminpages/addons.php:75 adminpages/addons.php:72 adminpages/addons.php:88
 msgid "Check Again"
-msgstr "Controlla Ancora"
+msgstr "Controlla di nuovo"
 
 #: adminpages/addons.php:79 adminpages/orders.php:881 adminpages/addons.php:76
-#: adminpages/addons.php:92 adminpages/orders.php:605
-#: adminpages/orders.php:712 adminpages/orders.php:741
-#: adminpages/orders.php:850
+#: adminpages/addons.php:92 adminpages/orders.php:605 adminpages/orders.php:712
+#: adminpages/orders.php:741 adminpages/orders.php:850
 msgid "All"
 msgstr "Tutti"
 
@@ -767,7 +766,7 @@ msgstr "Pagamento Iniziale"
 #: adminpages/membershiplevels.php:338 adminpages/membershiplevels.php:340
 #: adminpages/membershiplevels.php:350 adminpages/membershiplevels.php:353
 msgid "The initial amount collected at registration."
-msgstr "?????"
+msgstr "L'importo iniziale pagato al momento della registrazione."
 
 #: adminpages/discountcodes.php:448 adminpages/membershiplevels.php:356
 #: adminpages/discountcodes.php:432 adminpages/discountcodes.php:435
@@ -2656,8 +2655,7 @@ msgstr "Accessi mensili"
 msgid "Total Logins"
 msgstr "Totale Accessi"
 
-#: adminpages/reports/memberships.php:18
-#: adminpages/reports/memberships.php:272
+#: adminpages/reports/memberships.php:18 adminpages/reports/memberships.php:272
 #: adminpages/reports/memberships.php:252
 #: adminpages/reports/memberships.php:259
 #: adminpages/reports/memberships.php:288
@@ -3283,8 +3281,7 @@ msgstr "Accettiamo %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:322
 #: classes/gateways/class.pmprogateway_stripe.php:516 pages/billing.php:314
-#: pages/checkout.php:577
-#: classes/gateways/class.pmprogateway_braintree.php:303
+#: pages/checkout.php:577 classes/gateways/class.pmprogateway_braintree.php:303
 #: classes/gateways/class.pmprogateway_braintree.php:316
 #: classes/gateways/class.pmprogateway_braintree.php:318
 #: classes/gateways/class.pmprogateway_braintree.php:321
@@ -3306,8 +3303,7 @@ msgstr "Numero di Carta"
 
 #: classes/gateways/class.pmprogateway_braintree.php:359
 #: classes/gateways/class.pmprogateway_stripe.php:553 pages/billing.php:357
-#: pages/checkout.php:612
-#: classes/gateways/class.pmprogateway_braintree.php:340
+#: pages/checkout.php:612 classes/gateways/class.pmprogateway_braintree.php:340
 #: classes/gateways/class.pmprogateway_braintree.php:353
 #: classes/gateways/class.pmprogateway_braintree.php:355
 #: classes/gateways/class.pmprogateway_braintree.php:358
@@ -3330,8 +3326,7 @@ msgstr "CVV"
 
 #: classes/gateways/class.pmprogateway_braintree.php:360
 #: classes/gateways/class.pmprogateway_stripe.php:554 pages/billing.php:358
-#: pages/checkout.php:613
-#: classes/gateways/class.pmprogateway_braintree.php:341
+#: pages/checkout.php:613 classes/gateways/class.pmprogateway_braintree.php:341
 #: classes/gateways/class.pmprogateway_braintree.php:354
 #: classes/gateways/class.pmprogateway_braintree.php:356
 #: classes/gateways/class.pmprogateway_braintree.php:359
@@ -3354,8 +3349,7 @@ msgstr "Cos'è?"
 
 #: classes/gateways/class.pmprogateway_braintree.php:370
 #: classes/gateways/class.pmprogateway_stripe.php:564 pages/checkout.php:95
-#: pages/checkout.php:621
-#: classes/gateways/class.pmprogateway_braintree.php:351
+#: pages/checkout.php:621 classes/gateways/class.pmprogateway_braintree.php:351
 #: classes/gateways/class.pmprogateway_braintree.php:364
 #: classes/gateways/class.pmprogateway_braintree.php:366
 #: classes/gateways/class.pmprogateway_braintree.php:369
@@ -4748,7 +4742,7 @@ msgstr "Livello d'iscrizione non valido."
 #: includes/functions.php:725 includes/functions.php:791
 #: includes/functions.php:797 includes/functions.php:976
 msgid "not changing?"
-msgstr "?????"
+msgstr "nessuna modifica?"
 
 #: includes/functions.php:1037 includes/functions.php:537
 #: includes/functions.php:559 includes/functions.php:570
@@ -5349,7 +5343,7 @@ msgstr "No, mantieni questa iscrizione"
 #: pages/cancel.php:57 shortcodes/pmpro_account.php:40 pages/account.php:14
 #: pages/cancel.php:48 pages/cancel.php:56 shortcodes/pmpro_account.php:39
 msgid "My Memberships"
-msgstr "Mia Iscrizione"
+msgstr "Iscrizione corrente"
 
 #: pages/cancel.php:93 pages/cancel.php:77 pages/cancel.php:92
 msgid "Cancel All Memberships"
@@ -5552,7 +5546,7 @@ msgstr "Totale Fatturato"
 #: pages/confirmation.php:88 pages/invoice.php:69 pages/confirmation.php:80
 #: pages/confirmation.php:82 pages/invoice.php:67
 msgid "ending in"
-msgstr "scade tra"
+msgstr "che finisce con"
 
 #: pages/confirmation.php:103 pages/confirmation.php:97
 #, php-format
@@ -5660,8 +5654,8 @@ msgstr "Mensilmente"
 msgid "Your membership status has been updated - Thank you!"
 msgstr "L'iscrizione è stata aggiornata - Grazie!"
 
-#: preheaders/account.php:12 preheaders/levels.php:24
-#: preheaders/account.php:11 preheaders/levels.php:23
+#: preheaders/account.php:12 preheaders/levels.php:24 preheaders/account.php:11
+#: preheaders/levels.php:23
 msgid ""
 "Sorry, your request could not be completed - please try again in a few "
 "moments."
@@ -6032,17 +6026,17 @@ msgstr "Vecchie Fatture"
 msgid "Amount"
 msgstr "Importo"
 
-#: shortcodes/pmpro_account.php:155 pages/account.php:121
-#: pages/account.php:140 pages/account.php:144
-#: shortcodes/pmpro_account.php:152 shortcodes/pmpro_account.php:154
+#: shortcodes/pmpro_account.php:155 pages/account.php:121 pages/account.php:140
+#: pages/account.php:144 shortcodes/pmpro_account.php:152
+#: shortcodes/pmpro_account.php:154
 msgid "View All Invoices"
 msgstr "Visualizza tutte le Fatture"
 
-#: shortcodes/pmpro_account.php:162 pages/account.php:128
-#: pages/account.php:146 pages/account.php:150
-#: shortcodes/pmpro_account.php:159 shortcodes/pmpro_account.php:161
+#: shortcodes/pmpro_account.php:162 pages/account.php:128 pages/account.php:146
+#: pages/account.php:150 shortcodes/pmpro_account.php:159
+#: shortcodes/pmpro_account.php:161
 msgid "Member Links"
-msgstr "???"
+msgstr "Link iscritti"
 
 #: adminpages/addons.php:79
 msgid "Disabled"

@@ -127,6 +127,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated our Stripe and Braintree libraries to use their latest versions. This update allows our gateway integrations to support PHP7 and also removes support for PHP 5.2 and 5.3.
 * ENHANCEMENT: The Braintree level compatibility check now also looks for a properly named plan.
 * ENHANCEMENT: Better error handling when trying to update plugins that update against the PMPro license server.
+* ENHANCEMENT: Improved Italian translation. (Thanks, Francesco Pezzotti)
 
 = 1.8.13.6 =
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
