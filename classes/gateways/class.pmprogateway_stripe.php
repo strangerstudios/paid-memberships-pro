@@ -101,7 +101,7 @@
 		function loadStripeLibrary()
 		{
 			//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
-			if(!class_exists("\\Stripe")) {
+			if(!class_exists("Stripe\Stripe")) {
                 require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 			}
 		}
