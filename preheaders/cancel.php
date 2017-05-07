@@ -25,7 +25,8 @@
 		$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
 		
 		//get the ids
-		$old_level_ids = array_map('intval', explode("+", preg_replace("[^0-9\+]", "", $_REQUEST['levelstocancel'])));
+		$requested_ids = preg_replace("/[^0-9\+]/", "", $_REQUEST['levelstocancel']);
+		$old_level_ids = array_map( 'intval', explode( "+", $requested_ids ) );
 		
 		//make sure the user has their old level
 		if(!pmpro_hasMembershipLevel($old_level_ids)) {
