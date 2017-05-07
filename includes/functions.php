@@ -974,7 +974,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	if(!is_array($level))
 	{
 		//are they even changing?
-		if(pmpro_hasMembershipLevel($level, $user_id)) {
+		if(!pmpro_hasMembershipLevel($level, $user_id)) {
 			$pmpro_error = __("not changing?", 'paid-memberships-pro' );
 			return false; //not changing
 		}
