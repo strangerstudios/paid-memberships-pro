@@ -314,8 +314,8 @@
 					'item_number'   => $order->code, 
 					'charset'       => get_bloginfo( 'charset' ), 				
 					'rm'            => '2', 
-					'return'        => pmpro_url("confirmation", "?level=" . $order->membership_level->id),
-					'notify_url'    => admin_url("admin-ajax.php") . "?action=ipnhandler",
+					'return'        => add_query_arg( 'level', $order->membership_level->id, pmpro_url("confirmation" ) ),
+					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
 					'src'			=> '1',
 					'sra'			=> '1',
 					'bn'			=> PAYPAL_BN_CODE
@@ -409,24 +409,24 @@
 					'item_number'   => $order->code, 
 					'charset'       => get_bloginfo( 'charset' ), 				
 					'rm'            => '2', 
-					'return'        => pmpro_url("confirmation", "?level=" . $order->membership_level->id),
-					'notify_url'    => admin_url("admin-ajax.php") . "?action=ipnhandler",
-					'bn'			=> PAYPAL_BN_CODE
+					'return'        => add_query_arg( 'level', $order->membership_level->id, pmpro_url("confirmation" ) ),
+					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
+					'bn'		=> PAYPAL_BN_CODE
 				 );	
 			}						
 			
+			//anything modders might add
+			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
+
+			foreach( $additional_parameters as $key => $value ) {
+                
+				$paypal_args[$key] = $value;
+ 			}
+
 			$nvpStr = "";
 			foreach($paypal_args as $key => $value)
 			{
 				$nvpStr .= "&" . $key . "=" . urlencode($value);
-			}
-			
-			//anything modders might add
-			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());									
-			if(!empty($additional_parameters))
-			{
-				foreach($additional_parameters as $key => $value)				
-					$nvpStr .= urlencode("&" . $key . "=" . $value);
 			}
 			
 			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
