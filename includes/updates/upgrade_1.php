@@ -41,6 +41,10 @@ function pmpro_upgrade_1()
 
 	pmpro_setOption("tospage", "");
 
+	//let's pause the nag for the first week of use
+	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
+	update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
+
 	//db update
 	pmpro_db_delta();
 

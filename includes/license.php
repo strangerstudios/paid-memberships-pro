@@ -284,11 +284,21 @@ function pmpro_license_nag() {
 	if(current_time('timestamp') < $pmpro_nag_paused && $pmpro_nag_paused < current_time('timestamp')*3600*24*8)
 		return;
 
-	//okay, show nag	
+	//get key for later
+	$key = get_option('pmpro_license_key');
+
+	//okay, show nag
 	?>
-	<div class="error fade">
+	<div class="<?php if(!empty($key)) { ?>error<?php } else { ?>notice notice-warning<?php } ?> fade">
 		<p>
-			<strong><?php _e('Invalid PMPro License Key.', 'paid-memberships-pro' );?></strong> <?php _e("If you're running Paid Memberships Pro on a production website, we recommend an annual support license.", 'paid-memberships-pro' );?>
+			<?php
+				//only show the invalid part if they've entered a key
+				
+				if(!empty($key)) {
+					?><strong><?php _e('Invalid PMPro License Key.', 'paid-memberships-pro' );?></strong><?php
+				} 
+			?>
+			<?php _e("If you're running Paid Memberships Pro on a production website, we recommend an annual support license.", 'paid-memberships-pro' );?>
 			<a href="<?php echo admin_url('options-general.php?page=pmpro_license_settings');?>"><?php _e('More Info', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;<a href="<?php echo add_query_arg('pmpro_nag_paused', '1', $_SERVER['REQUEST_URI']);?>"><?php _e('Dismiss', 'paid-memberships-pro' );?></a>
 		</p>
 	</div>
