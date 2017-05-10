@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.
 * BUG FIX: Cancel code now properly uses preg_replace when sanitizing the list of level ids to cancel.
 * FIX/ENHANCEMENT: Removed test/doc code from Stripe and Braintree libraries.
+* ENHANCEMENT: Now pausing the license nag for the first week of use and removed the "invalid" error if no key is being used.
 
 = 1.9 =
 * BUG: Fixed issue with cancelling 2Checkout recurring subscriptions. Now using the payment_transaction_id to find/cancel the sale's recurring subscription since no subscription_transaction_id is being saved.
