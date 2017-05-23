@@ -1,4 +1,5 @@
 <?php
+use Stripe\Customer as Stripe_Customer;
 /*
 	Upgrade to 1.8.9.1
 	* Fixing Stripe orders where user_id/membership_id = 0
