@@ -24,13 +24,13 @@
 		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
 	}
 
-	if(!class_exists("\\Stripe")) {
+	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
 
 	try {
-		\Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
+		Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
 	} catch ( Exception $e ) {
 		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
 		pmpro_stripeWebhookExit();
