@@ -661,6 +661,7 @@
 							'creditCard' => array(
 								'number' => $order->braintree->number,
 								'expirationDate' => $order->braintree->expiration_date,
+								'cvv' => $order->braintree->cvv,
 								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
 								'options' => array(
 									'updateExistingToken' => $this->customer->creditCards[0]->token
@@ -715,7 +716,7 @@
 						
 			//no customer id, create one
 			if(!empty($order->accountnumber))
-			{
+			{				
 				try
 				{					
 					$result = Braintree_Customer::create(array(
