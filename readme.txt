@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 1.9.2 =
 * BUG FIX: Fixed issue where Braintree checkouts were failing with a CVV error when existing users checked out.
+* BUG FIX: Fixed issue loading the Stripe library in PHP 5.6.
 
 = 1.9.1 =
 * BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.
