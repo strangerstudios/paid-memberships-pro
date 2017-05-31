@@ -254,6 +254,7 @@
 			$card_types = array(
 				'Visa' => '001',
 				'MasterCard' => '002',
+				'Mastercard' => '002',
 				'Master Card' => '002',
 				'AMEX' => '003',
 				'American Express' => '003',
