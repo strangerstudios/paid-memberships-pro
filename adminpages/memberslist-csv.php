@@ -161,8 +161,13 @@
 	$sqlQuery .= "WHERE mu.membership_id > 0 ";
 
 	// looking for a specific user
+	$search = "";
+	
 	if($s)
-		$sqlQuery .= "AND (u.user_login LIKE '%". esc_sql($s) ."%' OR u.user_email LIKE '%". esc_sql($s) ."%' OR um.meta_value LIKE '%". esc_sql($s) ."%') ";
+	{
+		$search = "AND (u.user_login LIKE '%". esc_sql($s) ."%' OR u.user_email LIKE '%". esc_sql($s) ."%' OR um.meta_value LIKE '%". esc_sql($s) ."%') ";
+		$sqlQuery .= $search;
+	}
 
 	// if ($former_members)
 		// $sqlQuery .= "AND mu2.status = 'active' ";
@@ -295,6 +300,10 @@
 		{
 			$i_start += $max_users_per_loop;
 		}
+		
+		//escape the % for LIKE comparison with $wpdb
+		if(!empty($search))
+			$search = str_replace('%', '%%', $search);
 
 		$userSql = $wpdb->prepare("
 	        SELECT
@@ -319,7 +328,7 @@
 			LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 			{$former_member_join}
-			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter}
+			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter} {$search}
 			-- GROUP BY u.ID
 			ORDER BY u.ID",
 				$first_uid,
