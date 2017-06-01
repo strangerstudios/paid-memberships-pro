@@ -119,7 +119,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue where Braintree checkouts were failing with a CVV error when existing users checked out.
 * BUG FIX: Fixed issue loading the Stripe library in PHP 5.6.
 * BUG FIX: Member List CSV export was ignoring search parameter.
-* BUG FIX: Discount codes weren't being remembered during the "review" step of a PayPal Express checkout.
+* BUG FIX: Discount codes weren't being remembered during the "review" step of a PayPal Express checkout. (Thanks, Rafe Colton)
 * ENHANCEMENT/FIX: Search Filter would trigger incorrectly for REST API request by slug.
 * ENHANCEMENT/FIX: Didn't always identify MasterCard cards correctly to set the CardType with some gateways.
 * ENHANCEMENT: Tested up to WordPress 4.8.
