@@ -19,21 +19,6 @@ define('PMPRO_VERSION', '1.9.1');
 define('PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url());
 define('PMPRO_MIN_PHP_VERSION', '5.6');
 
-//if the session has been started yet, start it (ignore if running from command line)
-if(!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
-	if(defined('STDIN')) {
-		//command line
-	} else {
-		if (version_compare(phpversion(), '5.4.0', '>=')) {
-			if (session_status() == PHP_SESSION_NONE)
-				session_start();
-		} else {
-			if(!session_id())
-				session_start();
-		}
-	}
-}
-	
 /*
 	Includes
 */
