@@ -66,7 +66,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	else
 	{
 		//are any membership levels associated with this page?
-		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $post_id . "'";
+		$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "'";
 	}
 
 
@@ -96,8 +96,13 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		}
 		elseif(!empty($myuser->ID))
 		{
-			$myuser->membership_level = pmpro_getMembershipLevelForUser($myuser->ID);
-			if(!empty($myuser->membership_level->ID) && in_array($myuser->membership_level->ID, $post_membership_levels_ids))
+			$myuser->membership_level = pmpro_getMembershipLevelForUser($myuser->ID); // kept in for legacy filter users below.
+			$myuser->membership_levels = pmpro_getMembershipLevelsForUser($myuser->ID);
+			$mylevelids = array();
+			foreach($myuser->membership_levels as $curlevel) {
+				$mylevelids[] = $curlevel->id;
+			}
+			if(count($myuser->membership_levels)>0 && count(array_intersect($mylevelids, $post_membership_levels_ids))>0)
 			{
 				//the users membership id is one that will grant access
 				$hasaccess = true;
@@ -122,7 +127,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//general filter for all posts
 	$hasaccess = apply_filters("pmpro_has_membership_access_filter", $hasaccess, $mypost, $myuser, $post_membership_levels);
 	//filter for this post type
-	if(has_filter("pmpro_has_membership_access_filter_" . $mypost->post_type))
+	if( isset($mypost->post_type) && has_filter("pmpro_has_membership_access_filter_" . $mypost->post_type))
 		$hasaccess = apply_filters("pmpro_has_membership_access_filter_" . $mypost->post_type, $hasaccess, $mypost, $myuser, $post_membership_levels);
 
 	//return
@@ -146,7 +151,7 @@ function pmpro_search_filter($query)
     }
 
     //hide member pages from non-members (make sure they aren't hidden from members)    
-	if(!$query->is_admin && 
+	if(!$query->is_admin &&
 	   !$query->is_singular && 
 	   empty($query->query['post_parent']) &&
 	   (
@@ -156,7 +161,10 @@ function pmpro_search_filter($query)
 	)
     {		
 		//get page ids that are in my levels
-        $levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+        if(!empty($current_user->ID))
+			$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+		else
+			$levels = false;
         $my_pages = array();
 		$member_pages = array();
 

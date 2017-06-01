@@ -3,12 +3,12 @@
 # To generate a new pmpro.pot, cd to the main /paid-memberships-pro/ directory,
 # then execute `languages/gettext.sh` from the command line.
 # then fix the header info (helps to have the old pmpro.pot open before running script above)
-# then execute `cp languages/pmpro.pot languages/pmpro.po` to copy the .pot to .po
-# then execute `msgfmt languages/pmpro.po --output-file languages/pmpro.mo` to generate the .mo
+# then execute `cp languages/paid-memberships-pro.pot languages/paid-memberships-pro.po` to copy the .pot to .po
+# then execute `msgfmt languages/paid-memberships-pro.po --output-file languages/paid-memberships-pro.mo` to generate the .mo
 #---------------------------
-echo "Updating pmpro.pot... "
-xgettext -j -o languages/pmpro.pot \
---default-domain=pmpro \
+echo "Updating paid-memberships-pro.pot... "
+xgettext -j -o languages/paid-memberships-pro.pot \
+--default-domain=paid-memberships-pro \
 --language=PHP \
 --keyword=_ \
 --keyword=__ \

@@ -36,7 +36,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['authorizenet']))
-				$gateways['authorizenet'] = __('Authorize.net', 'pmpro');
+				$gateways['authorizenet'] = __('Authorize.net', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -90,12 +90,12 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Authorize.net Settings', 'pmpro'); ?>
+				<?php _e('Authorize.net Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="loginname"><?php _e('Login Name', 'pmpro');?>:</label>
+				<label for="loginname"><?php _e('Login Name', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="loginname" name="loginname" size="60" value="<?php echo esc_attr($values['loginname'])?>" />
@@ -103,7 +103,7 @@
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="transactionkey"><?php _e('Transaction Key', 'pmpro');?>:</label>
+				<label for="transactionkey"><?php _e('Transaction Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="transactionkey" name="transactionkey" size="60" value="<?php echo esc_attr($values['transactionkey'])?>" />
@@ -111,10 +111,10 @@
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('Silent Post URL', 'pmpro');?>:</label>
+				<label><?php _e('Silent Post URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre></p>
+				<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre></p>
 			</td>
 		</tr>
 		<?php
@@ -136,7 +136,7 @@
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 						$order->TrialBillingPeriod = $order->BillingPeriod;
 						$order->TrialBillingFrequency = $order->BillingFrequency;
 						$order->TrialBillingCycles = 1;
@@ -149,7 +149,7 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 						$order->TrialBillingCycles++;
 
 						//add a billing cycle to make up for the trial, if applicable
@@ -159,7 +159,7 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					}
 
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -168,7 +168,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", "pmpro");
+						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
 					return false;
 				}
 			}
@@ -183,7 +183,7 @@
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 							$order->TrialBillingPeriod = $order->BillingPeriod;
 							$order->TrialBillingFrequency = $order->BillingFrequency;
 							$order->TrialBillingCycles = 1;
@@ -196,7 +196,7 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 							$order->TrialBillingCycles++;
 
 							//add a billing cycle to make up for the trial, if applicable
@@ -206,7 +206,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
 
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -219,13 +219,13 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
-								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
 							}
 
 							return false;
@@ -241,7 +241,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Payment failed.", "pmpro");
+						$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 
 					return false;
 				}
@@ -300,7 +300,7 @@
 				"x_exp_date"		=> $order->ExpirationDate,
 
 				"x_amount"			=> $amount,
-				"x_description"		=> $order->membership_level->name . " " . __("Membership", "pmpro"),
+				"x_description"		=> $order->membership_level->name . " " . __("Membership", 'paid-memberships-pro' ),
 
 				"x_first_name"		=> $order->FirstName,
 				"x_last_name"		=> $order->LastName,
@@ -906,8 +906,8 @@
 			else
 			{
 				$order->status = "error";
-				$order->error = __("Could not connect to Authorize.net", "pmpro");
-				$order->shorterror = __("Could not connect to Authorize.net", "pmpro");
+				$order->error = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
+				$order->shorterror = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
 				return false;
 			}
 		}

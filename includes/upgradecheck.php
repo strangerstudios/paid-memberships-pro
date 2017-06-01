@@ -155,6 +155,59 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.88) {		
 		$pmpro_db_version = pmpro_upgrade_1_8_8();			
 	}
+	
+	/*
+		v1.8.9.1
+		* Fixing Stripe orders where user_id/membership_id = 0		
+	*/	
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
+	if($pmpro_db_version < 1.891) {		
+		$pmpro_db_version = pmpro_upgrade_1_8_9_1();			
+	}
+
+	/*
+		v1.8.9.2 (db v1.9)
+		* Changed 'code' column of pmpro_membership_orders table to 32 characters.
+	*/
+	if($pmpro_db_version < 1.892) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.892;
+		pmpro_setOption("db_version", "1.892");
+	}
+
+	/*
+		v1.8.9.3 (db v1.91)
+		* Fixing incorrect start and end dates.	
+	*/
+	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
+	if($pmpro_db_version < 1.91) {
+		$pmpro_db_version = pmpro_upgrade_1_8_9_3();			
+	}
+
+	/*
+		v1.8.10 (db v1.92)
+
+		Added checkout_id column to pmpro_membership_orders
+	*/
+	if($pmpro_db_version < 1.92) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.92;
+		pmpro_setOption("db_version", "1.92");
+	}
+
+	/*
+		v1.8.10.2 (db v1.93)
+
+		Run dbDelta again to fix broken/missing orders tables.
+	*/
+	if($pmpro_db_version < 1.93) {
+		pmpro_db_delta();
+		
+		$pmpro_db_version = 1.93;
+		pmpro_setOption("db_version", "1.93");
+	}
 }
 
 function pmpro_db_delta()
@@ -202,7 +255,7 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_orders . "` (
 		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-		  `code` varchar(10) NOT NULL,
+		  `code` varchar(32) NOT NULL,
 		  `session_id` varchar(64) NOT NULL DEFAULT '',
 		  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
 		  `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
@@ -217,6 +270,7 @@ function pmpro_db_delta()
 		  `subtotal` varchar(16) NOT NULL DEFAULT '',
 		  `tax` varchar(16) NOT NULL DEFAULT '',
 		  `couponamount` varchar(16) NOT NULL DEFAULT '',
+		  `checkout_id` int(11) NOT NULL DEFAULT '0',
 		  `certificate_id` int(11) NOT NULL DEFAULT '0',
 		  `certificateamount` varchar(16) NOT NULL DEFAULT '',
 		  `total` varchar(16) NOT NULL DEFAULT '',
@@ -246,7 +300,8 @@ function pmpro_db_delta()
 		  KEY `payment_transaction_id` (`payment_transaction_id`),
 		  KEY `subscription_transaction_id` (`subscription_transaction_id`),
 		  KEY `affiliate_id` (`affiliate_id`),
-		  KEY `affiliate_subid` (`affiliate_subid`)
+		  KEY `affiliate_subid` (`affiliate_subid`),
+		  KEY `checkout_id` (`checkout_id`)
 		);
 	";
 	dbDelta($sqlQuery);
@@ -363,8 +418,8 @@ function pmpro_db_delta()
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
-		  KEY (`pmpro_membership_level_id`),
-		  KEY (`meta_key`)
+		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+		  KEY `meta_key` (`meta_key`)
 		);
 	";
 	dbDelta($sqlQuery);

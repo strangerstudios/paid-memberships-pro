@@ -36,7 +36,7 @@ function pmpro_page_meta()
     </ul>
 	<?php 
 		if('post' == get_post_type($post) && $in_member_cat) { ?>
-		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", "pmpro");?></p>
+		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", 'paid-memberships-pro' );?></p>
 	<?php 
 		}
 		
@@ -101,8 +101,8 @@ function pmpro_page_save($post_id)
 //wrapper to add meta boxes
 function pmpro_page_meta_wrapper()
 {
-	add_meta_box('pmpro_page_meta', __('Require Membership', 'pmpro'), 'pmpro_page_meta', 'page', 'side');
-	add_meta_box('pmpro_page_meta', __('Require Membership', 'pmpro'), 'pmpro_page_meta', 'post', 'side');
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'page', 'side');
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'post', 'side');
 }
 if (is_admin())
 {
@@ -128,11 +128,11 @@ function pmpro_taxonomy_meta($term)
 	{ 
 		?>
 		<tr class="form-field">
-			<th scope="row" valign="top"><?php _e( 'Membership Levels', 'pmpro' ); ?></label></th>
+			<th scope="row" valign="top"><?php _e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
 			<td>
 				<p><strong>
 					<?php echo implode(', ',$protectedlevels); ?></strong></p>
-				<p class="description"><?php _e('Only members of these levels will be able to view posts in this category.','pmpro'); ?></p>
+				<p class="description"><?php _e('Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 	<?php

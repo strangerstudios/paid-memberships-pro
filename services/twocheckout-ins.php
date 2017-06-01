@@ -193,7 +193,7 @@
 		global $logstr;
 		//echo $logstr;
 
-		$logstr = var_export($_REQUEST, true) . "Logged On: " . date("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
+		$logstr = var_export($_REQUEST, true) . "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
 		//log in file or email?
 		if(defined('PMPRO_INS_DEBUG') && PMPRO_INS_DEBUG === "log")
@@ -274,7 +274,7 @@
 		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
-			$enddate = "'" . date("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time("timestamp"))) . "'";
+			$enddate = "'" . date_i18n("Y-m-d", strtotime("+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time("timestamp"))) . "'";
 		}
 		else
 		{
@@ -463,7 +463,7 @@
 
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {
-			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member
@@ -495,7 +495,7 @@
 
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
 		if( $worked === true ) {
-			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member

@@ -45,6 +45,9 @@
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_error');
 			jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
 
+			var code_level;
+			code_level = false;
+			
 			//filter to insert your own code
 			<?php do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, $level_id, false); ?>
 		</script>
@@ -64,7 +67,7 @@
 	//filter adjustments to the level
 	$code_level = apply_filters("pmpro_discount_code_level", $code_level, $discount_code_id);
 
-	printf(__("The %s code has been applied to your order. ", "pmpro"), $discount_code);
+	printf(__("The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code);
 	?>
 	<script>
 		var code_level = <?php echo json_encode($code_level); ?>;
@@ -86,7 +89,7 @@
 		}
 
 		jQuery('#other_discount_code_tr').hide();
-		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);"><?php _e('Click here to change your discount code', 'pmpro');?></a>.');
+		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);"><?php _e('Click here to change your discount code', 'paid-memberships-pro' );?></a>.');
 		jQuery('#other_discount_code_p').show();
 
 		jQuery('#other_discount_code_a').click(function() {
@@ -94,7 +97,7 @@
 			jQuery('#other_discount_code_p').hide();
 		});
 
-		jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'pmpro'), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?><?php echo pmpro_no_quotes(pmpro_getLevelExpiration($code_level), array('"', "'", "\n", "\r"))?></p>');
+		jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?><?php echo pmpro_no_quotes(pmpro_getLevelExpiration($code_level), array('"', "'", "\n", "\r"))?></p>');
 
 		<?php
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)

@@ -59,7 +59,18 @@
 				add_action('pmpro_checkout_before_processing', array('PMProGateway_paypalexpress', 'pmpro_checkout_before_processing'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('pmpro_checkout_after_form', array('PMProGateway_paypalexpress', 'pmpro_checkout_after_form'));
+				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
+		}
+
+		/**
+		 * Update the SSLVERSION for CURL to support PayPal Express moving to TLS 1.2
+		 *
+		 * @since 1.8.9.1
+		 */
+		static function http_api_curl($handle, $r, $url) {
+			if(strpos($url, 'paypal.com') !== false)
+				curl_setopt( $handle, CURLOPT_SSLVERSION, 6 );
 		}
 
 		/**
@@ -70,7 +81,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['paypalexpress']))
-				$gateways['paypalexpress'] = __('PayPal Express', 'pmpro');
+				$gateways['paypalexpress'] = __('PayPal Express', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -93,7 +104,8 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'paypalexpress_skip_confirmation'
 			);
 
 			return $options;
@@ -125,17 +137,17 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('PayPal Settings', 'pmpro'); ?>
+				<?php _e('PayPal Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'pmpro');?>
+				<strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('We do not recommend using PayPal Standard. We suggest using PayPal Express, Website Payments Pro (Legacy), or PayPal Pro (Payflow Pro). <a target="_blank" href="http://www.paidmembershipspro.com/2013/09/read-using-paypal-standard-paid-memberships-pro/">More information on why can be found here.</a>', 'paid-memberships-pro' );?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="gateway_email"><?php _e('Gateway Account Email', 'pmpro');?>:</label>
+				<label for="gateway_email"><?php _e('Gateway Account Email', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="gateway_email" name="gateway_email" size="60" value="<?php echo esc_attr($values['gateway_email'])?>" />
@@ -143,7 +155,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apiusername"><?php _e('API Username', 'pmpro');?>:</label>
+				<label for="apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apiusername" name="apiusername" size="60" value="<?php echo esc_attr($values['apiusername'])?>" />
@@ -151,7 +163,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apipassword"><?php _e('API Password', 'pmpro');?>:</label>
+				<label for="apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apipassword" name="apipassword" size="60" value="<?php echo esc_attr($values['apipassword'])?>" />
@@ -159,18 +171,29 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apisignature"><?php _e('API Signature', 'pmpro');?>:</label>
+				<label for="apisignature"><?php _e('API Signature', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apisignature" name="apisignature" size="60" value="<?php echo esc_attr($values['apisignature'])?>" />
 			</td>
 		</tr>
-		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler URL', 'pmpro');?>:</label>
+				<label for="paypalexpress_skip_confirmation"><?php _e('Confirmation Step', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
+					<option value="0" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 0);?>>Require an extra confirmation after users return from PayPal Express.</option>
+					<option value="1" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 1);?>>Skip the extra confirmation after users return from PayPal Express.</option>
+				</select>
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
 			</td>
 		</tr>
 		<?php
@@ -275,11 +298,15 @@
 				}
 				else
 				{
-					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
-			elseif(!empty($_REQUEST['confirm']))
+			
+			if(empty($pmpro_msg) &&
+				(!empty($_REQUEST['confirm']) ||
+				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
+			)
 			{
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
@@ -292,7 +319,7 @@
 					$morder->discount_code = $discount_code;
 					$morder->InitialPayment = $pmpro_level->initial_payment;
 					$morder->PaymentAmount = $pmpro_level->billing_amount;
-					$morder->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+					$morder->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 					$morder->BillingPeriod = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
@@ -327,7 +354,7 @@
 				}
 				else
 				{
-					$pmpro_msg = __("The PayPal Token was lost.", "pmpro");
+					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
@@ -372,7 +399,7 @@
 		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 
 			return $this->setExpressCheckout($order);
@@ -387,7 +414,7 @@
 		{
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+				$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 				return $this->subscribe($order);
 			}
@@ -406,16 +433,14 @@
 
 			//show our submit buttons
 			?>
-			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" value="<?php _e('Check Out with PayPal', 'pmpro');?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
-			<?php } ?>
-
+			
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -489,7 +514,7 @@
 			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate, current_time("timestamp")) > 0)
 				$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
+				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
@@ -529,8 +554,8 @@
 			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
 
 			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
-            		if ($account_optional)
-                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
+    		if ($account_optional)
+        		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
 
 			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
 
@@ -547,11 +572,11 @@
 				$order->saveOrder();
 
 				//redirect to paypal
-				$paypal_url = "https://www.paypal.com/webscr&cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
+				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
 				$environment = pmpro_getOption("gateway_environment");
 				if("sandbox" === $environment || "beta-sandbox" === $environment)
 				{
-					$paypal_url = "https://www.sandbox.paypal.com/webscr&useraction=commit&cmd=_express-checkout&token="  . $this->httpParsedResponseAr['TOKEN'];
+					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
 				}
 
 				wp_redirect($paypal_url);
@@ -624,7 +649,7 @@
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
 			*/
 			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&NOSHIPPING=1";
@@ -682,7 +707,7 @@
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
-			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLAMT=AddToNextBilling";
+			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
@@ -749,7 +774,7 @@
 			{
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
-				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", "pmpro");
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
 				return false;

@@ -39,7 +39,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['cybersource']))
-				$gateways['cybersource'] = __('CyberSource', 'pmpro');
+				$gateways['cybersource'] = __('CyberSource', 'paid-memberships-pro' );
 		
 			return $gateways;
 		}
@@ -93,17 +93,17 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('CyberSource Settings', 'pmpro'); ?>
+				<?php _e('CyberSource Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<strong><?php _e('Note', 'pmpro');?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'pmpro');?>
+				<strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'paid-memberships-pro' );?>
 			</td>	
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'pmpro');?>:</label>
+				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" size="60" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" />
@@ -111,7 +111,7 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'pmpro');?>:</label>
+				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>					
@@ -136,7 +136,7 @@
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 						$order->TrialBillingPeriod = $order->BillingPeriod;
 						$order->TrialBillingFrequency = $order->BillingFrequency;													
 						$order->TrialBillingCycles = 1;
@@ -149,7 +149,7 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 						$order->TrialBillingCycles++;
 						
 						//add a billing cycle to make up for the trial, if applicable
@@ -159,7 +159,7 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 					}
 					
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -168,7 +168,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Authorization failed.", "pmpro");
+						$order->error = __("Unknown error: Authorization failed.", 'paid-memberships-pro' );
 					return false;
 				}
 			}
@@ -183,7 +183,7 @@
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 							$order->TrialBillingPeriod = $order->BillingPeriod;
 							$order->TrialBillingFrequency = $order->BillingFrequency;													
 							$order->TrialBillingCycles = 1;
@@ -196,7 +196,7 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date("Y-m-d") . "T0:0:0";														
+							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
@@ -206,7 +206,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
 						
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -219,14 +219,14 @@
 							if($this->void($order))
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 							}
 							else
 							{
 								if(!$order->error)
-									$order->error = __("Unknown error: Payment failed.", "pmpro");
+									$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 								
-								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", "pmpro");
+								$order->error .= " " . __("A partial payment was made that we could not void. Please contact the site owner immediately to correct this.", 'paid-memberships-pro' );
 							}
 							
 							return false;								
@@ -242,7 +242,7 @@
 				else
 				{
 					if(empty($order->error))
-						$order->error = __("Unknown error: Payment failed.", "pmpro");
+						$order->error = __("Unknown error: Payment failed.", 'paid-memberships-pro' );
 					
 					return false;
 				}	
@@ -534,7 +534,7 @@
 		
 		function subscribe(&$order)
 		{
-			global $currency;
+			global $pmpro_currency;
 			
 			//create a code for the order
 			if(empty($order->code))
@@ -583,13 +583,13 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 				
 			//convert to a profile start date
-			$order->ProfileStartDate = date("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
 
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))						
@@ -606,7 +606,7 @@
 			}
 			
 			//convert back into a date
-			$profile_start_date = date("Ymd", strtotime("+ " . $trial_period_days . " Days"));
+			$profile_start_date = date_i18n("Ymd", strtotime("+ " . $trial_period_days . " Days"));
 			
 			//figure out the frequency
 			if($order->BillingPeriod == "Year")

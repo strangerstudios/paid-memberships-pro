@@ -13,41 +13,41 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 global $pmpro_reports;
-$pmpro_reports['login'] = __('Visits, Views, and Logins', 'pmpro');
+$pmpro_reports['login'] = __('Visits, Views, and Logins', 'paid-memberships-pro' );
 
 function pmpro_report_login_widget()
 {
 	global $wpdb;
 	$now = current_time('timestamp');
-	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));
-	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));
-	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date("n", $now)));	
+	$visits = get_option("pmpro_visits", array("today"=>0, "thisday"=>date_i18n("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date_i18n("n", $now)));
+	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date_i18n("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date_i18n("n", $now)));
+	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date_i18n("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date_i18n("n", $now)));
 ?>
 <span id="pmpro_report_login">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Visits','pmpro'); ?></th>
-			<th scope="col"><?php _e('Views','pmpro'); ?></th>
-			<th scope="col"><?php _e('Logins','pmpro'); ?></th>
+			<th scope="col"><?php _e('Visits', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('Views', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('Logins', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<th scope="row"><?php _e('Today','pmpro'); ?></th>
+			<th scope="row"><?php _e('Today', 'paid-memberships-pro' ); ?></th>
 			<td><?php echo number_format_i18n($visits['today']); ?></td>
 			<td><?php echo number_format_i18n($views['today']); ?></td>
 			<td><?php echo number_format_i18n($logins['today']);?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('This Month','pmpro'); ?></th>
+			<th scope="row"><?php _e('This Month', 'paid-memberships-pro' ); ?></th>
 			<td><?php echo number_format_i18n($visits['month']); ?></td>
 			<td><?php echo number_format_i18n($views['month']); ?></td>
 			<td><?php echo number_format_i18n($logins['month']); ?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('All Time','pmpro'); ?></th>
+			<th scope="row"><?php _e('All Time', 'paid-memberships-pro' ); ?></th>
 			<td><?php echo number_format_i18n($visits['alltime']); ?></td>
 			<td><?php echo number_format_i18n($views['alltime']);?></td>
 			<td><?php echo number_format_i18n($logins['alltime']); ?></td>
@@ -76,13 +76,13 @@ function pmpro_report_login_page()
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h1>
-		<?php _e('Visits, Views, and Logins Report', 'pmpro');?>
+		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro' );?>
 	</h1>		
 	<ul class="subsubsub">
 		<li>			
-			<?php _e('Show', 'pmpro')?> <select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Users', 'pmpro')?></option>
-				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro')?></option>
+			<?php _e('Show', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Users', 'paid-memberships-pro' )?></option>
+				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' )?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -96,7 +96,7 @@ function pmpro_report_login_page()
 		</li>
 	</ul>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input"><?php _e('Search', 'pmpro')?> <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
+		<label class="hidden" for="post-search-input"><?php _e('Search', 'paid-memberships-pro' )?> <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
@@ -155,20 +155,20 @@ function pmpro_report_login_page()
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
-				<th><?php _e('ID', 'pmpro')?></th>
-				<th><?php _e('User', 'pmpro')?></th>	
-				<th><?php _e('Name', 'pmpro')?></th>
-				<th><?php _e('Membership', 'pmpro')?></th>	
-				<th><?php _e('Joined', 'pmpro')?></th>
-				<th><?php _e('Expires', 'pmpro')?></th>
-				<th><?php _e('Last Visit', 'pmpro')?></th>
-				<th><?php _e('Visits This Month', 'pmpro')?></th>
-				<th><?php _e('Total Visits', 'pmpro')?></th>
-				<th><?php _e('Views This Month', 'pmpro')?></th>
-				<th><?php _e('Total Views', 'pmpro')?></th>
-				<th><?php _e('Last Login', 'pmpro')?></th>
-				<th><?php _e('Logins This Month', 'pmpro')?></th>
-				<th><?php _e('Total Logins', 'pmpro')?></th>				
+				<th><?php _e('ID', 'paid-memberships-pro' )?></th>
+				<th><?php _e('User', 'paid-memberships-pro' )?></th>	
+				<th><?php _e('Name', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Membership', 'paid-memberships-pro' )?></th>	
+				<th><?php _e('Joined', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Expires', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Last Visit', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Visits This Month', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Total Visits', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Views This Month', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Total Views', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Last Login', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Logins This Month', 'paid-memberships-pro' )?></th>
+				<th><?php _e('Total Logins', 'paid-memberships-pro' )?></th>				
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -200,11 +200,11 @@ function pmpro_report_login_page()
 								<?php echo $theuser->display_name;?>
 							</td>
 							<td><?php echo $auser->membership?></td>												
-							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered, current_time("timestamp")))?></td>
+							<td><?php echo date_i18n("m/d/Y", strtotime($theuser->user_registered, current_time("timestamp")))?></td>
 							<td>
 								<?php 									
 									if($auser->enddate) 
-										echo date(get_option('date_format'), $auser->enddate);
+										echo date_i18n(get_option('date_format'), $auser->enddate);
 									else
 										echo "Never";
 								?>
@@ -225,7 +225,7 @@ function pmpro_report_login_page()
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php _e('No members found.', 'pmpro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php _e('Search all levels', 'pmpro')?></a>.<?php } ?></p></td>
+					<td colspan="9"><p><?php _e('No members found.', 'paid-memberships-pro' )?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php _e('Search all levels', 'paid-memberships-pro' )?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}
@@ -273,9 +273,9 @@ function pmpro_report_login_wp_visits()
 			$visits = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 			
 		//track logins for user
-		$visits['last'] = date(get_option("date_format"));
+		$visits['last'] = date_i18n(get_option("date_format"));
 		$visits['alltime']++;
-		$thismonth = date("n", $now);
+		$thismonth = date_i18n("n", $now);
 		if($thismonth == $visits['thismonth'])
 			$visits['month']++;
 		else
@@ -294,7 +294,7 @@ function pmpro_report_login_wp_visits()
 		$visits = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$visits['alltime']++;
-	$thisdate = date("Y-d-m", $now);
+	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $visits['thisdate'])
 		$visits['today']++;
 	else
@@ -341,9 +341,9 @@ function pmpro_report_login_wp_views()
 			$views = array("last"=>"N/A", "month"=>0, "alltime"=>0);
 				
 		//track logins for user
-		$views['last'] = date(get_option("date_format"), $now);
+		$views['last'] = date_i18n(get_option("date_format"), $now);
 		$views['alltime']++;
-		$thismonth = date("n", $now);
+		$thismonth = date_i18n("n", $now);
 		if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 			$views['month']++;
 		else
@@ -362,7 +362,7 @@ function pmpro_report_login_wp_views()
 		$views = array("today"=>0, "thisdate"=> NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
 	$views['alltime']++;
-	$thisdate = date("Y-d-m", $now);
+	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $views['thisdate'])
 		$views['today']++;
 	else
@@ -370,7 +370,7 @@ function pmpro_report_login_wp_views()
 		$views['today'] = 1;
 		$views['thisdate'] = $thisdate;
 	}
-	$thismonth = date("n", $now);
+	$thismonth = date_i18n("n", $now);
 	if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 		$views['month']++;
 	else
@@ -395,9 +395,9 @@ function pmpro_report_login_wp_login($user_login)
 		$logins = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 		
 	//track logins for user
-	$logins['last'] = date(get_option("date_format"), $now);
+	$logins['last'] = date_i18n(get_option("date_format"), $now);
 	$logins['alltime']++;
-	$thismonth = date("n", $now);
+	$thismonth = date_i18n("n", $now);
 	if($thismonth == $logins['thismonth'])
 		$logins['month']++;
 	else
@@ -415,7 +415,7 @@ function pmpro_report_login_wp_login($user_login)
 		$logins = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 	
 	$logins['alltime']++;
-	$thisdate = date("Y-d-m", $now);
+	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $logins['thisdate'])
 		$logins['today']++;
 	else

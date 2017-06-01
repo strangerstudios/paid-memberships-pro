@@ -3,9 +3,11 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.8.9
+Version: 1.9.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
+Text Domain: paid-memberships-pro
+Domain Path: /languages
 */
 /*
 	Copyright 2011	Stranger Studios	(email : jason@strangerstudios.com)
@@ -13,27 +15,25 @@ Author URI: http://www.strangerstudios.com
 */
 
 //version constant
-define("PMPRO_VERSION", "1.8.9");
-define("PMPRO_USER_AGENT", "Paid Memberships Pro v" . PMPRO_VERSION . "; " . site_url());
+define('PMPRO_VERSION', '1.9.1');
+define('PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url());
+define('PMPRO_MIN_PHP_VERSION', '5.6');
 
 //if the session has been started yet, start it (ignore if running from command line)
-if(defined('STDIN') )
-{
-	//command line
+if(!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
+	if(defined('STDIN')) {
+		//command line
+	} else {
+		if (version_compare(phpversion(), '5.4.0', '>=')) {
+			if (session_status() == PHP_SESSION_NONE)
+				session_start();
+		} else {
+			if(!session_id())
+				session_start();
+		}
+	}
 }
-else
-{
-    if (version_compare(phpversion(), '5.4.0', '>=')) {
-        if (session_status() == PHP_SESSION_NONE)
-            session_start();
-    }
-    else {
-        if(!session_id())
-            session_start();
-    }
-
-}
-
+	
 /*
 	Includes
 */
@@ -70,23 +70,32 @@ require_once(PMPRO_DIR . "/includes/capabilities.php");			//manage PMPro capabil
 
 require_once(PMPRO_DIR . "/includes/xmlrpc.php");				//xmlrpc methods
 
-require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[checkout_button] shortcode to show link to checkout for a level
+require_once(PMPRO_DIR . "/shortcodes/checkout_button.php");	//[pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once(PMPRO_DIR . "/shortcodes/membership.php");			//[membership] shortcode to hide/show member content
 require_once(PMPRO_DIR . "/shortcodes/pmpro_account.php");			//[pmpro_account] shortcode to show account information
+require_once(PMPRO_DIR . "/shortcodes/pmpro_member.php");			//[pmpro_member] shortcode to show user fields
 
 //load gateway
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway.php");	//loaded by memberorder class when needed
 
 //load payment gateway class
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_authorizenet.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php");
+
+if ( version_compare( PHP_VERSION, '5.4.45', '>=' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_braintree.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_check.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_cybersource.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_payflowpro.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypal.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalexpress.php");
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_paypalstandard.php");
-require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php");
+
+if ( version_compare( PHP_VERSION, '5.3.29', '>=' )) {
+	require_once( PMPRO_DIR . "/classes/gateways/class.pmprogateway_stripe.php" );
+}
+
 require_once(PMPRO_DIR . "/classes/gateways/class.pmprogateway_twocheckout.php");
 
 /*
@@ -123,17 +132,17 @@ $gateway_environment = pmpro_getOption("gateway_environment");
 // Returns a list of all available gateway
 function pmpro_gateways(){
 	$pmpro_gateways = array(
-		'' 					=> __('Testing Only', 'pmpro'),
-		'check' 			=> __('Pay by Check', 'pmpro'),
-		'stripe' 			=> __('Stripe', 'pmpro'),
-		'paypalexpress' 	=> __('PayPal Express', 'pmpro'),
-		'paypal' 			=> __('PayPal Website Payments Pro', 'pmpro'),
-		'payflowpro' 		=> __('PayPal Payflow Pro/PayPal Pro', 'pmpro'),
-		'paypalstandard' 	=> __('PayPal Standard', 'pmpro'),
-		'authorizenet' 		=> __('Authorize.net', 'pmpro'),
-		'braintree' 		=> __('Braintree Payments', 'pmpro'),
-		'twocheckout' 		=> __('2Checkout', 'pmpro'),
-		'cybersource' 		=> __('Cybersource', 'pmpro')
+		'' 					=> __('Testing Only', 'paid-memberships-pro' ),
+		'check' 			=> __('Pay by Check', 'paid-memberships-pro' ),
+		'stripe' 			=> __('Stripe', 'paid-memberships-pro' ),
+		'paypalexpress' 	=> __('PayPal Express', 'paid-memberships-pro' ),
+		'paypal' 			=> __('PayPal Website Payments Pro', 'paid-memberships-pro' ),
+		'payflowpro' 		=> __('PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
+		'paypalstandard' 	=> __('PayPal Standard', 'paid-memberships-pro' ),
+		'authorizenet' 		=> __('Authorize.net', 'paid-memberships-pro' ),
+		'braintree' 		=> __('Braintree Payments', 'paid-memberships-pro' ),
+		'twocheckout' 		=> __('2Checkout', 'paid-memberships-pro' ),
+		'cybersource' 		=> __('Cybersource', 'paid-memberships-pro' )
 	);
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );

@@ -19,9 +19,9 @@ if ($default_level) {
 global $wpdb, $pmpro_msg, $pmpro_msgt;
 if (isset($_REQUEST['msg'])) {
     if ($_REQUEST['msg'] == 1) {
-        $pmpro_msg = __('Your membership status has been updated - Thank you!', 'pmpro');
+        $pmpro_msg = __('Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
     } else {
-        $pmpro_msg = __('Sorry, your request could not be completed - please try again in a few moments.', 'pmpro');
+        $pmpro_msg = __('Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
     }
 } else {

@@ -9,10 +9,11 @@ function pmpro_init()
 	require_once(PMPRO_DIR . "/includes/states.php");
 	require_once(PMPRO_DIR . "/includes/currencies.php");
 
-	wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
 
 	if(is_admin())
 	{
+		wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
+
 		$admin_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
 			$admin_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin.css";
@@ -240,7 +241,7 @@ add_action('init', 'pmpro_set_current_user');
  * Add Membership Level to Users page in WordPress dashboard.
  */
 function pmpro_manage_users_columns($columns) {
-    $columns['pmpro_membership_level'] = __('Membership Level', 'pmpro');
+    $columns['pmpro_membership_level'] = __('Membership Level', 'paid-memberships-pro' );
     return $columns;
 }
 
@@ -255,7 +256,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
             $column_data = implode(',', $level_names);
         }
         else
-            $column_data = __('None', 'pmpro');
+            $column_data = __('None', 'paid-memberships-pro' );
     }
     return $column_data;
 }

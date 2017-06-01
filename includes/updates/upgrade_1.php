@@ -4,14 +4,14 @@ function pmpro_upgrade_1()
 	/*
 		default options
 	*/
-	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Register</a>', 'pmpro' ), wp_login_url() . "?action=register" );
+	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Register</a>', 'paid-memberships-pro' ), wp_login_url() . "?action=register" );
 	pmpro_setOption("nonmembertext", $nonmembertext);
 
-	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Register</a>', 'pmpro' ), wp_login_url(), wp_login_url() . "?action=register" );
+	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Register</a>', 'paid-memberships-pro' ), wp_login_url(), wp_login_url() . "?action=register" );
 	'?action=register">Register</a>';
 	pmpro_setOption("notloggedintext", $notloggedintext);
 
-	$rsstext = __( "This content is for !!levels!! members only. Visit the site and log in/register to read.", 'pmpro' );
+	$rsstext = __( "This content is for !!levels!! members only. Visit the site and log in/register to read.", 'paid-memberships-pro' );
 	pmpro_setOption("rsstext", $rsstext);
 
 	$gateway_environment = "sandbox";
@@ -40,6 +40,10 @@ function pmpro_upgrade_1()
 	pmpro_setOption("email_admin_billing", "1");
 
 	pmpro_setOption("tospage", "");
+
+	//let's pause the nag for the first week of use
+	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
+	update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
 
 	//db update
 	pmpro_db_delta();

@@ -7,6 +7,15 @@ function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
 
+	$server_tz = date_default_timezone_get();
+	$wp_tz =  get_option( 'timezone_string' );
+	
+	//option "timezone_string" is empty if set to UTC+0
+	if(empty($wp_tz))
+		$wp_tz = 'UTC';
+	
+	date_default_timezone_set($wp_tz);
+
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
@@ -24,7 +33,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!$levels)
 		return "";
 ?>
-<h3><?php _e("Membership Level", "pmpro"); ?></h3>
+<h3><?php _e("Membership Level", 'paid-memberships-pro' ); ?></h3>
 <table class="form-table">
     <?php
 		$show_membership_level = true;
@@ -33,10 +42,10 @@ function pmpro_membership_level_profile_fields($user)
 		{
 		?>
 		<tr>
-			<th><label for="membership_level"><?php _e("Current Level", "pmpro"); ?></label></th>
+			<th><label for="membership_level"><?php _e("Current Level", 'paid-memberships-pro' ); ?></label></th>
 			<td>
 				<select name="membership_level">
-					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- <?php _e("None", "pmpro");?> --</option>
+					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
 				<?php
 					foreach($levels as $level)
 					{
@@ -62,7 +71,7 @@ function pmpro_membership_level_profile_fields($user)
 					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
 						echo "Paid " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
 					else
-						_e('Not paying.', 'pmpro');					
+						_e('Not paying.', 'paid-memberships-pro' );					
 				}                
 				else
                 {                    
@@ -70,7 +79,7 @@ function pmpro_membership_level_profile_fields($user)
                 }
                 ?>
                 </span>
-                <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", "pmpro"); ?></p>
+                <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", 'paid-memberships-pro' ); ?></p>
             </td>
 		</tr>
 		<?php
@@ -79,36 +88,42 @@ function pmpro_membership_level_profile_fields($user)
 		$show_expiration = true;
 		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
 		if($show_expiration)
-		{					
+		{
+
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
-			$end_date = !empty($user->membership_level->enddate);
-			
+			$end_date = (!empty($user->membership_level) && !empty($user->membership_level->enddate)); // Returned as UTC timestamp
+						
+			// Convert UTC to local time
+            if ( $end_date ) {
+	            $user->membership_level->enddate = strtotime( $wp_tz, $user->membership_level->enddate );
+            }
+
 			//some vars for the dates
-			$current_day = date("j");			
+			$current_day = date_i18n("j", current_time('timestamp'));			
 			if($end_date)
-				$selected_expires_day = date("j", $user->membership_level->enddate);
+				$selected_expires_day = date_i18n("j", $user->membership_level->enddate);
 			else
 				$selected_expires_day = $current_day;
 				
-			$current_month = date("M");			
+			$current_month = date_i18n("M", current_time('timestamp'));			
 			if($end_date)
-				$selected_expires_month = date("m", $user->membership_level->enddate);
+				$selected_expires_month = date_i18n("m", $user->membership_level->enddate);
 			else
-				$selected_expires_month = date("m");
+				$selected_expires_month = date_i18n("m");
 				
-			$current_year = date("Y");									
+			$current_year = date_i18n("Y", current_time('timestamp'));									
 			if($end_date)
-				$selected_expires_year = date("Y", $user->membership_level->enddate);
+				$selected_expires_year = date_i18n("Y", $user->membership_level->enddate);
 			else
 				$selected_expires_year = (int)$current_year + 1;
 		?>
 		<tr>
-			<th><label for="expiration"><?php _e("Expires", "pmpro"); ?></label></th>
+			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
 			<td>
 				<select id="expires" name="expires">
-					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", "pmpro");?></option>
-					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", "pmpro");?></option>
+					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", 'paid-memberships-pro' );?></option>
+					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", 'paid-memberships-pro' );?></option>
 				</select>
 				<span id="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
 					on
@@ -117,7 +132,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
@@ -235,7 +250,9 @@ function pmpro_membership_level_profile_fields($user)
         });
     </script>
 <?php
-	do_action("pmpro_after_membership_level_profile_fields", $user);	
+	do_action("pmpro_after_membership_level_profile_fields", $user);
+
+	date_default_timezone_set( $server_tz );
 }
 
 /*

@@ -32,13 +32,15 @@
 				<?php
 			}
 		?>
-		<div id="pmpro_report_<?php echo $report; ?>" class="postbox pmpro_clickable" onclick="location.href='<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>';">			
-			<h2 class="hndle"><span><?php echo $title; ?></span></h2>
+		<div id="pmpro_report_<?php echo $report; ?>" class="postbox">			
+			<h2><span><?php echo $title; ?></span></h2>
 			<div class="inside">
 				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
+				<?php if(function_exists('pmpro_report_' . $report . '_page')) { ?>
 				<p style="text-align:center;">
-					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'pmpro');?></a>
+					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
 				</p>
+				<?php } ?>
 			</div>
 		</div>
 		<?php
@@ -58,7 +60,7 @@
 		call_user_func("pmpro_report_" . $report . "_page");
 		?>
 		<hr />
-		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'pmpro');?></a>
+		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'paid-memberships-pro' );?></a>
 		<?php
 	}
 	

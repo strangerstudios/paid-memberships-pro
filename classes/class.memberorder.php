@@ -53,6 +53,7 @@
 			$order->affiliate_id = "";
 			$order->affiliate_subid = "";
 			$order->notes = "";
+			$order->checkout_id = 0;
 
 			$order->billing = new stdClass();
 			$order->billing->name = "";
@@ -139,6 +140,7 @@
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
 				$this->notes = $dbobj->notes;
+				$this->checkout_id = $dbobj->checkout_id;
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -156,28 +158,31 @@
 		 * @param string $gateway Name/label for the gateway to set.
 		 *
 		 */
-		function setGateway($gateway = NULL)
-		{
+		function setGateway($gateway = NULL) {
 			//set the gateway property
-			if(isset($gateway))
-			{
+			if(isset($gateway)) {
 				$this->gateway = $gateway;
 			}
 
 			//which one to load?
 			$classname = "PMProGateway";	//default test gateway
-			if(!empty($this->gateway) && $this->gateway != "free")
+			if(!empty($this->gateway) && $this->gateway != "free") {
 				$classname .= "_" . $this->gateway;	//adding the gateway suffix
-
-			if(class_exists($classname))
-				$this->Gateway = new $classname($this->gateway);
-			else
-			{
-				$error = new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
-				//die("Could not locate the gateway class file with class name = " . $classname . ".");
 			}
 
-			return $this->Gateway;
+			if(class_exists($classname) && isset($this->gateway)) {
+				$this->Gateway = new $classname($this->gateway);
+			} else {
+				$this->Gateway = null;	//null out any current gateway
+				$error = new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
+			}
+
+			if(!empty($this->Gateway)) {
+				return $this->Gateway;
+			} else {
+				//gateway wasn't setup
+				return false;
+			}
 		}
 
 		/**
@@ -185,8 +190,9 @@
 		 *
 		 * @param int $user_id ID of user to find order for.
 		 * @param string $status Limit search to only orders with this status. Defaults to "success".
-		 * @param id $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param int $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
 		 *
+		 * @return MemberOrder
 		 */
 		function getLastMemberOrder($user_id = NULL, $status = 'success', $membership_id = NULL, $gateway = NULL, $gateway_environment = NULL)
 		{
@@ -206,7 +212,7 @@
 
 			if(!empty($membership_id))
 				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
-			
+
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
 
@@ -442,7 +448,7 @@
 		 */
 		function saveOrder()
 		{
-			global $current_user, $wpdb;
+			global $current_user, $wpdb, $pmpro_checkout_id;
 
 			//get a random code to use for the public ID
 			if(empty($this->code))
@@ -513,14 +519,20 @@
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
 			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date("Y-m-d H:s:i", current_time("timestamp"));		//use current time
+				$this->datetime = date_i18n("Y-m-d H:i:s", current_time("timestamp"));		//use current time
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
-				$this->datetime = date("Y-m-d H:s:i", $this->timestamp);	//get datetime from timestamp
+				$this->datetime = date_i18n("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
 			elseif(empty($this->datetime) && !empty($this->timestamp))
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 
 			if(empty($this->notes))
 				$this->notes = "";
+
+			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
+				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
+				$this->checkout_id = intval($highestval)+1;
+				$pmpro_checkout_id = $this->checkout_id;
+			}
 
 			//build query
 			if(!empty($this->id))
@@ -561,7 +573,8 @@
 									`timestamp` = '" . esc_sql($this->datetime) . "',
 									`affiliate_id` = '" . esc_sql($this->affiliate_id) . "',
 									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
-									`notes` = '" . esc_sql($this->notes) . "'
+									`notes` = '" . esc_sql($this->notes) . "',
+									`checkout_id` = " . intval($this->checkout_id) . "
 									WHERE id = '" . $this->id . "'
 									LIMIT 1";
 			}
@@ -572,7 +585,7 @@
 				$after_action = "pmpro_added_order";
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`)
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
 									   " . intval($this->user_id) . ",
@@ -604,7 +617,8 @@
 									   '" . esc_sql($this->datetime) . "',
 									   '" . esc_sql($this->affiliate_id) . "',
 									   '" . esc_sql($this->affiliate_subid) . "',
-									    '" . esc_sql($this->notes) . "'
+										'" . esc_sql($this->notes) . "',
+									    " . intval($this->checkout_id) . "
 									   )";
 			}
 
@@ -666,7 +680,9 @@
 		 */
 		function process()
 		{
-			return $this->Gateway->process($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->process($this);
+			}
 		}
 
 		/**
@@ -676,7 +692,9 @@
 		 */
 		function confirm()
 		{
-			return $this->Gateway->confirm($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->confirm($this);
+			}
 		}
 
 		/**
@@ -694,7 +712,12 @@
 			else
 			{
 				//cancel the gateway subscription first
-				$result = $this->Gateway->cancel($this);
+				if (is_object($this->Gateway)) {
+					$result = $this->Gateway->cancel( $this );
+				} else {
+					$result = false;
+				}
+
 				if($result == false)
 				{
 					//there was an error, but cancel the order no matter what
@@ -703,7 +726,7 @@
 					//we should probably notify the admin
 					$pmproemail = new PMProEmail();
 					$pmproemail->template = "subscription_cancel_error";
-					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", "pmpro"), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
+					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
 					$pmproemail->data["body"] .= "<p>Associated Order:<br />" . nl2br(var_export($this, true)) . "</p>";
 					$pmproemail->sendEmail(get_bloginfo("admin_email"));
 
@@ -712,12 +735,12 @@
 				else
 				{
 					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
-					
+
 					//remove billing numbers in pmpro_memberships_users if the membership is still active
 					global $wpdb;
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
 					$wpdb->query($sqlQuery);
-					
+
 					return $result;
 				}
 			}
@@ -728,7 +751,9 @@
 		 */
 		function updateBilling()
 		{
-			return $this->Gateway->update($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->update( $this );
+			}
 		}
 
 		/**
@@ -736,7 +761,9 @@
 		 */
 		function getGatewaySubscriptionStatus()
 		{
-			return $this->Gateway->getSubscriptionStatus($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->getSubscriptionStatus( $this );
+			}
 		}
 
 		/**
@@ -744,7 +771,9 @@
 		 */
 		function getGatewayTransactionStatus()
 		{
-			return $this->Gateway->getTransactionStatus($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->getTransactionStatus( $this );
+			}
 		}
 
 		/**

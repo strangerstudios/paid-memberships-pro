@@ -56,7 +56,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['twocheckout']))
-				$gateways['twocheckout'] = __('2Checkout', 'pmpro');
+				$gateways['twocheckout'] = __('2Checkout', 'paid-memberships-pro' );
 		
 			return $gateways;
 		}
@@ -111,12 +111,12 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('2Checkout Settings', 'pmpro'); ?>
+				<?php _e('2Checkout Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apiusername"><?php _e('API Username', 'pmpro');?>:</label>
+				<label for="twocheckout_apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" />
@@ -125,7 +125,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apipassword"><?php _e('API Password', 'pmpro');?>:</label>
+				<label for="twocheckout_apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
@@ -134,7 +134,7 @@
 		</tr>		
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'pmpro');?>:</label>
+				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $values['twocheckout_accountnumber']?>" />
@@ -143,7 +143,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_secretword"><?php _e('Secret Word', 'pmpro');?>:</label>
+				<label for="twocheckout_secretword"><?php _e('Secret Word', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
@@ -152,10 +152,10 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('TwoCheckout INS URL', 'pmpro');?>:</label>
+				<label><?php _e('TwoCheckout INS URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
 				
 			</td>
 		</tr>		
@@ -200,7 +200,7 @@
 			?>			
 			<span id="pmpro_submit_span">
 				<input type="hidden" name="submit-checkout" value="1" />		
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />		
+				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />		
 			</span>
 			<?php
 		
@@ -359,13 +359,13 @@
 			//no matter what happens below, we're going to cancel the order in our system
 			$order->updateStatus("cancelled");
 
-			//require a subscription id
-			if(empty($order->subscription_transaction_id))
+			//require a payment transaction id
+			if(empty($order->payment_transaction_id))
 				return false;
 
 			//build api params
 			$params = array();
-			$params['sale_id'] = $order->subscription_transaction_id;
+			$params['sale_id'] = $order->payment_transaction_id;
 			
 			// Demo mode?
 			if(empty($order->gateway_environment))

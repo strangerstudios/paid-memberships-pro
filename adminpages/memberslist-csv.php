@@ -2,7 +2,7 @@
 
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslistcsv")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	if (!defined('PMPRO_BENCHMARK'))
@@ -10,7 +10,7 @@
 
 	if (PMPRO_BENCHMARK)
 	{
-		error_log(str_repeat('-', 10) . date('Y-m-d H:i:s') . str_repeat('-', 10));
+		error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
 		$start_time = microtime(true);
 		$start_memory = memory_get_usage(true);
 	}
@@ -197,6 +197,12 @@
 	if(!empty($limit))
 		$sqlQuery .= "LIMIT {$start}, {$limit}";
 
+	/**
+	* Filter to change/manipulate the SQL for the list of members export
+	* @since v1.9.0    Re-introduced
+	*/
+	$sqlQuery = apply_filters('pmpro_members_list_sql', $sqlQuery);
+
 	// Generate a temporary file to store the data in.
 	$tmp_dir = sys_get_temp_dir();
 	$filename = tempnam( $tmp_dir, 'pmpro_ml_');
@@ -344,7 +350,7 @@
 
 			foreach( $um_values as $key => $value ) {
 
-				$metavalues->{$key} = $value[0];
+				$metavalues->{$key} = isset( $value[0] ) ? $value[0] : null;
 			}
 
 			$theuser->metavalues = $metavalues;
@@ -395,7 +401,7 @@
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date($dateformat, $theuser->enddate), $theuser)));
+					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
 				else
 					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
 			}
@@ -457,9 +463,9 @@
 			$memory_used = $end_of_iteration_memory - $start_iteration_memory;
 
 			error_log("PMPRO_BENCHMARK - For iteration #{$ic} of {$iterations} - Records processed: " . count($usr_data));
-			error_log("PMPRO_BENCHMARK - \tTime processing whole iteration: " . date("H:i:s", $iteration_sec) . ".{$iteration_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date("H:i:s", $udata_sec) . ".{$udata_sec}");
-			error_log("PMPRO_BENCHMARK - \tTime flushing cache: " . date("H:i:s", $flush_sec) . ".{$flush_usec}");
+			error_log("PMPRO_BENCHMARK - \tTime processing whole iteration: " . date_i18n("H:i:s", $iteration_sec) . ".{$iteration_sec}");
+			error_log("PMPRO_BENCHMARK - \tTime processing user data for iteration: " . date_i18n("H:i:s", $udata_sec) . ".{$udata_sec}");
+			error_log("PMPRO_BENCHMARK - \tTime flushing cache: " . date_i18n("H:i:s", $flush_sec) . ".{$flush_usec}");
 			error_log("PMPRO_BENCHMARK - \tAdditional memory used during iteration: ".number_format($memory_used, 2, '.', ',') . " bytes");
 		}
 
