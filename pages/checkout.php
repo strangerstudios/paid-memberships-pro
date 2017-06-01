@@ -16,6 +16,9 @@
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
 	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
+	<?php if ($discount_code && $pmpro_review) { ?>
+		<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
+	<?php } ?>
 
 	<?php if($pmpro_msg)
 		{
