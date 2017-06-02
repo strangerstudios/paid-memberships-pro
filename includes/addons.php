@@ -218,14 +218,16 @@ function pmpro_getPluginAPIObjectFromAddon($addon)
         $api->download_link = add_query_arg("key", $key, $api->download_link);
 	if(!empty($key) && !empty($api->package))
         $api->package = add_query_arg("key", $key, $api->package);
-
+	if(empty($api->upgrade_notice) && !pmpro_license_isValid())
+		$api->upgrade_notice = __('Important: This plugin requires a valid PMPro Plus license key to update.', 'paid-memberships-pro');
+	
 	return $api;
 }
 
 /**
  * Force update of plugin update data when the PMPro License key is updated
  *
- * @since 2.0
+ * @since 1.8
  *
  * @param array $args  Array of request args.
  * @param string $url  The URL to be pinged.
@@ -236,3 +238,95 @@ function pmpro_reset_update_plugins_cache($old_value, $value)
 	delete_option('pmpro_addons_timestamp');
 	delete_site_transient('update_themes');	
 }
+
+/**
+ * Detect when trying to update a PMPro Plus plugin without a valid license key.
+ *
+ * @since 1.9
+ */
+function pmpro_admin_init_updating_plugins() {	
+	//if user can't edit plugins, then WP will catch this later
+	if ( ! current_user_can('update_plugins') )
+		return;
+	
+	//updating one or more plugins via Dashboard -> Upgrade
+	if(basename($_SERVER['SCRIPT_NAME']) == 'update.php' && !empty($_REQUEST['action']) && $_REQUEST['action'] == 'update-selected' && !empty($_REQUEST['plugins'])) {
+		//figure out which plugin we are updating
+		$plugins = explode( ',', stripslashes($_GET['plugins']) );	
+		$plugins = array_map('urldecode', $plugins);		
+		
+		//look for addons
+		$plus_addons = array();
+		$plus_plugins = array();
+		foreach($plugins as $plugin) {			
+			$slug = str_replace('.php', '', basename($plugin));
+			$addon = pmpro_getAddonBySlug($slug);			
+			if(!empty($addon) && $addon['License'] == 'plus') {
+				$plus_addons[] = $addon['Name'];
+				$plus_plugins[] = $plugin;
+			}						
+		}
+		unset($plugin);
+		
+		//if Plus addons found, check license key
+		if(!empty($plus_plugins) && !pmpro_license_isValid()) {
+			//show error
+			$msg = __('You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro Plus License Key</a> to update PMPro Plus add ons. The following plugins will not be updated:', 'paid-memberships-pro');
+			echo '<div class="error"><p>' . $msg . ' <strong>' . implode(', ', $plus_addons) . '</strong></p></div>';						
+		}
+		
+		//can exit out of this function now
+		return;
+	}
+	
+	//upgrading just one or plugin via an update.php link
+	if(basename($_SERVER['SCRIPT_NAME']) == 'update.php' && !empty($_REQUEST['action']) && $_REQUEST['action'] == 'upgrade-plugin' && !empty($_REQUEST['plugin'])) {
+		//figure out which plugin we are updating
+		$plugin = urldecode(trim($_REQUEST['plugin']));
+
+		$slug = str_replace('.php', '', basename($plugin));
+		$addon = pmpro_getAddonBySlug($slug);
+		if(!empty($addon) && !pmpro_license_isValid()) {
+			require_once(ABSPATH . 'wp-admin/admin-header.php');
+			
+			echo '<div class="wrap"><h2>' . __('Update Plugin') . '</h2>';
+			
+			$msg = __('You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro Plus License Key</a> to update PMPro Plus add ons.', 'paid-memberships-pro');
+			echo '<div class="error"><p>' . $msg . '</p></div>';
+			
+			echo '<p><a href="' . admin_url('admin.php?page=pmpro-addons') . '" target="_parent">' . __('Return to the PMPro Add Ons page', 'paid-memberships-pro') . '</a></p>';
+			
+			echo '</div>';
+			
+			include(ABSPATH . 'wp-admin/admin-footer.php');
+			
+			//can exit WP now
+			exit;				
+		}	
+	}
+		
+	//updating via AJAX on the plugins page
+	if(basename($_SERVER['SCRIPT_NAME']) == 'admin-ajax.php' && !empty($_REQUEST['action']) && $_REQUEST['action'] == 'update-plugin' && !empty($_REQUEST['plugin'])) {
+		//figure out which plugin we are updating
+		$plugin = urldecode(trim($_REQUEST['plugin']));
+
+		$slug = str_replace('.php', '', basename($plugin));
+		$addon = pmpro_getAddonBySlug($slug);
+		if(!empty($addon) && !pmpro_license_isValid()) {
+			$msg = __('You must enter a valid PMPro Plus License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro');
+			echo '<div class="error"><p>' . $msg . '</p></div>';						
+			
+			//can exit WP now
+			exit;
+		}		
+	}
+	
+	/*
+		TODO: 
+		* Check for PMPro Plug plugins
+		* If a plus plugin is found, check the PMPro license key
+		* If the key is missing or invalid, throw an error
+		* Show appropriate footer and exit... maybe do something else to keep plugin update from happening
+	*/
+}
+add_action('admin_init', 'pmpro_admin_init_updating_plugins');

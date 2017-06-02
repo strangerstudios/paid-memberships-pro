@@ -17,13 +17,13 @@
 /*
 	Developers, add this line to your wp-config.php to remove PMPro license nags even if no license has been purchased.
 	
-	define('PMPRO_LICENSE_NAG', true);	//consider purchasing a license at http://www.paidmembershipspro.com/support-license/
+	define('PMPRO_LICENSE_NAG', false);	//consider purchasing a license at http://www.paidmembershipspro.com/support-license/
 */
 
 /*
 	Constants
 */
-define('PMPRO_LICENSE_SERVER', 'http://license.paidmembershipspro.com/');
+define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/');
 
 /*
 	Add license settings page.
@@ -33,7 +33,7 @@ function pmpro_license_settings_page() {
 	//only let admins get here
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_license")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 	
 	//updating license?
@@ -41,6 +41,9 @@ function pmpro_license_settings_page() {
 	{
 		$key = preg_replace("/[^a-zA-Z0-9]/", "", $_REQUEST['pmpro-license-key']);
 					
+		//erase the old key
+		delete_option('pmpro_license_key');
+		
 		//check key
 		$valid = pmpro_license_isValid($key, NULL, true);
 		
@@ -48,7 +51,7 @@ function pmpro_license_settings_page() {
 		{
 		?>
 		<div id="message" class="updated fade">
-			<p><?php _e('Your license key has been validated.', 'pmpro');?></p>
+			<p><?php _e('Your license key has been validated.', 'paid-memberships-pro' );?></p>
 		</div>
 		<?php
 		}
@@ -66,7 +69,7 @@ function pmpro_license_settings_page() {
 		}
 		
 		//update key
-		update_option('pmpro_license_key', $key);
+		update_option('pmpro_license_key', $key, 'no');
 	}	
 	
 	//get saved license
@@ -78,28 +81,28 @@ function pmpro_license_settings_page() {
 		require_once(PMPRO_DIR . "/adminpages/admin_header.php");
 	?>
 	<div class="wrap">
-		<h2><?php _e('Paid Memberships Pro Support License', 'pmpro');?></h2>
+		<h2><?php _e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h2>
 		<p>Paid Memberships Pro and our add ons are distributed under the <a target="_blank" href='http://www.gnu.org/licenses/gpl-2.0.html'>GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.</p>
 		<p><strong>An annual support license is recommended for websites running Paid Memberships Pro.</strong> <a href="http://www.paidmembershipspro.com/pricing/" target="_blank">View Support License Options &raquo;</a></p>			
 		<div class="metabox-holder">
 			<div class="postbox">		
-				<h3 class="hndle"><?php _e('License Key', 'pmpro');?></h3>
+				<h3 class="hndle"><?php _e('License Key', 'paid-memberships-pro' );?></h3>
 				<div class="inside">										
 					<?php if(!pmpro_license_isValid() && empty($key)) { ?>
-						<div class="notice notice-error inline"><p><strong><?php _e('Enter your support license key.</strong> Your license key can be found in your membership email receipt or in your <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a>.', 'pmpro');?></p></div>
+						<div class="notice notice-error inline"><p><strong><?php _e('Enter your support license key.</strong> Your license key can be found in your membership email receipt or in your <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a>.', 'paid-memberships-pro' );?></p></div>
 					<?php } elseif(!pmpro_license_isValid()) { ?>
-						<div class="notice notice-error inline"><p><strong><?php _e('Your license is invalid or expired.', 'pmpro');?></strong> <?php _e('Visit the PMPro <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'pmpro');?></p></div>
+						<div class="notice notice-error inline"><p><strong><?php _e('Your license is invalid or expired.', 'paid-memberships-pro' );?></strong> <?php _e('Visit the PMPro <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p></div>
 					<?php } else { ?>													
-						<div class="notice inline"><?php printf(__('<p><strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.</p>', 'pmpro'), ucwords($pmpro_license_check['license']));?></div>
+						<div class="notice inline"><?php printf(__('<p><strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.</p>', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></div>
 					<?php } ?>					
 					<form action="" method="post">
 					<table class="form-table">
 						<tbody>
 							<tr id="pmpro-settings-key-box">
 								<td>
-									<input type="password" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'pmpro');?>" size="40"  />
+									<input type="password" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40"  />
 									<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
-									<?php submit_button( __( 'Verify Key', 'pmpro' ), 'primary', 'pmpro-verify-submit', false ); ?>										
+									<?php submit_button( __( 'Verify Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>										
 								</td>
 							</tr>
 						</tbody>
@@ -235,8 +238,8 @@ add_action('pmpro_license_check_key', 'pmpro_license_check_key');
 */
 function pmpro_license_pause() {
 	if(!empty($_REQUEST['pmpro_nag_paused']) && current_user_can('manage_options')) {
-		$pmpro_nag_paused = current_time('timestamp')*3600*24*7;
-		update_option('pmpro_nag_paused', $pmpro_nag_paused);
+		$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
+		update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
 		
 		return;
 	}
@@ -260,24 +263,45 @@ function pmpro_license_nag() {
 	//blocked by constant?
 	if(defined('PMPRO_LICENSE_NAG') && !PMPRO_LICENSE_NAG)
 		return;
-
+	
+	//don't load on the license page
+	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro_license_settings')
+		return;
+	
 	//valid license?
 	if(pmpro_license_isValid())
-		return;	
+		return;
 	
-	//are we paused?
-	$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);
+	//always show on updates page
+	/*
+	$screen = get_current_screen();	
+	if($screen->id == 'update-core')
+		$pmpro_nag_paused = false;	
+	else
+	*/
+		$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);		
 		
 	if(current_time('timestamp') < $pmpro_nag_paused && $pmpro_nag_paused < current_time('timestamp')*3600*24*8)
 		return;
 
-	//okay, show nag	
+	//get key for later
+	$key = get_option('pmpro_license_key');
+
+	//okay, show nag
 	?>
-	<div class="error fade">
+	<div class="<?php if(!empty($key)) { ?>error<?php } else { ?>notice notice-warning<?php } ?> fade">
 		<p>
-			<strong><?php _e('Invalid PMPro License Key.', 'pmpro');?></strong> <?php _e("If you're running Paid Memberships Pro on a production website, we recommend an annual support license.", "pmpro");?>
-			<a href="<?php echo admin_url('options-general.php?page=pmpro_license_settings');?>"><?php _e('More Info', 'pmpro');?></a>&nbsp;|&nbsp;<a href="<?php echo add_query_arg('pmpro_nag_paused', '1', $_SERVER['REQUEST_URI']);?>"><?php _e('Dismiss', 'pmpro');?></a>
+			<?php
+				//only show the invalid part if they've entered a key
+				
+				if(!empty($key)) {
+					?><strong><?php _e('Invalid PMPro License Key.', 'paid-memberships-pro' );?></strong><?php
+				} 
+			?>
+			<?php _e("If you're running Paid Memberships Pro on a production website, we recommend an annual support license.", 'paid-memberships-pro' );?>
+			<a href="<?php echo admin_url('options-general.php?page=pmpro_license_settings');?>"><?php _e('More Info', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;<a href="<?php echo add_query_arg('pmpro_nag_paused', '1', $_SERVER['REQUEST_URI']);?>"><?php _e('Dismiss', 'paid-memberships-pro' );?></a>
 		</p>
 	</div>
 	<?php
 }
+add_action('admin_notices', 'pmpro_license_nag');

@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_paymentsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	global $wpdb, $pmpro_currency_symbol, $msg, $msgt;
@@ -46,7 +46,7 @@
 
 		//assume success
 		$msg = true;
-		$msgt = __("Your payment settings have been updated.", "pmpro");
+		$msgt = __("Your payment settings have been updated.", 'paid-memberships-pro' );
 	}
 
 	/*
@@ -90,20 +90,20 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">
-		<h2><?php _e('Payment Gateway', 'pmpro');?> &amp; <?php _e('SSL Settings', 'pmpro');?></h2>
+		<h2><?php _e('Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php _e('SSL Settings', 'paid-memberships-pro' );?></h2>
 
-		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.', 'pmpro'); ?></p>
+		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.', 'paid-memberships-pro' ); ?></p>
 
 		<table class="form-table">
 		<tbody>
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					<?php _e('Choose a Gateway', 'pmpro'); ?>
+					<?php _e('Choose a Gateway', 'paid-memberships-pro' ); ?>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="gateway"><?php _e('Payment Gateway', 'pmpro');?>:</label>
+					<label for="gateway"><?php _e('Payment Gateway', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
@@ -121,12 +121,12 @@
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="gateway_environment"><?php _e('Gateway Environment', 'pmpro');?>:</label>
+					<label for="gateway_environment"><?php _e('Gateway Environment', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<select name="gateway_environment">
-						<option value="sandbox" <?php selected( $gateway_environment, "sandbox" ); ?>><?php _e('Sandbox/Testing', 'pmpro');?></option>
-						<option value="live" <?php selected( $gateway_environment, "live" ); ?>><?php _e('Live/Production', 'pmpro');?></option>
+						<option value="sandbox" <?php selected( $gateway_environment, "sandbox" ); ?>><?php _e('Sandbox/Testing', 'paid-memberships-pro' );?></option>
+						<option value="live" <?php selected( $gateway_environment, "live" ); ?>><?php _e('Live/Production', 'paid-memberships-pro' );?></option>
 					</select>
 					<script>
 						function pmpro_changeGateway(gateway)
@@ -145,12 +145,12 @@
 
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					<?php _e('Currency and Tax Settings', 'pmpro'); ?>
+					<?php _e('Currency and Tax Settings', 'paid-memberships-pro' ); ?>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("currency"));?>" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource" && $gateway != "payflowpro" && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "gourl") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="currency"><?php _e('Currency', 'pmpro');?>:</label>
+					<label for="currency"><?php _e('Currency', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<select name="currency">
@@ -166,12 +166,12 @@
 						}
 					?>
 					</select>
-					<small><?php _e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'pmpro' ); ?></small>
+					<small><?php _e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'paid-memberships-pro' ); ?></small>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("accepted_credit_cards"));?>" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="creditcards"><?php _e('Accepted Credit Card Types', 'pmpro');?></label>
+					<label for="creditcards"><?php _e('Accepted Credit Card Types', 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
 					<input type="checkbox" id="creditcards_visa" name="creditcards_visa" value="1" <?php if(in_array("Visa", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_visa">Visa</label><br />
@@ -185,42 +185,42 @@
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("tax_rate"));?>" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="tax"><?php _e('Sales Tax', 'pmpro');?> <small>(<?php _e('optional', 'pmpro');?>)</small></label>
+					<label for="tax"><?php _e('Sales Tax', 'paid-memberships-pro' );?> <small>(<?php _e('optional', 'paid-memberships-pro' );?>)</small></label>
 				</th>
 				<td>
-					<?php _e('Tax State', 'pmpro');?>:
-					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'pmpro');?>)</small>
-					&nbsp; <?php _e('Tax Rate', 'pmpro'); ?>:
-					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'pmpro');?>)</small>
-					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/">pmpro_tax filter</a>.', 'pmpro');?></small></p>
+					<?php _e('Tax State', 'paid-memberships-pro' );?>:
+					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'paid-memberships-pro' );?>)</small>
+					&nbsp; <?php _e('Tax Rate', 'paid-memberships-pro' ); ?>:
+					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)</small>
+					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></small></p>
 				</td>
 			</tr>
 
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					<?php _e('SSL Settings', 'pmpro'); ?>
+					<?php _e('SSL Settings', 'paid-memberships-pro' ); ?>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("use_ssl"));?>">
 				<th scope="row" valign="top">
-					<label for="use_ssl"><?php _e('Force SSL', 'pmpro');?>:</label>
+					<label for="use_ssl"><?php _e('Force SSL', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<?php
 						if( pmpro_check_site_url_for_https() ) {
 							//entire site is over HTTPS
 							?>
-							<p><?php _e( 'Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS.' , 'pmpro' ); ?></p>
+							<p><?php _e( 'Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS.', 'paid-memberships-pro' ); ?></p>
 							<?php
 						} else {
 							//site is not over HTTPS, show setting
 							?>
 							<select id="use_ssl" name="use_ssl">
-								<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-								<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
-								<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'pmpro');?></option>
+								<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+								<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'paid-memberships-pro' );?></option>
+								<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'paid-memberships-pro' );?></option>
 							</select>
-							<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'pmpro'); ?></small>
+							<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'paid-memberships-pro' ); ?></small>
 							<?php 
 						} 
 					?>
@@ -228,26 +228,26 @@
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="sslseal"><?php _e('SSL Seal Code', 'pmpro');?>:</label>
+					<label for="sslseal"><?php _e('SSL Seal Code', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
-					<br /><small><?php _e('Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.', 'pmpro'); ?></small>
+					<br /><small><?php _e('Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.', 'paid-memberships-pro' ); ?></small>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="nuclear_HTTPS"><?php _e('Extra HTTPS URL Filter', 'pmpro');?>:</label>
+					<label for="nuclear_HTTPS"><?php _e('Extra HTTPS URL Filter', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <label for="nuclear_HTTPS"><?php _e('Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'pmpro');?></label>
+					<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <label for="nuclear_HTTPS"><?php _e('Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'paid-memberships-pro' );?></label>
 				</td>
 			</tr>
 
 		</tbody>
 		</table>
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'pmpro');?>" />
+			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
 

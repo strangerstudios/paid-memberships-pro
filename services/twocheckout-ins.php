@@ -463,7 +463,7 @@
 
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {
-			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member
@@ -495,7 +495,7 @@
 
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
 		if( $worked === true ) {
-			//$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member

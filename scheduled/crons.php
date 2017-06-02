@@ -36,7 +36,7 @@ function pmpro_cron_expire_memberships()
 			$pmproemail->sendMembershipExpiredEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Membership expired email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}
@@ -102,7 +102,7 @@ function pmpro_cron_expiration_warnings()
 			$pmproemail->sendMembershipExpiringEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Membership expiring email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}
@@ -168,7 +168,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 			//make sure they are using a credit card type billing method for their current membership level (check the last order)
 			$last_order = new MemberOrder();
 			$last_order->getLastMemberOrder($euser->ID);
-			if(empty($last_order->accountnumber))
+			if(empty($last_order->accountnumber) && 'XXXXXXXXXXXXXXXX' != $last_order->accountnumber)
 				continue;
 
 			//okay send them an email
@@ -181,7 +181,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
 				if(current_user_can('manage_options'))
-					printf(__("Credit card expiring email sent to %s. ", "pmpro"), $euser->user_email);
+					printf(__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 				else
 					echo ". ";
 			}
@@ -237,7 +237,7 @@ function pmpro_cron_trial_ending_warnings()
 			$pmproemail->sendTrialEndingEmail($euser);
 
 			if(current_user_can('manage_options'))
-				printf(__("Trial ending email sent to %s. ", "pmpro"), $euser->user_email);
+				printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
 			else
 				echo ". ";
 		}

@@ -15,7 +15,7 @@
 
 global $pmpro_reports;
 
-$pmpro_reports['memberships'] = __('Membership Stats', 'pmpro');
+$pmpro_reports['memberships'] = __('Membership Stats', 'paid-memberships-pro' );
 
 //queue Google Visualization JS on report page
 function pmpro_report_memberships_init() {
@@ -37,16 +37,16 @@ function pmpro_report_memberships_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Signups','pmpro'); ?></th>
-			<th scope="col"><?php _e('All Cancellations','pmpro'); ?></th>
+			<th scope="col"><?php _e('Signups', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('All Cancellations', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
 	<?php
 		$reports = array(
-			'today'=> __('Today', 'pmpro'),
-			'this month'=> __('This Month', 'pmpro'),
-			'this year'=> __('This Year', 'pmpro'),
-			'all time'=> __('All Time', 'pmpro'),
+			'today'=> __('Today', 'paid-memberships-pro' ),
+			'this month'=> __('This Month', 'paid-memberships-pro' ),
+			'this year'=> __('This Year', 'paid-memberships-pro' ),
+			'all time'=> __('All Time', 'paid-memberships-pro' ),
 		);
 		
 		foreach($reports as $report_type => $report_name) {
@@ -297,25 +297,25 @@ function pmpro_report_memberships_page()
 	?>
 	<form id="posts-filter" method="get" action="">		
 	<h1>
-		<?php _e('Membership Stats', 'pmpro');?>
+		<?php _e('Membership Stats', 'paid-memberships-pro' );?>
 	</h1>
 	<ul class="subsubsub">
 		<li>
-			<?php _e('Show', 'pmpro')?>
+			<?php _e('Show', 'paid-memberships-pro' )?>
 			<select id="period" name="period">
-				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'pmpro');?></option>
-				<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'pmpro');?></option>
-				<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'pmpro');?></option>
+				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'paid-memberships-pro' );?></option>
+				<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'paid-memberships-pro' );?></option>
+				<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'paid-memberships-pro' );?></option>
 			</select>
 			<select id="type" name="type">
-				<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php _e('Signups vs. All Cancellations', 'pmpro');?></option>
-				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php _e('Signups vs. Cancellations', 'pmpro');?></option>
-				<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php _e('Signups vs. Expirations', 'pmpro');?></option>
+				<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php _e('Signups vs. All Cancellations', 'paid-memberships-pro' );?></option>
+				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php _e('Signups vs. Cancellations', 'paid-memberships-pro' );?></option>
+				<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php _e('Signups vs. Expirations', 'paid-memberships-pro' );?></option>
 				<?php /*
-				<option value="mrr_ltv" <?php selected($type, "mrr_ltv");?>><?php _e('MRR & LTV', 'pmpro');?></option>
+				<option value="mrr_ltv" <?php selected($type, "mrr_ltv");?>><?php _e('MRR & LTV', 'paid-memberships-pro' );?></option>
 				*/ ?>
 			</select>
-			<span id="for"><?php _e('for', 'pmpro')?></span>
+			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
 					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date_i18n("F", mktime(0, 0, 0, $i, 2));?></option>
@@ -326,9 +326,9 @@ function pmpro_report_memberships_page()
 					<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
 				<?php } ?>
 			</select>
-			<span id="for"><?php _e('for', 'pmpro')?></span>
+			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 			<select name="level">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -342,7 +342,7 @@ function pmpro_report_memberships_page()
 			
 			<input type="hidden" name="page" value="pmpro-reports" />		
 			<input type="hidden" name="report" value="memberships" />	
-			<input type="submit" class="button" value="<?php _e('Generate Report', 'pmpro');?>" />
+			<input type="submit" class="button" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 		</li>
 	</ul>
 	

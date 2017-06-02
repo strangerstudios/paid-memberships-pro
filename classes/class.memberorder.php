@@ -212,7 +212,7 @@
 
 			if(!empty($membership_id))
 				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
-			
+
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
 
@@ -527,7 +527,7 @@
 
 			if(empty($this->notes))
 				$this->notes = "";
-				
+
 			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
@@ -680,7 +680,9 @@
 		 */
 		function process()
 		{
-			return $this->Gateway->process($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->process($this);
+			}
 		}
 
 		/**
@@ -690,7 +692,9 @@
 		 */
 		function confirm()
 		{
-			return $this->Gateway->confirm($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->confirm($this);
+			}
 		}
 
 		/**
@@ -708,7 +712,12 @@
 			else
 			{
 				//cancel the gateway subscription first
-				$result = $this->Gateway->cancel($this);
+				if (is_object($this->Gateway)) {
+					$result = $this->Gateway->cancel( $this );
+				} else {
+					$result = false;
+				}
+
 				if($result == false)
 				{
 					//there was an error, but cancel the order no matter what
@@ -717,7 +726,7 @@
 					//we should probably notify the admin
 					$pmproemail = new PMProEmail();
 					$pmproemail->template = "subscription_cancel_error";
-					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", "pmpro"), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
+					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
 					$pmproemail->data["body"] .= "<p>Associated Order:<br />" . nl2br(var_export($this, true)) . "</p>";
 					$pmproemail->sendEmail(get_bloginfo("admin_email"));
 
@@ -726,12 +735,12 @@
 				else
 				{
 					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
-					
+
 					//remove billing numbers in pmpro_memberships_users if the membership is still active
 					global $wpdb;
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
 					$wpdb->query($sqlQuery);
-					
+
 					return $result;
 				}
 			}
@@ -742,7 +751,9 @@
 		 */
 		function updateBilling()
 		{
-			return $this->Gateway->update($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->update( $this );
+			}
 		}
 
 		/**
@@ -750,7 +761,9 @@
 		 */
 		function getGatewaySubscriptionStatus()
 		{
-			return $this->Gateway->getSubscriptionStatus($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->getSubscriptionStatus( $this );
+			}
 		}
 
 		/**
@@ -758,7 +771,9 @@
 		 */
 		function getGatewayTransactionStatus()
 		{
-			return $this->Gateway->getTransactionStatus($this);
+			if (is_object($this->Gateway)) {
+				return $this->Gateway->getTransactionStatus( $this );
+			}
 		}
 
 		/**

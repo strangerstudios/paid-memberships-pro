@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslist")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	//vars
@@ -22,14 +22,14 @@
 
 	<form id="posts-filter" method="get" action="">
 	<h2>
-		<?php _e('Members List', 'pmpro');?>
-		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=memberslist_csv&s=<?php echo esc_attr($s);?>&l=<?php echo $l?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro');?></a>
+		<?php _e('Members List', 'paid-memberships-pro' );?>
+		<a target="_blank" href="<?php echo admin_url('admin-ajax.php');?>?action=memberslist_csv&s=<?php echo esc_attr($s);?>&l=<?php echo $l?>" class="add-new-h2"><?php _e('Export to CSV', 'paid-memberships-pro' );?></a>
 	</h2>
 	<ul class="subsubsub">
 		<li>
-			<?php _e('Show', 'pmpro');?>
+			<?php _e('Show', 'paid-memberships-pro' );?>
 			<select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro');?></option>
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -39,17 +39,17 @@
 				<?php
 					}
 				?>
-				<option value="cancelled" <?php if($l == "cancelled") { ?>selected="selected"<?php } ?>><?php _e('Cancelled Members', 'pmpro');?></option>
-				<option value="expired" <?php if($l == "expired") { ?>selected="selected"<?php } ?>><?php _e('Expired Members', 'pmpro');?></option>
-				<option value="oldmembers" <?php if($l == "oldmembers") { ?>selected="selected"<?php } ?>><?php _e('Old Members', 'pmpro');?></option>
+				<option value="cancelled" <?php if($l == "cancelled") { ?>selected="selected"<?php } ?>><?php _e('Cancelled Members', 'paid-memberships-pro' );?></option>
+				<option value="expired" <?php if($l == "expired") { ?>selected="selected"<?php } ?>><?php _e('Expired Members', 'paid-memberships-pro' );?></option>
+				<option value="oldmembers" <?php if($l == "oldmembers") { ?>selected="selected"<?php } ?>><?php _e('Old Members', 'paid-memberships-pro' );?></option>
 			</select>
 		</li>
 	</ul>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input"><?php _e('Search Members', 'pmpro');?>:</label>
+		<label class="hidden" for="post-search-input"><?php _e('Search Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-memberslist" />
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s);?>" name="s"/>
-		<input class="button" type="submit" value="<?php _e('Search Members', 'pmpro');?>"/>
+		<input class="button" type="submit" value="<?php _e('Search Members', 'paid-memberships-pro' );?>"/>
 	</p>
 	<?php
 		//some vars for the search
@@ -153,7 +153,7 @@
 			else
 			{
 			?>
-			<p class="clear"><?php printf(__("%d members found.", "pmpro"), $totalrows);?></span></p>
+			<p class="clear"><?php printf(__("%d members found.", 'paid-memberships-pro' ), $totalrows);?></span></p>
 			<?php
 			}
 		}
@@ -161,22 +161,22 @@
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
-				<th><?php _e('ID', 'pmpro');?></th>
-				<th><?php _e('Username', 'pmpro');?></th>
-				<th><?php _e('First&nbsp;Name', 'pmpro');?></th>
-				<th><?php _e('Last&nbsp;Name', 'pmpro');?></th>
-				<th><?php _e('Email', 'pmpro');?></th>
+				<th><?php _e('ID', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Username', 'paid-memberships-pro' );?></th>
+				<th><?php _e('First&nbsp;Name', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Last&nbsp;Name', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Email', 'paid-memberships-pro' );?></th>
 				<?php do_action("pmpro_memberslist_extra_cols_header", $theusers);?>
-				<th><?php _e('Billing Address', 'pmpro');?></th>
-				<th><?php _e('Membership', 'pmpro');?></th>
-				<th><?php _e('Fee', 'pmpro');?></th>
-				<th><?php _e('Joined', 'pmpro');?></th>
+				<th><?php _e('Billing Address', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Membership', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Fee', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Joined', 'paid-memberships-pro' );?></th>
 				<th>
 					<?php
 						if($l == "oldmembers")
-							_e('Ended', 'pmpro');
+							_e('Ended', 'paid-memberships-pro' );
 						else
-							_e('Expires', 'pmpro');
+							_e('Expires', 'paid-memberships-pro' );
 					?>
 				</th>
 			</tr>
@@ -259,7 +259,7 @@
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php _e("No members found.", "pmpro");?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s);?>"><?php _e("Search all levels", "pmpro");?></a>.<?php } ?></p></td>
+					<td colspan="9"><p><?php _e("No members found.", 'paid-memberships-pro' );?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s);?>"><?php _e("Search all levels", 'paid-memberships-pro' );?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}

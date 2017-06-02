@@ -31,7 +31,7 @@ if ( pmpro_getOption( "gateway", true ) == "paypal" ) {
 
 //let's add an error now, if an invalid gateway is set
 if ( ! in_array( $gateway, $valid_gateways ) ) {
-	$pmpro_msg  = __( "Invalid gateway.", 'pmpro' );
+	$pmpro_msg  = __( "Invalid gateway.", 'paid-memberships-pro' );
 	$pmpro_msgt = "pmpro_error";
 }
 
@@ -51,12 +51,12 @@ global $wpdb, $current_user, $pmpro_requirebilling;
 
 if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	//require billing and ssl
-	$pagetitle            = __( "Checkout: Payment Information", 'pmpro' );
+	$pagetitle            = __( "Checkout: Payment Information", 'paid-memberships-pro' );
 	$pmpro_requirebilling = true;
 	$besecure             = pmpro_getOption( "use_ssl" );
 } else {
 	//no payment so we don't need ssl
-	$pagetitle            = __( "Set Up Your Account", 'pmpro' );
+	$pagetitle            = __( "Set Up Your Account", 'paid-memberships-pro' );
 	$pmpro_requirebilling = false;
 	$besecure             = false;
 }
@@ -286,7 +286,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 	//make sure javascript is ok
 	if ( apply_filters( "pmpro_require_javascript_for_checkout", true ) && ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
-		pmpro_setMessage( __( "There are JavaScript errors on the page. Please contact the webmaster.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "There are JavaScript errors on the page. Please contact the webmaster.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 
 	//if we're skipping the account fields and there is no user, we need to create a username and password
@@ -319,32 +319,32 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 
 	if ( ! empty( $pmpro_error_fields ) ) {
-		pmpro_setMessage( __( "Please complete all required fields.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "Please complete all required fields.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 	if ( ! empty( $password ) && $password != $password2 ) {
-		pmpro_setMessage( __( "Your passwords do not match. Please try again.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "Your passwords do not match. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "password";
 		$pmpro_error_fields[] = "password2";
 	}
 	if ( ! empty( $bemail ) && $bemail != $bconfirmemail ) {
-		pmpro_setMessage( __( "Your email addresses do not match. Please try again.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "Your email addresses do not match. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "bemail";
 		$pmpro_error_fields[] = "bconfirmemail";
 	}
 	if ( ! empty( $bemail ) && ! is_email( $bemail ) ) {
-		pmpro_setMessage( __( "The email address entered is in an invalid format. Please try again.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "bemail";
 		$pmpro_error_fields[] = "bconfirmemail";
 	}
 	if ( ! empty( $tospage ) && empty( $tos ) ) {
-		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", "pmpro" ), $tospage->post_title ), "pmpro_error" );
+		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", 'paid-memberships-pro' ), $tospage->post_title ), "pmpro_error" );
 		$pmpro_error_fields[] = "tospage";
 	}
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
-		pmpro_setMessage( __( "Invalid gateway.", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "Invalid gateway.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 	if ( ! empty( $fullname ) ) {
-		pmpro_setMessage( __( "Are you a spammer?", "pmpro" ), "pmpro_error" );
+		pmpro_setMessage( __( "Are you a spammer?", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 
 	if ( $pmpro_msgt == "pmpro_error" ) {
@@ -365,12 +365,12 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		}
 
 		if ( ! empty( $ouser->user_login ) ) {
-			pmpro_setMessage( __( "That username is already taken. Please try another.", "pmpro" ), "pmpro_error" );
+			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "username";
 		}
 
 		if ( ! empty( $oldemail ) ) {
-			pmpro_setMessage( __( "That email address is already taken. Please try another.", "pmpro" ), "pmpro_error" );
+			pmpro_setMessage( __( "That email address is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
 		}
@@ -401,7 +401,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 				}
 
 				if ( ! $recaptcha_valid ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", "pmpro" ), $recaptcha_errors );
+					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
 					$pmpro_msgt = "pmpro_error";
 				} else {
 					// Your code here to handle a successful verification
@@ -488,13 +488,13 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$pmpro_processed = $morder->process();
 
 					if ( ! empty( $pmpro_processed ) ) {
-						$pmpro_msg       = __( "Payment accepted.", "pmpro" );
+						$pmpro_msg       = __( "Payment accepted.", 'paid-memberships-pro' );
 						$pmpro_msgt      = "pmpro_success";
 						$pmpro_confirmed = true;
 					} else {
-						$pmpro_msg = $morder->error;
+						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
 						if ( empty( $pmpro_msg ) ) {
-							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", "pmpro" );
+							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
 						}
 						$pmpro_msgt = "pmpro_error";
 					}
@@ -569,7 +569,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$e_msg = $user_id->get_error_message();
 			}
 
-			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", "pmpro" ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
+			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
 
@@ -799,10 +799,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			// test that the order object contains data
 			$test = (array) $morder;
 			if ( ! empty( $test ) && $morder->cancel() ) {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", "pmpro" );
+				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 				$morder    = null;
 			} else {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", "pmpro" );
+				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 			}
 		}
 	}
@@ -813,9 +813,9 @@ if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'pmpro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
-			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", "pmpro" );
+			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}
 		$pmpro_msgt = "";
 	}

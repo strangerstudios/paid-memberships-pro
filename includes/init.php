@@ -241,7 +241,7 @@ add_action('init', 'pmpro_set_current_user');
  * Add Membership Level to Users page in WordPress dashboard.
  */
 function pmpro_manage_users_columns($columns) {
-    $columns['pmpro_membership_level'] = __('Membership Level', 'pmpro');
+    $columns['pmpro_membership_level'] = __('Membership Level', 'paid-memberships-pro' );
     return $columns;
 }
 
@@ -256,7 +256,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
             $column_data = implode(',', $level_names);
         }
         else
-            $column_data = __('None', 'pmpro');
+            $column_data = __('None', 'paid-memberships-pro' );
     }
     return $column_data;
 }

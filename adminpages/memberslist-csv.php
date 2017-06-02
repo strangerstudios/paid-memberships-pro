@@ -2,7 +2,7 @@
 
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_memberslistcsv")))
 	{
-		die(__("You do not have permissions to perform this action.", "pmpro"));
+		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	if (!defined('PMPRO_BENCHMARK'))
@@ -350,7 +350,7 @@
 
 			foreach( $um_values as $key => $value ) {
 
-				$metavalues->{$key} = $value[0];
+				$metavalues->{$key} = isset( $value[0] ) ? $value[0] : null;
 			}
 
 			$theuser->metavalues = $metavalues;

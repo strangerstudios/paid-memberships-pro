@@ -25,7 +25,8 @@
 		$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
 		
 		//get the ids
-		$old_level_ids = array_map('intval', explode("+", preg_replace("[^0-9\+]", "", $_REQUEST['levelstocancel'])));
+		$requested_ids = preg_replace("/[^0-9\+]/", "", $_REQUEST['levelstocancel']);
+		$old_level_ids = array_map( 'intval', explode( "+", $requested_ids ) );
 		
 		//make sure the user has their old level
 		if(!pmpro_hasMembershipLevel($old_level_ids)) {
@@ -50,13 +51,13 @@
 			}
         }
 		else {
-			$old_level_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND status = 'active'");
+			$old_level_ids = $wpdb->get_col("SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND status = 'active'");
 			$worked = pmpro_changeMembershipLevel(0, $current_user->ID, 'cancelled');
 		}
         
 		if($worked === true && empty($pmpro_error))
 		{
-			$pmpro_msg = __("Your membership has been cancelled.", 'pmpro');
+			$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member

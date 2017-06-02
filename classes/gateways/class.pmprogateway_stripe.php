@@ -1,4 +1,10 @@
 <?php
+    // For compatibility with old library (Namespace Alias)
+    use Stripe\Customer as Stripe_Customer;
+    use Stripe\Invoice as Stripe_Invoice;
+    use Stripe\Plan as Stripe_Plan;
+    use Stripe\Charge as Stripe_Charge;
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -19,6 +25,10 @@
 	class PMProGateway_stripe extends PMProGateway
 	{
 		/**
+		 * @var bool    Is the Stripe/PHP Library loaded
+		 */
+	    private static $is_loaded = false;
+		/**
 		 * Stripe Class Constructor
 		 *
 		 * @since 1.4
@@ -28,12 +38,11 @@
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 
-			if($this->dependencies()) {
+			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
-				Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe::setAPIVersion("2015-07-13");
-			} else {
-				return false;
+				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+				Stripe\Stripe::setAPIVersion("2015-07-13");
+                self::$is_loaded = true;
 			}
 			
 			return $this->gateway;
@@ -44,18 +53,32 @@
 		 *
 		 * @return bool
 		 * @since 1.8.6.8.1
+         * @since 1.8.13.6 - Add json dependency
 		 */
 		public static function dependencies()
 		{
 			global $msg, $msgt, $pmpro_stripe_error;
 
-			$modules = array('curl', 'mbstring');
+			if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+
+			    $pmpro_stripe_error = true;
+			    $msg = -1;
+			    $msgt = sprintf(__("The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
+
+			    if ( !is_admin() ) {
+	                pmpro_setMessage( $msgt, "pmpro_error" );
+                }
+
+				return false;
+			}
+
+			$modules = array( 'curl', 'mbstring', 'json' );
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
 					$pmpro_stripe_error = true;					
 					$msg = -1;
-					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", "pmpro"), 'Stripe', $module);
+					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Stripe', $module);
 					
 					//throw error on checkout page
 					if(!is_admin())
@@ -64,7 +87,8 @@
 					return false;
 				}
 			}
-			
+
+			self::$is_loaded = true;
 			return true;
 		}
 
@@ -77,8 +101,9 @@
 		function loadStripeLibrary()
 		{
 			//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
-			if(!class_exists("Stripe"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Stripe/Stripe.php");
+			if(!class_exists("Stripe\Stripe")) {
+                require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
+			}
 		}
 
 		/**
@@ -119,12 +144,14 @@
 			
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
-			$current_gateway = pmpro_getGateway();			
-			if(($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))	//$_REQUEST['review'] means the PayPal Express review page
+			$current_gateway = pmpro_getGateway();
+
+			if( ($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review'] ) )	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
+				add_filter('pmpro_billing_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
@@ -139,7 +166,7 @@
 		static function pmpro_gateways($gateways)
 		{
 			if(empty($gateways['stripe']))
-				$gateways['stripe'] = __('Stripe', 'pmpro');
+				$gateways['stripe'] = __('Stripe', 'paid-memberships-pro' );
 
 			return $gateways;
 		}
@@ -176,7 +203,7 @@
 		static function pmpro_payment_options($options)
 		{
 			//get stripe options
-			$stripe_options = PMProGateway_stripe::getGatewayOptions();
+			$stripe_options = self::getGatewayOptions();
 
 			//merge with others.
 			$options = array_merge($stripe_options, $options);
@@ -194,12 +221,12 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Stripe Settings', 'pmpro'); ?>
+				<?php _e('Stripe Settings', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_secretkey"><?php _e('Secret Key', 'pmpro');?>:</label>
+				<label for="stripe_secretkey"><?php _e('Secret Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
@@ -207,7 +234,7 @@
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_publishablekey"><?php _e('Publishable Key', 'pmpro');?>:</label>
+				<label for="stripe_publishablekey"><?php _e('Publishable Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60" value="<?php echo esc_attr($values['stripe_publishablekey'])?>" />
@@ -215,22 +242,22 @@
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'pmpro');?>:</label>
+				<label for="stripe_billingaddress"><?php _e('Show Billing Address Fields', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<select id="stripe_billingaddress" name="stripe_billingaddress">
-					<option value="0" <?php if(empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('No', 'pmpro');?></option>
-					<option value="1" <?php if(!empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'pmpro');?></option>
+					<option value="0" <?php if(empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+					<option value="1" <?php if(!empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'paid-memberships-pro' );?></option>
 				</select>
-				<small><?php _e("Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'pmpro');?></small>
+				<small><?php _e("Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' );?></small>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('Web Hook URL', 'pmpro');?>:</label>
+				<label><?php _e('Web Hook URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'pmpro');?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
+				<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
 			</td>
 		</tr>
 		<?php
@@ -456,7 +483,7 @@
 
 			if($gateway == "stripe")
 			{
-				if(!empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				if(static::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
 				{
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
@@ -496,8 +523,8 @@
 			<thead>
 				<tr>
 					<th>
-						<span class="pmpro_thead-name"><?php _e('Payment Information', 'pmpro');?></span>
-						<span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'pmpro'), $pmpro_accepted_credit_cards_string);?></span>
+						<span class="pmpro_thead-name"><?php _e('Payment Information', 'paid-memberships-pro' );?></span>
+						<span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
 					</th>
 				</tr>
 			</thead>
@@ -519,7 +546,7 @@
 							{
 							?>
 							<div class="pmpro_payment-card-type">
-								<label for="CardType"><?php _e('Card Type', 'pmpro');?></label>
+								<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
 								<select id="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
 									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
@@ -562,12 +589,12 @@
 						?>
 
 						<div class="pmpro_payment-account-number">
-							<label for="AccountNumber"><?php _e('Card Number', 'pmpro');?></label>
+							<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
 							<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
 						</div>
 
 						<div class="pmpro_payment-expiration">
-							<label for="ExpirationMonth"><?php _e('Expiration Date', 'pmpro');?></label>
+							<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
 							<select id="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
 								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
 								<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
@@ -599,8 +626,8 @@
 							{							
 						?>
 						<div class="pmpro_payment-cvv">
-							<label for="CVV"><?php _e('CVV', 'pmpro');?></label>
-							<input id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'pmpro');?></a>)</small>
+							<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
+							<input id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 						</div>
 						<?php
 							}
@@ -608,9 +635,9 @@
 
 						<?php if($pmpro_show_discount_code) { ?>
 						<div class="pmpro_payment-discount-code">
-							<label for="discount_code"><?php _e('Discount Code', 'pmpro');?></label>
+							<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
 							<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
-							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'pmpro');?>" />
+							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 							<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
 						</div>
 						<?php } ?>
@@ -634,7 +661,7 @@
 		{
 			global $wpdb, $current_user, $pmpro_currency_symbol;
 
-			$cycles = array( __('Day(s)', 'pmpro') => 'Day', __('Week(s)', 'pmpro') => 'Week', __('Month(s)', 'pmpro') => 'Month', __('Year(s)', 'pmpro') => 'Year' );
+			$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 			$current_year = date_i18n("Y");
 			$current_month = date_i18n("m");
 
@@ -656,7 +683,7 @@
 			$sub = false;
 
 			//check that gateway is Stripe
-			if($last_order->gateway == "stripe")
+			if($last_order->gateway == "stripe" && self::$is_loaded )
 			{
 				//is there a customer?
 				$sub = $last_order->Gateway->getSubscription($last_order);
@@ -673,25 +700,25 @@
 				if(!empty($last_order) && $last_order->gateway == "stripe" && !empty($last_order->subscription_transaction_id) && strpos($last_order->subscription_transaction_id, "sub_") !== false)
 				{
 				?>
-				<p><strong>Note:</strong> Subscription <strong><?php echo $last_order->subscription_transaction_id;?></strong> could not be found at Stripe. It might have been deleted.</p>
+				<p><?php printf( __('%1$sNote:%2$s Subscription %3$s%4$s%5$s could not be found at Stripe. It may have been deleted.', 'paid-memberships-pro'), '<strong>', '</strong>', '<strong>', esc_attr($last_order->subscription_transaction_id), '</strong>' ); ?></p>
 				<?php
 				}
 			}
-			else
+			elseif ( true === self::$is_loaded )
 			{
 			?>
-			<h3><?php _e("Subscription Updates", "pmpro"); ?></h3>
+			<h3><?php _e("Subscription Updates", 'paid-memberships-pro' ); ?></h3>
 			<p>
 				<?php
 					if(empty($_REQUEST['user_id']))
-						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes.", 'pmpro');
+						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes.", 'paid-memberships-pro' );
 					else
-						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'pmpro');
+						_e("Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'paid-memberships-pro' );
 				?>
 			</p>
 			<table class="form-table">
 				<tr>
-					<th><label for="membership_level"><?php _e("Update", "pmpro"); ?></label></th>
+					<th><label for="membership_level"><?php _e("Update", 'paid-memberships-pro' ); ?></label></th>
 					<td id="updates_td">
 						<?php
 							$old_updates = $user->pmpro_stripe_updates;
@@ -732,7 +759,7 @@
 								</span>
 								<span class="updates_billing" <?php if($update['when'] == "now") { ?>style="display: none;"<?php } ?>>
 									<?php echo $pmpro_currency_symbol?><input name="updates_billing_amount[]" type="text" size="10" value="<?php echo esc_attr($update['billing_amount']);?>" />
-									<small><?php _e('per', 'pmpro');?></small>
+									<small><?php _e('per', 'paid-memberships-pro' );?></small>
 									<input name="updates_cycle_number[]" type="text" size="5" value="<?php echo esc_attr($update['cycle_number']);?>" />
 									<select name="updates_cycle_period[]">
 									  <?php
@@ -884,7 +911,7 @@
 							//throw error and halt save
 							function pmpro_stripe_user_profile_fields_save_error($errors, $update, $user)
 							{
-								$errors->add('pmpro_stripe_updates',__('Could not cancel the old subscription. Updates have not been processed.', 'pmpro'));
+								$errors->add('pmpro_stripe_updates',__('Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ));
 							}
 							add_filter('user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3);
 
@@ -1139,9 +1166,18 @@
 				}
 				else
 				{
-					if(empty($order->error))
-						$order->error = __("Unknown error: Initial payment failed.", "pmpro");
-					return false;
+					if(empty($order->error)) {
+						if ( ! self::$is_loaded ) {
+
+							$order->error = __( "Payment error: Please contact the webmaster (stripe-load-error)", 'paid-memberships-pro' );
+
+						} else {
+
+							$order->error = __( "Unknown error: Initial payment failed.", 'paid-memberships-pro' );
+						}
+					}
+
+                    return false;
 				}
 			}
 		}
@@ -1188,7 +1224,7 @@
 				  "amount" => $amount * $currency_unit_multiplier, # amount in cents, again
 				  "currency" => strtolower($pmpro_currency),
 				  "customer" => $this->customer->id,
-				  "description" => "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")"
+				  "description" => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order)
 				  )
 				);
 			}
@@ -1371,7 +1407,7 @@
 				}
 				catch (Exception $e)
 				{
-					$order->error = __("Error creating customer record with Stripe:", "pmpro") . " " . $e->getMessage();
+					$order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1430,7 +1466,7 @@
 				}
 				catch (Exception $e)
 				{
-					$order->error = __("Error getting subscription with Stripe:", "pmpro") . $e->getMessage();
+					$order->error = __("Error getting subscription with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1586,7 +1622,7 @@
 			}
 			catch (Exception $e)
 			{
-				$order->error = __("Error creating plan with Stripe:", "pmpro") . $e->getMessage();
+				$order->error = __("Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -1617,7 +1653,7 @@
 					update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
 
 				//return error
-				$order->error = __("Error subscribing customer to plan with Stripe:", "pmpro") . $e->getMessage();
+				$order->error = __("Error subscribing customer to plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -1713,7 +1749,7 @@
 					}
 					else
 					{
-						$order->error = __("Could not cancel old subscription.", "pmpro");
+						$order->error = __("Could not cancel old subscription.", 'paid-memberships-pro' );
 						$order->shorterror = $order->error;
 
 						return false;
@@ -1730,7 +1766,7 @@
 			}
 			else
 			{
-				$order->error = __("Could not find the customer.", "pmpro");
+				$order->error = __("Could not find the customer.", 'paid-memberships-pro' );
 				$order->shorterror = $order->error;
 				return false;	//no customer found
 			}
@@ -1808,7 +1844,7 @@
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
 				
-				//check if this is a paypal express order with a subscription transaction id
+				//check if this is a Stripe order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
 				{
 					//get the subscription and return the current_period end or false
@@ -1882,7 +1918,7 @@
 			{
 				//$order->status = "error";
 				$order->errorcode = true;
-				$order->error = __("Error: ", "pmpro") . $e->getMessage();
+				$order->error = __("Error: ", 'paid-memberships-pro' ) . $e->getMessage();
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -1895,7 +1931,7 @@
 			} else  {
 				$order->status = "error";
 				$order->errorcode = true;
-				$order->error = sprintf(__("Error: Unkown error while refunding charge #%s", "pmpro"), $transaction_id);
+				$order->error = sprintf(__("Error: Unkown error while refunding charge #%s", 'paid-memberships-pro' ), $transaction_id);
 				$order->shorterror = $order->error;
 				
 				return false;
