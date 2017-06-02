@@ -18,12 +18,29 @@
 
 	$level = $current_user->membership_level;
 
+
 	//Make sure the $level object is a valid level definition
 	if(isset($level->id) && !empty($level->id))
 	{
 	?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+		<?php
+		 /**
+		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
+		 *
+		 * @since 1.9.2
+		 */
+		 do_action('pmpro_billing_message_top'); ?>
+
 		<ul>
+			<?php 
+			 /**
+			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the top).
+			 *
+			 * @since 1.9.2
+			 * @param {objects} {$level} {Passes the $level object}
+			 */
+			do_action('pmpro_billing_bullets_top', $level);?>
 			<li><strong><?php _e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo $level->name?></li>
 		<?php if($level->billing_amount > 0) { ?>
 			<li><strong><?php _e("Membership Fee", 'paid-memberships-pro' );?>:</strong>
@@ -37,12 +54,21 @@
 						echo pmpro_formatPrice($current_user->membership_level->billing_amount);
 					}
 				?>
+				
 			</li>
 		<?php } ?>
 
 		<?php if($level->billing_limit) { ?>
 			<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
 		<?php } ?>
+		<?php 
+		 /**
+		 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
+		 *
+		 * @since 1.9.2
+		 * @param {objects} {$level} {Passes the $level object}
+		 */
+		do_action('pmpro_billing_bullets_bottom', $level);?>
 		</ul>
 	<?php
 	}

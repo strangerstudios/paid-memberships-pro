@@ -67,9 +67,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									<?php 
 										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
-										<a href="<?php echo pmpro_url("levels")?>"><?php _e("Change", 'paid-memberships-pro' );?></a>
+										<a href="<?php echo pmpro_url("levels")?>" id="pmpro_account-change"><?php _e("Change", 'paid-memberships-pro' );?></a>
 									<?php } ?>
-									<a href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>"><?php _e("Cancel", 'paid-memberships-pro' );?></a>
+									<a href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>" id="pmpro_account-cancel"><?php _e("Cancel", 'paid-memberships-pro' );?></a>
 									<?php do_action("pmpro_member_action_links_after"); ?>
 								</div> <!-- end pmpro_actionlinks -->
 							</td>
@@ -112,8 +112,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
 				<div class="pmpro_actionlinks">
-					<a href="<?php echo admin_url('profile.php')?>"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
-					<a href="<?php echo admin_url('profile.php')?>"><?php _e('Change Password', 'paid-memberships-pro' );?></a>
+					<a href="<?php echo admin_url('profile.php')?>" id="pmpro_account-edit-profile"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
+					<a href="<?php echo admin_url('profile.php')?>" id="pmpro_account-change-password"><?php _e('Change Password', 'paid-memberships-pro' );?></a>
 				</div>
 			</div> <!-- end pmpro_account-profile -->
 		<?php } ?>
