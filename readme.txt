@@ -122,6 +122,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Discount codes weren't being remembered during the "review" step of a PayPal Express checkout. (Thanks, Rafe Colton)
 * ENHANCEMENT/FIX: Search Filter would trigger incorrectly for REST API request by slug.
 * ENHANCEMENT/FIX: Didn't always identify MasterCard cards correctly to set the CardType with some gateways.
+* ENHANCEMENT/FIX: Some custom code or add ons (e.g. the Prorating and Auto-renewal Checkbox add ons) would sometimes break PayPal Website Payments Pro and PayPal Express subscriptions by trying to set the "Profile Start Date" longer than 1 year out. We now limit the Profile Start Date to 1 year out and try to squeeze up to 1 additional year into a trial if it's not already being used. This bug affects PayPal Standard as well, but the fix is different and not included in this release.
 * ENHANCEMENT: Tested up to WordPress 4.8.
 * ENHANCEMENT: Made countries translatable.
 * ENHANCEMENT: Improved performance via PHP $_SESSION management improvements. We now only open the session before we set session vars and close the session when we are finished with it.
