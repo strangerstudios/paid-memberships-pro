@@ -2,10 +2,10 @@
 
 defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
-class Deny_Network_Activation {
+class PMPro_Deny_Network_Activation {
 
 	public function init() {
-		register_activation_hook( DENY_PLUGIN_BASE_FILE, array( $this, 'pmpro_check_network_activation' ) );
+		register_activation_hook( PMPRO_BASE_FILE, array( $this, 'pmpro_check_network_activation' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'wp_admin_style' ) );
 		add_action( 'network_admin_notices', array( $this, 'display_message_after_network_activation_attempt' ) );
 
@@ -29,9 +29,20 @@ class Deny_Network_Activation {
 
 	public function display_message_after_network_activation_attempt() {
 		global $current_screen;
-		if ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) {
+		if ( !empty($_REQUEST['pmpro_deny_network_activation']) && ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) ) {
+				//get plugin data
+				$plugin = isset($_REQUEST['pmpro_deny_network_activation']) ? $_REQUEST['pmpro_deny_network_activation'] : '';
+				$plugin_path = WP_PLUGIN_DIR . '/' . urldecode($plugin);
+				$plugin_data = get_plugin_data($plugin_path);
+
+				if(!empty($plugin_data))
+					$plugin_name = $plugin_data['Name'];
+				else
+					$plugin_name = '';
+
+				//show notice
 				echo '<div class="notice notice-info is-dismissible"><p>';
-				$text = sprintf( 'The %2$s should not be network activated. <br> We\'ve installed %2$s on the main site. To deactivate, <a href="%1$s">click here</a>, and then activate on your preferred site\'s plugin page.', admin_url( 'plugins.php' ), 'Paid Memberships Pro', basename( DENY_PLUGIN_BASE_FILE ) );
+				$text = sprintf( __("The %s plugin should not be network activated. Activate on each individual site's plugin page.", 'paid-memberships-pro'), $plugin_name);
 				echo $text;
 				echo '</p></div>';
 		}
@@ -42,39 +53,13 @@ class Deny_Network_Activation {
 			return;
 		}
 
-		deactivate_plugins( plugin_basename( DENY_PLUGIN_BASE_FILE ), true, true );
-		switch_to_blog( $blog_id );
-		$result = activate_plugin( plugin_basename( DENY_PLUGIN_BASE_FILE ) );
-		if ( is_wp_error( $result ) ) {
-			// Process Error
-			echo $result;
-		}
-		restore_current_blog();
-		header( 'Location: ' . network_admin_url( 'plugins.php' ) );
-		die();
-	}
+		$plugin = isset($_REQUEST['plugin']) ? $_REQUEST['plugin'] : '';
 
-	// Deactivating these functions, just to clean up the code. Probably should be deleted before pushing to master.
-	// function add_sites_column( $column_details ) {
-	// $column_details['active_plugins'] = __( 'PMPro Active?', 'pmpro' );
-	// return $column_details;
-	// }
-	// function manage_sites_custom_column( $column_name, $blog_id ) {
-	// if ( 'active_plugins' !== $column_name ) {
-	// return;
-	// }
-	// $output = '';
-	// if ( '1' === $blog_id ) {
-	// $button_text = __( 'PMPro Active', 'pmpro' );
-	// $style = __( 'button-secondary inactive', 'pmpro' );
-	// } else {
-	// $button_text = __( 'Activate PMPro', 'pmpro' );
-	// $style = __( 'button-primary', 'pmpro' );
-	// }
-	// $output .= '<button class="' . $style . '">' . esc_html( $button_text ) . '</button>';
-	// echo $output;
-	// }
+		deactivate_plugins( $plugin_slug, true, true );
+		wp_redirect( network_admin_url( 'plugins.php?pmpro_deny_network_activation=' . $plugin ) );
+		exit;
+	}
 }
 
-$deny_network = new Deny_Network_Activation();
+$deny_network = new PMPro_Deny_Network_Activation();
 $deny_network->init();

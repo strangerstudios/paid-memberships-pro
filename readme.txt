@@ -126,6 +126,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Tested up to WordPress 4.8.
 * ENHANCEMENT: Made countries translatable.
 * ENHANCEMENT: Improved performance via PHP $_SESSION management improvements. We now only open the session before we set session vars and close the session when we are finished with it.
+* ENHANCEMENT: Added to code to stop network activation of Paid Memberships Pro. (Thanks, Paul Barthmaier)
 
 = 1.9.1 =
 * BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.

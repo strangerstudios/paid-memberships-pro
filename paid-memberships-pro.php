@@ -22,11 +22,10 @@ define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 /*
 	Includes
 */
+define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
-// Adding in the Deny Network Activation.
-define( 'DENY_PLUGIN_BASE_FILE', __FILE__ );
-require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );
+require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );	//stop PMPro from being network activated
 
 require_once( PMPRO_DIR . '/includes/localization.php' );			// localization functions
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );		// parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
