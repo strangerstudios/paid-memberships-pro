@@ -16,6 +16,9 @@
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
 	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
+	<?php if ($discount_code && $pmpro_review) { ?>
+		<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
+	<?php } ?>
 
 	<?php if($pmpro_msg)
 		{
@@ -423,7 +426,7 @@
 				?>
 				<div>
 					<label for="bcountry"><?php _e('Country', 'paid-memberships-pro' );?></label>
-					<select name="bcountry" class=" <?php echo pmpro_getClassForField("bcountry");?>">
+					<select name="bcountry" id="bcountry" class=" <?php echo pmpro_getClassForField("bcountry");?>">
 						<?php
 							global $pmpro_countries, $pmpro_default_country;
 							if(!$bcountry)

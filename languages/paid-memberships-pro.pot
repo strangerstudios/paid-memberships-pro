@@ -1,17 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Hi there! Details on how to help out translating Paid Memberships Pro can be found at:
+# http://www.paidmembershipspro.com/documentation/languages/
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: paid-memberships-pro\n"
 "Report-Msgid-Bugs-To: jason@strangerstudios.com\n"
-"POT-Creation-Date: 2017-05-10 14:14-0400\n"
+"POT-Creation-Date: 2017-06-03 09:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: \n"
+"Language-Team: Stranger Studios <jason@strangerstudios.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -846,8 +844,8 @@ msgstr ""
 
 #: adminpages/discountcodes.php:442
 #: classes/gateways/class.pmprogateway_braintree.php:423
-#: classes/gateways/class.pmprogateway_stripe.php:597 pages/billing.php:316
-#: pages/checkout.php:582 adminpages/discountcodes.php:367
+#: classes/gateways/class.pmprogateway_stripe.php:597 pages/billing.php:342
+#: pages/checkout.php:585 adminpages/discountcodes.php:367
 #: adminpages/discountcodes.php:370 adminpages/discountcodes.php:371
 #: adminpages/discountcodes.php:372 adminpages/discountcodes.php:377
 #: adminpages/discountcodes.php:442
@@ -1713,7 +1711,7 @@ msgid "Save Level"
 msgstr ""
 
 #: adminpages/membershiplevels.php:530 adminpages/orders.php:796
-#: pages/billing.php:371 pages/cancel.php:84 shortcodes/pmpro_account.php:72
+#: pages/billing.php:397 pages/cancel.php:84 shortcodes/pmpro_account.php:72
 #: adminpages/membershiplevels.php:506 adminpages/membershiplevels.php:508
 #: adminpages/membershiplevels.php:517 adminpages/membershiplevels.php:518
 #: adminpages/membershiplevels.php:530 adminpages/orders.php:511
@@ -1912,7 +1910,7 @@ msgstr ""
 msgid "%d members found."
 msgstr ""
 
-#: adminpages/memberslist.php:165 pages/checkout.php:191
+#: adminpages/memberslist.php:165 pages/checkout.php:194
 #: shortcodes/pmpro_account.php:110 adminpages/memberslist.php:112
 #: adminpages/memberslist.php:145 adminpages/memberslist.php:155
 #: adminpages/memberslist.php:165 pages/account.php:51 pages/account.php:55
@@ -1936,7 +1934,7 @@ msgstr ""
 msgid "Last&nbsp;Name"
 msgstr ""
 
-#: adminpages/memberslist.php:170 pages/billing.php:77 pages/checkout.php:326
+#: adminpages/memberslist.php:170 pages/billing.php:103 pages/checkout.php:329
 #: pages/confirmation.php:67 pages/invoice.php:48
 #: adminpages/memberslist.php:117 adminpages/memberslist.php:150
 #: adminpages/memberslist.php:160 adminpages/memberslist.php:170
@@ -2182,8 +2180,8 @@ msgstr ""
 
 #: adminpages/orders.php:563
 #: classes/gateways/class.pmprogateway_braintree.php:406
-#: classes/gateways/class.pmprogateway_stripe.php:549 pages/billing.php:268
-#: pages/checkout.php:534 adminpages/orders.php:339 adminpages/orders.php:389
+#: classes/gateways/class.pmprogateway_stripe.php:549 pages/billing.php:294
+#: pages/checkout.php:537 adminpages/orders.php:339 adminpages/orders.php:389
 #: adminpages/orders.php:461 adminpages/orders.php:490
 #: adminpages/orders.php:532 adminpages/orders.php:563
 #: classes/gateways/class.pmprogateway_braintree.php:291
@@ -2494,7 +2492,7 @@ msgid "User"
 msgstr ""
 
 #: adminpages/orders.php:1138 includes/init.php:244 includes/profile.php:36
-#: pages/checkout.php:42 pages/confirmation.php:53 pages/confirmation.php:70
+#: pages/checkout.php:45 pages/confirmation.php:53 pages/confirmation.php:70
 #: pages/confirmation.php:116 pages/invoice.php:28 pages/invoice.php:51
 #: adminpages/orders.php:601 adminpages/orders.php:904
 #: adminpages/orders.php:914 adminpages/orders.php:941
@@ -2856,7 +2854,7 @@ msgstr ""
 msgid "Sales Tax"
 msgstr ""
 
-#: adminpages/paymentsettings.php:188 pages/billing.php:97
+#: adminpages/paymentsettings.php:188 pages/billing.php:123
 #: adminpages/paymentsettings.php:188 adminpages/paymentsettings.php:398
 #: adminpages/paymentsettings.php:438 adminpages/paymentsettings.php:443
 #: adminpages/paymentsettings.php:445 pages/billing.php:78
@@ -3253,6 +3251,13 @@ msgstr ""
 msgid "Update complete."
 msgstr ""
 
+#: classes/class-deny-network-activation.php:45
+#, php-format
+msgid ""
+"The %s plugin should not be network activated. Activate on each individual "
+"site's plugin page."
+msgstr ""
+
 #: classes/class.memberorder.php:729 classes/class.memberorder.php:553
 #: classes/class.memberorder.php:561 classes/class.memberorder.php:564
 #: classes/class.memberorder.php:573 classes/class.memberorder.php:644
@@ -3300,8 +3305,8 @@ msgstr ""
 #: classes/class.pmproemail.php:378 classes/class.pmproemail.php:696
 #: classes/class.pmproemail.php:698
 #: classes/gateways/class.pmprogateway_braintree.php:464
-#: classes/gateways/class.pmprogateway_stripe.php:638 pages/checkout.php:83
-#: pages/checkout.php:93 pages/checkout.php:619 pages/confirmation.php:58
+#: classes/gateways/class.pmprogateway_stripe.php:638 pages/checkout.php:86
+#: pages/checkout.php:96 pages/checkout.php:622 pages/confirmation.php:58
 #: pages/invoice.php:33 classes/class.pmproemail.php:216
 #: classes/class.pmproemail.php:218 classes/class.pmproemail.php:225
 #: classes/class.pmproemail.php:227 classes/class.pmproemail.php:228
@@ -3634,7 +3639,7 @@ msgid ""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_authorizenet.php:39
-#: paid-memberships-pro.php:142
+#: paid-memberships-pro.php:134
 #: classes/gateways/class.pmprogateway_authorizenet.php:39
 #: paid-memberships-pro.php:122 paid-memberships-pro.php:123
 #: paid-memberships-pro.php:130 paid-memberships-pro.php:131
@@ -3703,7 +3708,7 @@ msgid ""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:172
-#: paid-memberships-pro.php:143
+#: paid-memberships-pro.php:135
 #: classes/gateways/class.pmprogateway_braintree.php:63
 #: classes/gateways/class.pmprogateway_braintree.php:76
 #: classes/gateways/class.pmprogateway_braintree.php:77
@@ -3815,7 +3820,7 @@ msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:383
-#: classes/gateways/class.pmprogateway_stripe.php:526 pages/checkout.php:510
+#: classes/gateways/class.pmprogateway_stripe.php:526 pages/checkout.php:513
 #: classes/gateways/class.pmprogateway_braintree.php:270
 #: classes/gateways/class.pmprogateway_braintree.php:283
 #: classes/gateways/class.pmprogateway_braintree.php:285
@@ -3843,7 +3848,7 @@ msgid "Payment Information"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:384
-#: classes/gateways/class.pmprogateway_stripe.php:527 pages/checkout.php:511
+#: classes/gateways/class.pmprogateway_stripe.php:527 pages/checkout.php:514
 #: classes/gateways/class.pmprogateway_braintree.php:270
 #: classes/gateways/class.pmprogateway_braintree.php:283
 #: classes/gateways/class.pmprogateway_braintree.php:285
@@ -3872,8 +3877,8 @@ msgid "We Accept %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:418
-#: classes/gateways/class.pmprogateway_stripe.php:592 pages/billing.php:311
-#: pages/checkout.php:577
+#: classes/gateways/class.pmprogateway_stripe.php:592 pages/billing.php:337
+#: pages/checkout.php:580
 #: classes/gateways/class.pmprogateway_braintree.php:303
 #: classes/gateways/class.pmprogateway_braintree.php:316
 #: classes/gateways/class.pmprogateway_braintree.php:318
@@ -3904,8 +3909,8 @@ msgid "Card Number"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:455
-#: classes/gateways/class.pmprogateway_stripe.php:629 pages/billing.php:354
-#: pages/checkout.php:612
+#: classes/gateways/class.pmprogateway_stripe.php:629 pages/billing.php:380
+#: pages/checkout.php:615
 #: classes/gateways/class.pmprogateway_braintree.php:340
 #: classes/gateways/class.pmprogateway_braintree.php:353
 #: classes/gateways/class.pmprogateway_braintree.php:355
@@ -3937,8 +3942,8 @@ msgid "CVV"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:456
-#: classes/gateways/class.pmprogateway_stripe.php:630 pages/billing.php:355
-#: pages/checkout.php:613
+#: classes/gateways/class.pmprogateway_stripe.php:630 pages/billing.php:381
+#: pages/checkout.php:616
 #: classes/gateways/class.pmprogateway_braintree.php:341
 #: classes/gateways/class.pmprogateway_braintree.php:354
 #: classes/gateways/class.pmprogateway_braintree.php:356
@@ -3970,8 +3975,8 @@ msgid "what's this?"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:466
-#: classes/gateways/class.pmprogateway_stripe.php:640 pages/checkout.php:95
-#: pages/checkout.php:621
+#: classes/gateways/class.pmprogateway_stripe.php:640 pages/checkout.php:98
+#: pages/checkout.php:624
 #: classes/gateways/class.pmprogateway_braintree.php:351
 #: classes/gateways/class.pmprogateway_braintree.php:364
 #: classes/gateways/class.pmprogateway_braintree.php:366
@@ -4003,9 +4008,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:524
 #: classes/gateways/class.pmprogateway_braintree.php:541
 #: classes/gateways/class.pmprogateway_braintree.php:623
-#: classes/gateways/class.pmprogateway_braintree.php:781
-#: classes/gateways/class.pmprogateway_braintree.php:886
-#: classes/gateways/class.pmprogateway_braintree.php:906
+#: classes/gateways/class.pmprogateway_braintree.php:782
+#: classes/gateways/class.pmprogateway_braintree.php:887
+#: classes/gateways/class.pmprogateway_braintree.php:907
 #: classes/gateways/class.pmprogateway_braintree.php:524
 #: classes/gateways/class.pmprogateway_braintree.php:541
 #: classes/gateways/class.pmprogateway_braintree.php:623
@@ -4069,7 +4074,7 @@ msgstr ""
 msgid "Error during charge:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:702
+#: classes/gateways/class.pmprogateway_braintree.php:703
 #: classes/gateways/class.pmprogateway_braintree.php:198
 #: classes/gateways/class.pmprogateway_braintree.php:221
 #: classes/gateways/class.pmprogateway_braintree.php:566
@@ -4083,7 +4088,7 @@ msgstr ""
 msgid "Failed to update customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:750
+#: classes/gateways/class.pmprogateway_braintree.php:751
 #: classes/gateways/class.pmprogateway_braintree.php:246
 #: classes/gateways/class.pmprogateway_braintree.php:269
 #: classes/gateways/class.pmprogateway_braintree.php:614
@@ -4097,7 +4102,7 @@ msgstr ""
 msgid "Failed to create customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:757
+#: classes/gateways/class.pmprogateway_braintree.php:758
 #: classes/gateways/class.pmprogateway_braintree.php:253
 #: classes/gateways/class.pmprogateway_braintree.php:276
 #: classes/gateways/class.pmprogateway_braintree.php:621
@@ -4111,7 +4116,7 @@ msgstr ""
 msgid "Error creating customer record with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:862
+#: classes/gateways/class.pmprogateway_braintree.php:863
 #: classes/gateways/class.pmprogateway_braintree.php:344
 #: classes/gateways/class.pmprogateway_braintree.php:345
 #: classes/gateways/class.pmprogateway_braintree.php:376
@@ -4126,7 +4131,7 @@ msgstr ""
 msgid "Error subscribing customer to plan with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:877
+#: classes/gateways/class.pmprogateway_braintree.php:878
 #: classes/gateways/class.pmprogateway_braintree.php:359
 #: classes/gateways/class.pmprogateway_braintree.php:360
 #: classes/gateways/class.pmprogateway_braintree.php:391
@@ -4141,9 +4146,9 @@ msgstr ""
 msgid "Failed to subscribe with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:925
-#: classes/gateways/class.pmprogateway_braintree.php:938
-#: classes/gateways/class.pmprogateway_braintree.php:945
+#: classes/gateways/class.pmprogateway_braintree.php:926
+#: classes/gateways/class.pmprogateway_braintree.php:939
+#: classes/gateways/class.pmprogateway_braintree.php:946
 #: classes/gateways/class.pmprogateway_braintree.php:397
 #: classes/gateways/class.pmprogateway_braintree.php:398
 #: classes/gateways/class.pmprogateway_braintree.php:410
@@ -4189,7 +4194,7 @@ msgid "Could not find the subscription."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:49
-#: paid-memberships-pro.php:136 adminpages/orders.php:399
+#: paid-memberships-pro.php:128 adminpages/orders.php:399
 #: adminpages/orders.php:449 adminpages/paymentsettings.php:157
 #: adminpages/paymentsettings.php:159
 #: classes/gateways/class.pmprogateway_check.php:48
@@ -4276,7 +4281,7 @@ msgid "Vendor"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_payflowpro.php:124
-#: pages/checkout.php:200 adminpages/paymentsettings.php:219
+#: pages/checkout.php:203 adminpages/paymentsettings.php:219
 #: adminpages/paymentsettings.php:223 adminpages/paymentsettings.php:228
 #: classes/gateways/class.pmprogateway_payflowpro.php:124
 #: pages/checkout.php:177 pages/checkout.php:180 pages/checkout.php:182
@@ -4312,7 +4317,7 @@ msgid ""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypal.php:68
-#: paid-memberships-pro.php:139
+#: paid-memberships-pro.php:131
 #: classes/gateways/class.pmprogateway_paypal.php:57
 #: classes/gateways/class.pmprogateway_paypal.php:68
 #: paid-memberships-pro.php:119 paid-memberships-pro.php:120
@@ -4450,7 +4455,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:201
 #: classes/gateways/class.pmprogateway_paypalexpress.php:438
 #: classes/gateways/class.pmprogateway_paypalstandard.php:201
-#: pages/checkout.php:309 classes/gateways/class.pmprogateway_paypal.php:178
+#: pages/checkout.php:312 classes/gateways/class.pmprogateway_paypal.php:178
 #: classes/gateways/class.pmprogateway_paypal.php:201
 #: classes/gateways/class.pmprogateway_paypalexpress.php:402
 #: classes/gateways/class.pmprogateway_paypalexpress.php:412
@@ -4467,7 +4472,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:207
 #: classes/gateways/class.pmprogateway_paypalexpress.php:443
 #: classes/gateways/class.pmprogateway_paypalstandard.php:206
-#: pages/checkout.php:725 classes/gateways/class.pmprogateway_paypal.php:184
+#: pages/checkout.php:728 classes/gateways/class.pmprogateway_paypal.php:184
 #: classes/gateways/class.pmprogateway_paypal.php:207
 #: classes/gateways/class.pmprogateway_paypalexpress.php:408
 #: classes/gateways/class.pmprogateway_paypalexpress.php:418
@@ -4485,7 +4490,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:443
 #: classes/gateways/class.pmprogateway_paypalstandard.php:206
 #: classes/gateways/class.pmprogateway_twocheckout.php:203
-#: pages/checkout.php:725 classes/gateways/class.pmprogateway_paypal.php:184
+#: pages/checkout.php:728 classes/gateways/class.pmprogateway_paypal.php:184
 #: classes/gateways/class.pmprogateway_paypal.php:207
 #: classes/gateways/class.pmprogateway_paypalexpress.php:408
 #: classes/gateways/class.pmprogateway_paypalexpress.php:418
@@ -4530,7 +4535,7 @@ msgid ""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:84
-#: paid-memberships-pro.php:138
+#: paid-memberships-pro.php:130
 #: classes/gateways/class.pmprogateway_paypalexpress.php:63
 #: classes/gateways/class.pmprogateway_paypalexpress.php:73
 #: classes/gateways/class.pmprogateway_paypalexpress.php:84
@@ -4568,7 +4573,7 @@ msgid "The PayPal Token was lost."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:60
-#: paid-memberships-pro.php:141
+#: paid-memberships-pro.php:133
 #: classes/gateways/class.pmprogateway_paypalstandard.php:60
 #: paid-memberships-pro.php:121 paid-memberships-pro.php:122
 #: paid-memberships-pro.php:129 paid-memberships-pro.php:130
@@ -4585,7 +4590,7 @@ msgid ""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:169
-#: paid-memberships-pro.php:137
+#: paid-memberships-pro.php:129
 #: classes/gateways/class.pmprogateway_stripe.php:93
 #: classes/gateways/class.pmprogateway_stripe.php:94
 #: classes/gateways/class.pmprogateway_stripe.php:104
@@ -4752,7 +4757,7 @@ msgid ""
 "at predefined times. Be sure to click Update User after making changes."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_stripe.php:721 pages/billing.php:370
+#: classes/gateways/class.pmprogateway_stripe.php:721 pages/billing.php:396
 #: classes/gateways/class.pmprogateway_stripe.php:578
 #: classes/gateways/class.pmprogateway_stripe.php:579
 #: classes/gateways/class.pmprogateway_stripe.php:589
@@ -4961,7 +4966,7 @@ msgid "Error: Unkown error while refunding charge #%s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_twocheckout.php:59
-#: paid-memberships-pro.php:144
+#: paid-memberships-pro.php:136
 #: classes/gateways/class.pmprogateway_twocheckout.php:53
 #: classes/gateways/class.pmprogateway_twocheckout.php:59
 #: classes/gateways/class.pmprogateway_twocheckout.php:60
@@ -5139,6 +5144,994 @@ msgstr ""
 #: includes/adminpages.php:275 includes/adminpages.php:262
 #: includes/adminpages.php:266 includes/adminpages.php:275
 msgid "Visit Customer Support Forum"
+msgstr ""
+
+#: includes/countries.php:7
+msgid "Andorra"
+msgstr ""
+
+#: includes/countries.php:8
+msgid "United Arab Emirates"
+msgstr ""
+
+#: includes/countries.php:9
+msgid "Afghanistan"
+msgstr ""
+
+#: includes/countries.php:10
+msgid "Antigua and Barbuda"
+msgstr ""
+
+#: includes/countries.php:11
+msgid "Anguilla"
+msgstr ""
+
+#: includes/countries.php:12
+msgid "Albania"
+msgstr ""
+
+#: includes/countries.php:13
+msgid "Armenia"
+msgstr ""
+
+#: includes/countries.php:14
+msgid "Netherlands Antilles"
+msgstr ""
+
+#: includes/countries.php:15
+msgid "Angola"
+msgstr ""
+
+#: includes/countries.php:16
+msgid "Antarctica"
+msgstr ""
+
+#: includes/countries.php:17
+msgid "Argentina"
+msgstr ""
+
+#: includes/countries.php:18
+msgid "American Samoa"
+msgstr ""
+
+#: includes/countries.php:19
+msgid "Austria"
+msgstr ""
+
+#: includes/countries.php:20
+msgid "Australia"
+msgstr ""
+
+#: includes/countries.php:21
+msgid "Aruba"
+msgstr ""
+
+#: includes/countries.php:22
+msgid "Aland Islands"
+msgstr ""
+
+#: includes/countries.php:23
+msgid "Azerbaijan"
+msgstr ""
+
+#: includes/countries.php:24
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: includes/countries.php:25
+msgid "Barbados"
+msgstr ""
+
+#: includes/countries.php:26
+msgid "Bangladesh"
+msgstr ""
+
+#: includes/countries.php:27
+msgid "Belgium"
+msgstr ""
+
+#: includes/countries.php:28
+msgid "Burkina Faso"
+msgstr ""
+
+#: includes/countries.php:29
+msgid "Bulgaria"
+msgstr ""
+
+#: includes/countries.php:30
+msgid "Bahrain"
+msgstr ""
+
+#: includes/countries.php:31
+msgid "Burundi"
+msgstr ""
+
+#: includes/countries.php:32
+msgid "Benin"
+msgstr ""
+
+#: includes/countries.php:33
+msgid "Saint Barthelemy"
+msgstr ""
+
+#: includes/countries.php:34
+msgid "Bermuda"
+msgstr ""
+
+#: includes/countries.php:35
+msgid "Brunei"
+msgstr ""
+
+#: includes/countries.php:36
+msgid "Bolivia"
+msgstr ""
+
+#: includes/countries.php:37
+msgid "Brazil"
+msgstr ""
+
+#: includes/countries.php:38
+msgid "Bahamas"
+msgstr ""
+
+#: includes/countries.php:39
+msgid "Bhutan"
+msgstr ""
+
+#: includes/countries.php:40
+msgid "Bouvet Island"
+msgstr ""
+
+#: includes/countries.php:41
+msgid "Botswana"
+msgstr ""
+
+#: includes/countries.php:42
+msgid "Belarus"
+msgstr ""
+
+#: includes/countries.php:43
+msgid "Belize"
+msgstr ""
+
+#: includes/countries.php:44
+msgid "Canada"
+msgstr ""
+
+#: includes/countries.php:45
+msgid "Cocos (Keeling) Islands"
+msgstr ""
+
+#: includes/countries.php:46
+msgid "Congo (Kinshasa)"
+msgstr ""
+
+#: includes/countries.php:47
+msgid "Central African Republic"
+msgstr ""
+
+#: includes/countries.php:48
+msgid "Congo (Brazzaville)"
+msgstr ""
+
+#: includes/countries.php:49
+msgid "Switzerland"
+msgstr ""
+
+#: includes/countries.php:50
+msgid "Ivory Coast"
+msgstr ""
+
+#: includes/countries.php:51
+msgid "Cook Islands"
+msgstr ""
+
+#: includes/countries.php:52
+msgid "Chile"
+msgstr ""
+
+#: includes/countries.php:53
+msgid "Cameroon"
+msgstr ""
+
+#: includes/countries.php:54
+msgid "China"
+msgstr ""
+
+#: includes/countries.php:55
+msgid "Colombia"
+msgstr ""
+
+#: includes/countries.php:56
+msgid "Costa Rica"
+msgstr ""
+
+#: includes/countries.php:57
+msgid "Cuba"
+msgstr ""
+
+#: includes/countries.php:58
+msgid "Cape Verde"
+msgstr ""
+
+#: includes/countries.php:59
+msgid "Christmas Island"
+msgstr ""
+
+#: includes/countries.php:60
+msgid "Cyprus"
+msgstr ""
+
+#: includes/countries.php:61
+msgid "Czech Republic"
+msgstr ""
+
+#: includes/countries.php:62
+msgid "Germany"
+msgstr ""
+
+#: includes/countries.php:63
+msgid "Djibouti"
+msgstr ""
+
+#: includes/countries.php:64
+msgid "Denmark"
+msgstr ""
+
+#: includes/countries.php:65
+msgid "Dominica"
+msgstr ""
+
+#: includes/countries.php:66
+msgid "Dominican Republic"
+msgstr ""
+
+#: includes/countries.php:67
+msgid "Algeria"
+msgstr ""
+
+#: includes/countries.php:68
+msgid "Ecuador"
+msgstr ""
+
+#: includes/countries.php:69
+msgid "Estonia"
+msgstr ""
+
+#: includes/countries.php:70
+msgid "Egypt"
+msgstr ""
+
+#: includes/countries.php:71
+msgid "Western Sahara"
+msgstr ""
+
+#: includes/countries.php:72
+msgid "Eritrea"
+msgstr ""
+
+#: includes/countries.php:73
+msgid "Spain"
+msgstr ""
+
+#: includes/countries.php:74
+msgid "Ethiopia"
+msgstr ""
+
+#: includes/countries.php:75
+msgid "Finland"
+msgstr ""
+
+#: includes/countries.php:76
+msgid "Fiji"
+msgstr ""
+
+#: includes/countries.php:77
+msgid "Falkland Islands"
+msgstr ""
+
+#: includes/countries.php:78
+msgid "Micronesia"
+msgstr ""
+
+#: includes/countries.php:79
+msgid "Faroe Islands"
+msgstr ""
+
+#: includes/countries.php:80
+msgid "France"
+msgstr ""
+
+#: includes/countries.php:81
+msgid "Gabon"
+msgstr ""
+
+#: includes/countries.php:82
+msgid "United Kingdom"
+msgstr ""
+
+#: includes/countries.php:83
+msgid "Grenada"
+msgstr ""
+
+#: includes/countries.php:84
+msgid "Georgia"
+msgstr ""
+
+#: includes/countries.php:85
+msgid "French Guiana"
+msgstr ""
+
+#: includes/countries.php:86
+msgid "Guernsey"
+msgstr ""
+
+#: includes/countries.php:87
+msgid "Ghana"
+msgstr ""
+
+#: includes/countries.php:88
+msgid "Gibraltar"
+msgstr ""
+
+#: includes/countries.php:89
+msgid "Greenland"
+msgstr ""
+
+#: includes/countries.php:90
+msgid "Gambia"
+msgstr ""
+
+#: includes/countries.php:91
+msgid "Guinea"
+msgstr ""
+
+#: includes/countries.php:92
+msgid "Guadeloupe"
+msgstr ""
+
+#: includes/countries.php:93
+msgid "Equatorial Guinea"
+msgstr ""
+
+#: includes/countries.php:94
+msgid "Greece"
+msgstr ""
+
+#: includes/countries.php:95
+msgid "South Georgia and the South Sandwich Islands"
+msgstr ""
+
+#: includes/countries.php:96
+msgid "Guatemala"
+msgstr ""
+
+#: includes/countries.php:97
+msgid "Guam"
+msgstr ""
+
+#: includes/countries.php:98
+msgid "Guinea-Bissau"
+msgstr ""
+
+#: includes/countries.php:99
+msgid "Guyana"
+msgstr ""
+
+#: includes/countries.php:100
+msgid "Hong Kong S.A.R., China"
+msgstr ""
+
+#: includes/countries.php:101
+msgid "Heard Island and McDonald Islands"
+msgstr ""
+
+#: includes/countries.php:102
+msgid "Honduras"
+msgstr ""
+
+#: includes/countries.php:103
+msgid "Croatia"
+msgstr ""
+
+#: includes/countries.php:104
+msgid "Haiti"
+msgstr ""
+
+#: includes/countries.php:105
+msgid "Hungary"
+msgstr ""
+
+#: includes/countries.php:106
+msgid "Indonesia"
+msgstr ""
+
+#: includes/countries.php:107
+msgid "Ireland"
+msgstr ""
+
+#: includes/countries.php:108
+msgid "Israel"
+msgstr ""
+
+#: includes/countries.php:109
+msgid "Isle of Man"
+msgstr ""
+
+#: includes/countries.php:110
+msgid "India"
+msgstr ""
+
+#: includes/countries.php:111
+msgid "British Indian Ocean Territory"
+msgstr ""
+
+#: includes/countries.php:112
+msgid "Iraq"
+msgstr ""
+
+#: includes/countries.php:113
+msgid "Iran"
+msgstr ""
+
+#: includes/countries.php:114
+msgid "Iceland"
+msgstr ""
+
+#: includes/countries.php:115
+msgid "Italy"
+msgstr ""
+
+#: includes/countries.php:116
+msgid "Jersey"
+msgstr ""
+
+#: includes/countries.php:117
+msgid "Jamaica"
+msgstr ""
+
+#: includes/countries.php:118
+msgid "Jordan"
+msgstr ""
+
+#: includes/countries.php:119
+msgid "Japan"
+msgstr ""
+
+#: includes/countries.php:120
+msgid "Kenya"
+msgstr ""
+
+#: includes/countries.php:121
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: includes/countries.php:122
+msgid "Cambodia"
+msgstr ""
+
+#: includes/countries.php:123
+msgid "Kiribati"
+msgstr ""
+
+#: includes/countries.php:124
+msgid "Comoros"
+msgstr ""
+
+#: includes/countries.php:125
+msgid "Saint Kitts and Nevis"
+msgstr ""
+
+#: includes/countries.php:126
+msgid "North Korea"
+msgstr ""
+
+#: includes/countries.php:127
+msgid "South Korea"
+msgstr ""
+
+#: includes/countries.php:128
+msgid "Kuwait"
+msgstr ""
+
+#: includes/countries.php:129
+msgid "Cayman Islands"
+msgstr ""
+
+#: includes/countries.php:130
+msgid "Kazakhstan"
+msgstr ""
+
+#: includes/countries.php:131
+msgid "Laos"
+msgstr ""
+
+#: includes/countries.php:132
+msgid "Lebanon"
+msgstr ""
+
+#: includes/countries.php:133
+msgid "Saint Lucia"
+msgstr ""
+
+#: includes/countries.php:134
+msgid "Liechtenstein"
+msgstr ""
+
+#: includes/countries.php:135
+msgid "Sri Lanka"
+msgstr ""
+
+#: includes/countries.php:136
+msgid "Liberia"
+msgstr ""
+
+#: includes/countries.php:137
+msgid "Lesotho"
+msgstr ""
+
+#: includes/countries.php:138
+msgid "Lithuania"
+msgstr ""
+
+#: includes/countries.php:139
+msgid "Luxembourg"
+msgstr ""
+
+#: includes/countries.php:140
+msgid "Latvia"
+msgstr ""
+
+#: includes/countries.php:141
+msgid "Libya"
+msgstr ""
+
+#: includes/countries.php:142
+msgid "Morocco"
+msgstr ""
+
+#: includes/countries.php:143
+msgid "Monaco"
+msgstr ""
+
+#: includes/countries.php:144
+msgid "Moldova"
+msgstr ""
+
+#: includes/countries.php:145
+msgid "Montenegro"
+msgstr ""
+
+#: includes/countries.php:146
+msgid "Saint Martin (French part)"
+msgstr ""
+
+#: includes/countries.php:147
+msgid "Madagascar"
+msgstr ""
+
+#: includes/countries.php:148
+msgid "Marshall Islands"
+msgstr ""
+
+#: includes/countries.php:149
+msgid "Macedonia"
+msgstr ""
+
+#: includes/countries.php:150
+msgid "Mali"
+msgstr ""
+
+#: includes/countries.php:151
+msgid "Myanmar"
+msgstr ""
+
+#: includes/countries.php:152
+msgid "Mongolia"
+msgstr ""
+
+#: includes/countries.php:153
+msgid "Macao S.A.R., China"
+msgstr ""
+
+#: includes/countries.php:154
+msgid "Northern Mariana Islands"
+msgstr ""
+
+#: includes/countries.php:155
+msgid "Martinique"
+msgstr ""
+
+#: includes/countries.php:156
+msgid "Mauritania"
+msgstr ""
+
+#: includes/countries.php:157
+msgid "Montserrat"
+msgstr ""
+
+#: includes/countries.php:158
+msgid "Malta"
+msgstr ""
+
+#: includes/countries.php:159
+msgid "Mauritius"
+msgstr ""
+
+#: includes/countries.php:160
+msgid "Maldives"
+msgstr ""
+
+#: includes/countries.php:161
+msgid "Malawi"
+msgstr ""
+
+#: includes/countries.php:162
+msgid "Mexico"
+msgstr ""
+
+#: includes/countries.php:163
+msgid "Malaysia"
+msgstr ""
+
+#: includes/countries.php:164
+msgid "Mozambique"
+msgstr ""
+
+#: includes/countries.php:165
+msgid "Namibia"
+msgstr ""
+
+#: includes/countries.php:166
+msgid "New Caledonia"
+msgstr ""
+
+#: includes/countries.php:167
+msgid "Niger"
+msgstr ""
+
+#: includes/countries.php:168
+msgid "Norfolk Island"
+msgstr ""
+
+#: includes/countries.php:169
+msgid "Nigeria"
+msgstr ""
+
+#: includes/countries.php:170
+msgid "Nicaragua"
+msgstr ""
+
+#: includes/countries.php:171
+msgid "Netherlands"
+msgstr ""
+
+#: includes/countries.php:172
+msgid "Norway"
+msgstr ""
+
+#: includes/countries.php:173
+msgid "Nepal"
+msgstr ""
+
+#: includes/countries.php:174
+msgid "Nauru"
+msgstr ""
+
+#: includes/countries.php:175
+msgid "Niue"
+msgstr ""
+
+#: includes/countries.php:176
+msgid "New Zealand"
+msgstr ""
+
+#: includes/countries.php:177
+msgid "Oman"
+msgstr ""
+
+#: includes/countries.php:178
+msgid "Panama"
+msgstr ""
+
+#: includes/countries.php:179
+msgid "Peru"
+msgstr ""
+
+#: includes/countries.php:180
+msgid "French Polynesia"
+msgstr ""
+
+#: includes/countries.php:181
+msgid "Papua New Guinea"
+msgstr ""
+
+#: includes/countries.php:182
+msgid "Philippines"
+msgstr ""
+
+#: includes/countries.php:183
+msgid "Pakistan"
+msgstr ""
+
+#: includes/countries.php:184
+msgid "Poland"
+msgstr ""
+
+#: includes/countries.php:185
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+
+#: includes/countries.php:186
+msgid "Pitcairn"
+msgstr ""
+
+#: includes/countries.php:187
+msgid "Puerto Rico"
+msgstr ""
+
+#: includes/countries.php:188
+msgid "Palestinian Territory"
+msgstr ""
+
+#: includes/countries.php:189
+msgid "Portugal"
+msgstr ""
+
+#: includes/countries.php:190
+msgid "Palau"
+msgstr ""
+
+#: includes/countries.php:191
+msgid "Paraguay"
+msgstr ""
+
+#: includes/countries.php:192
+msgid "Qatar"
+msgstr ""
+
+#: includes/countries.php:193
+msgid "Reunion"
+msgstr ""
+
+#: includes/countries.php:194
+msgid "Romania"
+msgstr ""
+
+#: includes/countries.php:195
+msgid "Serbia"
+msgstr ""
+
+#: includes/countries.php:196
+msgid "Russia"
+msgstr ""
+
+#: includes/countries.php:197
+msgid "Rwanda"
+msgstr ""
+
+#: includes/countries.php:198
+msgid "Saudi Arabia"
+msgstr ""
+
+#: includes/countries.php:199
+msgid "Solomon Islands"
+msgstr ""
+
+#: includes/countries.php:200
+msgid "Seychelles"
+msgstr ""
+
+#: includes/countries.php:201
+msgid "Sudan"
+msgstr ""
+
+#: includes/countries.php:202
+msgid "Sweden"
+msgstr ""
+
+#: includes/countries.php:203
+msgid "Singapore"
+msgstr ""
+
+#: includes/countries.php:204
+msgid "Saint Helena"
+msgstr ""
+
+#: includes/countries.php:205
+msgid "Slovenia"
+msgstr ""
+
+#: includes/countries.php:206
+msgid "Svalbard and Jan Mayen"
+msgstr ""
+
+#: includes/countries.php:207
+msgid "Slovakia"
+msgstr ""
+
+#: includes/countries.php:208
+msgid "Sierra Leone"
+msgstr ""
+
+#: includes/countries.php:209
+msgid "San Marino"
+msgstr ""
+
+#: includes/countries.php:210
+msgid "Senegal"
+msgstr ""
+
+#: includes/countries.php:211
+msgid "Somalia"
+msgstr ""
+
+#: includes/countries.php:212
+msgid "Suriname"
+msgstr ""
+
+#: includes/countries.php:213
+msgid "Sao Tome and Principe"
+msgstr ""
+
+#: includes/countries.php:214
+msgid "El Salvador"
+msgstr ""
+
+#: includes/countries.php:215
+msgid "Syria"
+msgstr ""
+
+#: includes/countries.php:216
+msgid "Swaziland"
+msgstr ""
+
+#: includes/countries.php:217
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: includes/countries.php:218
+msgid "Chad"
+msgstr ""
+
+#: includes/countries.php:219
+msgid "French Southern Territories"
+msgstr ""
+
+#: includes/countries.php:220
+msgid "Togo"
+msgstr ""
+
+#: includes/countries.php:221
+msgid "Thailand"
+msgstr ""
+
+#: includes/countries.php:222
+msgid "Tajikistan"
+msgstr ""
+
+#: includes/countries.php:223
+msgid "Tokelau"
+msgstr ""
+
+#: includes/countries.php:224
+msgid "Timor-Leste"
+msgstr ""
+
+#: includes/countries.php:225
+msgid "Turkmenistan"
+msgstr ""
+
+#: includes/countries.php:226
+msgid "Tunisia"
+msgstr ""
+
+#: includes/countries.php:227
+msgid "Tonga"
+msgstr ""
+
+#: includes/countries.php:228
+msgid "Turkey"
+msgstr ""
+
+#: includes/countries.php:229
+msgid "Trinidad and Tobago"
+msgstr ""
+
+#: includes/countries.php:230
+msgid "Tuvalu"
+msgstr ""
+
+#: includes/countries.php:231
+msgid "Taiwan"
+msgstr ""
+
+#: includes/countries.php:232
+msgid "Tanzania"
+msgstr ""
+
+#: includes/countries.php:233
+msgid "Ukraine"
+msgstr ""
+
+#: includes/countries.php:234
+msgid "Uganda"
+msgstr ""
+
+#: includes/countries.php:235
+msgid "United States Minor Outlying Islands"
+msgstr ""
+
+#: includes/countries.php:236
+msgid "United States"
+msgstr ""
+
+#: includes/countries.php:237
+msgid "Uruguay"
+msgstr ""
+
+#: includes/countries.php:238
+msgid "Uzbekistan"
+msgstr ""
+
+#: includes/countries.php:239
+msgid "Vatican"
+msgstr ""
+
+#: includes/countries.php:240
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+
+#: includes/countries.php:241 includes/countries.php:254
+msgid "Venezuela"
+msgstr ""
+
+#: includes/countries.php:242
+msgid "British Virgin Islands"
+msgstr ""
+
+#: includes/countries.php:243
+msgid "U.S. Virgin Islands"
+msgstr ""
+
+#: includes/countries.php:244
+msgid "Vietnam"
+msgstr ""
+
+#: includes/countries.php:245
+msgid "Vanuatu"
+msgstr ""
+
+#: includes/countries.php:246
+msgid "Wallis and Futuna"
+msgstr ""
+
+#: includes/countries.php:247
+msgid "Samoa"
+msgstr ""
+
+#: includes/countries.php:248
+msgid "Yemen"
+msgstr ""
+
+#: includes/countries.php:249
+msgid "Mayotte"
+msgstr ""
+
+#: includes/countries.php:250
+msgid "South Africa"
+msgstr ""
+
+#: includes/countries.php:251
+msgid "Zambia"
+msgstr ""
+
+#: includes/countries.php:252
+msgid "Zimbabwe"
+msgstr ""
+
+#: includes/countries.php:253
+msgid "US Armed Forces"
 msgstr ""
 
 #: includes/currencies.php:17 includes/currencies.php:94
@@ -5366,6 +6359,36 @@ msgstr ""
 #: includes/currencies.php:67 includes/currencies.php:77
 #: includes/currencies.php:79 includes/currencies.php:84
 msgid "Vietnamese Dong"
+msgstr ""
+
+#: includes/filters.php:217
+msgid ""
+"There was a potential issue while setting the 'Profile Start Date' for a "
+"user's subscription at checkout. PayPal does not allow one to set a Profile "
+"Start Date further than 1 year out. Typically, this is not an issue, but "
+"sometimes a combination of custom code or add ons for PMPro (e.g. the "
+"Prorating or Auto-renewal Checkbox add ons) will try to set a Profile Start "
+"Date out past 1 year in order to respect an existing user's original "
+"expiration date before they checked out. The user's information is below. "
+"PMPro has allowed the checkout and simply restricted the Profile Start Date "
+"to 1 year out with a possible additional free Trial of up to 1 year. You "
+"should double check this information to determine if maybe the user has "
+"overpaid or otherwise needs to be addressed. If you get many of these "
+"emails, you should consider adjusting your custom code to avoid these "
+"situations."
+msgstr ""
+
+#: includes/filters.php:218
+#, php-format
+msgid ""
+"User: %s<br />Email: %s<br />Membership Level: %s<br />Order #: %s<br /"
+">Original Profile Start Date: %s<br />Adjusted Profile Start Date: %s<br /"
+">Trial Period: %s<br />Trial Frequency: %s<br />"
+msgstr ""
+
+#: includes/filters.php:220
+#, php-format
+msgid "Profile Start Date Issue Detected and Fixed at %s"
 msgstr ""
 
 #: includes/functions.php:320 includes/functions.php:455
@@ -5645,6 +6668,7 @@ msgstr ""
 
 #: includes/functions.php:1129 includes/functions.php:907
 #: includes/functions.php:1123 includes/functions.php:1127
+#: includes/functions.php:1129
 #, php-format
 msgid "Error interacting with database: %s"
 msgstr ""
@@ -5668,8 +6692,9 @@ msgstr ""
 #: includes/functions.php:948 includes/functions.php:953
 #: includes/functions.php:986 includes/functions.php:987
 #: includes/functions.php:992 includes/functions.php:1198
-#: includes/functions.php:1202 includes/functions.php:1237
-#: includes/functions.php:1241
+#: includes/functions.php:1202 includes/functions.php:1204
+#: includes/functions.php:1237 includes/functions.php:1241
+#: includes/functions.php:1243
 msgid "Membership level not found."
 msgstr ""
 
@@ -5681,6 +6706,7 @@ msgstr ""
 #: includes/functions.php:1290 includes/functions.php:1356
 #: includes/functions.php:1357 includes/functions.php:1362
 #: includes/functions.php:1605 includes/functions.php:1609
+#: includes/functions.php:1611
 msgid "No code was given to check."
 msgstr ""
 
@@ -5695,7 +6721,7 @@ msgstr ""
 #: includes/functions.php:1205 includes/functions.php:1299
 #: includes/functions.php:1365 includes/functions.php:1366
 #: includes/functions.php:1371 includes/functions.php:1614
-#: includes/functions.php:1618
+#: includes/functions.php:1618 includes/functions.php:1620
 msgid "The discount code could not be found."
 msgstr ""
 
@@ -5710,7 +6736,7 @@ msgstr ""
 #: includes/functions.php:1220 includes/functions.php:1314
 #: includes/functions.php:1380 includes/functions.php:1381
 #: includes/functions.php:1386 includes/functions.php:1629
-#: includes/functions.php:1633
+#: includes/functions.php:1633 includes/functions.php:1635
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
@@ -5726,7 +6752,7 @@ msgstr ""
 #: includes/functions.php:1227 includes/functions.php:1321
 #: includes/functions.php:1387 includes/functions.php:1388
 #: includes/functions.php:1393 includes/functions.php:1636
-#: includes/functions.php:1640
+#: includes/functions.php:1640 includes/functions.php:1642
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
@@ -5742,7 +6768,7 @@ msgstr ""
 #: includes/functions.php:1237 includes/functions.php:1331
 #: includes/functions.php:1397 includes/functions.php:1398
 #: includes/functions.php:1403 includes/functions.php:1646
-#: includes/functions.php:1650
+#: includes/functions.php:1650 includes/functions.php:1652
 msgid "This discount code is no longer valid."
 msgstr ""
 
@@ -5757,6 +6783,7 @@ msgstr ""
 #: includes/functions.php:1344 includes/functions.php:1410
 #: includes/functions.php:1411 includes/functions.php:1416
 #: includes/functions.php:1666 includes/functions.php:1670
+#: includes/functions.php:1672
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
@@ -5771,7 +6798,7 @@ msgstr ""
 #: includes/functions.php:1276 includes/functions.php:1370
 #: includes/functions.php:1436 includes/functions.php:1442
 #: includes/functions.php:1448 includes/functions.php:1703
-#: includes/functions.php:1707
+#: includes/functions.php:1707 includes/functions.php:1709
 msgid "This discount code is okay."
 msgstr ""
 
@@ -5786,7 +6813,7 @@ msgstr ""
 #: includes/functions.php:1395 includes/functions.php:1397
 #: includes/functions.php:1463 includes/functions.php:1469
 #: includes/functions.php:1475 includes/functions.php:1730
-#: includes/functions.php:1734
+#: includes/functions.php:1734 includes/functions.php:1736
 msgid "and"
 msgstr ""
 
@@ -5802,7 +6829,7 @@ msgstr ""
 #: includes/functions.php:1624 includes/functions.php:1691
 #: includes/functions.php:1697 includes/functions.php:1703
 #: includes/functions.php:2015 includes/functions.php:2019
-#: includes/functions.php:2022
+#: includes/functions.php:2022 includes/functions.php:2024
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
@@ -5818,7 +6845,7 @@ msgstr ""
 #: includes/functions.php:1630 includes/functions.php:1697
 #: includes/functions.php:1703 includes/functions.php:1709
 #: includes/functions.php:2021 includes/functions.php:2025
-#: includes/functions.php:2028
+#: includes/functions.php:2028 includes/functions.php:2030
 msgid "Please specify a level id."
 msgstr ""
 
@@ -5877,60 +6904,64 @@ msgid "Verify Key"
 msgstr ""
 
 #: includes/license.php:298 includes/license.php:273 includes/license.php:278
-#: includes/license.php:288 includes/license.php:291
+#: includes/license.php:288 includes/license.php:291 includes/license.php:298
 msgid "Invalid PMPro License Key."
 msgstr ""
 
 #: includes/license.php:301 includes/license.php:273 includes/license.php:278
-#: includes/license.php:288 includes/license.php:291
+#: includes/license.php:288 includes/license.php:291 includes/license.php:301
 msgid ""
 "If you're running Paid Memberships Pro on a production website, we recommend "
 "an annual support license."
 msgstr ""
 
 #: includes/license.php:302 includes/license.php:274 includes/license.php:279
-#: includes/license.php:289 includes/license.php:292
+#: includes/license.php:289 includes/license.php:292 includes/license.php:302
 msgid "Dismiss"
 msgstr ""
 
 #: includes/license.php:302 includes/license.php:274 includes/license.php:279
-#: includes/license.php:289 includes/license.php:292
+#: includes/license.php:289 includes/license.php:292 includes/license.php:302
 msgid "More Info"
 msgstr ""
 
 #: includes/localization.php:33 includes/localization.php:23
-#: includes/localization.php:26
+#: includes/localization.php:26 includes/localization.php:33
 msgid "Day"
 msgstr ""
 
 #: includes/localization.php:35 includes/localization.php:25
-#: includes/localization.php:28
+#: includes/localization.php:28 includes/localization.php:35
 msgid "Week"
 msgstr ""
 
 #: includes/localization.php:37 includes/localization.php:27
-#: includes/localization.php:30
+#: includes/localization.php:30 includes/localization.php:37
 msgid "Month"
 msgstr ""
 
 #: includes/localization.php:39 includes/localization.php:29
-#: includes/localization.php:32
+#: includes/localization.php:32 includes/localization.php:39
 msgid "Year"
 msgstr ""
 
 #: includes/localization.php:44 includes/localization.php:37
+#: includes/localization.php:44
 msgid "Days"
 msgstr ""
 
 #: includes/localization.php:46 includes/localization.php:39
+#: includes/localization.php:46
 msgid "Weeks"
 msgstr ""
 
 #: includes/localization.php:48 includes/localization.php:41
+#: includes/localization.php:48
 msgid "Months"
 msgstr ""
 
 #: includes/localization.php:50 includes/localization.php:43
+#: includes/localization.php:50
 msgid "Years"
 msgstr ""
 
@@ -6017,18 +7048,18 @@ msgid ""
 "register to read."
 msgstr ""
 
-#: pages/billing.php:25 pages/billing.php:14 pages/billing.php:23
+#: pages/billing.php:26 pages/billing.php:14 pages/billing.php:23
 #: pages/billing.php:25 pages/billing.php:26 pages/billing.php:28
 #, php-format
 msgid "Logged in as <strong>%s</strong>."
 msgstr ""
 
-#: pages/billing.php:25 pages/billing.php:14 pages/billing.php:23
+#: pages/billing.php:26 pages/billing.php:14 pages/billing.php:23
 #: pages/billing.php:25 pages/billing.php:26 pages/billing.php:28
 msgid "logout"
 msgstr ""
 
-#: pages/billing.php:27 pages/cancel.php:61 pages/invoice.php:109
+#: pages/billing.php:44 pages/cancel.php:61 pages/invoice.php:109
 #: pages/levels.php:35 shortcodes/pmpro_account.php:44
 #: shortcodes/pmpro_account.php:128 pages/account.php:12 pages/account.php:18
 #: pages/account.php:92 pages/billing.php:16 pages/billing.php:25
@@ -6041,33 +7072,33 @@ msgstr ""
 msgid "Level"
 msgstr ""
 
-#: pages/billing.php:29 pages/account.php:14 pages/billing.php:18
+#: pages/billing.php:46 pages/account.php:14 pages/billing.php:18
 #: pages/billing.php:27 pages/billing.php:29 pages/billing.php:30
 #: pages/billing.php:32
 msgid "Membership Fee"
 msgstr ""
 
-#: pages/billing.php:33 pages/account.php:18 pages/billing.php:22
+#: pages/billing.php:50 pages/account.php:18 pages/billing.php:22
 #: pages/billing.php:31 pages/billing.php:33 pages/billing.php:34
 #: pages/billing.php:36 pages/levels.php:70
 #, php-format
 msgid "%s every %d %s."
 msgstr ""
 
-#: pages/billing.php:35 pages/account.php:20 pages/billing.php:24
+#: pages/billing.php:52 pages/account.php:20 pages/billing.php:24
 #: pages/billing.php:33 pages/billing.php:35 pages/billing.php:36
 #: pages/billing.php:38 pages/levels.php:66
 #, php-format
 msgid "%s per %s."
 msgstr ""
 
-#: pages/billing.php:44 pages/account.php:25 pages/account.php:29
+#: pages/billing.php:62 pages/account.php:25 pages/account.php:29
 #: pages/billing.php:29 pages/billing.php:33 pages/billing.php:42
 #: pages/billing.php:44 pages/billing.php:45 pages/billing.php:47
 msgid "Duration"
 msgstr ""
 
-#: pages/billing.php:54 pages/billing.php:39 pages/billing.php:43
+#: pages/billing.php:80 pages/billing.php:39 pages/billing.php:43
 #: pages/billing.php:52 pages/billing.php:54 pages/billing.php:55
 #: pages/billing.php:57
 msgid ""
@@ -6075,7 +7106,7 @@ msgid ""
 "paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr ""
 
-#: pages/billing.php:84 pages/checkout.php:333 pages/billing.php:65
+#: pages/billing.php:110 pages/checkout.php:336 pages/billing.php:65
 #: pages/billing.php:69 pages/billing.php:78 pages/billing.php:81
 #: pages/billing.php:83 pages/billing.php:84 pages/billing.php:87
 #: pages/checkout.php:305 pages/checkout.php:307 pages/checkout.php:309
@@ -6084,7 +7115,7 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: pages/billing.php:88 pages/checkout.php:337 pages/billing.php:69
+#: pages/billing.php:114 pages/checkout.php:340 pages/billing.php:69
 #: pages/billing.php:73 pages/billing.php:82 pages/billing.php:85
 #: pages/billing.php:87 pages/billing.php:88 pages/billing.php:91
 #: pages/checkout.php:309 pages/checkout.php:311 pages/checkout.php:313
@@ -6093,7 +7124,7 @@ msgstr ""
 msgid "Last Name"
 msgstr ""
 
-#: pages/billing.php:92 pages/checkout.php:341 pages/billing.php:73
+#: pages/billing.php:118 pages/checkout.php:344 pages/billing.php:73
 #: pages/billing.php:77 pages/billing.php:86 pages/billing.php:89
 #: pages/billing.php:91 pages/billing.php:92 pages/billing.php:95
 #: pages/checkout.php:313 pages/checkout.php:315 pages/checkout.php:317
@@ -6102,7 +7133,7 @@ msgstr ""
 msgid "Address 1"
 msgstr ""
 
-#: pages/billing.php:96 pages/checkout.php:345 pages/billing.php:77
+#: pages/billing.php:122 pages/checkout.php:348 pages/billing.php:77
 #: pages/billing.php:81 pages/billing.php:90 pages/billing.php:93
 #: pages/billing.php:95 pages/billing.php:96 pages/billing.php:99
 #: pages/checkout.php:317 pages/checkout.php:319 pages/checkout.php:321
@@ -6111,7 +7142,7 @@ msgstr ""
 msgid "Address 2"
 msgstr ""
 
-#: pages/billing.php:106 pages/checkout.php:355 pages/billing.php:87
+#: pages/billing.php:132 pages/checkout.php:358 pages/billing.php:87
 #: pages/billing.php:91 pages/billing.php:100 pages/billing.php:103
 #: pages/billing.php:105 pages/billing.php:106 pages/billing.php:109
 #: pages/checkout.php:327 pages/checkout.php:329 pages/checkout.php:331
@@ -6120,7 +7151,7 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#: pages/billing.php:110 pages/checkout.php:359 pages/billing.php:91
+#: pages/billing.php:136 pages/checkout.php:362 pages/billing.php:91
 #: pages/billing.php:95 pages/billing.php:104 pages/billing.php:107
 #: pages/billing.php:109 pages/billing.php:110 pages/billing.php:113
 #: pages/checkout.php:331 pages/checkout.php:333 pages/checkout.php:335
@@ -6129,7 +7160,7 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: pages/billing.php:114 pages/checkout.php:363 pages/billing.php:95
+#: pages/billing.php:140 pages/checkout.php:366 pages/billing.php:95
 #: pages/billing.php:99 pages/billing.php:108 pages/billing.php:111
 #: pages/billing.php:113 pages/billing.php:114 pages/billing.php:117
 #: pages/checkout.php:335 pages/checkout.php:337 pages/checkout.php:339
@@ -6138,7 +7169,7 @@ msgstr ""
 msgid "Postal Code"
 msgstr ""
 
-#: pages/billing.php:123 pages/checkout.php:372 pages/billing.php:104
+#: pages/billing.php:149 pages/checkout.php:375 pages/billing.php:104
 #: pages/billing.php:108 pages/billing.php:117 pages/billing.php:120
 #: pages/billing.php:122 pages/billing.php:123 pages/billing.php:126
 #: pages/checkout.php:344 pages/checkout.php:346 pages/checkout.php:348
@@ -6147,7 +7178,7 @@ msgstr ""
 msgid "City, State Zip"
 msgstr ""
 
-#: pages/billing.php:176 pages/checkout.php:425 pages/billing.php:157
+#: pages/billing.php:202 pages/checkout.php:428 pages/billing.php:157
 #: pages/billing.php:161 pages/billing.php:170 pages/billing.php:173
 #: pages/billing.php:175 pages/billing.php:176 pages/billing.php:179
 #: pages/checkout.php:397 pages/checkout.php:399 pages/checkout.php:401
@@ -6156,7 +7187,7 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: pages/billing.php:201 pages/checkout.php:450 pages/billing.php:182
+#: pages/billing.php:227 pages/checkout.php:453 pages/billing.php:182
 #: pages/billing.php:186 pages/billing.php:195 pages/billing.php:198
 #: pages/billing.php:200 pages/billing.php:201 pages/billing.php:204
 #: pages/checkout.php:422 pages/checkout.php:424 pages/checkout.php:426
@@ -6165,7 +7196,7 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
-#: pages/billing.php:212 pages/checkout.php:227 pages/checkout.php:464
+#: pages/billing.php:238 pages/checkout.php:230 pages/checkout.php:467
 #: pages/billing.php:193 pages/billing.php:197 pages/billing.php:206
 #: pages/billing.php:209 pages/billing.php:211 pages/billing.php:212
 #: pages/billing.php:215 pages/checkout.php:204 pages/checkout.php:207
@@ -6177,7 +7208,7 @@ msgstr ""
 msgid "E-mail Address"
 msgstr ""
 
-#: pages/billing.php:216 pages/checkout.php:473 pages/billing.php:197
+#: pages/billing.php:242 pages/checkout.php:476 pages/billing.php:197
 #: pages/billing.php:201 pages/billing.php:210 pages/billing.php:213
 #: pages/billing.php:215 pages/billing.php:216 pages/billing.php:219
 #: pages/checkout.php:445 pages/checkout.php:447 pages/checkout.php:449
@@ -6186,20 +7217,20 @@ msgstr ""
 msgid "Confirm E-mail"
 msgstr ""
 
-#: pages/billing.php:244 pages/billing.php:217 pages/billing.php:221
+#: pages/billing.php:270 pages/billing.php:217 pages/billing.php:221
 #: pages/billing.php:230 pages/billing.php:231 pages/billing.php:234
 #: pages/billing.php:238 pages/billing.php:244 pages/billing.php:247
 msgid "Credit Card Information"
 msgstr ""
 
-#: pages/billing.php:245 pages/billing.php:217 pages/billing.php:221
+#: pages/billing.php:271 pages/billing.php:217 pages/billing.php:221
 #: pages/billing.php:230 pages/billing.php:232 pages/billing.php:235
 #: pages/billing.php:239 pages/billing.php:245 pages/billing.php:248
 #, php-format
 msgid "We accept %s"
 msgstr ""
 
-#: pages/billing.php:387 pages/billing.php:309 pages/billing.php:313
+#: pages/billing.php:413 pages/billing.php:309 pages/billing.php:313
 #: pages/billing.php:344 pages/billing.php:353 pages/billing.php:356
 #: pages/billing.php:360 pages/billing.php:364 pages/billing.php:387
 #: pages/billing.php:408 pages/billing.php:417 pages/billing.php:422
@@ -6243,25 +7274,25 @@ msgstr ""
 msgid "Click here to go to the home page."
 msgstr ""
 
-#: pages/checkout.php:35 pages/checkout.php:26 pages/checkout.php:27
+#: pages/checkout.php:38 pages/checkout.php:26 pages/checkout.php:27
 #: pages/checkout.php:28 pages/checkout.php:35
 msgid ""
 "Almost done. Review the membership information and pricing below then "
 "<strong>click the \"Complete Payment\" button</strong> to finish your order."
 msgstr ""
 
-#: pages/checkout.php:43 pages/checkout.php:33 pages/checkout.php:34
+#: pages/checkout.php:46 pages/checkout.php:33 pages/checkout.php:34
 #: pages/checkout.php:35 pages/checkout.php:42 pages/checkout.php:43
 msgid "change"
 msgstr ""
 
-#: pages/checkout.php:51 pages/checkout.php:41 pages/checkout.php:42
+#: pages/checkout.php:54 pages/checkout.php:41 pages/checkout.php:42
 #: pages/checkout.php:43 pages/checkout.php:50 pages/checkout.php:51
 #, php-format
 msgid "You have selected the <strong>%s</strong> membership level."
 msgstr ""
 
-#: pages/checkout.php:68 pages/checkout.php:51 pages/checkout.php:53
+#: pages/checkout.php:71 pages/checkout.php:51 pages/checkout.php:53
 #: pages/checkout.php:60 pages/checkout.php:61 pages/checkout.php:68
 #, php-format
 msgid ""
@@ -6269,7 +7300,7 @@ msgid ""
 "been applied to your order.</p>"
 msgstr ""
 
-#: pages/checkout.php:79 services/applydiscountcode.php:92
+#: pages/checkout.php:82 services/applydiscountcode.php:92
 #: pages/checkout.php:62 pages/checkout.php:63 pages/checkout.php:64
 #: pages/checkout.php:71 pages/checkout.php:72 pages/checkout.php:79
 #: services/applydiscountcode.php:74 services/applydiscountcode.php:75
@@ -6278,61 +7309,61 @@ msgstr ""
 msgid "Click here to change your discount code"
 msgstr ""
 
-#: pages/checkout.php:81 pages/checkout.php:64 pages/checkout.php:65
+#: pages/checkout.php:84 pages/checkout.php:64 pages/checkout.php:65
 #: pages/checkout.php:66 pages/checkout.php:73 pages/checkout.php:74
 #: pages/checkout.php:81
 msgid "Click here to enter your discount code"
 msgstr ""
 
-#: pages/checkout.php:81 pages/checkout.php:64 pages/checkout.php:65
+#: pages/checkout.php:84 pages/checkout.php:64 pages/checkout.php:65
 #: pages/checkout.php:66 pages/checkout.php:73 pages/checkout.php:74
 #: pages/checkout.php:81
 msgid "Do you have a discount code?"
 msgstr ""
 
-#: pages/checkout.php:182 pages/checkout.php:160 pages/checkout.php:163
+#: pages/checkout.php:185 pages/checkout.php:160 pages/checkout.php:163
 #: pages/checkout.php:165 pages/checkout.php:172 pages/checkout.php:173
 #: pages/checkout.php:175 pages/checkout.php:182
 msgid "Account Information"
 msgstr ""
 
-#: pages/checkout.php:183 pages/checkout.php:160 pages/checkout.php:163
+#: pages/checkout.php:186 pages/checkout.php:160 pages/checkout.php:163
 #: pages/checkout.php:165 pages/checkout.php:172 pages/checkout.php:174
 #: pages/checkout.php:176 pages/checkout.php:183
 msgid "Already have an account?"
 msgstr ""
 
-#: pages/checkout.php:183 pages/checkout.php:160 pages/checkout.php:163
+#: pages/checkout.php:186 pages/checkout.php:160 pages/checkout.php:163
 #: pages/checkout.php:165 pages/checkout.php:172 pages/checkout.php:174
 #: pages/checkout.php:176 pages/checkout.php:183
 msgid "Log in here"
 msgstr ""
 
-#: pages/checkout.php:209 pages/checkout.php:186 pages/checkout.php:189
+#: pages/checkout.php:212 pages/checkout.php:186 pages/checkout.php:189
 #: pages/checkout.php:191 pages/checkout.php:198 pages/checkout.php:200
 #: pages/checkout.php:202 pages/checkout.php:209
 msgid "Confirm Password"
 msgstr ""
 
-#: pages/checkout.php:236 pages/checkout.php:213 pages/checkout.php:216
+#: pages/checkout.php:239 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218 pages/checkout.php:225 pages/checkout.php:227
 #: pages/checkout.php:229 pages/checkout.php:236
 msgid "Confirm E-mail Address"
 msgstr ""
 
-#: pages/checkout.php:255 pages/checkout.php:232 pages/checkout.php:235
+#: pages/checkout.php:258 pages/checkout.php:232 pages/checkout.php:235
 #: pages/checkout.php:237 pages/checkout.php:244 pages/checkout.php:246
 #: pages/checkout.php:248 pages/checkout.php:255
 msgid "Full Name"
 msgstr ""
 
-#: pages/checkout.php:256 pages/checkout.php:233 pages/checkout.php:236
+#: pages/checkout.php:259 pages/checkout.php:233 pages/checkout.php:236
 #: pages/checkout.php:238 pages/checkout.php:245 pages/checkout.php:247
 #: pages/checkout.php:249 pages/checkout.php:256
 msgid "LEAVE THIS BLANK"
 msgstr ""
 
-#: pages/checkout.php:280 pages/checkout.php:257 pages/checkout.php:260
+#: pages/checkout.php:283 pages/checkout.php:257 pages/checkout.php:260
 #: pages/checkout.php:262 pages/checkout.php:269 pages/checkout.php:271
 #: pages/checkout.php:273 pages/checkout.php:280
 #, php-format
@@ -6341,19 +7372,19 @@ msgid ""
 "different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr ""
 
-#: pages/checkout.php:296 pages/checkout.php:276 pages/checkout.php:278
+#: pages/checkout.php:299 pages/checkout.php:276 pages/checkout.php:278
 #: pages/checkout.php:285 pages/checkout.php:287 pages/checkout.php:289
 #: pages/checkout.php:292 pages/checkout.php:296 pages/checkout.php:299
 msgid "Choose your Payment Method"
 msgstr ""
 
-#: pages/checkout.php:305 pages/checkout.php:284 pages/checkout.php:286
+#: pages/checkout.php:308 pages/checkout.php:284 pages/checkout.php:286
 #: pages/checkout.php:293 pages/checkout.php:296 pages/checkout.php:298
 #: pages/checkout.php:300 pages/checkout.php:305 pages/checkout.php:307
 msgid "Check Out with a Credit Card Here"
 msgstr ""
 
-#: pages/checkout.php:693 pages/checkout.php:277 pages/checkout.php:284
+#: pages/checkout.php:696 pages/checkout.php:277 pages/checkout.php:284
 #: pages/checkout.php:657 pages/checkout.php:672 pages/checkout.php:673
 #: pages/checkout.php:681 pages/checkout.php:686 pages/checkout.php:690
 #: pages/checkout.php:692 pages/checkout.php:693 pages/checkout.php:696
@@ -6362,7 +7393,7 @@ msgstr ""
 msgid "I agree to the %s"
 msgstr ""
 
-#: pages/checkout.php:713 pages/checkout.php:667 pages/checkout.php:674
+#: pages/checkout.php:716 pages/checkout.php:667 pages/checkout.php:674
 #: pages/checkout.php:677 pages/checkout.php:692 pages/checkout.php:693
 #: pages/checkout.php:701 pages/checkout.php:706 pages/checkout.php:710
 #: pages/checkout.php:712 pages/checkout.php:713 pages/checkout.php:716
@@ -6370,7 +7401,7 @@ msgstr ""
 msgid "Complete Payment"
 msgstr ""
 
-#: pages/checkout.php:735 pages/checkout.php:687 pages/checkout.php:694
+#: pages/checkout.php:738 pages/checkout.php:687 pages/checkout.php:694
 #: pages/checkout.php:697 pages/checkout.php:713 pages/checkout.php:714
 #: pages/checkout.php:723 pages/checkout.php:728 pages/checkout.php:732
 #: pages/checkout.php:734 pages/checkout.php:735 pages/checkout.php:738
@@ -6515,7 +7546,7 @@ msgstr ""
 msgid "&larr; Return to Home"
 msgstr ""
 
-#: paid-memberships-pro.php:135 adminpages/orders.php:398
+#: paid-memberships-pro.php:127 adminpages/orders.php:398
 #: adminpages/orders.php:448 paid-memberships-pro.php:115
 #: paid-memberships-pro.php:116 paid-memberships-pro.php:123
 #: paid-memberships-pro.php:124 paid-memberships-pro.php:125
@@ -6524,7 +7555,7 @@ msgstr ""
 msgid "Testing Only"
 msgstr ""
 
-#: paid-memberships-pro.php:140 paid-memberships-pro.php:120
+#: paid-memberships-pro.php:132 paid-memberships-pro.php:120
 #: paid-memberships-pro.php:121 paid-memberships-pro.php:128
 #: paid-memberships-pro.php:129 paid-memberships-pro.php:130
 #: paid-memberships-pro.php:131 paid-memberships-pro.php:133
@@ -6532,7 +7563,7 @@ msgstr ""
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr ""
 
-#: paid-memberships-pro.php:145 paid-memberships-pro.php:125
+#: paid-memberships-pro.php:137 paid-memberships-pro.php:125
 #: paid-memberships-pro.php:126 paid-memberships-pro.php:133
 #: paid-memberships-pro.php:134 paid-memberships-pro.php:135
 #: paid-memberships-pro.php:136 paid-memberships-pro.php:138
@@ -6540,7 +7571,7 @@ msgstr ""
 msgid "Cybersource"
 msgstr ""
 
-#: paid-memberships-pro.php:166 paid-memberships-pro.php:156
+#: paid-memberships-pro.php:158 paid-memberships-pro.php:156
 #: paid-memberships-pro.php:157 paid-memberships-pro.php:159
 #: paid-memberships-pro.php:166
 msgid "Once a month"
@@ -6623,7 +7654,7 @@ msgid "Error updating billing information."
 msgstr ""
 
 #: preheaders/cancel.php:60 preheaders/cancel.php:24 preheaders/cancel.php:25
-#: preheaders/cancel.php:28 preheaders/cancel.php:59
+#: preheaders/cancel.php:28 preheaders/cancel.php:59 preheaders/cancel.php:60
 msgid "Your membership has been cancelled."
 msgstr ""
 
