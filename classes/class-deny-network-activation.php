@@ -55,11 +55,10 @@ class PMPro_Deny_Network_Activation {
 
 		$plugin = isset($_REQUEST['plugin']) ? $_REQUEST['plugin'] : '';
 
-		deactivate_plugins( $plugin_slug, true, true );
+		deactivate_plugins( $plugin, true, true );
 		wp_redirect( network_admin_url( 'plugins.php?pmpro_deny_network_activation=' . $plugin ) );
 		exit;
 	}
 }
 
-$deny_network = new PMPro_Deny_Network_Activation();
-$deny_network->init();
+add_action( 'plugins_loaded', new PMPro_Deny_Network_Activation(), 'init' );
