@@ -22,7 +22,8 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 * Make the changes to your forked repository
   * Make sure to pull in any "upstream" changes first.
   	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo
-	* Use `git checkout dev` then `git merge upstream/dev` to pull in the latest updates on dev.
+	* Use `git checkout upstream/dev` then `git pull` to pull in the latest updates on dev.
+	* Use `git checkout dev` then `git merge upstream/dev` to merge those updates into your dev.
   * Ensure you stick to the [WordPress Coding Standards](https://codex.wordpress.org/WordPress_Coding_Standards) (even though much of the PMPro code does not currently)
 * When committing, reference your issue (if present) and include a note about the fix
 * Push the changes to your fork 
