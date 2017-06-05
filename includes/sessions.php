@@ -24,7 +24,7 @@ function pmpro_start_session() {
 	}
 }
 
-add_action( 'pmpro_checkout_before_processing', 'pmpro_start_session', - 1 );
+add_action( 'pmpro_checkout_preheader', 'pmpro_start_session', -1 );
 
 /**
  * Close the session object for new updates
