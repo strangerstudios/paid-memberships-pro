@@ -82,7 +82,7 @@
 		function loadBraintreeLibrary()
 		{
 			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
-			if(!class_exists("\\Braintree"))
+			if(!class_exists("\Braintree"))
 				require_once( PMPRO_DIR . "/includes/lib/Braintree/lib/Braintree.php");
 		}		
 		
