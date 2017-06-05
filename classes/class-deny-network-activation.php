@@ -6,7 +6,7 @@ class PMPro_Deny_Network_Activation {
 
 	public function init() {
 		register_activation_hook( PMPRO_BASE_FILE, array( $this, 'pmpro_check_network_activation' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'wp_admin_style' ) );
+		add_action( 'wp_print_footer_scripts', array( $this, 'wp_admin_style' ) );
 		add_action( 'network_admin_notices', array( $this, 'display_message_after_network_activation_attempt' ) );
 
 		// On the blog list page, show the plugins and theme active on each blog
@@ -16,7 +16,7 @@ class PMPro_Deny_Network_Activation {
 
 	public function wp_admin_style() {
 		global $current_screen;
-		if ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) {
+		if ( is_admin() && ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) ) {
 	?>
 		<style type="text/css">
 			.notice.notice-info {
@@ -49,17 +49,22 @@ class PMPro_Deny_Network_Activation {
 	}
 
 	public function pmpro_check_network_activation( $network_wide ) {
-		if ( is_multisite() && ! $network_wide ) {
+		if ( !is_multisite() || !$network_wide ) {
 			return;
 		}
 
 		$plugin = isset($_REQUEST['plugin']) ? $_REQUEST['plugin'] : '';
 
-		deactivate_plugins( $plugin_slug, true, true );
-		wp_redirect( network_admin_url( 'plugins.php?pmpro_deny_network_activation=' . $plugin ) );
-		exit;
+		deactivate_plugins( $plugin, true, true );
+		if ( ! isset( $_REQUEST['pmpro_deny_network_activation']) ) {
+			wp_redirect( add_query_arg( 'pmpro_deny_network_activation', $plugin, network_admin_url( 'plugins.php' ) ) );
+			exit;
+		}
 	}
 }
 
-$deny_network = new PMPro_Deny_Network_Activation();
-$deny_network->init();
+// Init the check if the plugin is active.
+if ( class_exists( '\PMPro_Deny_Network_Activation' ) ) {
+	$pmp_wpmu_deny = new PMPro_Deny_Network_Activation();
+	$pmp_wpmu_deny->init();
+}
