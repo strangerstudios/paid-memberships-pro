@@ -49,7 +49,7 @@ class PMPro_Deny_Network_Activation {
 	}
 
 	public function pmpro_check_network_activation( $network_wide ) {
-		if ( is_multisite() && ! $network_wide ) {
+		if ( !is_multisite() || !$network_wide ) {
 			return;
 		}
 
