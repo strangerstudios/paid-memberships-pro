@@ -115,6 +115,10 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.2.2 =
+* BUG FIX: Fixed warnings on the Network Dashboard's sites page.
+
 = 1.9.2.1 =
 * BUG FIX: Fixed issues with activation on single sites.
 * BUG FIX: Starting PHP sessions earlier to fix issues with PayPal/PayPal Express checkouts.
