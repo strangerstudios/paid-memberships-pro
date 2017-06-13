@@ -7,11 +7,7 @@ class PMPro_Deny_Network_Activation {
 	public function init() {
 		register_activation_hook( PMPRO_BASE_FILE, array( $this, 'pmpro_check_network_activation' ) );
 		add_action( 'wp_print_footer_scripts', array( $this, 'wp_admin_style' ) );
-		add_action( 'network_admin_notices', array( $this, 'display_message_after_network_activation_attempt' ) );
-
-		// On the blog list page, show the plugins and theme active on each blog
-		add_filter( 'manage_sites-network_columns', array( $this, 'add_sites_column' ), 10, 1 );
-		add_action( 'manage_sites_custom_column', array( $this, 'manage_sites_custom_column' ), 10, 3 );
+		add_action( 'network_admin_notices', array( $this, 'display_message_after_network_activation_attempt' ) );	
 	}
 
 	public function wp_admin_style() {
