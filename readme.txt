@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 4
 Tested up to: 4.8
-Stable tag: 1.9.2.1
+Stable tag: 1.9.2.2
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,6 +115,11 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.2.2 =
+* BUG FIX: Fixed warnings on the Network Dashboard's sites page.
+* BUG FIX: Skipping update scripts that require the Stripe library if the system doesn't support the minimum requirements for the Stripe API. This avoids warnings and errors during upgrade.
+
 = 1.9.2.1 =
 * BUG FIX: Fixed issues with activation on single sites.
 * BUG FIX: Starting PHP sessions earlier to fix issues with PayPal/PayPal Express checkouts.

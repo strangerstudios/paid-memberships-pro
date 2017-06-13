@@ -17,13 +17,17 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 ## Making Changes
 
 * Fork the repository on GitHub
-* For bug fixes, checkout the latest versioned branch of the PMPro repository (e.g. 1.8.9.3).
+* For bug fixes, checkout the latest versioned branch of the PMPro repository (e.g. 1.9).
 * For new features and enhancements, checkout the DEV branch of the PMPro respository.
 * Make the changes to your forked repository
+  * Make sure to pull in any "upstream" changes first.
+  	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo
+	* Use `git checkout upstream/dev` then `git pull` to pull in the latest updates on dev.
+	* Use `git checkout dev` then `git merge upstream/dev` to merge those updates into your dev.
   * Ensure you stick to the [WordPress Coding Standards](https://codex.wordpress.org/WordPress_Coding_Standards) (even though much of the PMPro code does not currently)
 * When committing, reference your issue (if present) and include a note about the fix
 * Push the changes to your fork 
-* For bug fixes, submit a pull request to the latest versioned branch of the PMPro repository (e.g. 1.8.9.3).
+* For bug fixes, submit a pull request to the latest versioned branch of the PMPro repository (e.g. 1.9).
 * For new features and enhancements, submit a pull request to the DEV branch of the PMPro repository. 
 * We will process all pull requests and make suggestions or changes as soon as possible. Feel free to ping us politely via email or social networks to take a look at your pulls.
 
