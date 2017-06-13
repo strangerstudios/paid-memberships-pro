@@ -159,14 +159,14 @@ function pmpro_checkForUpgrades()
 	/*
 		v1.8.9.1
 		* Fixing Stripe orders where user_id/membership_id = 0		
-	*/		
-	if($pmpro_db_version < 1.891) {		
-		if (PMProGateway_stripe::dependencies()) {
-			require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
+	*/	
+	if (PMProGateway_stripe::dependencies()) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
+		if($pmpro_db_version < 1.891) {			
 			$pmpro_db_version = pmpro_upgrade_1_8_9_1();
-		} else {
-			$pmpro_db_version = 1.891;    //skipping this update because Stripe is not supported
 		}
+	} elseif($pmpro_db_version < 1.891) {
+		$pmpro_db_version = 1.891;		  //skipping this update because Stripe is not supported
 	}
 
 	/*
