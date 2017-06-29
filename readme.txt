@@ -116,6 +116,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.3 =
+* BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
+
 = 1.9.2.2 =
 * BUG FIX: Fixed warnings on the Network Dashboard's sites page.
 * BUG FIX: Skipping update scripts that require the Stripe library if the system doesn't support the minimum requirements for the Stripe API. This avoids warnings and errors during upgrade.
