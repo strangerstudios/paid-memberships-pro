@@ -276,10 +276,10 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	$affiliates = apply_filters( "pmpro_orders_show_affiliate_ids", false );
 	if ( ! empty( $affiliates ) ) {
 		if ( ! in_array( "affiliate_id", $read_only_fields ) ) {
-			$order->affiliate_id = $_POST['affiliate_id'];
+			$order->affiliate_id = sanitize_text_field( $_POST['affiliate_id'] );
 		}
 		if ( ! in_array( "affiliate_subid", $read_only_fields ) ) {
-			$order->affiliate_subid = $_POST['affiliate_subid'];
+			$order->affiliate_subid = sanitize_text_field( $_POST['affiliate_subid'] );
 		}
 	}
 
