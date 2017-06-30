@@ -176,6 +176,11 @@ $read_only_fields = apply_filters( "pmpro_orders_read_only_fields", array(
 	"subscription_transaction_id"
 ) );
 
+//if this is a new order or copy of one, let's make all fields editable
+if( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] < 0 ) {
+	$read_only_fields = array();
+}
+
 //saving?
 if ( ! empty( $_REQUEST['save'] ) ) {
 	//start with old order if applicable
