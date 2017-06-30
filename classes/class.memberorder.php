@@ -478,8 +478,8 @@
 			else {
 				$total = (float)$amount + (float)$tax;
 				$this->total = $total;
-			}
-
+			}			
+			
 			//these fix some warnings/notices
 			if(empty($this->billing))
 			{
@@ -508,6 +508,10 @@
 				$this->accountnumber = "";
 			if(empty($this->cardtype))
 				$this->cardtype = "";
+			if(empty($this->expirationmonth))
+				$this->expirationmonth = "";
+			if(empty($this->expirationyear))
+				$this->expirationyear = "";
 			if(empty($this->ExpirationDate))
 				$this->ExpirationDate = "";
 			if (empty($this->status))
@@ -583,6 +587,13 @@
 				//set up actions
 				$before_action = "pmpro_add_order";
 				$after_action = "pmpro_added_order";
+				
+				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate
+				if( (empty($this->expirationmonth) || empty($this->expirationyear)) && !empty($this->ExpirationDate)) {
+					$this->expirationmonth = substr($this->ExpirationDate, 0, 2);
+					$this->expirationyear = substr($this->ExpirationDate, 2, 4);
+				}
+				
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
@@ -607,8 +618,8 @@
 									   '" . $this->payment_type . "',
 									   '" . $this->cardtype . "',
 									   '" . hideCardNumber($this->accountnumber, false) . "',
-									   '" . substr($this->ExpirationDate, 0, 2) . "',
-									   '" . substr($this->ExpirationDate, 2, 4) . "',
+									   '" . $this->expirationmonth . "',
+									   '" . $this->expirationyear . "',
 									   '" . esc_sql($this->status) . "',
 									   '" . $this->gateway . "',
 									   '" . $this->gateway_environment . "',

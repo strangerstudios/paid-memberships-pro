@@ -250,9 +250,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( "expirationyear", $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
 		$order->expirationyear = sanitize_text_field( $_POST['expirationyear'] );
 	}
-	if ( ! in_array( "ExpirationDate", $read_only_fields ) && isset( $_POST['ExpirationDate'] ) ) {
-		$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
-	}
+	
 	if ( ! in_array( "status", $read_only_fields ) && isset( $_POST['status'] ) ) {
 		$order->status = stripslashes( $_POST['status'] );
 	}
