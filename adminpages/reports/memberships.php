@@ -60,8 +60,10 @@ function pmpro_report_memberships_widget() {
 			<?php
 				//level stats
 				$count = 0;
+				$max_level_count = apply_filters( 'pmpro_admin_reports_included_levels', 3 );
+			
 				foreach($levels as $level) { 
-					if($count++ > 2) break;
+					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo $level->name;?></th>
