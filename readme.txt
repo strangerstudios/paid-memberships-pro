@@ -118,6 +118,7 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.9.3 =
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
+* BUG FIX: Fixed issue where subscription and payment transaction IDs were not being saved correctly when copying an order in the dashboard. (Thanks, Pippin Williamson)
 
 = 1.9.2.2 =
 * BUG FIX: Fixed warnings on the Network Dashboard's sites page.
