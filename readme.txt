@@ -117,8 +117,11 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.3 =
+* SECURITY: Fixed sanitization of input in several places to protect against XSS attacks.
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
 * BUG FIX: Fixed issue where subscription and payment transaction IDs were not being saved correctly when copying an order in the dashboard. (Thanks, Pippin Williamson)
+* ENHANCEMENT: Added a pmpro_sanitize_with_safelist() function that is used to sanitize inputs that have a limited number of exact options.
+* ENHANCEMENT: Updated the pmpro_setOption() and pmpro_getParam() functions to take a new last parameter $sanitize_function, which defaults to 'sanitize_text_field'.
 
 = 1.9.2.2 =
 * BUG FIX: Fixed warnings on the Network Dashboard's sites page.

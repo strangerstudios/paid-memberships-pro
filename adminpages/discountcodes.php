@@ -127,6 +127,8 @@
 			{
 				foreach($levels_a as $level_id)
 				{
+					$level_id = intval($level_id);	//sanitized
+					
 					//get the values ready
 					$n = array_search($level_id, $all_levels_a); 	//this is the key location of this level's values
 					$initial_payment = sanitize_text_field($initial_payment_a[$n]);

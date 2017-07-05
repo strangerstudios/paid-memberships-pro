@@ -44,11 +44,11 @@
 
 		//get the id
 		if(!empty($post_event))
-			$event_id = $post_event->id;
+			$event_id = sanitize_text_field($post_event->id);
 	}
 	else
 	{
-		$event_id = $_REQUEST['event_id'];
+		$event_id = sanitize_text_field($_REQUEST['event_id']);
 	}
 
 	//get the event through the API now

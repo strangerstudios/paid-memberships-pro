@@ -65,14 +65,18 @@ function pmpro_report_login_page()
 	
 	//vars
 	if(!empty($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 		
-	if(!empty($_REQUEST['l']))
-		$l = intval($_REQUEST['l']);
-	else
+	if(!empty($_REQUEST['l'])) {
+		if($_REQUEST['l'] == 'all')
+			$l = 'all';
+		else
+			$l = intval($_REQUEST['l']);
+	} else {
 		$l = "";
+	}
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h1>
@@ -124,7 +128,7 @@ function pmpro_report_login_page()
 			if($l == "all")
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
 			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";					
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";					
 				
 			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
@@ -136,7 +140,7 @@ function pmpro_report_login_page()
 			if($l == "all")
 				$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
 			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
 			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
 

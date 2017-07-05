@@ -38,30 +38,30 @@
 		$deleteid = intval($_REQUEST['deleteid']);
 
 	if($action == "save_membershiplevel") {
-		$ml_name = stripslashes($_REQUEST['name']);
-		$ml_description = stripslashes($_REQUEST['description']);
-		$ml_confirmation = stripslashes($_REQUEST['confirmation']);
-		$ml_initial_payment = stripslashes($_REQUEST['initial_payment']);
+		$ml_name = wp_unslash($_REQUEST['name']);
+		$ml_description = wp_unslash($_REQUEST['description']);
+		$ml_confirmation = wp_unslash($_REQUEST['confirmation']);
+		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
 		else
 			$ml_recurring = 0;
-		$ml_billing_amount = stripslashes($_REQUEST['billing_amount']);
-		$ml_cycle_number = stripslashes($_REQUEST['cycle_number']);
-		$ml_cycle_period = stripslashes($_REQUEST['cycle_period']);
-		$ml_billing_limit = stripslashes($_REQUEST['billing_limit']);
+		$ml_billing_amount = sanitize_text_field($_REQUEST['billing_amount']);
+		$ml_cycle_number = intval($_REQUEST['cycle_number']);
+		$ml_cycle_period = sanitize_text_field($_REQUEST['cycle_period']);
+		$ml_billing_limit = intval($_REQUEST['billing_limit']);
 		if(!empty($_REQUEST['custom_trial']))
 			$ml_custom_trial = 1;
 		else
 			$ml_custom_trial = 0;
-		$ml_trial_amount = stripslashes($_REQUEST['trial_amount']);
-		$ml_trial_limit = stripslashes($_REQUEST['trial_limit']);
+		$ml_trial_amount = sanitize_text_field($_REQUEST['trial_amount']);
+		$ml_trial_limit = intval($_REQUEST['trial_limit']);
 		if(!empty($_REQUEST['expiration']))
 			$ml_expiration = 1;
 		else
 			$ml_expiration = 0;
-		$ml_expiration_number = stripslashes($_REQUEST['expiration_number']);
-		$ml_expiration_period = stripslashes($_REQUEST['expiration_period']);
+		$ml_expiration_number = intval($_REQUEST['expiration_number']);
+		$ml_expiration_period = sanitize_text_field($_REQUEST['expiration_period']);
 		$ml_categories = array();
 
 		//reversing disable to allow here

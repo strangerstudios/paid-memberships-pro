@@ -25,13 +25,13 @@ $post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'p
 
 if (!empty($_REQUEST['savesettings'])) {
     //page ids
-    pmpro_setOption("account_page_id");
-    pmpro_setOption("billing_page_id");
-    pmpro_setOption("cancel_page_id");
-    pmpro_setOption("checkout_page_id");
-    pmpro_setOption("confirmation_page_id");
-    pmpro_setOption("invoice_page_id");
-    pmpro_setOption("levels_page_id");
+    pmpro_setOption("account_page_id", NULL, 'intval');
+    pmpro_setOption("billing_page_id", NULL, 'intval');
+    pmpro_setOption("cancel_page_id", NULL, 'intval');
+    pmpro_setOption("checkout_page_id", NULL, 'intval');
+    pmpro_setOption("confirmation_page_id", NULL, 'intval');
+    pmpro_setOption("invoice_page_id", NULL, 'intval');
+    pmpro_setOption("levels_page_id", NULL, 'intval');
 
     //update the pages array
     $pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -45,7 +45,7 @@ if (!empty($_REQUEST['savesettings'])) {
     //save additional pages
     if (!empty($extra_pages)) {
         foreach ($extra_pages as $name => $label) {
-            pmpro_setOption($name . '_page_id');
+            pmpro_setOption($name . '_page_id', NULL, 'intval');
             $pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
         }
     }
@@ -72,7 +72,7 @@ if (!empty($_REQUEST['createpages'])) {
 
     } else {
         //generate extra pages one at a time
-        $pmpro_page_name = $_REQUEST['page_name'];
+        $pmpro_page_name = sanitize_text_field($_REQUEST['page_name']);
         $pmpro_page_id = $pmpro_pages[$pmpro_page_name];
         $pages[$pmpro_page_name] = $extra_pages[$pmpro_page_name];
     }
