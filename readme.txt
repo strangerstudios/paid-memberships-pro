@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 4
 Tested up to: 4.8
-Stable tag: 1.9.2.2
+Stable tag: 1.9.3
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -117,9 +117,11 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.3 =
-* SECURITY: Fixed sanitization of input in several places to protect against XSS attacks.
+* SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
 * BUG FIX: Fixed issue where subscription and payment transaction IDs were not being saved correctly when copying an order in the dashboard. (Thanks, Pippin Williamson)
+* BUG FIX: Fixed fatal errors that occurred in certain PHP versions.
+* BUG FIX: Fixed issue where ProfileStartDate was being calculated incorrectly in the test, check, and Cybersource gateways.(Thanks, David Parker)
 * ENHANCEMENT: Added a pmpro_sanitize_with_safelist() function that is used to sanitize inputs that have a limited number of exact options.
 * ENHANCEMENT: Updated the pmpro_setOption() and pmpro_getParam() functions to take a new last parameter $sanitize_function, which defaults to 'sanitize_text_field'.
 
