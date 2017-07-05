@@ -273,11 +273,11 @@ function pmpro_report_login_wp_visits()
 			$visits = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 			
 		//track logins for user
-		$visits['last'] = date_i18n(get_option("date_format"));
-		$visits['alltime']++;
+		$visits['last'] = date_i18n(get_option("date_format"), $now);
+		$visits['alltime'] = $visits['alltime'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 		$thismonth = date_i18n("n", $now);
 		if($thismonth == $visits['thismonth'])
-			$visits['month']++;
+			$visits['month'] = $visits['month'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 		else
 		{
 			$visits['month'] = 1;
@@ -293,17 +293,17 @@ function pmpro_report_login_wp_visits()
 	if(empty($visits))
 		$visits = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
-	$visits['alltime']++;
+	$visits['alltime'] = $visits['alltime'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $visits['thisdate'])
-		$visits['today']++;
+		$visits['today'] = $visits['today'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 	else
 	{
 		$visits['today'] = 1;
 		$visits['thisdate'] = $thisdate;
 	}
 	if($thismonth == $visits['thismonth'])
-		$visits['month']++;
+		$visits['month'] = $visits['month'] + 1;// BUG FIX: Caused fatal error in certain PHP versions
 	else
 	{
 		$visits['month'] = 1;
