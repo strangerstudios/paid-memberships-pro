@@ -281,8 +281,14 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		}
 	}
 
+	//check nonce for saving
+	$nonceokay = true;
+	if (empty($_REQUEST['pmpro_orders_nonce']) || !check_admin_referer('save', 'pmpro_orders_nonce')) {		
+		$nonceokay = false;
+	}
+	
 	//save
-	if ( $order->saveOrder() !== false ) {
+	if ( $order->saveOrder() !== false && $nonceokay) {
 		//handle timestamp
 		if ( $order->updateTimestamp( intval($_POST['ts_year']), intval($_POST['ts_month']), intval($_POST['ts_day']) ) !== false ) {
 			$pmpro_msg  = __( "Order saved successfully.", 'paid-memberships-pro' );
@@ -367,6 +373,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 	<?php } ?>
 
 	<form method="post" action="">
+		<?php wp_nonce_field('save', 'pmpro_orders_nonce');?>
 
 		<table class="form-table">
 			<tbody>
