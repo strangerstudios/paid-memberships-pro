@@ -23,6 +23,13 @@ global $pmpro_pages;
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 $post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
+//check nonce for saving settings
+if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_pagesettings_nonce'))) {
+	$msg = -1;
+	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	unset($_REQUEST['savesettings']);
+}
+
 if (!empty($_REQUEST['savesettings'])) {
     //page ids
     pmpro_setOption("account_page_id", NULL, 'intval');
@@ -53,6 +60,13 @@ if (!empty($_REQUEST['savesettings'])) {
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
+}
+
+//check nonce for generating pages
+if (!empty($_REQUEST['createpages']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('createpages', 'pmpro_pagesettings_nonce'))) {
+	$msg = -1;
+	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	unset($_REQUEST['createpages']);
 }
 
 //are we generating pages?
@@ -89,8 +103,9 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
 
-    <form action="" method="post" enctype="multipart/form-data">
-        <h2><?php _e('Pages', 'paid-memberships-pro' ); ?></h2>
+    <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
+        <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
+		<h2><?php _e('Pages', 'paid-memberships-pro' ); ?></h2>
         <?php
         global $pmpro_pages_ready;
         if ($pmpro_pages_ready) {
@@ -100,7 +115,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
         } else {
             ?>
             <p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
-                    href="?page=pmpro-pagesettings&createpages=1"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
+                    href="<?php echo wp_nonce_url(admin_url('admin.php?page=pmpro-pagesettings&createpages=1'), 'createpages', 'pmpro_pagesettings_nonce');?>"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
             </p>
             <?php
         }
