@@ -7,6 +7,13 @@
 
 	global $wpdb, $msg, $msgt;
 
+	//check nonce for saving settings
+	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_advancedsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_advancedsettings_nonce'))) {
+		$msg = -1;
+		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		unset($_REQUEST['savesettings']);
+	}
+	
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
@@ -88,6 +95,8 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">
+		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
+		
 		<h2><?php _e('Advanced Settings', 'paid-memberships-pro' );?></h2>
 
 		<table class="form-table">
