@@ -9,6 +9,14 @@
 	
 	//get/set settings
 	global $pmpro_pages;
+	
+	//check nonce for saving settings
+	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_emailsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_emailsettings_nonce'))) {
+		$msg = -1;
+		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		unset($_REQUEST['savesettings']);
+	}	
+	
 	if(!empty($_REQUEST['savesettings']))
 	{                   		
 		//email options
@@ -66,6 +74,8 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data"> 
+		<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
+		
 		<h2><?php _e('Email Settings', 'paid-memberships-pro' );?></h2>
 		<p><?php _e('By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' );?></p>
 		
