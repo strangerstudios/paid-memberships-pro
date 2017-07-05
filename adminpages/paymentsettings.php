@@ -19,8 +19,13 @@
 		/*
 			Save any value that might have been passed in
 		*/
-		foreach($payment_options as $option)
-			pmpro_setOption($option);
+		foreach($payment_options as $option) {
+			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
+			if($option == 'sslseal')
+				pmpro_setOption($option, NULL, 'wp_unslash');
+			else
+				pmpro_setOption($option);
+		}
 
 		/*
 			Some special case options still worked out here

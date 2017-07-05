@@ -11,9 +11,9 @@
 	if(!empty($_REQUEST['savesettings']))
 	{
 		//other settings
-		pmpro_setOption("nonmembertext");
-		pmpro_setOption("notloggedintext");
-		pmpro_setOption("rsstext");
+		pmpro_setOption("nonmembertext", NULL, 'wp_unslash');
+		pmpro_setOption("notloggedintext", NULL, 'wp_unslash');
+		pmpro_setOption("rsstext", NULL, 'wp_unslash');
 		pmpro_setOption("filterqueries");
 		pmpro_setOption("showexcerpts");
 		pmpro_setOption("hideads");
