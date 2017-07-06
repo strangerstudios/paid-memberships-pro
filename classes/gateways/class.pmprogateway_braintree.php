@@ -286,17 +286,17 @@
 		{			
 			//load up values
 			if(isset($_REQUEST['number']))			
-				$braintree_number = $_REQUEST['number'];
+				$braintree_number = sanitize_text_field($_REQUEST['number']);
 			else
 				$braintree_number = "";
 				
 			if(isset($_REQUEST['expiration_date']))			
-				$braintree_expiration_date = $_REQUEST['expiration_date'];
+				$braintree_expiration_date = sanitize_text_field($_REQUEST['expiration_date']);
 			else
 				$braintree_expiration_date = "";
 				
 			if(isset($_REQUEST['cvv']))
-				$braintree_cvv = $_REQUEST['cvv'];
+				$braintree_cvv = sanitize_text_field($_REQUEST['cvv']);
 			else
 				$braintree_cvv = "";			
 
@@ -453,7 +453,7 @@
 						?>
 						<div class="pmpro_payment-cvv">
 							<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
-							<input class="input" id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+							<input class="input" id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 						</div>
 						<?php
 							}

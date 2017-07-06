@@ -33,7 +33,7 @@
 
 	//verify
 	if(!empty($_REQUEST['bt_challenge']))
-		echo Braintree_WebhookNotification::verify($_REQUEST['bt_challenge']);
+		echo Braintree_WebhookNotification::verify(sanitize_text_field($_REQUEST['bt_challenge']));
 	else
 		$logstr .= "Guessing you are just testing the URL out. Check that the timestamp updates on refresh to make sure this isn't being cached.";
 
@@ -45,13 +45,13 @@
     try
     {
         $webhookNotification = Braintree_WebhookNotification::parse(
-            $_REQUEST['bt_signature'], $_REQUEST['bt_payload']
+            sanitize_text_field($_REQUEST['bt_signature']), sanitize_text_field($_REQUEST['bt_payload'])
         );
     }
     catch ( Exception $e )
     {
         {
-            $logstr .= "Couldn't get notification with payload " . $_REQUEST['bt_payload'] . ". " . $e->getMessage();
+            $logstr .= "Couldn't get notification with payload " . sanitize_text_field($_REQUEST['bt_payload']) . ". " . $e->getMessage();
             pmpro_braintreeWebhookExit();
         }
     }

@@ -31,9 +31,9 @@ $initial_payment_status = pmpro_getParam( "initial_payment_status", "POST" );
 $payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
-$receiver_email         = pmpro_getParam( "receiver_email", "POST" );
-$business_email         = pmpro_getParam( "business", "POST" );
-$payer_email            = pmpro_getParam( "payer_email", "POST" );
+$receiver_email         = pmpro_getParam( "receiver_email", "POST", '', 'sanitize_email' );
+$business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_email'  );
+$payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
 $profile_status         = strtolower( pmpro_getParam( "profile_status", "POST" ) );
 

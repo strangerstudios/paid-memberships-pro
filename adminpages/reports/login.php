@@ -65,14 +65,18 @@ function pmpro_report_login_page()
 	
 	//vars
 	if(!empty($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 		
-	if(!empty($_REQUEST['l']))
-		$l = intval($_REQUEST['l']);
-	else
+	if(!empty($_REQUEST['l'])) {
+		if($_REQUEST['l'] == 'all')
+			$l = 'all';
+		else
+			$l = intval($_REQUEST['l']);
+	} else {
 		$l = "";
+	}
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h1>
@@ -124,7 +128,7 @@ function pmpro_report_login_page()
 			if($l == "all")
 				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
 			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";					
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";					
 				
 			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
@@ -136,7 +140,7 @@ function pmpro_report_login_page()
 			if($l == "all")
 				$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
 			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
 			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
 		}
 
@@ -273,11 +277,11 @@ function pmpro_report_login_wp_visits()
 			$visits = array("last"=>"N/A", "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 			
 		//track logins for user
-		$visits['last'] = date_i18n(get_option("date_format"));
-		$visits['alltime']++;
+		$visits['last'] = date_i18n(get_option("date_format"), $now);
+		$visits['alltime'] = $visits['alltime'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 		$thismonth = date_i18n("n", $now);
 		if($thismonth == $visits['thismonth'])
-			$visits['month']++;
+			$visits['month'] = $visits['month'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 		else
 		{
 			$visits['month'] = 1;
@@ -293,17 +297,17 @@ function pmpro_report_login_wp_visits()
 	if(empty($visits))
 		$visits = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
-	$visits['alltime']++;
+	$visits['alltime'] = $visits['alltime'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $visits['thisdate'])
-		$visits['today']++;
+		$visits['today'] = $visits['today'] + 1; // BUG FIX: Caused fatal error in certain PHP versions
 	else
 	{
 		$visits['today'] = 1;
 		$visits['thisdate'] = $thisdate;
 	}
 	if($thismonth == $visits['thismonth'])
-		$visits['month']++;
+		$visits['month'] = $visits['month'] + 1;// BUG FIX: Caused fatal error in certain PHP versions
 	else
 	{
 		$visits['month'] = 1;

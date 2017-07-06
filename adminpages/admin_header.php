@@ -2,7 +2,7 @@
 	require_once(dirname(__FILE__) . "/functions.php");
 	
 	if(isset($_REQUEST['page']))
-		$view = $_REQUEST['page'];
+		$view = sanitize_text_field($_REQUEST['page']);
 	else
 		$view = "";
 	
@@ -14,7 +14,7 @@
 		if(!isset($edit))
 		{
 			if(isset($_REQUEST['edit']))
-				$edit = $_REQUEST['edit'];
+				$edit = intval($_REQUEST['edit']);
 			else
 				$edit = false;
 		}

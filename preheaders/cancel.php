@@ -39,7 +39,7 @@
 
 	//are we confirming a cancellation?
 	if(isset($_REQUEST['confirm']))
-		$pmpro_confirm = $_REQUEST['confirm'];
+		$pmpro_confirm = boolval($_REQUEST['confirm']);
 	else
 		$pmpro_confirm = false;
 

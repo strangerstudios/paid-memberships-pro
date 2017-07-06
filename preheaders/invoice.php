@@ -12,7 +12,7 @@ if (!is_user_logged_in()) {
 
 //get invoice from DB
 if (!empty($_REQUEST['invoice']))
-    $invoice_code = $_REQUEST['invoice'];
+    $invoice_code = sanitize_text_field($_REQUEST['invoice']);
 else
     $invoice_code = NULL;
 

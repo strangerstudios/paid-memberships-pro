@@ -93,11 +93,11 @@ function pmpro_getOption($s, $force = false)
 		return "";
 }
 
-function pmpro_setOption($s, $v = NULL)
+function pmpro_setOption($s, $v = NULL, $sanitize_function = 'sanitize_text_field')
 {
 	//no value is given, set v to the p var
 	if($v === NULL && isset($_POST[$s]))
-		$v = $_POST[$s];
+		$v = call_user_func($sanitize_function, $_POST[$s]);
 
 	if(is_array($v))
 		$v = implode(",", $v);
@@ -2238,22 +2238,22 @@ function pmpro_getClassForField($field)
 }
 
 //get a var from $_GET or $_POST
-function pmpro_getParam($index, $method = "REQUEST", $default = "")
+function pmpro_getParam($index, $method = "REQUEST", $default = "", $sanitize_function = 'sanitize_text_field')
 {
 	if($method == "REQUEST")
 	{
 		if(!empty($_REQUEST[$index]))
-			return $_REQUEST[$index];
+			return call_user_func($sanitize_function, $_REQUEST[$index]);
 	}
 	elseif($method == "POST")
 	{
 		if(!empty($_POST[$index]))
-			return $_POST[$index];
+			return call_user_func($sanitize_function, $_POST[$index]);
 	}
 	elseif($method == "GET")
 	{
 		if(!empty($_GET[$index]))
-			return $_GET[$index];
+			return call_user_func($sanitize_function, $_GET[$index]);
 	}
 
 	return $default;
@@ -2617,4 +2617,39 @@ function pmpro_getMemberOrdersByCheckoutID($checkout_id) {
 	}
 	
 	return $r;
+}
+
+/**
+ * Check that the test value is a member of a specific array for sanitization purposes.
+ *
+ * @param mixed $needle Value to be tested.
+ * @param array $safe Array of safelist values.
+ * @since 1.9.3
+ */
+function pmpro_sanitize_with_safelist($needle, $safelist) {
+	if(!in_array($needle, $safelist))
+		return false;
+	else
+		return $needle;
+}
+ 
+ /**
+  * Return an array of allowed order statuses
+  *
+  * @since 1.9.3
+  */
+function pmpro_getOrderStatuses($force = false) {
+	global $pmpro_order_statuses;
+	
+	if(!isset($pmpro_order_statuses) || $force) {
+		global $wpdb;
+		$statuses         = array();
+		$default_statuses = array( "", "success", "cancelled", "review", "token", "refunded" );
+		$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
+		$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
+		asort( $statuses );
+		$statuses = apply_filters( "pmpro_order_statuses", $statuses );
+	}
+	
+	return $statuses;
 }
