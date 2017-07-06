@@ -203,22 +203,22 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->membership_id = intval( $_POST['membership_id'] );
 	}
 	if ( ! in_array( "billing_name", $read_only_fields ) && isset( $_POST['billing_name'] ) ) {
-		$order->billing->name = wp_unslash( $_POST['billing_name'] );
+		$order->billing->name = sanitize_text_field(wp_unslash( $_POST['billing_name'] ));
 	}
 	if ( ! in_array( "billing_street", $read_only_fields ) && isset( $_POST['billing_street'] ) ) {
-		$order->billing->street = wp_unslash( $_POST['billing_street'] );
+		$order->billing->street = sanitize_text_field(wp_unslash( $_POST['billing_street'] ));
 	}
 	if ( ! in_array( "billing_city", $read_only_fields ) && isset( $_POST['billing_city'] ) ) {
-		$order->billing->city = wp_unslash( $_POST['billing_city'] );
+		$order->billing->city = sanitize_text_field(wp_unslash( $_POST['billing_city'] ));
 	}
 	if ( ! in_array( "billing_state", $read_only_fields ) && isset( $_POST['billing_state'] ) ) {
-		$order->billing->state = wp_unslash( $_POST['billing_state'] );
+		$order->billing->state = sanitize_text_field(wp_unslash( $_POST['billing_state'] ));
 	}
 	if ( ! in_array( "billing_zip", $read_only_fields ) && isset( $_POST['billing_zip'] ) ) {
 		$order->billing->zip = sanitize_text_field( $_POST['billing_zip'] );
 	}
 	if ( ! in_array( "billing_country", $read_only_fields ) && isset( $_POST['billing_country'] ) ) {
-		$order->billing->country = wp_unslash( $_POST['billing_country'] );
+		$order->billing->country = sanitize_text_field(wp_unslash( $_POST['billing_country'] ));
 	}
 	if ( ! in_array( "billing_phone", $read_only_fields ) && isset( $_POST['billing_phone'] ) ) {
 		$order->billing->phone = sanitize_text_field( $_POST['billing_phone'] );
@@ -252,7 +252,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 	
 	if ( ! in_array( "status", $read_only_fields ) && isset( $_POST['status'] ) ) {
-		$order->status = wp_unslash( $_POST['status'] );
+		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() );
 	}
 	if ( ! in_array( "gateway", $read_only_fields ) && isset( $_POST['gateway'] ) ) {
 		$order->gateway = sanitize_text_field( $_POST['gateway'] );
@@ -267,7 +267,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->subscription_transaction_id = sanitize_text_field( $_POST['subscription_transaction_id'] );
 	}
 	if ( ! in_array( "notes", $read_only_fields ) && isset( $_POST['notes'] ) ) {
-		$order->notes = wp_unslash( $_POST['notes'] );
+		global $allowedposttags;
+		$order->notes = wp_kses(wp_unslash($_REQUEST['notes']), $allowedposttags);
 	}
 
 	//affiliate stuff
@@ -954,13 +955,8 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 
 				</select>
 
-				<?php
-				$statuses         = array();
-				$default_statuses = array( "", "success", "cancelled", "review", "token", "refunded" );
-				$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
-				$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
-				asort( $statuses );
-				$statuses = apply_filters( "pmpro_order_statuses", $statuses );
+				<?php				
+					$statuses = pmpro_getOrderStatuses();
 				?>
 				<select id="status" name="status">
 					<?php foreach ( $statuses as $the_status ) { ?>

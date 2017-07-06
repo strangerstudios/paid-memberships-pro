@@ -2626,9 +2626,30 @@ function pmpro_getMemberOrdersByCheckoutID($checkout_id) {
  * @param array $safe Array of safelist values.
  * @since 1.9.3
  */
- function pmpro_sanitize_with_safelist($needle, $safelist) {
+function pmpro_sanitize_with_safelist($needle, $safelist) {
 	if(!in_array($needle, $safelist))
 		return false;
 	else
 		return $needle;
- }
+}
+ 
+ /**
+  * Return an array of allowed order statuses
+  *
+  * @since 1.9.3
+  */
+function pmpro_getOrderStatuses($force = false) {
+	global $pmpro_order_statuses;
+	
+	if(!isset($pmpro_order_statuses) || $force) {
+		global $wpdb;
+		$statuses         = array();
+		$default_statuses = array( "", "success", "cancelled", "review", "token", "refunded" );
+		$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
+		$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
+		asort( $statuses );
+		$statuses = apply_filters( "pmpro_order_statuses", $statuses );
+	}
+	
+	return $statuses;
+}
