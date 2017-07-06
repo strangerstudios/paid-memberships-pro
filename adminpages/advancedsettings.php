@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt;
+	global $wpdb, $msg, $msgt, $allowedposttags;
 
 	//check nonce for saving settings
 	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_advancedsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_advancedsettings_nonce'))) {
@@ -17,10 +17,17 @@
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
+		//handle the text settings for better security handling		
+		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
+		update_option('pmpro_nonmembertext', $nonmembertext);
+		
+		$notloggedintext = wp_kses(wp_unslash($_POST['notloggedintext']), $allowedposttags);
+		update_option('pmpro_notloggedintext', $notloggedintext);
+		
+		$rsstext = wp_kses(wp_unslash($_POST['rsstext']), $allowedposttags);
+		update_option('pmpro_rsstext', $rsstext);		
+		
 		//other settings
-		pmpro_setOption("nonmembertext", NULL, 'wp_unslash');
-		pmpro_setOption("notloggedintext", NULL, 'wp_unslash');
-		pmpro_setOption("rsstext", NULL, 'wp_unslash');
 		pmpro_setOption("filterqueries");
 		pmpro_setOption("showexcerpts");
 		pmpro_setOption("hideads");

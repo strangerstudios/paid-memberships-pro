@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt, $pmpro_currency_symbol;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
@@ -45,9 +45,11 @@
 	}		
 	
 	if($action == "save_membershiplevel") {		
-		$ml_name = wp_unslash($_REQUEST['name']);
-		$ml_description = wp_unslash($_REQUEST['description']);
-		$ml_confirmation = wp_unslash($_REQUEST['confirmation']);
+		
+		$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
+		$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
+		$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
+				
 		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;

@@ -28,10 +28,13 @@
 		*/
 		foreach($payment_options as $option) {
 			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
-			if($option == 'sslseal')
-				pmpro_setOption($option, NULL, 'wp_unslash');
-			else
+			if($option == 'sslseal') {
+				global $allowedposttags;
+				$sslseal = wp_kses(wp_unslash($_POST['sslseal']), $allowedposttags);
+				update_option('pmpro_sslseal', $sslseal);
+			} else {
 				pmpro_setOption($option);
+			}
 		}
 
 		/*
