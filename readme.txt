@@ -116,6 +116,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.3.1 =
+* BUG FIX: Fixed issue where "adnim_cancelled" memberships weren't being calculated correctly in membership reports.
+
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
