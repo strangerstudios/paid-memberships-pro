@@ -3,7 +3,7 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
 	//load classes init method
-	add_action('init', array('PMProGateway_twocheckout', 'init'));
+	add_action('init', array('PMProGateway_Twocheckout', 'init'));
 		
 	class PMProGateway_Twocheckout extends PMProGateway
 	{
@@ -30,11 +30,11 @@
 		static function init()
 		{			
 			//make sure PayPal Express is a gateway option
-			add_filter('pmpro_gateways', array('PMProGateway_twocheckout', 'pmpro_gateways'));
+			add_filter('pmpro_gateways', array('PMProGateway_Twocheckout', 'pmpro_gateways'));
 			
 			//add fields to payment settings
-			add_filter('pmpro_payment_options', array('PMProGateway_twocheckout', 'pmpro_payment_options'));		
-			add_filter('pmpro_payment_option_fields', array('PMProGateway_twocheckout', 'pmpro_payment_option_fields'), 10, 2);
+			add_filter('pmpro_payment_options', array('PMProGateway_Twocheckout', 'pmpro_payment_options'));		
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_Twocheckout', 'pmpro_payment_option_fields'), 10, 2);
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
@@ -42,9 +42,9 @@
 			{				
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
-				add_filter('pmpro_required_billing_fields', array('PMProGateway_twocheckout', 'pmpro_required_billing_fields'));
-				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_twocheckout', 'pmpro_checkout_default_submit_button'));
-				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_twocheckout', 'pmpro_checkout_before_change_membership_level'), 10, 2);
+				add_filter('pmpro_required_billing_fields', array('PMProGateway_Twocheckout', 'pmpro_required_billing_fields'));
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_Twocheckout', 'pmpro_checkout_default_submit_button'));
+				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_Twocheckout', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
 		
@@ -93,7 +93,7 @@
 		static function pmpro_payment_options($options)
 		{			
 			//get stripe options
-			$twocheckout_options = PMProGateway_twocheckout::getGatewayOptions();
+			$twocheckout_options = PMProGateway_Twocheckout::getGatewayOptions();
 			
 			//merge with others.
 			$options = array_merge($twocheckout_options, $options);
