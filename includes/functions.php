@@ -1868,7 +1868,8 @@ function pmpro_getMembershipLevelsForUser($user_id = NULL, $include_inactive = f
 								UNIX_TIMESTAMP(enddate) as enddate
 							FROM {$wpdb->pmpro_membership_levels} AS l
 							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-							WHERE mu.user_id = $user_id".($include_inactive?"":" AND mu.status = 'active'"));
+							WHERE mu.user_id = $user_id".($include_inactive?"":" AND mu.status = 'active'
+							GROUP BY ID"));
 	/**
 	 * pmpro_get_membership_levels_for_user filter.
 	 *

@@ -116,6 +116,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.3.1 =
+* BUG FIX: pmpro_getMembershipLevelsForUser() would sometimes return duplicate levels in the array if the user had multiple active entries in the pmpro_memberships_users table.
+
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
