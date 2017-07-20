@@ -119,6 +119,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.9.3.1 =
 * BUG FIX: Fixed issue where "adnim_cancelled" memberships weren't being calculated correctly in membership reports.
 * BUG FIX: pmpro_getMembershipLevelsForUser() would sometimes return duplicate levels in the array if the user had multiple active entries in the pmpro_memberships_users table.
+* BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
 
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
