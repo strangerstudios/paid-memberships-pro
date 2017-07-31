@@ -144,8 +144,8 @@
 ?>
 <div class="wrap pmpro_admin">	
 	<div class="pmpro_banner">
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>	
-		<div class="pmpro_meta"><span class="pmpro_tag-grey">v<?php echo PMPRO_VERSION?></span><a target="_blank" class="pmpro_tag-blue" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><?php _e('Plugin Support', 'paid-memberships-pro' );?></a><a target="_blank" class="pmpro_tag-blue" href="http://www.paidmembershipspro.com/forums/"><?php _e('User Forum', 'paid-memberships-pro' );?></a></div>
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/?utm_source=plugin&utm_campaign=admin_header")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>	
+		<div class="pmpro_meta"><span class="pmpro_tag-grey">v<?php echo PMPRO_VERSION?></span><a target="_blank" class="pmpro_tag-blue" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/?utm_source=plugin&utm_campaign=admin_header")?>"><?php _e('Plugin Support', 'paid-memberships-pro' );?></a><a target="_blank" class="pmpro_tag-blue" href="http://www.paidmembershipspro.com/forums/?utm_source=plugin&utm_campaign=admin_header"><?php _e('User Forum', 'paid-memberships-pro' );?></a></div>
 		
 		<br style="clear:both;" />
 	</div>	
