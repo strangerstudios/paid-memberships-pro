@@ -209,7 +209,7 @@
 					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'paid-memberships-pro' );?>)</small>
 					&nbsp; <?php _e('Tax Rate', 'paid-memberships-pro' ); ?>:
 					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)</small>
-					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_campaign=payment_settings">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></small></p>
+					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=banner&utm_campaign=payment_settings">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></small></p>
 				</td>
 			</tr>
 
@@ -249,7 +249,7 @@
 				</th>
 				<td>
 					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
-					<br /><small><?php _e('Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_campaign=payment_settings">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.', 'paid-memberships-pro' ); ?></small>
+					<br /><small><?php _e('Your <strong><a target="_blank" href="http://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=banner&utm_campaign=payment_settings">SSL Certificate</a></strong> must be installed by your web host. Your <strong>SSL Seal</strong> will be a short HTML or JavaScript snippet that can be pasted here.', 'paid-memberships-pro' ); ?></small>
 				</td>
 			</tr>
 			<tr>
