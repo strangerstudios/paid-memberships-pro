@@ -60,8 +60,10 @@ function pmpro_report_memberships_widget() {
 			<?php
 				//level stats
 				$count = 0;
+				$max_level_count = apply_filters( 'pmpro_admin_reports_included_levels', 3 );
+			
 				foreach($levels as $level) { 
-					if($count++ > 2) break;
+					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo $level->name;?></th>
@@ -247,11 +249,11 @@ function pmpro_report_memberships_page()
 		$sqlQuery = "SELECT $date_function(mu1.modified) as date, COUNT(DISTINCT mu1.user_id) as cancellations
 		FROM $wpdb->pmpro_memberships_users mu1 ";
 		if ( $type === "signup_v_cancel")
-			$sqlQuery .= "WHERE mu1.status IN('inactive','cancelled','cancelled_admin') ";
+			$sqlQuery .= "WHERE mu1.status IN('inactive','cancelled','admin_cancelled') ";
 		elseif($type === "signup_v_expiration")
 			$sqlQuery .= "WHERE mu1.status IN('expired') ";
 		else
-			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','cancelled_admin') ";
+			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','admin_cancelled') ";
 			
 		$sqlQuery .= "AND mu1.startdate >= '" . $startdate . "' 
 		AND mu1.startdate < '" . $enddate . "' ";
@@ -548,7 +550,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 		
 	/*
 		build query.
-		cancellations are marked in the memberships users table with status 'inactive', 'expired', 'cancelled', 'cancelled_admin'
+		cancellations are marked in the memberships users table with status 'inactive', 'expired', 'cancelled', 'admin_cancelled'
 		we try to ignore cancellations when the user gets a new level with 24 hours (probably an upgrade or downgrade)
 	*/
 	global $wpdb;

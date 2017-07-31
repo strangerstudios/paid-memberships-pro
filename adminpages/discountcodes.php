@@ -28,6 +28,13 @@
 	else
 		$s = "";
 	
+	//check nonce for saving codes
+	if (!empty($_REQUEST['saveid']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
+		$pmpro_msgt = 'error';
+		$pmpro_msg = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$saveid = false;
+	}
+	
 	if($saveid)
 	{
 		//get vars
@@ -127,6 +134,8 @@
 			{
 				foreach($levels_a as $level_id)
 				{
+					$level_id = intval($level_id);	//sanitized
+					
 					//get the values ready
 					$n = array_search($level_id, $all_levels_a); 	//this is the key location of this level's values
 					$initial_payment = sanitize_text_field($initial_payment_a[$n]);
@@ -253,18 +262,25 @@
 			if(!empty($level_errors))
 			{
 				$pmpro_msg = __("There were errors updating the level values: ", 'paid-memberships-pro' ) . implode(" ", $level_errors);
-				$pmpro_msgt = "error";
+				$pmpro_msgt = "error";								
 			}
 			else
 			{
-				//all good. set edit = NULL so we go back to the overview page
-				$edit = NULL;
-
+				//all good. set edit = false so we go back to the overview page				
+				$edit = false;
+				
 				do_action("pmpro_save_discount_code", $saveid);
 			}
 		}
 	}
 
+	//check nonce for deleting codes
+	if (!empty($_REQUEST['delete']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
+		$pmpro_msgt = 'error';
+		$pmpro_msg = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$delete = false;
+	}
+	
 	//are we deleting?
 	if(!empty($delete))
 	{
@@ -375,6 +391,7 @@
 			?>
 			<form action="" method="post">
 				<input name="saveid" type="hidden" value="<?php echo $edit?>" />
+				<?php wp_nonce_field('save', 'pmpro_discountcodes_nonce');?>
 				<table class="form-table">
                 <tbody>
                     <tr>
@@ -735,7 +752,7 @@
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php _e('edit', 'paid-memberships-pro' );?></a>
 						</td>
 						<td>
-							<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '?page=pmpro-discountcodes&delete=<?php echo $code->id?>'); void(0);"><?php _e('delete', 'paid-memberships-pro' );?></a>
+							<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(admin_url('admin.php?page=pmpro-discountcodes&delete=' . $code->id), 'delete', 'pmpro_discountcodes_nonce');?>'); void(0);"><?php _e('delete', 'paid-memberships-pro' );?></a>
 						</td>
 					</tr>
 					<?php

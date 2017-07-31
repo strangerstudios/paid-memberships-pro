@@ -13,14 +13,29 @@
 	//define options
 	$payment_options = array_unique(apply_filters("pmpro_payment_options", array('gateway')));
 
+	//check nonce for saving settings
+	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_paymentsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_paymentsettings_nonce'))) {
+		$msg = -1;
+		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		unset($_REQUEST['savesettings']);
+	}
+	
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
 		/*
 			Save any value that might have been passed in
 		*/
-		foreach($payment_options as $option)
-			pmpro_setOption($option);
+		foreach($payment_options as $option) {
+			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
+			if($option == 'sslseal') {
+				global $allowedposttags;
+				$sslseal = wp_kses(wp_unslash($_POST['sslseal']), $allowedposttags);
+				update_option('pmpro_sslseal', $sslseal);
+			} else {
+				pmpro_setOption($option);
+			}
+		}
 
 		/*
 			Some special case options still worked out here
@@ -90,6 +105,8 @@
 ?>
 
 	<form action="" method="post" enctype="multipart/form-data">
+		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
+		
 		<h2><?php _e('Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php _e('SSL Settings', 'paid-memberships-pro' );?></h2>
 
 		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.', 'paid-memberships-pro' ); ?></p>

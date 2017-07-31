@@ -140,26 +140,29 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 function pmpro_search_filter($query)
 {
     global $current_user, $wpdb, $pmpro_pages;
-			
+	
     //hide pmpro pages from search results
     if(!$query->is_admin && $query->is_search && empty($query->query['post_parent']))
     {
-        if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now			
+        if(empty($query->query_vars['post_parent']))	//avoiding post_parent queries for now
 			$query->set('post__not_in', $pmpro_pages );
 
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post		
+		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
-    //hide member pages from non-members (make sure they aren't hidden from members)    
+    //hide member pages from non-members (make sure they aren't hidden from members)
 	if(!$query->is_admin &&
-	   !$query->is_singular && 
+	   !$query->is_singular &&
 	   empty($query->query['post_parent']) &&
 	   (
-		empty($query->query_vars['post_type']) || 
+		empty($query->query_vars['post_type']) ||
 		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
-	   )	   
+	   ) && (
+		( ! defined('REST_REQUEST') || ( defined( 'REST_REQUEST' ) && false === REST_REQUEST  ) )
+		)
 	)
-    {		
+    {
+	   
 		//get page ids that are in my levels
         if(!empty($current_user->ID))
 			$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
@@ -193,11 +196,11 @@ function pmpro_search_filter($query)
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', $my_pages) . ")";
 		else
 			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
-        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));						
+        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
 		
         if($hidden_page_ids)
 		{
-			if(empty($query->query_vars['post_parent']))			//avoiding post_parent queries for now				
+			if(empty($query->query_vars['post_parent']))			//avoiding post_parent queries for now
 				$query->set('post__not_in', $hidden_page_ids);
 		}
 				
@@ -222,7 +225,7 @@ function pmpro_search_filter($query)
 				
         //make this work
         if($hidden_cat_ids)
-		{			
+		{
             $query->set('category__not_in', $hidden_cat_ids);
 						
 			//filter so posts in this member's categories are allowed
@@ -243,7 +246,7 @@ if(!empty($filterqueries))
 function pmpro_posts_where_unhide_cats($where)
 {
 	global $pmpro_my_cats, $wpdb;
-		
+	
 	//if we have member cats, make sure they are allowed in taxonomy queries
 	if(!empty($where) && !empty($pmpro_my_cats))
 	{
@@ -251,21 +254,21 @@ function pmpro_posts_where_unhide_cats($where)
 		$replacement = $wpdb->posts . '.ID NOT IN (
 						SELECT tr1.object_id
 						FROM ' . $wpdb->term_relationships . ' tr1
-							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode($pmpro_my_cats) . ') 
-						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';	
+							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode($pmpro_my_cats) . ')
+						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';
 		$where = preg_replace($pattern, $replacement, $where);
 	}
-			
+	
 	//remove filter for next query
 	remove_action('posts_where', 'pmpro_posts_where_unhide_cats');
-		
+	
 	return $where;
 }
-  
-function pmpro_membership_content_filter($content, $skipcheck = false)
-{	
-	global $post, $current_user;
 
+function pmpro_membership_content_filter($content, $skipcheck = false)
+{
+	global $post, $current_user;
+	
 	if(!$skipcheck)
 	{
 		$hasaccess = pmpro_has_membership_access(NULL, NULL, true);
@@ -287,16 +290,16 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 	{
 		//if show excerpts is set, return just the excerpt
 		if(pmpro_getOption("showexcerpts"))
-		{			
+		{
 			//show excerpt
 			global $post;
 			if($post->post_excerpt)
-			{								
+			{
 				//defined exerpt
 				$content = wpautop($post->post_excerpt);
 			}
 			elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false)
-			{				
+			{
 				//more tag
 				$pos = strpos($content, "<span id=\"more-" . $post->ID . "\"></span>");
 				$content = wpautop(substr($content, 0, $pos));
@@ -327,6 +330,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 		}
 		else
 		{
+			
 			//else hide everything
 			$content = "";
 		}

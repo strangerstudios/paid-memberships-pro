@@ -30,7 +30,7 @@
 	
 	//get plugin status for filters
 	if(!empty($_REQUEST['plugin_status']))
-		$status = $_REQUEST['plugin_status'];
+		$status = pmpro_sanitize_with_safelist($_REQUEST['plugin_status'], array('', 'all', 'active', 'inactive', 'update', 'uninstalled'));
 
 	//make sure we have an approved status
 	$approved_statuses = array('all', 'active', 'inactive', 'update', 'uninstalled');

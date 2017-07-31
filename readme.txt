@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: memberships, membership, authorize.net, ecommerce, paypal, stripe, braintree, restrict access, restrict content, directory site, payflow
 Requires at least: 4
-Tested up to: 4.7.4
-Stable tag: 1.9.1
+Tested up to: 4.8
+Stable tag: 1.9.3
 
 A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
 
@@ -115,9 +115,41 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.3.1 =
+* BUG FIX: Fixed issue where "adnim_cancelled" memberships weren't being calculated correctly in membership reports.
+* BUG FIX: pmpro_getMembershipLevelsForUser() would sometimes return duplicate levels in the array if the user had multiple active entries in the pmpro_memberships_users table.
+* BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
+
+= 1.9.3 =
+* SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
+* BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
+* BUG FIX: Fixed issue where subscription and payment transaction IDs were not being saved correctly when copying an order in the dashboard. (Thanks, Pippin Williamson)
+* BUG FIX: Fixed fatal errors that occurred in certain PHP versions.
+* BUG FIX: Fixed issue where ProfileStartDate was being calculated incorrectly in the test, check, and Cybersource gateways.(Thanks, David Parker)
+* ENHANCEMENT: Added a pmpro_sanitize_with_safelist() function that is used to sanitize inputs that have a limited number of exact options.
+* ENHANCEMENT: Updated the pmpro_setOption() and pmpro_getParam() functions to take a new last parameter $sanitize_function, which defaults to 'sanitize_text_field'.
+
+= 1.9.2.2 =
+* BUG FIX: Fixed warnings on the Network Dashboard's sites page.
+* BUG FIX: Skipping update scripts that require the Stripe library if the system doesn't support the minimum requirements for the Stripe API. This avoids warnings and errors during upgrade.
+
+= 1.9.2.1 =
+* BUG FIX: Fixed issues with activation on single sites.
+* BUG FIX: Starting PHP sessions earlier to fix issues with PayPal/PayPal Express checkouts.
+
 = 1.9.2 =
 * BUG FIX: Fixed issue where Braintree checkouts were failing with a CVV error when existing users checked out.
 * BUG FIX: Fixed issue loading the Stripe library in PHP 5.6.
+* BUG FIX: Member List CSV export was ignoring search parameter.
+* BUG FIX: Discount codes weren't being remembered during the "review" step of a PayPal Express checkout. (Thanks, Rafe Colton)
+* ENHANCEMENT/FIX: Search Filter would trigger incorrectly for REST API request by slug.
+* ENHANCEMENT/FIX: Didn't always identify MasterCard cards correctly to set the CardType with some gateways.
+* ENHANCEMENT/FIX: Some custom code or add ons (e.g. the Prorating and Auto-renewal Checkbox add ons) would sometimes break PayPal Website Payments Pro and PayPal Express subscriptions by trying to set the "Profile Start Date" longer than 1 year out. We now limit the Profile Start Date to 1 year out and try to squeeze up to 1 additional year into a trial if it's not already being used. This bug affects PayPal Standard as well, but the fix is different and not included in this release.
+* ENHANCEMENT: Tested up to WordPress 4.8.
+* ENHANCEMENT: Made countries translatable.
+* ENHANCEMENT: Improved performance via PHP $_SESSION management improvements. We now only open the session before we set session vars and close the session when we are finished with it.
+* ENHANCEMENT: Added to code to stop network activation of Paid Memberships Pro. (Thanks, Paul Barthmaier)
 
 = 1.9.1 =
 * BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.

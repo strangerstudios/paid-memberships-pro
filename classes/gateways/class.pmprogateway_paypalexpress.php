@@ -238,15 +238,15 @@
 			{
 				//get values from post
 				if(isset($_REQUEST['username']))
-					$username = trim($_REQUEST['username']);
+					$username = trim(sanitize_text_field($_REQUEST['username']));
 				else
 					$username = "";
 				if(isset($_REQUEST['password']))
-					$password = $_REQUEST['password'];
+					$password = sanitize_text_field($_REQUEST['password']);
 				else
 					$password = "";
 				if(isset($_REQUEST['bemail']))
-					$bemail = $_REQUEST['bemail'];
+					$bemail = sanitize_email($_REQUEST['bemail']);
 				else
 					$bemail = "";
 
@@ -273,16 +273,16 @@
 			if(!empty($_REQUEST['review']))
 			{
 				if(!empty($_REQUEST['PayerID']))
-					$_SESSION['payer_id'] = $_REQUEST['PayerID'];
+					$_SESSION['payer_id'] = sanitize_text_field($_REQUEST['PayerID']);
 				if(!empty($_REQUEST['paymentAmount']))
-					$_SESSION['paymentAmount'] = $_REQUEST['paymentAmount'];
+					$_SESSION['paymentAmount'] = sanitize_text_field($_REQUEST['paymentAmount']);
 				if(!empty($_REQUEST['currencyCodeType']))
-					$_SESSION['currCodeType'] = $_REQUEST['currencyCodeType'];
+					$_SESSION['currCodeType'] = sanitize_text_field($_REQUEST['currencyCodeType']);
 				if(!empty($_REQUEST['paymentType']))
-					$_SESSION['paymentType'] = $_REQUEST['paymentType'];
+					$_SESSION['paymentType'] = sanitize_text_field($_REQUEST['paymentType']);
 
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
+				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 				if($morder->Token)
 				{
@@ -309,7 +309,7 @@
 			)
 			{
 				$morder = new MemberOrder();
-				$morder->getMemberOrderByPayPalToken($_REQUEST['token']);
+				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 				if($morder->Token)
 				{

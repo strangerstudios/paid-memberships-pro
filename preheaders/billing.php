@@ -36,12 +36,12 @@ wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.credit
 
 //_x stuff in case they clicked on the image button with their mouse
 if (isset($_REQUEST['update-billing']))
-    $submit = $_REQUEST['update-billing'];
+    $submit = true;
 else
     $submit = false;
 
 if (!$submit && isset($_REQUEST['update-billing_x']))
-    $submit = $_REQUEST['update-billing_x'];
+    $submit = true;
 
 if ($submit === "0")
     $submit = true;
@@ -50,39 +50,39 @@ if ($submit === "0")
 if ($submit) {
     //load em up (other fields)
     if (isset($_REQUEST['bfirstname']))
-        $bfirstname = trim(stripslashes($_REQUEST['bfirstname']));
+        $bfirstname = trim(sanitize_text_field($_REQUEST['bfirstname']));
     if (isset($_REQUEST['blastname']))
-        $blastname = trim(stripslashes($_REQUEST['blastname']));
+        $blastname = trim(sanitize_text_field($_REQUEST['blastname']));
     if (isset($_REQUEST['fullname']))
-        $fullname = $_REQUEST['fullname']; //honeypot for spammers
+        $fullname = sanitize_text_field($_REQUEST['fullname']); //honeypot for spammers
     if (isset($_REQUEST['baddress1']))
-        $baddress1 = trim(stripslashes($_REQUEST['baddress1']));
+        $baddress1 = trim(sanitize_text_field($_REQUEST['baddress1']));
     if (isset($_REQUEST['baddress2']))
-        $baddress2 = trim(stripslashes($_REQUEST['baddress2']));
+        $baddress2 = trim(sanitize_text_field($_REQUEST['baddress2']));
     if (isset($_REQUEST['bcity']))
-        $bcity = trim(stripslashes($_REQUEST['bcity']));
+        $bcity = trim(sanitize_text_field($_REQUEST['bcity']));
     if (isset($_REQUEST['bstate']))
-        $bstate = trim(stripslashes($_REQUEST['bstate']));
+        $bstate = trim(sanitize_text_field($_REQUEST['bstate']));
     if (isset($_REQUEST['bzipcode']))
-        $bzipcode = trim(stripslashes($_REQUEST['bzipcode']));
+        $bzipcode = trim(sanitize_text_field($_REQUEST['bzipcode']));
     if (isset($_REQUEST['bcountry']))
-        $bcountry = trim(stripslashes($_REQUEST['bcountry']));
+        $bcountry = trim(sanitize_text_field($_REQUEST['bcountry']));
     if (isset($_REQUEST['bphone']))
-        $bphone = trim(stripslashes($_REQUEST['bphone']));
+        $bphone = trim(sanitize_text_field($_REQUEST['bphone']));
     if (isset($_REQUEST['bemail']))
-        $bemail = trim(stripslashes($_REQUEST['bemail']));
+        $bemail = trim(sanitize_email($_REQUEST['bemail']));
     if (isset($_REQUEST['bconfirmemail']))
-        $bconfirmemail = trim(stripslashes($_REQUEST['bconfirmemail']));
+        $bconfirmemail = trim(sanitize_email($_REQUEST['bconfirmemail']));
     if (isset($_REQUEST['CardType']))
-        $CardType = $_REQUEST['CardType'];
+        $CardType = sanitize_text_field($_REQUEST['CardType']);
     if (isset($_REQUEST['AccountNumber']))
-        $AccountNumber = trim($_REQUEST['AccountNumber']);
+        $AccountNumber = trim(sanitize_text_field($_REQUEST['AccountNumber']));
     if (isset($_REQUEST['ExpirationMonth']))
-        $ExpirationMonth = $_REQUEST['ExpirationMonth'];
+        $ExpirationMonth = sanitize_text_field($_REQUEST['ExpirationMonth']);
     if (isset($_REQUEST['ExpirationYear']))
-        $ExpirationYear = $_REQUEST['ExpirationYear'];
+        $ExpirationYear = sanitize_text_field($_REQUEST['ExpirationYear']);
     if (isset($_REQUEST['CVV']))
-        $CVV = trim($_REQUEST['CVV']);
+        $CVV = trim(sanitize_text_field($_REQUEST['CVV']));
     
     //avoid warnings for the required fields
     if (!isset($bfirstname))

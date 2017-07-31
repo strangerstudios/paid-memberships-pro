@@ -23,7 +23,7 @@
 	foreach($_REQUEST as $name => $value)
 	{
 		// Create our associative array
-		$fields[$name] = $value;
+		$fields[$name] = sanitize_text_field($value);
 
 		// If we see a special field flag this as an ARB transaction
 		if($name == 'x_subscription_id')

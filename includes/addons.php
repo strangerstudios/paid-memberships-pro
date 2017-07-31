@@ -269,7 +269,7 @@ function pmpro_admin_init_updating_plugins() {
 		unset($plugin);
 		
 		//if Plus addons found, check license key
-		if(!empty($plus_plugins) && !pmpro_license_isValid()) {
+		if(!empty($plus_plugins) && !pmpro_license_isValid(NULL, 'plus')) {
 			//show error
 			$msg = __('You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro Plus License Key</a> to update PMPro Plus add ons. The following plugins will not be updated:', 'paid-memberships-pro');
 			echo '<div class="error"><p>' . $msg . ' <strong>' . implode(', ', $plus_addons) . '</strong></p></div>';						

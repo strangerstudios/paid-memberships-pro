@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt, $pmpro_currency_symbol;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
@@ -37,31 +37,40 @@
 	if(isset($_REQUEST['deleteid']))
 		$deleteid = intval($_REQUEST['deleteid']);
 
-	if($action == "save_membershiplevel") {
-		$ml_name = stripslashes($_REQUEST['name']);
-		$ml_description = stripslashes($_REQUEST['description']);
-		$ml_confirmation = stripslashes($_REQUEST['confirmation']);
-		$ml_initial_payment = stripslashes($_REQUEST['initial_payment']);
+	//check nonce
+	if(!empty($action) && (empty($_REQUEST['pmpro_membershiplevels_nonce']) || !check_admin_referer($action, 'pmpro_membershiplevels_nonce'))) {
+		$msg = -1;
+		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$action = false;
+	}		
+	
+	if($action == "save_membershiplevel") {		
+		
+		$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
+		$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
+		$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
+				
+		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
 		else
 			$ml_recurring = 0;
-		$ml_billing_amount = stripslashes($_REQUEST['billing_amount']);
-		$ml_cycle_number = stripslashes($_REQUEST['cycle_number']);
-		$ml_cycle_period = stripslashes($_REQUEST['cycle_period']);
-		$ml_billing_limit = stripslashes($_REQUEST['billing_limit']);
+		$ml_billing_amount = sanitize_text_field($_REQUEST['billing_amount']);
+		$ml_cycle_number = intval($_REQUEST['cycle_number']);
+		$ml_cycle_period = sanitize_text_field($_REQUEST['cycle_period']);
+		$ml_billing_limit = intval($_REQUEST['billing_limit']);
 		if(!empty($_REQUEST['custom_trial']))
 			$ml_custom_trial = 1;
 		else
 			$ml_custom_trial = 0;
-		$ml_trial_amount = stripslashes($_REQUEST['trial_amount']);
-		$ml_trial_limit = stripslashes($_REQUEST['trial_limit']);
+		$ml_trial_amount = sanitize_text_field($_REQUEST['trial_amount']);
+		$ml_trial_limit = intval($_REQUEST['trial_limit']);
 		if(!empty($_REQUEST['expiration']))
 			$ml_expiration = 1;
 		else
 			$ml_expiration = 0;
-		$ml_expiration_number = stripslashes($_REQUEST['expiration_number']);
-		$ml_expiration_period = stripslashes($_REQUEST['expiration_period']);
+		$ml_expiration_number = intval($_REQUEST['expiration_number']);
+		$ml_expiration_period = sanitize_text_field($_REQUEST['expiration_period']);
 		$ml_categories = array();
 
 		//reversing disable to allow here
@@ -306,6 +315,7 @@
 		<form action="" method="post" enctype="multipart/form-data">
 			<input name="saveid" type="hidden" value="<?php echo esc_attr($edit); ?>" />
 			<input type="hidden" name="action" value="save_membershiplevel" />
+			<?php wp_nonce_field('save_membershiplevel', 'pmpro_membershiplevels_nonce'); ?>
 			<table class="form-table">
 			<tbody>
 				<tr>
@@ -683,7 +693,7 @@
 				</td>
 				<td><?php if($level->allow_signups) { ?><a href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'paid-memberships-pro' );?></a><?php } else { ?><?php _e('No', 'paid-memberships-pro' );?><?php } ?></td>
 
-				<td><a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e('edit', 'paid-memberships-pro' ); ?></a>&nbsp;<a title="<?php _e('copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'copy' => $level->id ), admin_url( 'admin.php' ) ); ?>" class="button-secondary"><?php _e('copy', 'paid-memberships-pro' ); ?></a>&nbsp;<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", 'paid-memberships-pro' ), $level->name));?>', '<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a></td>
+				<td><a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e('edit', 'paid-memberships-pro' ); ?></a>&nbsp;<a title="<?php _e('copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'copy' => $level->id ), admin_url( 'admin.php' ) ); ?>" class="button-secondary"><?php _e('copy', 'paid-memberships-pro' ); ?></a>&nbsp;<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", 'paid-memberships-pro' ), $level->name));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ), 'delete_membership_level', 'pmpro_membershiplevels_nonce'); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a></td>
 			</tr>
 			<?php
 				}

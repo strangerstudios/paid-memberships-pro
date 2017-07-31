@@ -206,7 +206,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $this->BillingFrequency . " " . $this->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
 						}
 						
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -254,6 +254,7 @@
 			$card_types = array(
 				'Visa' => '001',
 				'MasterCard' => '002',
+				'Mastercard' => '002',
 				'Master Card' => '002',
 				'AMEX' => '003',
 				'American Express' => '003',

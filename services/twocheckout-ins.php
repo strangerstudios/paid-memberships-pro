@@ -35,6 +35,7 @@
 	$txn_id = pmpro_getParam( 'sale_id', 'REQUEST' );
 	$recurring = pmpro_getParam( 'recurring', 'REQUEST' );
 	$order_id = pmpro_getParam( 'merchant_order_id', 'REQUEST' );
+	$order_number = pmpro_getParam( 'order_number', 'REQUEST' );
 	if(empty($order_id))
 		$order_id = pmpro_getParam( 'vendor_order_id', 'REQUEST' );
 	$product_id = pmpro_getParam( 'item_id_1', 'REQUEST' ); // Should be item 0 or 1?
@@ -43,7 +44,7 @@
 	$invoice_status = pmpro_getParam( 'invoice_status', 'REQUEST' ); // On single we need to check for deposited
 	$fraud_status = pmpro_getParam( 'fraud_status', 'REQUEST' ); // Check fraud status?
 	$invoice_list_amount = pmpro_getParam( 'invoice_list_amount', 'REQUEST' ); // Price paid by customer in seller currency code
-	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST' );
+	$customer_email = pmpro_getParam( 'customer_email', 'REQUEST', '', 'sanitize_email' );
 
 	// No message = return processing
 	if( empty($message_type) ) {
@@ -58,7 +59,7 @@
 		if( ! empty ( $morder ) && ! empty ( $morder->status ) && $morder->status === 'success' ) {
 			inslog( "Checkout was already processed (" . $morder->code . "). Ignoring this request." );
 		}
-		elseif (pmpro_insChangeMembershipLevel( $_REQUEST['order_number'], $morder ) ) {
+		elseif (pmpro_insChangeMembershipLevel( $order_number, $morder ) ) {
 			inslog( "Checkout processed (" . $morder->code . ") success!" );
 		}
 		else {

@@ -158,11 +158,17 @@ function pmpro_checkForUpgrades()
 	
 	/*
 		v1.8.9.1
-		* Fixing Stripe orders where user_id/membership_id = 0		
+		* Fixing Stripe orders where user_id/membership_id = 0
+		* Updated in v1.9.2.2 to check for namespace compatibility first,
+		  since the Stripe class isn't loaded for PHP < 5.3.29
 	*/	
-	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
-	if($pmpro_db_version < 1.891) {		
-		$pmpro_db_version = pmpro_upgrade_1_8_9_1();			
+	if (version_compare( PHP_VERSION, '5.3.29', '>=' )) {
+		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
+		if($pmpro_db_version < 1.891) {			
+			$pmpro_db_version = pmpro_upgrade_1_8_9_1();
+		}
+	} elseif($pmpro_db_version < 1.891) {
+		$pmpro_db_version = 1.891;		  //skipping this update because Stripe is not supported
 	}
 
 	/*

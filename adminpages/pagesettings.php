@@ -23,15 +23,22 @@ global $pmpro_pages;
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 $post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
+//check nonce for saving settings
+if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_pagesettings_nonce'))) {
+	$msg = -1;
+	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	unset($_REQUEST['savesettings']);
+}
+
 if (!empty($_REQUEST['savesettings'])) {
     //page ids
-    pmpro_setOption("account_page_id");
-    pmpro_setOption("billing_page_id");
-    pmpro_setOption("cancel_page_id");
-    pmpro_setOption("checkout_page_id");
-    pmpro_setOption("confirmation_page_id");
-    pmpro_setOption("invoice_page_id");
-    pmpro_setOption("levels_page_id");
+    pmpro_setOption("account_page_id", NULL, 'intval');
+    pmpro_setOption("billing_page_id", NULL, 'intval');
+    pmpro_setOption("cancel_page_id", NULL, 'intval');
+    pmpro_setOption("checkout_page_id", NULL, 'intval');
+    pmpro_setOption("confirmation_page_id", NULL, 'intval');
+    pmpro_setOption("invoice_page_id", NULL, 'intval');
+    pmpro_setOption("levels_page_id", NULL, 'intval');
 
     //update the pages array
     $pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -45,7 +52,7 @@ if (!empty($_REQUEST['savesettings'])) {
     //save additional pages
     if (!empty($extra_pages)) {
         foreach ($extra_pages as $name => $label) {
-            pmpro_setOption($name . '_page_id');
+            pmpro_setOption($name . '_page_id', NULL, 'intval');
             $pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
         }
     }
@@ -53,6 +60,13 @@ if (!empty($_REQUEST['savesettings'])) {
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
+}
+
+//check nonce for generating pages
+if (!empty($_REQUEST['createpages']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('createpages', 'pmpro_pagesettings_nonce'))) {
+	$msg = -1;
+	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	unset($_REQUEST['createpages']);
 }
 
 //are we generating pages?
@@ -72,7 +86,7 @@ if (!empty($_REQUEST['createpages'])) {
 
     } else {
         //generate extra pages one at a time
-        $pmpro_page_name = $_REQUEST['page_name'];
+        $pmpro_page_name = sanitize_text_field($_REQUEST['page_name']);
         $pmpro_page_id = $pmpro_pages[$pmpro_page_name];
         $pages[$pmpro_page_name] = $extra_pages[$pmpro_page_name];
     }
@@ -89,8 +103,9 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
 
-    <form action="" method="post" enctype="multipart/form-data">
-        <h2><?php _e('Pages', 'paid-memberships-pro' ); ?></h2>
+    <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
+        <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
+		<h2><?php _e('Pages', 'paid-memberships-pro' ); ?></h2>
         <?php
         global $pmpro_pages_ready;
         if ($pmpro_pages_ready) {
@@ -100,7 +115,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
         } else {
             ?>
             <p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
-                    href="?page=pmpro-pagesettings&createpages=1"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
+                    href="<?php echo wp_nonce_url(admin_url('admin.php?page=pmpro-pagesettings&createpages=1'), 'createpages', 'pmpro_pagesettings_nonce');?>"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
             </p>
             <?php
         }

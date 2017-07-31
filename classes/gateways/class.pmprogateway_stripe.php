@@ -444,7 +444,7 @@
 				foreach($_REQUEST as $key => $param) {
 					if(preg_match('/stripeToken(\d+)/', $key, $matches)) {
 						if(intval($matches[1])>$tokennum) {
-							$thetoken = $param;
+							$thetoken = sanitize_text_field($param);
 							$tokennum = intval($matches[1]);
 						}
 					}
@@ -464,8 +464,8 @@
 				}
 				elseif(!empty($_REQUEST['first_name']) && !empty($_REQUEST['last_name']))
 				{
-					$morder->FirstName = $_REQUEST['first_name'];
-					$morder->LastName = $_REQUEST['last_name'];
+					$morder->FirstName = sanitize_text_field($_REQUEST['first_name']);
+					$morder->LastName = sanitize_text_field($_REQUEST['last_name']);
 				}
 			}
 
@@ -627,7 +627,7 @@
 						?>
 						<div class="pmpro_payment-cvv">
 							<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
-							<input id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+							<input id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 						</div>
 						<?php
 							}
@@ -870,17 +870,17 @@
 				$update = array();
 
 				//all updates have these values
-				$update['when'] = $_POST['updates_when'][$i];
-				$update['billing_amount'] = $_POST['updates_billing_amount'][$i];
-				$update['cycle_number'] = $_POST['updates_cycle_number'][$i];
-				$update['cycle_period'] = $_POST['updates_cycle_period'][$i];
+				$update['when'] = pmpro_sanitize_with_safelist($_POST['updates_when'][$i], array('now', 'payment', 'date'));
+				$update['billing_amount'] = sanitize_text_field($_POST['updates_billing_amount'][$i]);
+				$update['cycle_number'] = intval($_POST['updates_cycle_number'][$i]);
+				$update['cycle_period'] = sanitize_text_field($_POST['updates_cycle_period'][$i]);
 
 				//these values only for on date updates
 				if($_POST['updates_when'][$i] == "date")
 				{
-					$update['date_month'] = str_pad($_POST['updates_date_month'][$i], 2, "0", STR_PAD_LEFT);
-					$update['date_day'] = str_pad($_POST['updates_date_day'][$i], 2, "0", STR_PAD_LEFT);
-					$update['date_year'] = $_POST['updates_date_year'][$i];
+					$update['date_month'] = str_pad(intval($_POST['updates_date_month'][$i]), 2, "0", STR_PAD_LEFT);
+					$update['date_day'] = str_pad(intval($_POST['updates_date_day'][$i]), 2, "0", STR_PAD_LEFT);
+					$update['date_year'] = intval($_POST['updates_date_year'][$i]);
 				}
 
 				//make sure the update is valid
