@@ -94,7 +94,14 @@ function pmpro_get_order_json() {
 add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
 
 function pmpro_update_level_order() {
-    echo pmpro_setOption('level_order');
+	
+	$level_order = $_POST['level_order'];
+	
+	//array was passed from ajax, we save it as a comma seperated list
+	if(is_array($level_order))
+		$level_order = implode(',', $level_order);
+	
+	echo pmpro_setOption('level_order', $level_order);
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
