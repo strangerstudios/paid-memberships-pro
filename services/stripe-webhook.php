@@ -326,32 +326,71 @@
 			if(!empty($old_order)) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
-				if(!empty($user->ID)) {
-					do_action("pmpro_stripe_subscription_deleted", $user->ID);
-
+				
+				//By default, asume there's no need to preserve the membership
+				$event_sub_id = null;
+				
+				/**
+				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
+				 */
+				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_delete', true );
+				
+				// Grab the subscription ID from the webhook
+				if ( !empty( $pmpro_stripe_event->data->object->lines->data ) ) {
+					
+					// Loop through all event lines from the webhook
+					foreach( $pmpro_stripe_event->data->object->lines->data as $item ) {
+					
+						// Check if there's a sub ID to look at (from the webhook)
+						// If it's in the list of preservable subscription IDs, check how long we've been protective.
+						if ( $item->type == 'subscription' && in_array(  $item->id, array_keys( $preserve ) ) ) {
+							
+							$logstr .= "Stripe subscription ({$event_sub_id}) has been flagged for preservation. Will not cancel membership!";
+							$event_sub_id = $item->id;
+						} else if ( $item->type == 'subscription' && in_array(  $item->id, array_keys( $preserve ) ) && ( intval( $preserve[ $item->id ] ) ( 3 * DAY_IN_SECONDS ) <= current_time('timestamp' ) ) ) {
+							
+							// Delete the usermeta entry as it's (probably) stale
+							unset( $preserve[$item->id] );
+							update_user_meta( $user_id,'pmpro_stripe_dont_delete', $preserve );
+						}
+						
+					}
+				}
+				
+				if(!empty($user->ID) && empty( $event_sub_id ) ) {
+					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
+					
 					if ( $old_order->status == "cancelled" ) {
 						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $old_order->id . ", Subscription Transaction ID #" . $old_order->subscription_transaction_id . ")";
-					} elseif ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
+					} else if ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
 						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $old_order->id . ", Subscription Transaction ID #" . $old_order->subscription_transaction_id . ")";
 					} else {
 						//if the initial payment failed, cancel with status error instead of cancelled					
 						pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
-
+						
 						$logstr .= "Cancelled membership for user with id = " . $old_order->user_id . ". Subscription transaction id = " . $old_order->subscription_transaction_id . ".";
-
+						
 						//send an email to the member
 						$myemail = new PMProEmail();
 						$myemail->sendCancelEmail( $user );
-
+						
 						//send an email to the admin
 						$myemail = new PMProEmail();
 						$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
 					}
-
+					
 					$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $pmpro_stripe_event->id . ".";
 					pmpro_stripeWebhookExit();
 				} else {
-					$logstr .= "Stripe tells us a subscription is deleted, but we could not find a user here for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
+					$logstr .= "Stripe tells us they deleted the subscription, but for some reason we must ignore it. ";
+					
+					if ( !empty( $event_sub_id ) ) {
+						$logstr .= "The subscription has been flagged as one to preserve. ";
+					} else {
+						$logstr .= "Perhaps we could not find a user here for that subscription. ";
+					}
+					
+					$logstr .= "Could also be a subscription managed by a different app or plugin. Event ID # {$pmpro_stripe_event->id}.";
 					pmpro_stripeWebhookExit();
 				}
 			} else {
