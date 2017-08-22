@@ -347,7 +347,7 @@
 							
 							$logstr .= "Stripe subscription ({$event_sub_id}) has been flagged for preservation. Will not cancel membership!";
 							$event_sub_id = $item->id;
-						} else if ( $item->type == 'subscription' && in_array(  $item->id, array_keys( $preserve ) ) && ( intval( $preserve[ $item->id ] ) ( 3 * DAY_IN_SECONDS ) <= current_time('timestamp' ) ) ) {
+						} elseif ( $item->type == 'subscription' && in_array(  $item->id, array_keys( $preserve ) ) && ( intval( $preserve[ $item->id ] ) + ( 3 * DAY_IN_SECONDS ) <= current_time('timestamp' ) ) ) {
 							
 							// Delete the usermeta entry as it's (probably) stale
 							unset( $preserve[$item->id] );
