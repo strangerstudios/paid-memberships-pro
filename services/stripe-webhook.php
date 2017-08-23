@@ -327,13 +327,12 @@
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
 				
-				//By default, asume there's no need to preserve the membership
-				$event_sub_id = null;
-				
 				/**
 				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
 				 */
 				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
+				
+				// Asume we should cancel the membership
 				$cancel_membership = true;
 				
 				// Grab the subscription ID from the webhook
@@ -342,17 +341,12 @@
 					$subscr = $pmpro_stripe_event->data->object;
 					
 					// Check if there's a sub ID to look at (from the webhook)
-					// If it's in the list of preservable subscription IDs, check how long we've been protective.
+					// If it's in the list of preservable subscription IDs, don't delete it
 					if ( in_array( $subscr->id, array_keys( $preserve ) ) ) {
 						
-						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged for preservation. Will NOT cancel the membership for {$user_id}!\n";
+						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user_id}!\n";
 						$cancel_membership = false;
 						
-					} else if ( in_array( $subscr->id, array_keys( $preserve ) ) && ( intval( $preserve[ $subscr->id ] ) + ( 3 * DAY_IN_SECONDS ) <= current_time( 'timestamp' ) ) ) {
-						
-						// Delete the usermeta entry as it's (probably) stale
-						unset( $preserve[ $subscr->id ] );
-						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
 					}
 				}
 				
@@ -389,8 +383,8 @@
 				} else {
 					$logstr .= "Stripe tells us they deleted the subscription, but for some reason we must ignore it. ";
 					
-					if ( !empty( $event_sub_id ) ) {
-						$logstr .= "The subscription has been flagged as one to preserve. ";
+					if ( false === $cancel_membership ) {
+						$logstr .= "The subscription has been flagged as one to not delete the user membership for.\n ";
 					} else {
 						$logstr .= "Perhaps we could not find a user here for that subscription. ";
 					}
