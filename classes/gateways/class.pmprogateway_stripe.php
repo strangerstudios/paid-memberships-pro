@@ -163,8 +163,37 @@
                  * add_filter( 'pmpro_scan_gateway_for_existing_customer_record', '__return_true', 10, 0 );
                  */
 			}
+			
+			add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 		}
-
+		
+		/**
+		 * Clear any saved (preserved) subscription IDs that should have been processed and are now timed out.
+		 */
+		public static function pmpro_clear_saved_subscriptions() {
+			
+		    if ( ! is_user_logged_in() ) {
+		        return;
+		    }
+		    
+		    global $current_user;
+		    $preserve = get_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', true );
+			
+			// Clean up the subscription timeout values (if applicable)
+		    if ( !empty( $preserve ) ) {
+			    
+			    foreach ( $preserve as $sub_id => $timestamp ) {
+			        
+			        // Make sure the ID has "timed out" (more than 3 days since it was last updated/added.
+				    if ( intval( $timestamp ) >= ( current_time( 'timestamp' ) + ( 3 * DAY_IN_SECONDS ) ) ) {
+					    unset( $preserve[ $sub_id ] );
+				    }
+			    }
+			    
+			    update_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', $preserve );
+		    }
+		}
+		
 		/**
 		 * Make sure Stripe is in the gateways list
 		 *
@@ -922,18 +951,20 @@
 						
 						// Store or update the subscription ID timestamp (for cleanup)
 						$preserve[$subscription->id] = current_time( 'timestamp' );
+      
 						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
 						
 						//cancel the old subscription
 						if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription))
 						{
-							//throw error and halt save
-							function pmpro_stripe_user_profile_fields_save_error($errors, $update, $user)
-							{
-								$errors->add('pmpro_stripe_updates',__('Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ));
-							}
-							add_filter('user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3);
-
+						    if ( !function_exists( 'pmpro_stripe_user_profile_fields_save_error' )) {
+							    //throw error and halt save
+							    function pmpro_stripe_user_profile_fields_save_error( $errors, $update, $user ) {
+								    $errors->add( 'pmpro_stripe_updates', __( 'Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ) );
+							    }
+							
+							    add_filter( 'user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3 );
+						    }
 							//stop processing updates
 							return;
 						}
@@ -2020,7 +2051,7 @@
 		        
 		        $continue = false;
 	            pmpro_setMessage( __( "Please log in before renewing/updating your membership", 'paid-memberships-pro' ), "pmpro_warning" );
-                
+             
             }
 		    return $continue;
         }
