@@ -27,6 +27,30 @@
 		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
+
+	//some vars for the search
+	if ( isset( $_REQUEST['pn'] ) ) {
+		$pn = intval( $_REQUEST['pn'] );
+	} else {
+		$pn = 1;
+	}
+
+	if ( isset( $_REQUEST['limit'] ) ) {
+		$limit = intval( $_REQUEST['limit'] );
+	} else {
+		/**
+		 * Filter to set the default number of items to show per page
+		 * on the Discount Codes page in the admin.
+		 *
+		 * @since 1.9.4
+		 *
+		 * @param int $limit The number of items to show per page.
+		 */
+		$limit = apply_filters( 'pmpro_discount_codes_per_page', 15 );
+	}
+
+	$end   = $pn * $limit;
+	$start = $end - $limit;
 	
 	//check nonce for saving codes
 	if (!empty($_REQUEST['saveid']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
@@ -657,6 +681,26 @@
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
 		<?php } ?>
+		
+		<?php
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
+			if(!empty($s))
+				$sqlQuery .= "WHERE code LIKE '%$s%' ";
+			
+			$sqlQuery .= "ORDER BY id DESC ";
+
+			$sqlQuery .= "LIMIT $start, $limit ";
+
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+
+			$totalrows = $wpdb->get_var( "SELECT FOUND_ROWS() as found_rows" );
+
+			if ( !empty($codes) ) {
+			?>
+			<p class="subsubsub"><?php printf( __( "%d discount codes found.", 'paid-memberships-pro' ), $totalrows ); ?></span></p>
+			<?php
+		}
+		?>
 
 		<form id="posts-filter" method="get" action="">
 			<p class="search-box">
@@ -668,14 +712,7 @@
 		</form>
 
 		<br class="clear" />
-		<?php
-			$sqlQuery = "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
-			if(!empty($s))
-				$sqlQuery .= "WHERE code LIKE '%$s%' ";
-				$sqlQuery .= "ORDER BY id ASC";
 
-				$codes = $wpdb->get_results($sqlQuery, OBJECT);
-		?>
 		<table class="widefat">
 		<thead>
 			<tr>
@@ -761,6 +798,11 @@
 				?>
 		</tbody>
 		</table>
+		
+		<?php		
+			$pagination_url = get_admin_url( null, "/admin.php?page=pmpro-discountcodes&s=" . $s );
+			echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
+		?>
 
 	<?php } ?>
 
