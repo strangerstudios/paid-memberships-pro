@@ -3,7 +3,7 @@
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
 	//load classes init method
-	add_action('init', array('PMProGateway_braintree', 'init'));	
+	add_action('init', array('PMProGateway_braintree', 'init'));
 	
 	class PMProGateway_braintree extends PMProGateway
 	{
@@ -18,22 +18,42 @@
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
 			if( true === $this->dependencies() ) {
-				$this->loadBraintreeLibrary();		
+				$this->loadBraintreeLibrary();
 				
 				//convert to braintree nomenclature
 				$environment = $this->gateway_environment;
 				if($environment == "live")
 					$environment = "production";
 				
-				Braintree_Configuration::environment($environment);
-				Braintree_Configuration::merchantId(pmpro_getOption("braintree_merchantid"));
-				Braintree_Configuration::publicKey(pmpro_getOption("braintree_publickey"));
-				Braintree_Configuration::privateKey(pmpro_getOption("braintree_privatekey"));
+				$merch_id = pmpro_getOption( "braintree_merchantid" );
+				$pk = pmpro_getOption( "braintree_publickey" );
+				$sk = pmpro_getOption( "braintree_privatekey" );
+				
+                try {
+                    
+                    Braintree_Configuration::environment( $environment );
+                    Braintree_Configuration::merchantId( $merch_id );
+                    Braintree_Configuration::publicKey( $pk );
+                    Braintree_Configuration::privateKey( $sk );
+                    
+                } catch( Exception $exception ) {
+                    global $msg;
+                    global $msgt;
+                    global $pmpro_braintree_error;
+                    
+                    error_log($exception->getMessage() );
+                    
+                        $pmpro_braintree_error = true;
+                        $msg                   = - 1;
+                        $msgt                  = sprintf( __( 'Attempting to load Braintree gateway: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+                    return false;
+                }
+				
 				self::$is_loaded = true;
 			}
-				
+			
 			return $this->gateway;
-		}										
+		}
 		/**
 		 * Warn if required extensions aren't loaded.
 		 *
@@ -47,7 +67,7 @@
 			if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
 
 				$msg = -1;
-				$msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );				
+				$msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
 
 				pmpro_setMessage( $msgt, "pmpro_error" );
 				return false;
@@ -57,13 +77,17 @@
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
-					$pmpro_braintree_error = true;					
-					$msg = -1;
-					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Braintree', $module);
+				    
+				    if ( false == $pmpro_braintree_error ) {
+					    $pmpro_braintree_error = true;
+					    $msg                   = - 1;
+					    $msgt                  = sprintf( __( "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Braintree', $module );
+				    }
 					
 					//throw error on checkout page
-					if(!is_admin())
-						pmpro_setMessage($msgt, 'pmpro_error');
+					if ( ! is_admin() ) {
+						pmpro_setMessage( $msgt, 'pmpro_error' );
+					}
 					
 					return false;
 				}
@@ -75,7 +99,7 @@
 		
 		/**
 		 * Load the Braintree API library.
-		 *		
+		 *
 		 * @since 1.8.1
 		 * Moved into a method in version 1.8.1 so we only load it when needed.
 		 */
@@ -84,7 +108,7 @@
 			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
 			if(!class_exists("\Braintree"))
 				require_once( PMPRO_DIR . "/includes/lib/Braintree/lib/Braintree.php");
-		}		
+		}
 		
 		/**
 		 * Get a collection of plans available for this Braintree account.
@@ -97,7 +121,31 @@
 			
 			//check Braintree if no transient found
 			if($plans === false) {
-				$plans = Braintree_Plan::all();
+			    
+			    try {
+				    $plans = Braintree_Plan::all();
+				    
+			    } catch( Braintree\Exception $exception ) {
+			    
+			        global $msg;
+			        global $msgt;
+				    global $pmpro_braintree_error;
+				
+				    if ( false == $pmpro_braintree_error ) {
+					    
+				        $pmpro_braintree_error = true;
+					    $msg                   = - 1;
+					    $status = $exception->getMessage();
+         
+					    if ( !empty( $status)) {
+						    $msgt = sprintf( __( "Problem loading plans: %s", "paid-memberships-pro" ), $status );
+					    } else {
+					        $msgt = __( "Problem accessing the Braintree Gateway. Please verify your PMPro Payment Settings (Keys, etc).", "paid-memberships-pro");
+                        }
+				    }
+				    
+			        return false;
+                }
 				
 				set_transient($cache_key, $plans);
 			}
@@ -110,14 +158,14 @@
 		 */
 		function getPlanByID($id) {
 			$plans = $this->getPlans();
-						
+			
 			if(!empty($plans)) {
 				foreach($plans as $plan) {
 					if($plan->id == $id)
 						return $plan;
 				}
 			}
-				
+			
 			return false;
 		}
 		
@@ -135,11 +183,11 @@
 		
 		/**
 		 * Run on WP init
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function init()
-		{			
+		{
 			//make sure Braintree Payments is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_braintree', 'pmpro_gateways'));
 			
@@ -149,21 +197,21 @@
 
 			//code to add at checkout if Braintree is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
-			$current_gateway = pmpro_getGateway();			
+			$current_gateway = pmpro_getGateway();
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
 				add_filter('pmpro_billing_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
-				add_filter('pmpro_required_billing_fields', array('PMProGateway_braintree', 'pmpro_required_billing_fields'));				
+				add_filter('pmpro_required_billing_fields', array('PMProGateway_braintree', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_braintree', 'pmpro_include_payment_information_fields'));
 			}
 		}
 		
 		/**
 		 * Make sure this gateway is in the gateways list
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
@@ -176,11 +224,11 @@
 		
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function getGatewayOptions()
-		{			
+		{
 			$options = array(
 				'sslseal',
 				'nuclear_HTTPS',
@@ -201,11 +249,11 @@
 		
 		/**
 		 * Set payment options for payment settings page.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{			
+		{
 			//get Braintree options
 			$braintree_options = self::getGatewayOptions();
 			
@@ -217,7 +265,7 @@
 		
 		/**
 		 * Display fields for this gateway's options.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
@@ -257,7 +305,7 @@
 				<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>					
+				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -266,8 +314,8 @@
 			</th>
 			<td>
 				<p>
-					<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> 
-					<pre><?php 
+					<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?>
+					<pre><?php
 						//echo admin_url("admin-ajax.php") . "?action=braintree_webhook";
 						echo PMPRO_URL . "/services/braintree-webhook.php";
 					?></pre>
@@ -279,18 +327,18 @@
 		
 		/**
 		 * Filtering orders at checkout.
-		 *		 
+		 *
 		 * @since 1.8
 		 */
 		static function pmpro_checkout_order($morder)
-		{			
+		{
 			//load up values
-			if(isset($_REQUEST['number']))			
+			if(isset($_REQUEST['number']))
 				$braintree_number = sanitize_text_field($_REQUEST['number']);
 			else
 				$braintree_number = "";
 				
-			if(isset($_REQUEST['expiration_date']))			
+			if(isset($_REQUEST['expiration_date']))
 				$braintree_expiration_date = sanitize_text_field($_REQUEST['expiration_date']);
 			else
 				$braintree_expiration_date = "";
@@ -298,30 +346,30 @@
 			if(isset($_REQUEST['cvv']))
 				$braintree_cvv = sanitize_text_field($_REQUEST['cvv']);
 			else
-				$braintree_cvv = "";			
+				$braintree_cvv = "";
 
 			$morder->braintree = new stdClass();
 			$morder->braintree->number = $braintree_number;
 			$morder->braintree->expiration_date = $braintree_expiration_date;
-			$morder->braintree->cvv = $braintree_cvv;			
-						
+			$morder->braintree->cvv = $braintree_cvv;
+			
 			return $morder;
 		}
 		
 		/**
 		 * Don't require the CVV, but look for cvv (lowercase) that braintree sends
-		 *		
+		 *
 		 */
 		static function pmpro_required_billing_fields($fields)
 		{
-			unset($fields['CVV']);	
+			unset($fields['CVV']);
 			$fields['cvv'] = true;
 			return $fields;
 		}
 		
 		/**
 		 * Add some hidden fields and JavaScript to checkout.
-		 *		
+		 *
 		 */
 		static function pmpro_checkout_before_submit_button()
 		{
@@ -372,7 +420,7 @@
 			//get accepted credit cards
 			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);	
+			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 			
 			//include ours
 			?>
@@ -385,9 +433,9 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody>                    
-				<tr valign="top">		
-					<td>	
+			<tbody>
+				<tr valign="top">
+					<td>
 						<?php
 							$sslseal = pmpro_getOption("sslseal");
 							if($sslseal)
@@ -397,9 +445,9 @@
 							<?php
 							}
 						?>
-						<?php 
+						<?php
 							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
-							if($pmpro_include_cardtype_field) 
+							if($pmpro_include_cardtype_field)
 							{
 							?>
 							<div class="pmpro_payment-card-type">
@@ -407,16 +455,16 @@
 								<select id="CardType" name="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
 									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
-									<?php } ?>												
-								</select> 
+									<?php } ?>
+								</select>
 							</div>
-						<?php 
-							} 
+						<?php
+							}
 						?>
 					
 						<div class="pmpro_payment-account-number">
 							<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
-							<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" /> 
+							<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
 						</div>
 					
 						<div class="pmpro_payment-expiration">
@@ -443,13 +491,13 @@
 								<?php
 									}
 								?>
-							</select> 					
+							</select>
 						</div>
 					
 						<?php
 							$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 							if($pmpro_show_cvv)
-							{								
+							{
 						?>
 						<div class="pmpro_payment-cvv">
 							<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
@@ -468,7 +516,7 @@
 						</div>
 						<?php } ?>
 						
-					</td>			
+					</td>
 				</tr>
 			</tbody>
 			</table>
@@ -480,10 +528,10 @@
 		
 		/**
 		 * Process checkout.
-		 *		
+		 *
 		 */
 		function process(&$order)
-		{			
+		{
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{
@@ -496,7 +544,7 @@
 				if($this->charge($order))
 				{
 					if(pmpro_isLevelRecurring($order->membership_level))
-					{						
+					{
 						if($this->subscribe($order))
 						{
 							//yay!
@@ -511,12 +559,12 @@
 					else
 					{
 						//only a one time charge
-						$order->status = "success";	//saved on checkout page											
+						$order->status = "success";	//saved on checkout page
 						return true;
 					}
 				}
 				else
-				{					
+				{
 					if(empty($order->error)) {
 
 					    if ( !self::$is_loaded ) {
@@ -531,8 +579,8 @@
 
 					return false;
 				}
-			}				
-		}		
+			}
+		}
 		
 		function charge(&$order)
 		{
@@ -546,29 +594,29 @@
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
 			
-			//what amount to charge?			
+			//what amount to charge?
 			$amount = $order->InitialPayment;
-						
+			
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
 			$amount = round((float)$order->subtotal + (float)$tax, 2);
-						
+			
 			//create a customer
 			$this->getCustomer($order);
 			if(empty($this->customer) || !empty($order->error))
-			{				
+			{
 				//failed to create customer
 				return false;
-			}			
+			}
 			
 			//charge
 			try
-			{ 
+			{
 				$response = Braintree_Transaction::sale(array(
 				  'amount' => $amount,
-				  'customerId' => $this->customer->id				  
-				));								
+				  'customerId' => $this->customer->id
+				));
 			}
 			catch (Exception $e)
 			{
@@ -578,25 +626,33 @@
 				$order->shorterror = $order->error;
 				return false;
 			}
-						
+			
 			if($response->success)
 			{
-				//successful charge			
+				//successful charge
 				$transaction_id = $response->transaction->id;
-				$response = Braintree_Transaction::submitForSettlement($transaction_id);
+				try {
+					$response = Braintree_Transaction::submitForSettlement( $transaction_id );
+				} catch ( Exception $exception ) {
+					$order->errorcode = true;
+					$order->error = "Error: " . $exception->getMessage() . " (" . get_class($exception) . ")";
+					$order->shorterror = $order->error;
+					return false;
+                }
+                
 				if($response->success)
 				{
-					$order->payment_transaction_id = $transaction_id;				
-					$order->updateStatus("success");					
-					return true;		
+					$order->payment_transaction_id = $transaction_id;
+					$order->updateStatus("success");
+					return true;
 				}
 				else
-				{					
+				{
 					$order->errorcode = true;
 					$order->error = __("Error during settlement:", 'paid-memberships-pro' ) . " " . $response->message;
 					$order->shorterror = $response->message;
 					return false;
-				}								
+				}
 			}
 			else
 			{
@@ -605,11 +661,11 @@
 				$order->error = __("Error during charge:", 'paid-memberships-pro' ) . " " . $response->message;
 				$order->shorterror = $response->message;
 				return false;
-			}									
+			}
 		}
 		
 		/*
-			This function will return a Braintree customer object.			
+			This function will return a Braintree customer object.
 			If $this->customer is set, it returns it.
 			It first checks if the order has a subscription_transaction_id. If so, that's the customer id.
 			If not, it checks for a user_id on the order and searches for a customer id in the user meta.
@@ -629,8 +685,8 @@
 			//already have it?
 			if(!empty($this->customer) && !$force)
 				return $this->customer;
-						
-			//try based on user id	
+				
+			//try based on user id
 			if(!empty($order->user_id))
 				$user_id = $order->user_id;
 		
@@ -640,20 +696,20 @@
 		
 			//check for a braintree customer id
 			if(!empty($user_id))
-			{			
-				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);	
+			{
+				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);
 			}
-						
+			
 			//check for an existing Braintree customer
 			if(!empty($customer_id))
 			{
-				try 
+				try
 				{
 					$this->customer = Braintree_Customer::find($customer_id);
-										
+					
 					//update the customer address, description and card
 					if(!empty($order->accountnumber))
-					{						
+					{
 						//put data in array for Braintree API calls
 						$update_array = array(
 							'firstName' => $order->FirstName,
@@ -668,7 +724,7 @@
 								)
 							)
 						);
-												
+						
 						//address too?
 						if(!empty($order->billing))
 							//make sure Address2 is set
@@ -676,7 +732,7 @@
 								$order->Address2 = '';
 							
 							//add billing address to array
-							$update_array['creditCard']['billingAddress'] = array(								
+							$update_array['creditCard']['billingAddress'] = array(
 								'firstName' => $order->FirstName,
 								'lastName' => $order->LastName,
 								'streetAddress' => $order->Address1,
@@ -689,36 +745,42 @@
 									'updateExisting' => true
 								)
 							);
-												
-						//update
-						$response = Braintree_Customer::update($customer_id, $update_array);
+							
+							try {
+								//update
+								$response = Braintree_Customer::update($customer_id, $update_array);
+                            } catch ( Exception $exception ) {
+								$order->error = sprintf( __("Failed to update customer: %s", 'paid-memberships-pro' ), $exception->getMessage() );
+								$order->shorterror = $order->error;
+								return false;
+                            }
 												
 						if($response->success)
-						{							
+						{
 							$this->customer = $response->customer;
 							return $this->customer;
 						}
 						else
-						{							
+						{
 							$order->error = __("Failed to update customer.", 'paid-memberships-pro' ) . " " . $response->message;
 							$order->shorterror = $order->error;
 							return false;
 						}
 					}
-										
+					
 					return $this->customer;
-				} 
-				catch (Exception $e) 
-				{
-					//assume no customer found					
 				}
-			}			
-						
+				catch (Exception $e)
+				{
+					//assume no customer found
+				}
+			}
+			
 			//no customer id, create one
 			if(!empty($order->accountnumber))
-			{				
+			{
 				try
-				{					
+				{
 					$result = Braintree_Customer::create(array(
 						'firstName' => $order->FirstName,
 						'lastName' => $order->LastName,
@@ -741,25 +803,25 @@
 							)
 						)
 					));
-										
+					
 					if($result->success)
 					{
 						$this->customer = $result->customer;
 					}
 					else
-					{						
+					{
 						$order->error = __("Failed to create customer.", 'paid-memberships-pro' ) . " " . $result->message;
 						$order->shorterror = $order->error;
 						return false;
-					}									
+					}
 				}
 				catch (Exception $e)
-				{					
+				{
 					$order->error = __("Error creating customer record with Braintree:", 'paid-memberships-pro' ) . $e->getMessage() . " (" . get_class($e) . ")";
 					$order->shorterror = $order->error;
 					return false;
 				}
-								
+				
 				//if we have no user id, we need to set the customer id after the user is created
 				if(empty($user_id))
 				{
@@ -773,7 +835,7 @@
 				return $this->customer;
 			}
 			
-			return false;			
+			return false;
 		}
 		
 		function subscribe(&$order)
@@ -791,10 +853,10 @@
 			$this->getCustomer($order);
 			if(empty($this->customer) || !empty($order->error))
 				return false;	//error retrieving customer
-						
+				
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);			
+			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
 			/*
@@ -804,7 +866,7 @@
 				
 				Braintree only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
 			*/
-			//figure out the trial length (first payment handled by initial charge)			
+			//figure out the trial length (first payment handled by initial charge)
 			if($order->BillingPeriod == "Year")
 				$trial_period_days = $order->BillingFrequency * 365;	//annual
 			elseif($order->BillingPeriod == "Day")
@@ -818,13 +880,13 @@
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
 			
 			//filter the start date
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);			
+			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 
 			//convert back to days
 			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
 
 			//now add the actual trial set by the site
-			if(!empty($order->TrialBillingCycles))						
+			if(!empty($order->TrialBillingCycles))
 			{
 				$trialOccurrences = (int)$order->TrialBillingCycles;
 				if($order->BillingPeriod == "Year")
@@ -834,16 +896,16 @@
 				elseif($order->BillingPeriod == "Week")
 					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
 				else
-					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly				
-			}					
-									
+					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
+			}
+			
 			//subscribe to the plan
 			try
-			{				
+			{
 				$details = array(
 				  'paymentMethodToken' => $this->customer->creditCards[0]->token,
 				  'planId' => 'pmpro_' . $order->membership_id,
-				  'price' => $amount				  
+				  'price' => $amount
 				);
 				
 				if(!empty($trial_period_days))
@@ -856,10 +918,10 @@
 				if(!empty($order->TotalBillingCycles))
 					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
 				
-				$result = Braintree_Subscription::create($details);								
+				$result = Braintree_Subscription::create($details);
 			}
 			catch (Exception $e)
-			{				
+			{
 				$order->error = __("Error subscribing customer to plan with Braintree:", 'paid-memberships-pro' ) . " " . $e->getMessage() . " (" . get_class($e) . ")";
 				//return error
 				$order->shorterror = $order->error;
@@ -867,9 +929,9 @@
 			}
 			
 			if($result->success)
-			{			
-				//if we got this far, we're all good						
-				$order->status = "success";		
+			{
+				//if we got this far, we're all good
+				$order->status = "success";
 				$order->subscription_transaction_id = $result->subscription->id;
 				return true;
 			}
@@ -878,8 +940,8 @@
 				$order->error = __("Failed to subscribe with Braintree:", 'paid-memberships-pro' ) . " " . $result->message;
 				$order->shorterror = $result->message;
 				return false;
-			}	
-		}	
+			}
+		}
 		
 		function update(&$order)
 		{
@@ -890,13 +952,13 @@
 
 			//we just have to run getCustomer which will look for the customer and update it with the new token
 			$this->getCustomer($order, true);
-						
+			
 			if(!empty($this->customer) && empty($order->error))
 			{
 				return true;
-			}			
+			}
 			else
-			{				
+			{
 				return false;	//couldn't find the customer
 			}
 		}
@@ -912,12 +974,12 @@
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
-			//find the customer			
+			//find the customer
 			if(!empty($order->subscription_transaction_id))
 			{
 				//cancel
-				try 
-				{ 
+				try
+				{
 					$result = Braintree_Subscription::cancel($order->subscription_transaction_id);
 				}
 				catch(Exception $e)
@@ -925,12 +987,12 @@
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
 					$order->error = __("Could not find the subscription.", 'paid-memberships-pro' ) . " " . $e->getMessage();
 					$order->shorterror = $order->error;
-					return false;	//no subscription found	
+					return false;	//no subscription found
 				}
 				
 				if($result->success)
 				{
-					$order->updateStatus("cancelled");					
+					$order->updateStatus("cancelled");
 					return true;
 				}
 				else
@@ -938,7 +1000,7 @@
 					$order->updateStatus("cancelled");	//assume it's been cancelled already
 					$order->error = __("Could not find the subscription.", 'paid-memberships-pro' ) . " " . $result->message;
 					$order->shorterror = $order->error;
-					return false;	//no subscription found	
+					return false;	//no subscription found
 				}
 			}
 			else
@@ -946,7 +1008,7 @@
 				$order->error = __("Could not find the subscription.", 'paid-memberships-pro' );
 				$order->shorterror = $order->error;
 				return false;	//no customer found
-			}						
+			}
 		}
 
 		/*

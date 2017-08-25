@@ -74,23 +74,33 @@
 	}
 	
 	if(!pmpro_checkLevelForBraintreeCompatibility())
-	{		
-		$msg = -1;
-		$msgt = __("The billing details for some of your membership levels is not supported by Braintree.", 'paid-memberships-pro' );
+	{
+		global $pmpro_braintree_error;
+		
+		if ( false == $pmpro_braintree_error ) {
+			$msg  = - 1;
+			$msgt = __( "The billing details for some of your membership levels is not supported by Braintree.", 'paid-memberships-pro' );
+		}
 		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
 		{
 			if(!pmpro_checkLevelForBraintreeCompatibility($_REQUEST['edit']))
 			{
-				global $pmpro_braintree_error;
-				$pmpro_braintree_error = true;
-				$msg = -1;
-				$msgt = __("The billing details for this level are not supported by Braintree. Please review the notes in the Billing Details section below.", 'paid-memberships-pro' );
+				
+				// Don't overwrite existing messages
+				if ( false == $pmpro_braintree_error  ) {
+					$pmpro_braintree_error = true;
+					$msg                   = - 1;
+					$msgt                  = __( "The billing details for this level are not supported by Braintree. Please review the notes in the Billing Details section below.", 'paid-memberships-pro' );
+				}
 			}			
 		}
 		elseif($view == "pmpro-membershiplevels")
 			$msgt .= " " . __("The levels with issues are highlighted below.", 'paid-memberships-pro' );
-		else
-			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", 'paid-memberships-pro' ) . "</a>.";			
+		else {
+			if ( false === $pmpro_braintree_error  ) {
+				$msgt .= " <a href=\"" . admin_url( 'admin.php?page=pmpro-membershiplevels' ) . "\">" . __( "Please edit your levels", 'paid-memberships-pro' ) . "</a>.";
+			}
+		}
 	}
 	
 	if(!pmpro_checkLevelForTwoCheckoutCompatibility())
