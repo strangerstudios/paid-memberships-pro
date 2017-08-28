@@ -76,7 +76,7 @@
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
-					$pmpro_stripe_error = true;					
+					$pmpro_stripe_error = true;
 					$msg = -1;
 					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Stripe', $module);
 					
@@ -155,9 +155,45 @@
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
+				
+				// Add check for upstream customer record (based on supplied email address)
+				add_filter('pmpro_registration_checks', array( 'PMProGateway_stripe', 'pmpro_check_stripe_data' ), 99 );
+				/**
+                 * Uncomment to enable the upstream gateway check during the registration checks (slow!)
+                 * add_filter( 'pmpro_scan_gateway_for_existing_customer_record', '__return_true', 10, 0 );
+                 */
 			}
+			
+			add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 		}
-
+		
+		/**
+		 * Clear any saved (preserved) subscription IDs that should have been processed and are now timed out.
+		 */
+		public static function pmpro_clear_saved_subscriptions() {
+			
+		    if ( ! is_user_logged_in() ) {
+		        return;
+		    }
+		    
+		    global $current_user;
+		    $preserve = get_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', true );
+			
+			// Clean up the subscription timeout values (if applicable)
+		    if ( !empty( $preserve ) ) {
+			    
+			    foreach ( $preserve as $sub_id => $timestamp ) {
+			        
+			        // Make sure the ID has "timed out" (more than 3 days since it was last updated/added.
+				    if ( intval( $timestamp ) >= ( current_time( 'timestamp' ) + ( 3 * DAY_IN_SECONDS ) ) ) {
+					    unset( $preserve[ $sub_id ] );
+				    }
+			    }
+			    
+			    update_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', $preserve );
+		    }
+		}
+		
 		/**
 		 * Make sure Stripe is in the gateways list
 		 *
@@ -303,7 +339,7 @@
 						if(pmpro_require_billing) {
 							//build array for creating token
 							var args = {
-								number: jQuery('#AccountNumber').val(),								
+								number: jQuery('#AccountNumber').val(),
 								exp_month: jQuery('#ExpirationMonth').val(),
 								exp_year: jQuery('#ExpirationYear').val()
 								<?php
@@ -339,13 +375,13 @@
 							} else {
 								Stripe.createToken(args, stripeResponseHandler);
 							}
-								
-							// prevent the form from submitting with the default action							
+							
+							// prevent the form from submitting with the default action
 							return false;
 						} else {
 							this.submit();
 							return true;	//not using Stripe anymore
-						}													
+						}
 						});
 					});
 
@@ -374,7 +410,7 @@
 							if(jQuery('#CardType[name=CardType]').length)
 								jQuery('#CardType').val(response['card']['brand']);
 							else
-								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");							
+								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
 							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
 							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
 							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
@@ -405,12 +441,12 @@
 		 */
 		static function pmpro_required_billing_fields($fields)
 		{
-			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;			
+			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
 			
 			//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
-			unset($fields['CVV']);	
+			unset($fields['CVV']);
 			
-			//if using stripe lite, remove some fields from the required array			
+			//if using stripe lite, remove some fields from the required array
 			if ($pmpro_stripe_lite) {
 				//some fields to remove
 				$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
@@ -504,7 +540,7 @@
 		}
 
 		/**
-		 * Use our own payment fields at checkout. (Remove the name attributes.)		
+		 * Use our own payment fields at checkout. (Remove the name attributes.)
 		 * @since 1.8
 		 */
 		static function pmpro_include_payment_information_fields($include)
@@ -623,7 +659,7 @@
 						<?php
 							$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 							if($pmpro_show_cvv)
-							{							
+							{
 						?>
 						<div class="pmpro_payment-cvv">
 							<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
@@ -904,17 +940,31 @@
 					if(!empty($subscription))
 					{
 						$end_timestamp = $subscription->current_period_end;
-
+      
+						// Save the subscription ID to make sure the membership doesn't get cancelled by the webhook
+						$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
+						
+						// No previous values found, init the array
+						if ( empty( $preserve ) ) {
+						    $preserve = array();
+                        }
+						
+						// Store or update the subscription ID timestamp (for cleanup)
+						$preserve[$subscription->id] = current_time( 'timestamp' );
+      
+						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
+						
 						//cancel the old subscription
 						if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription))
 						{
-							//throw error and halt save
-							function pmpro_stripe_user_profile_fields_save_error($errors, $update, $user)
-							{
-								$errors->add('pmpro_stripe_updates',__('Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ));
-							}
-							add_filter('user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3);
-
+						    if ( !function_exists( 'pmpro_stripe_user_profile_fields_save_error' )) {
+							    //throw error and halt save
+							    function pmpro_stripe_user_profile_fields_save_error( $errors, $update, $user ) {
+								    $errors->add( 'pmpro_stripe_updates', __( 'Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ) );
+							    }
+							
+							    add_filter( 'user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3 );
+						    }
 							//stop processing updates
 							return;
 						}
@@ -1031,7 +1081,7 @@
 					
 					//if user is missing, delete the update info and continue
 					if(empty($user) || empty($user->ID))
-					{						
+					{
 						delete_user_meta($user_id, "pmpro_stripe_updates");
 						delete_user_meta($user_id, "pmpro_stripe_next_on_date_update");
 					
@@ -1039,7 +1089,7 @@
 					}
 					
 					$user_updates = $user->pmpro_stripe_updates;
-					$next_on_date_update = "";					
+					$next_on_date_update = "";
 					
 					//loop through updates looking for updates happening today or earlier
 					if(!empty($user_updates))
@@ -1301,7 +1351,7 @@
 				}
 
 				//look up by transaction id
-				if(empty($customer_id) && !empty($user_id)) 
+				if(empty($customer_id) && !empty($user_id))
 				{
 					//user id from this order or the user's last stripe order
 					if(!empty($order->payment_transaction_id))
@@ -1309,7 +1359,7 @@
 					else
 					{
 						//find the user's last stripe order
-						$last_order = new MemberOrder();						
+						$last_order = new MemberOrder();
 						$last_order->getLastMemberOrder($user_id, array('success', 'cancelled'), NULL, 'stripe', $order->Gateway->gateway_environment);
 						if(!empty($last_order->payment_transaction_id))
 							$payment_transaction_id = $last_order->payment_transaction_id;
@@ -1324,7 +1374,7 @@
 							$charge = Stripe_Charge::retrieve($payment_transaction_id);
 							if(!empty($charge) && !empty($charge->customer))
 								$customer_id = $charge->customer;
-						} 
+						}
 						else if(strpos($payment_transaction_id, "in_") !== false)
 						{
 							//invoice look it up
@@ -1346,7 +1396,7 @@
 			elseif(!empty($order->FirstName))
 				$name = $order->FirstName;
 			elseif(!empty($order->LastName))
-				$name = $order->LastName;	
+				$name = $order->LastName;
 
 			if(empty($name) && !empty($user->ID))
 			{
@@ -1848,7 +1898,7 @@
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
 				{
 					//get the subscription and return the current_period end or false
-					$subscription = $order->Gateway->getSubscription($order);					
+					$subscription = $order->Gateway->getSubscription($order);
 					
 					if(!empty($subscription->current_period_end))
 						return $subscription->current_period_end;
@@ -1856,7 +1906,7 @@
 						return false;
 				}
 			}
-						
+			
 			return $timestamp;
 		}
 
@@ -1937,4 +1987,105 @@
 				return false;
 			}
 		}
+		
+		/**
+         * Check upstream (Stripe.com) for existing subscriptions, etc based on $_REQUEST[] array
+         *
+		 * @param bool $continue
+         * @return bool
+		 */
+		public static function pmpro_check_stripe_data( $continue ) {
+		    
+		    global $submit;
+		    global $bemail;
+		    global $username;
+            global $pmpro_level;
+            
+		    $u_user = null;
+		    $e_user = null;
+		    $user = null;
+		    $stripe_id = null;
+		    $customer = null;
+		    
+		    // This shouldn't happen, but let's play it safe.
+		    if ( false === $submit ) {
+		        return $continue;
+            }
+            
+            // Use exists?
+		    if ( !empty( $username ) ) {
+		        $u_user = get_user_by( 'login', $username );
+            }
+            
+            if ( !empty( $bemail ) ) {
+		        $e_user = get_user_by( 'email', $bemail );
+            }
+            
+            // Does the email address match?
+            if ( !empty( $u_user ) && !empty( $e_user ) && ( $u_user->user_email != $e_user->user_email ) ) {
+		        // Ok. It's the same user record
+                $user = $u_user;
+            }
+            
+            if ( ! empty( $user ) ) {
+		        $stripe_id = get_user_meta( $user->ID, 'pmpro_stripe_customerid', true );
+            }
+            
+            // No local stripe ID found
+            if ( empty( $stripe_id )) {
+	
+	            // Should we scan through all Stripe records for the user?
+		        if ( true === apply_filters( 'pmpro_scan_gateway_for_existing_customer_record', false ) ) {
+		            
+		            if ( false === ( $customer = self::find_stripe_customer_by_email( $user->user_email ) ) ) {
+		                $continue = true;
+                    }
+                }
+            } else {
+		        // Customer has a pre-existing stripe record?
+		        $customer = Stripe_Customer::retrieve( $stripe_id );
+            }
+            
+            // Stripe record exist, but current level isn't a recurring payment level
+            if ( !empty( $customer ) && false === pmpro_isLevelRecurring( $pmpro_level ) && ! empty( $customer->subscriptions ) ) {
+		        
+		        $continue = false;
+	            pmpro_setMessage( __( "Please log in before renewing/updating your membership", 'paid-memberships-pro' ), "pmpro_warning" );
+             
+            }
+		    return $continue;
+        }
+		
+		/**
+         * Scan through Stripe.com data for the user's email address
+         *
+		 * @param string $user_email
+         *
+         * @return bool|Stripe_Customer - Return false or the Stripe.com Customer record
+		 */
+        public static function find_stripe_customer_by_email( $user_email ) {
+	
+	        $customers = Stripe_Customer::all( array( 'limit' => 100 ) );
+         
+	        if ( empty( $customers ) ) {
+	            return false;
+            }
+            
+            // Search through all customer data on stripe.com
+	        do {
+	            // Process the customer records we've received
+		        foreach ( $customers->autoPagingIterator() as $customer ) {
+			
+			        // Is the current Stripe customer record the one we're looking for?
+			        if ( $customer->email == $user_email ) {
+            
+				        return $customer;
+			        }
+		        }
+		
+		        // Fetch new batch of customers (if possible)
+		        $customers = Stripe_Customer::all( array( 'limit' => 100, 'starting_after' => end($customers->data ) ) );
+		        
+	        } while ( $customers->has_more );
+        }
 	}
