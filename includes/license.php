@@ -83,15 +83,15 @@ function pmpro_license_settings_page() {
 	<div class="wrap">
 		<h2><?php _e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h2>
 		<p>Paid Memberships Pro and our add ons are distributed under the <a target="_blank" href='http://www.gnu.org/licenses/gpl-2.0.html'>GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.</p>
-		<p><strong>An annual support license is recommended for websites running Paid Memberships Pro.</strong> <a href="http://www.paidmembershipspro.com/pricing/" target="_blank">View Support License Options &raquo;</a></p>			
+		<p><strong>An annual support license is recommended for websites running Paid Memberships Pro.</strong> <a href="http://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=license_notice" target="_blank">View Support License Options &raquo;</a></p>			
 		<div class="metabox-holder">
 			<div class="postbox">		
 				<h3 class="hndle"><?php _e('License Key', 'paid-memberships-pro' );?></h3>
 				<div class="inside">										
 					<?php if(!pmpro_license_isValid() && empty($key)) { ?>
-						<div class="notice notice-error inline"><p><strong><?php _e('Enter your support license key.</strong> Your license key can be found in your membership email receipt or in your <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a>.', 'paid-memberships-pro' );?></p></div>
+						<div class="notice notice-error inline"><p><strong><?php _e('Enter your support license key.</strong> Your license key can be found in your membership email receipt or in your <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/?utm_source=plugin&utm_medium=banner&utm_campaign=license_notice" target="_blank">Membership Account</a>.', 'paid-memberships-pro' );?></p></div>
 					<?php } elseif(!pmpro_license_isValid()) { ?>
-						<div class="notice notice-error inline"><p><strong><?php _e('Your license is invalid or expired.', 'paid-memberships-pro' );?></strong> <?php _e('Visit the PMPro <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p></div>
+						<div class="notice notice-error inline"><p><strong><?php _e('Your license is invalid or expired.', 'paid-memberships-pro' );?></strong> <?php _e('Visit the PMPro <a href="http://www.paidmembershipspro.com/login/?redirect_to=/membership-account/?utm_source=plugin&utm_medium=banner&utm_campaign=license_notice" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p></div>
 					<?php } else { ?>													
 						<div class="notice inline"><?php printf(__('<p><strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.</p>', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></div>
 					<?php } ?>					
