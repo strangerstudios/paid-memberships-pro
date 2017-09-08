@@ -370,7 +370,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		}
 
 		if ( ! empty( $oldemail ) ) {
-			pmpro_setMessage( __( "That email address is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
+			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
 		}

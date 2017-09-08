@@ -94,7 +94,17 @@ function pmpro_get_order_json() {
 add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
 
 function pmpro_update_level_order() {
-    echo pmpro_setOption('level_order');
+	
+	$level_order = null;
+	
+	if ( isset( $_REQUEST['level_order'] ) && is_array( $_REQUEST['level_order'] ) ) {
+		$level_order = array_map( 'intval', $_REQUEST['level_order'] );
+		$level_order = implode(',', $level_order );
+	} else if ( isset( $_REQUEST['level_order'] ) ) {
+		$level_order = sanitize_text_field( $_REQUEST['level_order'] );
+	}
+	
+	echo pmpro_setOption('level_order', $level_order);
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
