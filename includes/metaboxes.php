@@ -4,7 +4,8 @@
 */
 function pmpro_page_meta()
 {
-	global $membership_levels, $post, $wpdb;
+	global $post, $wpdb;
+	$membership_levels = pmpro_getAllLevels(true, true);
 	$page_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'");
 ?>
     <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
