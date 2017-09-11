@@ -10,16 +10,17 @@
 
 .pmpro_admin .pmpro_banner h2 {float: left; }
 .pmpro_admin .pmpro_banner .pmpro_meta {float: left; margin: 26px 0 0 0; font-size: 12px; }
-.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_tag-blue {margin: 0 0 0 5px; }
 .pmpro_admin .pmpro_banner .pmpro_logo {float: left; margin: 0 1em 0 0; width: 350px; height: 75px; } 
 .pmpro_admin .pmpro_banner ul.pmpro_menu {clear: both; border: 1px solid #CCC; border-radius: 5px; -moz-border-radius: 5px; background: #FFF; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li {display: inline-block; margin: 10px 0; padding: 0px 10px; border-right: 1px solid #CCC; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li a, .pmpro_admin .pmpro_banner ul.pmpro_menu li a:link {color: #1e0741; text-decoration: none; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li a:hover {text-decoration: underline; color: #412f5b; }
 
-.pmpro_admin .pmpro_tag-grey {display: inline-block; font-size: 11px; font-weight: bold; position: relative; padding: 2px 5px; border: 1px solid #CCC; background: whiteSmoke; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; }
-.pmpro_admin .pmpro_tag-blue {display: inline-block; font-size: 11px; font-weight: bold; position: relative; padding: 2px 5px; border: 1px solid #2997c8; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; background: #2997c8; color: #FFF; text-decoration: none; }
-.pmpro_admin a.pmpro_tag-blue:hover {background: #77a02e; border: 1px solid #77a02e; }
+.pmpro_admin .pmpro_tag {border: 1px solid; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; display: inline-block; font-size: 13px; font-weight: bold; line-height: 20px; margin: 0; position: relative; padding: 4px 5px; text-decoration: none; } 
+.pmpro_admin .pmpro_tag-grey {border-color: #CCC; background: #F5F5F5; color: #666; }
+.pmpro_admin .pmpro_tag-blue {border-color: #2997c8; background: #2997c8; color: #FFF; }
+.pmpro_admin a.pmpro_tag-blue:hover {background: #77a02e; border-color: #77a02e; }
+.pmpro_admin a.pmpro_tag-grey:hover {background: #E5E5E5; }
 
 .pmpro_admin .topborder {border-top: 1px solid #CCC; margin-top: 1em; padding-top: 1em; }
 .pmpro_admin #editorcontainer #description {width: 100%; height: 180px; }
