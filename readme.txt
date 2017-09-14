@@ -127,7 +127,9 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed redirect error that occured when the levels page was not set.
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
 * BUG FIX/ENHANCEMENT: Better error handling for Braintree.
+* BUG FIX/ENHANCEMENT: Membership stats widget now shows first 3 levels based on level order.
 * ENHANCEMENT: Added pagination to the discount codes page in the admin. Also sorting codes in descending order by ID. Use the pmpro_discount_codes_per_page filter to change the per page limit from 15.
+* ENHANCEMENT: Better error message if trying to checkout using an existing user's email address.
 
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
