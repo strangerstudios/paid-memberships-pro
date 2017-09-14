@@ -117,6 +117,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.4 =
+* ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.																			 
 * BUG FIX: Fixed issue where PayPal was not working for amounts over $1000.
 * BUG FIX: Fixed issue where updating a Stripe subscription from the edit user page could cancel the subscription once the webhook fired.
 * BUG FIX: Fixed issue where "admin_cancelled" memberships weren't being calculated correctly in membership reports.
