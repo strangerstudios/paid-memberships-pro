@@ -299,10 +299,10 @@
 				//other args
 				$paypal_args = array( 
 					'cmd'           => '_xclick-subscriptions', 
-					'a1'			=> number_format($initial_payment, 2),
+					'a1'			=> number_format($initial_payment, 2, '.', ''),
 					'p1'			=> $order->BillingFrequency,
 					't1'			=> $period,
-					'a3'			=> number_format($amount, 2),
+					'a3'			=> number_format($amount, 2, '.', ''),
 					'p3'			=> $order->BillingFrequency,
 					't3'			=> $period,
 					'item_name'     => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
@@ -399,7 +399,7 @@
 				//other args
 				$paypal_args = array( 
 					'cmd'           => '_xclick', 
-					'amount'        => number_format($initial_payment, 2), 				
+					'amount'        => number_format($initial_payment, 2, '.', ''), 				
 					'item_name'     => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
 					'email'         => $order->Email, 
 					'no_shipping'   => '1', 

@@ -153,13 +153,13 @@ function pmpro_membership_level_profile_fields($user)
         <tr class="more_level_options">
             <th></th>
             <td>
-                <label for="send_admin_change_email"><input value="1" id="send_admin_change_email" name="send_admin_change_email" type="checkbox"> Send the user an email about this change.</label>
+                <label for="send_admin_change_email"><input value="1" id="send_admin_change_email" name="send_admin_change_email" type="checkbox"> <?php _e( 'Send the user an email about this change.', 'paid-memberships-pro' ); ?></label>
             </td>
         </tr>
         <tr class="more_level_options">
             <th></th>
             <td>
-                <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> Cancel this user's subscription at the gateway.</label>
+                <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> <?php _e("Cancel this user's subscription at the gateway.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
 		<?php
@@ -192,7 +192,7 @@ function pmpro_membership_level_profile_fields($user)
 				//cancelling sub or not
 				if($membership_level_select.val() == 0) {
                     jQuery("#cancel_subscription").attr('checked', true);
-                    jQuery("#current_level_cost").text("Not paying.");
+                    jQuery("#current_level_cost").text(<?php _e("Not paying.", "paid-memberships-pro" ); ?>);
                 }
                 else {
                     jQuery("#cancel_subscription").attr('checked', false);
@@ -239,7 +239,7 @@ function pmpro_membership_level_profile_fields($user)
                 if(jQuery(this).attr('checked') == 'checked')
                 {
                     jQuery("#cancel_description").hide();
-                    jQuery("#current_level_cost").text("Not paying.");
+                    jQuery("#current_level_cost").text(<?php _e("Not paying.", "paid-memberships-pro" ); ?>);
                 }
                 else
                 {

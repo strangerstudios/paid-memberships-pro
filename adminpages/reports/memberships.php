@@ -30,7 +30,25 @@ function pmpro_report_memberships_widget() {
 	global $wpdb;
 	
 	//get levels to show stats on first 3
-	$levels = pmpro_getAllLevels(true, true);
+	$pmpro_levels = pmpro_getAllLevels(true, true);
+	
+	$pmpro_level_order = pmpro_getOption('level_order');
+
+	if(!empty($pmpro_level_order))
+	{
+		$order = explode(',',$pmpro_level_order);
+
+		//reorder array
+		$reordered_levels = array();
+		foreach($order as $level_id) {
+			foreach($pmpro_levels as $key=>$level) {
+				if($level_id == $level->id)
+					$reordered_levels[$key] = $pmpro_levels[$key];
+			}
+		}
+
+		$pmpro_levels = $reordered_levels;
+	}
 ?>
 <span id="pmpro_report_memberships">	
 	<table class="wp-list-table widefat fixed striped">
@@ -62,7 +80,7 @@ function pmpro_report_memberships_widget() {
 				$count = 0;
 				$max_level_count = apply_filters( 'pmpro_admin_reports_included_levels', 3 );
 			
-				foreach($levels as $level) { 
+				foreach($pmpro_levels as $level) { 
 					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">

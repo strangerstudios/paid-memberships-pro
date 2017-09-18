@@ -278,124 +278,129 @@
 			{
 				//stripe js library
 				wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
+				
+				if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 
-				//stripe js code for checkout
-				function pmpro_stripe_javascript()
-				{
-					global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
-				?>
-				<script type="text/javascript">
-					<!--
-					// this identifies your website in the createToken call below
-					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-
-					pmpro_require_billing = true;
-
-					var tokenNum = 0;
-
-					jQuery(document).ready(function() {
-						jQuery(".pmpro_form").submit(function(event) {
-						
-						// prevent the form from submitting with the default action
-						event.preventDefault();
-						
-						//double check in case a discount code made the level free
-						if(pmpro_require_billing) {
-							//build array for creating token
-							var args = {
-								number: jQuery('#AccountNumber').val(),								
-								exp_month: jQuery('#ExpirationMonth').val(),
-								exp_year: jQuery('#ExpirationYear').val()
-								<?php
-									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
-									if(!empty($pmpro_stripe_verify_address))
-									{
+					//stripe js code for checkout
+					function pmpro_stripe_javascript()
+					{
+						global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
+					?>
+					<script type="text/javascript">
+						<!--
+						// this identifies your website in the createToken call below
+						Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
+	
+						pmpro_require_billing = true;
+	
+						var tokenNum = 0;
+	
+						jQuery(document).ready(function() {
+							jQuery(".pmpro_form").submit(function(event) {
+							
+							// prevent the form from submitting with the default action
+							event.preventDefault();
+							
+							//double check in case a discount code made the level free
+							if(pmpro_require_billing) {
+								//build array for creating token
+								var args = {
+									number: jQuery('#AccountNumber').val(),								
+									exp_month: jQuery('#ExpirationMonth').val(),
+									exp_year: jQuery('#ExpirationYear').val()
+									<?php
+										$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
+										if(!empty($pmpro_stripe_verify_address))
+										{
+										?>
+										,address_line1: jQuery('#baddress1').val(),
+										address_line2: jQuery('#baddress2').val(),
+										address_city: jQuery('#bcity').val(),
+										address_state: jQuery('#bstate').val(),
+										address_zip: jQuery('#bzipcode').val(),
+										address_country: jQuery('#bcountry').val()
+									<?php
+										}
 									?>
-									,address_line1: jQuery('#baddress1').val(),
-									address_line2: jQuery('#baddress2').val(),
-									address_city: jQuery('#bcity').val(),
-									address_state: jQuery('#bstate').val(),
-									address_zip: jQuery('#bzipcode').val(),
-									address_country: jQuery('#bcountry').val()
-								<?php
+								};
+	
+								//add CVC if not blank
+								if(jQuery('#CVV').val().length)
+									args['cvc'] = jQuery('#CVV').val();
+	
+								//add first and last name if not blank
+								if (jQuery('#bfirstname').length && jQuery('#blastname').length)
+									args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
+	
+								//create token(s)
+								if (jQuery('#level').length) {
+									var levelnums = jQuery("#level").val().split(",");
+									for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+										Stripe.createToken(args, stripeResponseHandler);
 									}
-								?>
-							};
-
-							//add CVC if not blank
-							if(jQuery('#CVV').val().length)
-								args['cvc'] = jQuery('#CVV').val();
-
-							//add first and last name if not blank
-							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
-								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
-
-							//create token(s)
-							if (jQuery('#level').length) {
-								var levelnums = jQuery("#level").val().split(",");
-								for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
+								} else {
 									Stripe.createToken(args, stripeResponseHandler);
 								}
+									
+								// prevent the form from submitting with the default action							
+								return false;
 							} else {
-								Stripe.createToken(args, stripeResponseHandler);
-							}
-								
-							// prevent the form from submitting with the default action							
-							return false;
-						} else {
-							this.submit();
-							return true;	//not using Stripe anymore
-						}													
+								this.submit();
+								return true;	//not using Stripe anymore
+							}														
+							});
 						});
-					});
 
-					function stripeResponseHandler(status, response) {
-						if (response.error) {
-							// re-enable the submit button
-							jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-
-							//hide processing message
-							jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-
-							// show the errors on the form
-							alert(response.error.message);
-							jQuery(".payment-errors").text(response.error.message);
-						} else {
-							var form$ = jQuery("#pmpro_form, .pmpro_form");
-							// token contains id, last4, and card type
-							var token = response['id'];
-							// insert the token into the form so it gets submitted to the server
-							form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
-							tokenNum++;
-							
-							//console.log(response);
-
-							//insert fields for other card fields
-							if(jQuery('#CardType[name=CardType]').length)
-								jQuery('#CardType').val(response['card']['brand']);
-							else
-								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");							
-							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
-							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
-
-							// and submit
-							form$.get(0).submit();
+						function stripeResponseHandler(status, response) {
+							if (response.error) {
+								// re-enable the submit button
+								jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
+	
+								//hide processing message
+								jQuery('#pmpro_processing_message').css('visibility', 'hidden');
+	
+								// show the errors on the form
+								alert(response.error.message);
+								jQuery(".payment-errors").text(response.error.message);
+							} else {
+								var form$ = jQuery("#pmpro_form, .pmpro_form");
+								// token contains id, last4, and card type
+								var token = response['id'];
+								// insert the token into the form so it gets submitted to the server
+								form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
+								tokenNum++;
+								
+								//console.log(response);
+	
+								//insert fields for other card fields
+								if(jQuery('#CardType[name=CardType]').length)
+									jQuery('#CardType').val(response['card']['brand']);
+								else
+									form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");							
+								form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
+								form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
+								form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
+	
+								// and submit
+								form$.get(0).submit();
+							}
 						}
+						-->
+					</script>
+					<?php
 					}
-					-->
-				</script>
-				<?php
+					add_action("wp_head", "pmpro_stripe_javascript");
 				}
-				add_action("wp_head", "pmpro_stripe_javascript");
-
-				//don't require the CVV
-				function pmpro_stripe_dont_require_CVV($fields)
-				{
-					unset($fields['CVV']);
-					return $fields;
+				
+				if ( ! function_exists( 'pmpro_stripe_dont_require_CVV' ) ) {
+					//don't require the CVV
+					function pmpro_stripe_dont_require_CVV($fields)
+					{
+						unset($fields['CVV']);
+						return $fields;
+					}
+					add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
 				}
-				add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
 			}
 		}
 		
