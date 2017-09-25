@@ -61,6 +61,11 @@
 			'NOK' => __('Norwegian Krone', 'paid-memberships-pro' ),
 			'PHP' => __('Philippine Pesos', 'paid-memberships-pro' ),
 			'PLN' => __('Polish Zloty', 'paid-memberships-pro' ),
+			'RUB' => array(
+				'name' => __('Russian Ruble (&#8381;)', 'paid-memberships-pro'),
+				'symbol' => '&#8381;',
+				'position' => 'right'
+			),
 			'SGD' => array(
 				'name' => __('Singapore Dollar (&#36;)', 'paid-memberships-pro' ),
 				'symbol' => '&#36;',
