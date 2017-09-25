@@ -116,16 +116,25 @@
 					$morder = new MemberOrder();
 					$morder->user_id = $old_order->user_id;
 					$morder->membership_id = $old_order->membership_id;
+					
+					global $pmpro_currency;
+					global $pmpro_currencies;
+					
+					$currency_unit_multiplier = 100; // 100 cents / USD
 
+					//account for zero-decimal currencies like the Japanese Yen
+					if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
+						$currency_unit_multiplier = 1;
+					
 					if(isset($invoice->amount))
 					{
-						$morder->subtotal = $invoice->amount / 100;					
+						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;					
 					}
 					elseif(isset($invoice->subtotal))
 					{
-						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / 100 : 0);
-						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / 100 : null);
-						$morder->total = (! empty($invoice->total) ? $invoice->total / 100 : 0);
+						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0);
+						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : null);
+						$morder->total = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 					}
 
 					$morder->payment_transaction_id = $invoice->id;
