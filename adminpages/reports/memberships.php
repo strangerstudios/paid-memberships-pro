@@ -49,6 +49,8 @@ function pmpro_report_memberships_widget() {
 
 		$pmpro_levels = $reordered_levels;
 	}
+	
+	$pmpro_levels = apply_filters( 'pmpro_report_levels', $pmpro_levels );
 ?>
 <span id="pmpro_report_memberships">	
 	<table class="wp-list-table widefat fixed striped">
