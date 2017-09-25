@@ -117,10 +117,21 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.4 =
-* BUG FIX: Fixed issue where "adnim_cancelled" memberships weren't being calculated correctly in membership reports.
+* ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.																			 
+* BUG FIX: Fixed issue where PayPal was not working for amounts over $1000.
+* BUG FIX: Fixed issue where updating a Stripe subscription from the edit user page could cancel the subscription once the webhook fired.
+* BUG FIX: Fixed issue where "admin_cancelled" memberships weren't being calculated correctly in membership reports.
+* BUG FIX: Fixed issue where users could not drag and drop to change the order of membership levels.
 * BUG FIX: pmpro_getMembershipLevelsForUser() would sometimes return duplicate levels in the array if the user had multiple active entries in the pmpro_memberships_users table.
+* BUG FIX: Updated includes/metaboxes.php to call pmpro_getAllLevels() instead of relying on the $membership_levels global which is problematic.
+* BUG FIX: Fixed a few strings that weren't wrapped for translation or were using the old text domain.
+* BUG FIX: Fixed redirect error that occured when the levels page was not set.
+* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching up the lines of text.
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
+* BUG FIX/ENHANCEMENT: Better error handling for Braintree.
+* BUG FIX/ENHANCEMENT: Membership stats widget now shows first 3 levels based on level order.
 * ENHANCEMENT: Added pagination to the discount codes page in the admin. Also sorting codes in descending order by ID. Use the pmpro_discount_codes_per_page filter to change the per page limit from 15.
+* ENHANCEMENT: Better error message if trying to checkout using an existing user's email address.
 
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.

@@ -97,7 +97,12 @@ function pmpro_setOption($s, $v = NULL, $sanitize_function = 'sanitize_text_fiel
 {
 	//no value is given, set v to the p var
 	if($v === NULL && isset($_POST[$s]))
-		$v = call_user_func($sanitize_function, $_POST[$s]);
+	{	
+		if(is_array($_POST[$s]))
+			$v = array_map($sanitize_function, $_POST[$s]);
+		else
+			$v = call_user_func($sanitize_function, $_POST[$s]);
+	}
 
 	if(is_array($v))
 		$v = implode(",", $v);
@@ -151,11 +156,15 @@ function pmpro_url($page = NULL, $querystring = "", $scheme = NULL)
 	//figure out querystring
 	$querystring = str_replace("?", "", $querystring);
 	parse_str( $querystring, $query_args );
-	$url = esc_url_raw( add_query_arg( $query_args, $url ) );
+	
+	if(!empty($url)) {
+		
+		$url = esc_url_raw( add_query_arg( $query_args, $url ) );
 
-	//figure out scheme
-	if(is_ssl())
-		$url = str_replace("http:", "https:", $url);
+		//figure out scheme
+		if(is_ssl())
+			$url = str_replace("http:", "https:", $url);
+	}
 
 	return $url;
 }

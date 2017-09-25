@@ -96,12 +96,14 @@ class pmpro_mimetype {
           
    } 
 
-   function privBuildMimeArray() { 
-      return array( 
+   function privBuildMimeArray() {
+
+   $mimetypes =  array( 
          "ez" => "application/andrew-inset", 
          "hqx" => "application/mac-binhex40", 
          "cpt" => "application/mac-compactpro", 
-         "doc" => "application/msword", 
+         "doc" => "application/msword",
+         "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
          "bin" => "application/octet-stream", 
          "dms" => "application/octet-stream", 
          "lha" => "application/octet-stream", 
@@ -234,6 +236,10 @@ class pmpro_mimetype {
          "movie" => "video/x-sgi-movie", 
          "ice" => "x-conference-xcooltalk" 
       ); 
+
+      $mimetypes = add_filter( 'pmpro_mimetypes_array', $mimetypes );
+
+      return $mimetypes;
    } 
 } 
 ?>
