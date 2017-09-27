@@ -41,7 +41,7 @@
 			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe\Stripe::setAPIVersion("2015-07-13");
+				Stripe\Stripe::setAPIVersion("2017-08-15");
                 self::$is_loaded = true;
 			}
 			
@@ -1039,6 +1039,37 @@
 					update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
 				}
 			}
+		}
+		
+		/**
+		 * Before processing a checkout, check for pending invoices we want to clean up.
+		 * This prevents double billing issues in cases where Stripe has pending invoices
+		 * because of an expired credit card/etc and a user checks out to renew their subscription
+		 * instead of updating their billing information via the billing info page.
+		 */
+		static function pmpro_checkout_before_processing() {			
+			//we're only worried about cases where the user is logged in
+			if(!is_user_logged_in())
+				return;
+			
+			//get user and membership level			
+			global $current_user;
+			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+			
+			//no level, then probably no subscription at Stripe anymore
+			if(empty($membership_level))
+				return;
+			
+			//does this user have an existing subscription at Stripe?
+			
+			
+			//check for pending invoices
+			
+			//cancel the invoices
+			
+			//Stripe was probably going to cancel this subscription 7 days past the payment failure
+			
+			//so let's cancel the user's susbcription with that date as the enddate for their current membership level
 		}
 
 		/**
