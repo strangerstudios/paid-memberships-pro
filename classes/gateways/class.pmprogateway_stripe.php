@@ -1346,6 +1346,7 @@
 				try
 				{
 					$this->customer = Stripe_Customer::create(array(
+							  'type' => 'custom',
 							  "description" => $name . " (" . $email . ")",
 							  "email" => $order->Email,
 							  "card" => $order->stripeToken
@@ -1931,8 +1932,8 @@
 			if(strpos($transaction_id, "in_") !== false) {
 				$invoice = Stripe_Invoice::retrieve($transaction_id);
 
-				if(!empty($invoice) && !empty($invoice->payment))
-					$transaction_id = $invoice->payment;
+				if(!empty($invoice) && !empty($invoice->charge))
+					$transaction_id = $invoice->charge;
 			}
 
 			//get the charge
