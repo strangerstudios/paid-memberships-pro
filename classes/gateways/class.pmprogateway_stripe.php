@@ -1345,8 +1345,7 @@
 			{
 				try
 				{
-					$this->customer = Stripe_Customer::create(array(
-							  'type' => 'custom',
+					$this->customer = Stripe_Customer::create(array(							 
 							  "description" => $name . " (" . $email . ")",
 							  "email" => $order->Email,
 							  "card" => $order->stripeToken
