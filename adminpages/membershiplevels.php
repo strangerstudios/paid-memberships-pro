@@ -650,7 +650,7 @@
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 			<br class="clear" />
-		    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
+		    <p><?php echo sprintf('%s Drag and drop membership levels to reorder them on the Levels page.', ' <span class="dashicons dashicons-move"></span> <span class="dashicons dashicons-minus"></span> ', 'paid-memberships-pro' ); ?></p>
 	    <?php } ?>
 
 	    <?php
@@ -660,6 +660,7 @@
 	    <table class="widefat membership-levels">
 		<thead>
 			<tr>
+				<th><?php _e('', 'paid-memberships-pro' );?></th>
 				<th><?php _e('ID', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Name', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Billing Details', 'paid-memberships-pro' );?></th>
@@ -675,6 +676,7 @@
 				{
 			?>
 			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
+				<td><?php echo '<span class="dashicons dashicons-move"></span>'; ?></td>
 				<td><?php echo $level->id?></td>
 				<td class="level_name"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php esc_attr_e( $level->name ); ?></a></td>
 				<td>
