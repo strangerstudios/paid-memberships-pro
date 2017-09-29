@@ -10,7 +10,7 @@
 	//check nonce for saving settings
 	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_advancedsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_advancedsettings_nonce'))) {
 		$msg = -1;
-		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
 	}
 	
