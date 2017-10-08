@@ -26,7 +26,7 @@ $post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'p
 //check nonce for saving settings
 if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_pagesettings_nonce'))) {
 	$msg = -1;
-	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 	unset($_REQUEST['savesettings']);
 }
 
@@ -65,7 +65,7 @@ if (!empty($_REQUEST['savesettings'])) {
 //check nonce for generating pages
 if (!empty($_REQUEST['createpages']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('createpages', 'pmpro_pagesettings_nonce'))) {
 	$msg = -1;
-	$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+	$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 	unset($_REQUEST['createpages']);
 }
 
