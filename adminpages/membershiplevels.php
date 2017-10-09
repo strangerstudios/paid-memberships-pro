@@ -40,7 +40,7 @@
 	//check nonce
 	if(!empty($action) && (empty($_REQUEST['pmpro_membershiplevels_nonce']) || !check_admin_referer($action, 'pmpro_membershiplevels_nonce'))) {
 		$msg = -1;
-		$msgt = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$action = false;
 	}		
 	
