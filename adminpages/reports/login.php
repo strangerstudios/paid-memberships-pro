@@ -346,7 +346,7 @@ function pmpro_report_login_wp_views()
 				
 		//track logins for user
 		$views['last'] = date_i18n(get_option("date_format"), $now);
-		$views['alltime'] = $views['alltime] + 1;
+		$views['alltime'] = $views['alltime'] + 1;
 		$thismonth = date_i18n("n", $now);
 		if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
 			$views['month'] = $views['month'] + 1;
@@ -418,7 +418,7 @@ function pmpro_report_login_wp_login($user_login)
 	if(empty($logins))
 		$logins = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 	
-	$logins['alltime'] = $logins['alltime] + 1;
+	$logins['alltime'] = $logins['alltime'] + 1;
 	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $logins['thisdate'])
 		$logins['today'] = $logins['today'] + 1;
