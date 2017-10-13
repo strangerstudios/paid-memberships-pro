@@ -544,7 +544,6 @@
 
 					// Both recurring and expiration checkboxes must be checked - if so show a popup alert and warning message below expiration.
 					if( jQuery('#recurring').is(':checked') && jQuery('#expiration').is(':checked') ) {
-					    alert( '<?php _e( 'Warning! You have selected both recurring settings and expiration date settings. This will cause memberships to cancel once the expiration date has been reached regardless of the members subscription status.', 'paid-memberships-pro' ); ?>' );
 					    jQuery('#pmpro_recurring_warning_msg').show();
 					}
 
