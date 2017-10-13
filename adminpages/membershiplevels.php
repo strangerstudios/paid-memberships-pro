@@ -518,9 +518,40 @@
 						</select>
 						<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
 					</td>
+
+				</tr>
+				<tr>
+					<td colspan="2"><span id="pmpro_recurring_warning_msg" style="display:none;color:red;"><?php _e( 'Warning! You have selected both recurring settings and expiration date settings. This will cause memberships to cancel once the expiration date has been reached regardless of the members subscription status.', 'paid-memberships-pro' ); ?></span></td>	
 				</tr>
 			</tbody>
 		</table>
+		<!-- Script to show warning message if both recurring and expiration checkboxes are set. -->
+		<script>
+			jQuery(document).ready(function(){
+				
+				// Check if both recurring and expiration checkboxes are selected on page load.
+				if( jQuery('#recurring').is(':checked') && jQuery('#expiration').is(':checked') ) { 
+					jQuery('#pmpro_recurring_warning_msg').show();
+				}
+				//show warning messages and check conditions on recurring and expiration checkbox clicks.
+				jQuery( '#expiration' ).on( 'click', function(){ pmpro_show_warning_message(); });	
+				jQuery( '#recurring' ).on( 'click', function(){ pmpro_show_warning_message(); });
+
+				function pmpro_show_warning_message(){
+
+					// Force the warning text to hide by default.
+					jQuery('#pmpro_recurring_warning_msg').hide();
+
+					// Both recurring and expiration checkboxes must be checked - if so show a popup alert and warning message below expiration.
+					if( jQuery('#recurring').is(':checked') && jQuery('#expiration').is(':checked') ) {
+					    alert( '<?php _e( 'Warning! You have selected both recurring settings and expiration date settings. This will cause memberships to cancel once the expiration date has been reached regardless of the members subscription status.', 'paid-memberships-pro' ); ?>' );
+					    jQuery('#pmpro_recurring_warning_msg').show();
+					}
+
+				}
+
+			});		
+		</script>
 
 		<?php do_action("pmpro_membership_level_after_other_settings"); ?>
 
