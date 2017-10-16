@@ -65,25 +65,6 @@ class pmpro_ReCaptcha
     }
 
     /**
-     * Encodes the given data into a query string format.
-     *
-     * @param array $data array of string elements to be encoded.
-     *
-     * @return string - encoded request.
-     */
-    private function _encodeQS($data)
-    {
-        $req = "";
-        foreach ($data as $key => $value) {
-            $req .= $key . '=' . urlencode(stripslashes($value)) . '&';
-        }
-
-        // Cut the last '&'
-        $req=substr($req, 0, strlen($req)-1);
-        return $req;
-    }
-
-    /**
      * Submits an HTTP GET to a reCAPTCHA server.
      *
      * @param string $path url path to recaptcha server.
@@ -93,8 +74,15 @@ class pmpro_ReCaptcha
      */
     private function _submitHTTPGet($path, $data)
     {
-        $req = $this->_encodeQS($data);
-        $response = file_get_contents($path . $req);
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => $path,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data
+        ));
+        $response = curl_exec($ch);
+        curl_close($ch);
         return $response;
     }
 
@@ -134,9 +122,9 @@ class pmpro_ReCaptcha
         } else {
             $recaptchaResponse->success = false;
             if(!empty($answers['errorCodes']))
-				$recaptchaResponse->errorCodes = $answers['errorCodes'];
-			else
-				$recaptchaResponse->errorCodes = 'Unknown error.';
+                $recaptchaResponse->errorCodes = $answers['errorCodes'];
+            else
+                $recaptchaResponse->errorCodes = 'Unknown error.';
         }
 
         return $recaptchaResponse;
