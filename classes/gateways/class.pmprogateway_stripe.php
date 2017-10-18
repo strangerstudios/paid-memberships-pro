@@ -1061,13 +1061,12 @@
 				return;
 			
 			//does this user have an existing subscription at Stripe?
-			
-			
+						
 			//check for pending invoices
 			
 			//cancel the invoices
 			
-			//Stripe was probably going to cancel this subscription 7 days past the payment failure
+			//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
 			
 			//so let's cancel the user's susbcription with that date as the enddate for their current membership level
 		}
@@ -1936,7 +1935,11 @@
 			}
 
 			//get the charge
-			$charge = Stripe_Charge::retrieve($transaction_id);
+			try {
+				$charge = Stripe_Charge::retrieve($transaction_id);
+			} catch (Exception $e) {
+				$charge = false;
+			}
 
 			//can't find the charge?
 			if(empty($charge)) {
