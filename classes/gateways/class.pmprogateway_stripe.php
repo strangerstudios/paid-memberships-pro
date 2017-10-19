@@ -129,6 +129,9 @@
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
 			
+			//make sure we clean up subs we will be cancelling after checkout before processing
+			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
+			
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
@@ -1018,27 +1021,47 @@
 		 * instead of updating their billing information via the billing info page.
 		 */
 		static function pmpro_checkout_before_processing() {			
+			global $wpdb, $current_user;
+			
 			//we're only worried about cases where the user is logged in
 			if(!is_user_logged_in())
 				return;
 			
 			//get user and membership level			
-			global $current_user;
 			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 			
 			//no level, then probably no subscription at Stripe anymore
 			if(empty($membership_level))
 				return;
-			
-			//does this user have an existing subscription at Stripe?
 						
-			//check for pending invoices
-			
-			//cancel the invoices
-			
-			//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
-			
-			//so let's cancel the user's susbcription with that date as the enddate for their current membership level
+			/**
+			 * Filter which levels to cancel at the gateway.
+			 * MMPU will set this to all levels that are going to be cancelled during this checkout.
+			 * Others may want to display this by add_filter('pmpro_stripe_levels_to_cancel_before_checkout', __return_false);
+			 */
+			$levels_to_cancel = apply_filters('pmpro_stripe_levels_to_cancel_before_checkout', array($membership_level->id), $current_user);
+						
+			foreach($levels_to_cancel as $level_to_cancel) {
+				//get the last order for this user/level
+				$last_order = new MemberOrder();
+				$last_order->getLastMemberOrder($current_user->ID, 'success', $level_to_cancel, 'stripe');
+								
+				//so let's cancel the user's susbcription
+				if(!empty($last_order) && !empty($last_order->subscription_transaction_id)) {										
+					$subscription = $last_order->Gateway->getSubscription($last_order);
+					if(!empty($subscription)) {					
+						$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true);
+						
+						//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
+						$memberships_users_row = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1");
+												
+						if(!empty($memberships_users_row) && (empty($memberships_users_row->enddate) || $memberships_users_row->enddate == '0000-00-00 00:00:00')) {
+							$new_enddate = date('Y-m-d H:i:s', current_time('timestamp')+3600*24*7);
+							$wpdb->update( $wpdb->pmpro_memberships_users, array('enddate'=>$new_enddate), array('user_id'=>$current_user->ID, 'membership_id'=>$level_to_cancel, 'status'=>'active'), array('%s'), array('%d', '%d', '%s') );
+						}						
+					}
+				}
+			}			
 		}
 
 		/**
@@ -1614,6 +1637,28 @@
 		}
 		
 		/**
+		 * Helper method to save the subscription ID to make sure the membership doesn't get cancelled by the webhook
+		 */
+		static function ignoreCancelWebhookForThisSubscription($subscription_id, $user_id = NULL) {
+			if(empty($user_id)) {
+				global $current_user;
+				$user_id = $current_user->ID;
+			}
+			
+			$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
+			
+			// No previous values found, init the array
+			if ( empty( $preserve ) ) {
+				$preserve = array();
+			}
+			
+			// Store or update the subscription ID timestamp (for cleanup)
+			$preserve[$subscription_id] = current_time( 'timestamp' );
+
+			update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
+		}
+			
+		/**
 		 * Helper method to process a Stripe subscription update
 		 */
 		static function updateSubscription($update, $user_id) {
@@ -1633,22 +1678,9 @@
 			if(!empty($subscription))
 			{
 				$end_timestamp = $subscription->current_period_end;
-
-				// Save the subscription ID to make sure the membership doesn't get cancelled by the webhook
-				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
 				
-				// No previous values found, init the array
-				if ( empty( $preserve ) ) {
-					$preserve = array();
-				}
-				
-				// Store or update the subscription ID timestamp (for cleanup)
-				$preserve[$subscription->id] = current_time( 'timestamp' );
-
-				update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-
 				//cancel the old subscription
-				if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription))
+				if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true))
 				{
 					//throw error and halt save
 					if ( !function_exists( 'pmpro_stripe_user_profile_fields_save_error' )) {
@@ -1785,7 +1817,7 @@
 		 *
 		 * @since 1.8
 		 */
-		function cancelSubscriptionAtGateway($subscription)
+		function cancelSubscriptionAtGateway($subscription, $preserve_local_membership = false)
 		{
 			//need a valid sub
 			if(empty($subscription->id))
@@ -1827,6 +1859,10 @@
 					}
 				}
 
+				//sometimes we don't want to cancel the local membership when Stripe sends its webhook
+				if($preserve_local_membership)					
+					PMProGateway_stripe::ignoreCancelWebhookForThisSubscription($subscription->id, $order->user_id);
+				
 				//cancel
 				$r = $subscription->cancel();
 
