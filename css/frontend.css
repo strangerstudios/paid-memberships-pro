@@ -34,7 +34,6 @@
 	outline-offset: -2px;
 }
 .pmpro_btn:hover, .pmpro_btn:focus, .pmpro_checkout .pmpro_btn:hover, .pmpro_checkout .pmpro_btn:focus, .pmpro_content_message a:focus, .pmpro_content_message a:hover {
-	background-color: #FAFAFA;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	color: #000;
@@ -57,82 +56,73 @@ fieldset[disabled] .pmpro_btn {
 	opacity: 0.65;
 	pointer-events: none;
 }
-.pmpro_btn.pmpro_cancel, .pmpro_btn.pmpro_cancel:link {
-	background: none;
-	border: none;
+input[type="button"].pmpro_btn.pmpro_btn-cancel {
+	background: #CCC;
 	margin: 0 0 0 10px;
+}
+input[type="button"].pmpro_btn.pmpro_btn-cancel:hover {
+	background: #EFEFEF;
+}
+.pmpro_btn.pmpro_btn-submit-checkout {
+	width: 100%;
 }
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
-form.pmpro_form div {
-	clear: left;
-	margin: .5em 0 1em 0;
+form.pmpro_form .pmpro_checkout-fields div {
+	margin: 0 0 1em 0;
 }
 form.pmpro_form label {
-	float: left;
-	font-weight: bold;
-	margin: 3px 10px 0 0;
-	text-align: right;
-	width: 200px;
+	font-weight: 700;
+	display: block;
+	margin: 0;
+	text-align: left;
 }
-form.pmpro_form label.pmpro_normal {
-	display: inline-block;
-	float: none;
-	font-weight: normal;
-	margin: 0 0 0 0;
-	text-align: auto;
+form.pmpro_form .pmpro_checkout-field-checkbox label {
+	cursor: pointer; 
+	display: inline-block; 
 	width: auto;
 }
-form.pmpro_form input[type=checkbox]#tos {
+form.pmpro_form label.pmpro_label-inline {
 	display: inline-block;
-	width: auto;
 }
-.pmpro_clickable {
+form.pmpro_form label.pmpro_clickable {
 	cursor: pointer;
 }
-form.pmpro_form .likelabel {
-	font-weight: bold;
+form.pmpro_form .pmpro_asterisk abbr {
+	border: none;
+	text-decoration: none;
 }
-form.pmpro_form .input, form.pmpro_form textarea, form.pmpro_form select {
-	border: 1px solid #AAA;
-	display: inline-block;
-	margin: 0 3px 0 0;
-	max-width: 60%;
-	padding: 3px;
+form.pmpro_form input[type=checkbox]#tos {
 	width: auto;
 }
-form.pmpro_form textarea {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
-}
+form.pmpro_form .input,
+form.pmpro_form textarea,
 form.pmpro_form select {
-	font-size: 12px;
-	margin: 2px 0 0 0;
+	max-width: 90%;
+}
+form.pmpro_form .pmpro_payment-cvv .input,
+form.pmpro_form .pmpro_payment-discount-code .input,
+form.pmpro_form #other_discount_code.input {
+	max-width: 40%;
 }
 form.pmpro_form .lite {
 	color: #666;
-}
-form.pmpro_form .leftmar {
-	margin: 8px 0 0 220px;
-}
-form.pmpro_form .pmpro_captcha {
-	margin: 0 0 0 220px;
 }
 form.pmpro_form .pmpro_captcha div {
 	clear: none;
 	margin: 0;
 }
-form.pmpro_form .pmpro_submit {
-	margin-left: 220px;
-}
-form.pmpro_form .pmpro_submit span {
-	float: left;
+form.pmpro_form .pmpro_submit{
+	margin-top: 1em;
+	text-align: center;
 }
 form.pmpro_form #pmpro_processing_message {
 	color: #999;
+	display: block;
 	font-style: italic;
-	margin: 5px 0 0 10px;
+	margin: 1em 0 0 0;
+	text-align: center;
 }
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
@@ -190,68 +180,26 @@ select.pmpro_error {
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
-.pmpro_checkout thead th {
-	color: #444;
-	font-weight: bold;
-	padding: 10px;
-}
-.pmpro_checkout tbody td {
-	padding: 10px;
-}
-.pmpro_checkout tr.odd td {
-	background: rgba(239,239,239,0.25);
-}
-.pmpro_checkout tr.selected td {
-	background: #FFC;
-}
-.pmpro_checkout tr.active td {
-	background: #FFC;
-}
-.pmpro_checkout .name {
-	font-weight: bold;
-}
-.pmpro_checkout ul {
-	color: #444;
-	font-size: .8em;
-	margin: 5px 0 0 20px;
+#pmpro_form .pmpro_checkout h3 {
+	margin: 1em 0 0 0;
 	padding: 0;
 }
-.pmpro_checkout tfoot td {
-	color: #444;
-	padding: 10px;
+.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+	display: inline-block;
+	margin: 0 .5rem 1rem 0;
 }
-.pmpro_checkout .topfoot td {
-	border-top: 2px solid #CCC;
-}
-.pmpro_checkout .total td {
-	border-top: 1px solid #CCC;
-	font-size: 1.2em;
-	font-weight: bold;
-	padding-bottom: 30px;
-}
-.pmpro_checkout tfoot .entercode td {
-	background: #EEE;
-}
-.pmpro_checkout td.rtbdr {
-	border-right: 1px solid #CCC;
-}
-.pmpro_checkout select {
+.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
 	font-size: 11px;
-}
-.pmpro_thead-name {
-	float: left;
-	width: 55%;
-}
-.pmpro_thead-msg {
-	float: right;
-	font-size: .9em;
 	font-style: italic;
 	font-weight: normal;
-	text-align: right;
-	width: 45%;
 }
-.pmpro_ordersummary {
-	float: right;
+#pmpro_payment_method span.gateway_paypalexpress {
+	margin-left: 2em;
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	grid-gap: 1em;
 }
 #pmpro_license {
 	background: #FFF;
@@ -261,15 +209,6 @@ select.pmpro_error {
 	margin: 3px;
 	overflow: auto;
 	padding: 5px;
-}
-.pmpro_sslseal {
-	clear: none !important;
-	float: right;
-	margin: 0 !important;
-}
-a.pmpro_radio {
-	color: #000;
-	text-decoration: none;
 }
 /*---------------------------------------
 	Membership Confirmation
@@ -283,14 +222,14 @@ body.pmpro-confirmation .entry-content ul {
 body.pmpro-invoice .entry-content ul {
 	margin-left: 1.5em;
 }
-.pmpro_invoice thead th, .pmpro_invoice tbody td, #pmpro_account-invoices thead th, #pmpro_account-invoices tbody td {
-	padding: 10px;
+.pmpro_invoice_details { 
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1em;
 }
-.pmpro_invoice tbody td:nth-child(first), #pmpro_account-invoices tbody td:nth-child(first) {
-	padding-left: 10px;
-}
-.pmpro_invoice tbody tr:nth-child(odd) td, #pmpro_account-invoices tbody tr:nth-child(odd) td {
-	background: rgba(239,239,239,0.25);
+.pmpro_invoice_details p {
+	margin: 0 0 .5em 0;
+	padding: 0;
 }
 /*---------------------------------------
 	Membership Account
@@ -393,35 +332,6 @@ li.pmpro_more {
 	font-size: .8em;
 }
 @media (max-width:768px) {
-	#pmpro_levels_table {
-		border: none;
-	}
-	#pmpro_levels_table th {
-		display: none;
-	}
-	#pmpro_levels_table td {
-		border: none;
-		display: block;
-		padding: 0 10px;
-		text-align: center;
-	}
-	#pmpro_levels_table td:first-child {
-		font-size: 1.4em;
-		padding-top: 10px;
-	}
-	#pmpro_levels_table td:last-child {
-		padding-bottom: 10px;
-		padding-top: 10px;
-	}
-	form.pmpro_form label {
-		display: block;
-		margin: 0;
-		text-align: left;
-		width: 100%;
-	}
-	form.pmpro_form label.pmpro_normal, #pmpro_tos_fields label {
-		display: inline-block;
-	}
 	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
 		width: 90%;
 	}
@@ -434,6 +344,9 @@ li.pmpro_more {
 		text-align: left;
 		text-wrap: normal;
 		white-space: normal;
+	}
+	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+		display: block;
 	}
 	form.pmpro_form .leftmar, form.pmpro_form .pmpro_captcha {
 		margin: 2px 0 0 0;
@@ -448,5 +361,8 @@ li.pmpro_more {
 	form.pmpro_form .pmpro_btn {
 		display: block;
 		width: 100%;
+	}
+	.pmpro_invoice_details {
+		display: block;
 	}
 }
