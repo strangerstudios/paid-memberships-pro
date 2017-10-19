@@ -116,16 +116,25 @@
 					$morder = new MemberOrder();
 					$morder->user_id = $old_order->user_id;
 					$morder->membership_id = $old_order->membership_id;
+					
+					global $pmpro_currency;
+					global $pmpro_currencies;
+					
+					$currency_unit_multiplier = 100; // 100 cents / USD
 
+					//account for zero-decimal currencies like the Japanese Yen
+					if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
+						$currency_unit_multiplier = 1;
+					
 					if(isset($invoice->amount))
 					{
-						$morder->subtotal = $invoice->amount / 100;					
+						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;					
 					}
 					elseif(isset($invoice->subtotal))
 					{
-						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / 100 : 0);
-						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / 100 : null);
-						$morder->total = (! empty($invoice->total) ? $invoice->total / 100 : 0);
+						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0);
+						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : null);
+						$morder->total = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 					}
 
 					$morder->payment_transaction_id = $invoice->id;
@@ -183,62 +192,7 @@
 						{
 							if($update['when'] == 'payment')
 							{
-								//get current plan at Stripe to get payment date
-								$last_order = new MemberOrder();
-								$last_order->getLastMemberOrder($user_id);
-								$last_order->setGateway('stripe');
-								$last_order->Gateway->getCustomer();
-								$old_subscription = $last_order->Gateway->getSubscription($last_order);
-
-								//cancel old subscription and figure out end date for the new one
-								if(!empty($old_subscription))
-								{
-									$end_timestamp = $old_subscription->current_period_end;
-
-									//cancel the old subscription
-									if(!$last_order->Gateway->cancelSubscriptionAtGateway($old_subscription))
-									{
-										//email admin that the old subscription could not be canceled
-										$pmproemail = new PMProEmail();
-										$pmproemail->data = array("body"=>"<p>" . sprintf(__("While processing an update to the subscription for %s, we failed to cancel their old subscription in Stripe. Please check that this user's original subscription (%s) is cancelled in the Stripe dashboard.", 'paid-memberships-pro' ), $user->display_name . " (" . $user->user_login . ", " . $user->user_email . ")", $old_subscription->id) . "</p>");
-										$pmproemail->sendEmail(get_bloginfo("admin_email"));
-									}
-								}
-
-								//if we didn't get an end date, let's set one one cycle out
-								if(empty($end_timestamp))
-									$end_timestamp = strtotime("+" . $update['cycle_number'] . " " . $update['cycle_period']);
-
-								//build order object
-								$update_order = new MemberOrder();
-								$update_order->setGateway('stripe');
-								$update_order->user_id = $user->ID;
-								$update_order->membership_id = $user->membership_level->id;
-								$update_order->membership_name = $user->membership_level->name;
-								$update_order->InitialPayment = 0;
-								$update_order->PaymentAmount = $update['billing_amount'];
-								$update_order->ProfileStartDate = date_i18n("Y-m-d", $end_timestamp);
-								$update_order->BillingPeriod = $update['cycle_period'];
-								$update_order->BillingFrequency = $update['cycle_number'];
-
-								//create new subscription
-								$update_order->Gateway->subscribe($update_order);
-
-								//update membership
-								$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
-												SET billing_amount = '" . esc_sql($update['billing_amount']) . "',
-													cycle_number = '" . esc_sql($update['cycle_number']) . "',
-													cycle_period = '" . esc_sql($update['cycle_period']) . "'
-												WHERE user_id = '" . esc_sql($user_id) . "'
-													AND membership_id = '" . esc_sql($last_order->membership_id) . "'
-													AND status = 'active'
-												LIMIT 1";
-
-								$wpdb->query($sqlQuery);
-
-								//save order so we know which plan to look for at stripe (order code = plan id)
-								$update_order->status = "success";
-								$update_order->saveOrder();
+								PMProGateway_stripe::updateSubscription($update, $user_id);
 
 								//remove this update
 								unset($user_updates[$key]);
@@ -326,7 +280,7 @@
 			if(!empty($old_order)) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
-				
+								
 				/**
 				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
 				 */
@@ -344,7 +298,7 @@
 					// If it's in the list of preservable subscription IDs, don't delete it
 					if ( in_array( $subscr->id, array_keys( $preserve ) ) ) {
 						
-						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user_id}!\n";
+						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user->display_name} ({$user->user_email})!\n";
 						$cancel_membership = false;
 						
 					}

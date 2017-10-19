@@ -66,10 +66,15 @@ function pmpro_send_html( $phpmailer ) {
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
 	// Clean < and > around text links in WP 3.1
-	$phpmailer->Body = preg_replace('#<(http://[^*]+)>#', '$1', $phpmailer->Body);
+	$phpmailer->Body = preg_replace('#<(https?://[^*]+)>#', '$1', $phpmailer->Body);	
+	
+	// If there is no HTML, run through wpautop	
+	if($phpmailer->Body == strip_tags($phpmailer->Body))
+		$phpmailer->Body = wpautop($phpmailer->Body);
+	
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = make_clickable ($phpmailer->Body);
-
+		
 	// Get header for message if found
 	if(file_exists(get_stylesheet_directory() . "/email_header.html"))
 		$header = file_get_contents(get_stylesheet_directory() . "/email_header.html");
@@ -78,6 +83,10 @@ function pmpro_send_html( $phpmailer ) {
 	else
 		$header = "";
 	
+	//wpautop header if needed
+	if(!empty($header) && $header == strip_tags($header))
+		$header = wpautop($header);
+	
 	// Get footer for message if found
 	if(file_exists(get_stylesheet_directory() . "/email_footer.html"))
 		$footer = file_get_contents(get_stylesheet_directory() . "/email_footer.html");
@@ -85,6 +94,10 @@ function pmpro_send_html( $phpmailer ) {
 		$footer =  file_get_contents(get_template_directory() . "/email_footer.html");
 	else
 		$footer = "";
+	
+	//wpautop header if needed
+	if(!empty($footer) && $footer == strip_tags($footer))
+		$footer = wpautop($footer);
 	
 	// Add header/footer to the email
 	if(!empty($header))
@@ -105,15 +118,8 @@ function pmpro_send_html( $phpmailer ) {
 	foreach($data as $key => $value)
 	{
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
-	}
-
-	// If there is no HTML, run through wpautop
-	if($original_body == strip_tags($original_body) &&
-		$header == strip_tags($header) &&
-		$footer == strip_tags($footer)
-	)
-		$phpmailer->Body = wpautop($phpmailer->Body);
-	
+	}	
+		
 	do_action("pmpro_after_phpmailer_init", $phpmailer);
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }

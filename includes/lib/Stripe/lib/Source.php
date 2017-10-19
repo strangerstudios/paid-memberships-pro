@@ -10,7 +10,8 @@ namespace Stripe;
 class Source extends ApiResource
 {
     /**
-     * @param string $id The ID of the Source to retrieve.
+     * @param array|string $id The ID of the source to retrieve, or an options
+     *     array containing an `id` key.
      * @param array|string|null $opts
      *
      * @return Source
@@ -62,6 +63,41 @@ class Source extends ApiResource
     public function save($opts = null)
     {
         return $this->_save($opts);
+    }
+
+    /**
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return Source The deleted source.
+     */
+    public function delete($params = null, $options = null)
+    {
+        self::_validateParams($params);
+
+        $id = $this['id'];
+        if (!$id) {
+            $class = get_class($this);
+            $msg = "Could not determine which URL to request: $class instance "
+             . "has invalid ID: $id";
+            throw new Error\InvalidRequest($msg, null);
+        }
+
+        if ($this['customer']) {
+            $base = Customer::classUrl();
+            $parentExtn = urlencode(Util\Util::utf8($this['customer']));
+            $extn = urlencode(Util\Util::utf8($id));
+            $url = "$base/$parentExtn/sources/$extn";
+
+            list($response, $opts) = $this->_request('delete', $url, $params, $options);
+            $this->refreshFrom($response, $opts);
+            return $this;
+        } else {
+            $message = "Source objects cannot be deleted, they can only be "
+               . "detached from customer objects. This source object does not "
+               . "appear to be currently attached to a customer object.";
+            throw new Error\Api($message);
+        }
     }
 
     /**

@@ -489,7 +489,7 @@
 					$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 					if($pmpro_show_cvv) { ?>
 					<div class="pmpro_checkout-field pmpro_payment-cvv">
-						<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
+						<label for="CVV"><?php _e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
 						<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL); ?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 					</div>
 				<?php } ?>
