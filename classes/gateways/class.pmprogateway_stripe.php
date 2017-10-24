@@ -1056,7 +1056,16 @@
 						$memberships_users_row = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1");
 												
 						if(!empty($memberships_users_row) && (empty($memberships_users_row->enddate) || $memberships_users_row->enddate == '0000-00-00 00:00:00')) {
-							$new_enddate = date('Y-m-d H:i:s', current_time('timestamp')+3600*24*7);
+							/**
+							 * Filter graced period days when canceling existing subscriptions at checkout.
+							 *
+							 * @since 1.9.4
+							 *
+							 * @param int $days Grace period defaults to 3 days
+							 * @param object $membership Membership row from pmpro_memberships_users including membership_id, user_id, and enddate
+							 */
+							$days_grace = apply_filters('pmpro_stripe_days_grace_when_canceling_existing_subscriptions_at_checkout', 3, $memberships_users_row);
+							$new_enddate = date('Y-m-d H:i:s', current_time('timestamp')+3600*24*$days_grace);
 							$wpdb->update( $wpdb->pmpro_memberships_users, array('enddate'=>$new_enddate), array('user_id'=>$current_user->ID, 'membership_id'=>$level_to_cancel, 'status'=>'active'), array('%s'), array('%d', '%d', '%s') );
 						}						
 					}
