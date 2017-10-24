@@ -94,7 +94,7 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		$field = str_replace('membership_', '', $field);
 		$membership_level = pmpro_getMembershipLevelForUser($user_id);
 		if(!empty($membership_level))
-			$r = $membership_level->$field;
+			$r = $membership_level->{$field};
 		else
 			$r = '';
 	} elseif(in_array( $field, $pmpro_user_meta_fields )) {
@@ -104,7 +104,7 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 	} elseif(in_array( $field, $user_column_fields )) {
 		//wp_users column
 		$user = get_userdata($user_id);
-		$r = $user->$field;
+		$r = $user->{$field};
 	} else {
 		//assume user meta
 		$r = get_user_meta($user_id, $field, true);

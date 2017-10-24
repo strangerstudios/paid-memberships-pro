@@ -192,7 +192,7 @@ function pmpro_membership_level_profile_fields($user)
 				//cancelling sub or not
 				if($membership_level_select.val() == 0) {
                     jQuery("#cancel_subscription").attr('checked', true);
-                    jQuery("#current_level_cost").text(<?php _e("Not paying.", "paid-memberships-pro" ); ?>);
+                    jQuery("#current_level_cost").text('<?php _e("Not paying.", "paid-memberships-pro" ); ?>');
                 }
                 else {
                     jQuery("#cancel_subscription").attr('checked', false);
@@ -239,7 +239,7 @@ function pmpro_membership_level_profile_fields($user)
                 if(jQuery(this).attr('checked') == 'checked')
                 {
                     jQuery("#cancel_description").hide();
-                    jQuery("#current_level_cost").text(<?php _e("Not paying.", "paid-memberships-pro" ); ?>);
+                    jQuery("#current_level_cost").text('<?php _e("Not paying.", "paid-memberships-pro" ); ?>');
                 }
                 else
                 {

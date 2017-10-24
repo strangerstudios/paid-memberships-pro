@@ -24,8 +24,9 @@ function pmpro_report_sales_init()
 {
 	if(is_admin() && isset($_REQUEST['report']) && $_REQUEST['report'] == "sales" && isset($_REQUEST['page']) && $_REQUEST['page'] == "pmpro-reports")
 	{
-		wp_enqueue_script("jsapi", "https://www.google.com/jsapi");
+		wp_enqueue_script( 'jsapi', plugins_url( 'js/jsapi.js',  plugin_dir_path( __DIR__ ) ) );
 	}
+
 }
 add_action("init", "pmpro_report_sales_init");
 	
