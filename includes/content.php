@@ -348,7 +348,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
             {
                 //does this level allow registrations?
                 $level_obj = pmpro_getLevel($id);
-                if(!$level_obj->allow_signups)
+                if(empty($level_obj) || empty($level_obj->allow_signups))
                 {
                     unset($post_membership_levels_ids[$key]);
                     unset($post_membership_levels_names[$key]);
