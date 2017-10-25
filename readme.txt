@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.8
-Stable tag: 1.9.3
+Tested up to: 4.8.2
+Stable tag: 1.9.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -131,6 +131,7 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.9.4 =
 * BUG FIX: Fixed issue where PayPal was not working for amounts over $1000.
+* BUG FIX: Non-decimal currencies now handled correctly with Stripe.
 * BUG FIX: Fixed issue where updating a Stripe subscription from the edit user page could cancel the subscription once the webhook fired.
 * BUG FIX: Fixed issue where "admin_cancelled" memberships weren't being calculated correctly in membership reports.
 * BUG FIX: Fixed issue where users could not drag and drop to change the order of membership levels.
@@ -139,14 +140,20 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed a few strings that weren't wrapped for translation or were using the old text domain.
 * BUG FIX: Fixed redirect error that occured when the levels page was not set.
 * BUG FIX: Updated getfile.php to support file names with urlencoded characters (e.g. spaces) in them. (Thanks, florent from PMPro blog)
-* BUG/FIX: Fixed notice when use the getfile.php script due to using add_filter instead of apply_filters in the mimetype class.
-* BUG/FIX: Fixed the all time views column for the logins report.
-* BUF/FIX: Fixed fatal error on the logins report when using PHP7.1+.
-* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching up the lines of text.
+* BUG FIX: Fixed notice when use the getfile.php script due to using add_filter instead of apply_filters in the mimetype class.
+* BUG FIX: Fixed the all time views column for the logins report.
+* BUG FIX: Fixed fatal error on the logins report, member shortcode and other issues when using PHP7.1+.
+* BUG FIX: Fixed issue with saving arrays using pmpro_setOption()
+up the lines of text.
+* BUG FIX: Fixed typo in the string "Are you sure you want to do that? Try again."
+* BUG FIX: Fixed a few strings that used the wrong text domain or weren't wrapped correclty for translation.
+* BUG FIX/ENHANCEMENT: Now bundling Google's jsapi.js file for use in the reports.
+* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching 
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
 * BUG FIX/ENHANCEMENT: Better error handling for Braintree.
 * BUG FIX/ENHANCEMENT: Membership stats widget now shows first 3 levels based on level order.
-* ENHANCEMENT: Updated Stripe to use the latest version of their API, 2017-08-15.
+* BUG FIX/ENHANCEMENT: Added the pmpro_member_shortcode_access filter 
+* ENHANCEMENT: Updated the Stripe PHP library to version 5.2.2 and updated Stripe to use the latest version of their API, 2017-08-15.
 * ENHANCEMENT: Changed frontend pages (e.g. checkout.php) to use a div-based layout instead of tables. Important information here if you are using custom page templates or notice UI issues after upgrading: 
 * ENHANCEMENT: Added pagination to the discount codes page in the admin. Also sorting codes in descending order by ID. Use the pmpro_discount_codes_per_page filter to change the per page limit from 15.
 * ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.
@@ -154,6 +161,12 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Better error message if trying to checkout using an existing user's email address.
 * ENHANCEMENT: Added the pmpro_report_levels filter to let users change levels and order of levels for the memberships.php report.
 * ENHANCEMENT: Updated video and copy for readme.txt.
+* ENHANCEMENT: Added user display name to Memberlist search query
+* ENHANCEMENT: Added Russian Ruble as a currency.
+* ENHANCEMENT: Changed the dated term "CVV" to "Security Code (CVC)" when shown on the frontend.
+* ENHANCEMENT: Added .doc and .docx to the mimetype class.
+* ENHANCEMENT: Added Portuguese language files. (Thanks, Secundino Correia)
+* ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.
 
 = 1.9.3 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
