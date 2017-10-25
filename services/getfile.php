@@ -34,7 +34,10 @@
 		This will prevent traversal attacks and loading hidden files.
 	*/
 	$uri = preg_replace("/[\.\/\\\\]{2,}/", "", $uri);
-		
+
+	// decode the file in case it's encoded.
+	$uri = urldecode($uri);
+	
 	//if WP is installed in a subdirectory, that directory(s) will be in both the PATH and URI
 	$home_url_parts = explode("/", str_replace("//", "", home_url()));	
 	if(count($home_url_parts) > 1)
