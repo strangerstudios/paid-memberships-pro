@@ -23,7 +23,8 @@ function pmpro_upgrade_1_9_4() {
 function pmpro_upgrade_1_9_4_show_div_notice() {
  ?>
     <div class="notice notice-warning">
-        <p><?php _e( 'We have detected that you are using a custom page template for Paid Memberships Pro. This was recently changed in version 1.9.4 and may need to be updated in order to display correctly. For more information follow this guide.', 'paid-memberships-pro' ); ?> <a href="<?php echo add_query_arg('pmpro_div_notice_hide', '1', $_SERVER['REQUEST_URI']);?>"><?php _e( 'Dismiss', 'paid-memberships-pro' );?></a></p>
+        <p><?php _e( 'We have detected that you are using a custom checkout page template for Paid Memberships Pro. This was recently changed and may need to be updated in order to display correctly.', 'paid-memberships-pro')?>
+        	<?php _e('If you notice UI issues after upgrading, <a href="https://www.paidmembershipspro.com/add-ons/table-layout-plugin-pages/">see this free add on to temporarily roll back to the table-based layout while you resolve the issues</a>.', 'paid-memberships-pro' ); ?> <a href="<?php echo add_query_arg('pmpro_div_notice_hide', '1', $_SERVER['REQUEST_URI']);?>"><?php _e( 'Dismiss', 'paid-memberships-pro' );?></a></p>
     </div>
 <?php
 }
@@ -31,7 +32,7 @@ function pmpro_upgrade_1_9_4_show_div_notice() {
 function pmpro_update_1_9_4_notice_dismiss() {
 
 	// check if query arg is available.
-	if( $_REQUEST['pmpro_div_notice_hide'] ) {
+	if( !empty( $_REQUEST['pmpro_div_notice_hide'] ) ) {
 		update_option( 'pmpro_hide_div_notice', 1 );
 	}
 }
