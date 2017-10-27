@@ -65,24 +65,20 @@ class pmpro_ReCaptcha
     }
 
     /**
-     * Submits an HTTP GET to a reCAPTCHA server.
+     * Submits an HTTP POST to a reCAPTCHA server.
      *
      * @param string $path url path to recaptcha server.
      * @param array  $data array of parameters to be sent.
      *
-     * @return array response
+     * @return string response
      */
-    private function _submitHTTPGet($path, $data)
+    private function _submitHTTPPost($path, $data)
     {
-        $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => $path,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data
-        ));
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $response = wp_remote_post($path, [
+            'method' => 'POST',
+            'body'   => $data,
+        ])['body'];
+
         return $response;
     }
 
@@ -93,7 +89,7 @@ class pmpro_ReCaptcha
      * @param string $remoteIp   IP address of end user.
      * @param string $response   response string from recaptcha verification.
      *
-     * @return ReCaptchaResponse
+     * @return object recaptchaResponse
      */
     public function verifyResponse($remoteIp, $response)
     {
@@ -105,7 +101,7 @@ class pmpro_ReCaptcha
             return $recaptchaResponse;
         }
 
-        $getResponse = $this->_submitHttpGet(
+        $getResponse = $this->_submitHttpPost(
             self::$_siteVerifyUrl,
             array (
                 'secret' => $this->_secret,
@@ -117,18 +113,32 @@ class pmpro_ReCaptcha
         $answers = json_decode($getResponse, true);
         $recaptchaResponse = new pmpro_ReCaptchaResponse();
 
-        if (trim($answers['success']) == true) {
+        if ((bool)$answers['success'] == true) {
             $recaptchaResponse->success = true;
         } else {
             $recaptchaResponse->success = false;
-            if(!empty($answers['errorCodes']))
-                $recaptchaResponse->errorCodes = $answers['errorCodes'];
-            else
-                $recaptchaResponse->errorCodes = 'Unknown error.';
+            if (!empty($answers['error-codes'])) {
+                switch ($answers['error-codes'][0]) {
+                    case 'timeout-or-duplicate':
+                        $recaptchaResponse->errorCodes = 'Duplicate or expired reCAPTCHA used';
+                        break;
+                    case 'missing-input-response':
+                    case 'invalid-input-response':
+                        $recaptchaResponse->errorCodes = 'Bad reCAPTCHA result';
+                        break;
+                    case 'missing-input-secret':
+                    case 'invalid-input-secret':
+                    case 'bad-request':
+                        $recaptchaResponse->errorCodes = 'Internal error';
+                        break;
+                    default:
+                        $recaptchaResponse->errorCodes = 'Unknown error';
+                        break;
+                }
+            }
         }
 
         return $recaptchaResponse;
     }
 }
-
 ?>
