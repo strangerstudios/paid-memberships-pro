@@ -7,6 +7,13 @@
 	
 	class PMProGateway_paypalstandard extends PMProGateway
 	{
+		/**
+		 * PMProGateway_paypalstandard constructor.
+		 *
+		 * @param null|string $gateway
+         *
+         * return string
+		 */
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -51,7 +58,11 @@
 		
 		/**
 		 * Make sure this gateway is in the gateways list
-		 *		 
+		 *
+		 * @param array $gateways - Array of recognized gateway identifiers
+         *
+         * @return array
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
@@ -64,7 +75,9 @@
 		
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
-		 *		 
+		 *
+		 * @return array
+         *
 		 * @since 1.8
 		 */
 		static function getGatewayOptions()
@@ -85,7 +98,11 @@
 		
 		/**
 		 * Set payment options for payment settings page.
-		 *		 
+		 *
+		 * @param array $options
+         *
+         * @return array
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
@@ -101,7 +118,10 @@
 		
 		/**
 		 * Display fields for this gateway's options.
-		 *		 
+		 *
+         * @param array     $values
+         * @param string    $gateway
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
@@ -162,7 +182,11 @@
 		
 		/**
 		 * Remove required billing fields
-		 *		 
+		 *
+		 * @param array $fields
+         *
+         * @return array
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_required_billing_fields($fields)
@@ -188,6 +212,10 @@
 		/**
 		 * Swap in our submit buttons.
 		 *
+         * @param bool $show
+         *
+         * @return bool
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_checkout_default_submit_button($show)
@@ -214,6 +242,9 @@
 		/**
 		 * Instead of change membership levels, send users to PayPal to pay.
 		 *
+         * @param int           $user_id
+         * @param \MemberOrder  $morder
+         *
 		 * @since 1.8
 		 */
 		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
@@ -238,7 +269,10 @@
 		
 		/**
 		 * Process checkout.
-		 *		
+		 *
+		 * @param \MemberOrder $order
+		 *
+         * @return bool
 		 */
 		function process(&$order)
 		{						
@@ -257,6 +291,11 @@
 			return true;			
 		}
 		
+		/**
+         * Send the data/order to PayPal.com's server
+         *
+		 * @param \MemberOrder $order
+		 */
 		function sendToPayPal(&$order)
 		{						
 			global $pmpro_currency;			
@@ -271,12 +310,14 @@
 			$amount_tax = $order->getTaxForPrice($amount);			
 			$amount = round((float)$amount + (float)$amount_tax, 2);			
 			
-			//build PayPal Redirect	
+			//build PayPal Redirect	URL
 			$environment = pmpro_getOption("gateway_environment");
-			if("sandbox" === $environment || "beta-sandbox" === $environment)
-				$paypal_url ="https://www.sandbox.paypal.com/cgi-bin/webscr?business=" . urlencode(pmpro_getOption("gateway_email"));
-			else
-				$paypal_url = "https://www.paypal.com/cgi-bin/webscr?business=" . urlencode(pmpro_getOption("gateway_email"));
+			
+			if("sandbox" === $environment || "beta-sandbox" === $environment) {
+				$paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
+			} else {
+				$paypal_url = "https://www.paypal.com/cgi-bin/webscr";
+			}
 			
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{				
@@ -297,7 +338,8 @@
 				}
 				
 				//other args
-				$paypal_args = array( 
+				$paypal_args = array(
+                    'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick-subscriptions', 
 					'a1'			=> number_format($initial_payment, 2, '.', ''),
 					'p1'			=> $order->BillingFrequency,
@@ -346,8 +388,22 @@
 				else
 				{
 					//we can try to work in any change in ProfileStartDate
-					$psd = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+					$psd = sprintf( '%1$sT0:0:0',
+                        date_i18n(
+                                "Y-m-d",
+                                strtotime(
+                                        sprintf(
+                                                "+ %s %s",
+                                                $order->BillingFrequency,
+                                                $order->BillingPeriod
+                                            ),
+                                        current_time("timestamp" )
+                                )
+                        )
+                    );
+					
 					$adjusted_psd = apply_filters("pmpro_profile_start_date", $psd, $order);
+					
 					if($psd != $adjusted_psd)
 					{
 						//someone is trying to push the start date back
@@ -397,10 +453,11 @@
 			else
 			{
 				//other args
-				$paypal_args = array( 
+				$paypal_args = array(
+					'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick', 
 					'amount'        => number_format($initial_payment, 2, '.', ''), 				
-					'item_name'     => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
+					'item_name'     => substr("{$order->membership_level->name} at " . get_bloginfo("name"), 0, 127),
 					'email'         => $order->Email, 
 					'no_shipping'   => '1', 
 					'shipping'      => '0',
@@ -411,7 +468,7 @@
 					'rm'            => '2', 
 					'return'        => add_query_arg( 'level', $order->membership_level->id, pmpro_url("confirmation" ) ),
 					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
-					'bn'		=> PAYPAL_BN_CODE
+					'bn'		    => PAYPAL_BN_CODE
 				 );	
 			}						
 			
@@ -424,31 +481,85 @@
  			}
 
 			$nvpStr = "";
-			foreach($paypal_args as $key => $value)
-			{
-				$nvpStr .= "&" . $key . "=" . urlencode($value);
-			}
 			
 			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
-            		if ($account_optional)
-                		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
-
+			
+			if ($account_optional) {
+				$paypal_args['SOLUTIONTYPE'] = "Sole";
+				$paypal_args['LANDINGPAGE'] = "Billing";
+			}
+			
+			$nvpStr = http_build_query( $paypal_args );
 			$nvpStr = apply_filters("pmpro_paypal_standard_nvpstr", $nvpStr, $order);
 			
-			//redirect to paypal			
-			$paypal_url .= $nvpStr;			
+			//Build complete URI for paypal redirect
+			$paypal_url = "{$paypal_url}?{$nvpStr}";
 			
 			//wp_die(str_replace("&", "<br />", $paypal_url));
-			
 			wp_redirect($paypal_url);
 			exit;
 		}
-										
+		
+		/**
+         * Cancel the member order at the payment gateway (if possible),
+         * or redirect the user (via the PayPal Sign-on page) to the
+         * specific "Subscription details" page for this order on PayPal.com
+         *
+		 * @param \MemberOrder $order
+		 *
+		 * @return bool
+		 */
 		function cancel(&$order)
-		{			
-			//paypal profile stuff
-			$nvpStr = "";			
-			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
+		{
+			$nvp_args    = array();
+			
+			$gateway     = pmpro_getGateway();
+            $environment = pmpro_getOption("gateway_environment");
+			$signature   = pmpro_getOption("apisignature");
+			
+			if("sandbox" === $environment || "beta-sandbox" === $environment) {
+				$paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
+			} else {
+				$paypal_url = "https://www.paypal.com/cgi-bin/webscr";
+			}
+			
+			if ( empty( $order->membership_level ) ) {
+			    $order->membership_level = pmpro_getMembershipLevelForUser( $order->user_id );
+            }
+            
+			// Send user to PayPal Recurring Billing page.
+			if ( "paypalstandard" == $gateway && empty( $signature ) && true === pmpro_isLevelRecurring($order->membership_level ) ) {
+       
+			    // Required arguments for the Subscription detail page of this order
+			    $nvp_args['cmd'] = '_profile-recurring-payments';
+			    $nvp_args['return_to'] = 'txn_details';
+			    $nvp_args['encrypted_profile_id'] = $order->subscription_transaction_id;
+       
+			    // Building URI for Recurring Billing Plan cancellation page
+			    $cancel_url = add_query_arg( $nvp_args, $paypal_url );
+				
+                // Select sign-in page based on environment
+				if("sandbox" === $environment || "beta-sandbox" === $environment) {
+					$paypal_signin = "https://www.sandbox.paypal.com/signin";
+				} else {
+					$paypal_signin = "https://www.paypal.com/signin";
+				}
+				
+				// Build URI to cancellation page for their plan via the PayPal Sign-in page.
+				$paypal_signin = add_query_arg( 'returnUri', urlencode( $cancel_url ), $paypal_signin );
+			 
+				// Send them to the PayPal sign-in page with a redirect to the subscription plan cancellation page
+			    wp_redirect( $paypal_signin );
+			    exit;
+            }
+			    
+			// PayPal profile info for if/when PayPal Express credentials happen to exist in our settings
+            $nvp_args['PROFILEID'] = $order->subscription_transaction_id;
+			$nvp_args['ACTION'] = 'Cancel';
+			$nvp_args['NOTE'] = __( "User requested cancellation", "paid-memberships-pro" );
+			
+			// Encode the query
+			$nvpStr = http_build_query( $nvp_args );
 			
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);						
 						
@@ -472,8 +583,8 @@
 		 * PAYPAL Function
 		 * Send HTTP POST Request
 		 *
-		 * @param	string	The API method name
-		 * @param	string	The POST Message fields in &name=value pair format
+		 * @param	string	$methodName_ The API method name
+		 * @param	string	$nvpStr_ The POST Message fields in &name=value pair format
 		 * @return	array	Parsed HTTP Response body
 		 */
 		function PPHttpPost($methodName_, $nvpStr_) {
@@ -489,10 +600,29 @@
 			}						
 			
 			$version = urlencode('72.0');
-		
+            $nvp_args = array(
+                'METHOD' => $methodName_,
+                'VERSION' => $version,
+                'bn' => PAYPAL_BN_CODE,
+            );
+			
+			if ( ! empty( $API_UserName ) ) {
+			    $nvp_args['USER'] = $API_UserName;
+            }
+            
+			if ( !empty( $API_Password ) ) {
+			    $nvp_args['PWD'] = $API_Password;
+            }
+            
+            if ( !empty( $API_Signature ) ) {
+			    $nvp_args['SIGNATURE'] = $API_Signature;
+            }
+            
 			// NVPRequest for submitting to server
-			$nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&bn=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
-						
+			// $nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&bn=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
+			$nvpreq = http_build_query( $nvp_args );
+            $nvpreq = "{$nvpStr_}&{$nvpreq}";
+            
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'timeout' => 60,
