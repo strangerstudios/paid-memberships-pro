@@ -2667,3 +2667,107 @@ function pmpro_getOrderStatuses($force = false) {
 	
 	return $statuses;
 }
+
+/**
+ * Check to see if current page has a specific shortcode on it.
+ * @param string.
+ * @return bool
+ */
+function pmpro_post_has_shortcode( $tag = '' ) {
+    global $post;
+
+    return is_singular() && is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $tag );
+}
+
+/**
+ * Show if current page is a PMPro Page.
+ * @param string.
+ * @return bool.
+ */
+function pmpro_is_page( $page = NULL ) {
+	global $pmpro_pages;
+
+	//assume false
+	$r = false;
+
+	if( empty( $page ) && is_page( $pmpro_pages ) ) {
+		//an empty param or no param was passed, so check if it's any PMPro page
+		$r = true;
+	} elseif( is_array( $page ) ) {
+		//an array of page slugs was passed in, try em one at a time
+		if( count( $page ) === 1 ) {
+			$r = pmpro_is_page( array_shift( $page ) );
+		} else {
+			$r = pmpro_is_page( array_shift( $page ) ) || pmpro_is_page( $page );
+		}
+	} elseif( ( isset( $pmpro_pages[ $page ] ) && is_page( $pmpro_pages[ $page ] ) ) || pmpro_post_has_shortcode( 'pmpro_' . $page ) ) {
+		//this is a PMPro page or has a PMPro page shortcode on it
+		$r = true;
+	}
+
+	return $r;
+}
+
+/**
+ * Checks if any page is a PMPro page.
+ * @return bool.
+ */
+function is_pmpro() {
+	return pmpro_is_page();
+}
+
+/**
+ * Checks if page is PMPro account page.
+ * @return bool.
+ */
+function is_pmpro_account() {
+	return pmpro_is_page( 'account' );
+}
+
+/**
+ * Checks if page is PMPro billing page.
+ * @return bool.
+ */
+function is_pmpro_billing() {
+	return pmpro_is_page( 'billing' );
+}
+
+/**
+ * Checks if page is PMPro cancel page.
+ * @return bool.
+ */
+function is_pmpro_cancel() {
+	return pmpro_is_page( 'cancel' );
+}
+
+/**
+ * Checks if page is PMPro checkout page.
+ * @return bool.
+ */
+function is_pmpro_checkout() {
+	return pmpro_is_page( 'checkout' );
+}
+
+/**
+ * Checks if page is PMPro confirmation page.
+ * @return bool.
+ */
+function is_pmpro_confirmation() {
+	return pmpro_is_page( 'confirmation' );
+}
+
+/**
+ * Checks if page is PMPro invoice page.
+ * @return bool.
+ */
+function is_pmpro_invoice() {
+	return pmpro_is_page( 'invoice' );
+}
+
+/**
+ * Checks if page is PMPro levels page.
+ * @return bool.
+ */
+function is_pmpro_levels() {
+	return pmpro_is_page( 'levels' );
+}
