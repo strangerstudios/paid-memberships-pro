@@ -378,30 +378,35 @@
 		<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
 		<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
 		<script type="text/javascript">
-			<!--
-			//set up braintree encryption
-			var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
-			braintree.onSubmitEncryptForm('pmpro_form');
-
-			//pass expiration dates in original format
-			function pmpro_updateBraintreeCardExp()
-			{
-				jQuery('#credit_card_exp').val(jQuery('#ExpirationMonth').val() + "/" + jQuery('#ExpirationYear').val());
-			}
-			jQuery('#ExpirationMonth, #ExpirationYear').change(function() {
-				pmpro_updateBraintreeCardExp();
-			});
-			pmpro_updateBraintreeCardExp();
-			
-			//pass last 4 of credit card
-			function pmpro_updateBraintreeAccountNumber()
-			{
-				jQuery('#BraintreeAccountNumber').val('XXXXXXXXXXXXX' + jQuery('#AccountNumber').val().substr(jQuery('#AccountNumber').val().length - 4));
-			}
-			jQuery('#AccountNumber').change(function() {
-				pmpro_updateBraintreeAccountNumber();
-			});
-			pmpro_updateBraintreeAccountNumber();
+            <!--
+            /**
+             * @since 1.9.5 - BUG FIX: substr() on undefined error
+             */
+            jQuery(document).ready(function($) {
+                //set up braintree encryption
+                var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
+                braintree.onSubmitEncryptForm('pmpro_form');
+    
+                //pass expiration dates in original format
+                function pmpro_updateBraintreeCardExp()
+                {
+                    $('#credit_card_exp').val($('#ExpirationMonth').val() + "/" + $('#ExpirationYear').val());
+                }
+                $('#ExpirationMonth, #ExpirationYear').change(function() {
+                    pmpro_updateBraintreeCardExp();
+                });
+                pmpro_updateBraintreeCardExp();
+                
+                //pass last 4 of credit card
+                function pmpro_updateBraintreeAccountNumber()
+                {
+                    $('#BraintreeAccountNumber').val('XXXXXXXXXXXXX' + $('#AccountNumber').val().substr($('#AccountNumber').val().length - 4));
+                }
+                $('#AccountNumber').change(function() {
+                    pmpro_updateBraintreeAccountNumber();
+                });
+                pmpro_updateBraintreeAccountNumber();
+                });
 			-->
 		</script>
 		<?php
