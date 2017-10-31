@@ -317,7 +317,7 @@
 					<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?>
 					<pre><?php
 						//echo admin_url("admin-ajax.php") . "?action=braintree_webhook";
-						echo PMPRO_URL . "/services/braintree-webhook.php";
+						echo add_query_arg( 'action', 'braintree_webhook', admin_url( 'admin-ajax.php' ) );
 					?></pre>
 				</p>
 			</td>
