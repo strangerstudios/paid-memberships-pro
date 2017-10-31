@@ -130,7 +130,11 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.4.1 =
+* BUG FIX: Fixed serious bug where payment fields weren't showing up for the Braintree gateway.
+* BUG FIX: Fixed issue where Braintree webhook notifications were failing. We now allow the Braintree library to sanitize the incoming data since our sanitizing efforts were breaking the validation.
+* BUG FIX/ENHANCEMENT: The webhook URL given for Braintree now goes through admin-ajax.php instead of a direct link to a php file within our plugin.
 * BUG FIX/ENHANCEMENT: Updates to the Recaptcha library. (Thanks, Corin Simpson-Bryars)
+* ENHANCEMENT: Made the cancelation failed error email easier to read.
 
 = 1.9.4 =
 * BUG FIX: Fixed issue where PayPal was not working for amounts over $1000.
