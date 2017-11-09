@@ -598,11 +598,10 @@
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";
 			}						
-			
-			$version = '72.0';
+            
             $nvp_args = array(
                 'METHOD' => $methodName_,
-                'VERSION' => $version,
+                'VERSION' => '72.0',
                 'bn' => PAYPAL_BN_CODE,
             );
 			
