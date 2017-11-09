@@ -599,7 +599,7 @@
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";
 			}						
 			
-			$version = urlencode('72.0');
+			$version = '72.0';
             $nvp_args = array(
                 'METHOD' => $methodName_,
                 'VERSION' => $version,
