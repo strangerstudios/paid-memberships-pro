@@ -28,7 +28,7 @@ if (empty($user_order->gateway)) {
 }
 
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
-$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : $gateway = pmpro_getOption("gateway");
+$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
 
 //action to run extra code for gateways/etc
 do_action( 'pmpro_billing_preheader' );
