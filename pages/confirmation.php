@@ -29,7 +29,7 @@
 		
 		//check instructions
 		if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
-			$confirmation_message .= wpautop(pmpro_getOption("instructions"));
+			$confirmation_message .= wpautop(wp_unslash( pmpro_getOption("instructions") ) );
 		
 		/**
 		 * All devs to filter the confirmation message.

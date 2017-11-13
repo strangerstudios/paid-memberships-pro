@@ -106,7 +106,7 @@
 				<label for="instructions"><?php _e('Instructions', 'paid-memberships-pro' );?></label>					
 			</th>
 			<td>
-				<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo wpautop( $values['instructions'] ); ?></textarea>
+				<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
 				<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></small></p>
 			</td>
 		</tr>	
@@ -149,7 +149,7 @@
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
 				$instructions = pmpro_getOption("instructions");
-				echo '<div class="pmpro_check_instructions">' . wpautop($instructions) . '</div>';
+				echo '<div class="pmpro_check_instructions">' . wpautop(wp_unslash( $instructions )) . '</div>';
 			}
 		}
 
