@@ -233,8 +233,7 @@
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{
-			self::validate_keys();			
+		{			
 			//get stripe options
 			$stripe_options = self::getGatewayOptions();
 
@@ -242,25 +241,7 @@
 			$options = array_merge($stripe_options, $options);
 
 			return $options;
-		}
-		
-		static function validate_keys()
-		{			
-			global $msg, $msgt;
-			$public_key = $_REQUEST["stripe_publishablekey"];
-			$secret_key = $_REQUEST["stripe_secretkey"];
-			
-			$public_key_prefix = substr($public_key , 0, 3);
-			$secret_key_prefix = substr($secret_key , 0, 3);
-			
-			if((!empty($public_key_prefix) && $public_key_prefix !== 'pk_') || 
-				(!empty($secret_key_prefix) && $secret_key_prefix !== 'sk_'))
-			{
-			    $msg = -1;
-			    $msgt = __("Your Stripe publishable and/or secret keys are incorrect.", "paid-memberships-pro" );
-				unset($_REQUEST['savesettings']);
-			}				
-		}
+		}				
 
 		/**
 		 * Display fields for Stripe options.
@@ -281,6 +262,14 @@
 			</th>
 			<td>
 				<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60" value="<?php echo esc_attr($values['stripe_publishablekey'])?>" />
+				<?php
+					$public_key_prefix = substr($values['stripe_publishablekey'] , 0, 3);
+					if($public_key_prefix != 'pk_') {
+					?>
+					<br /><small class="pmpro_message pmpro_error"><?php _e('Your Publishable Key appears incorrect.', 'paid-memberships-pro');?></small>
+					<?php
+					}
+				?>
 			</td>
 		</tr>		
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
@@ -289,6 +278,14 @@
 			</th>
 			<td>
 				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
+				<?php
+					$secret_key_prefix = substr($values['stripe_secretkey'] , 0, 3);
+					if($secret_key_prefix != 'sk_') {
+					?>
+					<br /><small class="pmpro_message pmpro_error"><?php _e('Your Secret Key appears incorrect.', 'paid-memberships-pro');?></small>
+					<?php
+					}
+				?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
