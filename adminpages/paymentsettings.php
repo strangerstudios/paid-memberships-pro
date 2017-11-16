@@ -28,11 +28,11 @@
 		*/
 		foreach($payment_options as $option) {
 			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
-			if($option == 'sslseal') {
+			if( in_array( $option, array( 'sslseal', 'instructions' ) ) ) {
 				global $allowedposttags;
-				$sslseal = wp_kses(wp_unslash($_POST['sslseal']), $allowedposttags);
-				update_option('pmpro_sslseal', $sslseal);
-			} else {
+				$html = wp_kses(wp_unslash($_POST[$option]), $allowedposttags);
+				update_option("pmpro_{$option}", $html);
+            } else {
 				pmpro_setOption($option);
 			}
 		}
