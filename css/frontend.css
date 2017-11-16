@@ -64,7 +64,7 @@ input[type="button"].pmpro_btn.pmpro_btn-cancel:hover {
 	background: #EFEFEF;
 }
 .pmpro_btn.pmpro_btn-submit-checkout {
-	width: 100%;
+	width: auto;
 }
 /*---------------------------------------
 	Forms
@@ -115,14 +115,14 @@ form.pmpro_form .pmpro_captcha div {
 }
 form.pmpro_form .pmpro_submit{
 	margin-top: 1em;
-	text-align: center;
+	text-align: right;
 }
 form.pmpro_form #pmpro_processing_message {
 	color: #999;
 	display: block;
 	font-style: italic;
 	margin: 1em 0 0 0;
-	text-align: center;
+	text-align: right;
 }
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
@@ -348,19 +348,12 @@ li.pmpro_more {
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
 	}
-	form.pmpro_form .leftmar, form.pmpro_form .pmpro_captcha {
-		margin: 2px 0 0 0;
-	}
-	form.pmpro_form .pmpro_submit {
-		margin-left: 0;
-	}
-	form.pmpro_form .pmpro_submit #pmpro_submit_span {
-		display: block;
-		float: none;
-	}
 	form.pmpro_form .pmpro_btn {
 		display: block;
 		width: 100%;
+	}
+	form.pmpro_form #pmpro_processing_message {
+		text-align: center;
 	}
 	.pmpro_invoice_details {
 		display: block;
