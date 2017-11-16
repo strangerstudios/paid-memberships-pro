@@ -326,7 +326,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		$pmpro_error_fields[] = "password";
 		$pmpro_error_fields[] = "password2";
 	}
-	if ( ! empty( $bemail ) && $bemail != $bconfirmemail ) {
+	if ( strcasecmp($bemail, $bconfirmemail) !== 0 ) {
 		pmpro_setMessage( __( "Your email addresses do not match. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "bemail";
 		$pmpro_error_fields[] = "bconfirmemail";
