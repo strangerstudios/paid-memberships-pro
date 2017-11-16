@@ -130,6 +130,8 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.4.2 - 2017-XX-XX =
+* BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
+* ENHANCEMENT/FIX: Avoid double-encoding the PayPal API version number
 * ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
 
 = 1.9.4.1 - 2017-10-31 =
