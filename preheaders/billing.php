@@ -5,7 +5,6 @@ global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipco
 
 if($current_user->ID)
     $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
-$gateway = pmpro_getOption("gateway");
 
 //need to be secure?
 global $besecure, $show_paypal_link;
@@ -27,6 +26,9 @@ if (empty($user_order->gateway)) {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");
 }
+
+// Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
+$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
 
 //action to run extra code for gateways/etc
 do_action( 'pmpro_billing_preheader' );
