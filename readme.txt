@@ -131,6 +131,8 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.9.4.2 - 2017-XX-XX =
 * BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
+* BUG FIX/ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
+* BUG FIX/ENHANCEMENT: Added invoice total and total billed breakdown back to confirmation and invoice single views.
 * ENHANCEMENT/FIX: Avoid double-encoding the PayPal API version number
 * ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
 * ENHANCEMENT: Switched order of Publishable and Secret Key fields and added validation check.

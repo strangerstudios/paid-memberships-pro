@@ -57,9 +57,6 @@
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
 			<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 		<?php } ?>
-		<?php if($pmpro_invoice->total) { ?>
-			<li><strong><?php _e('Total Billed', 'paid-memberships-pro' );?>:</strong> <?php echo pmpro_formatPrice($pmpro_invoice->total);?></li>
-		<?php } ?>
 		<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 	</ul>
 	<hr />	
@@ -87,10 +84,24 @@
 			<?php echo $pmpro_invoice->payment_type?>
 		<?php } ?>
 		
-		<div class="pmpro_invoice-membership-level">
-			<strong><?php _e('Membership Level', 'paid-memberships-pro' );?></strong>
-			<p><?php echo $pmpro_invoice->membership_level->name?></p>
-		</div> <!-- end pmpro_invoice-membership-level -->
+		<div class="pmpro_invoice-total">
+			<strong><?php _e('Total Billed', 'paid-memberships-pro' );?></strong>
+			<p><?php if($pmpro_invoice->total != '0.00') { ?>
+				<?php if(!empty($pmpro_invoice->tax)) { ?>
+					<?php _e('Subtotal', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
+					<?php _e('Tax', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
+					<?php if(!empty($pmpro_invoice->couponamount)) { ?>
+						<?php _e('Coupon', 'paid-memberships-pro' );?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
+					<?php } ?>
+					<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
+				<?php } else { ?>
+					<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
+				<?php } ?>						
+			<?php } else { ?>
+				<small class="pmpro_grey"><?php echo pmpro_formatPrice(0);?></small>
+			<?php } ?></p>
+		</div> <!-- end pmpro_invoice-total -->
+
 	</div> <!-- end pmpro_invoice -->
 	<hr />
 <?php 
