@@ -55,7 +55,7 @@
 	//check nonce for saving codes
 	if (!empty($_REQUEST['saveid']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
-		$pmpro_msg = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$saveid = false;
 	}
 	
@@ -290,10 +290,10 @@
 			}
 			else
 			{
+				do_action("pmpro_save_discount_code", $edit);
+				
 				//all good. set edit = false so we go back to the overview page				
 				$edit = false;
-				
-				do_action("pmpro_save_discount_code", $saveid);
 			}
 		}
 	}
@@ -301,7 +301,7 @@
 	//check nonce for deleting codes
 	if (!empty($_REQUEST['delete']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
-		$pmpro_msg = __("Are your sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$delete = false;
 	}
 	

@@ -346,10 +346,10 @@ function pmpro_report_login_wp_views()
 				
 		//track logins for user
 		$views['last'] = date_i18n(get_option("date_format"), $now);
-		$views['alltime']++;
+		$views['alltime'] = $views['alltime'] + 1;
 		$thismonth = date_i18n("n", $now);
 		if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
-			$views['month']++;
+			$views['month'] = $views['month'] + 1;
 		else
 		{
 			$views['month'] = 1;
@@ -365,10 +365,10 @@ function pmpro_report_login_wp_views()
 	if(empty($views))
 		$views = array("today"=>0, "thisdate"=> NULL, "month"=>0, "thismonth"=> NULL, "alltime"=>0);
 	
-	$views['alltime']++;
+	$views['alltime'] = $views['alltime'] + 1;
 	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $views['thisdate'])
-		$views['today']++;
+		$views['today'] = $views['today'] + 1;
 	else
 	{
 		$views['today'] = 1;
@@ -376,7 +376,7 @@ function pmpro_report_login_wp_views()
 	}
 	$thismonth = date_i18n("n", $now);
 	if(isset($views['thismonth']) && $thismonth == $views['thismonth'])
-		$views['month']++;
+		$views['month'] = $views['month'] + 1;
 	else
 	{
 		$views['month'] = 1;
@@ -400,10 +400,10 @@ function pmpro_report_login_wp_login($user_login)
 		
 	//track logins for user
 	$logins['last'] = date_i18n(get_option("date_format"), $now);
-	$logins['alltime']++;
+	$logins['alltime'] = $logins['alltime'] + 1;
 	$thismonth = date_i18n("n", $now);
 	if($thismonth == $logins['thismonth'])
-		$logins['month']++;
+		$logins['month'] = $logins['month'] + 1;
 	else
 	{		
 		$logins['month'] = 1;
@@ -418,17 +418,17 @@ function pmpro_report_login_wp_login($user_login)
 	if(empty($logins))
 		$logins = array("today"=>0, "thisdate"=>NULL, "month"=>0, "thismonth"=>NULL, "alltime"=>0);
 	
-	$logins['alltime']++;
+	$logins['alltime'] = $logins['alltime'] + 1;
 	$thisdate = date_i18n("Y-d-m", $now);
 	if($thisdate == $logins['thisdate'])
-		$logins['today']++;
+		$logins['today'] = $logins['today'] + 1;
 	else
 	{
 		$logins['today'] = 1;
 		$logins['thisdate'] = $thisdate;
 	}
 	if($thismonth == $logins['thismonth'])
-		$logins['month']++;
+		$logins['month'] = $logins['month'] + 1;
 	else
 	{
 		$logins['month'] = 1;

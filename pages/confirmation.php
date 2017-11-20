@@ -57,45 +57,42 @@
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
 			<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
 		<?php } ?>
+		<?php if($pmpro_invoice->total) { ?>
+			<li><strong><?php _e('Total Billed', 'paid-memberships-pro' );?>:</strong> <?php echo pmpro_formatPrice($pmpro_invoice->total);?></li>
+		<?php } ?>
 		<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 	</ul>
-	
-	<table id="pmpro_confirmation_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
-		<thead>
-			<tr>
-				<?php if(!empty($pmpro_invoice->billing->name)) { ?>
-				<th><?php _e('Billing Address', 'paid-memberships-pro' );?></th>
+	<hr />	
+	<div class="pmpro_invoice_details">
+		<?php if(!empty($pmpro_invoice->billing->name)) { ?>
+			<div class="pmpro_invoice-billing-address">
+				<strong><?php _e('Billing Address', 'paid-memberships-pro' );?></strong>
+				<p><?php echo $pmpro_invoice->billing->name?><br />
+				<?php echo $pmpro_invoice->billing->street?><br />						
+				<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
+					<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />												
 				<?php } ?>
-				<th><?php _e('Payment Method', 'paid-memberships-pro' );?></th>
-				<th><?php _e('Membership Level', 'paid-memberships-pro' );?></th>
-				<th><?php _e('Total Billed', 'paid-memberships-pro' );?></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<?php if(!empty($pmpro_invoice->billing->name)) { ?>
-				<td>
-					<?php echo $pmpro_invoice->billing->name?><br />
-					<?php echo $pmpro_invoice->billing->street?><br />						
-					<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />												
-					<?php } ?>
-					<?php echo formatPhone($pmpro_invoice->billing->phone)?>
-				</td>
-				<?php } ?>
-				<td>
-					<?php if($pmpro_invoice->accountnumber) { ?>
-						<?php echo $pmpro_invoice->cardtype?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?><br />
-						<small><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></small>
-					<?php } elseif($pmpro_invoice->payment_type) { ?>
-						<?php echo $pmpro_invoice->payment_type?>
-					<?php } ?>
-				</td>
-				<td><?php echo $pmpro_invoice->membership_level->name?></td>					
-				<td><?php if($pmpro_invoice->total) echo pmpro_formatPrice($pmpro_invoice->total); else echo "---";?></td>
-			</tr>
-		</tbody>
-	</table>		
+				<?php echo formatPhone($pmpro_invoice->billing->phone)?>
+				</p>
+			</div> <!-- end pmpro_invoice-billing-address -->
+		<?php } ?>
+		
+		<?php if($pmpro_invoice->accountnumber) { ?>
+			<div class="pmpro_invoice-payment-method">
+				<strong><?php _e('Payment Method', 'paid-memberships-pro' );?></strong>
+				<p><?php echo $pmpro_invoice->cardtype?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?></p>
+				<p><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></p>
+			</div> <!-- end pmpro_invoice-payment-method -->
+		<?php } elseif($pmpro_invoice->payment_type) { ?>
+			<?php echo $pmpro_invoice->payment_type?>
+		<?php } ?>
+		
+		<div class="pmpro_invoice-membership-level">
+			<strong><?php _e('Membership Level', 'paid-memberships-pro' );?></strong>
+			<p><?php echo $pmpro_invoice->membership_level->name?></p>
+		</div> <!-- end pmpro_invoice-membership-level -->
+	</div> <!-- end pmpro_invoice -->
+	<hr />
 <?php 
 	} 
 	else 

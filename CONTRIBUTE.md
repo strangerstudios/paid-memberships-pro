@@ -17,8 +17,8 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 ## Making Changes
 
 * Fork the repository on GitHub
-* For bug fixes, checkout the latest versioned branch of the PMPro repository (e.g. 1.9).
-* For new features and enhancements, checkout the DEV branch of the PMPro respository.
+* For bug fixes, checkout the DEV branch of the PMPro repository.
+* For new features and enhancements, checkout the branch for the version the feature is milestoned for.
 * Make the changes to your forked repository
   * Make sure to pull in any "upstream" changes first.
   	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo

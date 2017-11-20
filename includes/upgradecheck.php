@@ -214,6 +214,11 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 1.93;
 		pmpro_setOption("db_version", "1.93");
 	}
+
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );	
+	if($pmpro_db_version < 1.94) {
+		$pmpro_db_version = pmpro_upgrade_1_9_4();
+	}
 }
 
 function pmpro_db_delta()
