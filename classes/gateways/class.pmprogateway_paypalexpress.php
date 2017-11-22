@@ -7,6 +7,8 @@
 
 	class PMProGateway_paypalexpress extends PMProGateway
 	{
+	    private $nvpStr = '';
+	    
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -484,9 +486,15 @@
 		</script>
 		<?php
 		}
-
-		//PayPal Express, this is run first to authorize from PayPal
-		function setExpressCheckout(&$order)
+        
+        /**
+         * Authorize (but don't charge yet) payment from PayPal
+         *
+         * @param \MemberOrder $order
+         *
+         * @return bool
+         */
+		function setExpressCheckout( $order )
 		{
 			global $pmpro_currency;
 
@@ -507,58 +515,158 @@
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = round((float)$amount + (float)$amount_tax, 2);
-
+   
+			$blog_name = get_bloginfo("name");
+            $level_name = $order->membership_level->name;
+            
 			//paypal profile stuff
-			$nvpStr = "";
-			$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency;
-			if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate, current_time("timestamp")) > 0)
-				$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;
-			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
-			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
+            $nvp_args = array();
+            $nvp_args['AMT'] = $initial_payment;
+            $nvp_args['CURRENCYCODE'] = !empty( $pmpro_currency ) ? $pmpro_currency : 'USD'; // Default to USD, just in case
+            $nvp_args['NOSHIPPING'] = true;
+            
+			$nvp_args['DESC'] = apply_filters(
+			        'pmpro_paypal_level_description',
+                    substr( "{$level_name} at {$blog_name}", 0, 127),
+                    $level_name,
+                    $order,
+                    $blog_name
+            );
+            
+            // If configured and a valid strtotime() (aka Date/Time) string
+            if ( !empty( $order->ProfileStartDate ) && false !== strtotime($order->ProfileStartDate, current_time("timestamp")) ) {
+                $nvp_args['PROFILESTARTDATE'] = $order->profileStartDate;
+            }
+            
+            // Set recurring billing info
+            if(!empty($order->BillingFrequency)) {
+                $nvp_args['BILLINGPERIOD'] = $order->BillingPeriod;
+                $nvp_args['BILLINGFREQUENCY'] = $order->BillingFrequency;
+                $nvp_args['AUTOBILLOUTAMT'] = 'AddToNextBilling';
+                $nvp_args['L_BILLINGTYPE0'] =  'RecurringPayments';
+                $nvp_args['L_BILLINGAGREEMENTDESCRIPTION0'] = substr( "{$level_name} at {$blog_name}", 0, 127 );
+            }
+            
+            // If there's a limit on the number of billing cycles
+            if(!empty($order->TotalBillingCycles)) {
+                $nvp_args['TOTALBILLINGCYCLES'] = $order->TotalBillingCycles;
+            }
+            
+            //if a trial period is defined
+            if(!empty($order->TrialBillingPeriod)) {
+    
+                $trial_amount = $order->TrialAmount;
+                $trial_tax = $order->getTaxForPrice($trial_amount);
+                $trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+                
+                $nvp_args['TRIALBILLINGPERIOD'] = $order->TrialBillingPeriod;
+                $nvp_args['TRIALBILLINGFREQUENCY'] = $order->TrialBillingFrequency;
+                $nvp_args['TRIALAMT'] = $trial_amount;
+            }
+            
+            // If there's a setting for how many billing cycles should be treated as a trial period
+            if(!empty($order->TrialBillingCycles)) {
+                $nvp_args['TRIALTOTALBILLINGCYCLES'] = $order->TrialBillingCycles;
+            }
+            
+            
+            $nvp_args['NOTIFYURL'] = esc_url( add_query_arg( 'action', 'ipnhandler', admin_url( 'admin-ajax.php' ) ) );
+            $nvp_args['L_PAYMENTTYPE0'] = 'Any';
+            
+            // Determine return URI content (with/without discount code)
+            if(!empty($order->discount_code)) {
+                $return_settings= array(
+                    'level' => $order->membership_level->id,
+                    'discount_code' => $order->discount_code,
+                    'review' => $order->code
+                );
+            } else {
+                $return_settings = array(
+                    'level' => $order->membership_level->id,
+                    'discount_code' => $order->discount_code,
+                    'review' => $order->code
+                );
+            }
+            
+            // Generate the return URL for where to send member after payment info is provided
+            $nvp_args['ReturnUrl'] = esc_url(
+                add_query_arg(
+                        $return_settings,
+                        pmpro_url( 'checkout' )
+                    )
+                );
+
+            // If they choose to cancel (on PayPal.com)
+            $nvp_args['CANCELURL'] = pmpro_url( 'levels' );
+            
+            // Should we force the new member to have a PayPal account?
+            // Nope, we shouldn't unless told otherwise by the filter
+            $account_optional = apply_filters('pmpro_paypal_account_optional', true);
+            
+            if (true === $account_optional) {
+                $nvp_args['SOLUTIONTYPE'] = 'Sole';
+                $nvp_args['LANDINGPAGE'] = 'Billing';
+            }
+            
+            // Any additional parameters the user(s) want us to include?
+            $additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
+            if(!empty($additional_parameters))
+            {
+                foreach($additional_parameters as $key => $value)
+                    $nvp_args[$key] = $value;
+            }
+            
+            // Build the NVP string to send to the PayPal server
+            $nvpStr = http_build_query( $nvp_args );
+            $nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
+            
+            //$nvpStr .="&AMT=" . $initial_payment . "&CURRENCYCODE=" . $pmpro_currency;
+			// if(!empty($order->ProfileStartDate) && strtotime($order->ProfileStartDate, current_time("timestamp")) > 0)
+			//	$nvpStr .= "&PROFILESTARTDATE=" . $order->ProfileStartDate;
+			// if(!empty($order->BillingFrequency))
+			//	$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
+			// $nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
+			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			// $nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
 
 			//if billing cycles are defined
-			if(!empty($order->TotalBillingCycles))
-				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
+			//if(!empty($order->TotalBillingCycles))
+			//	$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 
 			//if a trial period is defined
-			if(!empty($order->TrialBillingPeriod))
-			{
-				$trial_amount = $order->TrialAmount;
-				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+			// if(!empty($order->TrialBillingPeriod))
+			// {
+			//	$trial_amount = $order->TrialAmount;
+			//	$trial_tax = $order->getTaxForPrice($trial_amount);
+			//	$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
 
-				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
-			}
-			if(!empty($order->TrialBillingCycles))
-				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
+			//	$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
+			//}
+			//if(!empty($order->TrialBillingCycles))
+			//	$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
+   
+			//if(!empty($order->discount_code))
+			//{
+			//	$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $order->membership_level->id . "&discount_code=" . $order->discount_code . "&review=" . $order->code));
+			//}
+			//else
+			//{
+			//	$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $order->membership_level->id . "&review=" . $order->code));
+			//}
 
-			if(!empty($order->discount_code))
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $order->membership_level->id . "&discount_code=" . $order->discount_code . "&review=" . $order->code));
-			}
-			else
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?level=" . $order->membership_level->id . "&review=" . $order->code));
-			}
+			//$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
+			//if(!empty($additional_parameters))
+			//{
+			//	foreach($additional_parameters as $key => $value)
+			//		$nvpStr .= urlencode("&" . $key . "=" . $value);
+			//}
 
-			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
-			if(!empty($additional_parameters))
-			{
-				foreach($additional_parameters as $key => $value)
-					$nvpStr .= urlencode("&" . $key . "=" . $value);
-			}
+			// $nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
 
-			$nvpStr .= "&CANCELURL=" . urlencode(pmpro_url("levels"));
-
-			$account_optional = apply_filters('pmpro_paypal_account_optional', true);
-    		if ($account_optional)
-        		$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
-
-			$nvpStr = apply_filters("pmpro_set_express_checkout_nvpstr", $nvpStr, $order);
-
+			//$account_optional = apply_filters('pmpro_paypal_account_optional', true);
+    		//if ($account_optional)
+        	//	$nvpStr .= '&SOLUTIONTYPE=Sole&LANDINGPAGE=Billing';
+         
 			///echo str_replace("&", "&<br />", $nvpStr);
 			///exit;
 
@@ -596,18 +704,29 @@
 
 			//redirect to PayPal
 		}
-
-		function getExpressCheckoutDetails(&$order)
+        
+        /**
+         * @param \MemberOrder $order
+         *
+         * @return bool
+         */
+		function getExpressCheckoutDetails($order)
 		{
-			$nvpStr="&TOKEN=".$order->Token;
+		    $nvp_args = array(
+                'TOKEN' => $order->Token,
+            );
+		    
+		    $this->nvpStr = http_build_query( $nvp_args );
+		    
+			// $nvpStr="&TOKEN=".$order->Token;
 
-			$nvpStr = apply_filters("pmpro_get_express_checkout_details_nvpstr", $nvpStr, $order);
+			$this->nvpStr = apply_filters("pmpro_get_express_checkout_details_nvpstr", $this->nvpStr, $order);
 
 			/* Make the API call and store the results in an array.  If the
 			call was a success, show the authorization details, and provide
 			an action to complete the payment.  If failed, show the error
 			*/
-			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $nvpStr);
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $this->nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "review";
@@ -625,7 +744,14 @@
 				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
 			}
 		}
-
+        
+        /**
+         * Create a one time charge transaction for the PayPal.com server (Express Checkout)
+         *
+         * @param \MemberOrder $order
+         *
+         * @return bool
+         */
 		function charge(&$order)
 		{
 			global $pmpro_currency;
@@ -640,27 +766,60 @@
 			$amount = round((float)$amount + (float)$amount_tax, 2);
 
 			//paypal profile stuff
-			$nvpStr = "";
+            $nvp_args = array();
+            $level_name = $order->membership_level->name;
+            $blog_name = get_bloginfo("name");
+            
+            $nvpStr = "";
 			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency;
+			    $nvp_args['TOKEN'] = $order->Token;
+			    // $nvpStr .= "&TOKEN=" . $order->Token;
+            
+            $nvp_args['AMT'] = $amount;
+            $nvp_args['CURRENCY_CODE'] = !empty( $pmpro_currency ) ? $pmpro_currency : 'USD';
+			// $nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency;
 			/*
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
 			*/
-			if(!empty($order->BillingFrequency))
-				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
+			// if(!empty($order->BillingFrequency))
+			//	$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
+            
+            // If the billing frequency is configured (that's weird, isn't it..?)
+			if ( !empty( $order->BillingFrequency ) ) {
+			    $nvp_args['BILLINGPERIOD'] = $order->BillingPeriod;
+			    $nvp_args['BILLINGFREQUENCY'] = $order->BillingFrequency;
+			    $nvp_args['AUTOBILLOUTAMT'] = 'AddToNextBilling';
+            }
+            
+            /**
+             * BUG FIX: Limit string length to max # of characters supported by PayPal: 127
+             */
+            $nvp_args['DESC'] = substr(
+                    apply_filters( 'pmpro_paypal_level_description', "{$level_name} at {$blog_name}", $level_name, $order, $blog_name ),
+                    0,
+                    127
+            );
+            
+			// $nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
-			$nvpStr .= "&NOSHIPPING=1";
+			$nvp_args['NOTIFYURL'] = esc_url( add_query_arg( 'action', 'ipnhandler', admin_url( 'admin-ajax.php' ) ) );
+			$nvp_args['NOSHIPPING'] = true;
+			// $nvpStr .= "&NOSHIPPING=1";
+            
+            if ( isset( $_SESSION['payer_id'] ) ) {
+                $nvp_args['PAYERID'] = $_SESSION['payer_id'];
+            }
+            
+            $nvp_args['PAYMENTACTION'] = 'sale';
+			// $nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";
 
-			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";
+            $nvpStr = http_build_query( $nvp_args );
+			$this->nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 
-			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
+			// $order->nvpStr = $nvpStr;
 
-			$order->nvpStr = $nvpStr;
-
-			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $nvpStr);
+			$this->httpParsedResponseAr = $this->PPHttpPost('DoExpressCheckoutPayment', $this->nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['TRANSACTIONID']);
@@ -679,7 +838,14 @@
 				//exit('SetExpressCheckout failed: ' . print_r($httpParsedResponseAr, true));
 			}
 		}
-
+        
+        /**
+         * Create a recurring billing plan (transaction) for the PayPal.com server (Express Checkout)
+         *
+         * @param \MemberOrder $order
+         *
+         * @return bool
+         */
 		function subscribe(&$order)
 		{
 			global $pmpro_currency;
@@ -701,40 +867,87 @@
 			//$amount = round((float)$amount + (float)$amount_tax, 2);
 
 			//paypal profile stuff
-			$nvpStr = "";
-			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
-			if(!empty($amount_tax))
-				$nvpStr .= "&TAXAMT=" . $amount_tax;
-			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
-			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
+            $nvp_args = array();
+            $level_name = $order->membership_level->name;
+            $blog_name = get_bloginfo("name");
+            
+            if ( !empty( $order->Token ) ) {
+                $nvp_args['TOKEN'] = $order->Token;
+            }
+            
+            $nvp_args['INITAMT'] = $initial_payment;
+            $nvp_args['AMT'] = $amount;
+            $nvp_args['CURRENCY_CODE'] = !empty( $pmpro_currency ) ? $pmpro_currency : 'USD';
+            $nvp_args['PROFILESTARTDATE'] = $order->ProfileStartDate;
+            
+            if ( !empty( $amount_tax ) ) {
+                $nvp_args['TAXAMT'] = $amount_tax;
+            }
+            
+            $nvp_args['BILLINGPERIOD'] = $order->BillingPeriod;
+            $nvp_args['BILLINGFREQUENCY'] = $order->BillingFrequency;
+            $nvp_args['AUTOBILLOUTAMT'] = 'AddToNextBilling';
+            
+            $nvp_args['DESC'] = apply_filters( 'pmpro_paypal_level_description', substr( "{$level_name} at {$blog_name}", 0, 127 ), $level_name, $order, $blog_name );
+            $nvp_args['NOTIFYURL'] = esc_url( add_query_arg( 'action', 'ipnhandler', admin_url( 'admin-ajax.php' ) ) );
+            
+            //if billing cycles are defined
+            if ( !empty( $order->TotalBillingCycles ) ) {
+                $nvp_args['TOTALBILLINGCYCLES'] = $order->TotalBillingCycles;
+            }
+            
+            //if a trial period is defined
+            if(!empty($order->TrialBillingPeriod)) {
+    
+                $trial_amount = $order->TrialAmount;
+                $trial_tax = $order->getTaxForPrice($trial_amount);
+                $trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+    
+                $nvp_args['TRIALBILLINGPERIOD'] = $order->TrialBillingPeriod;
+                $nvp_args['TRIALBILLINGFREQUENCY'] = $order->TrialBillingFrequency;
+                $nvp_args['TRIALAMT'] = $trial_amount;
+            }
+            
+            if ( !empty( $order->TrialBillingCycles ) ) {
+                $nvp_args['TRIALTOTALBILLINGCYCLES'] = $order->TrialBillingCycles;
+            }
+            
+            // Create remote URI for PayPal server(s)
+			$nvpStr = http_build_query( $nvp_args );
+   
+			//if(!empty($order->Token))
+			//	$nvpStr .= "&TOKEN=" . $order->Token;
+			// $nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
+			// if(!empty($amount_tax))
+			//	$nvpStr .= "&TAXAMT=" . $amount_tax;
+			// $nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
+			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			//$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			//if billing cycles are defined
-			if(!empty($order->TotalBillingCycles))
-				$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
+			// if(!empty($order->TotalBillingCycles))
+			//	$nvpStr .= "&TOTALBILLINGCYCLES=" . $order->TotalBillingCycles;
 
 			//if a trial period is defined
-			if(!empty($order->TrialBillingPeriod))
-			{
-				$trial_amount = $order->TrialAmount;
-				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+			//if(!empty($order->TrialBillingPeriod))
+			//{
+			//	$trial_amount = $order->TrialAmount;
+			//	$trial_tax = $order->getTaxForPrice($trial_amount);
+			//	$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
 
-				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
-			}
-			if(!empty($order->TrialBillingCycles))
-				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
+			//	$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
+			//}
+			// if(!empty($order->TrialBillingCycles))
+			//	$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
+            
+            $this->nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
-			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
-
-			$this->nvpStr = $nvpStr;
+			// $this->nvpStr = $nvpStr;
 
 			///echo str_replace("&", "&<br />", $nvpStr);
 			///exit;
 
-			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
+			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $this->nvpStr );
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				$order->status = "success";
@@ -754,12 +967,25 @@
 				return false;
 			}
 		}
-
+        
+        /**
+         * Cancel PayPal subscription plan for the user
+         *
+         * @param \MemberOrder $order
+         *
+         * @return bool
+         */
 		function cancel(&$order)
 		{
 			//paypal profile stuff
-			$nvpStr = "";
-			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
+            $nvp_args = array(
+                'PROFILEID' => $order->subscription_transaction_id,
+                'ACTION' => 'Cancel',
+                'NOTE' => __( "User requested cancellation", "paid-memberships-pro" ),
+            );
+            
+			$nvpStr = http_build_query( $nvp_args );
+            // $nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
 
 			$nvpStr = apply_filters("pmpro_manage_recurring_payments_profile_status_nvpstr", $nvpStr, $order);
 
@@ -780,16 +1006,29 @@
 				return false;
 			}
 		}
-
+        
+        /**
+         * Return the subscription plan status for the specified order from PayPal.com
+         *
+         * @param \MemberOrder $order
+         *
+         * @return array|bool
+         */
 		function getSubscriptionStatus(&$order)
 		{
 			if(empty($order->subscription_transaction_id))
 				return false;
 
 			//paypal profile stuff
-			$nvpStr = "";
-			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);
-
+			// $nvpStr = "";
+			// $nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);
+            
+            //paypal profile stuff
+			$nvp_args = array(
+			        'PROFILEID' => $order->subscription_transaction_id
+            );
+			
+			$nvpStr = http_build_query( $nvp_args );
 			$nvpStr = apply_filters("pmpro_get_recurring_payments_profile_details_nvpstr", $nvpStr, $order);
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);
@@ -812,6 +1051,12 @@
 		/**
 		 * Filter pmpro_next_payment to get date via API if possible
 		 *
+         * @param int $timestamp
+         * @param int $user_id
+         * @param string $order_status
+         *
+         * @return int - Timestamp value of the next payment (as indicated by PayPal server)
+         *
 		 * @since 1.8.5
 		*/
 		static function pmpro_next_payment($timestamp, $user_id, $order_status)
@@ -827,11 +1072,11 @@
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
 				{
 					//get the subscription status
-					$status = $order->getGatewaySubscriptionStatus();					
-										
+					$status = $order->getGatewaySubscriptionStatus();
+					
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{
-						//found the next billing date at PayPal, going to use that						
+						//found the next billing date at PayPal, going to use that
 						$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
 					}
 					elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled")
@@ -843,7 +1088,7 @@
 					}
 				}
 			}
-						
+			
 			return $timestamp;
 		}
 
@@ -851,11 +1096,12 @@
 		 * PAYPAL Function
 		 * Send HTTP POST Request
 		 *
-		 * @param	string	The API method name
-		 * @param	string	The POST Message fields in &name=value pair format
+		 * @param	string	$methodName_ The API method name
+		 * @param	string	$nvpStr_ The POST Message fields in &name=value pair format
 		 * @return	array	Parsed HTTP Response body
 		 */
 		function PPHttpPost($methodName_, $nvpStr_) {
+		 
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
@@ -866,24 +1112,55 @@
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";
 			}
-
-			$version = urlencode('72.0');
-
-			//NVPRequest for submitting to server
-			$nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&BUTTONSOURCE=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
-
+            
+            $nvp_args = array(
+                'METHOD' => $methodName_,
+                'VERSION' => '72.0',
+                'BUTTONSOURCE' => PAYPAL_BN_CODE,
+            );
+            
+            // Make sure we have an API username
+            if ( ! empty( $API_UserName ) ) {
+                $nvp_args['USER'] = $API_UserName;
+            } else {
+                return array( 'ACK' => 'API_ERROR', 'L_ERRORCODE0' => 'MERCHANT_INFO', 'L_LONGMESSAGE0' => 'PayPal Express Merchant', 'L_SHORTMESSAGE0' => 'PayPal Express: More merchant info needed' );
+            }
+            
+            // Make sure we have an API password
+            if ( !empty( $API_Password ) ) {
+                $nvp_args['PWD'] = $API_Password;
+            } else {
+                return array( 'ACK' => 'API_ERROR', 'L_ERRORCODE0' => 'API_CREDENTIALS', 'L_LONGMESSAGE0' => 'PayPal Express API Credentials', 'L_SHORTMESSAGE0' => 'PayPal Express API Credentials' );
+            }
+            
+            // Make sure we have an API Signature
+            if ( !empty( $API_Signature ) ) {
+                $nvp_args['SIGNATURE'] = $API_Signature;
+            } else {
+                return array( 'ACK' => 'API_ERROR', 'L_ERRORCODE0' => 'API_SIGNATURE', 'L_LONGMESSAGE0' => 'PayPal Express API Signature', 'L_SHORTMESSAGE0' => 'PayPal Express API Signature' );
+            }
+            
+            //NVPRequest for submitting to server
+			// $nvpreq = "METHOD=" . urlencode($methodName_) . "&VERSION=" . urlencode($version) . "&PWD=" . urlencode($API_Password) . "&USER=" . urlencode($API_UserName) . "&SIGNATURE=" . urlencode($API_Signature) . "&BUTTONSOURCE=" . urlencode(PAYPAL_BN_CODE) . $nvpStr_;
+            
+            $nvpreq = http_build_query( $nvp_args );
+            $this->nvpStr = "{$nvpStr_}&{$nvpreq}";
+            
 			//post to PayPal
 			$response = wp_remote_post( $API_Endpoint, array(
 					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
-					'body' => $nvpreq
+					'body' => $this->nvpStr
 			    )
 			);
-
-			if ( is_wp_error( $response ) ) {
-			   $error_message = $response->get_error_message();
-			   die( "methodName_ failed: $error_message" );
+   
+			$status_code = wp_remote_retrieve_response_code( $response );
+			
+			if ( is_wp_error( $response ) || ( $status_code < 200 || $status_code >= 299 ) ) {
+                $error_message = wp_remote_retrieve_response_message( $response );
+			    // $error_message = $response->get_error_message();
+			   die( "{$methodName_} failed/error: {$error_message}" );
 			} else {
 				//extract the response details
 				$httpParsedResponseAr = array();
@@ -891,7 +1168,7 @@
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
+					exit("Invalid HTTP Response for POST request({$nvpreq}) to {$API_Endpoint}.");
 				}
 			}
 
