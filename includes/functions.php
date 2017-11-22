@@ -1982,6 +1982,11 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 		$level_id = intval($_REQUEST['level']);
 	}
 	
+	//no level, check for a default level in the custom fields for this post
+	if(empty($level_id) && !empty($post)) {
+		$level_id = get_post_meta( $post->ID, "pmpro_default_level", true );
+	}
+	
 	//default to discount code passed in
 	if(empty($discount_code) && !empty($_REQUEST['discount_code'])) {
 		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
@@ -1992,7 +1997,7 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
 
 		//check code
-		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );		
 		if ( $code_check[0] != false ) {			
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
@@ -2014,12 +2019,6 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 	//what level are they purchasing? (no discount code)
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
-	} elseif ( empty( $pmpro_level ) && !empty( $post ) ) {
-		//check if a level is defined in custom fields
-		$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
-		if ( ! empty( $default_level ) ) {
-			$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $default_level ) . "' AND allow_signups = 1 LIMIT 1" );
-		}
 	}
 
 	//filter the level (for upgrades, etc)

@@ -132,6 +132,7 @@ Not sure? You can find out by doing a bit a research.
 = 1.9.4.2 - 2017-XX-XX =
 * BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
 * BUG FIX: The update billing page now checks the gateway of the user's last order instead of the default gateway settings in case multiple gateways are in use or the default gateway has changed.
+* BUG FIX: Fixed bug where discount codes were not being applied properly if the pmpro_default_level custom field was set and used on a page.
 * ENHANCEMENT/FIX: Avoid double-encoding the PayPal API version number
 * ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
 * ENHANCEMENT: Switched order of Publishable and Secret Key fields and added validation check.
