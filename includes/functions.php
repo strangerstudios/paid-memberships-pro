@@ -2234,6 +2234,11 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 	    $level_id = intval( $level_id );
     }
 	
+	//no level, check for a default level in the custom fields for this post
+	if(empty($level_id) && !empty($post)) {
+		$level_id = get_post_meta( $post->ID, "pmpro_default_level", true );
+	}
+	
 	//default to discount code passed in
 	if(empty($discount_code) && !empty($_REQUEST['discount_code'])) {
 		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
@@ -2259,7 +2264,10 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
                     $discount_code,
                     $level_id
             );
-			
+			//NOTE: Above SQL is the same as the SQL in the commeted out section (below)
+            /*
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
+            */
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
 
 			//if the discount code doesn't adjust the level, let's just get the straight level
@@ -2279,12 +2287,6 @@ function pmpro_getLevelAtCheckout($level_id = NULL, $discount_code = NULL) {
 	//what level are they purchasing? (no discount code)
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
 		$pmpro_level = $wpdb->get_row( $wpdb->prepare( "SELECT ml.* FROM {$wpdb->pmpro_membership_levels} AS ml WHERE ml.id = %d AND ml.allow_signups = 1 LIMIT 1" , $level_id ) );
-	} elseif ( empty( $pmpro_level ) && !empty( $post ) ) {
-		//check if a level is defined in custom fields
-		$default_level = get_post_meta( $post->ID, "pmpro_default_level", true );
-		if ( ! empty( $default_level ) ) {
-			$pmpro_level = $wpdb->get_row( $wpdb->prepare( "SELECT ml.* FROM {$wpdb->pmpro_membership_levels} AS ml WHERE ml.id = %d AND ml.allow_signups = 1 LIMIT 1", $default_level ) );
-		}
 	}
 
 	//filter the level (for upgrades, etc)
