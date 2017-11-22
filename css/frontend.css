@@ -99,6 +99,7 @@ form.pmpro_form input[type=checkbox]#tos {
 form.pmpro_form .input,
 form.pmpro_form textarea,
 form.pmpro_form select {
+	display: inline-block;
 	max-width: 90%;
 }
 form.pmpro_form .pmpro_payment-cvv .input,
