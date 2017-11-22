@@ -651,7 +651,7 @@ function pmpro_getMRR($period, $levels = 'all')
 	$revenue = $wpdb->get_var($sqlQuery);
 	
 	//when was the first order
-	$first_order_timestamp = $wpdb->get_var("SELECT UNIX_TIMESTAMP(`timestamp`) FROM $wpdb->pmpro_membership_orders WHERE `timestamp` IS NOT NULL AND `timestamp` >  '0000-00-00 00:00:00' ORDER BY `timestamp` LIMIT 1");
+	$first_order_timestamp = strtotime( $wpdb->get_var("SELECT timestamp FROM $wpdb->pmpro_membership_orders WHERE `timestamp` IS NOT NULL AND `timestamp` >  '0000-00-00 00:00:00' ORDER BY `timestamp` LIMIT 1"), current_time('timestamp' ) );
 	
 	//if we don't have a timestamp, we can't do this
 	if(empty($first_order_timestamp))

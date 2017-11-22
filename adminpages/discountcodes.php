@@ -372,7 +372,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						SELECT *, starts, expires
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$edit ),
@@ -393,7 +393,7 @@
 				elseif(!empty($copy) && $copy > 0)
 				{
 					$code = $wpdb->get_row( $wpdb->prepare("
-					SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+					SELECT *, starts, expires
 					FROM $wpdb->pmpro_discount_codes
 					WHERE id = %d LIMIT 1",
 					$copy ),
@@ -432,31 +432,31 @@
 						//some vars for the dates
 						$current_day = date_i18n("j");
 						if(!empty($code->starts))
-							$selected_starts_day = date_i18n("j", $code->starts);
+							$selected_starts_day = date_i18n("j", strtotime( $code->starts, current_time('timestamp') ) );
 						else
 							$selected_starts_day = $current_day;
 						if(!empty($code->expires))
-							$selected_expires_day = date_i18n("j", $code->expires);
+							$selected_expires_day = date_i18n("j", strtotime( $code->expires, current_time('timestamp') ) );
 						else
 							$selected_expires_day = $current_day;
 
 						$current_month = date_i18n("M");
 						if(!empty($code->starts))
-							$selected_starts_month = date_i18n("m", $code->starts);
+							$selected_starts_month = date_i18n("m", strtotime( $code->starts, current_time('timestamp') ) );
 						else
 							$selected_starts_month = date_i18n("m");
 						if(!empty($code->expires))
-							$selected_expires_month = date_i18n("m", $code->expires);
+							$selected_expires_month = date_i18n("m", strtotime( $code->expires, current_time('timestamp') ) );
 						else
 							$selected_expires_month = date_i18n("m");							
 						
 						$current_year = date_i18n("Y");
 						if(!empty($code->starts))
-							$selected_starts_year = date_i18n("Y", $code->starts);
+							$selected_starts_year = date_i18n("Y", strtotime( $code->starts, current_time('timestamp')) );
 						else
 							$selected_starts_year = $current_year;
 						if(!empty($code->expires))
-							$selected_expires_year = date_i18n("Y", $code->expires);
+							$selected_expires_year = date_i18n("Y", strtotime( $code->expires, current_time('timestamp') ) );
 						else
 							$selected_expires_year = (int)$current_year + 1;
 					?>
@@ -683,7 +683,7 @@
 		<?php } ?>
 		
 		<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, starts, expires FROM $wpdb->pmpro_discount_codes ";
 			if(!empty($s))
 				$sqlQuery .= "WHERE code LIKE '%$s%' ";
 			
@@ -749,10 +749,10 @@
 							<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>
 						</td>
 						<td>
-							<?php echo date_i18n(get_option('date_format'), $code->starts)?>
+							<?php echo date_i18n(get_option('date_format'), strtotime( $code->starts, current_time('timestamp') ) ); ?>
 						</td>
 						<td>
-							<?php echo date_i18n(get_option('date_format'), $code->expires)?>
+							<?php echo date_i18n(get_option('date_format'), strtotime( $code->expires, current_time('timestamp') ) ); ?>
 						</td>				
 						<td>
 							<?php

@@ -78,7 +78,7 @@
 				return false;
 
 			$gmt_offset = get_option('gmt_offset');
-			$dbobj = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) + " . ($gmt_offset * 3600) . "  as timestamp FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
 
 			if($dbobj)
 			{
@@ -135,7 +135,7 @@
 				$this->gateway_environment = $dbobj->gateway_environment;
 				$this->payment_transaction_id = $dbobj->payment_transaction_id;
 				$this->subscription_transaction_id = $dbobj->subscription_transaction_id;
-				$this->timestamp = $dbobj->timestamp;
+				$this->timestamp = strtotime( $dbobj->timestamp, current_time('timestamp' ) );
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
@@ -318,8 +318,11 @@
 			if(!empty($this->user))
 				return $this->user;
 
-			$gmt_offset = get_option('gmt_offset');
-			$this->user = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(user_registered) + " . ($gmt_offset * 3600) . "  as user_registered FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			// $gmt_offset = get_option('gmt_offset'); // Not needed
+			$this->user = $wpdb->get_row($wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE ID = %d LIMIT 1", $this->user_id ) );
+			
+			// Convert to UNIX_TIME
+			$this->user->user_registered = strtotime( $this->user->user_registered, current_time( 'timestamp' ) );
 			return $this->user;
 		}
 
@@ -328,6 +331,7 @@
 		 *
 		 * @param bool $force If true, it will query the database again.
 		 *
+		 * @return \stdClass
 		 */
 		function getMembershipLevel($force = false)
 		{
@@ -339,11 +343,19 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, mu.startdate as startdate, mu.enddate as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
 
-				//fix the membership level id
-				if(!empty($this->membership_level->level_id))
+				//fix the membership level id and timestamps for startdate/enddate
+				if(!empty($this->membership_level->level_id)) {
 					$this->membership_level->id = $this->membership_level->level_id;
+					$this->membership_level->startdate = strtotime( $this->membership_level->startdate, current_time( 'timestamp' ) );
+					
+					if ( !empty( $this->membership_level->enddate ) &&  '0000-00-00 00:00:00' != $this->membership_level->enddate ) {
+						$this->membership_level->enddate = strtotime( $this->membership_level->enddate, current_time( 'timestamp' ) );
+					} else if ( '0000-00-00 00:00:00' == $this->membership_level->enddate ) {
+						$this->membership_level->enddate = null;
+					}
+				}
 			}
 
 			//okay, do I have a discount code to check? (if there is no membership_level->membership_id value, that means there was no entry in memberships_users)
@@ -432,12 +444,12 @@
 			if(empty($time))
 				$time = "00:00:00";
 
-			$date = $year . "-" . $month . "-" . $day . " " . $time;
+			$date = "{$year}-{$month}-{$day} {$time}";
 
 			global $wpdb;
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			//$this->sqlQuery = "UPDATE  SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
 
-			if($wpdb->query($this->sqlQuery) !== "false")
+			if( $wpdb->update($wpdb->pmpro_membership_orders, array( 'timestamp' => $date ), array( 'id' => $this->id ), array( '%s' ), array( '%d' ) ) !== false )
 				return $this->getMemberOrderByID($this->id);
 			else
 				return false;
@@ -545,41 +557,41 @@
 				$before_action = "pmpro_update_order";
 				$after_action = "pmpro_updated_order";
 				//update
-				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
-									SET `code` = '" . $this->code . "',
-									`session_id` = '" . $this->session_id . "',
-									`user_id` = " . intval($this->user_id) . ",
-									`membership_id` = " . intval($this->membership_id) . ",
-									`paypal_token` = '" . $this->paypal_token . "',
-									`billing_name` = '" . esc_sql($this->billing->name) . "',
-									`billing_street` = '" . esc_sql($this->billing->street) . "',
-									`billing_city` = '" . esc_sql($this->billing->city) . "',
-									`billing_state` = '" . esc_sql($this->billing->state) . "',
-									`billing_zip` = '" . esc_sql($this->billing->zip) . "',
-									`billing_country` = '" . esc_sql($this->billing->country) . "',
-									`billing_phone` = '" . esc_sql($this->billing->phone) . "',
-									`subtotal` = '" . $this->subtotal . "',
-									`tax` = '" . $this->tax . "',
-									`couponamount` = '" . $this->couponamount . "',
-									`certificate_id` = " . intval($this->certificate_id) . ",
-									`certificateamount` = '" . $this->certificateamount . "',
-									`total` = '" . $this->total . "',
-									`payment_type` = '" . $this->payment_type . "',
-									`cardtype` = '" . $this->cardtype . "',
-									`accountnumber` = '" . $this->accountnumber . "',
-									`expirationmonth` = '" . $this->expirationmonth . "',
-									`expirationyear` = '" . $this->expirationyear . "',
-									`status` = '" . esc_sql($this->status) . "',
-									`gateway` = '" . $this->gateway . "',
-									`gateway_environment` = '" . $this->gateway_environment . "',
-									`payment_transaction_id` = '" . esc_sql($this->payment_transaction_id) . "',
-									`subscription_transaction_id` = '" . esc_sql($this->subscription_transaction_id) . "',
-									`timestamp` = '" . esc_sql($this->datetime) . "',
-									`affiliate_id` = '" . esc_sql($this->affiliate_id) . "',
-									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
-									`notes` = '" . esc_sql($this->notes) . "',
-									`checkout_id` = " . intval($this->checkout_id) . "
-									WHERE id = '" . $this->id . "'
+				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders AS mo
+									SET mo.code = '" . $this->code . "',
+									mo.session_id = '" . $this->session_id . "',
+									mo.user_id = " . intval($this->user_id) . ",
+									mo.membership_id = " . intval($this->membership_id) . ",
+									mo.paypal_token = '" . $this->paypal_token . "',
+									mo.billing_name = '" . esc_sql($this->billing->name) . "',
+									mo.billing_street = '" . esc_sql($this->billing->street) . "',
+									mo.billing_city = '" . esc_sql($this->billing->city) . "',
+									mo.billing_state = '" . esc_sql($this->billing->state) . "',
+									mo.billing_zip = '" . esc_sql($this->billing->zip) . "',
+									mo.billing_country = '" . esc_sql($this->billing->country) . "',
+									mo.billing_phone = '" . esc_sql($this->billing->phone) . "',
+									mo.subtotal = '" . $this->subtotal . "',
+									mo.tax = '" . $this->tax . "',
+									mo.couponamount = '" . $this->couponamount . "',
+									mo.certificate_id = " . intval($this->certificate_id) . ",
+									mo.certificateamount = '" . $this->certificateamount . "',
+									mo.total = '" . $this->total . "',
+									mo.payment_type = '" . $this->payment_type . "',
+									mo.cardtype = '" . $this->cardtype . "',
+									mo.accountnumber = '" . $this->accountnumber . "',
+									mo.expirationmonth = '" . $this->expirationmonth . "',
+									mo.expirationyear = '" . $this->expirationyear . "',
+									mo.status = '" . esc_sql($this->status) . "',
+									mo.gateway = '" . $this->gateway . "',
+									mo.gateway_environment = '" . $this->gateway_environment . "',
+									mo.payment_transaction_id = '" . esc_sql($this->payment_transaction_id) . "',
+									mo.subscription_transaction_id = '" . esc_sql($this->subscription_transaction_id) . "',
+									mo.timestamp = '" . esc_sql($this->datetime) . "',
+									mo.affiliate_id = '" . esc_sql($this->affiliate_id) . "',
+									mo.affiliate_subid = '" . esc_sql($this->affiliate_subid) . "',
+									mo.notes = '" . esc_sql($this->notes) . "',
+									mo.checkout_id = " . intval($this->checkout_id) . "
+									WHERE mo.id = '" . $this->id . "'
 									LIMIT 1";
 			}
 			else
@@ -595,8 +607,8 @@
 				}
 				
 				//insert
-				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
+				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders AS mo
+								(mo.code, mo.session_id, mo.user_id, mo.membership_id, mo.paypal_token, mo.billing_name, mo.billing_street, mo.billing_city, mo.billing_state, mo.billing_zip, mo.billing_country, mo.billing_phone, mo.subtotal, mo.tax, mo.couponamount, mo.certificate_id, mo.certificateamount, mo.total, mo.payment_type, mo.cardtype, mo.accountnumber, mo.expirationmonth, mo.expirationyear, mo.status, mo.gateway, mo.gateway_environment, mo.payment_transaction_id, mo.subscription_transaction_id, mo.timestamp, mo.affiliate_id, mo.affiliate_subid, mo.notes, mo.checkout_id)
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
 									   " . intval($this->user_id) . ",
@@ -660,7 +672,7 @@
 				$scramble = md5(AUTH_KEY . current_time('timestamp') . SECURE_AUTH_KEY);
 				$code = substr($scramble, 0, 10);
 				$code = apply_filters("pmpro_random_code", $code, $this);	//filter
-				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");
+				$check = $wpdb->get_var($wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
 				if($check || is_numeric($code))
 					$code = NULL;
 			}

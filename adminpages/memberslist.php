@@ -7,6 +7,8 @@
 
 	//vars
 	global $wpdb;
+	global $pmpro_currency_symbol;
+	
 	if(isset($_REQUEST['s']))
 		$s = sanitize_text_field(trim($_REQUEST['s']));
 	else
@@ -78,7 +80,7 @@
 
 		if($s)
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_registered as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, mu.startdate as startdate, mu.enddate as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 
 			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
@@ -107,7 +109,7 @@
 		}
 		else
 		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.user_registered as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, mu.startdate as startdate, mu.enddate as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 
 			if($l == "oldmembers" || $l == "expired" || $l == "cancelled")
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
@@ -147,8 +149,7 @@
 				$initial_payments = pmpro_calculateInitialPaymentRevenue($s, $l);
 				$recurring_payments = pmpro_calculateRecurringRevenue($s, $l);
 				?>
-				<p class="clear"><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
-				<?php
+                <p class="clear"><?php printf( __( '%1$d members found. These members have paid %2$s%3$s%4$s in initial payments%5$s, and will generate an estimated %2%s%3$s%6$s in revenue over the next year%5%s, or %2$s%3$s%7$s/month%5$s', "paid-memberships-pro" ), esc_attr( strval( $totalrows ) ), '<strong>', $pmpro_currency_symbol, number_format($initial_payments), '</strong>', number_format($recurring_payments), number_format($recurring_payments/12) );?><span class="pmpro_lite"><?php _e( "(This estimate does not take into account trial periods or billing limits.)", "paid-memberships-pro"); ?></span></p><?php
 			}
 			else
 			{
@@ -246,7 +247,7 @@
 							<td>
 								<?php
 									if($auser->enddate)
-										echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
+										echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), strtotime( $auser->enddate, current_time('timestamp') ) ), $auser);
 									else
 										echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
 								?>

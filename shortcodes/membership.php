@@ -54,11 +54,11 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	{		
 		//okay, this post requires membership. start by getting the user's startdate
 		if(!empty($levels))
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
+			$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
 		else
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
+			$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
 
-		$startdate = $wpdb->get_var($sqlQuery);
+		$startdate = strtotime( $wpdb->get_var($sqlQuery), current_time('timestamp') );
 
 		//adjust start date to 12AM
 		$startdate = strtotime(date_i18n("Y-m-d", $startdate));
