@@ -237,7 +237,7 @@ class pmpro_mimetype {
          "ice" => "x-conference-xcooltalk" 
       ); 
 
-      $mimetypes = add_filter( 'pmpro_mimetypes_array', $mimetypes );
+      $mimetypes = apply_filters( 'pmpro_mimetypes_array', $mimetypes );
 
       return $mimetypes;
    } 

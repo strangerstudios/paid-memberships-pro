@@ -79,6 +79,9 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 		}
 	}
 
+	// Filter the $hasaccess so we can overwrite this for other add ons.
+	$hasaccess = apply_filters( 'pmpro_member_shortcode_access', $hasaccess, $content, $levels, $delay );
+
 	//to show or not to show
 	if($hasaccess)
 		return do_shortcode($content);	//show content

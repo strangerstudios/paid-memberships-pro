@@ -41,7 +41,7 @@
 			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe\Stripe::setAPIVersion("2015-07-13");
+				Stripe\Stripe::setAPIVersion("2017-08-15");
                 self::$is_loaded = true;
 			}
 			
@@ -128,6 +128,9 @@
 			global $pmpro_stripe_lite;
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
+			
+			//make sure we clean up subs we will be cancelling after checkout before processing
+			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
 			
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
@@ -230,7 +233,7 @@
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{
+		{			
 			//get stripe options
 			$stripe_options = self::getGatewayOptions();
 
@@ -238,7 +241,7 @@
 			$options = array_merge($stripe_options, $options);
 
 			return $options;
-		}
+		}				
 
 		/**
 		 * Display fields for Stripe options.
@@ -255,18 +258,34 @@
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_secretkey"><?php _e('Secret Key', 'paid-memberships-pro' );?>:</label>
-			</th>
-			<td>
-				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
 				<label for="stripe_publishablekey"><?php _e('Publishable Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60" value="<?php echo esc_attr($values['stripe_publishablekey'])?>" />
+				<?php
+					$public_key_prefix = substr($values['stripe_publishablekey'] , 0, 3);
+					if($public_key_prefix != 'pk_') {
+					?>
+					<br /><small class="pmpro_message pmpro_error"><?php _e('Your Publishable Key appears incorrect.', 'paid-memberships-pro');?></small>
+					<?php
+					}
+				?>
+			</td>
+		</tr>		
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_secretkey"><?php _e('Secret Key', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
+				<?php
+					$secret_key_prefix = substr($values['stripe_secretkey'] , 0, 3);
+					if($secret_key_prefix != 'sk_') {
+					?>
+					<br /><small class="pmpro_message pmpro_error"><?php _e('Your Secret Key appears incorrect.', 'paid-memberships-pro');?></small>
+					<?php
+					}
+				?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
@@ -553,133 +572,103 @@
 
 			//include ours
 			?>
-			<table id="pmpro_payment_information_fields" class="pmpro_checkout top1em" width="100%" cellpadding="0" cellspacing="0" border="0" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
-			<thead>
-				<tr>
-					<th>
-						<span class="pmpro_thead-name"><?php _e('Payment Information', 'paid-memberships-pro' );?></span>
-						<span class="pmpro_thead-msg"><?php printf(__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr valign="top">
-					<td>
-						<?php
-							$sslseal = pmpro_getOption("sslseal");
-							if($sslseal)
-							{
-							?>
-								<div class="pmpro_sslseal"><?php echo stripslashes($sslseal)?></div>
-							<?php
-							}
-						?>
-						<?php
-							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
-							if($pmpro_include_cardtype_field)
-							{
-							?>
-							<div class="pmpro_payment-card-type">
-								<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
-								<select id="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
-									<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-										<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
-									<?php } ?>
-								</select>
-							</div>
-						<?php
-							}
-							else
-							{
-							?>
-							<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-							<script>
-								<!--
-								jQuery(document).ready(function() {
-										jQuery('#AccountNumber').validateCreditCard(function(result) {
-											var cardtypenames = {
-												"amex":"American Express",
-												"diners_club_carte_blanche":"Diners Club Carte Blanche",
-												"diners_club_international":"Diners Club International",
-												"discover":"Discover",
-												"jcb":"JCB",
-												"laser":"Laser",
-												"maestro":"Maestro",
-												"mastercard":"Mastercard",
-												"visa":"Visa",
-												"visa_electron":"Visa Electron"
-											}
-
-											if(result.card_type)
-												jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-											else
-												jQuery('#CardType').val('Unknown Card Type');
-										});
-								});
-								-->
-							</script>
-							<?php
-							}
-						?>
-
-						<div class="pmpro_payment-account-number">
-							<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
-							<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
-						</div>
-
-						<div class="pmpro_payment-expiration">
-							<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
-							<select id="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
-								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-								<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-								<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-								<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-								<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-								<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-								<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-								<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-								<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-								<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-								<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-								<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-							</select>/<select id="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
-								<?php
-									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
-									{
-								?>
-									<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
-								<?php
-									}
-								?>
+			<div id="pmpro_payment_information_fields" class="pmpro_checkout" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
+				<h3>
+					<span class="pmpro_checkout-h3-name"><?php _e('Payment Information', 'paid-memberships-pro' );?></span>
+					<span class="pmpro_checkout-h3-msg"><?php printf(__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
+				</h3>
+				<?php $sslseal = pmpro_getOption("sslseal"); ?>
+				<?php if(!empty($sslseal)) { ?>
+					<div class="pmpro_checkout-fields-display-seal">
+				<?php } ?>
+				<div class="pmpro_checkout-fields<?php if(!empty($sslseal)) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
+				<?php
+					$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
+					if($pmpro_include_cardtype_field) { ?>
+						<div class="pmpro_checkout-field pmpro_payment-card-type">
+							<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
+							<select id="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
+								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
+									<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
+								<?php } ?>
 							</select>
 						</div>
+					<?php } else { ?>
+						<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+						<script>
+							<!--
+							jQuery(document).ready(function() {
+									jQuery('#AccountNumber').validateCreditCard(function(result) {
+										var cardtypenames = {
+											"amex":"American Express",
+											"diners_club_carte_blanche":"Diners Club Carte Blanche",
+											"diners_club_international":"Diners Club International",
+											"discover":"Discover",
+											"jcb":"JCB",
+											"laser":"Laser",
+											"maestro":"Maestro",
+											"mastercard":"Mastercard",
+											"visa":"Visa",
+											"visa_electron":"Visa Electron"
+										}
 
-						<?php
-							$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
-							if($pmpro_show_cvv)
-							{							
-						?>
-						<div class="pmpro_payment-cvv">
+										if(result.card_type)
+											jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+										else
+											jQuery('#CardType').val('Unknown Card Type');
+									});
+							});
+							-->
+						</script>
+					<?php } ?>
+					<div class="pmpro_checkout-field pmpro_payment-account-number">
+						<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
+						<input id="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
+					</div>
+					<div class="pmpro_checkout-field pmpro_payment-expiration">
+						<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
+						<select id="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
+							<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
+							<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
+							<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
+							<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
+							<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
+							<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
+							<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
+							<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
+							<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
+							<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
+							<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
+							<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
+						</select>/<select id="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
+							<?php
+								for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++) { ?>
+								<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
+							<?php } ?>
+						</select>
+					</div>
+					<?php
+						$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
+						if($pmpro_show_cvv) { ?>
+						<div class="pmpro_checkout-field pmpro_payment-cvv">
 							<label for="CVV"><?php _e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
 							<input id="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="input <?php echo pmpro_getClassForField("CVV");?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 						</div>
-						<?php
-							}
-						?>
-
-						<?php if($pmpro_show_discount_code) { ?>
-						<div class="pmpro_payment-discount-code">
+					<?php } ?>
+					<?php if($pmpro_show_discount_code) { ?>
+						<div class="pmpro_checkout-field pmpro_payment-discount-code">
 							<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-							<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
+							<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code)?>" />
 							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 							<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
 						</div>
-						<?php } ?>
-
-					</td>
-				</tr>
-			</tbody>
-			</table>
+					<?php } ?>
+				</div> <!-- end pmpro_checkout-fields -->
+				<?php if(!empty($sslseal)) { ?>
+					<div class="pmpro_checkout-fields-rightcol pmpro_sslseal"><?php echo stripslashes($sslseal); ?></div>
+				</div> <!-- end pmpro_checkout-fields-display-seal -->
+				<?php } ?>
+			</div> <!-- end pmpro_payment_information_fields -->
 			<?php
 
 			//don't include the default
@@ -1040,6 +1029,65 @@
 				}
 			}
 		}
+		
+		/**
+		 * Before processing a checkout, check for pending invoices we want to clean up.
+		 * This prevents double billing issues in cases where Stripe has pending invoices
+		 * because of an expired credit card/etc and a user checks out to renew their subscription
+		 * instead of updating their billing information via the billing info page.
+		 */
+		static function pmpro_checkout_before_processing() {			
+			global $wpdb, $current_user;
+			
+			//we're only worried about cases where the user is logged in
+			if(!is_user_logged_in())
+				return;
+			
+			//get user and membership level			
+			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+			
+			//no level, then probably no subscription at Stripe anymore
+			if(empty($membership_level))
+				return;
+						
+			/**
+			 * Filter which levels to cancel at the gateway.
+			 * MMPU will set this to all levels that are going to be cancelled during this checkout.
+			 * Others may want to display this by add_filter('pmpro_stripe_levels_to_cancel_before_checkout', __return_false);
+			 */
+			$levels_to_cancel = apply_filters('pmpro_stripe_levels_to_cancel_before_checkout', array($membership_level->id), $current_user);
+						
+			foreach($levels_to_cancel as $level_to_cancel) {
+				//get the last order for this user/level
+				$last_order = new MemberOrder();
+				$last_order->getLastMemberOrder($current_user->ID, 'success', $level_to_cancel, 'stripe');
+								
+				//so let's cancel the user's susbcription
+				if(!empty($last_order) && !empty($last_order->subscription_transaction_id)) {										
+					$subscription = $last_order->Gateway->getSubscription($last_order);
+					if(!empty($subscription)) {					
+						$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true);
+						
+						//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
+						$memberships_users_row = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1");
+												
+						if(!empty($memberships_users_row) && (empty($memberships_users_row->enddate) || $memberships_users_row->enddate == '0000-00-00 00:00:00')) {
+							/**
+							 * Filter graced period days when canceling existing subscriptions at checkout.
+							 *
+							 * @since 1.9.4
+							 *
+							 * @param int $days Grace period defaults to 3 days
+							 * @param object $membership Membership row from pmpro_memberships_users including membership_id, user_id, and enddate
+							 */
+							$days_grace = apply_filters('pmpro_stripe_days_grace_when_canceling_existing_subscriptions_at_checkout', 3, $memberships_users_row);
+							$new_enddate = date('Y-m-d H:i:s', current_time('timestamp')+3600*24*$days_grace);
+							$wpdb->update( $wpdb->pmpro_memberships_users, array('enddate'=>$new_enddate), array('user_id'=>$current_user->ID, 'membership_id'=>$level_to_cancel, 'status'=>'active'), array('%s'), array('%d', '%d', '%s') );
+						}						
+					}
+				}
+			}			
+		}
 
 		/**
 		 * Process checkout and decide if a charge and or subscribe is needed
@@ -1314,7 +1362,7 @@
 			{
 				try
 				{
-					$this->customer = Stripe_Customer::create(array(
+					$this->customer = Stripe_Customer::create(array(							 
 							  "description" => $name . " (" . $email . ")",
 							  "email" => $order->Email,
 							  "card" => $order->stripeToken
@@ -1614,6 +1662,28 @@
 		}
 		
 		/**
+		 * Helper method to save the subscription ID to make sure the membership doesn't get cancelled by the webhook
+		 */
+		static function ignoreCancelWebhookForThisSubscription($subscription_id, $user_id = NULL) {
+			if(empty($user_id)) {
+				global $current_user;
+				$user_id = $current_user->ID;
+			}
+			
+			$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
+			
+			// No previous values found, init the array
+			if ( empty( $preserve ) ) {
+				$preserve = array();
+			}
+			
+			// Store or update the subscription ID timestamp (for cleanup)
+			$preserve[$subscription_id] = current_time( 'timestamp' );
+
+			update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
+		}
+			
+		/**
 		 * Helper method to process a Stripe subscription update
 		 */
 		static function updateSubscription($update, $user_id) {
@@ -1633,22 +1703,9 @@
 			if(!empty($subscription))
 			{
 				$end_timestamp = $subscription->current_period_end;
-
-				// Save the subscription ID to make sure the membership doesn't get cancelled by the webhook
-				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
 				
-				// No previous values found, init the array
-				if ( empty( $preserve ) ) {
-					$preserve = array();
-				}
-				
-				// Store or update the subscription ID timestamp (for cleanup)
-				$preserve[$subscription->id] = current_time( 'timestamp' );
-
-				update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-
 				//cancel the old subscription
-				if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription))
+				if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true))
 				{
 					//throw error and halt save
 					if ( !function_exists( 'pmpro_stripe_user_profile_fields_save_error' )) {
@@ -1785,7 +1842,7 @@
 		 *
 		 * @since 1.8
 		 */
-		function cancelSubscriptionAtGateway($subscription)
+		function cancelSubscriptionAtGateway($subscription, $preserve_local_membership = false)
 		{
 			//need a valid sub
 			if(empty($subscription->id))
@@ -1827,6 +1884,10 @@
 					}
 				}
 
+				//sometimes we don't want to cancel the local membership when Stripe sends its webhook
+				if($preserve_local_membership)					
+					PMProGateway_stripe::ignoreCancelWebhookForThisSubscription($subscription->id, $order->user_id);
+				
 				//cancel
 				$r = $subscription->cancel();
 
@@ -1900,12 +1961,16 @@
 			if(strpos($transaction_id, "in_") !== false) {
 				$invoice = Stripe_Invoice::retrieve($transaction_id);
 
-				if(!empty($invoice) && !empty($invoice->payment))
-					$transaction_id = $invoice->payment;
+				if(!empty($invoice) && !empty($invoice->charge))
+					$transaction_id = $invoice->charge;
 			}
 
 			//get the charge
-			$charge = Stripe_Charge::retrieve($transaction_id);
+			try {
+				$charge = Stripe_Charge::retrieve($transaction_id);
+			} catch (Exception $e) {
+				$charge = false;
+			}
 
 			//can't find the charge?
 			if(empty($charge)) {

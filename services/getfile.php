@@ -28,13 +28,16 @@
 	if($uri[0] == "/")
 		$uri = substr($uri, 1, strlen($uri) - 1);
 	
+	// decode the file in case it's encoded.
+	$uri = urldecode($uri);
+	
 	/*
 		Remove ../-like strings from the URI.
 		Actually removes any combination of two or more ., /, and \.
 		This will prevent traversal attacks and loading hidden files.
 	*/
 	$uri = preg_replace("/[\.\/\\\\]{2,}/", "", $uri);
-		
+	
 	//if WP is installed in a subdirectory, that directory(s) will be in both the PATH and URI
 	$home_url_parts = explode("/", str_replace("//", "", home_url()));	
 	if(count($home_url_parts) > 1)
