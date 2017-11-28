@@ -175,6 +175,10 @@
 					<?php
 						if($l == "oldmembers")
 							_e('Ended', 'paid-memberships-pro' );
+						elseif($l == "cancelled")
+							_e('Cancelled', 'paid-memberships-pro' );
+						elseif($l == "expired")
+							_e('Expired', 'paid-memberships-pro' );
 						else
 							_e('Expires', 'paid-memberships-pro' );
 					?>
