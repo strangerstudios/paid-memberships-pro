@@ -133,11 +133,15 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
 * BUG FIX: The update billing page now checks the gateway of the user's last order instead of the default gateway settings in case multiple gateways are in use or the default gateway has changed.
 * BUG FIX: Fixed bug where discount codes were not being applied properly if the pmpro_default_level custom field was set and used on a page.
+* BUG FIX: Credit card expiration emails were being to sent to members with PayPal Express orders.
+* BUG FIX: Now correctly unslashing instructions for the check gateway.
+* BUG FIX: Fixed issue with creating pages from the page settings page.
 * BUG FIX/ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
 * BUG FIX/ENHANCEMENT: Added invoice total and total billed breakdown back to confirmation and invoice single views.
 * BUG FIX/ENHANCEMENT: Avoid double-encoding the PayPal API version number
 * ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
 * ENHANCEMENT: Switched order of Publishable and Secret Key fields and added validation check.
+* ENHANCEMENT: Conditionally update members list headings for expired, cancelled, or old members.
 
 = 1.9.4.1 - 2017-10-31 =
 * BUG FIX: Fixed serious bug where payment fields weren't showing up for the Braintree gateway.
