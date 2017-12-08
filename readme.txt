@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.8.3
-Stable tag: 1.9.4.1
+Tested up to: 4.9.1
+Stable tag: 1.9.4.2
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -129,7 +129,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
-= 1.9.4.2 - 2017-XX-XX =
+= 1.9.4.2 - 2017-12-07 =
 * BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
 * BUG FIX: The update billing page now checks the gateway of the user's last order instead of the default gateway settings in case multiple gateways are in use or the default gateway has changed.
 * BUG FIX: Fixed bug where discount codes were not being applied properly if the pmpro_default_level custom field was set and used on a page.
