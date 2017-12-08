@@ -280,7 +280,8 @@
 				<input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60" value="<?php echo esc_attr($values['stripe_secretkey'])?>" />
 				<?php
 					$secret_key_prefix = substr($values['stripe_secretkey'] , 0, 3);
-					if($secret_key_prefix != 'sk_') {
+					//note the false here to disable this for now until we figure out a better check
+					if(false && $secret_key_prefix != 'sk_') {
 					?>
 					<br /><small class="pmpro_message pmpro_error"><?php _e('Your Secret Key appears incorrect.', 'paid-memberships-pro');?></small>
 					<?php
