@@ -556,7 +556,7 @@
 				//set up actions
 				$before_action = "pmpro_update_order";
 				$after_action = "pmpro_updated_order";
-				//update
+				/*
 				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders AS mo
 									SET mo.code = '" . $this->code . "',
 									mo.session_id = '" . $this->session_id . "',
@@ -593,6 +593,7 @@
 									mo.checkout_id = " . intval($this->checkout_id) . "
 									WHERE mo.id = '" . $this->id . "'
 									LIMIT 1";
+				*/
 			}
 			else
 			{
@@ -606,8 +607,8 @@
 					$this->expirationyear = substr($this->ExpirationDate, 2, 4);
 				}
 				
-				//insert
-				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders AS mo
+				/*
+				$this->sqlQuery = "INSERT INTO {$wpdb->pmpro_membership_orders}
 								(mo.code, mo.session_id, mo.user_id, mo.membership_id, mo.paypal_token, mo.billing_name, mo.billing_street, mo.billing_city, mo.billing_state, mo.billing_zip, mo.billing_country, mo.billing_phone, mo.subtotal, mo.tax, mo.couponamount, mo.certificate_id, mo.certificateamount, mo.total, mo.payment_type, mo.cardtype, mo.accountnumber, mo.expirationmonth, mo.expirationyear, mo.status, mo.gateway, mo.gateway_environment, mo.payment_transaction_id, mo.subscription_transaction_id, mo.timestamp, mo.affiliate_id, mo.affiliate_subid, mo.notes, mo.checkout_id)
 								VALUES('" . $this->code . "',
 									   '" . session_id() . "',
@@ -643,10 +644,166 @@
 										'" . esc_sql($this->notes) . "',
 									    " . intval($this->checkout_id) . "
 									   )";
+				*/
 			}
 
 			do_action($before_action, $this);
-			if($wpdb->query($this->sqlQuery) !== false)
+			
+			if ( !empty( $this->id ) ) {
+				//update
+				$retval = $wpdb->update(
+					$wpdb->pmpro_membership_orders,
+					array(
+						'code' => $this->code,
+						'session_id' => $this->session_id,
+						'user_id' => $this->user_id,
+						'membership_id' => $this->membership_id,
+						'paypal_token' => $this->paypal_token,
+						'billing_name' => $this->billing->name,
+						'billing_street' => $this->billing->street,
+						'billing_city' => $this->billing->city,
+						'billing_state' => $this->billing->state,
+						'billing_zip' => $this->billing->zip,
+						'billing_country' => $this->billing->country,
+						'billing_phone' => $this->billing->phone,
+						'subtotal' => $this->subtotal,
+						'tax' => $this->tax,
+						'couponamount' => $this->couponamount,
+						'certificate_id' => (int) $this->certificate_id,
+						'certificateamount' => (float) $this->certificateamount,
+						'total' => (float) $this->total,
+						'payment_type' => $this->payment_type,
+						'cardtype' => $this->cardtype,
+						'accountnumber' => $this->accountnumber,
+						'expirationmonth' => $this->expirationmonth,
+						'expirationyear' => $this->expirationyear,
+						'status' => $this->status,
+						'gateway' => $this->gateway,
+						'gateway_environment' => $this->gateway_environment,
+						'payment_transaction_id' => $this->payment_transaction_id,
+						'subscription_transaction_id' => $this->subscription_transaction_id,
+						'timestamp' => $this->datetime,
+						'affiliate_id' => $this->affiliate_id,
+						'affiliate_subid' => $this->affiliate_subid,
+						'notes' => $this->notes,
+						'checkout_id' => $this->checkout_id,
+					),
+					array( 'id' => $this->id ),
+					array(
+						'%s', // code
+						'%s', // session_id
+						'%d', // user_id
+						'%d', // membership_id
+						'%s', // paypal_token
+						'%s', // billing_name
+						'%s', // billing_street
+						'%s', // billing_city
+						'%s', // billing_state
+						'%s', // billing_zip
+						'%s', // billing_country
+						'%s', // billing_phone
+						'%s', // subtotal
+						'%f', // tax
+						'%f', // couponamount
+						'%d', // certificate_id
+						'%f', // certificateamount
+						'%f', // total
+						'%s', // payment_type
+						'%s', // cardtype
+						'%s', // accountnumber
+						'%s', // expirationmonth
+						'%s', // expirationyear
+						'%s', // status
+						'%s', // gateway
+						'%s', // gateway_environment
+						'%s', // payment_transaction_id
+						'%s', // subscription_transaction_id
+						'%s', // timestamp
+						'%s', // affiliate_id
+						'%s', // affiliate_subid
+						'%s', // notes
+						'%s', // checkout_id
+					),
+					array( '%d' )
+				);
+			} else {
+				//insert
+				$retval = $wpdb->insert(
+					$wpdb->pmpro_membership_orders,
+					array(
+						'code' => $this->code,
+						'session_id' => $this->session_id,
+						'user_id' => $this->user_id,
+						'membership_id' => $this->membership_id,
+						'paypal_token' => $this->paypal_token,
+						'billing_name' => $this->billing->name,
+						'billing_street' => $this->billing->street,
+						'billing_city' => $this->billing->city,
+						'billing_state' => $this->billing->state,
+						'billing_zip' => $this->billing->zip,
+						'billing_country' => $this->billing->country,
+						'billing_phone' => $this->billing->phone,
+						'subtotal' => $this->subtotal,
+						'tax' => $this->tax,
+						'couponamount' => $this->couponamount,
+						'certificate_id' => (int) $this->certificate_id,
+						'certificateamount' => (float) $this->certificateamount,
+						'total' => (float) $this->total,
+						'payment_type' => $this->payment_type,
+						'cardtype' => $this->cardtype,
+						'accountnumber' => $this->accountnumber,
+						'expirationmonth' => $this->expirationmonth,
+						'expirationyear' => $this->expirationyear,
+						'status' => $this->status,
+						'gateway' => $this->gateway,
+						'gateway_environment' => $this->gateway_environment,
+						'payment_transaction_id' => $this->payment_transaction_id,
+						'subscription_transaction_id' => $this->subscription_transaction_id,
+						'timestamp' => $this->datetime,
+						'affiliate_id' => $this->affiliate_id,
+						'affiliate_subid' => $this->affiliate_subid,
+						'notes' => $this->notes,
+						'checkout_id' => $this->checkout_id,
+					),
+					array(
+						'%s', // code
+						'%s', // session_id
+						'%d', // user_id
+						'%d', // membership_id
+						'%s', // paypal_token
+						'%s', // billing_name
+						'%s', // billing_street
+						'%s', // billing_city
+						'%s', // billing_state
+						'%s', // billing_zip
+						'%s', // billing_country
+						'%s', // billing_phone
+						'%s', // subtotal
+						'%f', // tax
+						'%f', // couponamount
+						'%d', // certificate_id
+						'%f', // certificateamount
+						'%f', // total
+						'%s', // payment_type
+						'%s', // cardtype
+						'%s', // accountnumber
+						'%s', // expirationmonth
+						'%s', // expirationyear
+						'%s', // status
+						'%s', // gateway
+						'%s', // gateway_environment
+						'%s', // payment_transaction_id
+						'%s', // subscription_transaction_id
+						'%s', // timestamp
+						'%s', // affiliate_id
+						'%s', // affiliate_subid
+						'%s', // notes
+						'%s', // checkout_id
+					)
+				);
+			}
+			
+			if( $retval !== false)
 			{
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
