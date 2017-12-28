@@ -1136,19 +1136,19 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			$level['enddate'] = preg_replace('/\'/', '', $level['enddate']);
    
 			$insert_values = array(
-                'user_id' => $level['user_id'],
-                'membership_id' => $level['membership_id'],
-                'code_id' => $level['code_id'],
-                'initial_payment' => $level['initial_payment'],
-                'billing_amount' => $level['billing_amount'],
-                'cycle_number' => $level['billing_amount'],
-                'cycle_period' => $level['cycle_period'],
-                'billing_limit' => $level['billing_limit'],
-                'trial_amount' => $level['trial_amount'],
-                'trial_limit' => $level['trial_limit'],
-                'startdate' => $level['startdate'],
-                'enddate' => $level['startdate'],
-            );
+		                'user_id' => $level['user_id'],
+		                'membership_id' => $level['membership_id'],
+				'code_id' => $level['code_id'],
+				'initial_payment' => $level['initial_payment'],
+				'billing_amount' => $level['billing_amount'],
+				'cycle_number' => $level['billing_amount'],
+				'cycle_period' => $level['cycle_period'],
+				'billing_limit' => $level['billing_limit'],
+				'trial_amount' => $level['trial_amount'],
+				'trial_limit' => $level['trial_limit'],
+				'startdate' => $level['startdate'],
+				'enddate' => $level['enddate'],
+			);
             /*
 			$sql = $wpdb->prepare("
 					INSERT INTO {$wpdb->pmpro_memberships_users} AS mu
@@ -1187,7 +1187,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			    'trial_amount' => 0,
 			    'trial_limit' => 0,
 			    'startdate' => current_time('mysql'),
-            );
+		    );
 		    /*
 			$sql = $wpdb->prepare("
 				INSERT INTO {$wpdb->pmpro_memberships_users} AS mu
