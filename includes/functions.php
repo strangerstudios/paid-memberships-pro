@@ -1054,24 +1054,29 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	if(!empty($cancel_level)) {
 		$pmpro_cancel_previous_subscriptions = true;	//don't filter cause we're doing just the one
 		
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql($cancel_level) . "' ORDER BY id DESC");
+		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql($cancel_level) . "' ORDER BY id DESC LIMIT 1");
 	} else {
 		$pmpro_cancel_previous_subscriptions = true;
 		if(isset($_REQUEST['cancel_membership']) && $_REQUEST['cancel_membership'] == false)
 			$pmpro_cancel_previous_subscriptions = false;
 		$pmpro_cancel_previous_subscriptions = apply_filters("pmpro_cancel_previous_subscriptions", $pmpro_cancel_previous_subscriptions);
 		
-		$other_order_ids = $wpdb->get_col("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' ORDER BY id DESC");
+		$other_order_ids = $wpdb->get_col("SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
+											FROM $wpdb->pmpro_membership_orders 
+											WHERE user_id = '" . $user_id . "' 
+												AND status = 'success' 
+											GROUP BY unique_sub_id  
+											ORDER BY id DESC");	
 	}
 	
 	$other_order_ids = apply_filters("pmpro_other_order_ids_to_cancel", $other_order_ids);
-	
+
 	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
 	if($pmpro_cancel_previous_subscriptions && !empty($other_order_ids))
 	{		
 		foreach($other_order_ids as $order_id)
 		{
-			$c_order = new MemberOrder($order_id);
+			$c_order = new MemberOrder($order_id);			
 			$c_order->cancel();
 
 			if(!empty($c_order->error))

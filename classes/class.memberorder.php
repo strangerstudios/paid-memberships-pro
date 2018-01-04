@@ -711,17 +711,15 @@
 		/**
 		 * Cancel an order and call the cancel step of the gateway class if needed.
 		 */
-		function cancel()
-		{
+		function cancel() {
+			global $wpdb;
+			
 			//only need to cancel on the gateway if there is a subscription id
-			if(empty($this->subscription_transaction_id))
-			{
+			if(empty($this->subscription_transaction_id)) {
 				//just mark as cancelled
 				$this->updateStatus("cancelled");
 				return true;
-			}
-			else
-			{
+			} else {
 				//get some data
 				$order_user = get_userdata($this->user_id);
 
@@ -732,8 +730,7 @@
 					$result = false;
 				}
 
-				if($result == false)
-				{
+				if($result == false) {
 					//there was an error, but cancel the order no matter what
 					$this->updateStatus("cancelled");
 
@@ -747,20 +744,33 @@
 					$pmproemail->data["body"] .= '<p>' . __('Gateway', 'paid-memberships-pro') . ': ' . $this->gateway . '</p>';
 					$pmproemail->data["body"] .= '<p>' . __('Subscription Transaction ID', 'paid-memberships-pro') . ': ' . $this->subscription_transaction_id . '</p>';
 					$pmproemail->sendEmail(get_bloginfo("admin_email"));
-
-					return false;
-				}
-				else
-				{
+				} else {
 					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
 
-					//remove billing numbers in pmpro_memberships_users if the membership is still active
-					global $wpdb;
+					//remove billing numbers in pmpro_memberships_users if the membership is still active					
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
 					$wpdb->query($sqlQuery);
-
-					return $result;
 				}
+				
+				//cancel orders for the same subscription
+				$sqlQuery = $wpdb->prepare(
+					"UPDATE $wpdb->pmpro_membership_orders 
+						SET `status` = 'cancelled' 
+						WHERE user_id = %d 
+							AND membership_id = %d 
+							AND gateway = %s 
+							AND gateway_environment = %s 
+							AND subscription_transaction_id = %s 
+							AND `status` IN('success', '') ",					
+					$this->user_id,
+					$this->membership_id,
+					$this->gateway,
+					$this->gateway_environment,
+					$this->subscription_transaction_id
+				);								
+				$wpdb->query($sqlQuery);
+				
+				return $result;
 			}
 		}
 

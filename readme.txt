@@ -129,6 +129,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.4.3 - 2018-01-04 =
+* BUG FIX: Fixed issue where PMPro would attempt to cancel gateway subscriptions more than once in some cases.
+
 = 1.9.4.2 - 2017-12-07 =
 * BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
 * BUG FIX: The update billing page now checks the gateway of the user's last order instead of the default gateway settings in case multiple gateways are in use or the default gateway has changed.
