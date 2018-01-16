@@ -1189,6 +1189,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			    'trial_amount' => 0,
 			    'trial_limit' => 0,
 			    'startdate' => current_time('mysql'),
+			    'enddate' => null
 		    );
 		    /*
 			$sql = $wpdb->prepare("
