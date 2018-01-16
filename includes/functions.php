@@ -1107,7 +1107,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	}
 	
 	$other_order_ids = apply_filters("pmpro_other_order_ids_to_cancel", $other_order_ids);
-	
+
 	//cancel any other subscriptions they have (updates pmpro_membership_orders table)
 	if($pmpro_cancel_previous_subscriptions && !empty($other_order_ids))
 	{		

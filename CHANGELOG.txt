@@ -1,13 +1,30 @@
 == Changelog ==
 
-= 1.9.4.1 =
+= 1.9.4.3 - 2018-01-04 =
+* BUG FIX: Fixed issue where PMPro would attempt to cancel gateway subscriptions more than once in some cases.
+
+= 1.9.4.2 - 2017-12-07 =
+* BUG FIX: Avoid double-encoding the API version in PayPal Standard gateway
+* BUG FIX: The update billing page now checks the gateway of the user's last order instead of the default gateway settings in case multiple gateways are in use or the default gateway has changed.
+* BUG FIX: Fixed bug where discount codes were not being applied properly if the pmpro_default_level custom field was set and used on a page.
+* BUG FIX: Credit card expiration emails were being to sent to members with PayPal Express orders.
+* BUG FIX: Now correctly unslashing instructions for the check gateway.
+* BUG FIX: Fixed issue with creating pages from the page settings page.
+* BUG FIX/ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
+* BUG FIX/ENHANCEMENT: Added invoice total and total billed breakdown back to confirmation and invoice single views.
+* BUG FIX/ENHANCEMENT: Avoid double-encoding the PayPal API version number
+* ENHANCEMENT: Improved submit button and processing message position for default and RTL on checkout page.
+* ENHANCEMENT: Switched order of Publishable and Secret Key fields and added validation check.
+* ENHANCEMENT: Conditionally update members list headings for expired, cancelled, or old members.
+
+= 1.9.4.1 - 2017-10-31 =
 * BUG FIX: Fixed serious bug where payment fields weren't showing up for the Braintree gateway.
 * BUG FIX: Fixed issue where Braintree webhook notifications were failing. We now allow the Braintree library to sanitize the incoming data since our sanitizing efforts were breaking the validation.
 * BUG FIX/ENHANCEMENT: The webhook URL given for Braintree now goes through admin-ajax.php instead of a direct link to a php file within our plugin.
 * BUG FIX/ENHANCEMENT: Updates to the Recaptcha library. (Thanks, Corin Simpson-Bryars)
 * ENHANCEMENT: Made the cancelation failed error email easier to read.
 
-= 1.9.4 =
+= 1.9.4 - 2017-10-26 =
 * BUG FIX: Fixed issue where PayPal was not working for amounts over $1000.
 * BUG FIX: Non-decimal currencies now handled correctly with Stripe.
 * BUG FIX: Fixed issue where updating a Stripe subscription from the edit user page could cancel the subscription once the webhook fired.
@@ -46,7 +63,7 @@ up the lines of text.
 * ENHANCEMENT: Added Portuguese language files. (Thanks, Secundino Correia)
 * ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.
 
-= 1.9.3 =
+= 1.9.3 - 2017-07-06 =
 * SECURITY: Fixed sanitization of inputs and added nonces in several places to protect against XSS attacks.
 * BUG FIX: Showing correct error message when trying to update a PMPro Plus add on with a Core license installed.
 * BUG FIX: Fixed issue where subscription and payment transaction IDs were not being saved correctly when copying an order in the dashboard. (Thanks, Pippin Williamson)
@@ -55,15 +72,15 @@ up the lines of text.
 * ENHANCEMENT: Added a pmpro_sanitize_with_safelist() function that is used to sanitize inputs that have a limited number of exact options.
 * ENHANCEMENT: Updated the pmpro_setOption() and pmpro_getParam() functions to take a new last parameter $sanitize_function, which defaults to 'sanitize_text_field'.
 
-= 1.9.2.2 =
+= 1.9.2.2 - 2017-06-13 =
 * BUG FIX: Fixed warnings on the Network Dashboard's sites page.
 * BUG FIX: Skipping update scripts that require the Stripe library if the system doesn't support the minimum requirements for the Stripe API. This avoids warnings and errors during upgrade.
 
-= 1.9.2.1 =
+= 1.9.2.1 - 2017-06-05 =
 * BUG FIX: Fixed issues with activation on single sites.
 * BUG FIX: Starting PHP sessions earlier to fix issues with PayPal/PayPal Express checkouts.
 
-= 1.9.2 =
+= 1.9.2 - 2017-06-03 =
 * BUG FIX: Fixed issue where Braintree checkouts were failing with a CVV error when existing users checked out.
 * BUG FIX: Fixed issue loading the Stripe library in PHP 5.6.
 * BUG FIX: Member List CSV export was ignoring search parameter.
@@ -76,13 +93,13 @@ up the lines of text.
 * ENHANCEMENT: Improved performance via PHP $_SESSION management improvements. We now only open the session before we set session vars and close the session when we are finished with it.
 * ENHANCEMENT: Added to code to stop network activation of Paid Memberships Pro. (Thanks, Paul Barthmaier)
 
-= 1.9.1 =
+= 1.9.1 - 2017-05-11 =
 * BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.
 * BUG FIX: Cancel code now properly uses preg_replace when sanitizing the list of level ids to cancel.
 * FIX/ENHANCEMENT: Removed test/doc code from Stripe and Braintree libraries.
 * ENHANCEMENT: Now pausing the license nag for the first week of use and removed the "invalid" error if no key is being used.
 
-= 1.9 =
+= 1.9 - 2017-04-26 =
 * BUG: Fixed issue with cancelling 2Checkout recurring subscriptions. Now using the payment_transaction_id to find/cancel the sale's recurring subscription since no subscription_transaction_id is being saved.
 * BUG: Fixed issue where old membership levels were not listed correctly in the cancellation email. (Thanks, Mike from Migrating Eye)
 * BUG: Fixed issue where "custom trial" values were not saving for discount codes.
