@@ -1094,9 +1094,11 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		$other_order_ids = $wpdb->get_col(
 		        $wpdb->prepare(
 		                "SELECT mo.id
+								  IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
                                   FROM {$wpdb->pmpro_membership_orders} AS mo
                                   WHERE mo.user_id = %d
                                   AND mo.status = %s
+                                  GROUP BY mo.unique_sub_id
                                   ORDER BY mo.id DESC",
                         $user_id,
                         'success'
@@ -1147,7 +1149,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
                 'trial_amount' => $level['trial_amount'],
                 'trial_limit' => $level['trial_limit'],
                 'startdate' => $level['startdate'],
-                'enddate' => $level['startdate'],
+                'enddate' => $level['enddate'],
             );
             /*
 			$sql = $wpdb->prepare("
@@ -1187,6 +1189,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			    'trial_amount' => 0,
 			    'trial_limit' => 0,
 			    'startdate' => current_time('mysql'),
+                'enddate' => null,
             );
 		    /*
 			$sql = $wpdb->prepare("
