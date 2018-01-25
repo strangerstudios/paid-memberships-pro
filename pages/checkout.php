@@ -15,7 +15,6 @@
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
-	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 	<?php if ($discount_code && $pmpro_review) { ?>
 		<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
 	<?php } ?>
@@ -671,11 +670,5 @@
 		   jQuery('#other_discount_code_button').click();
 	    }
 	});
--->
-</script>
-<script>
-<!--
-//add javascriptok hidden field to checkout
-jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 -->
 </script>
