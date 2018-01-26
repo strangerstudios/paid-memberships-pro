@@ -1820,6 +1820,11 @@ function pmpro_getMembershipLevelForUser($user_id = NULL, $force = false)
 														WHERE mu.user_id = $user_id AND mu.status = 'active'
 														LIMIT 1");
 
+		//if null, change to false to avoid user meta conflicts
+		if(empty($all_membership_levels[$user_id])) {
+			$all_membership_levels[$user_id] = false;
+		}
+
 		/**
 		 * pmpro_get_membership_level_for_user filter.
 		 *
