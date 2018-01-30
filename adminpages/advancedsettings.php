@@ -250,10 +250,10 @@ if(pmpro_displayAds())
 					<label for="recaptcha_invisible"><?php _e( 'Enable invisible reCAPTCHA', 'paid-memberships-pro' );?>:</label>
 					<input type="checkbox" name="recaptcha_invisible" value="1" <?php checked( $recaptcha_invisible, "1", true); ?>"/>
 					<br /><br />
-					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'paid-memberships-pro' );?>:</label>
+					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />
-					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'paid-memberships-pro' );?>:</label>
+					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
 				</td>
 			</tr>
