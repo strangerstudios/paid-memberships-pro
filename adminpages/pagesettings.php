@@ -189,7 +189,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout'] ?>&action=edit"
                            class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
                         &nbsp;
-                        <a target="_blank" href="<?php echo get_permalink($pmpro_pages['checkout']); ?>"
+                        <?php 
+                         // Get Levels ID
+                        $levels = pmpro_getAllLevels();
+
+                        // Filter to change default level ID to view for checkout page.
+                        $level = apply_filters( 'pmpro_admin_view_checkout_level_default', key( $levels ) );
+                        ?>
+                        <a target="_blank" href="<?php echo add_query_arg( 'level', $level, get_permalink($pmpro_pages['checkout']) ); ?>"
                            class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
                     <br/>
