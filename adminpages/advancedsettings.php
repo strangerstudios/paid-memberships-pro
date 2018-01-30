@@ -36,6 +36,7 @@
 
 		//captcha
 		pmpro_setOption("recaptcha");
+		pmpro_setOption("recaptcha_invisible");
 		pmpro_setOption("recaptcha_publickey");
 		pmpro_setOption("recaptcha_privatekey");
 
@@ -72,6 +73,7 @@
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 
 	$recaptcha = pmpro_getOption("recaptcha");
+	$recaptcha_invisible = pmpro_getOption("recaptcha_invisible");
 	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
 	$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
 
@@ -245,6 +247,9 @@ if(pmpro_displayAds())
 			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
+					<label for="recaptcha_invisible"><?php _e( 'Enable invisible reCAPTCHA', 'paid-memberships-pro' );?>:</label>
+					<input type="checkbox" name="recaptcha_invisible" value="1" <?php checked( $recaptcha_invisible, "1", true); ?>"/>
+					<br /><br />
 					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />
