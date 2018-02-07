@@ -2689,3 +2689,38 @@ function pmpro_getOrderStatuses($force = false) {
 	
 	return $statuses;
 }
+
+/**
+ * Cleanup the wp_pmpro_memberships_users_table
+ * (a) If a user has more than one active row for the same level, 
+ * the older ones are marked inactive.
+ * (b) If any user has active rows for an non-existent level id,
+ * those rows are marked as inactive.
+ * @since 1.9.4.4
+ */
+ function pmpro_cleanup_memberships_users_table() {
+	global $wpdb;
+		
+	//fix rows for levels that don't exists
+	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users mu
+					LEFT JOIN $wpdb->pmpro_membership_levels l ON mu.membership_id = l.id
+				SET mu.status = 'inactive'
+				WHERE mu.status = 'active' 
+					AND l.id IS NULL";
+	$wpdb->query($sqlQuery);
+	
+	//fix rows where there is more than one active status for the same user/level
+	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
+					INNER JOIN (SELECT mu1.id as id
+				FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2 		
+				WHERE mu1.id < mu2.id
+					AND mu1.user_id = mu2.user_id
+					AND mu1.membership_id = mu2.membership_id		
+					AND mu1.status = 'active'
+					AND mu2.status = 'active'
+				GROUP BY mu1.id
+				ORDER BY mu1.user_id, mu1.id DESC) t2
+				ON t1.id = t2.id
+				SET status = 'inactive'";
+	$wpdb->query($sqlQuery);
+ }
