@@ -967,9 +967,21 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 	else if(is_array($level))
 	{
 		//custom level
+		if(empty($level['membership_id'])) {
+			$pmpro_error = __('No membership_id specified in pmpro_changeMembershipLevel.', 'paid-memberships-pro');
+			return false;
+		}
+		
+		$level_obj = pmpro_getLevel($level['membership_id']);
+		if(empty($level_obj)) {
+			$pmpro_error = __("Invalid level.", 'paid-memberships-pro' );
+			return false;
+		}
+		unset($level_obj);
 	}
 	else
 	{
+		//just level id
 		$level_obj = pmpro_getLevel($level);
 		if(empty($level_obj))
 		{
@@ -977,6 +989,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			return false;
 		}
 		$level = $level_obj->id;
+		unset($level_obj);
 	}
 
 	//if it's a custom level, they're changing
