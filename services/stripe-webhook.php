@@ -228,6 +228,7 @@
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
+			$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 			if(!empty($old_order->id))
 			{
@@ -236,6 +237,7 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
+				$morder->membership_id = $old_order->membership_id;
 				
 				$morder->billing = new stdClass();
 				
