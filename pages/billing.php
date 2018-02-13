@@ -355,7 +355,7 @@
 					<?php } ?>
 				</div> <!-- end pmpro_checkout-fields -->
 			</div> <!-- end pmpro_payment_information_fields -->	
-			<?php } // if($pmpro_include_payment_information_fields) ?>
+			
 			
 			<?php do_action("pmpro_billing_before_submit_button"); ?>
 		
@@ -364,6 +364,10 @@
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update', 'paid-memberships-pro' );?>" />
 				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url("account")?>';" />
 			</div>
+			<?php } else {
+				$payment_gateway = pmpro_gateways();
+				_e( sprintf( 'Please update your billing information at your payment gateway. (Payment Gateway: %s)', $payment_gateway[$gateway] ), 'paid-memberships-pro' );
+				} // if($pmpro_include_payment_information_fields) ?>
 
 		</form>
 		<script>
