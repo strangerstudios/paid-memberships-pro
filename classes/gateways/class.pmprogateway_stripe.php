@@ -41,7 +41,7 @@
 			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe\Stripe::setAPIVersion("2017-08-15");
+				Stripe\Stripe::setAPIVersion(pmpro_getOption( 'stripe_api_version' ) );
                 self::$is_loaded = true;
 			}
 			
@@ -217,6 +217,7 @@
 				'stripe_secretkey',
 				'stripe_publishablekey',
 				'stripe_billingaddress',
+				'stripe_api_version',
 				'currency',
 				'use_ssl',
 				'tax_state',
@@ -298,6 +299,38 @@
 					<option value="1" <?php if(!empty($values['stripe_billingaddress'])) { ?>selected="selected"<?php } ?>><?php _e('Yes', 'paid-memberships-pro' );?></option>
 				</select>
 				<small><?php _e("Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' );?></small>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe"){?>style="display: none;"<?php } ?>>
+		<th scope="row" valign="top">
+			<label><?php _e( 'Stripe API Version', 'paid-memberships-pro' );?>:</label>
+		</th>
+			<td>
+				<?php 
+				// Array to easily input array of versions.
+				$stripe_api_version_array = array( 
+										'2018-02-06', 
+										'2018-02-05', 
+										'2018-01-23', 
+										'2017-12-14', 
+										'2017-08-15',
+										'2017-06-05',
+										'2017-05-25',
+										'2017-04-06',
+										'2017-02-14',
+										'2017-01-27'
+										 ); 
+
+				$stripe_api_version_array = apply_filters( 'pmpro_stripe_api_versions', $stripe_api_version_array );
+
+				?>
+				<select id="stripe_api_version" name="stripe_api_version">
+					<?php
+						foreach( $stripe_api_version_array as $key => $version ){
+						echo '<option value="' . $version . '"'. selected( $version, $values['stripe_api_version'] ) .'>'. $version .'</option>';
+						}
+					?>
+				</select>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
