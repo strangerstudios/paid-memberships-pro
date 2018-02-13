@@ -104,6 +104,11 @@
 			
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
+
+			if ( empty( $temail ) ) {
+				return false;
+			}
+
 			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
