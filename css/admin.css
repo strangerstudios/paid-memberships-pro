@@ -1,3 +1,5 @@
+#pmpro_page_meta #membershipschecklist { list-style: none; }
+
 /* icon */
 #wp-admin-bar-paid-memberships-pro .ab-item .ab-icon:before {
     font-family: "dashicons";
