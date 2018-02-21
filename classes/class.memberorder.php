@@ -77,8 +77,7 @@
 			if(!$id)
 				return false;
 
-			$gmt_offset = get_option('gmt_offset');
-			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->pmpro_membership_orders} WHERE id = %d LIMIT 1", $id ) );
 
 			if($dbobj)
 			{
@@ -112,7 +111,7 @@
 				$this->Address1 = $this->billing->street;
 
 				//get email from user_id
-				$this->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM {$wpdb->users} WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = $dbobj->tax;
