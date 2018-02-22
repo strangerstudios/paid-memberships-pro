@@ -1259,8 +1259,10 @@ class="alternate"<?php } ?>>
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
-						<?php } else { ?>
+						<?php } elseif ( $order->user_id > 0 ) { ?>
 							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+						<?php } else { ?>
+							[<?php _e( 'n/a', 'paid-memberships-pro' ); ?>]
 						<?php } ?>
 						<br/>
 						<?php
@@ -1385,4 +1387,3 @@ class="alternate"<?php } ?>>
 <?php } ?>
 <?php
 require_once( dirname( __FILE__ ) . '/admin_footer.php' );
-?>
