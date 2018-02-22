@@ -1262,7 +1262,7 @@ class="alternate"<?php } ?>>
 						<?php } elseif ( $order->user_id > 0 ) { ?>
 							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
-							[<?php _e( 'n/a', 'paid-memberships-pro' ); ?>]
+							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
 						<?php } ?>
 						<br/>
 						<?php
@@ -1327,7 +1327,7 @@ class="alternate"<?php } ?>>
 									if ( ! empty( $order->payment_transaction_id ) ) {
 										echo $order->payment_transaction_id;
 									} else {
-										echo 'N/A';
+										_e( 'N/A', 'paid-memberships-pro' );
 									}
 						?>
 						<br/>
@@ -1337,7 +1337,7 @@ class="alternate"<?php } ?>>
 						if ( ! empty( $order->subscription_transaction_id ) ) {
 							echo $order->subscription_transaction_id;
 						} else {
-							echo 'N/A';
+							_e( 'N/A', 'paid-memberships-pro' );
 						}
 						?>
 					</td>
