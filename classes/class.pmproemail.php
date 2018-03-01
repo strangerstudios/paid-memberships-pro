@@ -98,7 +98,9 @@
 			{
 				foreach($this->data as $key => $value)
 				{
-					$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+					if ( 'body' != $key ) {
+						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+					}
 				}
 			}
 			
