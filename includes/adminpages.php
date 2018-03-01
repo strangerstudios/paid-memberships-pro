@@ -16,7 +16,8 @@ function pmpro_getPMProCaps()
 		'pmpro_reports',
 		'pmpro_orders',
 		'pmpro_discountcodes',
-		'pmpro_updates'
+		'pmpro_updates',
+		'pmpro_welcome'
 	);
 	
 	return $pmpro_caps;
@@ -55,6 +56,7 @@ function pmpro_add_pages()
 	add_submenu_page('pmpro-membershiplevels', __('Reports', 'paid-memberships-pro' ), __('Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
 	add_submenu_page('pmpro-membershiplevels', __('Orders', 'paid-memberships-pro' ), __('Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
 	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'paid-memberships-pro' ), __('Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
+	add_submenu_page( 'pmpro-membershiplevels', __( 'Welcome', 'paid-memberships-pro' ), __( 'Welcome', 'paid-memberships-pro' ), 'pmpro_welcome', 'pmpro-welcome', 'pmpro_welcome' );
 
 	//updates page only if needed
 	if(pmpro_isUpdateRequired())
@@ -80,6 +82,31 @@ function pmpro_add_pages()
 	}
 }
 add_action('admin_menu', 'pmpro_add_pages');
+
+/**
+ * Hide Welcome page from Memberships Menu
+ *
+ * @param  string $submenu_file The submenu file to be filtered.
+ */
+function pmpro_wp_admin_submenu_filter( $submenu_file ) {
+	global $plugin_page;
+	$hidden_submenus = array(
+		'pmpro-welcome' => true,
+	);
+
+	// Select another submenu item to highlight (optional).
+	if ( $plugin_page && isset( $hidden_submenus[ $plugin_page ] ) ) {
+		$submenu_file = 'pmpro-membershiplevels';
+	}
+
+	// Hide the submenu.
+	foreach ( $hidden_submenus as $submenu => $unused ) {
+		remove_submenu_page( 'pmpro-membershiplevels', $submenu );
+	}
+
+	return $submenu_file;
+}
+add_filter( 'submenu_file', 'pmpro_wp_admin_submenu_filter' );
 
 /*
 	Admin Bar
@@ -237,6 +264,13 @@ function pmpro_orders()
 function pmpro_updates()
 {
 	require_once(PMPRO_DIR . "/adminpages/updates.php");
+}
+
+/**
+ * Function to load the Welcome dashboard page.
+ */
+function pmpro_welcome() {
+	require_once( PMPRO_DIR . '/adminpages/welcome.php' );
 }
 
 /*
