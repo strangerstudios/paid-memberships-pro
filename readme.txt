@@ -129,6 +129,10 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.5 =
+* BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
+* ENHANCEMENT: Added the pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) function for cases where MMPU is enabled and you want data about a specific membership level a user might have.
+
 = 1.9.4.3 - 2018-01-04 =
 * BUG FIX: Fixed issue where PMPro would attempt to cancel gateway subscriptions more than once in some cases.
 

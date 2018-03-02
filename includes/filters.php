@@ -14,10 +14,16 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id ) ) {
 		// get the current enddate of their membership
 		global $current_user;
-		$expiration_date = $current_user->membership_level->enddate;
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
+
+		// bail if their existing level doesn't have an end date
+		if ( empty( $user_level ) || empty( $user_level->enddate ) ) {
+			return $level;
+		}
 
 		// calculate days left
 		$todays_date = current_time( 'timestamp' );
+		$expiration_date = $user_level->enddate;
 		$time_left = $expiration_date - $todays_date;
 
 		// time left?
@@ -54,11 +60,16 @@ function pmpro_ipnhandler_level_extend_memberships( $level, $user_id ) {
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		// get the current enddate of their membership
-		$user_level = pmpro_getMembershipLevelForUser( $user_id );
-		$expiration_date = $user_level->enddate;
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
+
+		// bail if their existing level doesn't have an end date
+		if ( empty( $user_level ) || empty( $user_level->enddate ) ) {
+			return $level;
+		}
 
 		// calculate days left
 		$todays_date = current_time( 'timestamp' );
+		$expiration_date = $user_level->enddate;
 		$time_left = $expiration_date - $todays_date;
 
 		// time left?
