@@ -364,8 +364,11 @@
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
 			}
-
-			return $this->membership_level;
+			
+			/**
+			  * @since 1.9.4.x - BUG FIX: Didn't set correct level info for Addon Packages, etc.
+			  */
+			return apply_filters( 'pmpro_checkout_level', $this->membership_level );
 		}
 
 		/**
