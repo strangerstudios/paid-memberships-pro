@@ -6,7 +6,7 @@
 .pmpro_admin tr td .dashicons {padding-top: 5px; }
 
 /* header/etc */
-.pmpro_admin {background: url(../images/Paid-Memberships-Pro_watermark.png) bottom right no-repeat !important; padding: 1em 0 70px 0; }
+.pmpro_admin {min-height: 85vh;height: 100%; background: url(../images/Paid-Memberships-Pro_watermark.png) bottom right no-repeat; padding:0; }
 
 .pmpro_admin .pmpro_banner h2 {float: left; }
 .pmpro_admin .pmpro_banner .pmpro_meta {float: left; margin: 26px 0 0 0; font-size: 12px; }
