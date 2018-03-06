@@ -127,11 +127,11 @@
 						{
 						?>
 							<div class="pmpro_checkout-field pmpro_checkout-field-bcity">
-								<label for="bcity"><?php _e('City', 'paid-memberships-pro' );?>City</label>
+								<label for="bcity"><?php _e('City', 'paid-memberships-pro' );?></label>
 								<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="30" value="<?php echo esc_attr($bcity)?>" />
 							</div> <!-- end pmpro_checkout-field-bcity -->
 							<div class="pmpro_checkout-field pmpro_checkout-field-bstate">
-								<label for="bstate"><?php _e('State', 'paid-memberships-pro' );?>State</label>
+								<label for="bstate"><?php _e('State', 'paid-memberships-pro' );?></label>
 								<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bstate");?>" size="30" value="<?php echo esc_attr($bstate)?>" />
 							</div> <!-- end pmpro_checkout-field-bstate -->
 							<div class="pmpro_checkout-field pmpro_checkout-field-bzipcode">
