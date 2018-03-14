@@ -127,11 +127,11 @@
 						{
 						?>
 							<div class="pmpro_checkout-field pmpro_checkout-field-bcity">
-								<label for="bcity"><?php _e('City', 'paid-memberships-pro' );?>City</label>
+								<label for="bcity"><?php _e('City', 'paid-memberships-pro' );?></label>
 								<input id="bcity" name="bcity" type="text" class="input <?php echo pmpro_getClassForField("bcity");?>" size="30" value="<?php echo esc_attr($bcity)?>" />
 							</div> <!-- end pmpro_checkout-field-bcity -->
 							<div class="pmpro_checkout-field pmpro_checkout-field-bstate">
-								<label for="bstate"><?php _e('State', 'paid-memberships-pro' );?>State</label>
+								<label for="bstate"><?php _e('State', 'paid-memberships-pro' );?></label>
 								<input id="bstate" name="bstate" type="text" class="input <?php echo pmpro_getClassForField("bstate");?>" size="30" value="<?php echo esc_attr($bstate)?>" />
 							</div> <!-- end pmpro_checkout-field-bstate -->
 							<div class="pmpro_checkout-field pmpro_checkout-field-bzipcode">
@@ -355,7 +355,7 @@
 					<?php } ?>
 				</div> <!-- end pmpro_checkout-fields -->
 			</div> <!-- end pmpro_payment_information_fields -->	
-			<?php } // if($pmpro_include_payment_information_fields) ?>
+			
 			
 			<?php do_action("pmpro_billing_before_submit_button"); ?>
 		
@@ -364,6 +364,10 @@
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update', 'paid-memberships-pro' );?>" />
 				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url("account")?>';" />
 			</div>
+			<?php } else {
+				$payment_gateway = pmpro_gateways();
+				_e( sprintf( 'Please update your billing information at your payment gateway. (Payment Gateway: %s)', $payment_gateway[$gateway] ), 'paid-memberships-pro' );
+				} // if($pmpro_include_payment_information_fields) ?>
 
 		</form>
 		<script>

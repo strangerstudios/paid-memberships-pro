@@ -98,12 +98,19 @@
 			{
 				foreach($this->data as $key => $value)
 				{
-					$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+					if ( 'body' != $key ) {
+						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+					}
 				}
 			}
 			
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
+
+			if ( empty( $temail ) ) {
+				return false;
+			}
+
 			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
