@@ -723,6 +723,26 @@
 				//get some data
 				$order_user = get_userdata($this->user_id);
 
+				//cancel orders for the same subscription
+				//Note: We do this early to avoid race conditions if and when the
+				//gateway send the cancel webhook after cancelling the subscription.				
+				$sqlQuery = $wpdb->prepare(
+					"UPDATE $wpdb->pmpro_membership_orders 
+						SET `status` = 'cancelled' 
+						WHERE user_id = %d 
+							AND membership_id = %d 
+							AND gateway = %s 
+							AND gateway_environment = %s 
+							AND subscription_transaction_id = %s 
+							AND `status` IN('success', '') ",					
+					$this->user_id,
+					$this->membership_id,
+					$this->gateway,
+					$this->gateway_environment,
+					$this->subscription_transaction_id
+				);								
+				$wpdb->query($sqlQuery);
+				
 				//cancel the gateway subscription first
 				if (is_object($this->Gateway)) {
 					$result = $this->Gateway->cancel( $this );
@@ -752,23 +772,7 @@
 					$wpdb->query($sqlQuery);
 				}
 				
-				//cancel orders for the same subscription
-				$sqlQuery = $wpdb->prepare(
-					"UPDATE $wpdb->pmpro_membership_orders 
-						SET `status` = 'cancelled' 
-						WHERE user_id = %d 
-							AND membership_id = %d 
-							AND gateway = %s 
-							AND gateway_environment = %s 
-							AND subscription_transaction_id = %s 
-							AND `status` IN('success', '') ",					
-					$this->user_id,
-					$this->membership_id,
-					$this->gateway,
-					$this->gateway_environment,
-					$this->subscription_transaction_id
-				);								
-				$wpdb->query($sqlQuery);
+				
 				
 				return $result;
 			}
