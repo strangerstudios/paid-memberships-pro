@@ -135,6 +135,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed conflict with pmpro-email-templates when emails were disabled (the pmpro_email filter returns false). (Thanks, Mathieu Hays)
 * BUG FIX: Removed the Update button and showing a message to visit the gateway if a user visits the Update Billing page for offsite payment solutions.
 * BUG FIX: Now updating status on related subscription orders BEFORE canceling at gateway to avoid cases where the webhook sent by the gateway after canceling the subscription triggers further cancellation attempts.
+* BUG FIX: No longer showing the "Stripe Publishable Key appears incorrect" error message if the key field is blank.
 * ENHANCEMENT: Added the pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) function for cases where MMPU is enabled and you want data about a specific membership level a user might have.
 * ENHANCEMENT: Changed labels on the reCAPTCHA settings to match their current terminology: Site Key and Secret Key.
 
