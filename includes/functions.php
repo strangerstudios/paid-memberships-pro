@@ -1150,6 +1150,9 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
                 'startdate' => $level['startdate'],
                 'enddate' => $level['enddate'],
             );
+			if ( isset( $level['status'] ) ) {
+				$insert_values['status'] = $level['status'];
+			}
             /*
 			$sql = $wpdb->prepare("
 					INSERT INTO {$wpdb->pmpro_memberships_users} AS mu
