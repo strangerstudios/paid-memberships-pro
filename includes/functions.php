@@ -1174,8 +1174,6 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 		}
 		else
 		{
-		    error_log("Level def: " . print_r( $level, true ));
-		    
 		    // Intentionally not including enddate (defaults to NULL)
 		    $insert_values = array(
 			    'user_id' => $user_id,
@@ -1212,7 +1210,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			);
 			*/
 		}
-
+		
 		// Handle custom levels with defined status value (imports, etc)
 		if ( !empty( $level['status'] ) ) {
 			$insert_values['status'] = $level['status'];
