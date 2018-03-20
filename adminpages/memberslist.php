@@ -250,7 +250,8 @@
 							<td><?php echo date_i18n(get_option("date_format"), strtotime($theuser->user_registered, current_time("timestamp")))?></td>
 							<td>
 								<?php
-									if( !empty( $auser->enddate) && '0000-00-00 00:00:00' !== $auser->enddate ) 
+
+									if(!empty( $auser->enddate ) && '0000-00-00 00:00:00' !== $auser->enddate )
 										echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), strtotime( $auser->enddate, current_time('timestamp') ) ), $auser);
 									else
 										echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
