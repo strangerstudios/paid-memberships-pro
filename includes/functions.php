@@ -1150,9 +1150,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
                 'startdate' => $level['startdate'],
                 'enddate' => $level['enddate'],
             );
-			if ( isset( $level['status'] ) ) {
-				$insert_values['status'] = $level['status'];
-			}
+			
             /*
 			$sql = $wpdb->prepare("
 					INSERT INTO {$wpdb->pmpro_memberships_users} AS mu
@@ -1215,6 +1213,12 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
 			*/
 		}
 
+		// Handle custom levels with defined status value (imports, etc)
+		if ( !empty( $level['status'] ) ) {
+			$insert_values['status'] = $level['status'];
+			$insert_format[] = '%s';
+		}
+		
 		if( false === $wpdb->insert($wpdb->pmpro_memberships_users, $insert_values, $insert_format ) )
 		{
 			$pmpro_error = sprintf( __("Error interacting with database: %s", 'paid-memberships-pro' ), (!empty($wpdb->last_error)  ? $wpdb->last_error : __('Error message unavailable', 'paid-memberships-pro' ) ));
