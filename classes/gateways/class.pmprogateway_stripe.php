@@ -376,10 +376,10 @@
 								if (jQuery('#level').length) {
 									var levelnums = jQuery("#level").val().split(",");
 									for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
-										Stripe.createToken(args, stripeResponseHandler);
+										Stripe.createToken(args, pmpro_stripeResponseHandler);
 									}
 								} else {
-									Stripe.createToken(args, stripeResponseHandler);
+									Stripe.createToken(args, pmpro_stripeResponseHandler);
 								}
 									
 								// prevent the form from submitting with the default action							
@@ -391,7 +391,7 @@
 							});
 						});
 
-						function stripeResponseHandler(status, response) {
+						function pmpro_stripeResponseHandler(status, response) {
 							if (response.error) {
 								// re-enable the submit button
 								jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
