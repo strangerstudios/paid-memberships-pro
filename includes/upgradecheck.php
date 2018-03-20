@@ -219,6 +219,12 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.94) {
 		$pmpro_db_version = pmpro_upgrade_1_9_4();
 	}
+	
+	if($pmpro_db_version < 1.944) {
+		pmpro_cleanup_memberships_users_table();
+		$pmpro_db_version = '1.944';
+		pmpro_setOption('db_version', '1.944');
+	}
 }
 
 function pmpro_db_delta()
