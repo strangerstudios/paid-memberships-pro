@@ -299,16 +299,23 @@
 		function sendToPayPal(&$order)
 		{						
 			global $pmpro_currency;			
+			global $pmpro_currencies;
+			
+			$p_decimals = 2;
+			if ( isset( $pmpro_currencies[$pmpro_currency]['decimals'] ) ) {
+				$p_decimals = $pmpro_currencies[$pmpro_currency]['decimals'];
+			}
 			
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, $p_decimals);
+			
 			
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);			
-			$amount = round((float)$amount + (float)$amount_tax, 2);			
+			$amount = round((float)$amount + (float)$amount_tax, $p_decimals);
 			
 			//build PayPal Redirect	URL
 			$environment = pmpro_getOption("gateway_environment");
@@ -341,10 +348,10 @@
 				$paypal_args = array(
                     'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick-subscriptions', 
-					'a1'			=> number_format($initial_payment, 2, '.', ''),
+					'a1'			=> number_format($initial_payment, $p_decimals, '.', ''),
 					'p1'			=> $order->BillingFrequency,
 					't1'			=> $period,
-					'a3'			=> number_format($amount, 2, '.', ''),
+					'a3'			=> number_format($amount, $p_decimals, '.', ''),
 					'p3'			=> $order->BillingFrequency,
 					't3'			=> $period,
 					'item_name'     => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
@@ -378,7 +385,7 @@
 					{
 						$trial_amount = $order->TrialAmount;
 						$trial_tax = $order->getTaxForPrice($trial_amount);
-						$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+						$trial_amount = round((float)$trial_amount + (float)$trial_tax, $p_decimals);
 						
 						$paypal_args['a2'] = $trial_amount;
 						$paypal_args['p2'] = $order->TrialBillingFrequency;
@@ -456,7 +463,7 @@
 				$paypal_args = array(
 					'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick', 
-					'amount'        => number_format($initial_payment, 2, '.', ''), 				
+					'amount'        => number_format($initial_payment, $p_decimals, '.', ''),
 					'item_name'     => substr("{$order->membership_level->name} at " . get_bloginfo("name"), 0, 127),
 					'email'         => $order->Email, 
 					'no_shipping'   => '1', 
