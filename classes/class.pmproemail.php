@@ -246,9 +246,6 @@
 				else
 					$this->template = "checkout_paid";
 
-				//BUG: Didn't apply template filter before it was being used in sendEmail()
-				$this->template = apply_filters("pmpro_email_template", $this->template, $this);
-
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
@@ -302,6 +299,9 @@
 			else
 				$this->data["membership_expiration"] = "";
 			
+			//BUG: Didn't apply template filter before it was being used in sendEmail()
+			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
+
 			return $this->sendEmail();
 		}
 		
