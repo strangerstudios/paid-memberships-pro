@@ -1148,7 +1148,7 @@ function pmpro_changeMembershipLevel($level, $user_id = NULL, $old_level_status 
                 'trial_amount' => $level['trial_amount'],
                 'trial_limit' => $level['trial_limit'],
                 'startdate' => $level['startdate'],
-                'enddate' => $level['enddate'],
+                'enddate' => ! empty( $level['enddate'] ) ? $level['enddate'] : null,
             );
 			
             /*
