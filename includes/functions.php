@@ -2619,3 +2619,4 @@ function pmpro_cleanup_memberships_users_table() {
 				SET status = 'inactive'";
 	$wpdb->query( $sqlQuery );
 }
+

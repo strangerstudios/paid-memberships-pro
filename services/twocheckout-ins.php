@@ -235,9 +235,9 @@
 
 		//is this a return call or notification
 		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 		else
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
@@ -460,7 +460,7 @@
 	function pmpro_insRecurringStopped( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments stop
-		do_action("pmpro_subscription_recuring_stopped", $last_order);
+		do_action("pmpro_subscription_recuring_stopped", $morder);
 
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {

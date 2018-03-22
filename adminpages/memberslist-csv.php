@@ -310,7 +310,7 @@
 				DISTINCT u.ID,
 				u.user_login,
 				u.user_email,
-				UNIX_TIMESTAMP(u.user_registered) as joindate,
+				u.user_registered as joindate,
 				u.user_login,
 				u.user_nicename,
 				u.user_url,
@@ -321,7 +321,7 @@
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_period,
-				UNIX_TIMESTAMP(mu.enddate) as enddate,
+				mu.enddate as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
@@ -405,18 +405,18 @@
 			}
 
 			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->joindate)));
+			array_push($csvoutput, pmpro_enclose(date($dateformat, strtotime( $theuser->joindate , current_time('timestamp')))));
 
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
+					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, strtotime( $theuser->enddate, current_time('timestamp') ) ), $theuser)));
 				else
 					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
 			}
 			elseif($l == "oldmembers" && $theuser->enddate)
 			{
-				array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->enddate)));
+				array_push($csvoutput, pmpro_enclose(date($dateformat, strtotime( $theuser->enddate, current_time('timestamp') ) )));
 			}
 			else
 				array_push($csvoutput, "N/A");
