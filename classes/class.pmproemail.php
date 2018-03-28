@@ -862,16 +862,24 @@
 			//make sure we have the current membership level data
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
+			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
+				$membership_level_name = $user->membership_level->name;
+			} else {
+				$membership_level_name = __('None', 'paid-memberships-pro');
+			}
+
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
-			if($user->membership_level->ID)
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $membership_level_name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
+
+			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
 				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
-			else
-				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );
+			} else {
+				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );	
+			}
 			
-			if(!empty($user->membership_level->enddate))
+			if(!empty($user->membership_level) && !empty($user->membership_level->enddate))
 			{
 					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
