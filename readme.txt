@@ -129,6 +129,10 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.4.5 =
+* BUG FIX: Added 'error' to the list of default order statuses.
+* BUG FIX/ENHANCEMENT: Using the pmpro_getOrderStatuses() function in adminpages/orders.php instead of redundant code there.
+
 = 1.9.4.4 =
 * BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
 * BUG FIX: Fixed cases where certain email templates were resulting in the body of the email being duplicated.
