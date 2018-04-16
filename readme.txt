@@ -131,6 +131,7 @@ Not sure? You can find out by doing a bit a research.
 
 = 1.9.4.5 =
 * BUG FIX: Added 'error' to the list of default order statuses.
+* BUG FIX: The redirect away from the billing page needed to be in the preheader instead of the page shortcode.
 * BUG FIX/ENHANCEMENT: Using the pmpro_getOrderStatuses() function in adminpages/orders.php instead of redundant code there.
 
 = 1.9.4.4 =
