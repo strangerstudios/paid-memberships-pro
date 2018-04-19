@@ -114,7 +114,7 @@ function pmpro_update_plugins_filter( $value ) {
 	// check addons
 	foreach ( $addons as $addon ) {
 		// skip wordpress.org plugins
-		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress' ) {
+		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 			continue;
 		}
 
@@ -178,7 +178,7 @@ function pmpro_plugins_api( $api, $action = '', $args = null ) {
 	}
 
 	// handled by wordpress.org?
-	if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress' ) {
+	if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 		return $api;
 	}
 
