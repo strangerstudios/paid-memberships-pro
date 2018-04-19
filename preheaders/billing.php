@@ -3,8 +3,12 @@
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-if($current_user->ID)
-    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if (! is_user_logged_in()) {	
+	wp_redirect(pmpro_url('levels'));
+	exit();
+} else {
+	$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+}
 
 //need to be secure?
 global $besecure, $show_paypal_link;

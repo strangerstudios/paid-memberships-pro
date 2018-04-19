@@ -1,11 +1,7 @@
 <?php
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-
-	if (! is_user_logged_in()) {	
-		wp_redirect(pmpro_url('levels'));
-		exit();
-	}
+	
 	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
 	 * 

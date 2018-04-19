@@ -669,6 +669,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<?php
 					if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->status;
+<<<<<<< HEAD
 					} else {
 										?>
 											<?php
@@ -687,6 +688,11 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
 											asort( $statuses );
 											$statuses = apply_filters( 'pmpro_order_statuses', $statuses );
+=======
+					} else { ?>
+						<?php
+						$statuses = pmpro_getOrderStatuses();
+>>>>>>> dev
 						?>
 						<select id="status" name="status">
 		<?php foreach ( $statuses as $status ) { ?>
