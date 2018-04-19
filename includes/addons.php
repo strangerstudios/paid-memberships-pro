@@ -1,7 +1,9 @@
 <?php
-/*
-	Some of the code in this library was borrowed from the TGM Updater class by Thomas Griffin. (https://github.com/thomasgriffin/TGM-Updater)
-*/
+/**
+ *  Some of the code in this library was borrowed from the
+ *  TGM Updater class by Thomas Griffin.
+ *  (https://github.com/thomasgriffin/TGM-Updater)
+ */
 
 /**
  * Setup plugins api filters
@@ -70,7 +72,7 @@ function pmpro_getAddons() {
  * @since 1.8.5
  *
  * @param object $slug  The identifying slug for the addon (typically the directory name)
- * @return object $addon containing plugin information or false if not found
+ * @return array $addon containing plugin information or false if not found
  */
 function pmpro_getAddonBySlug( $slug ) {
 	$addons = pmpro_getAddons();
@@ -114,7 +116,7 @@ function pmpro_update_plugins_filter( $value ) {
 	// check addons
 	foreach ( $addons as $addon ) {
 		// skip wordpress.org plugins
-		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress' ) {
+		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 			continue;
 		}
 
@@ -162,10 +164,10 @@ function pmpro_http_request_args_for_addons( $args, $url ) {
 /**
  * Setup plugin updaters
  *
- * @param  string $api    [description]
- * @param  string $action [description]
- * @param  object $args   [description]
- * @return object         [description]
+ * @param  object $api     WordPress plugins api object
+ * @param  string $action
+ * @param  object $args
+ * @return object
  *
  * @since  1.8.5
  */
@@ -184,7 +186,7 @@ function pmpro_plugins_api( $api, $action = '', $args = null ) {
 	}
 
 	// handled by wordpress.org?
-	if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress' ) {
+	if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 		return $api;
 	}
 
