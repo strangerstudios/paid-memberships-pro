@@ -295,7 +295,7 @@ function pmpro_membership_level_profile_fields_update()
 			add_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
 				
 		//do the change
-        if(pmpro_changeMembershipLevel($_REQUEST['membership_level'], $user_ID, $changed_or_cancelled))
+        if(pmpro_changeMembershipLevel(intval($_REQUEST['membership_level']), $user_ID, $changed_or_cancelled))
         {
             //it changed. send email
             $level_changed = true;
