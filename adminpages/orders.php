@@ -624,21 +624,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						echo $order->status;
 					} else { ?>
 						<?php
-						$statuses         = array();
-						$default_statuses = array(
-							"",
-							"success",
-							"cancelled",
-							"review",
-							"token",
-							"refunded",
-							"pending",
-							"error",
-						);
-						$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
-						$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
-						asort( $statuses );
-						$statuses = apply_filters( "pmpro_order_statuses", $statuses );
+						$statuses = pmpro_getOrderStatuses();
 						?>
 						<select id="status" name="status">
 							<?php foreach ( $statuses as $status ) { ?>
