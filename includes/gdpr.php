@@ -9,13 +9,13 @@
  * Add suggested Privacy Policy language for PMPro
  * @since 1.9.5
  */
-function pmpro_add_privacy_policy_content() {
+function pmpro_add_privacy_policy_content() {	
 	// Check for support.
 	if ( ! function_exists( 'wp_add_privacy_policy_content') ) {
 		return;
 	}
 
-	$content = '...':
+	$content = '...';
 
 	wp_add_privacy_policy_content( 'Paid Memberships Pro', $content );
 }
