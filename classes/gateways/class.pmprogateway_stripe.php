@@ -1551,7 +1551,7 @@
 					'when' => 'payment',
 					'billing_amount' => $order->PaymentAmount,
 					'cycle_period' => $order->BillingPeriod,
-					'cycle_number' => $order->BillingFrequency
+					'cycle_number' => $order->TrialBillingCycles
 				);
 
 				//now amount to equal the trial #s
