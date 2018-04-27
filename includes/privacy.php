@@ -1,6 +1,6 @@
 <?php
 /**
- * Functions to aid with GDPR compliance.
+ * Code to aid with user data privacy, e.g. GDPR compliance
  * 
  * @since  1.9.5
  */
