@@ -19,16 +19,20 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 * Fork the repository on GitHub
 * For bug fixes, checkout the DEV branch of the PMPro repository.
 * For new features and enhancements, checkout the branch for the version the feature is milestoned for.
-* Make the changes to your forked repository
-  * Make sure to pull in any "upstream" changes first.
-  	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo
+* Make sure to pull in any "upstream" changes first.
+	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo
 	* Use `git checkout upstream/dev` then `git pull` to pull in the latest updates on dev.
 	* Use `git checkout dev` then `git merge upstream/dev` to merge those updates into your dev.
-  * Ensure you stick to the [WordPress Coding Standards](https://codex.wordpress.org/WordPress_Coding_Standards) (even though much of the PMPro code does not currently)
-* When committing, reference your issue (if present) and include a note about the fix
-* Push the changes to your fork 
-* For bug fixes, submit a pull request to the latest versioned branch of the PMPro repository (e.g. 1.9).
-* For new features and enhancements, submit a pull request to the DEV branch of the PMPro repository. 
+* Create a new local branch for each separate bug fix or feature. This will ensure that each pull request is for one issue only and easier to process.
+	* Use `git checkout -b nameofmybugfixorfeature` to create the new branch
+* Make the changes to your local repository.
+* Ensure you stick to the [WordPress Coding Standards](https://codex.wordpress.org/WordPress_Coding_Standards) (even though much of the PMPro code does not currently)
+* If you have an automatic beautifier in your IDE or dev environment, turn it off. Unrelated style changes in your pull requests will make them harder to process. Feel free to message the core development team to ask them to clean up a file you are working on if the inconsitent coding styles is bothering you.
+* You can update the readme.txt to include a comment about your fix or feature in the changelog, but if you do not the core team will do it for you.
+* When committing, reference your issue (if present) and include a note about the fix in the commit message.
+* Push the changes to your fork.
+* For bug fixes, submit a pull request to the DEV branch of the PMPro repository.
+* For new features and enhancements, submit a pull request to the version the feature is milestoned for. This will usually be the version number following the current release unless the core dev team has milestoned the feature for a later release.
 * We will process all pull requests and make suggestions or changes as soon as possible. Feel free to ping us politely via email or social networks to take a look at your pulls.
 
 ## Code Documentation

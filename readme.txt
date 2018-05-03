@@ -136,7 +136,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Using the pmpro_getOrderStatuses() function in adminpages/orders.php instead of redundant code there.
 * ENHANCEMENT: You can now sort by the Membership Level column added to the users list in the dashboard. (Thanks, Matt Julian)
 
-= 1.9.4.4 =
+= 1.9.4.4 - 2018-03-14 =
 * BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
 * BUG FIX: Fixed cases where certain email templates were resulting in the body of the email being duplicated.
 * BUG FIX: Fixed conflict with pmpro-email-templates when emails were disabled (the pmpro_email filter returns false). (Thanks, Mathieu Hays)
