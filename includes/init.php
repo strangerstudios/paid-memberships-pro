@@ -267,16 +267,16 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
     return $column_data;
 }
 
-function pmpro_sortable_column_query($query)
-{
+function pmpro_sortable_column_query($query) {
     global $wpdb;
 	
 	$vars = $query->query_vars;
-	
+
 	if($vars['orderby'] == 'level'){
-		$query->query_from .= " LEFT JOIN {$wpdb->prefix}pmpro_memberships_users AS pmrpo_users ON wpib_users.ID = pmrpo_users.user_id AND pmrpo_users.status = 'active'"; 
-		$query->query_orderby = 'ORDER BY pmrpo_users.membership_id ' . $vars['order'] . ', wpib_users.user_registered';
+		$query->query_from .= " LEFT JOIN {$wpdb->prefix}pmpro_memberships_users AS pmpro_mu ON {$wpdb->prefix}users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active'"; 
+		$query->query_orderby = "ORDER BY pmpro_mu.membership_id " . $vars['order'] . ", {$wpdb->prefix}users.user_registered";
 	}
+
 }
 
 add_filter('manage_users_columns', 'pmpro_manage_users_columns');
