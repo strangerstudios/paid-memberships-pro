@@ -84,10 +84,16 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 	if( !empty( $user ) ) {
 		// Add data stored in user meta.
 		$personal_user_meta_fields = pmpro_get_personal_user_meta_fields();
-		$sqlQuery = "SELECT meta_key, meta_value
-					 FROM $wpdb->usermeta
-					 WHERE user_id = '" . intval($user->ID) . "'
-					 	AND meta_key IN('" . implode( "', '", array_keys( $personal_user_meta_fields ) ) . "')";
+		$sqlQuery = $wpdb->prepare( 
+			"SELECT meta_key, meta_value
+			 FROM {$wpdb->usermeta}
+			 WHERE user_id = %d
+			 AND meta_key IN( [IN_CLAUSE] )", intval($user->ID) );
+		
+		$in_clause_data = array_map( 'esc_sql', array_keys( $personal_user_meta_fields ) );
+		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";
+		$sqlQuery = preg_replace( '/[IN_CLAUSE]/', $in_clause, $sqlQuery );
+		
 		$personal_user_meta_data = $wpdb->get_results( $sqlQuery, OBJECT_K );
 		
 		$user_meta_data_to_export = array();
