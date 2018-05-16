@@ -91,8 +91,8 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			 AND meta_key IN( [IN_CLAUSE] )", intval($user->ID) );
 		
 		$in_clause_data = array_map( 'esc_sql', array_keys( $personal_user_meta_fields ) );
-		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";
-		$sqlQuery = preg_replace( '/[IN_CLAUSE]/', $in_clause, $sqlQuery );
+		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";	
+		$sqlQuery = preg_replace( '/\[IN_CLAUSE\]/', $in_clause, $sqlQuery );
 		
 		$personal_user_meta_data = $wpdb->get_results( $sqlQuery, OBJECT_K );
 		
