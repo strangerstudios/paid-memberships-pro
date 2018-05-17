@@ -199,14 +199,22 @@ if ( $txn_type == "recurring_payment" ) {
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscr_order );
-		} elseif ( $_POST['payment_status'] == "Failed" ) {
-			pmpro_ipnFailedPayment( $last_subscr_order );
-		} else {
-			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
-		}
 	} else {
 		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
 	}
+		
+	pmpro_ipnExit();
+}
+
+if ( $txn_type == "recurring_payment_skipped" ) {
+	$last_subscr_order = new MemberOrder();
+	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+		// the payment failed
+		pmpro_ipnFailedPayment( $last_subscr_order );
+	} else {
+		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
+	}
+
 	pmpro_ipnExit();
 }
 
