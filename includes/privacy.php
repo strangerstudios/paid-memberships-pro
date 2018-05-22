@@ -25,7 +25,7 @@ add_action( 'admin_init', 'pmpro_add_privacy_policy_content' );
  * Register the personal data eraser for PMPro
  * @param array $erasers All erasers added so far
  */
-function pmpro_register_personal_data_erasers( $erasers ) {
+function pmpro_register_personal_data_erasers( $erasers = array() ) {
 	$erasers[] = array(
  		'eraser_friendly_name' => __( 'Paid Memberships Pro Data' ),
  		'callback'             => 'pmpro_personal_data_eraser',
@@ -41,19 +41,55 @@ add_filter( 'wp_privacy_personal_data_erasers', 'pmpro_register_personal_data_er
  * @param int    $page          For batching
  */
 function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
-	// Erase any data we have about this user.
-	
+	global $wpdb;
 
-	// Keep track of how many items are removed and remaining.
+	// What user is this?
+	$user = get_user_by( 'email', $email_address );
+
+	$num_items_removed = 0;
+	$num_items_retained = 0;
+	$messages = array();
+	$done = false;
+
+	if( !empty( $user ) ) {
+		// Erase any data we have about this user.
+		$user_meta_fields_to_erase = pmpro_get_personal_user_meta_fields_to_erase();
+
+		$sqlQuery = $wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key IN( [IN_CLAUSE] )", intval( $user->ID ) );
+
+		$in_clause_data = array_map( 'esc_sql', $user_meta_fields_to_erase );
+		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";	
+		$sqlQuery = preg_replace( '/\[IN_CLAUSE\]/', $in_clause, $sqlQuery );
+
+		$wpdb->query( $sqlQuery );
+		$num_deleted = $wpdb->rows_affected;
+		$num_items_removed += $num_deleted;
+
+		// We retain all orders. Get the number of them to report them as retained.
+		$sqlQuery = $wpdb->prepare( "SELECT COUNT(id) FROM {$wpdb->pmpro_membership_orders} WHERE user_id = %d", intval( $user->ID ) );
+		$num_orders = $wpdb->get_var( $sqlQuery );
+		if( $num_orders > 0 ) {
+			$num_items_retained += $num_orders;
+			// We could have used _n below, but that doesn't work well with our script for generating the .pot file.
+			if( $num_orders == 1 ) {
+				$messages[] = __( '1 PMPro order was retained for business records.', 'paid-memberships-pro' );
+			} else {
+				$messages[] = sprintf( __( '%d PMPro orders were retained for business records.', 'paid-memberships-pro' ), $num_orders );
+			}
+		}
+
+		// Warn the admin if this user has an active subscription
+		$messages[] = __( "Please note that data erasure will not cancel a user's membership level or any active subscriptions. Please edit or delete the user through the WordPress dashboard.", 'paid-memberships-pro' );
+	}
 
 	// Set done to false if we still have stuff to erase.
 	$done = true;
 
 	return array(
- 		'num_items_removed'  => 0,
- 		'num_items_retained' => 0,
- 		'messages'           => array(),
- 		'done'               => $done,
+ 		'items_removed'  => $num_items_removed,
+ 		'items_retained' => $num_items_retained,
+ 		'messages'       => $messages,
+ 		'done'           => $done,
  	);
 }
 
@@ -325,6 +361,34 @@ function pmpro_get_personal_user_meta_fields() {
 	);
 
 	$fields = apply_filters( 'pmpro_get_personal_user_meta_fields', $fields );
+
+	return $fields;
+}
+
+/**
+ * Get list of user meta fields to include in the PMPro data eraser
+ */
+function pmpro_get_personal_user_meta_fields_to_erase() {
+	$fields = array(
+		'pmpro_bfirstname',
+		'pmpro_blastname',
+		'pmpro_baddress1',
+		'pmpro_baddress2',
+		'pmpro_bcity',
+		'pmpro_bstate',
+		'pmpro_bzipcode',
+		'pmpro_bphone',
+		'pmpro_bcountry',
+		'pmpro_CardType',
+		'pmpro_AccountNumber',
+		'pmpro_ExpirationMonth',
+		'pmpro_ExpirationYear',
+		'pmpro_logins',
+		'pmpro_visits',
+		'pmpro_views',
+	);
+
+	$fields = apply_filters( 'pmpro_get_personal_user_meta_fields_to_erase', $fields );
 
 	return $fields;
 }
