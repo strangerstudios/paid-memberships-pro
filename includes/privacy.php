@@ -43,8 +43,9 @@ add_filter( 'wp_privacy_personal_data_erasers', 'pmpro_register_personal_data_er
 function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
 	// Erase any data we have about this user.
 	
+
 	// Keep track of how many items are removed and remaining.
-	
+
 	// Set done to false if we still have stuff to erase.
 	$done = true;
 
@@ -88,7 +89,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			"SELECT meta_key, meta_value
 			 FROM {$wpdb->usermeta}
 			 WHERE user_id = %d
-			 AND meta_key IN( [IN_CLAUSE] )", intval($user->ID) );
+			 AND meta_key IN( [IN_CLAUSE] )", intval( $user->ID ) );
 		
 		$in_clause_data = array_map( 'esc_sql', array_keys( $personal_user_meta_fields ) );
 		$in_clause = "'" . implode( "', '", $in_clause_data ) . "'";	
@@ -119,7 +120,11 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 		
 
 		// Add membership history.
-		$sqlQuery = "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . intval($user->ID) . "' ORDER BY id DESC";
+		$sqlQuery = $wpdb->prepare(
+			"SELECT * FROM {$wpdb->pmpro_memberships_users}
+			 WHERE user_id = %d
+			 ORDER BY id DESC", intval( $user->ID ) );
+			 
 		$history = $wpdb->get_results( $sqlQuery );
 		foreach( $history as $item ) {
 			if( $item->enddate === null || $item->enddate == '0000-00-00 00:00:00' ) {
@@ -164,12 +169,132 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 		}
 
 		// Add order history.
-		// TODO: grab order history and put into $data_to_export
+		$sqlQuery = $wpdb->prepare(
+			"SELECT id FROM {$wpdb->pmpro_membership_orders}
+			 WHERE user_id = %d
+			 ORDER BY id DESC", intval( $user->ID ) );
+			 
+		$order_ids = $wpdb->get_col( $sqlQuery );		
 		
+		foreach( $order_ids as $order_id ) {
+			$order = new MemberOrder( $order_id );
+			$order->getMembershipLevel();
+			
+			$order_data_to_export = array(
+				array(
+					'name' => __( 'Order ID', 'paid-memberships-pro' ),
+					'value' => $order->id,
+				),
+				array(
+					'name' => __( 'Order Code', 'paid-memberships-pro' ),
+					'value' => $order->code,
+				),
+				array(
+					'name' => __( 'Order Date', 'paid-memberships-pro' ),
+					'value' => date( get_option( 'date_format' ), $order->timestamp ),
+				),
+				array(
+					'name' => __( 'Level', 'paid-memberships-pro' ),
+					'value' => $order->membership_level->name,
+				),
+				array(
+					'name' => __( 'Billing Name', 'paid-memberships-pro' ),
+					'value' => $order->billing->name,
+				),
+				array(
+					'name' => __( 'Billing Street', 'paid-memberships-pro' ),
+					'value' => $order->billing->street,
+				),
+				array(
+					'name' => __( 'Billing City', 'paid-memberships-pro' ),
+					'value' => $order->billing->city,
+				),
+				array(
+					'name' => __( 'Billing State', 'paid-memberships-pro' ),
+					'value' => $order->billing->state,
+				),
+				array(
+					'name' => __( 'Billing Postal Code', 'paid-memberships-pro' ),
+					'value' => $order->billing->zip,
+				),
+				array(
+					'name' => __( 'Billing Country', 'paid-memberships-pro' ),
+					'value' => $order->billing->country,
+				),
+				array(
+					'name' => __( 'Billing Phone', 'paid-memberships-pro' ),
+					'value' => formatPhone( $order->billing->phone ),
+				),
+				array(
+					'name' => __( 'Sub Total', 'paid-memberships-pro' ),
+					'value' => $order->subtotal,
+				),
+				array(
+					'name' => __( 'Tax', 'paid-memberships-pro' ),
+					'value' => $order->tax,
+				),
+				array(
+					'name' => __( 'Coupon Amount', 'paid-memberships-pro' ),
+					'value' => $order->couponamount,
+				),
+				array(
+					'name' => __( 'Total', 'paid-memberships-pro' ),
+					'value' => $order->total,
+				),
+				array(
+					'name' => __( 'Payment Type', 'paid-memberships-pro' ),
+					'value' => $order->payment_type,
+				),
+				array(
+					'name' => __( 'Card Type', 'paid-memberships-pro' ),
+					'value' => $order->cardtype,
+				),
+				array(
+					'name' => __( 'Account Number', 'paid-memberships-pro' ),
+					'value' => $order->accountnumber,
+				),
+				array(
+					'name' => __( 'Expiration Month', 'paid-memberships-pro' ),
+					'value' => $order->expirationmonth,
+				),
+				array(
+					'name' => __( 'Expiration Year', 'paid-memberships-pro' ),
+					'value' => $order->expirationyear,
+				),
+				array(
+					'name' => __( 'Status', 'paid-memberships-pro' ),
+					'value' => $order->status,
+				),
+				array(
+					'name' => __( 'Gateway', 'paid-memberships-pro' ),
+					'value' => $order->gateway,
+				),
+				array(
+					'name' => __( 'Gateway Environment', 'paid-memberships-pro' ),
+					'value' => $order->gateway_environment,
+				),
+				array(
+					'name' => __( 'Payment Transaction ID', 'paid-memberships-pro' ),
+					'value' => $order->payment_transaction_id,
+				),
+				array(
+					'name' => __( 'Subscription Transaction ID', 'paid-memberships-pro' ),
+					'value' => $order->subscription_transaction_id,
+				),
+				// Note: Order notes, session_id, and paypal_token are excluded.
+			);
+			
+			$data_to_export[] = array(
+				'group_id'    => 'pmpro_order_history',
+				'group_label' => __( 'Paid Memberships Pro Order History' ),
+				'item_id'     => "membership_order-{$order->id}",
+				'data'        => $order_data_to_export,
+			);
+		}		
 	}
 
 	$done = true;
-
+	
 	return array(
 		'data' => $data_to_export,
 		'done' => $done,
