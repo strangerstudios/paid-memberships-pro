@@ -22,7 +22,7 @@ export default class Inspector extends Component {
     }
 
     render() {
-        const { attributes: { text, level, cssClass }, setAttributes } = this.props;
+        const { attributes: { text, level, css_class }, setAttributes } = this.props;
 
         return (
           <InspectorControls>
@@ -46,8 +46,8 @@ export default class Inspector extends Component {
                  <TextControl
                      label={ __( 'CSS Class', 'pmpro' ) }
                      help={ __( 'Additional Styling for Button', 'pmpro' ) }
-                     value={ cssClass }
-                     onChange={ cssClass => setAttributes( { cssClass } ) }
+                     value={ css_class }
+                     onChange={ css_class => setAttributes( { css_class } ) }
                  />
               </PanelBody>
           </InspectorControls>

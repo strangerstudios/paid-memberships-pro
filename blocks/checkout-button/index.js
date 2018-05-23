@@ -4,8 +4,6 @@
  * Add a styled link to the PMPro checkout page for a
  * specific level.
  *
- * @todo : Remove link button from editor.
- * @todo : Add membership level setting or control.
  */
  /**
   * Block dependencies
@@ -55,7 +53,7 @@ const {
                  type: 'string',
                  default: 'Buy Now',
              },
-             cssClass: {
+             css_class: {
                  type: 'string',
                  default: 'wp-block-paid-memberships-pro-checkout-button',
              },
@@ -64,14 +62,14 @@ const {
              }
          },
          edit: props => {
-             const { attributes: { text, level, cssClass}, className, setAttributes, isSelected } = props;
+             const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
              const link = ''; //use level to make link
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div
                     className={ className }
                 >
-                  <a class={cssClass} >{text}</a>
+                  <a class={css_class} >{text}</a>
                 </div>
             ];
          },
