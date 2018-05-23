@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.9.1
-Stable tag: 1.9.4.3
+Tested up to: 4.9.4
+Stable tag: 1.9.4.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,15 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.4.4 =
+* BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
+* BUG FIX: Fixed cases where certain email templates were resulting in the body of the email being duplicated.
+* BUG FIX: Fixed conflict with pmpro-email-templates when emails were disabled (the pmpro_email filter returns false). (Thanks, Mathieu Hays)
+* BUG FIX: Now updating status on related subscription orders BEFORE canceling at gateway to avoid cases where the webhook sent by the gateway after canceling the subscription triggers further cancellation attempts.
+* BUG FIX: No longer showing the "Stripe Publishable Key appears incorrect" error message if the key field is blank.
+* ENHANCEMENT: Added the pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) function for cases where MMPU is enabled and you want data about a specific membership level a user might have.
+* ENHANCEMENT: Changed labels on the reCAPTCHA settings to match their current terminology: Site Key and Secret Key.
 
 = 1.9.4.3 - 2018-01-04 =
 * BUG FIX: Fixed issue where PMPro would attempt to cancel gateway subscriptions more than once in some cases.
