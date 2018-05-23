@@ -12,6 +12,7 @@
   */
  import './style.scss';
  import classnames from 'classnames';
+ import Inspector from './inspector';
  /**
   * Internal block libraries
   */
@@ -51,62 +52,39 @@ const {
          },
          attributes: {
              text: {
-                 type: 'array',
-                 source: 'children',
-                 selector: '.message-body',
+                 type: 'string',
                  default: 'Buy Now',
+             },
+             cssClass: {
+                 type: 'string',
+                 default: 'pmpro_btn',
              },
              level: {
                   type: 'integer'
              }
          },
          edit: props => {
-             const { attributes: { text, level}, className, setAttributes } = props;
-
-             return [(
-                     <InspectorControls>
-                         <PanelBody>
-                            <TextControl
-                                label={ __( 'Text', 'pmpro' ) }
-                                help={ __( 'Text for checkout button', 'pmpro' ) }
-                                value={ text }
-                                onChange={ text => setAttributes( { text } ) }
-                            />
-                         </PanelBody>
-                         <PanelBody>
-                            <TextControl
-                                label={ __( 'Level', 'pmpro' ) }
-                                help={ __( 'Level id to check out', 'pmpro' ) }
-                                value={ level }
-                                onChange={ level => setAttributes( { level } ) }
-                            />
-                         </PanelBody>
-                     </InspectorControls>
-                 ),
-                 <div
-                     className={ classnames(
-                         props.className,
-                     ) }
-                 >
-                     <RichText
-                         tagName="div"
-                         multiline="p"
-                         value={ text }
-                         onChange={ ( text ) => setAttributes( { text } ) }
-                     />
-                 </div>
-             ];
+             const { attributes: { text, level, cssClass}, className, setAttributes, isSelected } = props;
+             const link = ''; //use level to make link
+             return [
+                isSelected && <Inspector { ...{ setAttributes, ...props} } />,
+                <div
+                    className={ className }
+                >
+                  <a href={link} class={cssClass}>{text}</a>
+                </div>
+            ];
          },
          save: props => {
-             const { attributes: { text } } = props;
-             return (
-                 <div>
-                     <h2>{ __( 'Call to Action', 'pmpro' ) }</h2>
-                     <div class="message-body">
-                         { text }
-                     </div>
-                 </div>
-             );
+           const { attributes: { text, level, cssClass}, className, setAttributes, isSelected } = props;
+           const link = ''; //use level to make link
+           return [
+              <div
+                  className={ className }
+              >
+                <a href={link} class={cssClass}>{text}</a>
+              </div>
+          ];
          },
      },
  );
