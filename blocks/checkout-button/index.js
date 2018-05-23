@@ -57,7 +57,7 @@ const {
              },
              cssClass: {
                  type: 'string',
-                 default: 'pmpro_btn',
+                 default: 'wp-block-paid-memberships-pro-checkout-button',
              },
              level: {
                   type: 'integer'
@@ -78,13 +78,11 @@ const {
          save: props => {
            const { attributes: { text, level, cssClass}, className, setAttributes, isSelected } = props;
            const link = ''; //use level to make link
-           return [
-              <div
-                  className={ className }
-              >
+           return (
+              <div className={ className }>
                 <a href={link} class={cssClass}>{text}</a>
               </div>
-          ];
+          );
          },
      },
  );

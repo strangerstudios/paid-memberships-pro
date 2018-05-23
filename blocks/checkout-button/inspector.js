@@ -47,7 +47,7 @@ export default class Inspector extends Component {
                      label={ __( 'CSS Class', 'pmpro' ) }
                      help={ __( 'Additional Styling for Button', 'pmpro' ) }
                      value={ cssClass }
-                     onChange={ level => setAttributes( { cssClass } ) }
+                     onChange={ cssClass => setAttributes( { cssClass } ) }
                  />
               </PanelBody>
           </InspectorControls>
