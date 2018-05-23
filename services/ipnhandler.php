@@ -592,7 +592,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		}
 
 		//hook
-		do_action( "pmpro_after_checkout", $morder->user_id );
+		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
 
 		//setup some values for the emails
 		if ( ! empty( $morder ) ) {
