@@ -5,6 +5,11 @@ defined( 'ABSPATH' ) || exit;
 /* NOTE: Maybe move this into includes/blocks.php or /blocks/blocks.php */
 
 /**
+ * Dynamic Block Requires
+ */
+require_once( PMPRO_DIR . '/blocks/checkout-button/index.php' );
+
+/**
  * Enqueue block editor only JavaScript and CSS
  */
 function pmpro_block_editor_scripts()

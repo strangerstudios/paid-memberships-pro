@@ -71,18 +71,12 @@ const {
                 <div
                     className={ className }
                 >
-                  <a href={link} class={cssClass}>{text}</a>
+                  <a class={cssClass} >{text}</a>
                 </div>
             ];
          },
-         save: props => {
-           const { attributes: { text, level, cssClass}, className, setAttributes, isSelected } = props;
-           const link = ''; //use level to make link
-           return (
-              <div className={ className }>
-                <a href={link} class={cssClass}>{text}</a>
-              </div>
-          );
+         save() {
+           return null;
          },
-     },
+       }
  );
