@@ -15,7 +15,12 @@ function pmpro_add_privacy_policy_content() {
 		return;
 	}
 
-	$content = '...';
+	$content = '';
+	$content .= '<h2>' . __( 'Data Collected to Manage Your Membership', 'paid-memberships-pro' ) . '</h2>';
+	$content .= '<p>' . __( "At checkout, we will collect your name, email address, username, and password. This information is used to setup your account for our site. If you are redirected to an offsite payment gateway to complete your payment, we may store this information in a temporary session variable to setup your account when you return to our site.", 'paid-memberships-pro' ) . '</p>';
+	$content .= '<p>' . __( "At checkout, we may also collect your billing address and phone number. This information is used to confirm your credit card. The billing address and phone number are saved by our site to prepopulate the checkout form for future purchases and so we can get in touch with you if needed to discuss your order.", 'paid-memberships-pro' ) . '</p>';
+	$content .= '<p>' . __( "At checkout, we may also collect your credit card number, expiration date, and security code. This information is passed to our payment gateway to process your purchase. The last 4 digits of your credit card number and the expiration date are saved by our site to use for reference and to send you an email if your credit card will expire before the next recurring payment.", 'paid-memberships-pro' ) . '</p>';
+	$content .= '<p>' . __( "When logged in, we use cookies to track some of your activity on our site including logins, visits, and page views.", 'paid-memberships-pro' ) . '</p>';
 
 	wp_add_privacy_policy_content( 'Paid Memberships Pro', $content );
 }
