@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.9.4
+Tested up to: 4.9.6
 Stable tag: 1.9.4.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
@@ -129,12 +129,18 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
-= 1.9.4.5 =
+= 1.9.5 - =
 * BUG FIX: Added 'error' to the list of default order statuses.
 * BUG FIX: Fixed issue where PayPal recurring_payment messages with status "Pending" were treated as "Failed" by our IPN handler. (Thanks, Matt Julian)
 * BUG FIX: The redirect away from the billing page needed to be in the preheader instead of the page shortcode.
 * BUG FIX/ENHANCEMENT: Using the pmpro_getOrderStatuses() function in adminpages/orders.php instead of redundant code there.
+* BUG FIX/ENHANCEMENT: Passing the $order as a second parameter to pmpro_after_checkout when called from the PayPal IPN handler. (The $order was being passed already for "regular" checkouts.)
 * ENHANCEMENT: You can now sort by the Membership Level column added to the users list in the dashboard. (Thanks, Matt Julian)
+* FEATURE: Added support for the privacy features added in WP 4.9.6. Details below.
+* FEATURE: Added suggest privacy page text.
+* FEATURE: Added PMPro-related user meta fields, membership history, and order history to the personal data export. You can filter which user meta fields are included in the export using the new pmpro_get_personal_user_meta_fields filter.
+* FEATURE: Deleting PMPro-related personal data fields when personal data is erased. The ereaser deletes a number of user meta fields (filterable through the new pmpro_get_personal_user_meta_fields_to_erase filter). A user's membership history and order history are retained unless the user is deleted.
+* FEATURE: Now saving a log of when the TOS page is agreed to at checkout. The ID and date modified of the TOS post is saved along with a timestamp of when the TOS was agreed to. This information is shown on the single order page in the admin, the orders CSV export, and on the edit user profile page in the admin. Note that this feature does not yet backport any data for existing users or ask users to re-agree to the TOS if the TOS has gone out of date.
 
 = 1.9.4.4 - 2018-03-14 =
 * BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
