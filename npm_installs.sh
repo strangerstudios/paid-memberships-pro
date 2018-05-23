@@ -1,0 +1,14 @@
+npm install style-loader
+npm install raw-loader
+npm install postcss-loader
+npm install node-sass
+npm install extract-text-webpack-plugin
+npm install eslint
+npm install css-loader
+npm install cross-loader
+npm install cross-env
+npm install classnames
+npm install babel-core
+npm install babel-loader
+npm install babel-eslint
+npm install @wordpress/babel-preset-default

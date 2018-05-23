@@ -66,7 +66,7 @@ require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membersh
 require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_account] shortcode to show account information
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 
-require_once( PMPRO_DIR . '/blocks/checkout-button/index.php' );    // PMPro:Checkout Button block
+require_once( PMPRO_DIR . '/blocks/init.php' );    // PMPro:Checkout Button block
 
 // load gateway
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
