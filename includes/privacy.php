@@ -402,3 +402,118 @@ function pmpro_get_personal_user_meta_fields_to_erase() {
 
 	return $fields;
 }
+
+/**
+ * Save a TOS consent timestamp to user meta.
+ * @since 1.9.5
+ */
+function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $order_id = NULL ) {
+	// Default to current user.
+	if( empty( $user_id ) ) {
+		global $current_user;
+		$user_id = $user->ID;
+	}
+
+	if( empty( $user_id ) ) {
+		return false;
+	}
+
+	// Default to the TOS post chosen on the advanced settings page
+	if( empty( $post_id ) ) {
+		$post_id = pmpro_getOption( 'tospage' );
+	}
+
+	if( empty( $post_id ) ) {
+		return false;
+	}
+
+	$post = get_post( $post_id );
+
+	$log = pmpro_get_consent_log( $user_id );
+	$log[] = array(
+		'user_id' => $user_id,
+		'post_id' => $post_id,
+		'post_modified' => $post->post_modified,
+		'order_id' => $order_id,
+		'consented' => true,
+		'timestamp' => current_time( 'timestamp' ),
+	);
+
+	update_user_meta( $user_id, 'pmpro_consent_log', $log );
+	return true;
+}
+
+/**
+ * Get the TOS consent log from user meta.
+ * @since  1.9.5
+ */
+function pmpro_get_consent_log( $user_id = NULL, $reversed = true ) {
+	// Default to current user.
+	if( empty( $user_id ) ) {
+		global $current_user;
+		$user_id = $user->ID;
+	}
+
+	if( empty( $user_id ) ) {
+		return false;
+	}
+
+	$log = get_user_meta( $user_id, 'pmpro_consent_log', true );
+
+	// Default log.
+	if( empty( $log ) ) {
+		$log = array();
+	}
+
+	if( $reversed ) {
+		$log = array_reverse( $log );
+	}
+
+	return $log;
+}
+
+/**
+ * Update TOS consent log after checkout.
+ * @since 1.9.5
+ */
+function pmpro_after_checkout_update_consent( $user_id, $order ) {
+	if( !empty( $_REQUEST['tos'] ) ) {
+		$tospage_id = pmpro_getOption( 'tospage' );
+		pmpro_save_consent( $user_id, $tospage_id, $order->id );
+	}
+}
+add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_update_consent', 10, 2 );
+
+/**
+ * Convert a consent entry into a English sentence.
+ * @since  1.9.5
+ */
+function pmpro_consent_to_text( $entry ) {
+	$user = get_userdata( $entry['user_id'] );
+	$post = get_post( $entry['post_id'] );
+
+	$s = sprintf( __('%s agreed to %s (ID #%d, last modified %s) on %s.' ),
+				  $user->display_name,
+				  $post->post_title,
+				  $post->ID,
+				  $entry['post_modified'],
+				  date( get_option( 'date_format' ), $entry['timestamp'] ) );
+
+	if( !pmpro_is_consent_current( $entry ) ) {
+		$s .= ' ' . __( 'That post has since been updated.', 'paid-memberships-pro' );
+	}
+
+	return $s;
+}
+
+/**
+ * Check if a consent entry is current.
+ * @since  1.9.5
+ */
+function pmpro_is_consent_current( $entry ) {
+	$post = get_post( $entry['post_id'] );
+	if( !empty( $post ) && !empty( $post->post_modified ) && $post->post_modified == $entry['post_modified'] ) {
+		return true;
+	}
+	return false;
+}

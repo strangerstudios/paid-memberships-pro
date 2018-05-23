@@ -838,6 +838,29 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				</tr>
 			<?php } ?>
 
+			<?php
+				$tospage_id = pmpro_getOption( 'tospage' );
+				$consent_entry = $order->get_tos_consent_log_entry();
+
+				if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+				?>
+				<tr>
+					<th scope="row" valign="top"><label for="tos_consent"><?php _e( 'TOS Consent', 'paid-memberships-pro' ); ?>:</label></th>
+					<td id="tos_consent">
+						<?php
+							
+							if( !empty( $consent_entry ) ) {
+								echo pmpro_consent_to_text( $consent_entry );
+							} else {
+								echo __( 'N/A' );
+							}
+						?>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
+
 			<tr>
 				<th scope="row" valign="top"><label for="notes"><?php _e( 'Notes', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
