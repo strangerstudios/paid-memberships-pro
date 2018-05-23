@@ -42,6 +42,7 @@ add_filter( 'wp_privacy_personal_data_erasers', 'pmpro_register_personal_data_er
 
 /**
  * Personal data eraser for PMPro data.
+ * @since 1.9.5
  * @param string $email_address Email address of the user to be erased.
  * @param int    $page          For batching
  */
@@ -100,6 +101,7 @@ function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
 
 /**
  * Register the personal data exporter for PMPro.
+ * @since 1.9.5
  * @param array $exporters All exporters added so far
  */
 function pmpro_register_personal_data_exporters( $exporters ) {
@@ -114,6 +116,7 @@ add_filter( 'wp_privacy_personal_data_exporters', 'pmpro_register_personal_data_
 
 /**
  * Personal data exporter for PMPro data.
+ * @since 1.9.5
  */
 function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 	global $wpdb;
@@ -344,6 +347,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 
 /**
  * Get list of user meta fields with labels to include in the PMPro data exporter
+ * @since 1.9.5
  */
 function pmpro_get_personal_user_meta_fields() {
 	$fields = array(
@@ -372,6 +376,7 @@ function pmpro_get_personal_user_meta_fields() {
 
 /**
  * Get list of user meta fields to include in the PMPro data eraser
+ * @since 1.9.5
  */
 function pmpro_get_personal_user_meta_fields_to_erase() {
 	$fields = array(
