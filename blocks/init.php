@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Dynamic Block Requires
  */
 require_once PMPRO_DIR . '/blocks/checkout-button/index.php';
+require_once PMPRO_DIR . '/blocks/account-page/index.php';
 
 /**
  * Enqueue block editor only JavaScript and CSS

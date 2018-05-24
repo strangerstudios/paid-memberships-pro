@@ -1,0 +1,31 @@
+/**
+ * Note that these styles are loaded *after* common styles, so that
+ * editor-specific styles using the same selectors will take precedence.
+ */
+.wp-block-paid-memberships-pro-checkout-button {
+	background-color: #EFEFEF;
+	background-image: none;
+	border: 1px solid #D6D6D6;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: #444;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 700;
+	margin: 0;
+	padding: 6px 12px;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	vertical-align: middle;
+	white-space: nowrap;
+}

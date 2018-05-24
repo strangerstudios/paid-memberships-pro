@@ -36,39 +36,40 @@ const {
   * Register block
   */
  export default registerBlockType(
-     'pmpro/checkout-button',
+     'pmpro/account-page',
      {
-         title: __( 'Checkout Button', 'pmpro' ),
-         description: __( 'Let users check out for a level.', 'pmpro' ),
+         title: __( 'Account Page', 'pmpro' ),
+         description: __( 'Displays a user\'s account information', 'pmpro' ),
          category: 'common',
-         icon: 'cart',
+         icon: 'id',
          keywords: [
-             __( 'buy', 'pmpro' ),
-             __( 'level', 'pmpro' ),
          ],
          supports: {
          },
          attributes: {
-             text: {
-                 type: 'string',
-                 default: 'Buy Now',
+             membership: {
+                 type: 'boolean',
+                 default: false,
              },
-             css_class: {
-                 type: 'string',
-                 default: 'wp-block-paid-memberships-pro-checkout-button',
+             profile: {
+                 type: 'boolean',
+                 default: false,
              },
-             level: {
-                  type: 'integer'
-             }
+             invoices: {
+                 type: 'boolean',
+                 default: false,
+             },
+             links: {
+                 type: 'boolean',
+                 default: false,
+             },
          },
          edit: props => {
-             const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
+             const { attributes: { fields }, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div
-                    className={ className }
-                >
-                  <a class={css_class} >{text}</a>
+                <div className={ className }>
+                  "temporary placeholder"
                 </div>
             ];
          },
