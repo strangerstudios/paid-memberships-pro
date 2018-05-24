@@ -5,7 +5,7 @@
  * @package blocks
  */
 
-defined( 'ABSPATH' ) || exit;
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 /* NOTE: Maybe move this into includes/blocks.php or /blocks/blocks.php */
 
@@ -14,6 +14,12 @@ defined( 'ABSPATH' ) || exit;
  */
 require_once PMPRO_DIR . '/blocks/checkout-button/index.php';
 require_once PMPRO_DIR . '/blocks/account-page/index.php';
+require_once PMPRO_DIR . '/blocks/billing-page/index.php';
+require_once PMPRO_DIR . '/blocks/cancel-page/index.php';
+require_once PMPRO_DIR . '/blocks/checkout-page/index.php';
+require_once PMPRO_DIR . '/blocks/confirmation-page/index.php';
+require_once PMPRO_DIR . '/blocks/invoice-page/index.php';
+require_once PMPRO_DIR . '/blocks/levels-page/index.php';
 
 /**
  * Enqueue block editor only JavaScript and CSS

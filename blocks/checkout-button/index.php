@@ -1,11 +1,13 @@
 <?php
 /**
-Sets up checkout-button block, does not format frontend
-
-@package checkcout-button
+ * Sets up checkout-button block, does not format frontend
+ *
+ * @package blocks/checkcout-button
  **/
 
 namespace PMPro\Blocks;
+
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 // Only load if Gutenberg is available.
 if ( ! function_exists( 'register_block_type' ) ) {

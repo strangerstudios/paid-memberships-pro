@@ -8,3 +8,9 @@ import './i18n.js';
  */
 import './checkout-button/';
 import './account-page/';
+import './billing-page/';
+import './cancel-page/';
+import './checkout-page/';
+import './confirmation-page/';
+import './invoice-page/';
+import './levels-page/';

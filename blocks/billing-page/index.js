@@ -10,7 +10,6 @@
   */
  import './style.scss';
  import classnames from 'classnames';
- import Inspector from './inspector';
  /**
   * Internal block libraries
   */
@@ -36,40 +35,23 @@ const {
   * Register block
   */
  export default registerBlockType(
-     'pmpro/account-page',
+     'pmpro/billing-page',
      {
-         title: __( 'Account Page', 'pmpro' ),
-         description: __( 'Displays a user\'s account information', 'pmpro' ),
+         title: __( 'Billing Page', 'pmpro' ),
+         description: __( 'For members with an active subscription, this page shows the member’s billing information and allows them to update the payment method.', 'pmpro' ),
          category: 'common',
-         icon: 'id',
+         icon: 'format-aside',
          keywords: [
          ],
          supports: {
          },
          attributes: {
-             membership: {
-                 type: 'boolean',
-                 default: false,
-             },
-             profile: {
-                 type: 'boolean',
-                 default: false,
-             },
-             invoices: {
-                 type: 'boolean',
-                 default: false,
-             },
-             links: {
-                 type: 'boolean',
-                 default: false,
-             },
          },
          edit: props => {
-             const { attributes: { fields }, className, setAttributes, isSelected } = props;
+             const { className } = props;
              return [
-                isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className }>
-                  "Account Page Placeholder"
+                  "Billing Page Placeholder"
                 </div>
             ];
          },

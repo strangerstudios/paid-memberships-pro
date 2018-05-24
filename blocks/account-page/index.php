@@ -1,11 +1,13 @@
 <?php
 /**
-Sets up account-page block, does not format frontend
-
-@package checkcout-button
+ * Sets up account-page block, does not format frontend
+ *
+ * @package blocks/account-page
  **/
 
 namespace PMPro\Blocks;
+
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 // Only load if Gutenberg is available.
 if ( ! function_exists( 'register_block_type' ) ) {
