@@ -229,13 +229,11 @@
 		 *
 		 * @since 1.8
 		 */
-		static function pmpro_checkout_before_processing()
-		{
+		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
 
 			//save user fields for PayPal Express
-			if(!$current_user->ID)
-			{
+			if(!$current_user->ID) {
 				//get values from post
 				if(isset($_REQUEST['username']))
 					$username = trim(sanitize_text_field($_REQUEST['username']));
@@ -254,6 +252,14 @@
 				$_SESSION['pmpro_signup_username'] = $username;
 				$_SESSION['pmpro_signup_password'] = $password;
 				$_SESSION['pmpro_signup_email'] = $bemail;
+			}
+
+			if( !empty( $_REQUEST['tos'] ) ) {
+				$tospost = get_post( pmpro_getOption( 'tospage' ) );
+				$_SESSION['tos'] = array(
+					'post_id' => $tospost->ID,
+					'post_modified' => $tospost->post_modified,
+				);
 			}
 
 			//can use this hook to save some other variables to the session

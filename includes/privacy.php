@@ -407,7 +407,7 @@ function pmpro_get_personal_user_meta_fields_to_erase() {
  * Save a TOS consent timestamp to user meta.
  * @since 1.9.5
  */
-function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $order_id = NULL ) {
+function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $post_modified = NULL, $order_id = NULL ) {
 	// Default to current user.
 	if( empty( $user_id ) ) {
 		global $current_user;
@@ -429,11 +429,15 @@ function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $order_id = NULL 
 
 	$post = get_post( $post_id );
 
+	if( empty( $post_modified ) ) {
+		$post_modified = $post->post_modified;
+	}
+
 	$log = pmpro_get_consent_log( $user_id );
 	$log[] = array(
 		'user_id' => $user_id,
 		'post_id' => $post_id,
-		'post_modified' => $post->post_modified,
+		'post_modified' => $post_modified,
 		'order_id' => $order_id,
 		'consented' => true,
 		'timestamp' => current_time( 'timestamp' ),
@@ -479,10 +483,17 @@ function pmpro_get_consent_log( $user_id = NULL, $reversed = true ) {
 function pmpro_after_checkout_update_consent( $user_id, $order ) {
 	if( !empty( $_REQUEST['tos'] ) ) {
 		$tospage_id = pmpro_getOption( 'tospage' );
-		pmpro_save_consent( $user_id, $tospage_id, $order->id );
+		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
+	} elseif ( !empty( $_SESSION['tos'] ) ) {
+		// PayPal Express and others might save tos info into a session variable
+		$tospage_id = $_SESSION['tos']['post_id'];
+		$tospage_modified = $_SESSION['tos']['post_modified'];
+		pmpro_save_consent( $user_id, $tospage_id, $tospage_modified, $order->id );
+		unset( $_SESSION['tos'] );
 	}
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_update_consent', 10, 2 );
+add_action( 'pmpro_before_send_to_paypal_standard', 'pmpro_after_checkout_update_consent', 10, 2);
 
 /**
  * Convert a consent entry into a English sentence.
