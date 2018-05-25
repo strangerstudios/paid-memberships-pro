@@ -11,4 +11,5 @@ npm install classnames
 npm install babel-core
 npm install babel-loader
 npm install babel-eslint
+npm install memize
 npm install @wordpress/babel-preset-default

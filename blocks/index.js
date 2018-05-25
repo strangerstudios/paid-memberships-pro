@@ -14,3 +14,5 @@ import './checkout-page/';
 import './confirmation-page/';
 import './invoice-page/';
 import './levels-page/';
+import './member/';
+import './membership/';
