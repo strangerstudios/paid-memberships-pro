@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.9.1
-Stable tag: 1.9.4.3
+Tested up to: 4.9.6
+Stable tag: 1.9.5
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,28 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.5 - 2018-05-24 =
+* BUG FIX: Added 'error' to the list of default order statuses.
+* BUG FIX: Fixed issue where PayPal recurring_payment messages with status "Pending" were treated as "Failed" by our IPN handler. (Thanks, Matt Julian)
+* BUG FIX: The redirect away from the billing page needed to be in the preheader instead of the page shortcode.
+* BUG FIX/ENHANCEMENT: Using the pmpro_getOrderStatuses() function in adminpages/orders.php instead of redundant code there.
+* BUG FIX/ENHANCEMENT: Passing the $order as a second parameter to pmpro_after_checkout when called from the PayPal IPN handler. (The $order was being passed already for "regular" checkouts.)
+* ENHANCEMENT: You can now sort by the Membership Level column added to the users list in the dashboard. (Thanks, Matt Julian)
+* FEATURE: Added support for the privacy features added in WP 4.9.6. Details below.
+* FEATURE: Added suggest privacy page text.
+* FEATURE: Added PMPro-related user meta fields, membership history, and order history to the personal data export. You can filter which user meta fields are included in the export using the new pmpro_get_personal_user_meta_fields filter.
+* FEATURE: Deleting PMPro-related personal data fields when personal data is erased. The ereaser deletes a number of user meta fields (filterable through the new pmpro_get_personal_user_meta_fields_to_erase filter). A user's membership history and order history are retained unless the user is deleted.
+* FEATURE: Now saving a log of when the TOS page is agreed to at checkout. The ID and date modified of the TOS post is saved along with a timestamp of when the TOS was agreed to. This information is shown on the single order page in the admin, the orders CSV export, and on the edit user profile page in the admin. Note that this feature does not yet backport any data for existing users or ask users to re-agree to the TOS if the TOS has gone out of date.
+
+= 1.9.4.4 - 2018-03-14 =
+* BUG FIX: Updated the filters to extend membership levels to use the new pmpro_getSpecificMembershipLevelForUser() function to avoid bugs when MMPU is enabled.
+* BUG FIX: Fixed cases where certain email templates were resulting in the body of the email being duplicated.
+* BUG FIX: Fixed conflict with pmpro-email-templates when emails were disabled (the pmpro_email filter returns false). (Thanks, Mathieu Hays)
+* BUG FIX: Now updating status on related subscription orders BEFORE canceling at gateway to avoid cases where the webhook sent by the gateway after canceling the subscription triggers further cancellation attempts.
+* BUG FIX: No longer showing the "Stripe Publishable Key appears incorrect" error message if the key field is blank.
+* ENHANCEMENT: Added the pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) function for cases where MMPU is enabled and you want data about a specific membership level a user might have.
+* ENHANCEMENT: Changed labels on the reCAPTCHA settings to match their current terminology: Site Key and Secret Key.
 
 = 1.9.4.3 - 2018-01-04 =
 * BUG FIX: Fixed issue where PMPro would attempt to cancel gateway subscriptions more than once in some cases.
@@ -381,46 +403,3 @@ up the lines of text.
 * ENHANCEMENT: Added the checkout_id column to the pmpro_membership_orders table. This will be used by addons and possible core in the future to track multiple orders that happen during the same checkout process.
 * ENHANCEMENT: Added support for the Serian language. (Thanks, Sasa Trifkovic)
 * NOTE: We are planning to remove the certificate_id and certificate_amount columns from the pmpro_membership_orders table. Please contact us if you are using this column for something to come up with a work around.
-
-= 1.8.9.3 =
-* BUG: Fixed bug introduced in 1.8.9.2 where member start and end dates weren't being set correctly. Includes an update script to fix past users affected by this.
-* BUG: Fixed warnings on new order page in the dashboard.
-* BUG/ENHANCEMENT: Fixed the pmpro_checkout_default_submit_button() methods of the PayPal Express to no longer check if the current gateway is a paypal one. The method is only called when the gateway is loaded anyway or when another addon (e.g. the pmpro-pay-by-check addon) adds the hook.
-* BUG/ENHANCEMENT: Moved check instructions code into the check gateway class so it can be overriden by addons (e.g. an update to the pmpro-pay-by-check addon).
-
-= 1.8.9.2 =
-* BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
-* BUG: Fixed URL PayPal Express and PayPal standard redirect to at checkout. (Although the incorrect URL was still working on the PayPal side.)
-* BUG: Addon page now passes $status to the plugin_row_meta filter to fix warnings that were sometimes showing up. (Thanks, jawhite)
-* BUG: Fixed typo in the pmpro_orders_csv_extra_columns filter introduced in 1.8.9.1. (Thanks, Johannes Jokelin)
-
-= 1.8.9.1 =
-* BUG: Fixed bug where some recurring orders members who checked out with Stripe in very old versions of PMPro would show up as orders with a blank user_id and membership_id. This update includes a fix for this and an update script to fix old orders affected by this.
-* BUG: Fixed bug where the Stripe class activation/deactivation methods were setup too late to actually run on activation/deactivation.
-* BUG: Updated the Stripe class to use the same language and markup in the Payment Information section as the default checkout.
-* BUG: Now forcing pmpro_getMembershipLevelForUser() in admin change emails.
-* BUG: Fixed warning in comments_array and comments_open filters. (Thanks, Mihail Chepovskiy)
-* BUG: Fixed format error for dates when saving orders. (Thanks, EmreErdogan)
-* BUG: Fixed bug that was causing issues in the cancellations report.
-* BUG: Fixed the pmpro_cron_expiration_warnings script to properly skip deleted and already expired members.
-* BUG: Reverted code to generate the CVV popup URL.
-* BUG: Fixed a couple bugs in the pmpro_loadTemplate function.
-* BUG/ENHANCEMENT: Updated URL used in the IPN Handler API calls to match the latest PayPal docs. (Thanks, pbaylies)
-* BUG/ENHANCEMENT: Overhauled the orders list CSV export for improved performance. There is still scaling work to be done on the exports, but timeouts and memory errors will happen much less often.
-* ENHANCEMENT: Added Greek (el_GR) translation. (Thanks, Alexandros Karypidis)
-* ENHANCEMENT: Added $order as a parameter to the pmpro_orders_user_row_actions hook. (Thanks, SquareLines)
-* ENHANCEMENT: Added a warning to backup your database to the update notice.
-
-= 1.8.9 =
-* BUG: Fixed bug with recurring orders and TwoCheckout.
-* BUG: Fixed bug where some non-members (membership_id was 0 or NULL) were being processed for expiration.
-* BUG: Fixed bug where the address/street wasn't showing up when printing orders from the dashboard.
-* BUG: Fixed bug where the Stripe class would sometimes show its billing and payment fields even if a secondary gateway was chosen.
-* BUG: Making sure $this->total is set for new orders and available to the pmpro_add_order, pmpro_added_order filters.
-* BUG: Fixed bug where email templates were not being loaded out of the /paid-memberships-pro/languages/email/ directory. (Thanks, menardmam on wordpress.org)
-* BUG: No longer showing a "renew" link on the membership account or membership levels pages if the user's level is not allowing sign ups.
-* BUG: Fixed bug where the expiration script might try to run on deleted or expired users.
-* BUG/ENHANCEMENT: Change membership shortcode to call pmpro_hasMembershipLevel when checking for level="" as well. This ensures the pmpro_has_membership_level filter runs, which some addons/etc need.
-* ENHANCEMENT: Updated categories list on the edit levels page to show nested categories.
-* ENHANCEMENT: Now adding a pmpro-no-access class (similar to the pmpro-has-access class) to the post element if a user doesn't have access to that post.
-* ENHANCEMENT: Added pmpro_checkout_end_date filter, similar to pmpro_checkout_start_date. Takes params $enddate, $user_id, $pmpro_level, $startdate.

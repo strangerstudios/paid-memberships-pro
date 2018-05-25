@@ -271,6 +271,8 @@ $csv_file_header_array = array(
 	"subscription_transaction_id",
 	"discount_code_id",
 	"discount_code",
+	"tos_consent_post_id",
+	"tos_consent_post_modified",
 	"timestamp"
 );
 
@@ -466,6 +468,16 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 				array_push( $csvoutput, pmpro_enclose( $val ) );
 			}
 		}
+
+		//tos_consent
+		$consent_entry = $order->get_tos_consent_log_entry();
+		if( !empty( $consent_entry ) ) {
+			array_push( $csvoutput, pmpro_enclose( $consent_entry['post_id'] ) );
+			array_push( $csvoutput, pmpro_enclose( $consent_entry['post_modified'] ) );
+		} else {
+			array_push( $csvoutput, '' );
+			array_push( $csvoutput, '' );
+		}				
 
 		//timestamp
 		$ts = date_i18n( $dateformat, $order->timestamp );

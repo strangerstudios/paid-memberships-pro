@@ -245,11 +245,11 @@ if(pmpro_displayAds())
 			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
-					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Public Key', 'paid-memberships-pro' );?>:</label>
-					<input type="text" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
+					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label>
+					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />
-					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Private Key', 'paid-memberships-pro' );?>:</label>
-					<input type="text" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
+					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label>
+					<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
 				</td>
 			</tr>
 			<tr>
