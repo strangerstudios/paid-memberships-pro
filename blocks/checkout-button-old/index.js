@@ -69,25 +69,7 @@ const {
                     className={ className }
                 >
                   <a class={css_class} >{text}</a>
-                </div>,
-                isSelected && <div>
-                  <br/>
-                   <TextControl
-                       label={ __( 'Button Text', 'paid-memberships-pro' ) }
-                       value={ text }
-                       onChange={ text => setAttributes( { text } ) }
-                   />
-                   <TextControl
-                       label={ __( 'Level ID', 'paid-memberships-pro' ) }
-                       value={ level }
-                       onChange={ level => setAttributes( { level } ) }
-                   />
-                   <TextControl
-                       label={ __( 'CSS Class', 'paid-memberships-pro' ) }
-                       value={ css_class }
-                       onChange={ css_class => setAttributes( { css_class } ) }
-                   />
-                   </div>,
+                </div>
             ];
          },
          save() {

@@ -37,8 +37,8 @@ const {
  export default registerBlockType(
      'pmpro/levels-page',
      {
-         title: __( 'Levels Page', 'pmpro' ),
-         description: __( 'This page shows the membership level options available displayed in the order sorted via the Memberships > Membership Levels admin', 'pmpro' ),
+         title: __( 'PMPro Levels Page', 'paid-memberships-pro' ),
+         description: __( 'This page shows the membership level options available displayed in the order sorted via the Memberships > Membership Levels admin', 'paid-memberships-pro' ),
          category: 'common',
          icon: 'chart-bar',
          keywords: [

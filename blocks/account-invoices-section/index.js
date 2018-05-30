@@ -1,7 +1,7 @@
 /**
- * Block: PMPro invoice Button
+ * Block: PMPro Checkout Button
  *
- * Add a styled link to the PMPro invoice page for a
+ * Add a styled link to the PMPro checkout page for a
  * specific level.
  *
  */
@@ -35,10 +35,10 @@ const {
   * Register block
   */
  export default registerBlockType(
-     'pmpro/invoice-page',
+     'pmpro/account-invoices-section',
      {
-         title: __( 'PMPro Invoice Page', 'paid-memberships-pro' ),
-         description: __( 'This page shows a single membership invoice or a list of all membership invoices for the current user.', 'paid-memberships-pro' ),
+         title: __( 'PMPro Account Invoices Section', 'paid-memberships-pro' ),
+         description: __( 'Displays a user\'s invoices information', 'paid-memberships-pro' ),
          category: 'common',
          icon: 'archive',
          keywords: [
@@ -51,7 +51,7 @@ const {
              const { className } = props;
              return [
                 <div className={ className }>
-                  "Invoice Page Placeholder"
+                  "Account Invoices Section Placeholder"
                 </div>
             ];
          },

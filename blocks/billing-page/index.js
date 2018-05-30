@@ -37,8 +37,8 @@ const {
  export default registerBlockType(
      'pmpro/billing-page',
      {
-         title: __( 'Billing Page', 'pmpro' ),
-         description: __( 'For members with an active subscription, this page shows the member’s billing information and allows them to update the payment method.', 'pmpro' ),
+         title: __( 'PMPro Billing Page', 'paid-memberships-pro' ),
+         description: __( 'For members with an active subscription, this page shows the member’s billing information and allows them to update the payment method.', 'paid-memberships-pro' ),
          category: 'common',
          icon: 'format-aside',
          keywords: [

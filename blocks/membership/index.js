@@ -1,8 +1,6 @@
 /**
- * Block: PMPro Checkout Button
+ * Block: PMPro Membership
  *
- * Add a styled link to the PMPro checkout page for a
- * specific level.
  *
  */
  /**
@@ -11,6 +9,7 @@
  import './style.scss';
  import classnames from 'classnames';
  import Inspector from './inspector';
+
  /**
   * Internal block libraries
   */
@@ -30,51 +29,51 @@ const {
 const {
     RichText,
     InspectorControls,
+    InnerBlocks,
 } = wp.editor;
+
 
  /**
   * Register block
   */
  export default registerBlockType(
-     'pmpro/account-page',
+     'pmpro/membership',
      {
-         title: __( 'PMPro Account Page', 'paid-memberships-pro' ),
-         description: __( 'Displays a user\'s account information', 'paid-memberships-pro' ),
+         title: __( 'PMPro Membership Check', 'paid-memberships-pro' ),
+         description: __( 'Only shows content to specific levels.', 'paid-memberships-pro' ),
          category: 'common',
-         icon: 'id',
+         icon: 'hidden',
          keywords: [
          ],
          supports: {
+           align: [ 'wide', 'full' ],
          },
          attributes: {
-             membership: {
-                 type: 'boolean',
-                 default: false,
+             levels: {
+                 type: 'string',
              },
-             profile: {
+             hide: {
                  type: 'boolean',
-                 default: false,
-             },
-             invoices: {
-                 type: 'boolean',
-                 default: false,
-             },
-             links: {
-                 type: 'boolean',
-                 default: false,
-             },
+                 default: false
+             }
          },
          edit: props => {
-             const { attributes: { fields }, className, setAttributes, isSelected } = props;
+             const { attributes: {levels, hide}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div className={ className }>
-                  "Account Page Placeholder"
+                <div className={ className } >
+                  <h3>Click here to edit membership viewing options.</h3>
+                  <InnerBlocks/>
                 </div>
             ];
          },
          save() {
-           return null;
+           const { className } = props;
+           return (
+        			<div className={ className }>
+        				<InnerBlocks.Content />
+        			</div>
+        		);
          },
        }
  );

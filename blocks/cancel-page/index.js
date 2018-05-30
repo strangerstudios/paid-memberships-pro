@@ -37,8 +37,8 @@ const {
  export default registerBlockType(
      'pmpro/cancel-page',
      {
-         title: __( 'Cancel Page', 'pmpro' ),
-         description: __( 'This page shows links for a member to cancel their membership or a link to return to the Membership Account page.', 'pmpro' ),
+         title: __( 'PMPro Cancel Page', 'paid-memberships-pro' ),
+         description: __( 'This page shows links for a member to cancel their membership or a link to return to the Membership Account page.', 'paid-memberships-pro' ),
          category: 'common',
          icon: 'no',
          keywords: [

@@ -37,8 +37,8 @@ const {
  export default registerBlockType(
      'pmpro/checkout-page',
      {
-         title: __( 'Checkout Page', 'pmpro' ),
-         description: __( 'This page shows the checkout form.', 'pmpro' ),
+         title: __( 'PMPro Checkout Page', 'paid-memberships-pro' ),
+         description: __( 'This page shows the checkout form.', 'paid-memberships-pro' ),
          category: 'common',
          icon: 'cart',
          keywords: [

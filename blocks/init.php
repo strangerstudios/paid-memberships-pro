@@ -13,15 +13,20 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
  * Dynamic Block Requires
  */
 require_once PMPRO_DIR . '/blocks/checkout-button/index.php';
+//require_once PMPRO_DIR . '/blocks/checkout-button-old/index.php';
 require_once PMPRO_DIR . '/blocks/account-page/index.php';
+require_once PMPRO_DIR . '/blocks/account-membership-section/index.php';
+require_once PMPRO_DIR . '/blocks/account-profile-section/index.php';
+require_once PMPRO_DIR . '/blocks/account-invoices-section/index.php';
+require_once PMPRO_DIR . '/blocks/account-links-section/index.php';
 require_once PMPRO_DIR . '/blocks/billing-page/index.php';
-require_once PMPRO_DIR . '/blocks/cancel-page/index.php';
-require_once PMPRO_DIR . '/blocks/checkout-page/index.php';
-require_once PMPRO_DIR . '/blocks/confirmation-page/index.php';
-require_once PMPRO_DIR . '/blocks/invoice-page/index.php';
+//require_once PMPRO_DIR . '/blocks/cancel-page/index.php';
+//require_once PMPRO_DIR . '/blocks/checkout-page/index.php';
+//require_once PMPRO_DIR . '/blocks/confirmation-page/index.php';
+//require_once PMPRO_DIR . '/blocks/invoice-page/index.php';
 require_once PMPRO_DIR . '/blocks/levels-page/index.php';
 // require_once PMPRO_DIR . '/blocks/member/index.php';
-// require_once PMPRO_DIR . '/blocks/membership/index.php';
+require_once PMPRO_DIR . '/blocks/membership/index.php';
 
 /**
  * Enqueue block editor only JavaScript and CSS
