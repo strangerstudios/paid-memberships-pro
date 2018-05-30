@@ -808,6 +808,21 @@
 			}
 		}
 
+		/** 
+		 * Get TOS consent information.
+		 * @since  1.9.5
+		 */
+		function get_tos_consent_log_entry() {
+			$consent_log = pmpro_get_consent_log( $this->user_id );
+			foreach( $consent_log as $entry ) {
+				if( $entry['order_id'] == $this->id ) {
+					return $entry;
+				}
+			}
+
+			return false;
+		}
+
 		/**
 		 * Delete an order and associated data.
 		 */

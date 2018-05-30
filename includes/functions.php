@@ -2574,7 +2574,7 @@ function pmpro_getOrderStatuses( $force = false ) {
 	if ( ! isset( $pmpro_order_statuses ) || $force ) {
 		global $wpdb;
 		$statuses         = array();
-		$default_statuses = array( '', 'success', 'cancelled', 'review', 'token', 'refunded' );
+		$default_statuses = array( '', 'success', 'cancelled', 'review', 'token', 'refunded', 'pending', 'error' );
 		$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
 		$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
 		asort( $statuses );
