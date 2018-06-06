@@ -129,6 +129,11 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.5.1 =
+* BUG FIX: Fixed issue with the PayPal IPN Handler where existing users checking out for a new level would sometimes have their membership and new subscription cancelled.
+* BUG FIX: Fixed PayPal IPN Handler to set the status of old levels to 'changed' (instead of 'inactive') when processing checkouts. This will improve the accuracy of reports.
+* ENHANCEMENT: Removed validation info from the IPN log.
+
 = 1.9.5 - 2018-05-24 =
 * BUG FIX: Added 'error' to the list of default order statuses.
 * BUG FIX: Fixed issue where PayPal recurring_payment messages with status "Pending" were treated as "Failed" by our IPN handler. (Thanks, Matt Julian)

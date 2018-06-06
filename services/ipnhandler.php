@@ -104,8 +104,8 @@ if ( $txn_type == "subscr_signup" ) {
 //PayPal Standard Subscription Payment
 if ( $txn_type == "subscr_payment" ) {
 	//is this a first payment?
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
 		//first payment, get order
 		$morder = new MemberOrder( $_POST['item_number'] );
 
@@ -143,9 +143,9 @@ if ( $txn_type == "subscr_payment" ) {
 	} else {
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
-			pmpro_ipnSaveOrder( $txn_id, $last_subscr_order );
+			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( $_POST['payment_status'] == "Failed" ) {
-			pmpro_ipnFailedPayment( $last_subscr_order );
+			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
 		}
@@ -194,13 +194,13 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 
 //PayPal Express Recurring Payments
 if ( $txn_type == "recurring_payment" ) {
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
-			pmpro_ipnSaveOrder( $txn_id, $last_subscr_order );
+			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( $_POST['payment_status'] == "Failed" ) {
-			pmpro_ipnFailedPayment( $last_subscr_order );
+			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
 		}
@@ -212,10 +212,10 @@ if ( $txn_type == "recurring_payment" ) {
 
 if ( $txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'suspended' == $profile_status ) {
 
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
-		pmpro_ipnFailedPayment( $last_subscr_order );
+		pmpro_ipnFailedPayment( $last_subscription_order );
 	} else {
 		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
 	}
@@ -226,17 +226,17 @@ if ( $txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'su
 //Recurring Payment Profile Cancelled (PayPal Express)
 if ( $txn_type == "recurring_payment_profile_cancel" ) {
 	//find last order
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id ) == false ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id ) == false ) {
 		ipnlog( "ERROR: Couldn't find this order to cancel (subscription_transaction_id=" . $recurring_payment_id . ")." );
 
 		pmpro_ipnExit();
 	} else {
 		//found order, let's cancel the membership
-		$user = get_userdata( $last_subscr_order->user_id );
+		$user = get_userdata( $last_subscription_order->user_id );
 
 		if ( empty( $user ) || empty( $user->ID ) ) {
-			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscr_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
+			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
 		} else {
 			/*
 				We want to make sure this is a cancel originating from PayPal and not one already handled by PMPro.
@@ -248,19 +248,19 @@ if ( $txn_type == "recurring_payment_profile_cancel" ) {
 				(2) The user doesn't currently have the level attached to this order.
 			*/
 
-			if ( $last_subscr_order->status == "cancelled" ) {
-				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
-			} elseif ( ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
-				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
+			if ( $last_subscription_order->status == "cancelled" ) {
+				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
+			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
+				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} else {
 				//if the initial payment failed, cancel with status error instead of cancelled
 				if ( $initial_payment_status === "Failed" ) {
-					pmpro_cancelMembershipLevel( $last_subscr_order->membership_id, $last_subscr_order->user_id, 'error' );
+					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
 				} else {
-					pmpro_cancelMembershipLevel( $last_subscr_order->membership_id, $last_subscr_order->user_id, 'cancelled' );
+					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
 				}
 
-				ipnlog( "Cancelled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
+				ipnlog( "Cancelled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
 
 				//send an email to the member
 				$myemail = new PMProEmail();
@@ -268,7 +268,7 @@ if ( $txn_type == "recurring_payment_profile_cancel" ) {
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendCancelAdminEmail( $user, $last_subscr_order->membership_id );
+				$myemail->sendCancelAdminEmail( $user, $last_subscription_order->membership_id );
 			}
 		}
 
@@ -279,17 +279,17 @@ if ( $txn_type == "recurring_payment_profile_cancel" ) {
 //Subscription Cancelled (PayPal Standard)
 if ( $txn_type == "subscr_cancel" ) {
 	//find last order
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
 		ipnlog( "ERROR: Couldn't find this order to cancel (subscription_transaction_id=" . $subscr_id . ")." );
 
 		pmpro_ipnExit();
 	} else {
 		//found order, let's cancel the membership
-		$user = get_userdata( $last_subscr_order->user_id );
+		$user = get_userdata( $last_subscription_order->user_id );
 
 		if ( empty( $user ) || empty( $user->ID ) ) {
-			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscr_order->id . " with subscription transaction id = " . $subscr_id . "." );
+			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $subscr_id . "." );
 		} else {
 			/*
 				We want to make sure this is a cancel originating from PayPal and not one already handled by PMPro.
@@ -301,14 +301,14 @@ if ( $txn_type == "subscr_cancel" ) {
 				(2) The user doesn't currently have the level attached to this order.
 			*/
 
-			if ( isset($last_subsc_order->membership_id) && $last_subscr_order->status == "cancelled" ) {
-				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
-			} elseif ( isset($last_subsc_order->membership_id) && ! pmpro_hasMembershipLevel( $last_subsc_order->membership_id, $user->ID ) ) {
-				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscr_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
+			if ( isset($last_subscription_order->membership_id) && $last_subscription_order->status == "cancelled" ) {
+				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
+			} elseif ( isset($last_subscription_order->membership_id) && ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
+				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
 			} else {
-				pmpro_changeMembershipLevel( 0, $last_subscr_order->user_id, 'cancelled' );
+				pmpro_changeMembershipLevel( 0, $last_subscription_order->user_id, 'cancelled' );
 
-				ipnlog( "Canceled membership for user with id = " . $last_subscr_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
+				ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
 
 				//send an email to the member
 				$myemail = new PMProEmail();
@@ -316,7 +316,7 @@ if ( $txn_type == "subscr_cancel" ) {
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendCancelAdminEmail( $user, $last_subscr_order->membership_id );
+				$myemail->sendCancelAdminEmail( $user, $last_subscription_order->membership_id );
 			}
 		}
 
@@ -425,11 +425,11 @@ function pmpro_ipnValidate() {
 	} else {
 		ipnlog( "FP!" );
 
-		//log fb object
-		ipnlog( print_r( $fp, true ) );
+		//log fp object
+		///ipnlog( print_r( $fp, true ) );
 
 		$res = wp_remote_retrieve_body( $fp );
-		ipnlog( print_r( $res, true ) );
+		//ipnlog( print_r( $res, true ) );
 
 		if ( strcmp( $res, "VERIFIED" ) == 0 ) {
 			//all good so far
@@ -551,7 +551,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 	}
 
 	//change level and continue "checkout"
-	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id ) !== false ) {
+	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id, 'changed' ) !== false ) {
 		//update order status and transaction ids
 		$morder->status                 = "success";
 		$morder->payment_transaction_id = $txn_id;
