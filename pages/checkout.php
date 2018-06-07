@@ -63,7 +63,7 @@
 
 			<?php if($pmpro_show_discount_code) { ?>
 				<?php if($discount_code && !$pmpro_review) { ?>
-					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to change your discount code', 'paid-memberships-pro' );?></a>.</p>
+					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to change your discount code.', 'paid-memberships-pro' );?></a></p>
 				<?php } elseif(!$pmpro_review) { ?>
 					<p id="other_discount_code_p" class="pmpro_small"><?php _e('Do you have a discount code?', 'paid-memberships-pro' );?> <a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to enter your discount code', 'paid-memberships-pro' );?></a>.</p>
 				<?php } elseif($pmpro_review && $discount_code) { ?>
