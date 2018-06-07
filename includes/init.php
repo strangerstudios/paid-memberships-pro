@@ -247,7 +247,8 @@ function pmpro_manage_users_columns($columns) {
 
 function pmpro_sortable_column($columns)
 {
-	$columns['pmpro_membership_level'] = ['level', 'desc'];
+	// $columns['pmpro_membership_level'] = ['level', 'desc'];
+	$columns['pmpro_membership_level'] = array( 'level', 'desc' );
 	return $columns;
 }
 
