@@ -207,6 +207,19 @@ if ( $txn_type == "recurring_payment" ) {
 	} else {
 		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
 	}
+		
+	pmpro_ipnExit();
+}
+
+if ( $txn_type == "recurring_payment_skipped" ) {
+	$last_subscr_order = new MemberOrder();
+	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+		// the payment failed
+		pmpro_ipnFailedPayment( $last_subscr_order );
+	} else {
+		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
+	}
+
 	pmpro_ipnExit();
 }
 
