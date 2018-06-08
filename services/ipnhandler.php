@@ -212,10 +212,10 @@ if ( $txn_type == "recurring_payment" ) {
 }
 
 if ( $txn_type == "recurring_payment_skipped" ) {
-	$last_subscr_order = new MemberOrder();
-	if ( $last_subscr_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
-		pmpro_ipnFailedPayment( $last_subscr_order );
+		pmpro_ipnFailedPayment( $last_subscription_order );
 	} else {
 		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
 	}
@@ -224,7 +224,6 @@ if ( $txn_type == "recurring_payment_skipped" ) {
 }
 
 if ( $txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'suspended' == $profile_status ) {
-
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
