@@ -52,9 +52,12 @@ const {
              levels: {
                  type: 'string',
              },
+             uid: {
+                 type: 'string',
+             },
          },
          edit: props => {
-             const { attributes: {levels, hide, inner}, className, setAttributes, isSelected } = props;
+             const { attributes: {levels}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className } >
@@ -65,7 +68,7 @@ const {
             ];
          },
          save: props => {
-           const { attributes: {levels, hide, inner}, className, setAttributes, isSelected } = props;
+           const { attributes: {levels}, className, setAttributes, isSelected } = props;
         		return (
         			<div className={ className }>
         				<InnerBlocks.Content />

@@ -38,12 +38,15 @@ function pmpro_membership_register_dynamic_block() {
  **/
 function pmpro_membership_render_dynamic_block( $attributes ) {
 	global $post;
-	$substr = '';
-	if ( ! empty( $attributes['levels'] ) ) {
-		$substr = get_string_between( $post->post_content, '<!-- wp:pmpro/membership {"levels":"' . $attributes['levels'] . '"} -->)', '<!-- /wp:pmpro/membership -->' );
-	} else {
-		$substr = get_string_between( $post->post_content, '<!-- wp:pmpro/membership -->)', '<!-- /wp:pmpro/membership -->' );
+	$tag_modifier = '';
+	if ( empty( $attributes['levels'] ) && ! empty( $attributes['uid'] ) ) {
+		$tag_modifier = ' {"uid":"' . $attributes['uid'] . '"}';
+	} elseif ( ! empty( $attributes['levels'] ) && ! empty( $attributes['uid'] ) ) {
+		$tag_modifier = ' {"levels":"' . $attributes['levels'] . '","uid":"' . $attributes['uid'] . '"}';
+	} elseif ( ! empty( $attributes['levels'] ) && empty( $attributes['uid'] ) ) {
+		$tag_modifier = ' {"levels":"' . $attributes['levels'] . '"}';
 	}
+	$substr = get_string_between( $post->post_content, '<!-- wp:pmpro/membership' . $tag_modifier . ' -->)', '<!-- /wp:pmpro/membership -->' );
 	return pmpro_shortcode_membership( array( 'level' => $attributes['levels'] ), do_blocks( $substr ) );
 }
 
