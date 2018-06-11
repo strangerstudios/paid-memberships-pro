@@ -30,16 +30,9 @@ export default class Inspector extends Component {
               <PanelBody>
                   <TextControl
                       label={ __( 'Levels', 'paid-memberships-pro' ) }
-                      help={ __( 'Levels to show/hide separated by comma, 0 is not logged in', 'paid-memberships-pro' ) }
+                      help={ __( 'Level IDs to show content to separated by comma, 0 is not logged in. Defaults to showing content to all logged in members.', 'paid-memberships-pro' ) }
                       value={ levels }
                       onChange={ levels => setAttributes( { levels } ) }
-                  />
-              </PanelBody>
-              <PanelBody>
-                  <CheckboxControl
-                      label="Hide from levels (as opposed to show to)"
-                      checked={ hide }
-                      onChange={ hide => setAttributes( {hide} ) }
                   />
               </PanelBody>
           </InspectorControls>

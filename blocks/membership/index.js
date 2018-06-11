@@ -52,28 +52,25 @@ const {
              levels: {
                  type: 'string',
              },
-             hide: {
-                 type: 'boolean',
-                 default: false
-             }
          },
          edit: props => {
-             const { attributes: {levels, hide}, className, setAttributes, isSelected } = props;
+             const { attributes: {levels, hide, inner}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className } >
                   <h3>Click here to edit membership viewing options.</h3>
-                  <InnerBlocks/>
+                  <h5>First click the text box and then the plus to add a block.</h5>
+                  <InnerBlocks />
                 </div>
             ];
          },
-         save() {
-           const { className } = props;
-           return (
+         save: props => {
+           const { attributes: {levels, hide, inner}, className, setAttributes, isSelected } = props;
+        		return (
         			<div className={ className }>
         				<InnerBlocks.Content />
         			</div>
         		);
-         },
+        	},
        }
  );

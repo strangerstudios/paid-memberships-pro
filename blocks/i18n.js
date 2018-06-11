@@ -1,1 +1,1 @@
-wp.i18n.setLocaleData( { '': {} }, 'pmpro' );
+wp.i18n.setLocaleData( { '': {} }, 'paid-memberships-pro' );
