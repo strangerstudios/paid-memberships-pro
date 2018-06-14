@@ -17,18 +17,14 @@
  const { __ } = wp.i18n;
  const {
     registerBlockType,
-    AlignmentToolbar,
     BlockControls,
-    BlockAlignmentToolbar,
 } = wp.blocks;
 const {
     PanelBody,
-    PanelRow,
     TextControl,
 } = wp.components;
 
 const {
-    RichText,
     InspectorControls,
 } = wp.editor;
 

@@ -57,7 +57,7 @@ const {
              },
          },
          edit: props => {
-             const { attributes: {levels}, className, setAttributes, isSelected } = props;
+             const { attributes: {levels, uid}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className } >
@@ -68,7 +68,9 @@ const {
             ];
          },
          save: props => {
-           const { attributes: {levels}, className, setAttributes, isSelected } = props;
+           const { attributes: {levels, uid}, className, setAttributes, isSelected } = props;
+           var rand = Math.random+"";
+           uid => setAttributes( { rand } );
         		return (
         			<div className={ className }>
         				<InnerBlocks.Content />

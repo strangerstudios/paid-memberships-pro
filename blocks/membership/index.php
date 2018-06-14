@@ -38,6 +38,7 @@ function pmpro_membership_register_dynamic_block() {
  **/
 function pmpro_membership_render_dynamic_block( $attributes ) {
 	global $post;
+	//var_dump($attributes);
 	$tag_modifier = '';
 	if ( ! array_key_exists( 'levels', $attributes ) && array_key_exists( 'uid', $attributes ) ) {
 		$tag_modifier = ' {"uid":"' . $attributes['uid'] . '"}';
@@ -64,7 +65,7 @@ function get_string_between( $string, $start, $end ) {
 	if ( false === $ini ) {
 		return '';
 	}
-	$ini += strlen( $start ); // 70
+	$ini += strlen( $start );
 	$len  = strpos( $string, $end, $ini ) - $ini;
 	return substr( $string, $ini, $len );
 }
