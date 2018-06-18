@@ -8,7 +8,6 @@
   */
  import './style.scss';
  import classnames from 'classnames';
- //import Inspector from './inspector';
 
  /**
   * Internal block libraries
@@ -106,11 +105,23 @@ jQuery(document).ready(function($) {
                         />
                     </PanelBody>
                 </InspectorControls>,
-                <div className={ className } >
-                  <h3>Click here to edit membership viewing options.</h3>
-                  <h5>First click the text box and then the plus to add a block.</h5>
+                isSelected && <div className={ className } >
+                  <h3>PMPro Membership Block</h3>
+                  <PanelBody>
+                      <SelectControl
+                          multiple
+                          label={ __( 'Select levels to show content to:' ) }
+                          value={ levels }
+                          onChange={ levels => { setAttributes( { levels } ) } }
+                          options={ all_levels }
+                      />
+                  </PanelBody>
                   <InnerBlocks />
-                </div>
+                </div>,
+                ! isSelected && <div className={ className } >
+                  <h3>PMPro Membership Block</h3>
+                  <InnerBlocks />
+                </div>,
             ];
          },
          save: props => {
