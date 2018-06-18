@@ -8,7 +8,7 @@
   */
  import './style.scss';
  import classnames from 'classnames';
- import Inspector from './inspector';
+ //import Inspector from './inspector';
 
  /**
   * Internal block libraries
@@ -24,6 +24,7 @@ const {
     PanelBody,
     PanelRow,
     TextControl,
+    SelectControl,
 } = wp.components;
 
 const {
@@ -32,6 +33,35 @@ const {
     InnerBlocks,
 } = wp.editor;
 
+var all_levels = [{ value: 0, label: "Non-Members" }];
+
+function get_ajax_url() {
+ var i = window.location.href.indexOf("/wp-admin/post.php?");
+
+ if(i > 0)
+  return  window.location.href.slice(0, i+10)+"admin-ajax.php";
+ else
+  return "";
+}
+
+jQuery(document).ready(function($) {
+	var data = {
+		'action': 'pmpro_getAllLevels',
+	};
+
+	var ajax_url = get_ajax_url();
+  if ( ajax_url === "" ) {
+    return;
+  }
+	jQuery.post(ajax_url, data, function(response) {
+	  var temp_levels = JSON.parse(response.slice(0, -1));
+    for (var level in temp_levels){
+        if (temp_levels.hasOwnProperty(level)) {
+             all_levels.push({ value: level, label: temp_levels[level] })
+        }
+    }
+	});
+});
 
  /**
   * Register block
@@ -50,16 +80,32 @@ const {
          },
          attributes: {
              levels: {
-                 type: 'string',
+                 type: 'array',
+                 default:[]
              },
              uid: {
                  type: 'string',
+                 default:'',
              },
          },
          edit: props => {
              const { attributes: {levels, uid}, className, setAttributes, isSelected } = props;
+             if( uid=='' ) {
+               var rand = Math.random()+"";
+               setAttributes( { uid:rand } );
+             }
              return [
-                isSelected && <Inspector { ...{ setAttributes, ...props} } />,
+                isSelected && <InspectorControls>
+                    <PanelBody>
+                        <SelectControl
+                            multiple
+                            label={ __( 'Select levels to show content to:' ) }
+                            value={ levels }
+                            onChange={ levels => { setAttributes( { levels } ) } }
+                            options={ all_levels }
+                        />
+                    </PanelBody>
+                </InspectorControls>,
                 <div className={ className } >
                   <h3>Click here to edit membership viewing options.</h3>
                   <h5>First click the text box and then the plus to add a block.</h5>
@@ -68,9 +114,15 @@ const {
             ];
          },
          save: props => {
-           const { attributes: {levels, uid}, className, setAttributes, isSelected } = props;
-           var rand = Math.random+"";
-           uid => setAttributes( { rand } );
+           const { attributes: {levels, uid}, className, isSelected } = props;
+           /*
+           const setAttributes = props;
+           console.log(className);
+           var rand = Math.random()+"";
+           alert(rand);
+           uid => { setAttributes( { rand } ) };
+           alert(uid);
+           */
         		return (
         			<div className={ className }>
         				<InnerBlocks.Content />

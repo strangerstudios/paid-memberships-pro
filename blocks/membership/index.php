@@ -38,18 +38,17 @@ function pmpro_membership_register_dynamic_block() {
  **/
 function pmpro_membership_render_dynamic_block( $attributes ) {
 	global $post;
-	//var_dump($attributes);
 	$tag_modifier = '';
 	if ( ! array_key_exists( 'levels', $attributes ) && array_key_exists( 'uid', $attributes ) ) {
 		$tag_modifier = ' {"uid":"' . $attributes['uid'] . '"}';
 	} elseif ( array_key_exists( 'levels', $attributes ) && array_key_exists( 'uid', $attributes ) ) {
-		$tag_modifier = ' {"levels":"' . $attributes['levels'] . '","uid":"' . $attributes['uid'] . '"}';
+		$tag_modifier = ' {"levels":[' . pmpro_level_array_to_str($attributes['levels']) . '],"uid":"' . $attributes['uid'] . '"}';
 	} elseif ( array_key_exists( 'levels', $attributes ) && ! array_key_exists( 'uid', $attributes ) ) {
-		$tag_modifier = ' {"levels":"' . $attributes['levels'] . '"}';
+		$tag_modifier = ' {"levels":[' . pmpro_level_array_to_str($attributes['levels']) . ']}';
 	}
 	$start_string = '<!-- wp:pmpro/membership' . $tag_modifier . ' -->';
-	$substr = get_string_between( $post->post_content, $start_string, '<!-- /wp:pmpro/membership -->' );
-	return pmpro_shortcode_membership( array( 'level' => $attributes['levels'] ), do_blocks( $substr ) );
+	$substr = pmpro_get_string_between( $post->post_content, $start_string, '<!-- /wp:pmpro/membership -->' );
+	return pmpro_shortcode_membership( array( 'level' => str_replace( '"', '', pmpro_level_array_to_str( $attributes['levels'] ) ) ), do_blocks( $substr ) );
 }
 
 /**
@@ -60,7 +59,7 @@ function pmpro_membership_render_dynamic_block( $attributes ) {
  * @param  string $end    the string after the substring you want.
  * @return string         the string between start and end
  */
-function get_string_between( $string, $start, $end ) {
+function pmpro_get_string_between( $string, $start, $end ) {
 	$ini = strpos( $string, $start );
 	if ( false === $ini ) {
 		return '';
@@ -68,4 +67,15 @@ function get_string_between( $string, $start, $end ) {
 	$ini += strlen( $start );
 	$len  = strpos( $string, $end, $ini ) - $ini;
 	return substr( $string, $ini, $len );
+}
+
+function pmpro_level_array_to_str( $arr ) {
+	$output = '';
+	foreach ( $arr as $level_id ) {
+		$output .= '"' . $level_id . '",';
+	}
+	if ( strlen( $output ) > 1 ) {
+		$output = substr( $output, 0, -1 );
+	}
+	return $output;
 }
