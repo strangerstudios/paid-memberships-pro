@@ -39,43 +39,47 @@ function pmpro_membership_register_dynamic_block() {
 function pmpro_membership_render_dynamic_block( $attributes ) {
 	global $post;
 	$tag_modifier = '';
-	if ( ! array_key_exists( 'levels', $attributes ) && array_key_exists( 'uid', $attributes ) ) {
+	if ( ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['levels'] ) ) && array_key_exists( 'uid', $attributes ) ) {
 		$tag_modifier = ' {"uid":"' . $attributes['uid'] . '"}';
 	} elseif ( array_key_exists( 'levels', $attributes ) && array_key_exists( 'uid', $attributes ) ) {
-		$tag_modifier = ' {"levels":[' . pmpro_level_array_to_str($attributes['levels']) . '],"uid":"' . $attributes['uid'] . '"}';
-	} elseif ( array_key_exists( 'levels', $attributes ) && ! array_key_exists( 'uid', $attributes ) ) {
-		$tag_modifier = ' {"levels":[' . pmpro_level_array_to_str($attributes['levels']) . ']}';
+		$tag_modifier = ' {"levels":[' . pmpro_level_array_to_str( $attributes['levels'] ) . '],"uid":"' . $attributes['uid'] . '"}';
+	} else {
+		return '';
 	}
+
 	$start_string = '<!-- wp:pmpro/membership' . $tag_modifier . ' -->';
-	$substr = pmpro_get_string_between( $post->post_content, $start_string, '<!-- /wp:pmpro/membership -->' );
-	return pmpro_shortcode_membership( array( 'level' => str_replace( '"', '', pmpro_level_array_to_str( $attributes['levels'] ) ) ), do_blocks( $substr ) );
+	$contents     = pmpro_get_membership_block_contents( $post->post_content, $start_string );
+	if ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['levels'] ) ) {
+		return pmpro_shortcode_membership( [], do_blocks( $contents ) );
+	} else {
+		return pmpro_shortcode_membership( array( 'level' => str_replace( '"', '', pmpro_level_array_to_str( $attributes['levels'] ) ) ), do_blocks( $contents ) );
+	}
 }
 
 /**
- * Copied from http://www.justin-cook.com/2006/03/31/php-parse-a-string-between-two-strings/.
+ * Gets content inside of membership block, should deal with nested membership blocks
  *
- * @param  string $string the whole string to parse.
- * @param  string $start  the string before the substring you want.
- * @param  string $end    the string after the substring you want.
- * @return string         the string between start and end
+ * @param  string $post_content          the whole post contents.
+ * @param  string $membership_block_tag  the string before the substring you want.
+ * @return string                        the contents of the membership block
  */
-function pmpro_get_string_between( $string, $start, $end ) {
-	$ini = strpos( $string, $start );
+function pmpro_get_membership_block_contents( $post_content, $membership_block_tag ) {
+	$ini = strpos( $post_content, $membership_block_tag );
 	if ( false === $ini ) {
 		return '';
 	}
-	$ini += strlen( $start );
-	$len  = strpos( $string, $end, $ini ) - $ini;
-	return substr( $string, $ini, $len );
+	$ini += strlen( $membership_block_tag );
+	$len  = strpos( $post_content, '<!-- /wp:pmpro/membership -->', $ini ) - $ini;
+	return substr( $post_content, $ini, $len );
 }
 
 function pmpro_level_array_to_str( $arr ) {
 	$output = '';
-	foreach ( $arr as $level_id ) {
-		$output .= '"' . $level_id . '",';
-	}
-	if ( strlen( $output ) > 1 ) {
-		$output = substr( $output, 0, -1 );
-	}
-	return $output;
+		foreach ( $arr as $level_id ) {
+			$output .= '"' . $level_id . '",';
+		}
+		if ( strlen( $output ) > 1 ) {
+			$output = substr( $output, 0, -1 );
+		}
+		return $output;
 }

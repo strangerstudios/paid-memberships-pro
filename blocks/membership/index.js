@@ -126,14 +126,6 @@ jQuery(document).ready(function($) {
          },
          save: props => {
            const { attributes: {levels, uid}, className, isSelected } = props;
-           /*
-           const setAttributes = props;
-           console.log(className);
-           var rand = Math.random()+"";
-           alert(rand);
-           uid => { setAttributes( { rand } ) };
-           alert(uid);
-           */
         		return (
         			<div className={ className }>
         				<InnerBlocks.Content />
