@@ -1276,14 +1276,26 @@
 						if(strpos($payment_transaction_id, "ch_") !== false)
 						{
 							//charge, look it up
-							$charge = Stripe_Charge::retrieve($payment_transaction_id);
+							try {
+								$charge = Stripe_Charge::retrieve($payment_transaction_id);
+							} catch( \Exception $exception ) {
+								$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+								return false;
+							}
+							
 							if(!empty($charge) && !empty($charge->customer))
 								$customer_id = $charge->customer;
 						} 
 						else if(strpos($payment_transaction_id, "in_") !== false)
 						{
 							//invoice look it up
-							$invoice = Stripe_Invoice::retrieve($payment_transaction_id);
+							try {
+								$invoice = Stripe_Invoice::retrieve($payment_transaction_id);
+							} catch( \Exception $exception ) {
+								$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+								return false;
+							}
+							
 							if(!empty($invoice) && !empty($invoice->customer))
 								$customer_id = $invoice->customer;
 						}
