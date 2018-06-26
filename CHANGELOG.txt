@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.9.5.2 - 2018-06-26 =
+* BUG FIX: Fixed compatibility with Theme My Login version 7. (Thanks, Jeff Farthing)
+* BUG FIX: Fixed missing $current_user bug in pmpro_ipnhandler_level_extend_memberships function. (Thanks, Anne)
+
 = 1.9.5.1 - 2018-06-08 =
 * BUG FIX: Fixed issue with the PayPal IPN Handler where existing users checking out for a new level would sometimes have their membership and new subscription cancelled.
 * BUG FIX: Fixed PayPal IPN Handler to set the status of old levels to 'changed' (instead of 'inactive') when processing checkouts. This will improve the accuracy of reports.
