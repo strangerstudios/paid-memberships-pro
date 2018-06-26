@@ -130,6 +130,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.5.2 - 2018-06-26 =
+* BUG FIX: Fixed compatibility with Theme My Login version 7. (Thanks, Jeff Farthing)
 * BUG FIX: Fixed missing $current_user bug in pmpro_ipnhandler_level_extend_memberships function. (Thanks, Anne)
 
 = 1.9.5.1 - 2018-06-08 =
