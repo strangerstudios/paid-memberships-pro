@@ -60,6 +60,7 @@ function pmpro_ipnhandler_level_extend_memberships( $level, $user_id ) {
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		// get the current enddate of their membership
+		global $current_user;
 		$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
 
 		// bail if their existing level doesn't have an end date
