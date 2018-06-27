@@ -1,4 +1,6 @@
 == Changelog ==
+= 1.9.5.3 - 2018-06-26 =
+* BUG FIX: The pmpro_ipnhandler_extend_memberships function actually needed use $user_id instead of $current_user.
 
 = 1.9.5.2 - 2018-06-26 =
 * BUG FIX: Fixed compatibility with Theme My Login version 7. (Thanks, Jeff Farthing)
