@@ -411,7 +411,7 @@ function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $post_modified = 
 	// Default to current user.
 	if( empty( $user_id ) ) {
 		global $current_user;
-		$user_id = $user->ID;
+		$user_id = $current_user->ID;
 	}
 
 	if( empty( $user_id ) ) {
@@ -455,7 +455,7 @@ function pmpro_get_consent_log( $user_id = NULL, $reversed = true ) {
 	// Default to current user.
 	if( empty( $user_id ) ) {
 		global $current_user;
-		$user_id = $user->ID;
+		$user_id = $current_user->ID;
 	}
 
 	if( empty( $user_id ) ) {
