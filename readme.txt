@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 4.9.6
-Stable tag: 1.9.5.2
+Stable tag: 1.9.5.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.5.3 - 2018-06-26 =
+* BUG FIX: The pmpro_ipnhandler_extend_memberships function actually needed use $user_id instead of $current_user.
 
 = 1.9.5.2 - 2018-06-26 =
 * BUG FIX: Fixed compatibility with Theme My Login version 7. (Thanks, Jeff Farthing)

@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro
 Plugin URI: http://www.paidmembershipspro.com
 Description: Plugin to Handle Memberships
-Version: 1.9.5.2
+Version: 1.9.5.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 Text Domain: paid-memberships-pro
@@ -14,8 +14,8 @@ Domain Path: /languages
 	GPLv2 Full license details in license.txt
 */
 
-// version constant.1
-define( 'PMPRO_VERSION', '1.9.5.2' );
+// version constant
+define( 'PMPRO_VERSION', '1.9.5.3' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
