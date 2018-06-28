@@ -2398,8 +2398,8 @@ function pmpro_getCurrencyPosition() {
  * Rounds price based on currency
  * Does not format price, to do that, call pmpro_formatPrice().
  *
- * @param string $price to round.
- * @param string $currency to round price into.
+ * @param string/float $price to round.
+ * @param string       $currency to round price into.
  */
 function pmpro_round_price( $price, $currency = '' ) {
 	global $pmpro_currency, $pmpro_currencies;

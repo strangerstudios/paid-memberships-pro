@@ -35,7 +35,7 @@
 				it there.
 			*/
 			//add_filter('pmpro_next_payment', array('PMProGateway_paypalexpress', 'pmpro_next_payment'), 10, 3);
-			
+
 			/*
 				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
 				So we only load it if we haven't already.
@@ -308,7 +308,7 @@
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
-			
+
 			if(empty($pmpro_msg) &&
 				(!empty($_REQUEST['confirm']) ||
 				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
@@ -443,7 +443,7 @@
 				<input type="hidden" name="submit-checkout" value="1" />
 				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
-			
+
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
@@ -507,12 +507,12 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -534,7 +534,7 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -643,7 +643,7 @@
 			$amount = $order->InitialPayment;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -699,12 +699,12 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			//$amount = round((float)$amount + (float)$amount_tax, 2);
+			//$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -726,7 +726,7 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -814,7 +814,7 @@
 				return false;
 			}
 		}
-		
+
 		/**
 		 * Filter pmpro_next_payment to get date via API if possible
 		 *
@@ -828,16 +828,16 @@
 				//get last order
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
-				
+
 				//check if this is a paypal express order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
 				{
 					//get the subscription status
-					$status = $order->getGatewaySubscriptionStatus();					
-										
+					$status = $order->getGatewaySubscriptionStatus();
+
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{
-						//found the next billing date at PayPal, going to use that						
+						//found the next billing date at PayPal, going to use that
 						$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
 					}
 					elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled")
@@ -849,7 +849,7 @@
 					}
 				}
 			}
-						
+
 			return $timestamp;
 		}
 
