@@ -333,6 +333,7 @@ function pmpro_report_sales_page()
 					?>
 					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 					formatter.format(data, 1);
+					formatter.format(data, 2);
 					<?php
 				}
 			?>
