@@ -21,8 +21,9 @@ __Please Note:__ GitHub is for bug reports and contributions only. If you have a
 * For new features and enhancements, checkout the branch for the version the feature is milestoned for.
 * Make sure to pull in any "upstream" changes first.
 	* Use `git remote add upstream https://github.com/strangerstudios/paid-memberships-pro.git` to set the upstream repo
-	* Use `git checkout upstream/dev` then `git pull` to pull in the latest updates on dev.
-	* Use `git checkout dev` then `git merge upstream/dev` to merge those updates into your dev.
+	* Use `git checkout dev` to get on the development branch.
+	* Use `git pull upstream dev` to get the latest updates.
+	* Use `git push` to push those updates to your fork.
 * Create a new local branch for each separate bug fix or feature. This will ensure that each pull request is for one issue only and easier to process.
 	* Use `git checkout -b nameofmybugfixorfeature` to create the new branch
 * Make the changes to your local repository.
