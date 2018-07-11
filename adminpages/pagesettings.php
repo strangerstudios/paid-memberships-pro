@@ -282,7 +282,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                             <?php wp_dropdown_pages(array(
                                 "name" => $name . '_page_id',
                                 "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --",
-                                "selected" => !empty( $pmpro_pages[$name] ) ? $pmpro_pages[$name] : '',
+                                "selected" => $pmpro_pages[$name],
                             ));
                             if(!empty($pmpro_pages[$name])) {
                                 ?>
