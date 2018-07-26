@@ -165,13 +165,13 @@ if ( empty( $_REQUEST['discount_code'] ) && ! empty( $_REQUEST['other_discount_c
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {
-	return apply_filters( 'the_content', $message );
+	return wpautop( $message );
 }
 add_filter( 'pmpro_confirmation_message', 'pmpro_pmpro_confirmation_message' );
 
 // apply all the_content filters to level descriptions
 function pmpro_pmpro_level_description( $description ) {
-	return apply_filters( 'the_content', $description );
+	return wpautop( $description );
 }
 add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 
