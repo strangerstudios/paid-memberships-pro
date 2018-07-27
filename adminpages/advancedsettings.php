@@ -42,6 +42,9 @@
 		//tos
 		pmpro_setOption("tospage");
 
+		//filter priority
+		pmpro_setOption("content_filter_priority");
+
 		//footer link
 		pmpro_setOption("hide_footer_link");
 
@@ -78,6 +81,8 @@
 	$tospage = pmpro_getOption("tospage");
 
 	$hide_footer_link = pmpro_getOption("hide_footer_link");
+		
+	$content_filter_priority = pmpro_getOption("content_filter_priority");
 
 	//default settings
 	if(!$nonmembertext)
@@ -263,6 +268,22 @@ if(pmpro_displayAds())
 					<br />
 					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></small>
 				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="content_filter_priority"><?php _e('Content Filter Priority', 'paid-memberships-pro'); ?></label>
+				</th>
+				<?php 
+				// Set the default content filter to 5.
+				if ( empty( $content_filter_priority ) ) { 
+					$content_filter_priority = apply_filters( 'pmpro_default_content_filter_priority', 5 );
+					pmpro_setOption( 'content_filter_priority', $content_filter_priority ); 
+				} 
+				?>
+				<td>
+					<input type="number" id="content_filter_priority" name="content_filter_priority" min="1" value="<?php echo esc_attr($content_filter_priority); ?>"/>
+					<br />
+					<small><?php _e( 'Set this to a higher value if you are using a page builder and content is not restricting.', 'paid-memberships-pro' ); ?><strong> <?php _e( 'Default is 5.','paid-memberships-pro' ); ?></strong></small>
 			</tr>
 
 			<?php

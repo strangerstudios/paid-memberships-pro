@@ -384,29 +384,42 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 
 	return $content;
 }
-add_filter('the_content', 'pmpro_membership_content_filter', 5);
-add_filter('the_content_rss', 'pmpro_membership_content_filter', 5);
-add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
+
+// Get the content filter settings from Advanced Settings. If for whatever reason it's not available, set it to 5.
+$content_filter_priority = pmpro_getOption( 'content_filter_priority' );
+
+if ( empty( $content_filter_priority ) ) {
+	$content_filter_priority = apply_filters( 'pmpro_default_content_filter_priority', 5 );
+} else {
+	$content_filter_priority = (int) $content_filter_priority;
+}
+
+add_filter('the_content', 'pmpro_membership_content_filter', $content_filter_priority );
+add_filter('the_content_rss', 'pmpro_membership_content_filter', $content_filter_priority);
+add_filter('comment_text_rss', 'pmpro_membership_content_filter', $content_filter_priority );
+
+
+
 
 /*
 	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the ecerpt.
 */
 function pmpro_membership_excerpt_filter($content, $skipcheck = false)
 {		
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
+	remove_filter('the_content', 'pmpro_membership_content_filter', $content_filter_priority);	
 	$content = pmpro_membership_content_filter($content, $skipcheck);
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);
+	add_filter('the_content', 'pmpro_membership_content_filter', $content_filter_priority);
 	
 	return $content;
 }
 function pmpro_membership_get_excerpt_filter_start($content, $skipcheck = false)
 {	
-	remove_filter('the_content', 'pmpro_membership_content_filter', 5);		
+	remove_filter('the_content', 'pmpro_membership_content_filter', $content_filter_priority);		
 	return $content;
 }
 function pmpro_membership_get_excerpt_filter_end($content, $skipcheck = false)
 {	
-	add_filter('the_content', 'pmpro_membership_content_filter', 5);		
+	add_filter('the_content', 'pmpro_membership_content_filter', $content_filter_priority);		
 	return $content;
 }
 add_filter('the_excerpt', 'pmpro_membership_excerpt_filter', 15);
