@@ -42,14 +42,14 @@
 		$msg = -1;
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$action = false;
-	}		
-	
-	if($action == "save_membershiplevel") {		
-		
+	}
+
+	if($action == "save_membershiplevel") {
+
 		$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
 		$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
 		$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
-				
+
 		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
@@ -136,7 +136,7 @@
 			$saveid = $wpdb->insert_id;
 
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			
+
 			if(empty($wpdb->last_error)) {
 				$saveid = $wpdb->insert_id;
 				pmpro_updateMembershipCategories( $saveid, $ml_categories );
@@ -536,7 +536,7 @@
 			</tbody>
 		</table>
 		<p class="submit topborder">
-			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" /> 					
+			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
 			<input name="cancel" type="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
 		</p>
 	</form>
@@ -638,6 +638,14 @@
 			}
 		?>
 
+		<?php if( count( $reordered_levels ) === 0 ) { ?>
+			<div class="pmpro-new-install">
+				<h2><?php _e( 'Step 1: Membership Level Setup', 'paid-memberships-pro' ); ?></h2>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php _e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/' ); ?>" target="_blank" class="button"><?php _e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
+			</div> <!-- end pmpro-new-install -->
+		<?php } else { ?>
+
 		<h2 class="alignleft"><?php _e('Membership Levels', 'paid-memberships-pro' );?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'paid-memberships-pro' );?></a></h2>
 		<form id="posts-filter" method="get" action="">
 			<p class="search-box">
@@ -700,6 +708,7 @@
 			?>
 		</tbody>
 		</table>
+
 	<?php
 		$table_html = ob_get_clean();
 
@@ -715,6 +724,8 @@
 		echo $table_html;
 	}
 	?>
+
+	<?php } ?>
 
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");

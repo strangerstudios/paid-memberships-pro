@@ -10,13 +10,13 @@
 
 .pmpro_admin .pmpro_banner h2 {float: left; }
 .pmpro_admin .pmpro_banner .pmpro_meta {float: left; margin: 26px 0 0 0; font-size: 12px; }
-.pmpro_admin .pmpro_banner .pmpro_logo {float: left; margin: 0 1em 0 0; width: 350px; height: 75px; } 
+.pmpro_admin .pmpro_banner .pmpro_logo {float: left; margin: 0 1em 0 0; width: 350px; height: 75px; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu {clear: both; border: 1px solid #CCC; border-radius: 5px; -moz-border-radius: 5px; background: #FFF; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li {display: inline-block; margin: 10px 0; padding: 0px 10px; border-right: 1px solid #CCC; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li a, .pmpro_admin .pmpro_banner ul.pmpro_menu li a:link {color: #1e0741; text-decoration: none; }
 .pmpro_admin .pmpro_banner ul.pmpro_menu li a:hover {text-decoration: underline; color: #412f5b; }
 
-.pmpro_admin .pmpro_tag {border: 1px solid; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; display: inline-block; font-size: 13px; font-weight: bold; line-height: 20px; margin: 0; position: relative; padding: 4px 5px; text-decoration: none; } 
+.pmpro_admin .pmpro_tag {border: 1px solid; border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; display: inline-block; font-size: 13px; font-weight: bold; line-height: 20px; margin: 0; position: relative; padding: 4px 5px; text-decoration: none; }
 .pmpro_admin .pmpro_tag-grey {border-color: #CCC; background: #F5F5F5; color: #666; }
 .pmpro_admin .pmpro_tag-blue {border-color: #2997c8; background: #2997c8; color: #FFF; }
 .pmpro_admin a.pmpro_tag-blue:hover {background: #77a02e; border-color: #77a02e; }
@@ -47,16 +47,33 @@ tr.pmpro_settings_divider td:before {content: "- ";}
 tr.pmpro_settings_divider td:after {content: " -";}
 
 /* messages */
-.pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
-
-.pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); color: #208A1B; }
-.pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); color: #E36154; }
-.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
-
-.pmpro_message a {color: #345395; }
-.pmpro_success a {color: #208A1B; }
-.pmpro_error a {color: #E36154; }
-.pmpro_alert a {color: #CF8516; }
+.pmpro_admin .pmpro_message {
+    background: #FFF;
+    border-left: 4px solid #FFF;
+    margin-right: 15px;
+    padding: 15px;
+}
+.pmpro_admin .pmpro_success {
+    background-color: rgba( 70, 180, 80, 0.1 );
+    border-left-color: rgb( 70, 180, 80 );
+}
+.pmpro_admin .pmpro_error {
+    background-color: rgba( 220, 50, 50, 0.1 );
+    border-left-color: rgb( 220, 50, 50 );
+}
+.pmpro_admin .pmpro_alert {
+    background-color: rgba( 255, 185, 0, 0.1 );
+    border-left-color: rgb( 255, 185, 0 );
+}
+.pmpro_admin .pmpro_success a {
+    color: #208A1B;
+}
+.pmpro_admin .pmpro_error a {
+    color: #E36154;
+}
+.pmpro_admin .pmpro_alert a {
+    color: #CF8516;
+}
 
 /* highlighted trs */
 tr.pmpro_message {background-image: none;}
@@ -143,6 +160,30 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
 .welcome-icon.pmpro-welcome-icon-advanced-settings:before {content: "\f108"; }
 .welcome-icon.pmpro-welcome-icon-add-ons:before {content: "\f106"; }
 
+/* new installation notices */
+.pmpro-new-install {
+    padding: 2rem;
+    text-align: center;
+}
+.pmpro-new-install h2 {
+    color: #AAA;
+    font-size: 2rem;
+}
+.toplevel_page_pmpro-membershiplevels .pmpro-new-install h2:before {
+    content: "\f110";
+    display: block;
+    font: 400 5rem/1.5 dashicons;
+}
+.pmpro-new-install .button-primary, .pmpro-new-install .button {
+    font-size: 1.2em;
+    height: auto;
+    margin-bottom: .5rem;
+    padding: .75em 1.5em;
+}
+
 @media screen and (max-width: 782px) {
 	.pmpro_reports-holder tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {display: table-cell; }
+    .pmpro-new-install { padding: 0; }
+    .pmpro-new-install h2 { font-size: 1.4rem; }
+    .pmpro-new-install .button-primary, .pmpro-new-install .button { display: block; }
 }
