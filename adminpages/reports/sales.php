@@ -31,8 +31,7 @@ function pmpro_report_sales_init()
 add_action("init", "pmpro_report_sales_init");
 	
 //widget
-function pmpro_report_sales_widget()
-{
+function pmpro_report_sales_widget() {
 	global $wpdb;
 ?>
 <style>
@@ -46,31 +45,48 @@ function pmpro_report_sales_widget()
 			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
 			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th scope="row"><?php _e('Today', 'paid-memberships-pro' ); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSales("today")); ?></td>
-			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("today"));?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Month', 'paid-memberships-pro' ); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSales("this month")); ?></td>
-			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("this month"));?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('This Year', 'paid-memberships-pro' ); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSales("this year")); ?></td>
-			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("this year"));?></td>
-		</tr>
-		<tr>
-			<th scope="row"><?php _e('All Time', 'paid-memberships-pro' ); ?></th>
-			<td><?php echo number_format_i18n(pmpro_getSales("all time")); ?></td>
-			<td><?php echo pmpro_formatPrice(pmpro_getRevenue("all time"));?></td>
-		</tr>
-	</tbody>
+	</thead>	
+	<?php
+		$reports = array(
+			'today'      => __('Today', 'paid-memberships-pro' ),
+			'this month' => __('This Month', 'paid-memberships-pro' ),
+			'this year'  => __('This Year', 'paid-memberships-pro' ),
+			'all time'   => __('All Time', 'paid-memberships-pro' ),
+		);
+
+	foreach ( $reports as $report_type => $report_name ) {
+		?>
+		<tbody>
+			<tr class="pmpro_report_tr">
+				<th scope="row"><button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button></th>
+				<td><?php echo number_format_i18n( pmpro_getSales( $report_type ) ); ?></td>
+				<td><?php echo pmpro_formatPrice( pmpro_getRevenue( $report_type ) ); ?></td>
+			</tr>
+			<?php
+				//sale prices stats
+				$count = 0;
+				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 3 );
+				$prices = pmpro_get_prices_paid( $report_type );
+				foreach ( $prices as $price => $quantitiy ) {
+					if ( $count++ >= $max_prices_count ) {
+						break;
+					}
+			?>
+				<tr class="pmpro_report_tr_sub" style="display: none;">
+					<th scope="row">- <?php echo pmpro_formatPrice( $price );?></th>
+					<td><?php echo number_format_i18n( $quantitiy ); ?></td>
+					<td><?php echo pmpro_formatPrice( $price * $quantitiy ); ?></td>
+				</tr>
+			<?php
+			}
+			?>
+		</tbody>
+		<?php
+	}
+	?>
 	</table>	
 </span>
+
 <?php
 }
 
@@ -370,10 +386,12 @@ function pmpro_getSales($period, $levels = NULL)
  */
 function pmpro_get_prices_paid( $period ) {
 	// Check for a transient.
+	/*
 	$cache = get_transient( 'pmpro_report_prices_paid' );
 	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) ) {
 		return $cache[ $period ];
 	}
+	*/
 
 	// A sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0.
 	if ( 'today' === $period ) {
@@ -408,6 +426,7 @@ function pmpro_get_prices_paid( $period ) {
 	}
 
 	// Save in cache.
+	/*
 	if ( ! empty( $cache ) ) {
 		$cache[ $period ] = $prices_formatted;
 	} else {
@@ -415,8 +434,9 @@ function pmpro_get_prices_paid( $period ) {
 	}
 
 	set_transient( 'pmpro_report_sales', $cache, 3600 * 24 );
+	*/
 
-	return $sales;
+	return $prices_formatted;
 }
 
 //get revenue
