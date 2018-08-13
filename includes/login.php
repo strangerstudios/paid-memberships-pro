@@ -54,7 +54,8 @@ function pmpro_login_head()
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	
 	if((pmpro_is_login_page() || is_page("login") ||
-		class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login"))
+		class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login")) ||
+		function_exists( 'tml_is_action' ) && ( tml_is_action( 'register' ) || tml_is_action( 'login' ) )
 		)
 		&& $login_redirect
 	)
@@ -62,7 +63,8 @@ function pmpro_login_head()
 		//redirect registration page to levels page
 		if( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || 
 			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	||
-			!is_admin() && class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("register")	
+			!is_admin() && class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("register") ||
+			function_exists( 'tml_is_action' ) && tml_is_action( 'register' )
 		)
 		{
 			//redirect to levels page unless filter is set.
@@ -121,6 +123,15 @@ function pmpro_login_head()
 						exit;
 					}
 				}				
+			}
+			elseif ( function_exists( 'tml_is_action' ) && function_exists( 'tml_get_action_url' ) )
+			{
+				if ( $link = tml_get_action_url( 'login' ) ) {
+					if ( ! tml_is_action( 'login' ) ) {
+						wp_redirect( $link );
+						exit;
+					}
+				}
 			}
 
 			//make sure users are only getting to the profile when logged in

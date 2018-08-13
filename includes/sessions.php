@@ -4,9 +4,14 @@
 	GPLv2 Full license details in license.txt
 */
 
+
+/**
+ * A general function to start sessions for Paid Memberships Pro.
+ * @since 1.9.2
+ */
 function pmpro_start_session() {
 	
-	//if the session has been started yet, start it (ignore if running from command line)
+	//if the session hasn't been started yet, start it (ignore if running from command line)
 	if ( ! defined( 'PMPRO_USE_SESSIONS' ) || PMPRO_USE_SESSIONS == true ) {
 		if ( defined( 'STDIN' ) ) {
 			//command line
@@ -28,7 +33,7 @@ add_action( 'pmpro_checkout_preheader', 'pmpro_start_session', -1 );
 
 /**
  * Close the session object for new updates
- * @return MemberOrder
+ * @since 1.9.2
  */
 function pmpro_close_session() {
 	
