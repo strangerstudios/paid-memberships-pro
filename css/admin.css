@@ -147,18 +147,29 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
 #pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr th, #pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {background-color: #f9f9f9; }
 
 /* welcome */
-.pmpro_admin .about-wrap {margin-left: 0; }
-.pmpro_admin .about-wrap h3 {margin-top: 0; }
-.pmpro_admin .about-wrap .welcome-panel-column p {padding-right: 15px; }
-.pmpro_admin .about-wrap hr {margin: 1.5em 2em 1.5em 0; }
-.pmpro_admin .about-wrap .button-action { background: #dd823b; border-color: #c36922 #ad5d1e #ad5d1e; color: #fff; box-shadow: 0 1px 0 #ad5d1e; text-shadow: 0 -1px 1px #ad5d1e, 1px 0 1px #ad5d1e, 0 1px 1px #ad5d1e, -1px 0 1px #ad5d1e; }
-
-.welcome-icon.pmpro-welcome-icon-membership-levels:before {content: "\f110"; }
-.welcome-icon.pmpro-welcome-icon-page-settings:before {content: "\f133"; }
-.welcome-icon.pmpro-welcome-icon-payment-settings:before {content: "\f111"; }
-.welcome-icon.pmpro-welcome-icon-email-settings:before {content: "\f466"; }
-.welcome-icon.pmpro-welcome-icon-advanced-settings:before {content: "\f108"; }
-.welcome-icon.pmpro-welcome-icon-add-ons:before {content: "\f106"; }
+.pmpro_admin .about-wrap {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+}
+.pmpro_admin .about-wrap h3 {
+    margin-top: 0;
+}
+.pmpro_admin .about-wrap .welcome-panel-column p {
+    padding-right: 15px;
+}
+.pmpro_admin .about-wrap hr {
+    margin: 1.5em 2em 1.5em 0;
+}
+.pmpro_admin .about-wrap .button-action {
+    background: #dd823b;
+    border-color: #c36922 #ad5d1e #ad5d1e;
+    color: #fff; box-shadow: 0 1px 0 #ad5d1e;
+    text-shadow: 0 -1px 1px #ad5d1e, 1px 0 1px #ad5d1e, 0 1px 1px #ad5d1e, -1px 0 1px #ad5d1e;
+}
+.pmpro_admin .about-wrap ul li a .dashicons {
+    color: #444;
+}
 
 /* new installation notices */
 .pmpro-new-install {
