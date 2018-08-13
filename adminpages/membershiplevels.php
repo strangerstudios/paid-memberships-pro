@@ -640,9 +640,9 @@
 
 		<?php if( count( $reordered_levels ) === 0 ) { ?>
 			<div class="pmpro-new-install">
-				<h2><?php _e( 'Step 1: Membership Level Setup', 'paid-memberships-pro' ); ?></h2>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php _e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
-				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/' ); ?>" target="_blank" class="button"><?php _e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
+				<h2><?php echo esc_attr_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/' ); ?>" target="_blank" class="button"><?php echo esc_attr_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
 

@@ -169,10 +169,15 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
     color: #AAA;
     font-size: 2rem;
 }
-.toplevel_page_pmpro-membershiplevels .pmpro-new-install h2:before {
-    content: "\f110";
+.pmpro-new-install h2:before {
     display: block;
     font: 400 5rem/1.5 dashicons;
+}
+.toplevel_page_pmpro-membershiplevels .pmpro-new-install h2:before {
+    content: "\f110";
+}
+.memberships_page_pmpro-pagesettings .pmpro-new-install h2:before {
+    content: "\f133";
 }
 .pmpro-new-install .button-primary, .pmpro-new-install .button {
     font-size: 1.2em;

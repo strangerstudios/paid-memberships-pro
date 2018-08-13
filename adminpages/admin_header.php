@@ -21,13 +21,12 @@
 
 		if(empty($msg))
 			$msg = -1;
-		/*if(empty($pmpro_level_ready) && empty($edit))
+		if(empty($pmpro_level_ready) && empty($edit) && $view != "pmpro-membershiplevels")
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels&edit=-1') . "\">" . __("Add a membership level to get started.", 'paid-memberships-pro' ) . "</a>";
-		else*/
-		if($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
-			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", 'paid-memberships-pro' ) . "</a>.";
+		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
+			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", 'paid-memberships-pro' ) . "</a>.";
 		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
-			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your SSL certificate and payment gateway", 'paid-memberships-pro' ) . "</a>.";
+			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your SSL certificate and payment gateway", 'paid-memberships-pro' ) . "</a>.";
 
 		if(empty($msgt))
 			$msg = false;
