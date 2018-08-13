@@ -363,6 +363,62 @@ function pmpro_getSales($period, $levels = NULL)
 	return $sales;
 }
 
+/**
+ * Gets an array of all prices paid in a time period
+ *
+ * @param  string $period time period to query.
+ */
+function pmpro_get_prices_paid( $period ) {
+	// Check for a transient.
+	$cache = get_transient( 'pmpro_report_prices_paid' );
+	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) ) {
+		return $cache[ $period ];
+	}
+
+	// A sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0.
+	if ( 'today' === $period ) {
+		$startdate = date_i18n( 'Y-m-d', current_time( 'timestamp' ) );
+	} elseif ( 'this month' === $period ) {
+		$startdate = date_i18n( 'Y-m', current_time( 'timestamp' ) ) . '-01';
+	} elseif ( 'this year' === $period ) {
+		$startdate = date_i18n( 'Y', current_time( 'timestamp' ) ) . '-01-01';
+	} else {
+		$startdate = '';
+	}
+
+	$gateway_environment = pmpro_getOption( 'gateway_environment' );
+
+	// Build query.
+	global $wpdb;
+	$sql_query = "SELECT DISTINCT total FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	// Restrict by level.
+	if ( ! empty( $levels ) ) {
+		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
+	}
+
+	$prices           = $wpdb->get_results( $sql_query );
+	$prices_formatted = [];
+	foreach ( $prices as $price ) {
+		if ( isset( $price->total ) ) {
+			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total = '" . $price->total . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+			$sales                             = $wpdb->get_var( $sql_query );
+			$prices_formatted[ $price->total ] = $sales;
+		}
+	}
+
+	// Save in cache.
+	if ( ! empty( $cache ) ) {
+		$cache[ $period ] = $prices_formatted;
+	} else {
+		$cache = array( $period => $prices_formatted );
+	}
+
+	set_transient( 'pmpro_report_sales', $cache, 3600 * 24 );
+
+	return $sales;
+}
+
 //get revenue
 function pmpro_getRevenue($period, $levels = NULL)
 {
