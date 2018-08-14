@@ -6,6 +6,7 @@ function pmpro_getPMProCaps()
 {
 	$pmpro_caps = array(
 		//pmpro_memberships_menu //this controls viewing the menu itself
+		'pmpro_dashboard',
 		'pmpro_membershiplevels',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
@@ -16,8 +17,7 @@ function pmpro_getPMProCaps()
 		'pmpro_reports',
 		'pmpro_orders',
 		'pmpro_discountcodes',
-		'pmpro_updates',
-		'pmpro_welcome'
+		'pmpro_updates'
 	);
 
 	return $pmpro_caps;
@@ -46,17 +46,18 @@ function pmpro_add_pages()
 	if(empty($top_menu_cap))
 		return;
 
-	add_menu_page(__('Memberships', 'paid-memberships-pro' ), __('Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-membershiplevels', $top_menu_cap, 'dashicons-groups');
-	add_submenu_page('pmpro-membershiplevels', __('Page Settings', 'paid-memberships-pro' ), __('Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings');
-	add_submenu_page('pmpro-membershiplevels', __('Payment Settings', 'paid-memberships-pro' ), __('Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Email Settings', 'paid-memberships-pro' ), __('Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Advanced Settings', 'paid-memberships-pro' ), __('Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Add Ons', 'paid-memberships-pro' ), __('Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons');
-	add_submenu_page('pmpro-membershiplevels', __('Members List', 'paid-memberships-pro' ), __('Members List', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist');
-	add_submenu_page('pmpro-membershiplevels', __('Reports', 'paid-memberships-pro' ), __('Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
-	add_submenu_page('pmpro-membershiplevels', __('Orders', 'paid-memberships-pro' ), __('Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
-	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'paid-memberships-pro' ), __('Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
-	add_submenu_page( 'pmpro-membershiplevels', __( 'Welcome Guide', 'paid-memberships-pro' ), __( 'Welcome Guide', 'paid-memberships-pro' ), 'pmpro_welcome', 'pmpro-welcome', 'pmpro_welcome' );
+	add_menu_page(__('Memberships', 'paid-memberships-pro' ), __('Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups');
+	add_submenu_page('pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
+	add_submenu_page('pmpro-dashboard', __( 'Membership Levels', 'paid-memberships-pro' ), __( 'Membership Levels', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
+	add_submenu_page('pmpro-dashboard', __('Page Settings', 'paid-memberships-pro' ), __('Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings');
+	add_submenu_page('pmpro-dashboard', __('Payment Settings', 'paid-memberships-pro' ), __('Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
+	add_submenu_page('pmpro-dashboard', __('Email Settings', 'paid-memberships-pro' ), __('Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings');
+	add_submenu_page('pmpro-dashboard', __('Advanced Settings', 'paid-memberships-pro' ), __('Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
+	add_submenu_page('pmpro-dashboard', __('Add Ons', 'paid-memberships-pro' ), __('Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons');
+	add_submenu_page('pmpro-dashboard', __('Members List', 'paid-memberships-pro' ), __('Members List', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist');
+	add_submenu_page('pmpro-dashboard', __('Reports', 'paid-memberships-pro' ), __('Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
+	add_submenu_page('pmpro-dashboard', __('Orders', 'paid-memberships-pro' ), __('Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
+	add_submenu_page('pmpro-dashboard', __('Discount Codes', 'paid-memberships-pro' ), __('Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
 
 	//updates page only if needed
 	if(pmpro_isUpdateRequired())
@@ -201,6 +202,10 @@ function pmpro_discountcodes()
 	require_once(PMPRO_DIR . "/adminpages/discountcodes.php");
 }
 
+function pmpro_dashboard() {
+	require_once( PMPRO_DIR . '/adminpages/membershipsdashboard.php' );
+}
+
 function pmpro_membershiplevels()
 {
 	require_once(PMPRO_DIR . "/adminpages/membershiplevels.php");
@@ -239,13 +244,6 @@ function pmpro_orders()
 function pmpro_updates()
 {
 	require_once(PMPRO_DIR . "/adminpages/updates.php");
-}
-
-/**
- * Function to load the Welcome dashboard page.
- */
-function pmpro_welcome() {
-	require_once( PMPRO_DIR . '/adminpages/welcome.php' );
 }
 
 /*

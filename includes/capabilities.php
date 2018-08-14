@@ -48,6 +48,7 @@ function pmpro_get_capability_defs($role)
     // caps for the administrator role
     $cap_array = array(
         'pmpro_memberships_menu',
+        'pmpro_dashboard',
         'pmpro_membershiplevels',
         'pmpro_edit_memberships',
         'pmpro_pagesettings',
@@ -62,7 +63,6 @@ function pmpro_get_capability_defs($role)
         'pmpro_orderscsv',
         'pmpro_discountcodes',
         'pmpro_updates',
-        'pmpro_welcome'
     );
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);

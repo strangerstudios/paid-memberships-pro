@@ -1,6 +1,6 @@
 <?php
 /**
- * The Welcome admin page for Paid Memberships Pro
+ * The Memberships Dashboard admin page for Paid Memberships Pro
  * @since 1.9.4.4
  */
 
@@ -14,13 +14,12 @@
 require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 <div class="about-wrap">
-	<h1><?php echo esc_attr_e( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ); ?></h1>
 	<div id="welcome-panel" class="welcome-panel">
 		<div class="welcome-panel-content">
 			<div class="welcome-panel-column-container">
 				<div class="welcome-panel-column">
 					<?php global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready; ?>
-					<h3><?php echo esc_attr_e( 'Plugin Setup', 'paid-memberships-pro' ); ?></h3>
+					<h3><?php echo esc_attr_e( 'Membership Setup', 'paid-memberships-pro' ); ?></h3>
 					<ul>
 						<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
 							<li>
@@ -69,6 +68,26 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 						<?php echo esc_html( __( 'For guidance as your begin these steps,', 'paid-memberships-pro' ) ); ?>
 						<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=banner&utm_campaign=welcome" target="_blank"><?php echo esc_attr_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
 					</p>
+					<?php /*
+					<h3><?php echo esc_attr_e( 'Membership Management', 'paid-memberships-pro' ); ?></h3>
+					<ul>
+						<?php if(current_user_can('pmpro_memberslist')) { ?>
+							<li><a href="<?php echo admin_url('admin.php?page=pmpro-memberslist');?>"><?php _e('Members List', 'paid-memberships-pro' );?></a></li>
+						<?php } ?>
+
+						<?php if(current_user_can('pmpro_reports')) { ?>
+							<li><a href="<?php echo admin_url('admin.php?page=pmpro-reports');?>"><?php _e('Reports', 'paid-memberships-pro' );?></a></li>
+						<?php } ?>
+
+						<?php if(current_user_can('pmpro_orders')) { ?>
+							<li><a href="<?php echo admin_url('admin.php?page=pmpro-orders');?>"><?php _e('Orders', 'paid-memberships-pro' );?></a></li>
+						<?php } ?>
+
+						<?php if(current_user_can('pmpro_discountcodes')) { ?>
+							<li><a href="<?php echo admin_url('admin.php?page=pmpro-discountcodes');?>"><?php _e('Discount Codes', 'paid-memberships-pro' );?></a></li>
+						<?php } ?>
+					</ul>
+					*/ ?>
 				</div>
 				<div class="welcome-panel-column">
 					<h3><?php echo esc_attr_e( 'Support License', 'paid-memberships-pro' ); ?></h3>
@@ -119,6 +138,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 
 <?php
+require_once(PMPRO_DIR . "/adminpages/reports.php");
+
 /**
  * Load the Paid Memberships Pro dashboard-area footer
  */
