@@ -194,6 +194,9 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
 .memberships_page_pmpro-pagesettings .pmpro-new-install h2:before {
     content: "\f133";
 }
+.memberships_page_pmpro-discountcodes .pmpro-new-install h2:before {
+    content: "\f323";
+}
 .pmpro-new-install .button-primary, .pmpro-new-install .button {
     font-size: 1.2em;
     height: auto;

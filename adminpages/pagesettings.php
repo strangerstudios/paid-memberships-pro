@@ -105,13 +105,12 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 
     <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
+        <h2><?php _e( 'Page Settings', 'paid-memberships-pro' ); ?></h2>
         <?php
         global $pmpro_pages_ready;
         if ( $pmpro_pages_ready ) { ?>
-            <h2><?php _e( 'Pages', 'paid-memberships-pro' ); ?></h2>
             <p><?php _e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'paid-memberships-pro' ); ?></p>
         <?php } elseif( ! empty( $_REQUEST['manualpages'] ) ) { ?>
-            <h2><?php _e( 'Pages', 'paid-memberships-pro' ); ?></h2>
             <p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
                     href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=pmpro-pagesettings&createpages=1' ), 'createpages', 'pmpro_pagesettings_nonce');?>"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
             </p>

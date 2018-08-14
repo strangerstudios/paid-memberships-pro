@@ -193,6 +193,10 @@
 			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Membership Levels', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
+		<?php if(current_user_can('pmpro_pagesettings') || current_user_can('pmpro_paymentsettings') || current_user_can('pmpro_emailsettings') || current_user_can('pmpro_advancedsettings') ) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" class="nav-tab<?php if( $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-advancedsettings' ) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
+		<?php } ?>
+
 		<?php if(current_user_can('pmpro_memberslist')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-memberslist');?>" class="nav-tab<?php if($view == 'pmpro-memberslist') { ?> nav-tab-active<?php } ?>"><?php _e('Members List', 'paid-memberships-pro' );?></a>
 		<?php } ?>
@@ -207,10 +211,6 @@
 
 		<?php if(current_user_can('pmpro_discountcodes')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-discountcodes');?>" class="nav-tab<?php if($view == 'pmpro-discountcodes') { ?> nav-tab-active<?php } ?>"><?php _e('Discount Codes', 'paid-memberships-pro' );?></a>
-		<?php } ?>
-
-		<?php if(current_user_can('pmpro_pagesettings') || current_user_can('pmpro_paymentsettings') || current_user_can('pmpro_emailsettings') || current_user_can('pmpro_advancedsettings') ) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" class="nav-tab<?php if( $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-advancedsettings' ) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
