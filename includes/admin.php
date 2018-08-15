@@ -4,19 +4,19 @@
 */
 
 /**
- * Redirect to Welcome tab if the user hasn't been there yet.
+ * Redirect to Dashboard tab if the user hasn't been there yet.
  *
  * @since 1.10
  */
-function pmpro_admin_init_redirect_to_welcome() {
-	$pmpro_welcome_version = get_option( 'pmpro_welcome_version', 0 );
-    if ( version_compare( $pmpro_welcome_version, PMPRO_VERSION ) < 0 ) {
-		update_option( 'pmpro_welcome_version', PMPRO_VERSION, 'no' );
-		wp_redirect( admin_url( 'admin.php?page=pmpro-welcome' ) );
+function pmpro_admin_init_redirect_to_dashboard() {
+	$pmpro_dashboard_version = get_option( 'pmpro_dashboard_version', 0 );
+    if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
+		update_option( 'pmpro_dashboard_version', PMPRO_VERSION, 'no' );
+		wp_redirect( admin_url( 'admin.php?page=pmpro-dashboard' ) );
 		exit;
 	}
 }
-add_action('admin_init', 'pmpro_admin_init_redirect_to_welcome');
+add_action('admin_init', 'pmpro_admin_init_redirect_to_dashboard');
 
 /**
  * Runs only when the plugin is activated.
@@ -39,7 +39,7 @@ function pmpro_admin_notice() {
 	if ( get_transient( 'pmpro-admin-notice' ) ) { ?>
 		<div id="message" class="updated notice">
 			<p><?php _e( '<strong>Welcome to Paid Memberships Pro</strong> &mdash; We&lsquo;re here to help you #GetPaid.', 'paid-memberships-rpo' ); ?></p>
-			<p class="submit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-welcome' ) ); ?>" class="button-primary"><?php _e( 'Get Started Using Paid Memberships Pro', 'paid-memberships-pro' ); ?></a></p>
+			<p class="submit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-dashboard' ) ); ?>" class="button-primary"><?php _e( 'Get Started Using Paid Memberships Pro', 'paid-memberships-pro' ); ?></a></p>
 		</div>
 		<?php
 		// Delete transient, only display this notice once.

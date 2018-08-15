@@ -151,28 +151,47 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
 #pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr th, #pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {background-color: #f9f9f9; }
 
 /* welcome */
-.pmpro_admin .about-wrap {
+/*.pmpro_admin .pmpro-welcome-wrap {
     margin-left: 0;
     margin-right: 0;
     max-width: none;
 }
-.pmpro_admin .about-wrap h3 {
+.pmpro_admin .pmpro-welcome-wrap h3 {
     margin-top: 0;
 }
-.pmpro_admin .about-wrap .welcome-panel-column p {
+.pmpro_admin .pmpro-welcome-wrap .welcome-panel-column p {
     padding-right: 15px;
 }
-.pmpro_admin .about-wrap hr {
+.pmpro_admin #pmpro_dashboard_welcome hr {
     margin: 1.5em 2em 1.5em 0;
 }
-.pmpro_admin .about-wrap .button-action {
+*/
+.pmpro_admin #pmpro_dashboard_welcome h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 1rem 0 0;
+}
+.pmpro_admin #pmpro_dashboard_welcome .inside {
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.pmpro_admin #pmpro_dashboard_welcome .button-action {
     background: #dd823b;
     border-color: #c36922 #ad5d1e #ad5d1e;
     color: #fff; box-shadow: 0 1px 0 #ad5d1e;
     text-shadow: 0 -1px 1px #ad5d1e, 1px 0 1px #ad5d1e, 0 1px 1px #ad5d1e, -1px 0 1px #ad5d1e;
 }
-.pmpro_admin .about-wrap ul li a .dashicons {
-    color: #444;
+.pmpro_admin #pmpro_dashboard_welcome ul li {
+    font-size: 14px;
+    line-height: 16px;
+    padding: 0 0 8px;
+}
+.pmpro_admin #pmpro_dashboard_welcome ul li a .dashicons {
+    color: #82878c;
+}
+.pmpro_admin p.text-center {
+    text-align: center;
 }
 
 /* new installation notices */
@@ -209,4 +228,7 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
     .pmpro-new-install { padding: 0; }
     .pmpro-new-install h2 { font-size: 1.4rem; }
     .pmpro-new-install .button-primary, .pmpro-new-install .button { display: block; }
+    .pmpro_admin #pmpro_dashboard_welcome .inside {
+        display: block;
+    }
 }
