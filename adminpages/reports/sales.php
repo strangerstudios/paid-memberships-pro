@@ -269,6 +269,8 @@ function pmpro_report_sales_page()
 	</div>
 
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
+	
+	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
 
 	<script>
 		//update month/year when period dropdown is changed
@@ -309,7 +311,7 @@ function pmpro_report_sales_page()
 		function drawChart() {
 
 			var data = google.visualization.arrayToDataTable([
-			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>', '<?php echo 'Average';?>'],
+			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>'],
 			  <?php foreach($cols as $date => $value) { ?>
 				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>, <?php echo $average;?>],
 			  <?php } ?>
