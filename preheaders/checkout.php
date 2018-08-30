@@ -216,7 +216,7 @@ if ( isset( $_REQUEST['discount_code'] ) ) {
 	$discount_code = "";
 }
 if ( isset( $_REQUEST['username'] ) ) {
-	$username = sanitize_user( $_REQUEST['username'] );
+	$username = sanitize_user( $_REQUEST['username'] , true);
 } else {
 	$username = "";
 }
