@@ -5,6 +5,8 @@
     use Stripe\Plan as Stripe_Plan;
     use Stripe\Charge as Stripe_Charge;
 
+    define( "PMPRO_STRIPE_API_VERSION", "2017-08-15" );
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -41,7 +43,7 @@
 			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe\Stripe::setAPIVersion("2017-08-15");
+				Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
                 self::$is_loaded = true;
 			}
 			
@@ -299,6 +301,11 @@
 			<td>
 				<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
 			</td>
+		</tr>
+
+		<tr>
+			<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
+			<td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
 		</tr>
 		<?php
 		}
