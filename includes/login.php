@@ -50,7 +50,9 @@ add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
 //redirect from default login pages to PMPro
 function pmpro_login_head()
-{		
+{
+	global $pagenow;
+
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	
 	if((pmpro_is_login_page() || is_page("login") ||
@@ -124,10 +126,12 @@ function pmpro_login_head()
 					}
 				}				
 			}
-			elseif ( function_exists( 'tml_is_action' ) && function_exists( 'tml_get_action_url' ) )
+			elseif ( function_exists( 'tml_is_action' ) && function_exists( 'tml_get_action_url' ) && function_exists( 'tml_action_exists' ) )
 			{
-				if ( $link = tml_get_action_url( 'login' ) ) {
-					if ( ! tml_is_action( 'login' ) ) {
+				$action = ! empty( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login';
+				if ( tml_action_exists( $action ) ) {
+					if ( 'wp-login.php' == $pagenow ) {
+						$link = tml_get_action_url( $action );
 						wp_redirect( $link );
 						exit;
 					}
