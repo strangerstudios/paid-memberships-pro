@@ -65,8 +65,8 @@ function pmpro_report_sales_widget() {
 			<?php
 				//sale prices stats
 				$count = 0;
-				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 3 );
-				$prices = pmpro_get_prices_paid( $report_type );
+				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+				$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 				foreach ( $prices as $price => $quantitiy ) {
 					if ( $count++ >= $max_prices_count ) {
 						break;
@@ -384,14 +384,12 @@ function pmpro_getSales($period, $levels = NULL)
  *
  * @param  string $period time period to query.
  */
-function pmpro_get_prices_paid( $period ) {
+function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Check for a transient.
-	/*
 	$cache = get_transient( 'pmpro_report_prices_paid' );
-	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) ) {
-		return $cache[ $period ];
+	if ( ! empty( $cache ) && ! empty( $cache[ $period . $count ] ) ) {
+		return $cache[ $period . $count ];
 	}
-	*/
 
 	// A sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0.
 	if ( 'today' === $period ) {
@@ -408,14 +406,21 @@ function pmpro_get_prices_paid( $period ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT DISTINCT total FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sql_query = "SELECT total, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
 	if ( ! empty( $levels ) ) {
 		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
 	}
 
+	$sql_query .= ' GROUP BY total ORDER BY num DESC ';
+
 	$prices           = $wpdb->get_results( $sql_query );
+
+	if( !empty( $count) ) {
+		$prices = array_slice( $prices, 0, $count, true );
+	}
+
 	$prices_formatted = [];
 	foreach ( $prices as $price ) {
 		if ( isset( $price->total ) ) {
@@ -425,16 +430,16 @@ function pmpro_get_prices_paid( $period ) {
 		}
 	}
 
+	krsort( $prices_formatted );
+
 	// Save in cache.
-	/*
 	if ( ! empty( $cache ) ) {
-		$cache[ $period ] = $prices_formatted;
+		$cache[ $period . $count ] = $prices_formatted;
 	} else {
-		$cache = array( $period => $prices_formatted );
+		$cache = array( $period . $count => $prices_formatted );
 	}
 
 	set_transient( 'pmpro_report_sales', $cache, 3600 * 24 );
-	*/
 
 	return $prices_formatted;
 }
