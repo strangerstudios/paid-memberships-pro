@@ -130,6 +130,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 1.9.5.4 - 2018-09-08 =
+* SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
 * BUG FIX: Fixed issue with lost passwords when Theme My Login 7 is active. (Thanks, Jeff Farthing)
 * BUG FIX: No longer sending an "error canceling the subscription" email when subscriptions are cancelled from Stripe.
 * BUG FIX: Fixed issue where TwoCheckout orders were not correctly updating the TOS consent data. (Thanks, Charl P. Botha)
