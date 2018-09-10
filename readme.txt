@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 4.9.6
-Stable tag: 1.9.5.3
+Tested up to: 4.9.8
+Stable tag: 1.9.5.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -28,9 +28,9 @@ Paid Memberships Pro is designed for premium content sites, clubs/associations, 
 * Create private social communities for unique interest groups.
 * Develop robust directory or listings sites by topic or region.
 * Offer product subscriptions or members-only product discounts.
- 
+
 = Choose from Top Payment Gateways. =
-All of our payment gateways are included in the plugin. Choose from PayPal, Stripe, Authorize.net, Braintree or 2Checkout. 
+All of our payment gateways are included in the plugin. Choose from PayPal, Stripe, Authorize.net, Braintree or 2Checkout.
 
 = Infinitely Configurable, Unlimited Membership Levels. =
 Set up the membership levels that best fit your business, whether they are one-time payments or recurring subscriptions (annual, monthly, weekly, daily). You can even offer custom trial periods including Free Trials, Custom-length Trial, or 'Introductory' Pricing trials.
@@ -83,7 +83,7 @@ Go to Memberships in the WordPress admin for a step-by-step initial setup, inclu
 Please visit [our support site at http://www.paidmembershipspro.com](http://www.paidmembershipspro.com) for more documentation and our support forums.
 
 = I found a bug in the plugin. =
-Please post it in the [WordPress support forum](http://wordpress.org/tags/paid-memberships-pro?forum_id=10) and we'll fix it right away. Thanks for helping. 
+Please post it in the [WordPress support forum](http://wordpress.org/tags/paid-memberships-pro?forum_id=10) and we'll fix it right away. Thanks for helping.
 
 = My site is broken or blank or not letting me log in after activating Paid Memberships Pro =
 This is typically caused by a conflict with another plugin that is trying to redirect around the login/register pages or trying to redirect from HTTP to HTTPS, etc.
@@ -128,6 +128,18 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 1.9.5.4 - 2018-09-10 =
+* SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
+* BUG FIX: Fixed issue with lost passwords when Theme My Login 7 is active. (Thanks, Jeff Farthing)
+* BUG FIX: No longer sending an "error canceling the subscription" email when subscriptions are cancelled from Stripe.
+* BUG FIX: Fixed issue where TwoCheckout orders were not correctly updating the TOS consent data. (Thanks, Charl P. Botha)
+* BUG FIX: Fixed issue where privacy function weren't defaulting to $current_user correctly. In practice, we were always passing a user_id anyway.
+* BUG FIX/ENHANCEMENT: Changed the confirmation message to use wpautop instead of apply_filters('the_content'). If you were relying on shortcodes or other content that required that filter, you use add_filter('pmpro_level_description', 'the_content') to revert this for your site.
+* BUG FIX/ENHANCEMENT: Using the strict parameter of sanitize_user when getting usernames. This will prevent some special characters from being used in usernames at checkout. This is inline with WP core and other plugins. (Thanks, David Cervantes Caballero)
+* ENHANCEMENT: Added a breakdown of orders at each price point to the Sales Report widget
+* ENHANCEMENT: Showing the Stripe version we use on the Payment Settings page.
+* ENHANCEMENT: Updated Copyright date and GPLv2 link in license.txt.
 
 = 1.9.5.3 - 2018-06-26 =
 * BUG FIX: The pmpro_ipnhandler_extend_memberships function actually needed use $user_id instead of $current_user.
@@ -208,13 +220,13 @@ up the lines of text.
 * BUG FIX: Fixed typo in the string "Are you sure you want to do that? Try again."
 * BUG FIX: Fixed a few strings that used the wrong text domain or weren't wrapped correclty for translation.
 * BUG FIX/ENHANCEMENT: Now bundling Google's jsapi.js file for use in the reports.
-* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching 
+* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
 * BUG FIX/ENHANCEMENT: Better error handling for Braintree.
 * BUG FIX/ENHANCEMENT: Membership stats widget now shows first 3 levels based on level order.
-* BUG FIX/ENHANCEMENT: Added the pmpro_member_shortcode_access filter 
+* BUG FIX/ENHANCEMENT: Added the pmpro_member_shortcode_access filter
 * ENHANCEMENT: Updated the Stripe PHP library to version 5.2.2 and updated Stripe to use the latest version of their API, 2017-08-15.
-* ENHANCEMENT: Changed frontend pages (e.g. checkout.php) to use a div-based layout instead of tables. Important information here if you are using custom page templates or notice UI issues after upgrading: 
+* ENHANCEMENT: Changed frontend pages (e.g. checkout.php) to use a div-based layout instead of tables. Important information here if you are using custom page templates or notice UI issues after upgrading:
 * ENHANCEMENT: Added pagination to the discount codes page in the admin. Also sorting codes in descending order by ID. Use the pmpro_discount_codes_per_page filter to change the per page limit from 15.
 * ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.
 * ENHANCEMENT: Updated plugin frontend pages checkout, billing, confirmation, and single invoice to remove most table based layouts.
@@ -303,7 +315,7 @@ up the lines of text.
 * BUG: Fixed bug with updating credit cards through Stripe.
 * BUG: Fixed SQL warnings when generating the pmpro_membership_levelmeta table. (Thanks, itibet on GitHub)
 * BUG/ENHANCEMENT: Moved some update billing and checkout related code from the preheaders and page templates into the Braintree and Stripe classes.
-* ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order. 
+* ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order.
 * ENHANCEMENT: Added pmpro_billing_before_submit_button hook that functions similar to the pmpro_checkout_before_submit_button hook.
 * ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
 * ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
@@ -326,7 +338,7 @@ up the lines of text.
 * BUG: Swapped out deprecated uses of eregi_replace and split.
 * BUG/ENHANCEMENT: Now using add_query_arg in the pmpro_url() function. (Thanks, Debjit Saha)
 * ENHANCEMENT: Updating stylesheet for WordPress 4.7 and new Twenty Seventeen theme support.
-* ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1. 
+* ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1.
 * ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
 * ENHANCEMENT: Added pmpro_include_payment_option_for_paypal filter, which can be set to false to use PayPal WPP without the PayPal Express option.
 * ENHANCEMENT: Better dependency checking for Stripe and Braintree gateways.
