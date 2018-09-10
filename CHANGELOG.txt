@@ -1,4 +1,18 @@
 == Changelog ==
+
+= 1.9.5.4 - 2018-09-10 =
+* SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
+* BUG FIX: Fixed issue with lost passwords when Theme My Login 7 is active. (Thanks, Jeff Farthing)
+* BUG FIX: No longer sending an "error canceling the subscription" email when subscriptions are cancelled from Stripe.
+* BUG FIX: Fixed issue where TwoCheckout orders were not correctly updating the TOS consent data. (Thanks, Charl P. Botha)
+* BUG FIX: Fixed issue where privacy function weren't defaulting to $current_user correctly. In practice, we were always passing a user_id anyway.
+* BUG FIX/ENHANCEMENT: Changed the confirmation message to use wpautop instead of apply_filters('the_content'). If you were relying on shortcodes or other content that required that filter, you use add_filter('pmpro_level_description', 'the_content') to revert this for your site.
+* BUG FIX/ENHANCEMENT: Using the strict parameter of sanitize_user when getting usernames. This will prevent some special characters from being used in usernames at checkout. This is inline with WP core and other plugins. (Thanks, David Cervantes Caballero)
+* ENHANCEMENT: Added a breakdown of orders at each price point to the Sales Report widget
+* ENHANCEMENT: Showing the Stripe version we use on the Payment Settings page.
+* ENHANCEMENT: Updated Copyright date and GPLv2 link in license.txt.
+
+
 = 1.9.5.3 - 2018-06-26 =
 * BUG FIX: The pmpro_ipnhandler_extend_memberships function actually needed use $user_id instead of $current_user.
 
