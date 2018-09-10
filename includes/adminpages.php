@@ -203,7 +203,12 @@ function pmpro_discountcodes()
 }
 
 function pmpro_dashboard() {
-	require_once( PMPRO_DIR . '/adminpages/membershipsdashboard.php' );
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script('common');
+	wp_enqueue_script('wp-lists');
+	wp_enqueue_script('postbox');
+
+	require_once( PMPRO_DIR . '/adminpages/dashboard.php' );
 }
 
 function pmpro_membershiplevels()
