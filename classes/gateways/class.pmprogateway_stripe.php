@@ -303,7 +303,7 @@
 			</td>
 		</tr>
 
-		<tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
 			<td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
 		</tr>
