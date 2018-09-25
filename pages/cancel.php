@@ -44,7 +44,7 @@
 			?>
 			<div class="pmpro_actionlinks">
 				<a class="pmpro_btn pmpro_yeslink yeslink" href="<?php echo pmpro_url("cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true")?>"><?php _e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
-				<a class="pmpro_btn pmpro_cancel pmpro_nolink nolink" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'paid-memberships-pro' );?></a>
+				<a class="pmpro_btn pmpro_btn-cancel pmpro_nolink nolink" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'paid-memberships-pro' );?></a>
 			</div>
 			<?php
 			}
