@@ -35,7 +35,7 @@
 				it there.
 			*/
 			//add_filter('pmpro_next_payment', array('PMProGateway_paypalexpress', 'pmpro_next_payment'), 10, 3);
-			
+
 			/*
 				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
 				So we only load it if we haven't already.
@@ -308,7 +308,7 @@
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
-			
+
 			if(empty($pmpro_msg) &&
 				(!empty($_REQUEST['confirm']) ||
 				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
@@ -443,7 +443,7 @@
 				<input type="hidden" name="submit-checkout" value="1" />
 				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
-			
+
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
@@ -761,9 +761,16 @@
 			}
 		}
 
-		function cancel(&$order)
-		{
-			//paypal profile stuff
+		function cancel(&$order) {
+			// Always cancel the order locally even if PayPal might fail
+			$order->updateStatus("cancelled");
+
+			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal
+			if( !empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) {
+				return true;
+			}
+
+			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
 
@@ -771,13 +778,9 @@
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
-			{
-				$order->updateStatus("cancelled");
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
-			}
-			else
-			{
+			} else {
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
@@ -814,7 +817,7 @@
 				return false;
 			}
 		}
-		
+
 		/**
 		 * Filter pmpro_next_payment to get date via API if possible
 		 *
@@ -828,16 +831,16 @@
 				//get last order
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
-				
+
 				//check if this is a paypal express order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
 				{
 					//get the subscription status
-					$status = $order->getGatewaySubscriptionStatus();					
-										
+					$status = $order->getGatewaySubscriptionStatus();
+
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{
-						//found the next billing date at PayPal, going to use that						
+						//found the next billing date at PayPal, going to use that
 						$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
 					}
 					elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled")
@@ -849,7 +852,7 @@
 					}
 				}
 			}
-						
+
 			return $timestamp;
 		}
 
