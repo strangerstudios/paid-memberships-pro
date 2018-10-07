@@ -54,6 +54,7 @@
 				'position' => 'right',
 				'decimals' => 0,
 				),
+			'KES' => __('Kenyan Shilling', 'paid-memberships-pro' ),
 			'MYR' => __('Malaysian Ringgits', 'paid-memberships-pro' ),
 			'MXN' => __('Mexican Peso (&#36;)', 'paid-memberships-pro' ),
 			'NGN' => __('Nigerian Naira (&#8358;)', 'paid-memberships-pro' ),
