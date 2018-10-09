@@ -2620,8 +2620,9 @@ function pmpro_cleanup_memberships_users_table() {
 	$wpdb->query( $sqlQuery );
 }
 
-
 /**
+ * Whether the current page is a PMPRO page or not.
+ *
  * @return bool
  */
 function pmpro_is_page() {
