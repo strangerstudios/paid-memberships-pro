@@ -2628,5 +2628,5 @@ function pmpro_cleanup_memberships_users_table() {
 function pmpro_is_page() {
 	global $pmpro_pages;
 
-	return is_page( array_values( $pmpro_pages ) );
+	return is_page( $pmpro_pages );
 }
