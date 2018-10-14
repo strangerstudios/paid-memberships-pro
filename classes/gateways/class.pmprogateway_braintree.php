@@ -150,6 +150,10 @@
 				
                 // Save to local cache
                 if ( !empty( $plans ) ) {
+	                /**
+	                 * @since v1.9.5.4+ - BUG FIX: Didn't expire transient
+                     * @since v1.9.5.4+ - ENHANCEMENT: Use wp_cache_*() system over direct transients
+	                 */
                     wp_cache_set( $cache_key,$plans,'pmpro_levels',HOUR_IN_SECONDS );
                 }
 				// set_transient($cache_key, $plans,HOUR_IN_SECONDS );
@@ -159,6 +163,8 @@
 		}
 		
 		/**
+         * Clear cached plans when updating membership level
+         *
 		 * @param $level_id
 		 */
 		public static function pmpro_save_level_action( $level_id ) {
