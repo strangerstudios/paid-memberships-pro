@@ -421,7 +421,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 		$prices = array_slice( $prices, 0, $count, true );
 	}
 
-	$prices_formatted = [];
+	$prices_formatted = array();
 	foreach ( $prices as $price ) {
 		if ( isset( $price->total ) ) {
 			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total = '" . esc_sql( $price->total ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
