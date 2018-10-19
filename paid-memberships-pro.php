@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
- * Description: A revenue-generating machine for membership sites. Unlimited levels with recurring payment, protected content and member management.
+ * Description: The most complete member management and membership subscriptions plugin for WordPress.
  * Version: 1.9.5.4
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
@@ -10,8 +10,8 @@
  * Domain Path: /languages
  */
 /**
- * Copyright 2011   Stranger Studios
- * (email : jason@strangerstudios.com)
+ * Copyright 2011-2018	Stranger Studios
+ * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
