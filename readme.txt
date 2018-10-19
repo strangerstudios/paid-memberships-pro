@@ -141,6 +141,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Removed the warning RE billing limits with the Stripe gateway. Our Stripe implementation has actually supported billing limits for a while.
 * ENHANCEMENT: Added Kenyan Shilling as a currency. (Thanks, Urandu Bildad Namawa)
 * ENHANCEMENT: Updated the description, url, email, and copyright info in the plugin header.
+* ENHANCEMENT: Now showing a note on the pages list in the dashboard if a page is linked to a PMPro page.
+* ENHANCEMENT: Improving logo and watermark in the dashboard for retina displays.
 
 = 1.9.5.4 - 2018-09-10 =
 * SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
