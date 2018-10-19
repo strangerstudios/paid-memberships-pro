@@ -43,13 +43,13 @@
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$action = false;
 	}
-	
+
 	if($action == "save_membershiplevel") {
-		
+
 		$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
 		$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
 		$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
-		
+
 		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
 			$ml_recurring = 1;
@@ -136,7 +136,7 @@
 			$saveid = $wpdb->insert_id;
 
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			
+
 			if(empty($wpdb->last_error)) {
 				$saveid = $wpdb->insert_id;
 				pmpro_updateMembershipCategories( $saveid, $ml_categories );
@@ -427,11 +427,9 @@
 							<p class="pmpro_message"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' );?></p>
 						<?php } elseif($gateway == "braintree") {
 						    $has_bt_plan = PMProGateway_braintree::checkLevelForPlan( $level->id );
-						    
-						    if ( !$has_bt_plan ) { ?>
-							<p class="pmpro_message <? ! $has_bt_plan ? 'pmpro_error' : null; ?>">
-                                <strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php printf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), sprintf( 'pmpro_%d'. $level->id ) ); ?></p>
-                        <?php } ?>
+							?>
+							<p class="pmpro_message <?php if ( ! $has_bt_plan ) {?>pmpro_error<?php } ?>">
+                                <strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php printf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), $level->id ); ?></p>
 						<?php } ?>
 					</td>
 				</tr>
