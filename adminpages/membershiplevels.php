@@ -440,9 +440,6 @@
 						<input name="billing_limit" type="text" size="20" value="<?php echo $level->billing_limit?>" />
 						<br /><small>
 							<?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?>
-							<?php if($gateway == "stripe") { ?>
-								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support billing limits. You can still set an expiration date below.', 'paid-memberships-pro' );?></strong>
-							<?php } ?>
 						</small>
 					</td>
 				</tr>
