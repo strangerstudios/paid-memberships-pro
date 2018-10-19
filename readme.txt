@@ -135,7 +135,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue where the Stripe API version was shown for non-Stripe gateways on the payment settings page.
 * BUG FIX: Using self:: instead of static:: in the Stripe class that could keep the pmpro_stripe_customerid from being updated.
 * BUG FIX: Fixed some fatal errors in PHP 5.2. (We still recommend a minimum PHP 5.6.)
-* BUG FIX/ENHANCEMENT: Removed a unnecessary <hr> element when viewing the table of all active memberships.
+* BUG FIX/ENHANCEMENT: Removed a unnecessary hr element when viewing the table of all active memberships.
 * BUG FIX/ENHANCEMENT: Cleaned up some CSS code around buttons.
 * BUG FIX/ENHANCEMENT: Added formatting for the Danish Krone.
 * BUG FIX/ENHANCEMENT: Removed the warning RE billing limits with the Stripe gateway. Our Stripe implementation has actually supported billing limits for a while.
