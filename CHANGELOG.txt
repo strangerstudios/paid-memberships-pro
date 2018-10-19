@@ -1,5 +1,18 @@
 == Changelog ==
 
+= 1.9.5.5 - 2018-10-19 =
+* BUG FIX: Fixed fatal error in the Braintree webhook that will have caused syncing issues for Braintree users.
+* BUG FIX: Stopped sending the cancel subscription request to the PayPal API if we are processing the IPN request for the same subscription.
+* BUG FIX: Fixed issue where the Stripe API version was shown for non-Stripe gateways on the payment settings page.
+* BUG FIX: Using self:: instead of static:: in the Stripe class that could keep the pmpro_stripe_customerid from being updated.
+* BUG FIX: Fixed some fatal errors in PHP 5.2. (We still recommend a minimum PHP 5.4.)
+* BUG FIX/ENHANCEMENT: Removed a unnecessary <hr> element when viewing the table of all active memberships.
+* BUG FIX/ENHANCEMENT: Cleaned up some CSS code around buttons.
+* BUG FIX/ENHANCEMENT: Added formatting for the Danish Krone.
+* BUG FIX/ENHANCEMENT: Removed the warning RE billing limits with the Stripe gateway. Our Stripe implementation has actually supported billing limits for a while.
+* ENHANCEMENT: Added Kenyan Shilling as a currency. (Thanks, Urandu Bildad Namawa)
+* ENHANCEMENT: Updated the description, url, email, and copyright info in the plugin header.
+
 = 1.9.5.4 - 2018-09-10 =
 * SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
 * BUG FIX: Fixed issue with lost passwords when Theme My Login 7 is active. (Thanks, Jeff Farthing)
@@ -92,13 +105,13 @@ up the lines of text.
 * BUG FIX: Fixed typo in the string "Are you sure you want to do that? Try again."
 * BUG FIX: Fixed a few strings that used the wrong text domain or weren't wrapped correclty for translation.
 * BUG FIX/ENHANCEMENT: Now bundling Google's jsapi.js file for use in the reports.
-* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching 
+* BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
 * BUG FIX/ENHANCEMENT: Better error handling for Braintree.
 * BUG FIX/ENHANCEMENT: Membership stats widget now shows first 3 levels based on level order.
-* BUG FIX/ENHANCEMENT: Added the pmpro_member_shortcode_access filter 
+* BUG FIX/ENHANCEMENT: Added the pmpro_member_shortcode_access filter
 * ENHANCEMENT: Updated the Stripe PHP library to version 5.2.2 and updated Stripe to use the latest version of their API, 2017-08-15.
-* ENHANCEMENT: Changed frontend pages (e.g. checkout.php) to use a div-based layout instead of tables. Important information here if you are using custom page templates or notice UI issues after upgrading: 
+* ENHANCEMENT: Changed frontend pages (e.g. checkout.php) to use a div-based layout instead of tables. Important information here if you are using custom page templates or notice UI issues after upgrading:
 * ENHANCEMENT: Added pagination to the discount codes page in the admin. Also sorting codes in descending order by ID. Use the pmpro_discount_codes_per_page filter to change the per page limit from 15.
 * ENHANCEMENT: Updated plugin admin pages with better links to documentation and support.
 * ENHANCEMENT: Updated plugin frontend pages checkout, billing, confirmation, and single invoice to remove most table based layouts.
@@ -187,7 +200,7 @@ up the lines of text.
 * BUG: Fixed bug with updating credit cards through Stripe.
 * BUG: Fixed SQL warnings when generating the pmpro_membership_levelmeta table. (Thanks, itibet on GitHub)
 * BUG/ENHANCEMENT: Moved some update billing and checkout related code from the preheaders and page templates into the Braintree and Stripe classes.
-* ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order. 
+* ENHANCEMENT: Added pmpro_billing_order filter that functions similar to pmpro_checkout_order.
 * ENHANCEMENT: Added pmpro_billing_before_submit_button hook that functions similar to the pmpro_checkout_before_submit_button hook.
 * ENHANCEMENT: Clicking on a report widget no longer takes you to the details page. You have to click the details button. This allows us to add additional functionality to the widgets.
 * ENHANCEMENT: Updated reports widgets so the "details" button only shows if a page function is defined for that report. You can now have report widgets without details pages.
@@ -210,7 +223,7 @@ up the lines of text.
 * BUG: Swapped out deprecated uses of eregi_replace and split.
 * BUG/ENHANCEMENT: Now using add_query_arg in the pmpro_url() function. (Thanks, Debjit Saha)
 * ENHANCEMENT: Updating stylesheet for WordPress 4.7 and new Twenty Seventeen theme support.
-* ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1. 
+* ENHANCEMENT: Now longer warning of membership levels with cycle numbers > 1 when using the Payflow Pro gateway since Payflow now supports cycle numbers (frequencies) > 1.
 * ENHANCEMENT: Updated da_DK translation. (Thanks, bopdoq on GitHub)
 * ENHANCEMENT: Added pmpro_include_payment_option_for_paypal filter, which can be set to false to use PayPal WPP without the PayPal Express option.
 * ENHANCEMENT: Better dependency checking for Stripe and Braintree gateways.
@@ -530,7 +543,7 @@ up the lines of text.
 * ENHANCEMENT: Added the pmpro_format_phone filter to change how phone numbers are formated. Param 1 is $r, the formatted phone number. Param 2 is $phone, the original phone number.
 * ENHANCEMENT: Added doc blocks to cleanPhone and formatPhone functions and the new pmpro_format_phone filter.
 
-= 1.8.4.3 = 
+= 1.8.4.3 =
 * SECURITY PATCH: Fixes to Cross Site Scripting vulnerabilities in the PMPro settings pages in the WordPress dashboard. [Advisory ID HTB23264](https://www.htbridge.com/advisory/HTB23264). (Thanks, High-Tech Bridge Security Research Lab)
 
 = 1.8.4.2 =
@@ -617,7 +630,7 @@ up the lines of text.
 * ENHANCEMENT: Updated to the new version of Google's ReCaptcha.
 * BUG: Fixed issue with quotes and other special characters in membership level names, descriptions, and confirmations. (Thanks, Marcelo Hinojosa)
 
-= 1.7.15.3 = 
+= 1.7.15.3 =
 * BUG: Now correctly setting $saveid when a discount code is created so the pmpro_save_discount_code hook will have the correct id value when codes are created.
 * BUG: Using get_userdata in checkout code for better multisite support when setting default role of new users.
 
@@ -850,7 +863,7 @@ up the lines of text.
 * Added "Show Billing Address Fields" option for the Stripe payment gateway. Set to 'No' to hide billing address fields. Replaces the functionality of the "Stripe Lite" plugin.
 * Added language files for es_ES, es_CL, and es_PE. Thanks, Javier Monorové (zillionsk8 on GitHub).
 * Added language files for fr_FR. Thanks, Jérémy De la casa.
-* NOTE: Language files may not be complete. The get involved, join us on GitHub. 
+* NOTE: Language files may not be complete. The get involved, join us on GitHub.
 * Added Cybersource and 2Checkout gateways in beta.
 * Added pmpro_paypal_button_image filter so you can override the URL of the PayPal button image.
 * Added a new report showing signups vs. cancellations, monthly recurring revenue, and lifetime value.
@@ -1128,7 +1141,7 @@ up the lines of text.
 * Added stripslashes() to membership description output on the checkout page.
 * The pmpro_getLevel() function may return the wrong level on the levels, checkout, or account page where another $pmpro_levels array was setup. (The array pmpro_getLevel uses used the level id as the array keys. The older $pmpro_levels used 0-n.) To fix this, I added a pmpro_getAllLevels($include_hidden = false) function and now use that function on the levels, checkout, and account pages. The function queries the database for all levels and then puts them into an array where the level ids are the keys.
 * Fix for !!billing_country!! in emails. (Somehow a previous fix for this got overwritten. My bad.)
-* Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is 
+* Settings $pmpro_level->code_id to $discount_code_id if a valid discount code is applied to a level at checkout. This is
 useful for determining if/what discount code was applied to the level when processing it in hooks.
 * Added pmpro_getDomainFromURL() and using that to set PMPRO_URL.
 * New hooks when orders are added/updated: pmpro_update_order (before update), pmpro_updated_order (after update), pmpro_add_order (before add), pmpro_added_order (after add). (Thanks, zookatron!)

@@ -129,6 +129,19 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.5.5 - 2018-10-19 =
+* BUG FIX: Fixed fatal error in the Braintree webhook that will have caused syncing issues for Braintree users.
+* BUG FIX: Stopped sending the cancel subscription request to the PayPal API if we are processing the IPN request for the same subscription.
+* BUG FIX: Fixed issue where the Stripe API version was shown for non-Stripe gateways on the payment settings page.
+* BUG FIX: Using self:: instead of static:: in the Stripe class that could keep the pmpro_stripe_customerid from being updated.
+* BUG FIX: Fixed some fatal errors in PHP 5.2. (We still recommend a minimum PHP 5.4.)
+* BUG FIX/ENHANCEMENT: Removed a unnecessary <hr> element when viewing the table of all active memberships.
+* BUG FIX/ENHANCEMENT: Cleaned up some CSS code around buttons.
+* BUG FIX/ENHANCEMENT: Added formatting for the Danish Krone.
+* BUG FIX/ENHANCEMENT: Removed the warning RE billing limits with the Stripe gateway. Our Stripe implementation has actually supported billing limits for a while.
+* ENHANCEMENT: Added Kenyan Shilling as a currency. (Thanks, Urandu Bildad Namawa)
+* ENHANCEMENT: Updated the description, url, email, and copyright info in the plugin header.
+
 = 1.9.5.4 - 2018-09-10 =
 * SECURITY: Some values used in SQL queries in our reporting code were sanitized but not later escaped via esc_sql(). All variables added to SQL queries in the reports are now wrapped in esc_sql(). The previous code was not vulnerable to any known attack, but this change hardens the code against vulnerabilities in the case other parts of the code change in the future.
 * BUG FIX: Fixed issue with lost passwords when Theme My Login 7 is active. (Thanks, Jeff Farthing)
