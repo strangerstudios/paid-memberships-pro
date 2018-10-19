@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 4.9.8
-Stable tag: 1.9.5.4
+Stable tag: 1.9.5.5
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -134,7 +134,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Stopped sending the cancel subscription request to the PayPal API if we are processing the IPN request for the same subscription.
 * BUG FIX: Fixed issue where the Stripe API version was shown for non-Stripe gateways on the payment settings page.
 * BUG FIX: Using self:: instead of static:: in the Stripe class that could keep the pmpro_stripe_customerid from being updated.
-* BUG FIX: Fixed some fatal errors in PHP 5.2. (We still recommend a minimum PHP 5.4.)
+* BUG FIX: Fixed some fatal errors in PHP 5.2. (We still recommend a minimum PHP 5.6.)
 * BUG FIX/ENHANCEMENT: Removed a unnecessary <hr> element when viewing the table of all active memberships.
 * BUG FIX/ENHANCEMENT: Cleaned up some CSS code around buttons.
 * BUG FIX/ENHANCEMENT: Added formatting for the Danish Krone.
