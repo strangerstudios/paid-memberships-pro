@@ -669,38 +669,19 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<?php
 					if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->status;
-<<<<<<< HEAD
-					} else {
-										?>
-											<?php
-											$statuses         = array();
-											$default_statuses = array(
-												'',
-												'success',
-												'cancelled',
-												'review',
-												'token',
-												'refunded',
-												'pending',
-												'error',
-											);
-											$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
-											$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
-											asort( $statuses );
-											$statuses = apply_filters( 'pmpro_order_statuses', $statuses );
-=======
 					} else { ?>
-						<?php
+					<?php
 						$statuses = pmpro_getOrderStatuses();
->>>>>>> dev
 						?>
 						<select id="status" name="status">
-		<?php foreach ( $statuses as $status ) { ?>
+							<?php foreach ( $statuses as $status ) { ?>
 								<option
 									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo $status; ?></option>
 							<?php } ?>
 						</select>
-					<?php } ?>
+						<?php 
+						} 
+					?>
 				</td>
 			</tr>
 
@@ -856,6 +837,29 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					</td>
 				</tr>
 			<?php } ?>
+
+			<?php
+				$tospage_id = pmpro_getOption( 'tospage' );
+				$consent_entry = $order->get_tos_consent_log_entry();
+
+				if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+				?>
+				<tr>
+					<th scope="row" valign="top"><label for="tos_consent"><?php _e( 'TOS Consent', 'paid-memberships-pro' ); ?>:</label></th>
+					<td id="tos_consent">
+						<?php
+							
+							if( !empty( $consent_entry ) ) {
+								echo pmpro_consent_to_text( $consent_entry );
+							} else {
+								echo __( 'N/A' );
+							}
+						?>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
 
 			<tr>
 				<th scope="row" valign="top"><label for="notes"><?php _e( 'Notes', 'paid-memberships-pro' ); ?>:</label></th>

@@ -165,6 +165,32 @@ function pmpro_membership_level_profile_fields($user)
 		<?php
 		}
 		?>
+
+		<?php
+			$tospage_id = pmpro_getOption( 'tospage' );
+			$consent_log = pmpro_get_consent_log( $user->ID, true );
+
+			if( !empty( $tospage_id ) || !empty( $consent_log ) ) {
+			?>
+	        <tr>
+				<th><label for="tos_consent_history"><?php _e("TOS Consent History", 'paid-memberships-pro' ); ?></label></th>
+				<td id="tos_consent_history">
+					<?php
+						if( !empty( $consent_log ) ) {
+							echo '<ul>';
+							foreach( $consent_log as $entry ) {
+								echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
+							}
+							echo '</ul>';
+						} else {
+							echo __( 'N/A', 'paid-memberships-pro' );
+						}
+					?>
+				</td>
+			</tr>
+			<?php
+			}
+		?>
 </table>
     <script>
         jQuery(document).ready(function() {

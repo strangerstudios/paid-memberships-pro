@@ -117,7 +117,8 @@
 			//check for cache
 			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
 			
-			$plans = get_transient($cache_key);
+			$plans = wp_cache_get( $cache_key,'pmpro_levels' );
+			// $plans = get_transient($cache_key );
 			
 			//check Braintree if no transient found
 			if($plans === false) {
@@ -147,10 +148,34 @@
 			        return false;
                 }
 				
-				set_transient($cache_key, $plans);
+                // Save to local cache
+                if ( !empty( $plans ) ) {
+	                /**
+	                 * @since v1.9.5.4+ - BUG FIX: Didn't expire transient
+                     * @since v1.9.5.4+ - ENHANCEMENT: Use wp_cache_*() system over direct transients
+	                 */
+                    wp_cache_set( $cache_key,$plans,'pmpro_levels',HOUR_IN_SECONDS );
+                }
+				// set_transient($cache_key, $plans,HOUR_IN_SECONDS );
 			}
 			
 			return $plans;
+		}
+		
+		/**
+         * Clear cached plans when updating membership level
+         *
+		 * @param $level_id
+		 */
+		public static function pmpro_save_level_action( $level_id ) {
+		    
+		    $BT_Gateway = new PMProGateway_braintree();
+		    
+		    if ( isset( $BT_Gateway->gateway_environment ) ) {
+			    $cache_key = 'pmpro_braintree_plans_' . md5($BT_Gateway->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
+			
+			    wp_cache_delete( $cache_key,'pmpro_levels' );
+		    }
 		}
 		
 		/**
@@ -200,6 +225,7 @@
 			$current_gateway = pmpro_getGateway();
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
+			    add_action( 'pmpro_save_membership_level', array( 'PMProGateway_braintree', 'pmpro_save_level_action') );
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));

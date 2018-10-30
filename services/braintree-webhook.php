@@ -5,6 +5,8 @@
  * @since 1.9.5 - Various updates to how we log & process requests from Braintree
  */
 
+use Braintree\WebhookNotification as Braintree_WebhookNotification;
+
 // If loading directly, make sure we return a 200 HTTP status
 global $isapage;
 $isapage = true;

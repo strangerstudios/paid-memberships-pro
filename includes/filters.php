@@ -60,7 +60,7 @@ function pmpro_ipnhandler_level_extend_memberships( $level, $user_id ) {
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		// get the current enddate of their membership
-		$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $level->id );
 
 		// bail if their existing level doesn't have an end date
 		if ( empty( $user_level ) || empty( $user_level->enddate ) ) {
@@ -165,13 +165,13 @@ if ( empty( $_REQUEST['discount_code'] ) && ! empty( $_REQUEST['other_discount_c
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {
-	return apply_filters( 'the_content', $message );
+	return wpautop( $message );
 }
 add_filter( 'pmpro_confirmation_message', 'pmpro_pmpro_confirmation_message' );
 
 // apply all the_content filters to level descriptions
 function pmpro_pmpro_level_description( $description ) {
-	return apply_filters( 'the_content', $description );
+	return wpautop( $description );
 }
 add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 
@@ -234,4 +234,3 @@ function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
 	return $order;
 }
 add_filter( 'pmpro_subscribe_order', 'pmpro_pmpro_subscribe_order_startdate_limit', 99, 2 );
-
