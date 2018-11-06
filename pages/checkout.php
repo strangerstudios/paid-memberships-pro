@@ -29,57 +29,65 @@
 	<?php if($pmpro_review) { ?>
 		<p><?php _e('Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.', 'paid-memberships-pro' );?></p>
 	<?php } ?>
-	<div id="pmpro_pricing_fields" class="pmpro_checkout">
-		<h3>
-			<span class="pmpro_checkout-h3-name"><?php _e('Membership Level', 'paid-memberships-pro' );?></span>
-			<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_checkout-h3-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
-		</h3>
-		<div class="pmpro_checkout-fields">
-			<p>
-				<?php printf(__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name);?>
-			</p>
 
-			<?php
-				/**
-				 * All devs to filter the level description at checkout.
-				 * We also have a function in includes/filters.php that applies the the_content filters to this description.
-				 * @param string $description The level description.
-				 * @param object $pmpro_level The PMPro Level object.
-				 */
-				$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
-				if(!empty($level_description))
-					echo $level_description;
-			?>
+	<?php
+		$include_pricing_fields = apply_filters( 'pmpro_include_pricing_fields', true );
+		if ( $include_pricing_fields ) {
+		?>
+		<div id="pmpro_pricing_fields" class="pmpro_checkout">
+			<h3>
+				<span class="pmpro_checkout-h3-name"><?php _e('Membership Level', 'paid-memberships-pro' );?></span>
+				<?php if(count($pmpro_levels) > 1) { ?><span class="pmpro_checkout-h3-msg"><a href="<?php echo pmpro_url("levels"); ?>"><?php _e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
+			</h3>
+			<div class="pmpro_checkout-fields">
+				<p>
+					<?php printf(__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name);?>
+				</p>
 
-			<div id="pmpro_level_cost">
-				<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
-					<?php printf(__('<p class="pmpro_level_discount_applied">The <strong>%s</strong> code has been applied to your order.</p>', 'paid-memberships-pro' ), $discount_code);?>
+				<?php
+					/**
+					 * All devs to filter the level description at checkout.
+					 * We also have a function in includes/filters.php that applies the the_content filters to this description.
+					 * @param string $description The level description.
+					 * @param object $pmpro_level The PMPro Level object.
+					 */
+					$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
+					if(!empty($level_description))
+						echo $level_description;
+				?>
+
+				<div id="pmpro_level_cost">
+					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
+						<?php printf(__('<p class="pmpro_level_discount_applied">The <strong>%s</strong> code has been applied to your order.</p>', 'paid-memberships-pro' ), $discount_code);?>
+					<?php } ?>
+					<?php echo wpautop(pmpro_getLevelCost($pmpro_level)); ?>
+					<?php echo wpautop(pmpro_getLevelExpiration($pmpro_level)); ?>
+				</div>
+
+				<?php do_action("pmpro_checkout_after_level_cost"); ?>
+
+				<?php if($pmpro_show_discount_code) { ?>
+					<?php if($discount_code && !$pmpro_review) { ?>
+						<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to change your discount code.', 'paid-memberships-pro' );?></a></p>
+					<?php } elseif(!$pmpro_review) { ?>
+						<p id="other_discount_code_p" class="pmpro_small"><?php _e('Do you have a discount code?', 'paid-memberships-pro' );?> <a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to enter your discount code', 'paid-memberships-pro' );?></a>.</p>
+					<?php } elseif($pmpro_review && $discount_code) { ?>
+						<p><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $discount_code?></p>
+					<?php } ?>
 				<?php } ?>
-				<?php echo wpautop(pmpro_getLevelCost($pmpro_level)); ?>
-				<?php echo wpautop(pmpro_getLevelExpiration($pmpro_level)); ?>
-			</div>
 
-			<?php do_action("pmpro_checkout_after_level_cost"); ?>
-
-			<?php if($pmpro_show_discount_code) { ?>
-				<?php if($discount_code && !$pmpro_review) { ?>
-					<p id="other_discount_code_p" class="pmpro_small"><a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to change your discount code.', 'paid-memberships-pro' );?></a></p>
-				<?php } elseif(!$pmpro_review) { ?>
-					<p id="other_discount_code_p" class="pmpro_small"><?php _e('Do you have a discount code?', 'paid-memberships-pro' );?> <a id="other_discount_code_a" href="#discount_code"><?php _e('Click here to enter your discount code', 'paid-memberships-pro' );?></a>.</p>
-				<?php } elseif($pmpro_review && $discount_code) { ?>
-					<p><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $discount_code?></p>
+				<?php if($pmpro_show_discount_code) { ?>
+				<div id="other_discount_code_tr" style="display: none;">
+					<label for="other_discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
+					<input id="other_discount_code" name="other_discount_code" type="text" class="input <?php echo pmpro_getClassForField("other_discount_code");?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
+					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
+				</div>
 				<?php } ?>
-			<?php } ?>
-
-			<?php if($pmpro_show_discount_code) { ?>
-			<div id="other_discount_code_tr" style="display: none;">
-				<label for="other_discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-				<input id="other_discount_code" name="other_discount_code" type="text" class="input <?php echo pmpro_getClassForField("other_discount_code");?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
-				<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
-			</div>
-			<?php } ?>
-		</div> <!-- end pmpro_checkout-fields -->
-	</div> <!-- end pmpro_pricing_fields -->
+			</div> <!-- end pmpro_checkout-fields -->
+		</div> <!-- end pmpro_pricing_fields -->
+		<?php
+		} // if ( $include_pricing_fields )
+	?>
 
 	<?php if($pmpro_show_discount_code) { ?>
 	<script>
@@ -186,7 +194,7 @@
 					</div> <!-- end pmpro_checkout-field-password2 -->
 				<?php } else { ?>
 					<input type="hidden" name="password2_copy" value="1" />
-				<?php } 
+				<?php }
 			?>
 
 			<?php
@@ -270,7 +278,7 @@
 		$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 		if($pmpro_include_billing_address_fields) { ?>
 	<div id="pmpro_billing_address_fields" class="pmpro_checkout" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_billing_address_fields", false) ){ ?>style="display: none;"<?php } ?>>
-		<hr />		
+		<hr />
 		<h3>
 			<span class="pmpro_checkout-h3-name"><?php _e('Billing Address', 'paid-memberships-pro' );?></span>
 		</h3>
