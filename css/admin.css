@@ -267,40 +267,14 @@ button.pmpro_report_th_closed:before {
     .pmpro_admin .pmpro_banner {
         display: block;
     }
-    .pmpro_admin .nav-tab-wrapper {
-        background: #e5e5e5;
-        padding: 15px;
-        text-align: center;
+    .pmpro_admin .nav-tab-wrapper:after {
+        clear: both;
+        display: block;
+        margin-bottom: 10px;
     }
-    .pmpro_admin .nav-tab-wrapper a.nav-tab {
-        float: none;
-        background: none;
-        border: none;
-        color: #0073aa;
-        font-size: 16px;
-        font-weight: normal;
-        line-height: 2;
-        margin: 0;
-        padding: 0;
+    .pmpro_admin .nav-tab-wrapper a {
+        margin-top: 5px;
     }
-    .pmpro_admin .nav-tab-wrapper a.nav-tab:active,
-    .pmpro_admin .nav-tab-wrapper a.nav-tab:hover {
-        color: #00a0d2;
-    }
-    .pmpro_admin .nav-tab-wrapper a.nav-tab-active {
-        color: #000;
-        font-weight: 600;
-    }
-    .pmpro_admin .nav-tab-wrapper a.nav-tab:after {
-        color: #666;
-        content: "|";
-        margin: 5px;
-    }
-    .pmpro_admin .nav-tab-wrapper a.nav-tab:last-child:after {
-        content: "";
-        margin: 0;
-    }
-    .pmpro_admin .nav-tab-wrapper { }
     .pmpro_report-holder tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
         display: table-cell;
         overflow: hidden;
