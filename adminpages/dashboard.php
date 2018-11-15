@@ -182,9 +182,6 @@ function pmpro_dashboard_welcome_callback() { ?>
 				<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=/membership-account/?utm_source=plugin&utm_medium=banner&utm_campaign=welcome' );?>
 		<?php } else { ?>
 			<p class="pmpro_message pmpro_success"><?php printf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></p>
-			<?php if ( ! empty( $pmpro_license_check['enddate'] ) ) { ?>
-					<?php echo date_i18n( get_option( 'date_format' ), $pmpro_license_check['enddate'] ); ?>
-			<?php } ?>
 		<?php } ?>
 
 		<?php if ( ! pmpro_license_isValid() ) { ?>
@@ -247,48 +244,50 @@ function pmpro_dashboard_report_recent_members_callback() {
 	$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
 
 	$theusers = $wpdb->get_results( $sqlQuery ); ?>
-	<table class="wp-list-table widefat fixed striped">
-		<thead>
-			<tr>
-				<th><?php _e( 'Username', 'paid-memberships-pro' );?></th>
-				<th><?php _e( 'Membership', 'paid-memberships-pro' );?></th>
-				<th><?php _e( 'Joined', 'paid-memberships-pro' );?></th>
-				<th><?php _e( 'Expires', 'paid-memberships-pro' ); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-		<?php
-			foreach( $theusers as $auser ) {
-				$auser = apply_filters( 'pmpro_members_list_user', $auser );
-				//get meta
-				$theuser = get_userdata( $auser->ID ); ?>
-				<tr>
-					<td class="username column-username">
-						<?php echo get_avatar($theuser->ID, 32)?>
-						<strong>
-							<?php
-								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
-								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
-								echo $userlink;
-							?>
-						</strong>
-					</td>
-					<td><?php esc_attr_e( $auser->membership ); ?></td>
-					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $theuser->user_registered, current_time( 'timestamp' ) ) ); ?></td>
-					<td>
-						<?php
-							if($auser->enddate)
-								echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
-							else
-								echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
-						?>
-					</td>
-				</tr>
-				<?php
-			}
-		?>
-		</tbody>
-	</table>
+    <span id="pmpro_report_members" class="pmpro_report-holder">
+    	<table class="wp-list-table widefat fixed striped">
+    		<thead>
+    			<tr>
+    				<th><?php _e( 'Username', 'paid-memberships-pro' );?></th>
+    				<th><?php _e( 'Membership', 'paid-memberships-pro' );?></th>
+    				<th><?php _e( 'Joined', 'paid-memberships-pro' );?></th>
+    				<th><?php _e( 'Expires', 'paid-memberships-pro' ); ?></th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    		<?php
+    			foreach( $theusers as $auser ) {
+    				$auser = apply_filters( 'pmpro_members_list_user', $auser );
+    				//get meta
+    				$theuser = get_userdata( $auser->ID ); ?>
+    				<tr>
+    					<td class="username column-username">
+    						<?php echo get_avatar($theuser->ID, 32)?>
+    						<strong>
+    							<?php
+    								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+    								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
+    								echo $userlink;
+    							?>
+    						</strong>
+    					</td>
+    					<td><?php esc_attr_e( $auser->membership ); ?></td>
+    					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $theuser->user_registered, current_time( 'timestamp' ) ) ); ?></td>
+    					<td>
+    						<?php
+    							if($auser->enddate)
+    								echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
+    							else
+    								echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
+    						?>
+    					</td>
+    				</tr>
+    				<?php
+    			}
+    		?>
+    		</tbody>
+    	</table>
+    </span>
 	<p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-memberslist' ); ?>"><?php esc_attr_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }
@@ -311,85 +310,87 @@ function pmpro_dashboard_report_recent_orders_callback() {
 		<?php
 	}
 	?>
-	<table class="wp-list-table widefat fixed striped">
-	<thead>
-		<tr class="thead">
-			<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Gateway', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
-			<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
-		</tr>
-		</thead>
-		<tbody id="orders" class="list:order orders-list">
-		<?php
-			foreach ( $order_ids as $order_id ) {
-			$order            = new MemberOrder();
-			$order->nogateway = true;
-			$order->getMemberOrderByID( $order_id );
-			?>
-			<tr>
-				<td>
-					<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
-				</td>
-				<td class="username column-username">
-					<?php $order->getUser(); ?>
-					<?php if ( ! empty( $order->user ) ) { ?>
-						<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
-					<?php } elseif ( $order->user_id > 0 ) { ?>
-						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
-					<?php } else { ?>
-						[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
-					<?php } ?>
-				</td>
-				<td><?php echo $order->membership_id; ?></td>
-				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
-				<td>
-					<?php
-					if ( ! empty( $order->payment_type ) ) {
-						echo $order->payment_type . '<br />';
-					}
-					?>
-					<?php if ( ! empty( $order->accountnumber ) ) { ?>
-						<?php echo $order->cardtype; ?>: x<?php echo last4( $order->accountnumber ); ?><br/>
-					<?php } ?>
-					<?php if ( ! empty( $order->billing->name ) ) { ?>
-							<?php echo $order->billing->name; ?><br/>
-					<?php } ?>
-					<?php if ( ! empty( $order->billing->street ) ) { ?>
-						<?php echo $order->billing->street; ?><br/>
-						<?php if ( $order->billing->city && $order->billing->state ) { ?>
-							<?php echo $order->billing->city; ?>, <?php echo $order->billing->state; ?><?php echo $order->billing->zip; ?>
-										<?php
-										if ( ! empty( $order->billing->country ) ) {
-											echo $order->billing->country; }
-								?>
-								<br/>
-						<?php } ?>
-					<?php } ?>
-					<?php
-					if ( ! empty( $order->billing->phone ) ) {
-						echo formatPhone( $order->billing->phone );
-					}
-					?>
-				</td>
-				<td><?php echo $order->gateway; ?>
-								<?php
-								if ( $order->gateway_environment == 'test' ) {
-										echo '(test)';
-								}
-					?>
-					</td>
-				<td><?php echo $order->status; ?></td>
-			</tr>
-			<?php
-		}
-		?>
-		</tbody>
-	</table>
+    <span id="pmpro_report_orders" class="pmpro_report-holder">
+    	<table class="wp-list-table widefat fixed striped">
+    	<thead>
+    		<tr class="thead">
+    			<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Gateway', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
+    		</tr>
+    		</thead>
+    		<tbody id="orders" class="list:order orders-list">
+    		<?php
+    			foreach ( $order_ids as $order_id ) {
+    			$order            = new MemberOrder();
+    			$order->nogateway = true;
+    			$order->getMemberOrderByID( $order_id );
+    			?>
+    			<tr>
+    				<td>
+    					<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
+    				</td>
+    				<td class="username column-username">
+    					<?php $order->getUser(); ?>
+    					<?php if ( ! empty( $order->user ) ) { ?>
+    						<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+    					<?php } elseif ( $order->user_id > 0 ) { ?>
+    						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+    					<?php } else { ?>
+    						[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+    					<?php } ?>
+    				</td>
+    				<td><?php echo $order->membership_id; ?></td>
+    				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
+    				<td>
+    					<?php
+    					if ( ! empty( $order->payment_type ) ) {
+    						echo $order->payment_type . '<br />';
+    					}
+    					?>
+    					<?php if ( ! empty( $order->accountnumber ) ) { ?>
+    						<?php echo $order->cardtype; ?>: x<?php echo last4( $order->accountnumber ); ?><br/>
+    					<?php } ?>
+    					<?php if ( ! empty( $order->billing->name ) ) { ?>
+    							<?php echo $order->billing->name; ?><br/>
+    					<?php } ?>
+    					<?php if ( ! empty( $order->billing->street ) ) { ?>
+    						<?php echo $order->billing->street; ?><br/>
+    						<?php if ( $order->billing->city && $order->billing->state ) { ?>
+    							<?php echo $order->billing->city; ?>, <?php echo $order->billing->state; ?><?php echo $order->billing->zip; ?>
+    										<?php
+    										if ( ! empty( $order->billing->country ) ) {
+    											echo $order->billing->country; }
+    								?>
+    								<br/>
+    						<?php } ?>
+    					<?php } ?>
+    					<?php
+    					if ( ! empty( $order->billing->phone ) ) {
+    						echo formatPhone( $order->billing->phone );
+    					}
+    					?>
+    				</td>
+    				<td><?php echo $order->gateway; ?>
+    								<?php
+    								if ( $order->gateway_environment == 'test' ) {
+    										echo '(test)';
+    								}
+    					?>
+    					</td>
+    				<td><?php echo $order->status; ?></td>
+    			</tr>
+    			<?php
+    		}
+    		?>
+    		</tbody>
+    	</table>
+    </span>
 	<p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-orders' ); ?>"><?php esc_attr_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }

@@ -4,12 +4,7 @@
 	require_once(dirname(__FILE__) . "/admin_header.php");
 
 	//default view, report widgets
-	if(empty($_REQUEST['report']))
-	{
-		//wrapper
-		?>
-		<h2><?php _e('Reports', 'paid-memberships-pro' );?></h2>
-
+	if ( empty( $_REQUEST[ 'report' ] ) ) { ?>
 		<div id="dashboard-widgets-wrap">
 			<div id="dashboard-widgets" class="metabox-holder pmpro_reports-holder">
 			<div id="postbox-container-1" class="postbox-container">
