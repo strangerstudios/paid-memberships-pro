@@ -57,26 +57,8 @@ function pmpro_add_pages()
 	add_submenu_page('pmpro-dashboard', __('Add Ons', 'paid-memberships-pro' ), __('Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons');
 
 	//updates page only if needed
-	if(pmpro_isUpdateRequired())
-		add_submenu_page('pmpro-membershiplevels', __('Updates Required', 'paid-memberships-pro' ), __('Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates');
-
-	//rename the automatically added Memberships submenu item
-	global $submenu;
-	if(!empty($submenu['pmpro-membershiplevels']))
-	{
-		if(current_user_can("pmpro_membershiplevels"))
-		{
-			$submenu['pmpro-membershiplevels'][0][0] = __( 'Membership Levels', 'paid-memberships-pro' );
-			$submenu['pmpro-membershiplevels'][0][3] = __( 'Membership Levels', 'paid-memberships-pro' );
-		}
-		elseif(current_user_can($top_menu_cap))
-		{
-			unset($submenu['pmpro-membershiplevels'][0]);
-		}
-		else
-		{
-			unset($submenu['pmpro-membershiplevels']);
-		}
+	if ( pmpro_isUpdateRequired() ) {
+		add_submenu_page( 'pmpro-dashboard', __('Updates Required', 'paid-memberships-pro' ), __('Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
 }
 add_action('admin_menu', 'pmpro_add_pages');
@@ -315,40 +297,37 @@ add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
 /*
 Function to add links to the plugin action links
 */
-function pmpro_add_action_links($links) {
+function pmpro_add_action_links( $links ) {
 
 	//array of all caps in the menu
 	$pmpro_caps = pmpro_getPMProCaps();
 
 	//the top level menu links to the first page they have access to
-	foreach($pmpro_caps as $cap)
-	{
-		if(current_user_can($cap))
-		{
-			$top_menu_page = str_replace("_", "-", $cap);
+	foreach( $pmpro_caps as $cap ) {
+		if ( current_user_can( $cap ) ) {
+			$top_menu_page = str_replace( '_', '-', $cap );
 			break;
 		}
 	}
 
 	$new_links = array(
-		'<a href="' . get_admin_url(NULL, 'admin.php?page=' . $top_menu_page) . '">Settings</a>',
+		'<a href="' . get_admin_url( NULL, 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
 	);
-	return array_merge($new_links, $links);
+	return array_merge( $new_links, $links );
 }
-add_filter('plugin_action_links_' . plugin_basename(PMPRO_DIR . "/paid-memberships-pro.php"), 'pmpro_add_action_links');
+add_filter('plugin_action_links_' . plugin_basename( PMPRO_DIR . '/paid-memberships-pro.php' ), 'pmpro_add_action_links');
 
 /*
 Function to add links to the plugin row meta
 */
-function pmpro_plugin_row_meta($links, $file) {
-	if(strpos($file, 'paid-memberships-pro.php') !== false)
-	{
+function pmpro_plugin_row_meta( $links, $file ) {
+	if ( strpos( $file, 'paid-memberships-pro.php' ) !== false ) {
 		$new_links = array(
 			'<a href="' . esc_url( apply_filters( 'pmpro_docs_url', 'http://paidmembershipspro.com/documentation/' ) ) . '" title="' . esc_attr( __( 'View PMPro Documentation', 'paid-memberships-pro' ) ) . '">' . __( 'Docs', 'paid-memberships-pro' ) . '</a>',
 			'<a href="' . esc_url( apply_filters( 'pmpro_support_url', 'http://paidmembershipspro.com/support/' ) ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'paid-memberships-pro' ) ) . '">' . __( 'Support', 'paid-memberships-pro' ) . '</a>',
 		);
-		$links = array_merge($links, $new_links);
+		$links = array_merge( $links, $new_links );
 	}
 	return $links;
 }
-add_filter('plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2);
+add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
