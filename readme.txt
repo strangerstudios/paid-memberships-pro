@@ -129,6 +129,18 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 1.9.5.6 - 2018-11-15 =
+* BUG FIX: Fixed issue where Braintree would try to cancel a subscription twice if it was cancelled on the Braintree side.
+* BUG FIX: Fixed bug in Braintree webhook when using certain versions of PHP.
+* BUG FIX: Correct Braintree plans flagged as faulty.
+* BUG FIX/ENHANCEMENT: Added Order Code to the Orders Export CSV
+* BUG FIX/ENHANCEMENT: Removed another warning RE billing limits with the Stripe gateway.
+* ENHANCEMENT: Added the pmpro_include_pricing_fields filter.
+* ENHANCEMENT: Adding IDs to action links in the account shortcode so users can target them with CSS/JS.
+* ENHANCEMENT: Updated French Translation. (Thanks, Pascal)
+* ENHANCEMENT: Retina logo on dashboard pages.
+* ENHANCEMENT: Showing what PMPro page a page is in the Post List table of the WP dashboard.
+
 = 1.9.5.5 - 2018-10-19 =
 * BUG FIX: Fixed fatal error in the Braintree webhook that will have caused syncing issues for Braintree users.
 * BUG FIX: Stopped sending the cancel subscription request to the PayPal API if we are processing the IPN request for the same subscription.
