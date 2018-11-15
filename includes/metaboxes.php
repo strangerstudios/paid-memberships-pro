@@ -21,7 +21,7 @@ function pmpro_page_meta()
 				<?php
 					echo $level->name;
 					//Check which categories are protected for this level
-					$protectedcategories = $wpdb->get_col("SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id");	
+					$protectedcategories = $wpdb->get_col("SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id");
 					//See if this post is in any of the level's protected categories
 					if(in_category($protectedcategories, $post->id))
 					{
@@ -35,12 +35,12 @@ function pmpro_page_meta()
 		}
     ?>
     </ul>
-	<?php 
+	<?php
 		if('post' == get_post_type($post) && $in_member_cat) { ?>
 		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", 'paid-memberships-pro' );?></p>
-	<?php 
+	<?php
 		}
-		
+
 		do_action('pmpro_after_require_membership_metabox', $post);
 	?>
 <?php
@@ -53,7 +53,7 @@ function pmpro_page_save($post_id)
 
 	if(empty($post_id))
 		return false;
-	
+
 	if (!empty($_POST['pmpro_noncename']) && !wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename(__FILE__) )) {
 		return $post_id;
 	}
@@ -75,14 +75,14 @@ function pmpro_page_save($post_id)
 			return $post_id;
 	}
 
-	// OK, we're authenticated: we need to find and save the data	
+	// OK, we're authenticated: we need to find and save the data
 	if(isset($_POST['pmpro_noncename']))
 	{
 		if(!empty($_POST['page_levels']))
 			$mydata = $_POST['page_levels'];
 		else
 			$mydata = NULL;
-	
+
 		//remove all memberships for this page
 		$wpdb->query("DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'");
 
@@ -92,7 +92,7 @@ function pmpro_page_save($post_id)
 			foreach($mydata as $level)
 				$wpdb->query("INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval($level) . "', '" . intval($post_id) . "')");
 		}
-	
+
 		return $mydata;
 	}
 	else
@@ -109,15 +109,13 @@ if (is_admin())
 {
 	add_action('admin_menu', 'pmpro_page_meta_wrapper');
 	add_action('save_post', 'pmpro_page_save');
-
-	require_once(PMPRO_DIR . "/adminpages/dashboard.php");
 }
 
 //show membership level restrictions on category edit
 function pmpro_taxonomy_meta($term)
 {
 	global $membership_levels, $post, $wpdb;
-	
+
 	$protectedlevels = array();
 	foreach($membership_levels as $level)
 	{
@@ -125,8 +123,8 @@ function pmpro_taxonomy_meta($term)
 		if(!empty($protectedlevel))
 			$protectedlevels[] .= '<a target="_blank" href="admin.php?page=pmpro-membershiplevels&edit=' . $level->id . '">' . $level->name. '</a>';
 	}
-	if(!empty($protectedlevels)) 
-	{ 
+	if(!empty($protectedlevels))
+	{
 		?>
 		<tr class="form-field">
 			<th scope="row" valign="top"><?php _e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>

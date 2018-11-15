@@ -37,7 +37,7 @@ function pmpro_report_sales_widget() {
 <style>
 	#pmpro_report_sales tbody td:last-child {text-align: right; }
 </style>
-<span id="pmpro_report_sales">
+<span id="pmpro_report_sales" class="pmpro_report-holder">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
 		<tr>

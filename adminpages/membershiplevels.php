@@ -638,7 +638,14 @@
 			}
 		?>
 
-		<h2 class="alignleft"><?php _e('Membership Levels', 'paid-memberships-pro' );?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'paid-memberships-pro' );?></a></h2>
+		<?php if( count( $reordered_levels ) === 0 ) { ?>
+			<div class="pmpro-new-install">
+				<h2><?php echo esc_attr_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/' ); ?>" target="_blank" class="button"><?php echo esc_attr_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
+			</div> <!-- end pmpro-new-install -->
+		<?php } else { ?>
+
 		<form id="posts-filter" method="get" action="">
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'paid-memberships-pro' );?>:</label>
@@ -647,9 +654,9 @@
 				<input class="button" type="submit" value="<?php _e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
 			</p>
 		</form>
+		<h2><?php _e('Membership Levels', 'paid-memberships-pro' );?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'paid-memberships-pro' );?></a></h2>
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
-			<br class="clear" />
 		    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
 	    <?php } ?>
 
@@ -700,6 +707,7 @@
 			?>
 		</tbody>
 		</table>
+
 	<?php
 		$table_html = ob_get_clean();
 
@@ -715,6 +723,8 @@
 		echo $table_html;
 	}
 	?>
+
+	<?php } ?>
 
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");

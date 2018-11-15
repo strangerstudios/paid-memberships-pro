@@ -6,6 +6,7 @@ function pmpro_getPMProCaps()
 {
 	$pmpro_caps = array(
 		//pmpro_memberships_menu //this controls viewing the menu itself
+		'pmpro_dashboard',
 		'pmpro_membershiplevels',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
@@ -18,7 +19,7 @@ function pmpro_getPMProCaps()
 		'pmpro_discountcodes',
 		'pmpro_updates'
 	);
-	
+
 	return $pmpro_caps;
 }
 
@@ -27,11 +28,11 @@ function pmpro_getPMProCaps()
 */
 function pmpro_add_pages()
 {
-	global $wpdb;   
+	global $wpdb;
 
 	//array of all caps in the menu
 	$pmpro_caps = pmpro_getPMProCaps();
-	
+
 	//the top level menu links to the first page they have access to
 	foreach($pmpro_caps as $cap)
 	{
@@ -41,24 +42,26 @@ function pmpro_add_pages()
 			break;
 		}
 	}
-	
+
 	if(empty($top_menu_cap))
 		return;
-	
-	add_menu_page(__('Memberships', 'paid-memberships-pro' ), __('Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-membershiplevels', $top_menu_cap, 'dashicons-groups');
-	add_submenu_page('pmpro-membershiplevels', __('Page Settings', 'paid-memberships-pro' ), __('Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings');
-	add_submenu_page('pmpro-membershiplevels', __('Payment Settings', 'paid-memberships-pro' ), __('Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Email Settings', 'paid-memberships-pro' ), __('Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Advanced Settings', 'paid-memberships-pro' ), __('Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
-	add_submenu_page('pmpro-membershiplevels', __('Add Ons', 'paid-memberships-pro' ), __('Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons');
-	add_submenu_page('pmpro-membershiplevels', __('Members List', 'paid-memberships-pro' ), __('Members List', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist');
-	add_submenu_page('pmpro-membershiplevels', __('Reports', 'paid-memberships-pro' ), __('Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
-	add_submenu_page('pmpro-membershiplevels', __('Orders', 'paid-memberships-pro' ), __('Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
-	add_submenu_page('pmpro-membershiplevels', __('Discount Codes', 'paid-memberships-pro' ), __('Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
+
+	add_menu_page(__('Memberships', 'paid-memberships-pro' ), __('Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups');
+	add_submenu_page('pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
+	add_submenu_page('pmpro-dashboard', __( 'Membership Levels', 'paid-memberships-pro' ), __( 'Membership Levels', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
+	add_submenu_page('pmpro-dashboard', __('Page Settings', 'paid-memberships-pro' ), __('Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings');
+	add_submenu_page('pmpro-dashboard', __('Payment Settings', 'paid-memberships-pro' ), __('Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings');
+	add_submenu_page('pmpro-dashboard', __('Email Settings', 'paid-memberships-pro' ), __('Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings');
+	add_submenu_page('pmpro-dashboard', __('Advanced Settings', 'paid-memberships-pro' ), __('Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings');
+	add_submenu_page('pmpro-dashboard', __('Add Ons', 'paid-memberships-pro' ), __('Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons');
+	add_submenu_page('pmpro-dashboard', __('Members List', 'paid-memberships-pro' ), __('Members List', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist');
+	add_submenu_page('pmpro-dashboard', __('Reports', 'paid-memberships-pro' ), __('Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports');
+	add_submenu_page('pmpro-dashboard', __('Orders', 'paid-memberships-pro' ), __('Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders');
+	add_submenu_page('pmpro-dashboard', __('Discount Codes', 'paid-memberships-pro' ), __('Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes');
 
 	//updates page only if needed
 	if(pmpro_isUpdateRequired())
-		add_submenu_page('pmpro-membershiplevels', __('Updates Required', 'paid-memberships-pro' ), __('Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates');	
+		add_submenu_page('pmpro-membershiplevels', __('Updates Required', 'paid-memberships-pro' ), __('Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates');
 
 	//rename the automatically added Memberships submenu item
 	global $submenu;
@@ -86,14 +89,14 @@ add_action('admin_menu', 'pmpro_add_pages');
 */
 function pmpro_admin_bar_menu() {
 	global $wp_admin_bar;
-	
+
 	//view menu at all?
 	if ( !current_user_can('pmpro_memberships_menu') || !is_admin_bar_showing() )
 		return;
-	
+
 	//array of all caps in the menu
 	$pmpro_caps = pmpro_getPMProCaps();
-	
+
 	//the top level menu links to the first page they have access to
 	foreach($pmpro_caps as $cap)
 	{
@@ -102,77 +105,77 @@ function pmpro_admin_bar_menu() {
 			$top_menu_page = str_replace("_", "-", $cap);
 			break;
 		}
-	}		
-	
+	}
+
 	$wp_admin_bar->add_menu( array(
 	'id' => 'paid-memberships-pro',
 	'title' => __( '<span class="ab-icon"></span>Memberships', 'paid-memberships-pro' ),
 	'href' => get_admin_url(NULL, '/admin.php?page=' . $top_menu_page) ) );
-	
+
 	if(current_user_can('pmpro_membershiplevels'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-membership-levels',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Membership Levels', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-membershiplevels') ) );
-	
+
 	if(current_user_can('pmpro_pagesettings'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-page-settings',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Page Settings', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-pagesettings') ) );
-	
-	if(current_user_can('pmpro_paymentsettings'))	
+
+	if(current_user_can('pmpro_paymentsettings'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-payment-settings',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Payment Settings', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-paymentsettings') ) );
-	
-	if(current_user_can('pmpro_emailsettings'))	
+
+	if(current_user_can('pmpro_emailsettings'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-email-settings',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Email Settings', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-emailsettings') ) );
-	
-	if(current_user_can('pmpro_advancedsettings'))	
+
+	if(current_user_can('pmpro_advancedsettings'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-advanced-settings',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Advanced Settings', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-advancedsettings') ) );
-	
-	if(current_user_can('pmpro_addons'))	
+
+	if(current_user_can('pmpro_addons'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-addons',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Add Ons', 'paid-memberships-pro' ),
-		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-addons') ) );	
-	
-	if(current_user_can('pmpro_memberslist'))	
+		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-addons') ) );
+
+	if(current_user_can('pmpro_memberslist'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-members-list',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Members List', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-memberslist') ) );
-	
-	if(current_user_can('pmpro_reports'))	
+
+	if(current_user_can('pmpro_reports'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-reports',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Reports', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-reports') ) );
-	
-	if(current_user_can('pmpro_orders'))	
+
+	if(current_user_can('pmpro_orders'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-orders',
 		'parent' => 'paid-memberships-pro',
 		'title' => __( 'Orders', 'paid-memberships-pro' ),
 		'href' => get_admin_url(NULL, '/admin.php?page=pmpro-orders') ) );
-	
-	if(current_user_can('pmpro_discountcodes'))	
+
+	if(current_user_can('pmpro_discountcodes'))
 		$wp_admin_bar->add_menu( array(
 		'id' => 'pmpro-discount-codes',
 		'parent' => 'paid-memberships-pro',
@@ -197,6 +200,15 @@ function pmpro_memberslist()
 function pmpro_discountcodes()
 {
 	require_once(PMPRO_DIR . "/adminpages/discountcodes.php");
+}
+
+function pmpro_dashboard() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script('common');
+	wp_enqueue_script('wp-lists');
+	wp_enqueue_script('postbox');
+
+	require_once( PMPRO_DIR . '/adminpages/dashboard.php' );
 }
 
 function pmpro_membershiplevels()
@@ -285,10 +297,10 @@ add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
 Function to add links to the plugin action links
 */
 function pmpro_add_action_links($links) {
-	
+
 	//array of all caps in the menu
 	$pmpro_caps = pmpro_getPMProCaps();
-	
+
 	//the top level menu links to the first page they have access to
 	foreach($pmpro_caps as $cap)
 	{
@@ -298,7 +310,7 @@ function pmpro_add_action_links($links) {
 			break;
 		}
 	}
-	
+
 	$new_links = array(
 		'<a href="' . get_admin_url(NULL, 'admin.php?page=' . $top_menu_page) . '">Settings</a>',
 	);
