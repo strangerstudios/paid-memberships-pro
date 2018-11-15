@@ -134,7 +134,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed bug in Braintree webhook when using certain versions of PHP.
 * BUG FIX: Correct Braintree plans flagged as faulty.
 * BUG FIX/ENHANCEMENT: Added Order Code to the Orders Export CSV
-* BUG FIX/ENHANCEMENT: Removed another warning RE billing limits with the Stripe gateway.
+* BUG FIX/ENHANCEMENT: Removed another warning RE billing limits with the Stripe gateway. (Thanks, Jordan Kohl)
 * ENHANCEMENT: Added the pmpro_include_pricing_fields filter.
 * ENHANCEMENT: Adding IDs to action links in the account shortcode so users can target them with CSS/JS.
 * ENHANCEMENT: Updated French Translation. (Thanks, Pascal)
