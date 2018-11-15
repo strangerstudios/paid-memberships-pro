@@ -1,7 +1,7 @@
 <?php
 /**
  * The Memberships Dashboard admin page for Paid Memberships Pro
- * @since 1.9.4.4
+ * @since 2.0
  */
 
  /**
