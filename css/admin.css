@@ -152,35 +152,60 @@ h2.nav-tab-wrapper {margin-bottom: 1em; }
 .js .postbox.pmpro_clickable h3 {cursor: pointer;}
 #pmpro_report_login .wp-list-table tbody td,
 #pmpro_report_memberships .wp-list-table tbody td,
-#pmpro_report_sales .wp-list-table tbody td {
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td {
     font-size: 1.2rem;
     font-weight: bold;
 }
-.pmpro_report-holder .wp-list-table tbody th button {border: none; background: 0 0; -webkit-border-radius: 0; border-radius: 0; color: #555; cursor: pointer; line-height: 1.7; padding: 0; }
-button.pmpro_report_th:before {bottom: 2px; display: inline-block; font: 400 20px/1 dashicons; left: 0; padding: 0 5px 0 0; position: relative; vertical-align: bottom; text-decoration: none; }
-button.pmpro_report_th_opened:before {content: "\f140"; }
-button.pmpro_report_th_closed:before {content: "\f139"; }
-.pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child th, .pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {border-bottom: 1px solid #CCC; }
-.pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub th, .pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub td {font-size: 12px; padding: 6px 10px; }
-#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th, #pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td {background-color: #fff; }
-#pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr th, #pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {background-color: #f9f9f9; }
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr_sub th {
+    padding-left: 40px;
+}
+.pmpro_report-holder .wp-list-table tbody th button {
+    border: none;
+    background: 0 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    color: #555;
+    cursor: pointer;
+    line-height: 1.7;
+    padding: 0;
+}
+button.pmpro_report_th:before {
+    bottom: 2px;
+    display: inline-block;
+    font: 400 20px/1 dashicons;
+    left: 0;
+    padding: 0 5px 0 0;
+    position: relative;
+    text-decoration: none;
+    vertical-align: bottom;
+}
+button.pmpro_report_th_opened:before {
+    content: "\f140";
+}
+button.pmpro_report_th_closed:before {
+    content: "\f139";
+}
+.pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child th,
+.pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {
+    border-bottom: 1px solid #CCC;
+}
+.pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub th,
+.pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub td {
+    font-size: 12px; padding: 6px 10px;
+}
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td {
+    background-color: #fff;
+}
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) .pmpro_report_tr th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {
+    background-color: #f9f9f9;
+}
 
-/* welcome */
-/*.pmpro_admin .pmpro-welcome-wrap {
-    margin-left: 0;
-    margin-right: 0;
-    max-width: none;
-}
-.pmpro_admin .pmpro-welcome-wrap h3 {
-    margin-top: 0;
-}
-.pmpro_admin .pmpro-welcome-wrap .welcome-panel-column p {
-    padding-right: 15px;
-}
-.pmpro_admin #pmpro_dashboard_welcome hr {
-    margin: 1.5em 2em 1.5em 0;
-}
-*/
 .pmpro_admin #pmpro_dashboard_welcome h3 {
     font-size: 16px;
     font-weight: 600;
@@ -239,11 +264,68 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
 }
 
 @media screen and (max-width: 782px) {
-	.pmpro_reports-holder tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {display: table-cell; }
-    .pmpro-new-install { padding: 0; }
-    .pmpro-new-install h2 { font-size: 1.4rem; }
-    .pmpro-new-install .button-primary, .pmpro-new-install .button { display: block; }
-    .pmpro_admin #pmpro_dashboard_welcome .inside {
+    .pmpro_admin .pmpro_banner {
         display: block;
+    }
+    .pmpro_admin .nav-tab-wrapper {
+        background: #e5e5e5;
+        padding: 15px;
+        text-align: center;
+    }
+    .pmpro_admin .nav-tab-wrapper a.nav-tab {
+        float: none;
+        background: none;
+        border: none;
+        color: #0073aa;
+        font-size: 16px;
+        font-weight: normal;
+        line-height: 2;
+        margin: 0;
+        padding: 0;
+    }
+    .pmpro_admin .nav-tab-wrapper a.nav-tab:active,
+    .pmpro_admin .nav-tab-wrapper a.nav-tab:hover {
+        color: #00a0d2;
+    }
+    .pmpro_admin .nav-tab-wrapper a.nav-tab-active {
+        color: #000;
+        font-weight: 600;
+    }
+    .pmpro_admin .nav-tab-wrapper a.nav-tab:after {
+        color: #666;
+        content: "|";
+        margin: 5px;
+    }
+    .pmpro_admin .nav-tab-wrapper a.nav-tab:last-child:after {
+        content: "";
+        margin: 0;
+    }
+    .pmpro_admin .nav-tab-wrapper { }
+    .pmpro_report-holder tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
+        display: table-cell;
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+    .pmpro-new-install {
+        padding: 0;
+    }
+    .pmpro-new-install h2 {
+        font-size: 1.4rem;
+    }
+    .pmpro-new-install .button-primary, .pmpro-new-install .button {
+        display: block;
+    }
+    .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
+        display: block;
+    }
+    .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column {
+        border-bottom: 1px solid #CCC;
+        margin-bottom: 2em;
+        padding-bottom: 2em;
+    }
+    .pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-column:last-child {
+        border: none;
+        margin: 0;
+        padding: 0;
     }
 }
