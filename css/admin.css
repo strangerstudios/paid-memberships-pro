@@ -186,7 +186,7 @@ button.pmpro_report_th_closed:before {content: "\f139"; }
     font-weight: 600;
     margin: 1rem 0 0;
 }
-.pmpro_admin #pmpro_dashboard_welcome .inside {
+.pmpro_admin #pmpro_dashboard_welcome .pmpro-dashboard-welcome-columns {
     display: grid;
     grid-gap: 2rem;
     grid-template-columns: 1fr 1fr 1fr;
