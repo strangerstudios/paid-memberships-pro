@@ -187,8 +187,12 @@ add_action('admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 /*
 	Functions to load pages from adminpages directory
 */
-function pmpro_reports()
-{
+function pmpro_reports() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script('common');
+	wp_enqueue_script('wp-lists');
+	wp_enqueue_script('postbox');
+
 	require_once(PMPRO_DIR . "/adminpages/reports.php");
 }
 

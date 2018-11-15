@@ -103,7 +103,10 @@ function pmpro_report_memberships_widget() {
 </span>
 <script>
 	jQuery(document).ready(function() {
-		jQuery('.pmpro_report_th ').click(function() {
+		jQuery('.pmpro_report_th ').click(function(event) {
+			//prevent form submit onclick
+			event.preventDefault();
+			 
 			//toggle sub rows
 			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
 
