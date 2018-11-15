@@ -189,7 +189,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 			<p><a href="https://www.paidmembershipspro.com/membership-checkout/?level=20&utm_source=plugin&utm_medium=banner&utm_campaign=welcome" target="_blank" class="button button-action button-hero"><?php esc_attr_e( 'Upgrade', 'paid-memberships-pro' ); ?></a>
 		<?php } ?>
 		<hr />
-		<p>Paid Memberships Pro and our add ons are distributed under the <a target="_blank" href='http://www.gnu.org/licenses/gpl-2.0.html'>GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.</p>
+		<p><?php echo wp_kses_post( sprintf( __( 'Paid Memberships Pro and our add ons are distributed under the <a target="_blank" href="%s">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), 'http://www.gnu.org/licenses/gpl-2.0.html' ) ); ?></p>
 	</div> <!-- end pmpro-dashboard-welcome-column -->
 	<div class="pmpro-dashboard-welcome-column">
 		<h3><?php esc_html_e( 'Get Involved', 'paid-memberships-pro' ); ?></h3>
