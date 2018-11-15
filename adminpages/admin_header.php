@@ -157,7 +157,6 @@
 			<a target="_blank" class="button-primary button-support" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=admin_header"><?php _e('Get Support', 'paid-memberships-pro' );?></a>
 		</div>
 	</div>
-
 	<div id="pmpro_notifications">
 	</div>
 	<script>
@@ -168,7 +167,7 @@
 			});
 		});
 	</script>
-
+	<h2 class="pmpro_wp-notice-fix">&nbsp;</h2>
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',
