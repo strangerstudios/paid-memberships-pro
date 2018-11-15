@@ -312,12 +312,6 @@ function pmpro_dashboard_report_recent_orders_callback() {
 	$order_ids = $wpdb->get_col( $sqlQuery );
 
 	$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
-
-	if ( $order_ids ) {
-		?>
-		<p class="clear"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span></p>
-		<?php
-	}
 	?>
     <span id="pmpro_report_orders" class="pmpro_report-holder">
     	<table class="wp-list-table widefat fixed striped">
@@ -325,10 +319,8 @@ function pmpro_dashboard_report_recent_orders_callback() {
     		<tr class="thead">
     			<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
     			<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+    			<th><?php _e( 'Level', 'paid-memberships-pro' ); ?></th>
     			<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Gateway', 'paid-memberships-pro' ); ?></th>
     			<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
     			<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
     		</tr>
@@ -358,46 +350,23 @@ function pmpro_dashboard_report_recent_orders_callback() {
         					<?php } else { ?>
         						[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
         					<?php } ?>
+                            
+                            <?php if ( ! empty( $order->billing->name ) ) { ?>
+                                <br /><?php echo $order->billing->name; ?>
+                            <?php } ?>
         				</td>
-        				<td><?php echo $order->membership_id; ?></td>
+                        <td><?php echo $order->membership_id; ?></td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>
-        					<?php
-        					if ( ! empty( $order->payment_type ) ) {
-        						echo $order->payment_type . '<br />';
-        					}
-        					?>
-        					<?php if ( ! empty( $order->accountnumber ) ) { ?>
-        						<?php echo $order->cardtype; ?>: x<?php echo last4( $order->accountnumber ); ?><br/>
-        					<?php } ?>
-        					<?php if ( ! empty( $order->billing->name ) ) { ?>
-        							<?php echo $order->billing->name; ?><br/>
-        					<?php } ?>
-        					<?php if ( ! empty( $order->billing->street ) ) { ?>
-        						<?php echo $order->billing->street; ?><br/>
-        						<?php if ( $order->billing->city && $order->billing->state ) { ?>
-        							<?php echo $order->billing->city; ?>, <?php echo $order->billing->state; ?><?php echo $order->billing->zip; ?>
-        										<?php
-        										if ( ! empty( $order->billing->country ) ) {
-        											echo $order->billing->country; }
-        								?>
-        								<br/>
-        						<?php } ?>
-        					<?php } ?>
-        					<?php
-        					if ( ! empty( $order->billing->phone ) ) {
-        						echo formatPhone( $order->billing->phone );
-        					}
-        					?>
-        				</td>
-        				<td><?php echo $order->gateway; ?>
-        								<?php
-        								if ( $order->gateway_environment == 'test' ) {
-        										echo '(test)';
-        								}
-        					?>
-        					</td>
-        				<td><?php echo $order->status; ?></td>
+                            <?php echo $order->gateway; ?>
+                            <?php if ( $order->gateway_environment == 'test' ) {
+                                echo '(test)';
+                            } ?>
+                            <?php if ( ! empty( $order->status ) ) {
+                                echo '<br />(' . $order->status . ')'; 
+                            } ?>
+                        </td>
+                        <td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></td>
         			</tr>
                     <?php
                 }
