@@ -54,6 +54,11 @@ function pmpro_report_login_widget()
 		</tr>
 	</tbody>
 	</table>
+	<?php if ( function_exists( 'pmpro_report_login_page' ) ) { ?>
+		<p class="pmpro_report-button">
+			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=login' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+		</p>
+	<?php } ?>
 </span>
 <?php
 }

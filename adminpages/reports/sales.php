@@ -34,9 +34,6 @@ add_action("init", "pmpro_report_sales_init");
 function pmpro_report_sales_widget() {
 	global $wpdb;
 ?>
-<style>
-	#pmpro_report_sales tbody td:last-child {text-align: right; }
-</style>
 <span id="pmpro_report_sales" class="pmpro_report-holder">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
@@ -55,10 +52,20 @@ function pmpro_report_sales_widget() {
 		);
 
 	foreach ( $reports as $report_type => $report_name ) {
+		//sale prices stats
+		$count = 0;
+		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );	
 		?>
 		<tbody>
 			<tr class="pmpro_report_tr">
-				<th scope="row"><button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button></th>
+				<th scope="row">
+					<?php if( ! empty( $prices ) ) { ?>
+						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button>
+					<?php } else { ?>
+						<?php echo $report_name; ?>
+					<?php } ?>
+				</th>
 				<td><?php echo number_format_i18n( pmpro_getSales( $report_type ) ); ?></td>
 				<td><?php echo pmpro_formatPrice( pmpro_getRevenue( $report_type ) ); ?></td>
 			</tr>
@@ -67,15 +74,15 @@ function pmpro_report_sales_widget() {
 				$count = 0;
 				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
 				$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
-				foreach ( $prices as $price => $quantitiy ) {
+				foreach ( $prices as $price => $quantity ) {
 					if ( $count++ >= $max_prices_count ) {
 						break;
 					}
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo pmpro_formatPrice( $price );?></th>
-					<td><?php echo number_format_i18n( $quantitiy ); ?></td>
-					<td><?php echo pmpro_formatPrice( $price * $quantitiy ); ?></td>
+					<td><?php echo number_format_i18n( $quantity ); ?></td>
+					<td><?php echo pmpro_formatPrice( $price * $quantity ); ?></td>
 				</tr>
 			<?php
 			}
@@ -85,6 +92,11 @@ function pmpro_report_sales_widget() {
 	}
 	?>
 	</table>
+	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
+		<p class="pmpro_report-button">
+			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=sales' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+		</p>
+	<?php } ?>
 </span>
 
 <?php
