@@ -157,6 +157,10 @@ if ( $filter == "all" || ! $filter ) {
 	$condition = "membership_id = " . esc_sql( $l );
 } elseif ( $filter == "within-a-status" ) {
 	$condition = "status = '" . esc_sql( $status ) . "' ";
+} elseif ( $filter == 'only-paid' ) {
+	$condition = "total > 0";
+} elseif( $filter == 'only-free' ) {
+	$condition = "total = 0";
 }
 
 //string search

@@ -136,18 +136,9 @@ if ( empty( $filter ) || $filter === 'all' ) {
 } elseif ( $filter == 'within-a-status' ) {
 	$condition = "status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
-
 	$condition = "total > 0";
-
-	if( !empty( $status ) ) {
-		$condition .= "AND status ='" . esc_sql( $status ) . "' ";
-	}
 } elseif( $filter == 'only-free' ) {
 	$condition = "total = 0";
-
-	if( !empty( $status ) ) {
-		$condition .= "AND status ='" . esc_sql( $status ) . "' ";
-	}
 }
 
 // emailing?
@@ -1171,12 +1162,12 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#end-day').hide();
 					jQuery('#end-year').hide();
 					jQuery('#predefined-date').hide();
-					jQuery('#status').show();
+					jQuery('#status').hide();
 					jQuery('#l').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
-					jQuery('#filterby').show();
+					jQuery('#filterby').hide();
 				}
 			}
 
