@@ -188,28 +188,20 @@
 			<a href="<?php echo admin_url('admin.php?page=pmpro-dashboard');?>" class="nav-tab<?php if($view == 'pmpro-dashboard') { ?> nav-tab-active<?php } ?>"><?php _e('Dashboard', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
-		<?php if(current_user_can('pmpro_membershiplevels')) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Membership Levels', 'paid-memberships-pro' );?></a>
-		<?php } ?>
-
-		<?php if(current_user_can('pmpro_pagesettings') || current_user_can('pmpro_paymentsettings') || current_user_can('pmpro_emailsettings') || current_user_can('pmpro_advancedsettings') ) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" class="nav-tab<?php if( $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-advancedsettings' ) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
-		<?php } ?>
-
 		<?php if(current_user_can('pmpro_memberslist')) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-memberslist');?>" class="nav-tab<?php if($view == 'pmpro-memberslist') { ?> nav-tab-active<?php } ?>"><?php _e('Members List', 'paid-memberships-pro' );?></a>
-		<?php } ?>
-
-		<?php if(current_user_can('pmpro_reports')) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-reports');?>" class="nav-tab<?php if($view == 'pmpro-reports') { ?> nav-tab-active<?php } ?>"><?php _e('Reports', 'paid-memberships-pro' );?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-memberslist');?>" class="nav-tab<?php if($view == 'pmpro-memberslist') { ?> nav-tab-active<?php } ?>"><?php _e('Members', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_orders')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-orders');?>" class="nav-tab<?php if($view == 'pmpro-orders') { ?> nav-tab-active<?php } ?>"><?php _e('Orders', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
-		<?php if(current_user_can('pmpro_discountcodes')) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-discountcodes');?>" class="nav-tab<?php if($view == 'pmpro-discountcodes') { ?> nav-tab-active<?php } ?>"><?php _e('Discount Codes', 'paid-memberships-pro' );?></a>
+		<?php if(current_user_can('pmpro_reports')) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-reports');?>" class="nav-tab<?php if($view == 'pmpro-reports') { ?> nav-tab-active<?php } ?>"><?php _e('Reports', 'paid-memberships-pro' );?></a>
+		<?php } ?>
+
+		<?php if(current_user_can('pmpro_membershiplevels')) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
@@ -217,22 +209,30 @@
 		<?php } ?>
 	</nav>
 
-	<?php if( $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-advancedsettings' ) { ?>
+	<?php if( $view == 'pmpro-membershiplevels' || $view == 'pmpro-discountcodes' || $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-advancedsettings' ) { ?>
 		<ul class="subsubsub">
+			<?php if(current_user_can('pmpro_membershiplevels')) { ?>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" title="<?php _e('Membership Levels', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-membershiplevels') { ?>current<?php } ?>"><?php _e('Levels', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+			<?php } ?>
+
+			<?php if(current_user_can('pmpro_discountcodes')) { ?>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-discountcodes');?>" title="<?php _e('Discount Codes', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-discountcodes') { ?>current<?php } ?>"><?php _e('Discount Codes', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+			<?php } ?>
+
 			<?php if(current_user_can('pmpro_pagesettings')) { ?>
-				<li><a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" class="<?php if($view == 'pmpro-pagesettings') { ?>current<?php } ?>"><?php _e('Page Settings', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" title="<?php _e('Page Settings', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-pagesettings') { ?>current<?php } ?>"><?php _e('Pages', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_paymentsettings')) { ?>
-				<li><a href="<?php echo admin_url('admin.php?page=pmpro-paymentsettings');?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php _e('Payment Gateway &amp; SSL Settings', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-paymentsettings');?>" title="<?php _e('Payment Gateway &amp; SSL Settings', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-paymentsettings') { ?>current<?php } ?>"><?php _e('Payment Gateway &amp; SSL', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_emailsettings')) { ?>
-				<li><a href="<?php echo admin_url('admin.php?page=pmpro-emailsettings');?>" class="<?php if($view == 'pmpro-emailsettings') { ?>current<?php } ?>"><?php _e('Email Settings', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-emailsettings');?>" title="<?php _e('Email Settings', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-emailsettings') { ?>current<?php } ?>"><?php _e('Email', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_advancedsettings')) { ?>
-				<li><a href="<?php echo admin_url('admin.php?page=pmpro-advancedsettings');?>" class="<?php if($view == 'pmpro-advancedsettings') { ?>current<?php } ?>"><?php _e('Advanced Settings', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo admin_url('admin.php?page=pmpro-advancedsettings');?>" title="<?php _e('Advanced Settings', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-advancedsettings') { ?>current<?php } ?>"><?php _e('Advanced', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 		</ul>
 		<br class="clear" />
