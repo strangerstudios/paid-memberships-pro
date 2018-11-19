@@ -1,4 +1,7 @@
 <?php
+
+use Braintree\WebhookNotification as Braintree_WebhookNotification;
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	
@@ -842,6 +845,13 @@
 			return false;
 		}
 		
+		/**
+         * Create Braintree Subscription
+         *
+		 * @param \MemberOrder $order
+		 *
+		 * @return bool
+		 */
 		function subscribe(&$order)
 		{
 			if ( ! self::$is_loaded ) {
@@ -886,9 +896,12 @@
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 
+			$start_ts  = strtotime($order->ProfileStartDate, current_time("timestamp") );
+			$now =  strtotime( date('Y-m-d\T00:00:00', current_time('timestamp' ) ), current_time('timestamp' ) );
+			
 			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
-
+			$trial_period_days = ceil(abs( $now - $start_ts ) / 86400);
+			
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))
 			{
@@ -926,7 +939,7 @@
 			}
 			catch (Exception $e)
 			{
-				$order->error = __("Error subscribing customer to plan with Braintree:", 'paid-memberships-pro' ) . " " . $e->getMessage() . " (" . get_class($e) . ")";
+				$order->error = sprint( __("Error subscribing customer to plan with Braintree: %s (%s)", 'paid-memberships-pro' ), $e->getMessage(), get_class($e) );
 				//return error
 				$order->shorterror = $order->error;
 				return false;
@@ -941,7 +954,7 @@
 			}
 			else
 			{
-				$order->error = __("Failed to subscribe with Braintree:", 'paid-memberships-pro' ) . " " . $result->message;
+				$order->error = sprintf( __("Failed to subscribe with Braintree: %s", 'paid-memberships-pro' ),  $result->message );
 				$order->shorterror = $result->message;
 				return false;
 			}
@@ -967,13 +980,37 @@
 			}
 		}
 		
+		/**
+         * Cancel order and Braintree Subscription if applicable
+         *
+		 * @param \MemberOrder $order
+		 *
+		 * @return bool
+		 */
 		function cancel(&$order)
 		{
 			if ( ! self::$is_loaded ) {
 				$order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", 'paid-memberships-pro');
 				return false;
 			}
-
+			
+			if ( isset( $_POST['bt_payload']) && isset( $_POST['bt_payload']) ) {
+			
+				try {
+					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+				} catch ( \Exception $e ) {
+				    // Don't do anything
+				}
+			}
+			
+			// Always cancel, even if Braintree fails
+			$order->updateStatus("cancelled" );
+			
+			if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
+			    // Return, we're already processing the cancellation
+			    return true;
+            }
+            
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
@@ -988,21 +1025,18 @@
 				}
 				catch(Exception $e)
 				{
-					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = __("Could not find the subscription.", 'paid-memberships-pro' ) . " " . $e->getMessage();
+					$order->error = sprintf( __("Could not find the subscription. %s", 'paid-memberships-pro' ),  $e->getMessage() );
 					$order->shorterror = $order->error;
 					return false;	//no subscription found
 				}
 				
 				if($result->success)
 				{
-					$order->updateStatus("cancelled");
 					return true;
 				}
 				else
 				{
-					$order->updateStatus("cancelled");	//assume it's been cancelled already
-					$order->error = __("Could not find the subscription.", 'paid-memberships-pro' ) . " " . $result->message;
+					$order->error = sprintf( __("Could not find the subscription. %s", 'paid-memberships-pro' ), $result->message );
 					$order->shorterror = $order->error;
 					return false;	//no subscription found
 				}

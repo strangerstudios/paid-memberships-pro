@@ -54,7 +54,7 @@ function pmpro_report_memberships_widget() {
 
 	$pmpro_levels = apply_filters( 'pmpro_report_levels', $pmpro_levels );
 ?>
-<span id="pmpro_report_memberships">
+<span id="pmpro_report_memberships" class="pmpro_report-holder">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
 		<tr>
@@ -71,13 +71,23 @@ function pmpro_report_memberships_widget() {
 			'all time'=> __('All Time', 'paid-memberships-pro' ),
 		);
 
-		foreach($reports as $report_type => $report_name) {
+		foreach( $reports as $report_type => $report_name ) {
+			$signups = number_format_i18n( pmpro_getSignups( $report_type ) );
+			$cancellations = number_format_i18n( pmpro_getCancellations( $report_type) );
 		?>
 		<tbody>
 			<tr class="pmpro_report_tr">
-				<th scope="row"><button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button></th>
-				<td><?php echo number_format_i18n(pmpro_getSignups($report_type)); ?></td>
-				<td><?php echo number_format_i18n(pmpro_getCancellations($report_type)); ?></td>
+				<th scope="row">
+					<?php if ( empty( $signups ) && empty( $cancellations) ) { ?>
+						<?php echo $report_name; ?>
+					<?php } else { ?>
+						<button class="pmpro_report_th pmpro_report_th_closed">
+							<?php echo $report_name; ?>
+						</button>
+					<?php } ?>
+				</th>
+				<td><?php echo $signups; ?></td>
+				<td><?php echo $cancellations; ?></td>
 			</tr>
 			<?php
 				//level stats
@@ -100,10 +110,18 @@ function pmpro_report_memberships_widget() {
 		}
 	?>
 	</table>
+	<?php if ( function_exists( 'pmpro_report_memberships_page' ) ) { ?>
+		<p class="pmpro_report-button">
+			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=memberships' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+		</p>
+	<?php } ?>
 </span>
 <script>
 	jQuery(document).ready(function() {
-		jQuery('.pmpro_report_th ').click(function() {
+		jQuery('.pmpro_report_th ').click(function(event) {
+			//prevent form submit onclick
+			event.preventDefault();
+			 
 			//toggle sub rows
 			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
 
@@ -582,7 +600,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	FROM {$wpdb->pmpro_memberships_users} AS mu1
 	WHERE mu1.status IN('" . esc_sql( implode( "','", $status ) ) . "')
 		AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.enddate <= " . esc_sql( $enddate ) . "
+		AND mu1.enddate <= '" . esc_sql( $enddate ) . "'
 	";
 
 	//restrict by level
