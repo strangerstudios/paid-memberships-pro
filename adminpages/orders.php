@@ -135,6 +135,19 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$condition = 'membership_id = ' . esc_sql( $l );
 } elseif ( $filter == 'within-a-status' ) {
 	$condition = "status = '" . esc_sql( $status ) . "' ";
+} elseif ( $filter == 'only-paid' ) {
+
+	$condition = "total > 0";
+
+	if( !empty( $status ) ) {
+		$condition .= "AND status ='" . esc_sql( $status ) . "' ";
+	}
+} elseif( $filter == 'only-free' ) {
+	$condition = "total = 0";
+
+	if( !empty( $status ) ) {
+		$condition .= "AND status ='" . esc_sql( $status ) . "' ";
+	}
 }
 
 // emailing?
@@ -989,6 +1002,10 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 						value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php _e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
 					<option
 						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php _e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
+					<option 
+						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php _e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
+					<option 
+						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php _e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
 				</select>
 
 				<span id="from"><?php _e( 'From', 'paid-memberships-pro' ); ?></span>
@@ -1132,6 +1149,21 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#filterby').show();
 				}
 				else if (filter == 'within-a-status') {
+					jQuery('#start-month').hide();
+					jQuery('#start-day').hide();
+					jQuery('#start-year').hide();
+					jQuery('#end-month').hide();
+					jQuery('#end-day').hide();
+					jQuery('#end-year').hide();
+					jQuery('#predefined-date').hide();
+					jQuery('#status').show();
+					jQuery('#l').hide();
+					jQuery('#submit').show();
+					jQuery('#from').hide();
+					jQuery('#to').hide();
+					jQuery('#filterby').show();
+				}
+				else if(filter == 'only-paid' || filter == 'only-free' ) {
 					jQuery('#start-month').hide();
 					jQuery('#start-day').hide();
 					jQuery('#start-year').hide();
