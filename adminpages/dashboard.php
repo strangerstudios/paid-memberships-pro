@@ -148,7 +148,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<h3><?php echo esc_attr_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
     		<ul>
     			<?php if ( current_user_can( 'pmpro_emailsettings' ) ) { ?>
-    				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailsettings' );?>"><i class="dashicons dashicons-email"></i> <?php _e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
+    				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailsettings' );?>"><i class="dashicons dashicons-email"></i> <?php echo esc_attr_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
     			<?php } ?>
 
     			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
