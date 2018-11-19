@@ -151,13 +151,13 @@ h2.nav-tab-wrapper {margin-bottom: 1em; }
 .pmpro_clickable {cursor: pointer;}
 .js .postbox.pmpro_clickable h3 {cursor: pointer;}
 #pmpro_report_login .wp-list-table tbody td,
-#pmpro_report_memberships .wp-list-table tbody td,
+#pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
 #pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td {
     font-size: 1.2rem;
     font-weight: bold;
 }
-#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr_sub th {
-    padding-left: 40px;
+#pmpro_report_sales .wp-list-table tbody td:last-child {
+    text-align: right;
 }
 .pmpro_report-holder .wp-list-table tbody th button {
     border: none;
@@ -185,13 +185,9 @@ button.pmpro_report_th_opened:before {
 button.pmpro_report_th_closed:before {
     content: "\f139";
 }
-.pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child th,
-.pmpro_reports-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {
+.pmpro_report-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child th,
+.pmpro_report-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {
     border-bottom: 1px solid #CCC;
-}
-.pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub th,
-.pmpro_reports-holder .wp-list-table tbody .pmpro_report_tr_sub td {
-    font-size: 12px; padding: 6px 10px;
 }
 #pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th,
 #pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td,
@@ -205,7 +201,11 @@ button.pmpro_report_th_closed:before {
 #pmpro_report_sales .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {
     background-color: #f9f9f9;
 }
+.pmpro_report-holder .pmpro_report-button {
+    text-align: center;
+}
 
+/* Dashboard */
 .pmpro_admin #pmpro_dashboard_welcome h3 {
     font-size: 16px;
     font-weight: 600;
