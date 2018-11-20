@@ -18,21 +18,21 @@
 	add_meta_box(
  		'pmpro_dashboard_report_sales',
  		__( 'Sales and Revenue' ),
- 		'pmpro_dashboard_report_sales_callback',
+ 		'pmpro_report_sales_widget',
  		'toplevel_page_pmpro-dashboard',
  		'advanced'
  	);
 	add_meta_box(
  		'pmpro_dashboard_report_membership_stats',
  		__( 'Membership Stats' ),
- 		'pmpro_dashboard_report_membership_stats_callback',
+ 		'pmpro_report_memberships_widget',
  		'toplevel_page_pmpro-dashboard',
  		'advanced'
  	);
 	add_meta_box(
  		'pmpro_dashboard_report_logins',
  		__( 'Visits, Views, and Logins' ),
- 		'pmpro_dashboard_report_logins_callback',
+ 		'pmpro_report_login_widget',
  		'toplevel_page_pmpro-dashboard',
  		'advanced'
  	);
@@ -203,36 +203,6 @@ function pmpro_dashboard_welcome_callback() { ?>
     	</div> <!-- end pmpro-dashboard-welcome-column -->
     </div> <!-- end pmpro-dashboard-welcome-columns -->
 	<?php
-}
-
-/*
- * Callback function for pmpro_dashboard_report_sales meta box to show the Sales and Revenue report widget.
- */
-function pmpro_dashboard_report_sales_callback() {
-	call_user_func( 'pmpro_report_sales_widget' );
-	if( function_exists( 'pmpro_report_sales_page' ) ) { ?>
-		<p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=sales ' ); ?>"><?php esc_attr_e( 'Details', 'paid-memberships-pro' ); ?></a></p>
-	<?php }
-}
-
-/*
- * Callback function for pmpro_dashboard_report_recent_orders meta box to show the Membership Stats report widget.
- */
-function pmpro_dashboard_report_membership_stats_callback() {
-	call_user_func( 'pmpro_report_memberships_widget' );
-	if( function_exists( 'pmpro_report_memberships_page' ) ) { ?>
-		<p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=memberships ' ); ?>"><?php esc_attr_e( 'Details', 'paid-memberships-pro' ); ?></a></p>
-	<?php }
-}
-
-/*
- * Callback function for pmpro_dashboard_report_logins meta box to show the Visits, Views and Logins report widget.
- */
-function pmpro_dashboard_report_logins_callback() {
-	call_user_func( 'pmpro_report_login_widget' );
-	if( function_exists( 'pmpro_report_login_page' ) ) { ?>
-		<p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=login' ); ?>"><?php esc_attr_e( 'Details', 'paid-memberships-pro' ); ?></a></p>
-	<?php }
 }
 
 /*
