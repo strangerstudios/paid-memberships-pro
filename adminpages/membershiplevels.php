@@ -7,6 +7,7 @@
 
 	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
 
+
 	//some vars
 	$gateway = pmpro_getOption("gateway");
     $pmpro_level_order = pmpro_getOption('level_order');
@@ -310,7 +311,6 @@
 				) );
 			if(empty($level->categories))
 				$level->categories = array();
-
 		?>
 		<form action="" method="post" enctype="multipart/form-data">
 			<input name="saveid" type="hidden" value="<?php echo esc_attr($edit); ?>" />
@@ -516,7 +516,7 @@
 							}
 						  ?>
 						</select>
-						<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
+						<br /><small><strong><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></strong></small>
 					</td>
 				</tr>
 			</tbody>
@@ -681,7 +681,7 @@
 				foreach($reordered_levels as $level)
 				{
 			?>
-			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
+			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level) || !pmpro_checkLevelForSettingsCompatibility($level) )  { ?>pmpro_error<?php } ?>">
 				<td><?php echo $level->id?></td>
 				<td class="level_name"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php esc_attr_e( $level->name ); ?></a></td>
 				<td>

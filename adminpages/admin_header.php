@@ -124,6 +124,15 @@
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", 'paid-memberships-pro' ) . "</a>.";
 	}
 
+	if ( !pmpro_checkLevelForSettingsCompatibility() ) {
+		if( $view == "pmpro-membershiplevels" && ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {
+			if ( ! pmpro_checkLevelForSettingsCompatibility( $_REQUEST['edit'] ) ) {
+				$msg = -1;
+				$msgt = __( 'You have set a recurring subscription with an expiration date. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );
+			}
+		}
+	}
+
 	//check gateway dependencies
 	$gateway = pmpro_getOption('gateway');
 	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {

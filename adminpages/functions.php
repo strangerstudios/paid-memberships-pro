@@ -171,6 +171,53 @@ function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 }
 
 /**
+ * Check if membership setting combination are allowed or show a warning to users.
+ *
+ * @param object $level The level's object you would like to query.
+ * @return bool
+ * @since 2.0
+ */
+function pmpro_checkLevelForSettingsCompatibility( $level = NULL ) {
+
+	global $wpdb;
+
+	// check for general incompatibile settings.
+	// Check if level has recurring amount & expiration date and show a warning.
+	$r = true;
+
+	if ( empty( $level ) ) {
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{					
+					if(!pmpro_checkLevelForSettingsCompatibility($level))
+						$r = false;
+				}
+			}
+	} else {
+
+		if( is_numeric($level) ) {
+
+			$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
+		}
+
+		// var_dump( $level );
+
+		if ( ! empty( $level->expiration_period ) && !empty( $level->cycle_period ) ) {
+
+			$r = false;
+		}
+
+	}
+	
+	$r = apply_filters( 'pmpro_level_settings_compatiblity', $r, $level );
+
+	return $r;
+}
+
+/**
  * Get the gateway-related classes for fields on the payment settings page.
  *
  * @param string $field The name of the field to check.
