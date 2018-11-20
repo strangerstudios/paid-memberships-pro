@@ -247,11 +247,14 @@ function pmpro_updates()
  */
 function pmpro_fix_orphaned_sub_menu_pages( ) {
 	global $submenu;
-	$pmpro_dashboard_submenu = $submenu['pmpro-dashboard'];	
-	$pmpro_old_memberships_submenu = $submenu['pmpro-membershiplevels'];
+
+	if ( array_key_exists( 'pmpro-membershiplevels', $submenu ) ) {
+		$pmpro_dashboard_submenu = $submenu['pmpro-dashboard'];	
+		$pmpro_old_memberships_submenu = $submenu['pmpro-membershiplevels'];
 	
-	if ( is_array( $pmpro_dashboard_submenu ) && is_array( $pmpro_old_memberships_submenu ) ) {
-		$submenu['pmpro-dashboard'] = array_merge( $pmpro_dashboard_submenu, $pmpro_old_memberships_submenu );
+		if ( is_array( $pmpro_dashboard_submenu ) && is_array( $pmpro_old_memberships_submenu ) ) {
+			$submenu['pmpro-dashboard'] = array_merge( $pmpro_dashboard_submenu, $pmpro_old_memberships_submenu );
+		}
 	}
 }
 add_action( 'admin_init', 'pmpro_fix_orphaned_sub_menu_pages', 99 );
