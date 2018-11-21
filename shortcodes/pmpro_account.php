@@ -31,7 +31,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		$ssorder->getLastMemberOrder();
 		$mylevels = pmpro_getMembershipLevelsForUser();
 		$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('refunded', 'review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
+		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 		?>	
 	<div id="pmpro_account">		
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
@@ -127,6 +127,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						<th><?php _e("Date", 'paid-memberships-pro' ); ?></th>
 						<th><?php _e("Level", 'paid-memberships-pro' ); ?></th>
 						<th><?php _e("Amount", 'paid-memberships-pro' ); ?></th>
+						<th><?php _e("Status", 'paid-memberships-pro'); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -147,6 +148,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?></td>
 							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
+							<td><?php if ( empty( $invoice->status ) ) { _e( 'success', 'paid-memberships-pro' ); }else{ echo $invoice->status; } ?></td>
 						</tr>
 						<?php 
 					}
