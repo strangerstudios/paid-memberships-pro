@@ -203,8 +203,6 @@ function pmpro_checkLevelForSettingsCompatibility( $level = NULL ) {
 			$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 		}
 
-		// var_dump( $level );
-
 		if ( ! empty( $level->expiration_period ) && !empty( $level->cycle_period ) ) {
 
 			$r = false;
