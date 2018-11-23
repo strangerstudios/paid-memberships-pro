@@ -196,7 +196,8 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                      * Get the first available level and append it to the "View Page" url for checkout.
                      * @since 2.0
                      */
-                    $first_level = apply_filters( 'pmpro_default_view_checkout_level', array_values( $available_levels_array )[0] );
+                    $first_level = apply_filters( 'pmpro_default_view_checkout_level', min( $available_levels_array ) );
+
 
                     ?>
                     <?php if (!empty($pmpro_pages['checkout'])) { ?>
