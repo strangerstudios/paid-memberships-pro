@@ -188,12 +188,22 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 <td>
                     <?php
                     wp_dropdown_pages(array("name" => "checkout_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['checkout'], "post_types" => $post_types ));
+                    
+                    // Get available levels for checkout.
+                    $available_levels_array = pmpro_getAllLevels( false, false );
+
+                    /**
+                     * Get the first available level and append it to the "View Page" url for checkout.
+                     * @since 2.0
+                     */
+                    $first_level = apply_filters( 'pmpro_default_view_checkout_level', array_values( $available_levels_array )[0] );
+
                     ?>
                     <?php if (!empty($pmpro_pages['checkout'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout'] ?>&action=edit"
                            class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
                         &nbsp;
-                        <a target="_blank" href="<?php echo get_permalink($pmpro_pages['checkout']); ?>"
+                        <a target="_blank" href="<?php echo add_query_arg( 'level', intval( $first_level->id ), get_permalink($pmpro_pages['checkout']) ); ?>"
                            class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
                     <br/>
