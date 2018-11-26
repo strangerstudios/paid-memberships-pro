@@ -1929,7 +1929,23 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// no level, check for a default level in the custom fields for this post
 	if ( empty( $level_id ) && ! empty( $post ) ) {
+
 		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
+
+		// if still empty, let's try get first available level.
+		if ( empty( $level_id ) ) {
+			$all_levels = pmpro_getAllLevels( false, false );
+
+			// Get lowest level ID.
+			$default_level =  min( $all_levels );
+
+			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level->id ) );
+			
+			// Bail back to levels page if level ID is empty or less than 1.
+			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+				return;
+			}
+		}
 	}
 
 	// default to discount code passed in
