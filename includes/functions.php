@@ -605,7 +605,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 			$lastdate = date_i18n( 'Y-m-d', $order->timestamp );
 
 			// next payment date
-			$nextdate = $wpdb->get_var( "SELECT UNIX_TIMESTAMP('" . $lastdate . "' + INTERVAL " . $level->cycle_number . ' ' . $level->cycle_period . ')' );
+			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->timestamp );
 
 			$r = $nextdate;
 		} else {
