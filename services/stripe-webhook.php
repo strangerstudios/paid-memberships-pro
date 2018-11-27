@@ -319,7 +319,7 @@
 						
 						//send an email to the member
 						$myemail = new PMProEmail();
-						$myemail->sendCancelEmail( $user );
+						$myemail->sendCancelEmail( $user, $old_order->membership_id );
 						
 						//send an email to the admin
 						$myemail = new PMProEmail();
