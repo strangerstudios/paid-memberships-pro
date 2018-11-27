@@ -44,6 +44,7 @@ tr td.level_name a {font-size: 115%; font-weight: bold; }
 .membership-levels tr {background: #fff;}
 .membership-levels tr.alternate {background: #f9f9f9;}
 .membership-levels tr.ui-sortable-helper {border: 1px solid #2997C8;}
+.membership-levels tr.pmpro_error {background-color: #f2dede; color: #a94442;}
 tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 tr.membership_categories ul {margin-left: 25px;}
 
@@ -53,22 +54,47 @@ tr.pmpro_settings_divider td:before {content: "- ";}
 tr.pmpro_settings_divider td:after {content: " -";}
 
 /* messages */
-.pmpro_message {background-color: #D5E4F7; background-image: url(../images/icon_information.gif); background-position: 3px 5px; background-repeat: no-repeat; margin: .5em 0; padding: 6px 6px 6px 25px; color: #345395; font-size: 11px; font-weight: bold; line-height: 1.3em; }
-
-.pmpro_success {background-color: #CFEECA; background-image: url(../images/icon_success.gif); color: #208A1B; }
-.pmpro_error {background-color: #F9D6CB; background-image: url(../images/icon_error.gif); color: #E36154; }
-.pmpro_alert {background-color: #FFF6CC; background-image: url(../images/icon_alert.gif); color: #CF8516; }
-
-.pmpro_message a {color: #345395; }
-.pmpro_success a {color: #208A1B; }
-.pmpro_error a {color: #E36154; }
-.pmpro_alert a {color: #CF8516; }
-
-/* highlighted trs */
-tr.pmpro_message {background-image: none;}
-tr.pmpro_success {background-image: none;}
-tr.pmpro_error {background-image: none;}
-tr.pmpro_alert {background-image: none;}
+.pmpro_message {
+	background-color: #d9edf7;
+	border: 1px solid #bce8f1;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	color: #31708f;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5em;
+	margin: .5em 0;
+	padding: 10px 15px;
+}
+.pmpro_success {
+	background-color: #dff0d8;
+	border-color: #d6e9c6;
+	color: #3c763d;
+}
+.pmpro_error {
+	background-color: #f2dede;
+	border-color: #ebccd1;
+	color: #a94442;
+}
+.pmpro_alert {
+	background-color: #fcf8e3;
+	border-color: #faebcc;
+	color: #8a6d3b;
+}
+.pmpro_message a {
+	color: #245269;
+	text-decoration: underline;
+}
+.pmpro_success a {
+	color: #2b542c;
+}
+.pmpro_error a {
+	color: #843534;
+}
+.pmpro_alert a {
+	color: #66512c;
+}
 
 /* discount levels */
 .pmpro_discount_levels {border: 1px solid #CCC;}
