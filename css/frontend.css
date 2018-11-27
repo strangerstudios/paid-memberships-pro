@@ -78,7 +78,10 @@ fieldset[disabled] .pmpro_btn {
 
 input[type="button"]#discount_code_button,
 input[type="button"]#discount_code_button:hover,
-input[type="button"]#discount_code_button:focus {
+input[type="button"]#discount_code_button:focus,
+input[type="button"]#other_discount_code_button,
+input[type="button"]#other_discount_code_button:hover,
+input[type="button"]#other_discount_code_button:focus {
 	-webkit-appearance: none;
     -moz-appearance: none;
 	background: none;
