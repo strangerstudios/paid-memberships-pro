@@ -165,10 +165,17 @@ function pmpro_report_memberships_page()
 	else
 		$year = date_i18n("Y");
 
-	if(isset($_REQUEST['level']))
-		$l = intval($_REQUEST['level']);
-	else
+	if(isset($_REQUEST['level'])) {
+		if( $_REQUEST['level'] == 'paid-levels' ) {
+			$l = pmpro_report_get_levels( 'paid' );
+		}elseif( $_REQUEST['level'] == 'free-levels' ) {
+			$l = pmpro_report_get_levels( 'free' );
+		}else{
+			$l = intval($_REQUEST['level']);
+		}
+	} else {
 		$l = "";
+	}
 
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
@@ -371,6 +378,8 @@ function pmpro_report_memberships_page()
 			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 			<select name="level">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
+				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "paid-levels"){?> selected="selected" <?php }?>><?php _e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
+				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "free-levels"){?> selected="selected" <?php }?>><?php _e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -379,7 +388,9 @@ function pmpro_report_memberships_page()
 					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
 				<?php
 					}
+
 				?>
+
 			</select>
 
 			<input type="hidden" name="page" value="pmpro-reports" />
@@ -779,3 +790,33 @@ function pmpro_report_memberships_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_memberships_delete_transients");
+
+
+/**
+ * Creates an array of membership level ID's for querying.
+ * @param $type string type of membership level you want to retrieve "free" or "paid".
+ * @since 2.0
+ */
+function pmpro_report_get_levels( $type = NULL ) {
+
+	if ( empty( $type ) ) {
+		return;
+	}
+
+	$level_data = pmpro_getAllLevels( true, true );
+	$r = array();
+
+
+	foreach( $level_data as $key => $value ) {
+		if ( $type === 'free' && pmpro_isLevelFree( $value ) ) {
+			$r[] = intval( $value->id);
+		} elseif( $type === 'paid' && !pmpro_isLevelFree( $value ) ) {
+			$r[] = intval( $value->id );
+		}
+	}
+
+	// implode it before returning it.
+	$r = implode( ',', $r );
+
+	return $r;
+}
