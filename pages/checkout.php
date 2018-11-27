@@ -555,6 +555,34 @@
 						jQuery('#discount_code_button').removeAttr('disabled');
 					}
 				});
+			} else {
+				//hide any previous message
+				jQuery('.pmpro_discount_code_msg').hide();
+
+				jQuery.ajax({
+					url: '<?php echo admin_url('admin-ajax.php'); ?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
+					dataType: 'html',
+					data: "action=applydiscountcode&code=&level=" + level_id + "&msgfield=discount_code_message",
+					error: function(xml){
+						alert('Please enter a discount code to apply [1]');
+
+						//enable apply button
+						jQuery('#discount_code_button').removeAttr('disabled');
+					},
+					success: function(responseHTML){
+						if (responseHTML == 'error')
+						{
+							alert('Please enter a discount code to apply [2]');
+						}
+						else
+						{
+							jQuery('#discount_code_message').html(responseHTML);
+						}
+
+						//enable invite button
+						jQuery('#discount_code_button').removeAttr('disabled');
+					}
+				});
 			}
 		});
 		-->
