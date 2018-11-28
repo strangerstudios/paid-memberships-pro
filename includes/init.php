@@ -119,7 +119,7 @@ add_action("init", "pmpro_init");
  */
 add_action( 'wp_enqueue_scripts', 'pmpro_checkout_scripts' );
 function pmpro_checkout_scripts() {
-	$pmpro_pages;
+	global $pmpro_pages;
 	wp_register_script( 'checkout-page', plugins_url( '/js/checkout-page.js', __DIR__ ), array( 'jquery' ), '1.2' );
 	wp_localize_script(
 		'checkout-page',
@@ -127,9 +127,14 @@ function pmpro_checkout_scripts() {
 		array(
 			'checkout_page_ajaxurl'   => admin_url( 'admin-ajax.php' ),
 			'checkout_page_nonce'     => wp_create_nonce( 'checkout-page-nonce' ),
+			'applydiscountcode'		  => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 		)
 	);
-	wp_enqueue_script( 'checkout-page' );
+	wp_register_style( 'checkout-page', plugins_url( '/css/checkout-page.css', __DIR__ ),  '1.2' );
+	if ( is_page( $pmpro_pages['checkout'] ) ) {
+		// wp_enqueue_script( 'checkout-page' );
+		wp_enqueue_style( 'checkout-page' );
+	}
 }
 
 // echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");
@@ -142,6 +147,10 @@ function pmpro_checkout_function() {
 	exit();
 }
 
+add_filter( 'pmpro_ajax_timeout', 'change_pmpro_ajax_timeout' );
+function change_pmpro_ajax_timeout() {
+	return 3999;
+}
 //this code runs after $post is set, but before template output
 function pmpro_wp()
 {
