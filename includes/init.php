@@ -132,7 +132,7 @@ function pmpro_checkout_scripts() {
 	);
 	wp_register_style( 'checkout-page', plugins_url( '/css/checkout-page.css', __DIR__ ),  '1.2' );
 	if ( is_page( $pmpro_pages['checkout'] ) ) {
-		// wp_enqueue_script( 'checkout-page' );
+		wp_enqueue_script( 'checkout-page' );
 		wp_enqueue_style( 'checkout-page' );
 	}
 }
