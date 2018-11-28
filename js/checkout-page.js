@@ -70,6 +70,7 @@ jQuery(document).ready(function($) {
 				data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 				error: function(xml){
 					alert('Error applying discount code [1]');
+					$('return-discount-info').html(xml);
 
 					//enable apply button
 					$('#discount_code_button').removeAttr('disabled');
@@ -102,9 +103,9 @@ jQuery(document).ready(function($) {
 
 			$.ajax({
 				url: checkout_page_object.checkout_page_ajaxurl,
-				action: 'checkout_page_action',
-				// type:'GET',
-				type: 'POST',
+				// action: 'checkout_page_action',
+				type:'GET',
+				// type: 'POST',
 				timeout: checkout_page_object.applydiscountcode,
 				dataType: 'html',
 				data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
@@ -120,6 +121,7 @@ jQuery(document).ready(function($) {
 					} else {
 						$('#pmpro_message').html(responseHTML);
 					}
+					$('return-discount-info').html(responseHTML);
 					//enable invite button
 					$('#other_discount_code_button').removeAttr('disabled');
 				}
