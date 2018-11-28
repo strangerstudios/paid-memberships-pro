@@ -123,8 +123,6 @@ if ( ! empty( $_REQUEST['review'] ) ) {
 				<label for="username"><?php _e( 'Username', 'paid-memberships-pro' ); ?></label>
 				<input id="username" name="username" type="text" class="input <?php echo pmpro_getClassForField( 'username' ); ?>" size="30" value="<?php echo esc_attr( $username ); ?>" />
 			</div> <!-- end pmpro_checkout-field-username -->
-		<h2 id="return-discount-info">Echo here</h2>
-
 			<?php
 				do_action( 'pmpro_checkout_after_username' );
 			?>
