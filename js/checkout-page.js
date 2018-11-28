@@ -1,4 +1,12 @@
 jQuery(document).ready(function($) {
+	$('#other_discount_code_button').hide();
+	$('.pmpro_checkout-field.pmpro_payment-discount-code').hide();
+	$('#other_discount_code').bind("change keyup input", function() {
+		$('.pmpro_checkout-field.pmpro_payment-discount-code').show();
+		$('#other_discount_code_button').show();
+		$('#discount_code_button').show();
+	});
+
 	// alert('Currently the AJAX timeout is set to ' + checkout_page_object.applydiscountcode);
 	$('#AccountNumber').validateCreditCard(function(result) {
 		var cardtypenames = {
@@ -60,7 +68,7 @@ jQuery(document).ready(function($) {
 			$('.pmpro_discount_code_msg').hide();
 
 			//disable the apply button
-			$('#discount_code_button').attr('disabled', 'disabled');
+			// $('#discount_code_button').attr('disabled', 'disabled');
 
 			$.ajax({
 				url: checkout_page_object.checkout_page_ajaxurl,
@@ -88,6 +96,7 @@ jQuery(document).ready(function($) {
 			});
 		}
 	});
+
 
 	//applying a discount code
 	$('#other_discount_code_button').click(function() {
@@ -159,7 +168,7 @@ jQuery(document).ready(function($) {
 	});
 
 	//click apply button on enter in discount code box
-	$('#discount_code').keydown(function (e){
+	$('#discount_code').keydown(function(e){
 	    if(e.keyCode == 13){
 		   e.preventDefault();
 		   $('#discount_code_button').click();

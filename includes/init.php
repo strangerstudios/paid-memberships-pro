@@ -130,7 +130,7 @@ function pmpro_checkout_scripts() {
 			'applydiscountcode'		  => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
 		)
 	);
-	wp_register_style( 'checkout-page', plugins_url( '/css/checkout-page.css', __DIR__ ),  '1.2' );
+	wp_register_style( 'checkout-page', plugins_url( '/css/checkout-page.css', __DIR__ ),  time() );
 	if ( is_page( $pmpro_pages['checkout'] ) ) {
 		wp_enqueue_script( 'checkout-page' );
 		wp_enqueue_style( 'checkout-page' );
