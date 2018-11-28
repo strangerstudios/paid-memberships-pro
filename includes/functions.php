@@ -1937,9 +1937,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$all_levels = pmpro_getAllLevels( false, false );
 
 			// Get lowest level ID.
-			$default_level =  min( $all_levels );
+			$default_level =  min( array_keys( $all_levels ) );
 
-			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level->id ) );
+			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
 			
 			// Bail back to levels page if level ID is empty or less than 1.
 			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
