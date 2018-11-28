@@ -3,7 +3,6 @@
 		background-color: #fff;
 		color: #444;
 		width: 100%;
-	    /*margin: 0 auto;*/
 	    position: absolute;
 	    left: 25%;
 	    z-index: 33;
@@ -14,7 +13,7 @@
 	.box {
 		color: #fff;
 		border-radius: 5px;
-		padding: .3rem 1rem;
+		padding: .2rem 1rem;
 		font-size: 90%;
 
 	}
