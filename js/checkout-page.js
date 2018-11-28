@@ -1,5 +1,6 @@
 jQuery(document).ready(function($) {
-	jQuery('#AccountNumber').validateCreditCard(function(result) {
+	// alert('Currently the AJAX timeout is set to ' + checkout_page_object.applydiscountcode);
+	$('#AccountNumber').validateCreditCard(function(result) {
 		var cardtypenames = {
 			"amex"                      : "American Express",
 			"diners_club_carte_blanche" : "Diners Club Carte Blanche",
@@ -13,10 +14,11 @@ jQuery(document).ready(function($) {
 			"visa_electron"             : "Visa Electron"
 		};
 
-		if(result.card_type)
-			jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-		else
-			jQuery('#CardType').val('Unknown Card Type');
+		if(result.card_type) {
+			$('#CardType').val(cardtypenames[result.card_type.name]);
+		}else{
+			$('#CardType').val('Unknown Card Type');
+		}
 	});
 	//update discount code link to show field at top of form
 	$('#other_discount_code_a').attr('href', 'javascript:void(0);');
@@ -41,42 +43,46 @@ jQuery(document).ready(function($) {
 	$('#discount_code').blur(function() {
 		$('#other_discount_code').val($('#discount_code').val());
 	});
-
+	$("#credit-card-whats").click(function(e){
+		e.preventDefault();
+		$("#cvv-window").show();
+	});
+	$("#small-x-close").click(function(){
+		$("#cvv-window").hide();
+	});
 	//checking a discount code
-	jQuery('#discount_code_button').click(function() {
-		var code = jQuery('#discount_code').val();
-		var level_id = jQuery('#level').val();
+	$('#discount_code_button').click(function() {
+		var code = $('#discount_code').val();
+		var level_id = $('#level').val();
 
-		if(code)
-		{
+		if(code){
 			//hide any previous message
-			jQuery('.pmpro_discount_code_msg').hide();
+			$('.pmpro_discount_code_msg').hide();
 
 			//disable the apply button
-			jQuery('#discount_code_button').attr('disabled', 'disabled');
+			$('#discount_code_button').attr('disabled', 'disabled');
 
-			jQuery.ajax({
-				url: '<?php echo admin_url('admin-ajax.php'); ?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
+			$.ajax({
+				url: checkout_page_object.checkout_page_ajaxurl,
+				type:'GET',
+				timeout: checkout_page_object.applydiscountcode,
 				dataType: 'html',
 				data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
 				error: function(xml){
 					alert('Error applying discount code [1]');
 
 					//enable apply button
-					jQuery('#discount_code_button').removeAttr('disabled');
+					$('#discount_code_button').removeAttr('disabled');
 				},
 				success: function(responseHTML){
-					if (responseHTML == 'error')
-					{
+					if (responseHTML == 'error'){
 						alert('Error applying discount code [2]');
-					}
-					else
-					{
-						jQuery('#discount_code_message').html(responseHTML);
+					}else{
+						$('#discount_code_message').html(responseHTML);
 					}
 
 					//enable invite button
-					jQuery('#discount_code_button').removeAttr('disabled');
+					$('#discount_code_button').removeAttr('disabled');
 				}
 			});
 		}
@@ -99,7 +105,7 @@ jQuery(document).ready(function($) {
 				action: 'checkout_page_action',
 				// type:'GET',
 				type: 'POST',
-				timeout: 5000,
+				timeout: checkout_page_object.applydiscountcode,
 				dataType: 'html',
 				data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=pmpro_message",
 				error: function(xml){
@@ -120,4 +126,58 @@ jQuery(document).ready(function($) {
 			});
 		}
 	});
+	// Find ALL <form> tags on your page
+	$('form').submit(function(){
+		// On submit disable its submit button
+		$('input[type=submit]', this).attr('disabled', 'disabled');
+		$('input[type=image]', this).attr('disabled', 'disabled');
+		$('#pmpro_processing_message').css('visibility', 'visible');
+	});
+
+	//iOS Safari fix (see: http://stackoverflow.com/questions/20210093/stop-safari-on-ios7-prompting-to-save-card-data)
+	var userAgent = window.navigator.userAgent;
+	if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
+		$('input[type=submit]').click(function() {
+			try{
+				$("input[type=password]").attr("type", "hidden");
+			} catch(ex){
+				try {
+					$("input[type=password]").prop("type", "hidden");
+				} catch(ex) {}
+			}
+		});
+	}
+
+	//add required to required fields
+	$('.pmpro_required').after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
+
+	//unhighlight error fields when the user edits them
+	$('.pmpro_error').bind("change keyup input", function() {
+		$(this).removeClass('pmpro_error');
+	});
+
+	//click apply button on enter in discount code box
+	$('#discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   $('#discount_code_button').click();
+	    }
+	});
+
+	//hide apply button if a discount code was passed in
+	// if ( true == discount_code_present ) {
+	$('#discount_code_button').hide();
+		$('#discount_code').bind('change keyup', function() {
+			$('#discount_code_button').show();
+		});
+	// }
+	//click apply button on enter in *other* discount code box
+	$('#other_discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   $('#other_discount_code_button').click();
+	    }
+	});
+	//add javascriptok hidden field to checkout
+	$("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 });
