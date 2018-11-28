@@ -601,9 +601,6 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 		$level = pmpro_getMembershipLevelForUser( $user_id );
 
 		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
-			// last payment date
-			$lastdate = date_i18n( 'Y-m-d', $order->timestamp );
-
 			// next payment date
 			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->timestamp );
 
