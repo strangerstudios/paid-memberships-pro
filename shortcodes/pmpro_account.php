@@ -142,13 +142,22 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						$invoice_id = $invoice->id;
 						$invoice = new MemberOrder;
 						$invoice->getMemberOrderByID($invoice_id);
-						$invoice->getMembershipLevel();						
+						$invoice->getMembershipLevel();		
+
+						if ( in_array( $invoice->status, array( '', 'success', 'cancelled' ) ) ) {
+						    $display_status = __( 'Paid', 'paid-memberships-pro' );
+						} elseif ( $invoice->status == 'pending' ) {
+						    // Some Add Ons set status to pending.
+						    $display_status = __( 'Pending', 'paid-memberships-pro' );
+						} elseif ( $invoice->status == 'refunded' ) {
+						    $display_status = __( 'Refunded', 'paid-memberships-pro' );
+						}				
 						?>
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
 							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?></td>
 							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
-							<td><?php if ( empty( $invoice->status ) ) { _e( 'success', 'paid-memberships-pro' ); }else{ echo $invoice->status; } ?></td>
+							<td><?php echo $display_status; ?></td>
 						</tr>
 						<?php 
 					}
