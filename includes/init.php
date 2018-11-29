@@ -137,8 +137,6 @@ function pmpro_checkout_scripts() {
 	}
 }
 
-// echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");
-
 add_action( 'wp_ajax_checkout_page_action', 'pmpro_checkout_function' );
 add_action( 'wp_ajax_nopriv_checkout_page_action', 'pmpro_checkout_function' );
 function pmpro_checkout_function() {
