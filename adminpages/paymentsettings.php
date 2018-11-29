@@ -19,7 +19,7 @@
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
 	}
-	
+
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
@@ -106,10 +106,10 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
-		
+
 		<h2><?php _e('Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php _e('SSL Settings', 'paid-memberships-pro' );?></h2>
 
-		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="http://www.paidmembershipspro.com/support/initial-plugin-setup/payment-gateway/">Payment Gateway Settings</a>.', 'paid-memberships-pro' ); ?></p>
+		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-3-payment-gateway-security/">Payment Gateway Settings</a>.', 'paid-memberships-pro' ); ?></p>
 
 		<table class="form-table">
 		<tbody>
@@ -209,7 +209,7 @@
 					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> <small>(<?php _e('abbreviation, e.g. "PA"', 'paid-memberships-pro' );?>)</small>
 					&nbsp; <?php _e('Tax Rate', 'paid-memberships-pro' ); ?>:
 					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> <small>(<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)</small>
-					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=banner&utm_campaign=payment_settings">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></small></p>
+					<p><small><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="https://www.paidmembershipspro.com/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=banner&utm_campaign=payment_settings">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></small></p>
 				</td>
 			</tr>
 
@@ -238,8 +238,8 @@
 								<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes (with JavaScript redirects)', 'paid-memberships-pro' );?></option>
 							</select>
 							<small><?php _e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'paid-memberships-pro' ); ?></small>
-							<?php 
-						} 
+							<?php
+						}
 					?>
 				</td>
 			</tr>

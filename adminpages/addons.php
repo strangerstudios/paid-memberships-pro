@@ -37,32 +37,46 @@
 	if(empty($status) || !in_array($status, $approved_statuses))
 		$status = "all";
 	
-	//split addons into groups for filtering
-	$addons_all = $addons;
-	$addons_active = array();
-	$addons_inactive = array();
-	$addons_update = array();
-	$addons_uninstalled = array();
-
-	foreach($addons as $addon)
-	{
+	// Split Add Ons into groups for filtering
+	$all_visible_addons = array();
+	$all_hidden_addons = array();
+	$active_addons = array();
+	$inactive_addons = array();
+	$update_available_addons = array();
+	$not_installed_addons = array();
+	
+	// Build array of Visible, Hidden, Active, Inactive, Installed, and Not Installed Add Ons.
+	foreach ( $addons as $addon ) {
+		
 		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 		$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+
+		// Build Visible and Hidden arrays.
+		if ( empty ( $addon['HideFromAddOnsList'] ) || file_exists( $plugin_file_abs ) ) {
+			$all_visible_addons[] = $addon;
+		} else {
+			$all_hidden_addons[] = $addon;
+		}
 		
-		//active?
-		if(is_plugin_active($plugin_file))
-			$addons_active[] = $addon;
-		else
-			$addons_inactive[] = $addon;
-
-		//has update?
-		if(isset($plugin_info->response[$plugin_file]))
-			$addons_update[] = $addon;
-
-		//not installed?
-		if(!file_exists($plugin_file_abs))
-			$addons_uninstalled[] = $addon;
+		// Build Active and Inactive arrays - exclude hidden Add Ons that are not installed.
+		if ( is_plugin_active( $plugin_file ) ) {
+			$active_addons[] = $addon;
+		} elseif ( empty ( $addon['HideFromAddOnsList'] ) || file_exists( $plugin_file_abs ) ) {
+			$inactive_addons[] = $addon;
+		}
+		
+		// Build array of Add Ons that have an update available.
+		if ( isset( $plugin_info->response[$plugin_file] ) ) {
+			$update_available_addons[] = $addon;
+		}
+		
+		// Build array of Add Ons that are visible and not installed.
+		if ( empty ( $addon['HideFromAddOnsList'] ) && ! file_exists( $plugin_file_abs ) ) {
+			$not_installed_addons[] = $addon;
+		}
+			
 	}
+
 	?>
 	<h2><?php _e('Add Ons', 'paid-memberships-pro' ); ?></h2>
 
@@ -76,11 +90,11 @@
 	</p>
 
 	<ul class="subsubsub">
-		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons);?>)</span></a> |</li>
-		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_active);?>)</span></a> |</li>
-		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_inactive);?>)</span></a> |</li>
-		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_update);?>)</span></a> |</li>
-		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($addons_uninstalled);?>)</span></a></li>
+		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($all_visible_addons);?>)</span></a> |</li>
+		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($active_addons);?>)</span></a> |</li>
+		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($inactive_addons);?>)</span></a> |</li>
+		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($update_available_addons);?>)</span></a> |</li>
+		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($not_installed_addons);?>)</span></a></li>
 	</ul>
 
 	<br /><br />
@@ -101,17 +115,18 @@
 	<tbody id="the-list">
 		<?php
 			//which addons to show?
-			if($status == "active")
-				$addons = $addons_active;
-			elseif($status == "inactive")
-				$addons = $addons_inactive;
-			elseif($status == "update")
-				$addons = $addons_update;
-			elseif($status == "uninstalled")
-				$addons = $addons_uninstalled;
-			else
-				$addons = $addons_all;
-
+			if ( $status == "active" ) {
+				$addons = $active_addons;
+			} elseif ( $status == "inactive") {
+				$addons = $inactive_addons;
+			} elseif ( $status == "update" ) {
+				$addons = $update_available_addons;
+			} elseif ( $status == "uninstalled" ) {
+				$addons = $not_installed_addons;
+			} else {
+				$addons = $all_visible_addons;
+			}
+			
 			//no addons for this filter?
 			if(count($addons) < 1)
 			{

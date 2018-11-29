@@ -23,7 +23,7 @@ function pmpro_report_login_widget()
 	$views = get_option("pmpro_views", array("today"=>0, "thisday"=>date_i18n("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date_i18n("n", $now)));
 	$logins = get_option("pmpro_logins", array("today"=>0, "thisday"=>date_i18n("Y-m-d", $now), "alltime"=>0, "month"=>0, "thismonth"=>date_i18n("n", $now)));
 ?>
-<span id="pmpro_report_login">
+<span id="pmpro_report_login" class="pmpro_report-holder">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
 		<tr>
@@ -54,6 +54,11 @@ function pmpro_report_login_widget()
 		</tr>
 	</tbody>
 	</table>
+	<?php if ( function_exists( 'pmpro_report_login_page' ) ) { ?>
+		<p class="pmpro_report-button">
+			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=login' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+		</p>
+	<?php } ?>
 </span>
 <?php
 }

@@ -305,7 +305,7 @@ li.pmpro_more {
 	width: auto;
 }
 .pmpro_a-print {
-	background: url(../images/printer.gif) top left no-repeat;
+	background: url(../images/printer-icon.svg) top left no-repeat;
 	color: #345395;
 	cursor: pointer;
 	float: right;

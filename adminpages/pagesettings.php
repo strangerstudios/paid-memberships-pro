@@ -105,21 +105,25 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 
     <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
-		<h2><?php _e('Pages', 'paid-memberships-pro' ); ?></h2>
+        <h2><?php _e( 'Page Settings', 'paid-memberships-pro' ); ?></h2>
         <?php
         global $pmpro_pages_ready;
-        if ($pmpro_pages_ready) {
-            ?>
+        if ( $pmpro_pages_ready ) { ?>
             <p><?php _e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'paid-memberships-pro' ); ?></p>
-            <?php
-        } else {
-            ?>
+        <?php } elseif( ! empty( $_REQUEST['manualpages'] ) ) { ?>
             <p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
-                    href="<?php echo wp_nonce_url(admin_url('admin.php?page=pmpro-pagesettings&createpages=1'), 'createpages', 'pmpro_pagesettings_nonce');?>"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
+                    href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=pmpro-pagesettings&createpages=1' ), 'createpages', 'pmpro_pagesettings_nonce');?>"><?php _e('click here to let us generate them for you', 'paid-memberships-pro' ); ?></a>.
             </p>
-            <?php
-        }
-        ?>
+        <?php } else { ?>
+            <div class="pmpro-new-install">
+                <h2><?php echo esc_attr_e( 'Manage Pages', 'paid-memberships-pro' ); ?></h2>
+                <h4><?php echo esc_attr_e( 'Several frontend pages are required for your Paid Memberships Pro site.', 'paid-memberships-pro' ); ?></h4>
+                <a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=pmpro-pagesettings&createpages=1'), 'createpages', 'pmpro_pagesettings_nonce' ); ?>" class="button-primary"><?php echo esc_attr_e( 'Generate Pages For Me', 'paid-memberships-pro' ); ?></a>
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings&manualpages=1' ) ); ?>" class="button"><?php echo esc_attr_e( 'Create Pages Manually', 'paid-memberships-pro' ); ?></a>
+            </div> <!-- end pmpro-new-install -->
+        <?php } ?>
+
+        <?php if ( ! empty( $pmpro_pages_ready ) || ! empty( $_REQUEST['manualpages'] ) ) { ?>
         <table class="form-table">
             <tbody>
             <tr>
@@ -256,6 +260,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             </tr>
             </tbody>
         </table>
+
         <?php
         if (!empty($extra_pages)) { ?>
             <h2><?php _e('Additional Page Settings', 'paid-memberships-pro' ); ?></h2>
@@ -292,7 +297,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                                 <a target="_blank" href="<?php echo get_permalink($pmpro_pages[$name]); ?>"
                                    class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
                             <?php } else { ?>
-                                &nbsp;				
+                                &nbsp;
                                 <a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( $name ) ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                             <?php } ?>
 							<?php if(!empty($hint)) { ?>
@@ -309,6 +314,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             <input name="savesettings" type="submit" class="button button-primary"
                    value="<?php _e('Save Settings', 'paid-memberships-pro' ); ?>"/>
         </p>
+        <?php } ?>
     </form>
 
 <?php
