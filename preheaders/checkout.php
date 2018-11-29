@@ -45,6 +45,27 @@ if ( empty( $pmpro_level->id ) ) {
 
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+add_action( 'wp_enqueue_scripts', 'pmpro_checkout_scripts', 10 );
+
+/**
+ * Enqueue JS for checkout page
+ *
+ * @since 2.0 Enqueue checkout-page.js here
+ */
+function pmpro_checkout_scripts() {
+	global $pmpro_pages;
+	wp_register_script( 'checkout-page', plugins_url( '/js/checkout-page.js', __DIR__ ), array( 'jquery' ), '2.0' );
+	wp_localize_script(
+		'checkout-page',
+		'checkout_page_object',
+		array(
+			'checkout_page_ajaxurl'   => admin_url( 'admin-ajax.php' ),
+			'checkout_page_nonce'     => wp_create_nonce( 'checkout-page-nonce' ),
+			'applydiscountcode'		  => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
+		)
+	);
+	wp_enqueue_script( 'checkout-page' );
+}
 
 global $wpdb, $current_user, $pmpro_requirebilling;
 //unless we're submitting a form, let's try to figure out if https should be used

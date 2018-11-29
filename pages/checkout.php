@@ -3,13 +3,6 @@
 	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
 	/**
-	 * Enqueue JS for checkout page
-	 *
-	 * @since 2.0 Registered in init.php, enqueue checkout-page.js here
-	 */
-	wp_enqueue_script( 'checkout-page' );
-
-	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
 	 *
 	 * @since 1.8.4.5
