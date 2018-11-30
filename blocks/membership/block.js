@@ -6,7 +6,7 @@
  /**
   * Block dependencies
   */
- import './style.scss';
+ import './style.css';
  import classnames from 'classnames';
 
  /**
