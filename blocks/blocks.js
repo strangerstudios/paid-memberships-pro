@@ -7,15 +7,15 @@ import './i18n.js';
  * Import registerBlockType blocks
  */
 import './checkout-button/block.js';
-import './account-page/block';
-import './account-membership-section/block';
-import './account-profile-section/block';
-import './account-invoices-section/block';
-import './account-links-section/block';
-import './billing-page/block';
-import './cancel-page/block';
-import './checkout-page/block';
-import './confirmation-page/block';
-import './invoice-page/block';
-import './levels-page/block';
-import './membership/block';
+import './account-page/block.js';
+import './account-membership-section/block.js';
+import './account-profile-section/block.js';
+import './account-invoices-section/block.js';
+import './account-links-section/block.js';
+import './billing-page/block.js';
+import './cancel-page/block.js';
+import './checkout-page/block.js';
+import './confirmation-page/block.js';
+import './invoice-page/block.js';
+import './levels-page/block.js';
+import './membership/block.js';

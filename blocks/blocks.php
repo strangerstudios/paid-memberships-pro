@@ -4,8 +4,6 @@
  *
  * @package blocks
  */
-namespace PMPro\Blocks;
-
 defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 /**
@@ -26,59 +24,64 @@ require_once( 'levels-page/block.php' );
 require_once( 'membership/block.php' );
 
 /**
+ * Add PMPro block category
+ */
+function pmpro_place_blocks_in_panel( $categories, $post ) {
+	return array_merge(
+		$categories,
+		array(
+			array(
+				'slug'  => 'pmpro',
+				'title' => __( 'Paid Memberships Pro', 'paid-memberships-pro' ),
+			),
+		)
+	);
+}
+add_filter( 'block_categories', 'pmpro_place_blocks_in_panel', 10, 2 );
+
+/**
  * Enqueue block editor only JavaScript and CSS
  */
 function pmpro_block_editor_scripts() {
-
-	// Make paths variables so we don't write em twice.
-	$block_path = 'js/editor.blocks.js';
-
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-js',
-		plugins_url( $block_path, dirname( __FILE__ ) ),
-		[ 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor' ],
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . $block_path )
+		PMPRO_URL . '/js/editor.blocks.js',
+		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor'),
+		PMPRO_VERSION
 	);
 
 	/*
 	// Enqueue optional editor only styles.
 	wp_enqueue_style(
 		'pmpro-editor-css',
-		plugins_url( $editor_style_path, dirname( __FILE__ ) ),
-		[ 'wp-blocks' ],
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . $editor_style_path )
+		plugins_url( $editor_style_path, PMPRO_DIR ),
+		array( 'wp-blocks' ),
+		PMPRO_VERSION )
 	);
 	*/
 }
-
-// Hook scripts function into block editor hook.
-add_action( 'enqueue_block_editor_assets',  __NAMESPACE__ . '\pmpro_block_editor_scripts' );
+add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );
 
 /**
  * Enqueue front end and editor JavaScript and CSS
  */
 function pmpro_block_scripts() {
-	$block_path = 'js/frontend.blocks.js';
-	$style_path = 'css/blocks.style.css';
-
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-frontend-js',
-		plugins_url( $block_path, dirname( __FILE__ ) ),
-		[ 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api' ],
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . $block_path )
+		PMPRO_URL . '/js/frontend.blocks.js',
+		array( 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api' ),
+		PMPRO_VERSION
 	);
 
 	// Enqueue frontend and editor block styles.
 	wp_enqueue_style(
 		'pmpro-blocks-css',
-		plugins_url( $style_path, dirname( __FILE__ ) ),
-		[ 'wp-blocks' ],
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . $style_path )
+		PMPRO_URL . '/css/blocks.style.css',
+		array( 'wp-blocks' ),
+		PMPRO_VERSION
 	);
 
 }
-
-// Hook scripts function into block editor hook.
-add_action( 'enqueue_block_assets',  __NAMESPACE__ . '\pmpro_block_scripts' );
+add_action( 'enqueue_block_assets', 'pmpro_block_scripts' );
