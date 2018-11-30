@@ -46,8 +46,9 @@ require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
-require_once( PMPRO_DIR . '/includes/admin.php' );					        // admin notices and functionality
+require_once( PMPRO_DIR . '/includes/admin.php' );					// admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
+require_once( PMPRO_DIR . '/blocks/blocks.php' );             		// Gutenberg blocks
 require_once( PMPRO_DIR . '/includes/services.php' );               // services loaded by AJAX and via webhook, etc
 require_once( PMPRO_DIR . '/includes/metaboxes.php' );              // metaboxes for dashboard
 require_once( PMPRO_DIR . '/includes/profile.php' );                // edit user/profile fields
