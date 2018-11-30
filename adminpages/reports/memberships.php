@@ -575,22 +575,22 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 
 	//figure out start date
 	$now = current_time('timestamp');
-	$year = date_i18n("Y", $now);
+	$year = date("Y", $now);
 
 	if( $period == 'today' )
 	{
-		$startdate = date_i18n('Y-m-d', $now) . " 00:00:00";
-		$enddate = "'" . date_i18n('Y-m-d', $now) . " 23:59:59'";
+		$startdate = date('Y-m-d', $now) . " 00:00:00";
+		$enddate = "'" . date('Y-m-d', $now) . " 23:59:59'";
 	}
 	elseif( $period == 'this month')
 	{
-		$startdate = date_i18n( 'Y-m', $now ) . '-01 00:00:00';
+		$startdate = date( 'Y-m', $now ) . '-01 00:00:00';
 		$enddate = "CONCAT(LAST_DAY('" . date_i18n( 'Y-m', $now ) . '-01' ."'), ' 23:59:59')";
 	}
 	elseif( $period == 'this year')
 	{
-		$startdate = date_i18n( 'Y', $now ) . '-01-01 00:00:00';
-		$enddate = "'" . date_i18n( 'Y', $now ) . "-12-31 23:59:59'";
+		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
+		$enddate = "'" . date( 'Y', $now ) . "-12-31 23:59:59'";
 	}
 	else
 	{
@@ -606,13 +606,16 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	*/
 	global $wpdb;
 
-        $sqlQuery = "
-	SELECT COUNT( DISTINCT mu1.user_id )
-	FROM {$wpdb->pmpro_memberships_users} AS mu1
-	WHERE mu1.status IN('" . esc_sql( implode( "','", $status ) ) . "')
-		AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.enddate <= '" . esc_sql( $enddate ) . "'
-	";
+	// Note here that we no longer esc_sql the $startdate and $enddate
+	// Escaping broke the MYSQL we passed in.
+	// We generated these vars and can trust them.
+    $sqlQuery = "
+		SELECT COUNT( DISTINCT mu1.user_id )
+		FROM {$wpdb->pmpro_memberships_users} AS mu1
+		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
+			AND mu1.enddate >= '" . $startdate . "'
+			AND mu1.enddate <= " . $enddate  . "
+		";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
@@ -623,7 +626,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 			$levels = array($levels);
 		}
 
-		$sqlQuery .= "AND mu1.membership_id IN(" . esc_sql( implode( ", ", $levels ) ) . ") ";
+		$sqlQuery .= "AND mu1.membership_id IN(" . implode( ',', array_map( 'esc_sql', $levels ) ) . ") ";
 	}
 
 	/**
@@ -691,7 +694,7 @@ function pmpro_getMRR($period, $levels = 'all')
 		return false;
 
 	//how many months ago was the first order
-	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . esc_sql( date_i18n("Ym") ) . "', '" . esc_sql( date_i18n("Ym", $first_order_timestamp ) ) . "')");
+	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . date("Ym") . "', '" . date("Ym", $first_order_timestamp ) . "')");
 
 	/* this works in PHP 5.3+ without using MySQL to get the diff
 	$date1 = new DateTime(date_i18n("Y-m-d", $first_order_timestamp));

@@ -454,6 +454,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//not saving email in order table, but the sites need it
 					$morder->Email = $bemail;
 
+					//save the user ID if logged in
+					if ( $current_user->ID ) {
+						$morder->user_id = $current_user->ID;
+					}
+					
 					//sometimes we need these split up
 					$morder->FirstName = $bfirstname;
 					$morder->LastName  = $blastname;
