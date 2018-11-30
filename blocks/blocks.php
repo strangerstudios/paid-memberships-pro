@@ -46,7 +46,7 @@ function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-js',
-		PMPRO_URL . '/js/editor.blocks.js',
+		plugins_url( 'js/editor.blocks.js', PMPRO_BASE_FILE ),
 		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor'),
 		PMPRO_VERSION
 	);
@@ -70,7 +70,7 @@ function pmpro_block_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-frontend-js',
-		PMPRO_URL . '/js/frontend.blocks.js',
+		plugins_url( 'js/frontend.blocks.js', PMPRO_BASE_FILE ),
 		array( 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api' ),
 		PMPRO_VERSION
 	);
@@ -78,7 +78,7 @@ function pmpro_block_scripts() {
 	// Enqueue frontend and editor block styles.
 	wp_enqueue_style(
 		'pmpro-blocks-css',
-		PMPRO_URL . '/css/blocks.style.css',
+		plugins_url( 'css/blocks.style.css', PMPRO_BASE_FILE ),
 		array( 'wp-blocks' ),
 		PMPRO_VERSION
 	);
