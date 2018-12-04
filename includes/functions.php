@@ -1425,7 +1425,7 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 		if ( $l ) {
 			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		}
-		$user_ids_query .= ')';
+		$user_ids_query .= ")";
 	} else {
 		$user_ids_query = '';
 	}
