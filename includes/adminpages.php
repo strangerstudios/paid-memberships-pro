@@ -14,6 +14,7 @@ function pmpro_getPMProCaps()
 		'pmpro_advancedsettings',
 		'pmpro_addons',
 		'pmpro_memberslist',
+		'pmpro_memberslisttable',
 		'pmpro_reports',
 		'pmpro_orders',
 		'pmpro_discountcodes',
@@ -49,6 +50,7 @@ function pmpro_add_pages()
 	add_menu_page(__( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
+	$page_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members Table', 'paid-memberships-pro' ), __( 'Members Table', 'paid-memberships-pro' ), 'pmpro_memberslisttable', 'pmpro-memberslisttable', 'pmpro_memberslisttable' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
@@ -59,12 +61,36 @@ function pmpro_add_pages()
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
+	add_action( 'load-' . $page_hook, 'pmpro_list_table_screen_options' );
+
 	//updates page only if needed
 	if ( pmpro_isUpdateRequired() ) {
 		add_submenu_page( 'pmpro-dashboard', __( 'Updates Required', 'paid-memberships-pro' ), __( 'Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
+
+/**
+ * Screen options for the List Table
+ *
+ * Callback for the load-($page_hook_suffix)
+ * Called when the plugin page is loaded
+ *
+ * @since    2.0.0
+ */
+function pmpro_list_table_screen_options() {
+	global $dev_member_list_table;
+	$arguments = array(
+		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
+		'default' => 13,
+		'option'  => 'users_per_page',
+	);
+
+	add_screen_option( 'per_page', $arguments );
+
+	// instantiate the User List Table
+	// $dev_member_list_table = new Dev_Members_List_Table();
+}
 
 /*
 	Admin Bar
@@ -116,6 +142,18 @@ function pmpro_admin_bar_menu() {
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Members', 'paid-memberships-pro' ),
 				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-memberslist' )
+			)
+		);
+	}
+	
+	// Add menu item for Members List.
+	if ( current_user_can( 'pmpro_memberslisttable' ) ) {
+		$wp_admin_bar->add_menu( 
+			array(
+				'id' => 'pmpro-members-list-table',
+				'parent' => 'paid-memberships-pro',
+				'title' => __( 'Members Table', 'paid-memberships-pro' ),
+				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-memberslisttable' )
 			)
 		);
 	}
@@ -185,6 +223,41 @@ function pmpro_reports() {
 function pmpro_memberslist()
 {
 	require_once(PMPRO_DIR . "/adminpages/memberslist.php");
+}
+
+function pmpro_memberslisttable() {
+	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
+	global $dev_member_list_table;
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+	$dev_member_list_table = new Dev_Members_List_Table();
+
+	// query, filter, and sort the data
+	$dev_member_list_table->prepare_items();
+
+	// render the List Table
+	include_once PMPRO_DIR . '/adminpages/admin_header.php';
+
+	echo '<pre>$dev_member_list_table set ';
+	// print_r( $dev_member_list_table );
+	echo '</pre>';
+	?>
+		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?></h2>
+			<div id="member-list-table-demo">			
+				<div id="pbrx-post-body">		
+					<form id="member-list-form" method="get">
+						<input type="hidden" name="page" value="pmpro-memberslisttable" />
+						<?php
+							$table_data = $dev_member_list_table->sql_table_data();
+							$dev_member_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'pbrx-user-find' );
+							echo '$dev_member_list_table->display()';
+							$dev_member_list_table->display();
+						?>
+				</form>
+			</div>			
+		</div>
+	<?php
 }
 
 function pmpro_discountcodes()
