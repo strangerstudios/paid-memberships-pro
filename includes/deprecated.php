@@ -32,7 +32,7 @@ foreach ( $pmpro_map_deprecated_hooks as $new => $old ) {
 function pmpro_maybe_show_deprecated_hook_message( $new, $old ) {
 	if ( has_filter( $old ) ) {
 		/* translators: 1: the old hook name, 2: the new or replacement hook name */
-		trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated since version 2.0 of Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) );
+		trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) );
 		do_action( $old );
 	}
 }
