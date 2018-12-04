@@ -47,7 +47,7 @@ function pmpro_add_pages()
 	if(empty($top_menu_cap))
 		return;
 
-	add_menu_page(__( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups' );
+	add_menu_page(__( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups', 61 );
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	$page_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members Table', 'paid-memberships-pro' ), __( 'Members Table', 'paid-memberships-pro' ), 'pmpro_memberslisttable', 'pmpro-memberslisttable', 'pmpro_memberslisttable' );
