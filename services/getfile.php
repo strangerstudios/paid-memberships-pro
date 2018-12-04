@@ -99,17 +99,17 @@
         die("File not found.");
 	}
 	
-	//if blacklistsed file type, redirect to it instead
+	//if blocklisted file type, redirect to it instead
 	$basename = basename($filename);
 	$parts = explode('.', $basename);
 	$ext = strtolower($parts[count($parts)-1]);
 	
-	//build blacklist and allow for filtering
-	$blacklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
-	$blacklist = apply_filters("pmpro_getfile_extension_blacklist", $blacklist);
-	
+	//build blocklist and allow for filtering
+	$blocklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
+	$blocklist = apply_filters("pmpro_getfile_extension_blocklist", $blocklist);
+
 	//check
-	if(in_array($ext, $blacklist))
+	if(in_array($ext, $blocklist))
 	{		
 		//add a noloop param to avoid infinite loops
 		$uri = add_query_arg("noloop", 1, $uri);
