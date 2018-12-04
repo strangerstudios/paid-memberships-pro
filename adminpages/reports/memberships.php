@@ -165,10 +165,17 @@ function pmpro_report_memberships_page()
 	else
 		$year = date_i18n("Y");
 
-	if(isset($_REQUEST['level']))
-		$l = intval($_REQUEST['level']);
-	else
+	if(isset($_REQUEST['level'])) {
+		if( $_REQUEST['level'] == 'paid-levels' ) {
+			$l = pmpro_report_get_levels( 'paid' );
+		}elseif( $_REQUEST['level'] == 'free-levels' ) {
+			$l = pmpro_report_get_levels( 'free' );
+		}else{
+			$l = intval($_REQUEST['level']);
+		}
+	} else {
 		$l = "";
+	}
 
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
@@ -371,6 +378,8 @@ function pmpro_report_memberships_page()
 			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 			<select name="level">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
+				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "paid-levels"){?> selected="selected" <?php }?>><?php _e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
+				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "free-levels"){?> selected="selected" <?php }?>><?php _e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					foreach($levels as $level)
@@ -379,7 +388,9 @@ function pmpro_report_memberships_page()
 					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
 				<?php
 					}
+
 				?>
+
 			</select>
 
 			<input type="hidden" name="page" value="pmpro-reports" />
@@ -564,22 +575,22 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 
 	//figure out start date
 	$now = current_time('timestamp');
-	$year = date_i18n("Y", $now);
+	$year = date("Y", $now);
 
 	if( $period == 'today' )
 	{
-		$startdate = date_i18n('Y-m-d', $now) . " 00:00:00";
-		$enddate = "'" . date_i18n('Y-m-d', $now) . " 23:59:59'";
+		$startdate = date('Y-m-d', $now) . " 00:00:00";
+		$enddate = "'" . date('Y-m-d', $now) . " 23:59:59'";
 	}
 	elseif( $period == 'this month')
 	{
-		$startdate = date_i18n( 'Y-m', $now ) . '-01 00:00:00';
+		$startdate = date( 'Y-m', $now ) . '-01 00:00:00';
 		$enddate = "CONCAT(LAST_DAY('" . date_i18n( 'Y-m', $now ) . '-01' ."'), ' 23:59:59')";
 	}
 	elseif( $period == 'this year')
 	{
-		$startdate = date_i18n( 'Y', $now ) . '-01-01 00:00:00';
-		$enddate = "'" . date_i18n( 'Y', $now ) . "-12-31 23:59:59'";
+		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
+		$enddate = "'" . date( 'Y', $now ) . "-12-31 23:59:59'";
 	}
 	else
 	{
@@ -595,13 +606,16 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	*/
 	global $wpdb;
 
-        $sqlQuery = "
-	SELECT COUNT( DISTINCT mu1.user_id )
-	FROM {$wpdb->pmpro_memberships_users} AS mu1
-	WHERE mu1.status IN('" . esc_sql( implode( "','", $status ) ) . "')
-		AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.enddate <= '" . esc_sql( $enddate ) . "'
-	";
+	// Note here that we no longer esc_sql the $startdate and $enddate
+	// Escaping broke the MYSQL we passed in.
+	// We generated these vars and can trust them.
+    $sqlQuery = "
+		SELECT COUNT( DISTINCT mu1.user_id )
+		FROM {$wpdb->pmpro_memberships_users} AS mu1
+		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
+			AND mu1.enddate >= '" . $startdate . "'
+			AND mu1.enddate <= " . $enddate  . "
+		";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
@@ -612,7 +626,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 			$levels = array($levels);
 		}
 
-		$sqlQuery .= "AND mu1.membership_id IN(" . esc_sql( implode( ", ", $levels ) ) . ") ";
+		$sqlQuery .= "AND mu1.membership_id IN(" . implode( ',', array_map( 'esc_sql', $levels ) ) . ") ";
 	}
 
 	/**
@@ -680,7 +694,7 @@ function pmpro_getMRR($period, $levels = 'all')
 		return false;
 
 	//how many months ago was the first order
-	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . esc_sql( date_i18n("Ym") ) . "', '" . esc_sql( date_i18n("Ym", $first_order_timestamp ) ) . "')");
+	$months = $wpdb->get_var("SELECT PERIOD_DIFF('" . date("Ym") . "', '" . date("Ym", $first_order_timestamp ) . "')");
 
 	/* this works in PHP 5.3+ without using MySQL to get the diff
 	$date1 = new DateTime(date_i18n("Y-m-d", $first_order_timestamp));
@@ -779,3 +793,33 @@ function pmpro_report_memberships_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_memberships_delete_transients");
+
+
+/**
+ * Creates an array of membership level ID's for querying.
+ * @param $type string type of membership level you want to retrieve "free" or "paid".
+ * @since 2.0
+ */
+function pmpro_report_get_levels( $type = NULL ) {
+
+	if ( empty( $type ) ) {
+		return;
+	}
+
+	$level_data = pmpro_getAllLevels( true, true );
+	$r = array();
+
+
+	foreach( $level_data as $key => $value ) {
+		if ( $type === 'free' && pmpro_isLevelFree( $value ) ) {
+			$r[] = intval( $value->id);
+		} elseif( $type === 'paid' && !pmpro_isLevelFree( $value ) ) {
+			$r[] = intval( $value->id );
+		}
+	}
+
+	// implode it before returning it.
+	$r = implode( ',', $r );
+
+	return $r;
+}

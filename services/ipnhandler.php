@@ -276,7 +276,7 @@ if ( $txn_type == "recurring_payment_profile_cancel" ) {
 
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendCancelEmail( $user );
+				$myemail->sendCancelEmail( $user, $last_subscription_order->membership_id );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();

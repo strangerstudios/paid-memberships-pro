@@ -145,13 +145,13 @@ function pmpro_admin_bar_menu() {
 	}
 
 	// Add menu item for Settings.
-	if ( current_user_can( 'pmpro_pagesettings' ) ) {
+	if ( current_user_can( 'pmpro_membershiplevels' ) ) {
 		$wp_admin_bar->add_menu(
 			array(
-				'id' => 'pmpro-page-settings',
+				'id' => 'pmpro-membership-levels',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Settings', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-pagesettings' )
+				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-membershiplevels' )
 			)
 		);
 	}

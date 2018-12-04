@@ -296,7 +296,7 @@
 					
 					// Check if there's a sub ID to look at (from the webhook)
 					// If it's in the list of preservable subscription IDs, don't delete it
-					if ( in_array( $subscr->id, array_keys( $preserve ) ) ) {
+					if ( is_array( $preserve ) && in_array( $subscr->id, array_keys( $preserve ) ) ) {
 						
 						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user->display_name} ({$user->user_email})!\n";
 						$cancel_membership = false;
@@ -319,7 +319,7 @@
 						
 						//send an email to the member
 						$myemail = new PMProEmail();
-						$myemail->sendCancelEmail( $user );
+						$myemail->sendCancelEmail( $user, $old_order->membership_id );
 						
 						//send an email to the admin
 						$myemail = new PMProEmail();

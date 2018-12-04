@@ -201,7 +201,7 @@
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_membershiplevels')) { ?>
-			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if($view == 'pmpro-membershiplevels') { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-membershiplevels');?>" class="nav-tab<?php if( in_array( $view, array( 'pmpro-membershiplevels', 'pmpro-discountcodes', 'pmpro-pagesettings', 'pmpro-paymentsettings', 'pmpro-emailsettings', 'pmpro-advancedsettings' ) ) ) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
