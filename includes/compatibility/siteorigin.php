@@ -4,7 +4,7 @@
  * Load "the_content" filter later when Page Builder by siteorigin is installed and activated.
  */
 
-function siteorigin_compatibility_for_pmpro() {
+function pmpro_siteorigin_compatibility() {
 	if ( defined('PMPRO_VERSION') ) {
 		// Remove the default the_content filter added to membership level descriptions and confirmation messages in PMPro.
 		remove_filter( 'the_content', 'pmpro_level_description' );
@@ -16,4 +16,4 @@ function siteorigin_compatibility_for_pmpro() {
 		add_filter( 'the_content', 'pmpro_membership_content_filter', 15 );
 	}
 }
-add_action( 'init', 'siteorigin_compatibility_for_pmpro' );
+add_action( 'init', 'pmpro_siteorigin_compatibility' );
