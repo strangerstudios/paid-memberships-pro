@@ -13,6 +13,9 @@
 	else
 		$edit = false;
 
+	if(isset($_REQUEST['copy']))
+		$copy = intval($_REQUEST['copy']);
+
 	if(isset($_REQUEST['delete']))
 		$delete = intval($_REQUEST['delete']);
 	else
@@ -388,29 +391,36 @@
 					WHERE cl.code_id = %s",
 					$code->code
 					) );
-					$temp_id = $code->id;
+					$temp_code = $code;
 				}
 				elseif(!empty($copy) && $copy > 0)
 				{
-					$code = $wpdb->get_row( $wpdb->prepare("
-					SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
-					FROM $wpdb->pmpro_discount_codes
-					WHERE id = %d LIMIT 1",
-					$copy ),
-					OBJECT
-				);
-					$temp_id = $level->id;
-					$level->id = NULL;
+					$code = $wpdb->get_row(
+						$wpdb->prepare("
+						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						FROM $wpdb->pmpro_discount_codes
+						WHERE id = %d LIMIT 1",
+						$copy ),
+						OBJECT
+					);
+					
+					$temp_code = $code;
 				}
 
 				// didn't find a discount code, let's add a new one...
 				if(empty($code->id)) $edit = -1;
 
 				//defaults for new codes
-				if($edit == -1)
+				if ( $edit == -1 )
 				{
 					$code = new stdClass();
 					$code->code = pmpro_getDiscountCode();
+					
+					if( ! empty( $copy ) && $copy > 0 ) {
+						$code->starts = $temp_code->starts;
+						$code->expires = $temp_code->expires;
+						$code->uses = $temp_code->uses;
+					}
 				}
 			?>
 			<form action="" method="post">
@@ -518,7 +528,7 @@
 				foreach($levels as $level)
 				{
 					//if this level is already managed for this discount code, use the code values
-					if($edit > 0)
+					if($edit > 0 || ! empty( $copy ) )
 					{
 						$code_level = $wpdb->get_row( $wpdb->prepare("
 						SELECT l.id, cl.*, l.name, l.description, l.allow_signups
@@ -526,7 +536,7 @@
 						LEFT JOIN $wpdb->pmpro_membership_levels l
 						ON cl.level_id = l.id
 						WHERE cl.code_id = %d AND cl.level_id = %d LIMIT 1",
-						$edit,
+						$temp_code->id,
 						$level->id )
 					);
 						if($code_level)
@@ -731,7 +741,6 @@
 						<th><?php _e('Levels', 'paid-memberships-pro' );?></th>
 						<?php do_action("pmpro_discountcodes_extra_cols_header", $codes);?>
 						<th></th>
-						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -781,10 +790,9 @@
 							</td>
 							<?php do_action("pmpro_discountcodes_extra_cols_body", $code);?>
 							<td>
-								<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php _e('edit', 'paid-memberships-pro' );?></a>
-							</td>
-							<td>
-								<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(admin_url('admin.php?page=pmpro-discountcodes&delete=' . $code->id), 'delete', 'pmpro_discountcodes_nonce');?>'); void(0);"><?php _e('delete', 'paid-memberships-pro' );?></a>
+								<a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
+								<a title="<?php _e('copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => -1, 'copy' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-secondary"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
+								<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a>	
 							</td>
 						</tr>
 					<?php
