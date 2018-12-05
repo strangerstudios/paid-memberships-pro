@@ -65,6 +65,7 @@ require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PM
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
+require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content
