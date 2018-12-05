@@ -114,7 +114,7 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$start_date = $start_date . ' 00:00:00';
 	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'predefined-date-range' ) {
 	if ( $predefined_date == 'Last Month' ) {
 		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of last month', current_time( 'timestamp' ) ) );
@@ -136,17 +136,17 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$start_date = $start_date . ' 00:00:00';
 	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'within-a-level' ) {
-	$condition = 'membership_id = ' . esc_sql( $l );
+	$condition = 'o.membership_id = ' . esc_sql( $l );
 } elseif ( $filter == 'with-discount-code' ) {
 	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
 } elseif ( $filter == 'within-a-status' ) {
-	$condition = "status = '" . esc_sql( $status ) . "' ";
+	$condition = "o.status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
-	$condition = "total > 0";
+	$condition = "o.total > 0";
 } elseif( $filter == 'only-free' ) {
-	$condition = "total = 0";
+	$condition = "o.total = 0";
 }
 
 // emailing?
