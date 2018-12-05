@@ -304,6 +304,11 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 
 	// save
 	if ( $order->saveOrder() !== false && $nonceokay ) {
+		// also update the discount code if needed
+		if( isset( $_REQUEST['discount_code_id'] ) ) {
+			$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
+		}
+
 		// handle timestamp
 		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ) ) !== false ) {
 			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
@@ -345,6 +350,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->billing->zip = '';
 			$order->billing->country = '';
 			$order->billing->phone = '';
+			$order->discount_code = '';
 			$order->subtotal = '';
 			$order->tax = '';
 			$order->couponamount = '';
@@ -549,7 +555,33 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<?php } ?>
 				</td>
 			</tr>
+			<?php
+			if ( $order_id > 0 ) {
+				$order->getDiscountCode();
+			}
 
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery .= "ORDER BY id DESC ";
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+			if ( ! empty( $codes ) ) { ?>
+			<tr>
+				<th scope="row" valign="top"><label for="discount_code_id"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?>:</label></th>
+				<td>
+					<?php
+						if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
+							echo esc_html( $order->discount_code->code );
+						} else { ?>
+							<select id="discount_code_id" name="discount_code_id">
+								<option value="0" <?php selected( $order->discount_code->id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+								<?php foreach ( $codes as $code ) { ?>
+									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $order->discount_code->id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+								<?php } ?>
+							</select>
+							<?php
+						} ?>
+				</td>
+			</tr>
+			<?php } ?>
 			<tr>
 				<th scope="row" valign="top"><label for="subtotal"><?php _e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -1230,11 +1262,6 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 		</p>
 
 		<?php
-		/*if ( $filter === 'with-discount-code' ) {
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS order_id FROM $wpdb->pmpro_discount_codes_uses WHERE " . $condition . ' ORDER BY order_id DESC, timestamp DESC ';
-		// string search
-		} else
-		*/
 		if ( $s ) {
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
 
