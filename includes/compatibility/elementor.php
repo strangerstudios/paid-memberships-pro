@@ -4,7 +4,7 @@
  * Load "the_content" filter later when elementor builder is activated.
  */
 
-function elementor_compatibility_for_pmpro() {
+function pmpro_elementor_compatibility() {
  	if ( defined('PMPRO_VERSION') ) {
 
 		// Remove the default the_content filter added to membership level descriptions and confirmation messages in PMPro.
@@ -18,5 +18,5 @@ function elementor_compatibility_for_pmpro() {
 
 	}
 }
-add_action( 'plugins_loaded', 'elementor_compatibility_for_pmpro', 15 );
+add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
 
