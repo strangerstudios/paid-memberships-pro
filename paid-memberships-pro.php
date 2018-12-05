@@ -57,6 +57,7 @@ require_once( PMPRO_DIR . '/includes/https.php' );                  // code rela
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
+require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
