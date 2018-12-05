@@ -49,6 +49,10 @@
 		$ml_name = wp_kses(wp_unslash($_REQUEST['name']), $allowedposttags);
 		$ml_description = wp_kses(wp_unslash($_REQUEST['description']), $allowedposttags);
 		$ml_confirmation = wp_kses(wp_unslash($_REQUEST['confirmation']), $allowedposttags);
+		if(!empty($_REQUEST['confirmation_in_email']))
+			$ml_confirmation_in_email = 1;
+		else
+			$ml_confirmation_in_email = 0;
 
 		$ml_initial_payment = sanitize_text_field($_REQUEST['initial_payment']);
 		if(!empty($_REQUEST['recurring']))
@@ -130,7 +134,7 @@
 				'%d',		//allow_signups
 			)
 		);
-
+				
 		if($saveid < 1) {
 			//added a level
 			$saveid = $wpdb->insert_id;
@@ -162,6 +166,11 @@
 			}
 		}
 
+		// Update the Level Meta to Add Confirmation Message to Email.
+		if ( isset( $ml_confirmation_in_email ) ) {
+			update_pmpro_membership_level_meta( $saveid, 'confirmation_in_email', $ml_confirmation_in_email );
+		}
+		
 		do_action("pmpro_save_membership_level", $saveid);
 	}
 	elseif($action == "delete_membership_level")
@@ -310,6 +319,11 @@
 				) );
 			if(empty($level->categories))
 				$level->categories = array();
+			
+			// grab the meta for the given level...
+			if ( ! empty( $temp_id ) ) {
+				$confirmation_in_email = get_pmpro_membership_level_meta( $temp_id, 'confirmation_in_email', true );
+			}
 
 		?>
 		<form action="" method="post" enctype="multipart/form-data">
@@ -363,6 +377,7 @@
 							}
 						?>
 						</div>
+						<input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> /> <label for="confirmation_in_email"><?php _e('Check to include this message in the membership confiramtion email.', 'paid-memberships-pro' );?></label>
 					</td>
 				</tr>
 			</tbody>
