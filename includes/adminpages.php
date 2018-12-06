@@ -239,6 +239,48 @@ function pmpro_updates()
 	require_once(PMPRO_DIR . "/adminpages/updates.php");
 }
 
+/**
+ * Function to add a post display state for special PMPro pages in the page list table.
+ *
+ * @param array   $post_states An array of post display states.
+ * @param WP_Post $post The current post object.
+ */
+function pmpro_display_post_states( $post_states, $post ) {
+	// Get assigned page settings.
+	global $pmpro_pages;
+
+	if ( intval( $pmpro_pages['account'] ) === $post->ID ) {
+		$post_states['pmpro_account_page'] = __( 'Membership Account Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['billing'] ) === $post->ID ) {
+		$post_states['pmpro_billing_page'] = __( 'Membership Billing Information Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['cancel'] ) === $post->ID ) {
+		$post_states['pmpro_cancel_page'] = __( 'Membership Cancel Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['checkout'] ) === $post->ID ) {
+		$post_states['pmpro_checkout_page'] = __( 'Membership Checkout Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['confirmation'] ) === $post->ID ) {
+		$post_states['pmpro_confirmation_page'] = __( 'Membership Confirmation Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['invoice'] ) === $post->ID ) {
+		$post_states['pmpro_invoice_page'] = __( 'Membership Invoice Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['levels'] ) === $post->ID ) {
+		$post_states['pmpro_levels_page'] = __( 'Membership Levels  Page', 'paid-memberships-pro' );
+	}
+
+	return $post_states;
+}
+add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
+
 /*
 Function to add links to the plugin action links
 */

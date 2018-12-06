@@ -241,6 +241,7 @@ $headers[] = "Content-Disposition: attachment; filename={$filename};";
 
 $csv_file_header_array = array(
 	"id",
+	"code",
 	"user_id",
 	"user_login",
 	"first_name",
@@ -279,6 +280,7 @@ $csv_file_header_array = array(
 //these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 $default_columns = array(
 	array( "order", "id" ),
+	array( "order", "code" ),
 	array( "user", "ID" ),
 	array( "user", "user_login" ),
 	array( "user", "first_name" ),

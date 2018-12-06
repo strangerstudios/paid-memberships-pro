@@ -303,7 +303,7 @@
 			</td>
 		</tr>
 
-		<tr>
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
 			<td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
 		</tr>
@@ -535,7 +535,7 @@
 
 			if($gateway == "stripe")
 			{
-				if(static::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				if(self::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
 				{
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
@@ -1801,6 +1801,8 @@
 		 */
 		function cancel(&$order, $update_status = true)
 		{
+			global $pmpro_stripe_event;
+
 			//no matter what happens below, we're going to cancel the order in our system
 			if($update_status)
 				$order->updateStatus("cancelled");
@@ -1817,7 +1819,8 @@
 				//find subscription with this order code
 				$subscription = $this->getSubscription($order);
 
-				if(!empty($subscription))
+				if(!empty($subscription) 
+					&& ( empty( $pmpro_stripe_event ) || empty( $pmpro_stripe_event->type ) || $pmpro_stripe_event->type != 'customer.subscription.deleted' ) )
 				{
 					if($this->cancelSubscriptionAtGateway($subscription))
 					{

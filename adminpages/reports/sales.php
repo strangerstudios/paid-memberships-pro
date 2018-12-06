@@ -84,7 +84,7 @@ function pmpro_report_sales_widget() {
 		<?php
 	}
 	?>
-	</table>	
+	</table>
 </span>
 
 <?php
@@ -127,7 +127,8 @@ function pmpro_report_sales_page()
 		$l = "";
 
 	$currently_in_period = false;
-	//calculate start date and how to group dates returned from DB
+
+  //calculate start date and how to group dates returned from DB
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
@@ -153,13 +154,13 @@ function pmpro_report_sales_page()
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
 	//get data
-	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND timestamp >= '" . $startdate . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
+	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND timestamp >= '" . esc_sql( $startdate ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND timestamp < '" . $enddate . "' ";
+		$sqlQuery .= "AND timestamp < '" . esc_sql( $enddate ) . "' ";
 
 	if(!empty($l))
-		$sqlQuery .= "AND membership_id IN(" . $l . ") ";
+		$sqlQuery .= "AND membership_id IN(" . esc_sql( $l ) . ") ";
 
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
@@ -284,8 +285,7 @@ function pmpro_report_sales_page()
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
 
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
-	
+	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>	
 	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
 
 	<script>
@@ -454,10 +454,10 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 		$prices = array_slice( $prices, 0, $count, true );
 	}
 
-	$prices_formatted = [];
+	$prices_formatted = array();
 	foreach ( $prices as $price ) {
 		if ( isset( $price->total ) ) {
-			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total = '" . $price->total . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total = '" . esc_sql( $price->total ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$sales                             = $wpdb->get_var( $sql_query );
 			$prices_formatted[ $price->total ] = $sales;
 		}
