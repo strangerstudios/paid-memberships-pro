@@ -252,7 +252,8 @@ function pmpro_memberslisttable() {
 			float: left;
 		}
 	</style>
-		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?> <button class="button-primary">Download</button></h2>
+		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?> 
+		<a target="_blank" href="<?php echo admin_url( 'admin-ajax.php' ); ?>?action=memberslist_csv" class="add-new-h2"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a></h2>
 			<div id="member-list-table-demo">			
 				<div id="pmpro-post-body">		
 					<form id="member-list-form" method="post">
