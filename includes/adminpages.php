@@ -264,7 +264,7 @@ function pmpro_updates() {
 function pmpro_fix_orphaned_sub_menu_pages( ) {
 	global $submenu;
 
-	if ( array_key_exists( 'pmpro-membershiplevels', $submenu ) ) {
+	if ( is_array( $submenu) && array_key_exists( 'pmpro-membershiplevels', $submenu ) ) {
 		$pmpro_dashboard_submenu = $submenu['pmpro-dashboard'];	
 		$pmpro_old_memberships_submenu = $submenu['pmpro-membershiplevels'];
 	
