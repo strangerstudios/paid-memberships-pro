@@ -51,7 +51,22 @@
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr td.level_name a {font-size: 115%; font-weight: bold; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr {background: #fff;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.alternate {background: #f1f1f1;}
-.memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.ui-sortable-helper {border: 1px solid #2997C8;}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.ui-sortable-handle {
+    border: 1px solid #2997C8;
+    cursor: move;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr th:first-child:before,
+.memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr td:first-child:before {
+    color: #CCC;
+    content: "\f333";
+    display: inline-block;
+    font: 400 16px/1 dashicons;
+    opacity: 0;
+    width: 25px;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr:hover td:first-child:before {
+    opacity: 1;
+}
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {margin-left: 25px;}
 
@@ -330,5 +345,10 @@ button.pmpro_report_th_closed:before {
         border: none;
         margin: 0;
         padding: 0;
+    }
+    .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr th:first-child:before,
+    .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr td:first-child:before {
+        content: '';
+        width: 0;
     }
 }
