@@ -5,7 +5,7 @@
 	
 	How it works:
 	- All source code and resource files bundled with this plugin are licensed under the GPLv2 license unless otherwise noted (e.g. included third-party libraries).
-	- An additional "support license" can be purchased at http://www.paidmembershipspro.com/support-license/
+	- An additional "support license" can be purchased at https://www.paidmembershipspro.com/pricing/
 	  which will simultaneous support the development of this plugin and also give you access to support forums and documentation.
 	- Once your license has been purchased, visit Settings --> PMPro License in your WP dashboard to enter your license.
 	- Once the license is activated all "nags" will be disabled in the dashboard and member links will be added where appropriate.
