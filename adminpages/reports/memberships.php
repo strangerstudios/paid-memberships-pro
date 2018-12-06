@@ -527,7 +527,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	//build query
 	global $wpdb;
 
-	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
+	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all')
