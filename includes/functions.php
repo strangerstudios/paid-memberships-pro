@@ -2440,11 +2440,12 @@ function pmpro_getGateway() {
 	return $gateway;
 }
 
-/*
+/**
  * Does the date provided fall in this month.
  * Used in logins/visits/views report.
  *
  * @since 1.8.3
+ * @param	$str	Date to check. Will be passed through strtotime().
  */
 function pmpro_isDateThisMonth( $str ) {
 	$now = current_time( 'timestamp' );
@@ -2456,6 +2457,44 @@ function pmpro_isDateThisMonth( $str ) {
 	$date_year = intval( date_i18n( 'Y', $date ) );
 
 	if ( $date_month === $this_month && $date_year === $this_year ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Does the date provided fall within the current week?
+ * Merged in from the Better Logins Report Add On.
+ * @since 2.0
+ * @param	$str	Date to check. Will be passed through strtotime().
+ */
+function pmpro_isDateThisWeek( $str ) {
+	$now = current_time( 'timestamp' );
+	$this_week = intval( date( "W", $now ) );
+	$this_year = intval( date( "Y", $now ) );
+	$date = strtotime( $str, $now );
+	$date_week = intval( date( "W", $date ) );
+	$date_year = intval( date( "Y", $date ) );
+	if( $date_week === $this_week && $date_year === $this_year ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+	
+/**
+ * Does the dave provided fall within the current year?
+ * Merged in from the Better Logins Report Add On.
+ * @since 2.0
+ * @param	$str	Date to check. Will be passed through strtotime().
+ */
+function pmpro_isDateThisYear( $str ) {
+	$now = current_time( 'timestamp' );
+	$this_year = intval( date("Y", $now ) );
+	$date = strtotime( $str, $now);
+	$date_year = intval( date("Y", $date ) );
+	if( $date_year === $this_year ) {
 		return true;
 	} else {
 		return false;
