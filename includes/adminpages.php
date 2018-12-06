@@ -43,13 +43,18 @@ function pmpro_add_pages() {
 		return;
 	}
 
+	// Top level menu
 	add_menu_page( __( 'Memberships', 'paid-memberships-pro' ), __( 'Memberships', 'paid-memberships-pro' ), 'pmpro_memberships_menu', 'pmpro-dashboard', $top_menu_cap, 'dashicons-groups', 30 );
+	
+	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
+	
+	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
@@ -62,6 +67,31 @@ function pmpro_add_pages() {
 	}
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
+
+/**
+ * Keep the Memberships menu selected on subpages.
+ */
+function pmpro_parent_file( $parent_file ) {
+	global $parent_file, $plugin_page, $submenu_file;
+	
+	$pmpro_settings_tabs = array(
+		'pmpro-membershiplevels',
+		'pmpro-discountcodes',
+		'pmpro-pagesettings',
+		'pmpro-paymentsettings',
+		'pmpro-emailsettings',
+		'pmpro-advancedsettings',
+	);
+	
+	if( in_array( $_REQUEST['page'], $pmpro_settings_tabs ) ) {
+		$parent_file = 'pmpro-dashboard';
+		$plugin_page = 'pmpro-dashboard';
+		$submenu_file = 'pmpro-membershiplevels';
+	}
+	
+	return $parent_file;
+}
+add_filter( 'parent_file', 'pmpro_parent_file' );
 
 /**
  * Admin Bar
