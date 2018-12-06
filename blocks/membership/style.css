@@ -1,0 +1,14 @@
+.edit-post-layout .wp-block-pmpro-membership {
+    border: 1px dashed #CCC;
+    padding: 10px;
+}
+.edit-post-layout .wp-block-pmpro-membership span.pmpro-membership-title {
+    background: #FAFAFA;
+    color: #AAA;
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
+    font-weight: 600;
+    padding: 10px;
+    position: relative;
+    text-transform: uppercase;
+}
