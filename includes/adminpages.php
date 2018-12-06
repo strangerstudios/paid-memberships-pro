@@ -29,6 +29,7 @@ function pmpro_getPMProCaps()
 */
 function pmpro_add_pages()
 {
+	global $pmp_member_list_table;
 	global $wpdb;
 
 	//array of all caps in the menu
@@ -79,7 +80,8 @@ add_action( 'admin_menu', 'pmpro_add_pages' );
  * @since    2.0.0
  */
 function pmpro_list_table_screen_options() {
-	global $dev_member_list_table;
+	global $pmp_member_list_table;
+	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
 	$arguments = array(
 		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
 		'default' => 13,
@@ -89,7 +91,7 @@ function pmpro_list_table_screen_options() {
 	add_screen_option( 'per_page', $arguments );
 
 	// instantiate the User List Table
-	// $dev_member_list_table = new Dev_Members_List_Table();
+	$pmp_member_list_table = new PMPro_Members_List_Table();
 }
 
 /*
@@ -227,32 +229,39 @@ function pmpro_memberslist()
 
 function pmpro_memberslisttable() {
 	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
-	global $dev_member_list_table;
-if ( ! class_exists( 'WP_List_Table' ) ) {
-	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-}
-	$dev_member_list_table = new Dev_Members_List_Table();
+	global $pmp_member_list_table;
 
-	// query, filter, and sort the data
-	$dev_member_list_table->prepare_items();
+	$pmp_member_list_table = new PMPro_Members_List_Table();
 
-	// render the List Table
+	$pmp_member_list_table->prepare_items();
+
 	include_once PMPRO_DIR . '/adminpages/admin_header.php';
-
-	echo '<pre>$dev_member_list_table set ';
-	// print_r( $dev_member_list_table );
-	echo '</pre>';
 	?>
-		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?></h2>
+	<style type="text/css">
+		#the-list > tr > td.ID.column-ID, #ID {
+			text-align: center;
+			width: 5%;
+		}
+		#ID > a > span {
+			text-align: center;
+			float: none;
+		}
+		#list-table-replace > table > tfoot > tr > th.manage-column.column-ID.column-primary.sorted.asc > a > span.sorting-indicator,
+		#ID > a > span.sorting-indicator {
+			/*text-align: center;*/
+			float: left;
+		}
+	</style>
+		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?> <button class="button-primary">Download</button></h2>
 			<div id="member-list-table-demo">			
-				<div id="pbrx-post-body">		
-					<form id="member-list-form" method="get">
-						<input type="hidden" name="page" value="pmpro-memberslisttable" />
+				<div id="pmpro-post-body">		
+					<form id="member-list-form" method="post">
+						<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
 						<?php
-							$table_data = $dev_member_list_table->sql_table_data();
-							$dev_member_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'pbrx-user-find' );
-							echo '$dev_member_list_table->display()';
-							$dev_member_list_table->display();
+							$pmp_member_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'pmpro-find-member' );
+							echo '<div id="list-table-replace">';
+							$pmp_member_list_table->display();
+							echo '</div>'
 						?>
 				</form>
 			</div>			

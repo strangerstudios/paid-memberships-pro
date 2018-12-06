@@ -8,7 +8,11 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
  * in a WordPress-like Admin Table with row actions to
  * perform user meta opeations
  */
-class Dev_Members_List_Table extends WP_List_Table {
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
+class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * The text domain of this plugin.
 	 *
@@ -372,47 +376,13 @@ class Dev_Members_List_Table extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ) {
-			echo '<div id="researching-levels" style="float:left;">';
-			echo $existing_levels = $this->get_levels_dropdown( 'dropdown-levels' );
-			echo '</div>';
+			echo $existing_levels = $this->get_levels_dropdown( 'levels-dropdown' );
 			$views = $this->get_views();
-			echo '<div style="float:left;padding: 0.4rem 1rem 1rem;">';
-			print_r( $views );
-			echo '</div>';
 		}
 		if ( $which == 'bottom' ) {
-			echo '<h4>Having trouble with AJAX selection of the level</h4>';
-			echo '<span id="return-selected"> return-selected </span>';
+			echo '<h3>Features</h3>';
+			echo '<li id="return-dafuq"> return-dafuq </li>';
 		}
-	}
-
-	public function pmpro_add_in_class_admin_scripts() {
-		wp_register_script( 'selected-level', plugins_url( '/js/selected-level.js', __FILE__ ), array( 'jquery' ), time() );
-		wp_localize_script(
-			'selected-level',
-			'selected_level_object',
-			array(
-				'selected_ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'selected_nonce'   => wp_create_nonce( 'selected-nonce' ),
-			)
-		);
-		wp_enqueue_script( 'selected-level' );
-	}
-
-	/**
-	 * Stop execution and exit
-	 *
-	 * @since    2.0.0
-	 *
-	 * @return void
-	 */
-	public function pmpro_in_class_function() {
-		$return_data = $_POST;
-		echo json_encode( $return_data );
-		// echo '<pre>';
-		// print_r( $return_data );
-		// echo '</pre>';
-		exit();
 	}
 
 	/**
@@ -439,12 +409,13 @@ class Dev_Members_List_Table extends WP_List_Table {
 			__( 'Error', $this->plugin_text_domain ),
 			array(
 				'response'  => 403,
-				'back_link' => esc_url( add_query_arg( array( 'page' => wp_unslash( $_REQUEST['page'] ) ), admin_url( 'pmpro-dashboard' ) ) ),
+				'back_link' => esc_url( add_query_arg( array( 'page' => wp_unslash( $_REQUEST['page'] ) ), admin_url( 'admin.php?page=pmpro-memberslisttable' ) ) ),
 			)
 		);
 	}
 }
 
+add_filter( 'add_to_levels_array', 'members_list_research_levels' );
 function members_list_research_levels( $added_levels ) {
 	$added_levels = array(
 		__( 'Cancelled', 'paid-memberships-pro' ),
@@ -453,96 +424,3 @@ function members_list_research_levels( $added_levels ) {
 	);
 	return $added_levels;
 }
-
-add_action( 'admin_footer', 'tabbed_diagnostic_message' );
-function tabbed_diagnostic_message() {
-	global $current_user;
-	?>
-	<style type="text/css">
-
-#footer-diagnostic {
-	display: grid;
-	grid-template-columns: 16% 1fr 1fr 1fr;
-}
-
-#footer-diagnostic pre {
- white-space: pre-wrap;       /* css-3 */
- white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
- white-space: -pre-wrap;      /* Opera 4-6 */
- white-space: -o-pre-wrap;    /* Opera 7 */
- word-wrap: break-word;       /* Internet Explorer 5.5+ */
-}
-#footer-diagnostic .full {
-	grid-column: 1 / -1;
-	text-align: center;
-}
-#toplevel_page_pmpro-beta  .xdebug-error.xe-warning {
-	margin-left: 12rem;
-}
-	</style>
-	<?php
-		echo '<div id="footer-diagnostic">';
-		echo '<div>$user <pre>';
-		echo '$current_user ' . $current_user->ID . '<br>';
-	if ( ! empty( $_REQUEST['user'] ) ) {
-		$user_id = intval( $_REQUEST['user'] );
-		$user    = get_userdata( $user_id );
-		if ( empty( $user->ID ) ) {
-			$user_id = false;
-		}
-	} else {
-		$user = get_userdata( 0 );
-	}
-
-	if ( isset( $user->ID ) ) {
-		echo '$user->ID  ' . $user->ID . '<br>';
-	} elseif ( isset( $user_id ) ) {
-		echo '$user_id ' . $user_id . '<br>';
-	} else {
-		echo 'wtf';
-	}
-		echo '</div><div>$_GET <pre>';
-		print_r( $_GET );
-		echo '</pre></div>';
-		echo '<div>$_REQUEST <pre>';
-		print_r( $_REQUEST );
-		echo '</pre></div>';
-		echo '<div>$_POST <pre>';
-		print_r( $_POST );
-		echo '</pre></div>';
-		echo '<div class="full">';
-		echo __FUNCTION__;
-		echo '<br>Line ' . __LINE__ . '</div>';
-		echo '</div>';
-
-}
-
-function pmpro_add_admin_function() {
-	$return_data = $_POST;
-	add_query_arg( 's', $return_data['filter'] );
-
-	echo '<pre>';
-	print_r( $return_data );
-	echo '</pre>';
-
-	exit();
-}
-
-function pmpro_add_admin_scripts() {
-	wp_register_script( 'selected-level', plugins_url( '/js/selected-level.js', __FILE__ ), array( 'jquery' ), time() );
-	wp_localize_script(
-		'selected-level',
-		'selected_level_object',
-		array(
-			'selected_ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'selected_nonce'   => wp_create_nonce( 'selected-nonce' ),
-		)
-	);
-	wp_enqueue_script( 'selected-level' );
-}
-
-add_filter( 'add_to_levels_array', 'members_list_research_levels' );
-add_action( 'admin_enqueue_scripts', 'pmpro_add_admin_scripts' );
-add_action( 'wp_ajax_selected_level_request', 'pmpro_add_admin_function' );
-
-
