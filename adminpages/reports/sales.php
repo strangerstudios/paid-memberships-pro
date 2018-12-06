@@ -22,9 +22,8 @@ else
 //queue Google Visualization JS on report page
 function pmpro_report_sales_init()
 {
-	if(is_admin() && isset($_REQUEST['report']) && $_REQUEST['report'] == "sales" && isset($_REQUEST['page']) && $_REQUEST['page'] == "pmpro-reports")
-	{
-		wp_enqueue_script( 'jsapi', plugins_url( 'js/jsapi.js',  plugin_dir_path( __DIR__ ) ) );
+	if ( is_admin() && isset( $_REQUEST['report'] ) && $_REQUEST[ 'report' ] == 'sales' && isset( $_REQUEST['page'] ) && $_REQUEST[ 'page' ] == 'pmpro-reports' ) {
+		wp_enqueue_script( 'corechart', plugins_url( 'js/corechart.js',  plugin_dir_path( __DIR__ ) ) );
 	}
 
 }
@@ -138,6 +137,12 @@ function pmpro_report_sales_page()
 	else
 		$l = "";
 
+	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
+	} else {
+		$discount_code = '';
+	}
+
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
 	{
@@ -161,13 +166,23 @@ function pmpro_report_sales_page()
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
 	//get data
-	$sqlQuery = "SELECT $date_function(timestamp) as date, $type_function(total) as value FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND timestamp >= '" . esc_sql( $startdate ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT $date_function(o.timestamp) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+	}
+
+	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= '" . esc_sql( $startdate ) . "' AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND timestamp < '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND o.timestamp < '" . esc_sql( $enddate ) . "' ";
 
 	if(!empty($l))
-		$sqlQuery .= "AND membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
+	}
 
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
@@ -250,7 +265,7 @@ function pmpro_report_sales_page()
 			<?php } ?>
 		</select>
 		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
-		<select name="level">
+		<select id="level" name="level">
 			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 			<?php
 				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
@@ -262,12 +277,22 @@ function pmpro_report_sales_page()
 				}
 			?>
 		</select>
-
+		<?php
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+		$sqlQuery .= "ORDER BY id DESC ";
+		$codes = $wpdb->get_results($sqlQuery, OBJECT);
+		if ( ! empty( $codes ) ) { ?>
+		<select id="discount_code" name="discount_code">
+			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
+			<?php foreach ( $codes as $code ) { ?>
+				<option value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+			<?php } ?>
+		</select>
+		<?php } ?>
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
-
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
 
 	<script>
@@ -304,21 +329,48 @@ function pmpro_report_sales_page()
 		pmpro_ShowMonthOrYear();
 
 		//draw the chart
-		google.load("visualization", "1", {packages:["corechart"]});
-		google.setOnLoadCallback(drawChart);
-		function drawChart() {
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawVisualization);
+		function drawVisualization() {
 
 			var data = google.visualization.arrayToDataTable([
-			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>'],
-			  <?php foreach($cols as $date => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>],
-			  <?php } ?>
+				[
+					{ label: '<?php echo $date_function;?>' },
+					{ label: '<?php echo ucwords($type);?>' }
+				],
+				<?php foreach($cols as $date => $value) { ?>
+					['<?php
+						if($period == "monthly") {
+							echo date_i18n("M", mktime(0,0,0,$date,2));
+						} else {
+						echo $date;
+					} ?>', <?php echo $value;?>],
+				<?php } ?>
 			]);
 
 			var options = {
-			  colors: ['#51a351', '#387038'],
-			  hAxis: {title: '<?php echo $date_function;?>', titleTextStyle: {color: 'black'}, maxAlternation: 1},
-			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},
+				colors: ['<?php
+					if ( $type === 'sales') {
+						echo '#0099c6'; // Blue for "Sales" chart.
+					} else {
+						echo '#51a351'; // Green for "Revenue" chart.
+					}
+				?>'],
+				chartArea: {width: '90%'},
+				hAxis: {
+					title: '<?php echo $date_function;?>',
+					textStyle: {color: '#555555', fontSize: '12', italic: false},
+					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
+					maxAlternation: 1
+				},
+				vAxis: {
+					<?php if ( $type === 'sales') { ?>
+						format: '0',
+					<?php } ?>
+					textStyle: {color: '#555555', fontSize: '12', italic: false},
+				},
+				seriesType: 'bars',
+				legend: {position: 'none'},
 			};
 
 			<?php
@@ -335,7 +387,7 @@ function pmpro_report_sales_page()
 				}
 			?>
 
-			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
 			chart.draw(data, options);
 		}
 	</script>
