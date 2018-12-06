@@ -239,7 +239,9 @@
 						$expiration_period = 'Month';
 					}
 
-
+					if ( ! empty( $expiration ) && ! empty( $recurring ) ) {
+						$expiration_warning_flag = true;
+					}
 
 					//okay, do the insert
 					$wpdb->insert(
@@ -347,6 +349,14 @@
 		{
 			$pmpro_msg = __("Code not found.", 'paid-memberships-pro' );
 			$pmpro_msgt = "error";
+		}
+	}
+	
+	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
+		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
+		
+		if( $pmpro_msgt == 'success' ) {
+			$pmpro_msgt = 'warning';
 		}
 	}
 
