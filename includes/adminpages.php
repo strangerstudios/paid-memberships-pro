@@ -83,7 +83,7 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-advancedsettings',
 	);
 	
-	if( in_array( $_REQUEST['page'], $pmpro_settings_tabs ) ) {
+	if( isset( $_REQUEST['page']) && in_array( $_REQUEST['page'], $pmpro_settings_tabs ) ) {
 		$parent_file = 'pmpro-dashboard';
 		$plugin_page = 'pmpro-dashboard';
 		$submenu_file = 'pmpro-membershiplevels';
