@@ -128,6 +128,11 @@ function pmpro_add_list_table_scripts() {
 }
 
 add_action( 'wp_ajax_select_level_request', 'run_list_table_ajax_function' );
+/**
+ * [run_list_table_ajax_function] Callback function for the WP List Table Levels Dropdown AJAX call
+ * 
+ * @return string Rebuild the HTML of the List table with the value of the select in the query
+ */
 function run_list_table_ajax_function() {
 	global $pmp_member_list_table;
 	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
@@ -136,7 +141,6 @@ function run_list_table_ajax_function() {
 	$pmp_member_list_table = new PMPro_Members_List_Table();
 	$pmp_member_list_table->prepare_items();
 	$pmp_member_list_table->display();
-
 	exit();
 }
 

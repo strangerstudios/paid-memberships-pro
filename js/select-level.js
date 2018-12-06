@@ -1,5 +1,4 @@
 jQuery(document).ready(function($) {
-	// alert(select_level_object.select_level_nonce);
 	$('#levels-dropdown').change(function() {
 		$.ajax({
 			type: "POST",
