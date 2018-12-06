@@ -4,10 +4,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
-	
+
 	//load classes init method
 	add_action('init', array('PMProGateway_braintree', 'init'));
-	
+
 	class PMProGateway_braintree extends PMProGateway
 	{
 		/**
@@ -19,42 +19,42 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		{
 			$this->gateway = $gateway;
 			$this->gateway_environment = pmpro_getOption("gateway_environment");
-			
+
 			if( true === $this->dependencies() ) {
 				$this->loadBraintreeLibrary();
-				
+
 				//convert to braintree nomenclature
 				$environment = $this->gateway_environment;
 				if($environment == "live")
 					$environment = "production";
-				
+
 				$merch_id = pmpro_getOption( "braintree_merchantid" );
 				$pk = pmpro_getOption( "braintree_publickey" );
 				$sk = pmpro_getOption( "braintree_privatekey" );
-				
+
                 try {
-                    
+
                     Braintree_Configuration::environment( $environment );
                     Braintree_Configuration::merchantId( $merch_id );
                     Braintree_Configuration::publicKey( $pk );
                     Braintree_Configuration::privateKey( $sk );
-                    
+
                 } catch( Exception $exception ) {
                     global $msg;
                     global $msgt;
                     global $pmpro_braintree_error;
-                    
+
                     error_log($exception->getMessage() );
-                    
+
                         $pmpro_braintree_error = true;
                         $msg                   = - 1;
                         $msgt                  = sprintf( __( 'Attempting to load Braintree gateway: %s', 'paid-memberships-pro' ), $exception->getMessage() );
                     return false;
                 }
-				
+
 				self::$is_loaded = true;
 			}
-			
+
 			return $this->gateway;
 		}
 		/**
@@ -80,18 +80,18 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
-				    
+
 				    if ( false == $pmpro_braintree_error ) {
 					    $pmpro_braintree_error = true;
 					    $msg                   = - 1;
 					    $msgt                  = sprintf( __( "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Braintree', $module );
 				    }
-					
+
 					//throw error on checkout page
 					if ( ! is_admin() ) {
 						pmpro_setMessage( $msgt, 'pmpro_error' );
 					}
-					
+
 					return false;
 				}
 			}
@@ -99,7 +99,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			self::$is_loaded = true;
 			return true;
 		}
-		
+
 		/**
 		 * Load the Braintree API library.
 		 *
@@ -112,45 +112,44 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			if(!class_exists("\Braintree"))
 				require_once( PMPRO_DIR . "/includes/lib/Braintree/lib/Braintree.php");
 		}
-		
+
 		/**
 		 * Get a collection of plans available for this Braintree account.
 		 */
 		function getPlans($force = false) {
 			//check for cache
 			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
-			
-			$plans = wp_cache_get( $cache_key,'pmpro_levels' );
-			// $plans = get_transient($cache_key );
+
+      $plans = wp_cache_get( $cache_key,'pmpro_levels' );
 			
 			//check Braintree if no transient found
 			if($plans === false) {
-			    
+
 			    try {
 				    $plans = Braintree_Plan::all();
-				    
+
 			    } catch( Braintree\Exception $exception ) {
-			    
+
 			        global $msg;
 			        global $msgt;
 				    global $pmpro_braintree_error;
-				
+
 				    if ( false == $pmpro_braintree_error ) {
-					    
+
 				        $pmpro_braintree_error = true;
 					    $msg                   = - 1;
 					    $status = $exception->getMessage();
-         
+
 					    if ( !empty( $status)) {
 						    $msgt = sprintf( __( "Problem loading plans: %s", "paid-memberships-pro" ), $status );
 					    } else {
 					        $msgt = __( "Problem accessing the Braintree Gateway. Please verify your PMPro Payment Settings (Keys, etc).", "paid-memberships-pro");
                         }
 				    }
-				    
+
 			        return false;
                 }
-				
+
                 // Save to local cache
                 if ( !empty( $plans ) ) {
 	                /**
@@ -159,12 +158,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 	                 */
                     wp_cache_set( $cache_key,$plans,'pmpro_levels',HOUR_IN_SECONDS );
                 }
-				// set_transient($cache_key, $plans,HOUR_IN_SECONDS );
 			}
-			
+
 			return $plans;
 		}
-		
+
 		/**
          * Clear cached plans when updating membership level
          *
@@ -186,17 +184,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		function getPlanByID($id) {
 			$plans = $this->getPlans();
-			
+
 			if(!empty($plans)) {
 				foreach($plans as $plan) {
 					if($plan->id == $id)
 						return $plan;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		/**
 		 * Checks if a level has an associated plan.
 		 */
@@ -208,7 +206,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			else
 				return false;
 		}
-		
+
 		/**
 		 * Run on WP init
 		 *
@@ -218,7 +216,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		{
 			//make sure Braintree Payments is a gateway option
 			add_filter('pmpro_gateways', array('PMProGateway_braintree', 'pmpro_gateways'));
-			
+
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_braintree', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_braintree', 'pmpro_payment_option_fields'), 10, 2);
@@ -237,7 +235,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_braintree', 'pmpro_include_payment_information_fields'));
 			}
 		}
-		
+
 		/**
 		 * Make sure this gateway is in the gateways list
 		 *
@@ -247,10 +245,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		{
 			if(empty($gateways['braintree']))
 				$gateways['braintree'] = __('Braintree Payments', 'paid-memberships-pro' );
-		
+
 			return $gateways;
 		}
-		
+
 		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
@@ -272,10 +270,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				'tax_rate',
 				'accepted_credit_cards'
 			);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Set payment options for payment settings page.
 		 *
@@ -285,13 +283,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		{
 			//get Braintree options
 			$braintree_options = self::getGatewayOptions();
-			
+
 			//merge with others.
 			$options = array_merge($braintree_options, $options);
-			
+
 			return $options;
 		}
-		
+
 		/**
 		 * Display fields for this gateway's options.
 		 *
@@ -353,7 +351,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		</tr>
 		<?php
 		}
-		
+
 		/**
 		 * Filtering orders at checkout.
 		 *
@@ -366,12 +364,12 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$braintree_number = sanitize_text_field($_REQUEST['number']);
 			else
 				$braintree_number = "";
-				
+
 			if(isset($_REQUEST['expiration_date']))
 				$braintree_expiration_date = sanitize_text_field($_REQUEST['expiration_date']);
 			else
 				$braintree_expiration_date = "";
-				
+
 			if(isset($_REQUEST['cvv']))
 				$braintree_cvv = sanitize_text_field($_REQUEST['cvv']);
 			else
@@ -381,10 +379,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			$morder->braintree->number = $braintree_number;
 			$morder->braintree->expiration_date = $braintree_expiration_date;
 			$morder->braintree->cvv = $braintree_cvv;
-			
+
 			return $morder;
 		}
-		
+
 		/**
 		 * Don't require the CVV, but look for cvv (lowercase) that braintree sends
 		 *
@@ -395,7 +393,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			$fields['cvv'] = true;
 			return $fields;
 		}
-		
+
 		/**
 		 * Add some hidden fields and JavaScript to checkout.
 		 *
@@ -415,7 +413,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
                 //set up braintree encryption
                 var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
                 braintree.onSubmitEncryptForm('pmpro_form');
-    
+
                 //pass expiration dates in original format
                 function pmpro_updateBraintreeCardExp()
                 {
@@ -425,7 +423,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
                     pmpro_updateBraintreeCardExp();
                 });
                 pmpro_updateBraintreeCardExp();
-                
+
                 //pass last 4 of credit card
                 function pmpro_updateBraintreeAccountNumber()
                 {
@@ -440,7 +438,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		</script>
 		<?php
 		}
-		
+
 		/**
 		 * Use our own payment fields at checkout. (Remove the name attributes and set some data-encrypted-name attributes.)
 		 * @since 1.8
@@ -450,12 +448,12 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-			
+
 			//get accepted credit cards
 			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-			
+
 			//include ours
 			?>
 			<div id="pmpro_payment_information_fields" class="pmpro_checkout" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
@@ -528,11 +526,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<?php } ?>
 			</div> <!-- end pmpro_payment_information_fields -->
 			<?php
-			
+
 			//don't include the default
 			return false;
 		}
-		
+
 		/**
 		 * Process checkout.
 		 *
@@ -588,7 +586,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				}
 			}
 		}
-		
+
 		function charge(&$order)
 		{
 		    if ( ! self::$is_loaded ) {
@@ -600,15 +598,15 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
-			
+
 			//what amount to charge?
 			$amount = $order->InitialPayment;
-			
+
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
-			$amount = round((float)$order->subtotal + (float)$tax, 2);
-			
+			$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+
 			//create a customer
 			$this->getCustomer($order);
 			if(empty($this->customer) || !empty($order->error))
@@ -616,7 +614,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				//failed to create customer
 				return false;
 			}
-			
+
 			//charge
 			try
 			{
@@ -633,7 +631,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$order->shorterror = $order->error;
 				return false;
 			}
-			
+
 			if($response->success)
 			{
 				//successful charge
@@ -646,7 +644,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$order->shorterror = $order->error;
 					return false;
                 }
-                
+
 				if($response->success)
 				{
 					$order->payment_transaction_id = $transaction_id;
@@ -670,7 +668,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;
 			}
 		}
-		
+
 		/*
 			This function will return a Braintree customer object.
 			If $this->customer is set, it returns it.
@@ -688,32 +686,32 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
             }
 
 			global $current_user;
-			
+
 			//already have it?
 			if(!empty($this->customer) && !$force)
 				return $this->customer;
-				
+
 			//try based on user id
 			if(!empty($order->user_id))
 				$user_id = $order->user_id;
-		
+
 			//if no id passed, check the current user
 			if(empty($user_id) && !empty($current_user->ID))
 				$user_id = $current_user->ID;
-		
+
 			//check for a braintree customer id
 			if(!empty($user_id))
 			{
 				$customer_id = get_user_meta($user_id, "pmpro_braintree_customerid", true);
 			}
-			
+
 			//check for an existing Braintree customer
 			if(!empty($customer_id))
 			{
 				try
 				{
 					$this->customer = Braintree_Customer::find($customer_id);
-					
+
 					//update the customer address, description and card
 					if(!empty($order->accountnumber))
 					{
@@ -731,13 +729,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 								)
 							)
 						);
-						
+
 						//address too?
 						if(!empty($order->billing))
 							//make sure Address2 is set
 							if(!isset($order->Address2))
 								$order->Address2 = '';
-							
+
 							//add billing address to array
 							$update_array['creditCard']['billingAddress'] = array(
 								'firstName' => $order->FirstName,
@@ -752,7 +750,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 									'updateExisting' => true
 								)
 							);
-							
+
 							try {
 								//update
 								$response = Braintree_Customer::update($customer_id, $update_array);
@@ -761,7 +759,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 								$order->shorterror = $order->error;
 								return false;
                             }
-												
+
 						if($response->success)
 						{
 							$this->customer = $response->customer;
@@ -774,7 +772,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 							return false;
 						}
 					}
-					
+
 					return $this->customer;
 				}
 				catch (Exception $e)
@@ -782,7 +780,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					//assume no customer found
 				}
 			}
-			
+
 			//no customer id, create one
 			if(!empty($order->accountnumber))
 			{
@@ -810,7 +808,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 							)
 						)
 					));
-					
+
 					if($result->success)
 					{
 						$this->customer = $result->customer;
@@ -828,7 +826,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$order->shorterror = $order->error;
 					return false;
 				}
-				
+
 				//if we have no user id, we need to set the customer id after the user is created
 				if(empty($user_id))
 				{
@@ -838,13 +836,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				}
 				else
 					update_user_meta($user_id, "pmpro_braintree_customerid", $this->customer->id);
-					
+
 				return $this->customer;
 			}
-			
+
 			return false;
 		}
-		
+
 		/**
          * Create Braintree Subscription
          *
@@ -862,22 +860,22 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
-			
+
 			//set up customer
 			$this->getCustomer($order);
 			if(empty($this->customer) || !empty($order->error))
 				return false;	//error retrieving customer
-				
+
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			/*
 				There are two parts to the trial. Part 1 is simply the delay until the first payment
 				since we are doing the first payment as a separate transaction.
 				The second part is the actual "trial" set by the admin.
-				
+
 				Braintree only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
 			*/
 			//figure out the trial length (first payment handled by initial charge)
@@ -889,10 +887,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$trial_period_days = $order->BillingFrequency * 7;		//weekly
 			else
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
-				
+
 			//convert to a profile start date
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
-			
+
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 
@@ -915,7 +913,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				else
 					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
 			}
-			
+
 			//subscribe to the plan
 			try
 			{
@@ -924,17 +922,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				  'planId' => 'pmpro_' . $order->membership_id,
 				  'price' => $amount
 				);
-				
+
 				if(!empty($trial_period_days))
 				{
 					$details['trialPeriod'] = true;
 					$details['trialDuration'] = $trial_period_days;
 					$details['trialDurationUnit'] = "day";
 				}
-				
+
 				if(!empty($order->TotalBillingCycles))
 					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
-				
+
 				$result = Braintree_Subscription::create($details);
 			}
 			catch (Exception $e)
@@ -944,7 +942,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$order->shorterror = $order->error;
 				return false;
 			}
-			
+
 			if($result->success)
 			{
 				//if we got this far, we're all good
@@ -959,7 +957,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;
 			}
 		}
-		
+
 		function update(&$order)
 		{
 			if ( ! self::$is_loaded ) {
@@ -969,7 +967,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			//we just have to run getCustomer which will look for the customer and update it with the new token
 			$this->getCustomer($order, true);
-			
+
 			if(!empty($this->customer) && empty($order->error))
 			{
 				return true;
@@ -981,12 +979,12 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		}
 		
 		/**
-         * Cancel order and Braintree Subscription if applicable
-         *
-		 * @param \MemberOrder $order
-		 *
-		 * @return bool
-		 */
+      * Cancel order and Braintree Subscription if applicable
+      *
+		  * @param \MemberOrder $order
+		  *
+		  * @return bool
+		  */
 		function cancel(&$order)
 		{
 			if ( ! self::$is_loaded ) {
@@ -1014,7 +1012,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;
-			
+
 			//find the customer
 			if(!empty($order->subscription_transaction_id))
 			{
@@ -1029,7 +1027,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$order->shorterror = $order->error;
 					return false;	//no subscription found
 				}
-				
+
 				if($result->success)
 				{
 					return true;

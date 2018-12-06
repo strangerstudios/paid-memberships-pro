@@ -44,8 +44,8 @@ function pmpro_report_sales_widget() {
 			<th scope="col">&nbsp;</th>
 			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
 			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
-		</tr>
-	</thead>
+    </tr>
+	</thead>	
 	<?php
 		$reports = array(
 			'today'      => __('Today', 'paid-memberships-pro' ),
@@ -126,23 +126,28 @@ function pmpro_report_sales_page()
 	else
 		$l = "";
 
-	//calculate start date and how to group dates returned from DB
+	$currently_in_period = false;
+
+  //calculate start date and how to group dates returned from DB
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
 		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-32';
 		$date_function = 'DAY';
+		$currently_in_period = ( intval( date( 'Y' ) ) === $year && intval( date( 'n' ) ) === $month );
 	}
 	elseif($period == "monthly")
 	{
 		$startdate = $year . '-01-01';
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
+		$currently_in_period = ( intval( date( 'Y' ) ) === $year );
 	}
 	else
 	{
 		$startdate = '1960-01-01';	//all time
 		$date_function = 'YEAR';
+		$currently_in_period = true;
 	}
 
 	//testing or live data
@@ -162,30 +167,45 @@ function pmpro_report_sales_page()
 	$dates = $wpdb->get_results($sqlQuery);
 
 	//fill in blanks in dates
-	$cols = array();
-	if($period == "daily")
-	{
-		$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
-
-		for($i = 1; $i <= $lastday; $i++)
-		{
-			$cols[$i] = 0;
+	$cols           = array();
+	$total_in_period = 0;
+	$units_in_period = 0; // Used for averages.
+	if ( $period == "daily" ) {
+		$lastday = date_i18n( 't', strtotime( $startdate, current_time( 'timestamp' ) ) );
+		$day_of_month = intval( date( 'j' ) );
+		for ( $i = 1; $i <= $lastday; $i++ ) {
+			$cols[ $i ] = 0;
+			if ( ! $currently_in_period || $i < $day_of_month ) {
+				$units_in_period++;
+			}
 			foreach($dates as $date)
 			{
-				if($date->date == $i)
+				if($date->date == $i) {
 					$cols[$i] = $date->value;
+					if ( ! $currently_in_period || $i < $day_of_month ) {
+						$total_in_period += $date->value;
+					}
+				}
 			}
 		}
 	}
 	elseif($period == "monthly")
 	{
+		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = 0;
+			if ( ! $currently_in_period || $i < $month_of_year ) {
+				$units_in_period++;
+			}
 			foreach($dates as $date)
 			{
-				if($date->date == $i)
+				if($date->date == $i) {
 					$cols[$i] = $date->value;
+					if ( ! $currently_in_period || $i < $month_of_year ) {
+						$total_in_period += $date->value;
+					}
+				}
 			}
 		}
 	}
@@ -194,20 +214,29 @@ function pmpro_report_sales_page()
 		//get min and max years
 		$min = 9999;
 		$max = 0;
-		foreach($dates as $date)
-		{
-			$min = min($min, $date->date);
-			$max = max($max, $date->date);
+		foreach ( $dates as $date ) {
+			$min = min( $min, $date->date );
+			$max = max( $max, $date->date );
 		}
 
-		for($i = $min; $i <= $max; $i++)
-		{
-			foreach($dates as $date)
-			{
-				if($date->date == $i)
-					$cols[$i] = $date->value;
+		$current_year = intval( date( 'Y' ) );
+		for ( $i = $min; $i <= $max; $i++ ) {
+			if ( $i < $current_year ) {
+				$units_in_period++;
+			}
+			foreach ( $dates as $date ) {
+				if ( $date->date == $i ) {
+					$cols[ $i ] = $date->value;
+					if ( $i < $current_year ) {
+						$total_in_period += $date->value;
+					}
+				}
 			}
 		}
+	}
+	$average = 0;
+	if ( 0 !== $units_in_period ) {
+		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
 	?>
 	<form id="posts-filter" method="get" action="">
@@ -256,7 +285,8 @@ function pmpro_report_sales_page()
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
 
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
+	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>	
+	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
 
 	<script>
 		//update month/year when period dropdown is changed
@@ -297,9 +327,9 @@ function pmpro_report_sales_page()
 		function drawChart() {
 
 			var data = google.visualization.arrayToDataTable([
-			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>'],
+			  ['<?php echo $date_function;?>', '<?php echo ucwords($type);?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>'],
 			  <?php foreach($cols as $date => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>],
+				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$date,2)); else echo $date;?>', <?php echo $value;?>, <?php echo $average;?>],
 			  <?php } ?>
 			]);
 
@@ -307,6 +337,8 @@ function pmpro_report_sales_page()
 			  colors: ['#51a351', '#387038'],
 			  hAxis: {title: '<?php echo $date_function;?>', titleTextStyle: {color: 'black'}, maxAlternation: 1},
 			  vAxis: {color: 'green', titleTextStyle: {color: '#51a351'}},
+				seriesType: 'bars',
+      	series: {1: {type: 'line', color: 'red'}}
 			};
 
 			<?php
@@ -319,11 +351,12 @@ function pmpro_report_sales_page()
 					?>
 					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 					formatter.format(data, 1);
+					formatter.format(data, 2);
 					<?php
 				}
 			?>
 
-			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
 			chart.draw(data, options);
 		}
 	</script>
@@ -358,11 +391,11 @@ function pmpro_getSales($period, $levels = NULL)
 
 	//build query
 	global $wpdb;
-	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
 
 	//restrict by level
 	if(!empty($levels))
-		$sqlQuery .= "AND membership_id IN(" . esc_sql( $levels ) . ") ";
+		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
@@ -466,7 +499,7 @@ function pmpro_getRevenue($period, $levels = NULL)
 
 	//build query
 	global $wpdb;
-	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql($gateway_environment) . "' ";
 
 	//restrict by level
 	if(!empty($levels))

@@ -985,10 +985,10 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 		$other_order_ids = $wpdb->get_col(
 			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
-											FROM $wpdb->pmpro_membership_orders 
-											WHERE user_id = '" . $user_id . "' 
-												AND status = 'success' 
-											GROUP BY unique_sub_id  
+											FROM $wpdb->pmpro_membership_orders
+											WHERE user_id = '" . $user_id . "'
+												AND status = 'success'
+											GROUP BY unique_sub_id
 											ORDER BY id DESC"
 		);
 	}
@@ -1043,7 +1043,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 				"
 				INSERT INTO {$wpdb->pmpro_memberships_users}
 				( `user_id`, `membership_id`, `code_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `startdate`, `enddate`)
-					VALUES 
+					VALUES
 					( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s )",
 				$user_id,
 				$level_id,
@@ -2350,13 +2350,13 @@ function pmpro_formatPrice( $price ) {
 	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
 
 	// start with the price formatted with two decimals
-	$formatted = number_format( (double) $price, 2 );
+	$formatted = pmpro_round_price( $price );
 
 	// settings stored in array?
 	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		// format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format(
-			$price,
+			$formatted,
 			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2 ),
 			( isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.' ),
 			( isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',' )
@@ -2389,6 +2389,33 @@ function pmpro_getCurrencyPosition() {
 	} else {
 		return 'left';
 	}
+}
+
+/**
+ * Rounds price based on currency
+ * Does not format price, to do that, call pmpro_formatPrice().
+ *
+ * @param string/float $price to round.
+ * @param string       $currency to round price into.
+ */
+function pmpro_round_price( $price, $currency = '' ) {
+	global $pmpro_currency, $pmpro_currencies;
+	$decimals = 2;
+
+	if ( '' === $currency && ! empty( $pmpro_currencies[ $pmpro_currency ] ) ) {
+		$currency = $pmpro_currency;
+	}
+
+	if ( ! empty( $pmpro_currencies[ $currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) && ! empty( $pmpro_currencies[ $currency ]['decimals'] ) && is_int( $pmpro_currencies[ $currency ]['decimals'] ) ) {
+		$decimals = $pmpro_currencies[ $currency ]['decimals'];
+	}
+
+	$formatted = number_format( round( (double) $price, $decimals ), $decimals );
+	/**
+	 * Filter for result of pmpro_round_price.
+	 */
+	$formatted = apply_filters( 'pmpro_round_price', $formatted );
+	return $formatted;
 }
 
 /*
@@ -2597,17 +2624,17 @@ function pmpro_cleanup_memberships_users_table() {
 	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users mu
 					LEFT JOIN $wpdb->pmpro_membership_levels l ON mu.membership_id = l.id
 				SET mu.status = 'inactive'
-				WHERE mu.status = 'active' 
+				WHERE mu.status = 'active'
 					AND l.id IS NULL";
 	$wpdb->query( $sqlQuery );
 
 	// fix rows where there is more than one active status for the same user/level
 	$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users t1
 					INNER JOIN (SELECT mu1.id as id
-				FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2 		
+				FROM $wpdb->pmpro_memberships_users mu1, $wpdb->pmpro_memberships_users mu2
 				WHERE mu1.id < mu2.id
 					AND mu1.user_id = mu2.user_id
-					AND mu1.membership_id = mu2.membership_id		
+					AND mu1.membership_id = mu2.membership_id
 					AND mu1.status = 'active'
 					AND mu2.status = 'active'
 				GROUP BY mu1.id
