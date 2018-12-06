@@ -87,6 +87,7 @@ function pmpro_parent_file( $parent_file ) {
 		$parent_file = 'pmpro-dashboard';
 		$plugin_page = 'pmpro-dashboard';
 		$submenu_file = 'pmpro-membershiplevels';
+		$submenu_file .= '<span id="membershiplevels"></span>';
 	}
 	
 	return $parent_file;

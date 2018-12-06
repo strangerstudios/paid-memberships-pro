@@ -32,9 +32,9 @@ require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/clo
 require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
+require_once( PMPRO_DIR . '/includes/pointers.php' );              // misc functions used by the plugin
 require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
-require_once( PMPRO_DIR . '/includes/deprecated.php' );              // deprecated hooks and functions
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
@@ -57,7 +57,6 @@ require_once( PMPRO_DIR . '/includes/https.php' );                  // code rela
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
-require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
@@ -66,7 +65,6 @@ require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PM
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
-require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content
