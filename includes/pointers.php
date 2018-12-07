@@ -93,16 +93,16 @@ class PMPro_WP_Pointers {
 		// The query variable is used to determine which pointer to display.
 		// *****************************************************************************************************
 		$tour = array(
-			'settings'      => array(
-				'id'       => '#dashboard_quick_press',
+			'newlevels'      => array(
+				'id'       => '#pmpro-new-levels',
 				'content'  => '<h3>' . __( 'Congratulations!', 'paid-memberships-pro' ) . '</h3>'
 					. '<p><strong>' . __( 'WP Pointers is working properly.', 'paid-memberships-pro' ) . '</strong></p>'
 					. '<p>' . __( 'This pointer is attached to the "Quick Draft" admin widget.', 'paid-memberships-pro' ) . '</p>'
 					. '<p>' . __( 'Our next pointer will take us to the "Settings" admin menu.', 'paid-memberships-pro' ) . '</p>',
 				'button2'  => __( 'Next', 'paid-memberships-pro' ),
-				'function' => 'window.location.href="' . get_admin_url( 'admin.php?page=pmpro-membershiplevels' ) . '"',
+			$function = 'document.location="' . $this->get_admin_url( 'admin.php', 'pmpro-memberslist' ) . '";',
 			),
-			'site_title'       => array(
+			'newsettings'       => array(
 				'id'       => '#pmpro-new-settings',
 				'content'  => '<h3>' . __( 'Moving along to Site Title.', 'paid-memberships-pro' ) . '</h3>'
 				. '<p><strong>' . __( 'Another WP Pointer.', 'paid-memberships-pro' ) . '</strong></p>'
