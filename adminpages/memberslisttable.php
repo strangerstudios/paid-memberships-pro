@@ -68,7 +68,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		// check if a search was performed.
 		$table_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
 
-		$this->_column_headers = $this->get_column_info();
+		$columns               = $this->get_columns();
+		$hidden                = $this->get_hidden_columns();
+		$sortable              = $this->get_sortable_columns();
+		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		// fetch table data
 		$table_data = $this->sql_table_data();
@@ -109,14 +112,19 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			// 'cb'            => '<input type="checkbox" />',
-			'ID'            => 'ID',
-			'display_name'  => 'Display Name',
-			'user_email'    => 'Email',
-			'membership'    => 'Level Name',
-			'membership_id' => 'Level ID',
-			'startdate'     => 'Subscribe Date',
-			'enddate'       => 'End Date',
-			'joindate'      => 'Initial Date',
+			'ID'             => 'ID',
+			'user_login'     => 'Username',
+			'first_name'     => 'First Name',
+			'last_name'      => 'Last Name',
+			'display_name'   => 'Display Name',
+			'user_email'     => 'Email',
+			'address'        => 'Address',
+			'membership'     => 'Membership',
+			'membership_id'  => 'Level ID',
+			'billing_amount' => 'Fee',
+			'startdate'      => 'Subscribe Date',
+			'joindate'       => 'Joined',
+			'enddate'        => 'Expires',
 		);
 		return $columns;
 	}
@@ -127,7 +135,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		return array();
+		$hidden = array(
+			'first_name',
+			'last_name',
+			'address',
+			'membership_id',
+			'display_name',
+			'startdate',
+		);
+		return $hidden;
 	}
 
 	/**
@@ -151,35 +167,51 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		 * column name_in_list_table => columnname in the db
 		 */
 		return array(
-			'ID'            => array(
+			'ID'             => array(
 				'ID',
 				false,
 			),
-			'display_name'  => array(
+			'user_login'     => array(
+				'user_login',
+				false,
+			),
+			'first_name'     => array(
+				'first_name',
+				false,
+			),
+			'last_name'      => array(
+				'last_name',
+				false,
+			),
+			'billing_amount' => array(
+				'billing_amount',
+				false,
+			),
+			'display_name'   => array(
 				'display_name',
 				false,
 			),
-			'user_email'    => array(
+			'user_email'     => array(
 				'user_email',
 				false,
 			),
-			'membership'    => array(
+			'membership'     => array(
 				'membership',
 				false,
 			),
-			'membership_id' => array(
+			'membership_id'  => array(
 				'membership_id',
 				false,
 			),
-			'startdate'     => array(
+			'startdate'      => array(
 				'startdate',
 				false,
 			),
-			'enddate'       => array(
+			'enddate'        => array(
 				'enddate',
 				false,
 			),
-			'joindate'      => array(
+			'joindate'       => array(
 				'joindate',
 				false,
 			),
@@ -290,7 +322,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'ID':
+			case 'user_login':
 			case 'display_name':
+			case 'billing_amount':
 			case 'user_email':
 			case 'membership':
 			case 'membership_id':
@@ -331,6 +365,46 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'<label class="screen-reader-text" for="user_' . $item['ID'] . '">' . sprintf( __( 'Select %s' ), $item['user_login'] ) . '</label>'
 			. "<input type='checkbox' name='users[]' id='user_{$item['ID']}' value='{$item['ID']}' />"
 		);
+	}
+
+	/**
+	 * Get value for first name column.
+	 *
+	 * The special 'first_name' column
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_first_name( $item ) {
+		$user_object = get_userdata( $item['ID'] );
+		return ( $user_object->first_name ?: '---' );
+	}
+
+	/**
+	 * Get value for last name column.
+	 *
+	 * The special 'last_name' column
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_last_name( $item ) {
+		$user_object = get_userdata( $item['ID'] );
+		return ( $user_object->last_name ?: '---' );
+	}
+
+	/**
+	 * Get value for Address column.
+	 *
+	 * The special 'address' column
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_address( $item ) {
+		$user_object = get_userdata( $item['ID'] );
+		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
+		// return ( $user_object->last_name ?: '---' );
 	}
 
 	public function get_levels_object() {
@@ -380,8 +454,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$views = $this->get_views();
 		}
 		if ( $which == 'bottom' ) {
-			echo '<h3>Features</h3>';
-			echo '<li id="return-dafuq"> return-dafuq </li>';
 		}
 	}
 
@@ -415,7 +487,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 }
 
-add_filter( 'add_to_levels_array', 'members_list_research_levels' );
+// add_filter( 'add_to_levels_array', 'members_list_research_levels' );
 function members_list_research_levels( $added_levels ) {
 	$added_levels = array(
 		__( 'Cancelled', 'paid-memberships-pro' ),

@@ -114,7 +114,7 @@ add_action("init", "pmpro_init");
 
 add_action( 'admin_enqueue_scripts', 'pmpro_add_list_table_scripts' );
 function pmpro_add_list_table_scripts() {
-	wp_register_script( 'select-level', plugins_url( '/js/select-level.js', __DIR__ ), array( 'jquery' ), time() );
+	wp_register_script( 'select-level', plugins_url( '/js/select-level.js', __DIR__ ), array( 'jquery' ), PMPRO_VERSION );
 	wp_localize_script(
 		'select-level',
 		'select_level_object',
