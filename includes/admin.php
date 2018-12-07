@@ -9,14 +9,20 @@
  * @since 1.10
  */
 function pmpro_admin_init_redirect_to_dashboard() {
+	// Can the current user view the dashboard?
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	// Check if we should redirect to the dashboard
 	$pmpro_dashboard_version = get_option( 'pmpro_dashboard_version', 0 );
-    if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
+	if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
 		update_option( 'pmpro_dashboard_version', PMPRO_VERSION, 'no' );
 		wp_redirect( admin_url( 'admin.php?page=pmpro-dashboard' ) );
 		exit;
 	}
 }
-add_action('admin_init', 'pmpro_admin_init_redirect_to_dashboard');
+add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 
 /**
  * Runs only when the plugin is activated.
