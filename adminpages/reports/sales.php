@@ -154,14 +154,14 @@ function pmpro_report_sales_page()
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
 		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-32';
 		$date_function = 'DAY';
-		$currently_in_period = ( intval( date( 'Y' ) ) === $year && intval( date( 'n' ) ) === $month );
+		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
 	elseif($period == "monthly")
 	{
 		$startdate = $year . '-01-01';
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
-		$currently_in_period = ( intval( date( 'Y' ) ) === $year );
+		$currently_in_period = ( intval( date( 'Y' ) ) == $year );
 	}
 	else
 	{
