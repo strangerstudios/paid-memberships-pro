@@ -25,7 +25,7 @@ function prepare_pointer_script() {
 
 	$id       = '#toplevel_page_pmpro-dashboard';
 	$content  = '<h3>' .  __( 'Welcome to New PMPro location.', 'paid-memberships-pro' ) . '</h3>';
-	$content .= '<p>'. __( 'The Memberships menu has moved. The Members List and Discount Codes pages can be found under Settings.', 'paid-memberships-pro' ) . '</p>';
+	$content .= '<p>'. sprintf( __( 'The Memberships menu has moved. The <a href="%s">Members List is here</a>; Membership Levels and Discount Codes pages can be found under <a href="%s">Settings</a>.', 'paid-memberships-pro' ) , 'admin.php?page=pmpro-memberslist', 'admin.php?page=pmpro-membershiplevels' ). '</p>';
 
 	$options  = array(
 		'content'  => $content,
@@ -37,7 +37,7 @@ function prepare_pointer_script() {
 	$function = '';
 
 	$dismissed_pointers = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
-	if ( in_array( 'pmpro_v2_tour', $dismissed_pointers ) ) {
+	if ( ! in_array( 'pmpro_v2_tour', $dismissed_pointers ) ) {
 		build_pointer_script( $id, $options, __( 'Close', 'paid-memberships-pro' ), $button2, $function );
 	}
 }
