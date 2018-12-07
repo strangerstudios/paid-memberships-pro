@@ -33,6 +33,9 @@ add_action("init", "pmpro_report_sales_init");
 function pmpro_report_sales_widget() {
 	global $wpdb;
 ?>
+<style>
+	#pmpro_report_sales tbody td:last-child {text-align: right; }
+</style>
 <span id="pmpro_report_sales" class="pmpro_report-holder">
 	<table class="wp-list-table widefat fixed striped">
 	<thead>
@@ -143,23 +146,28 @@ function pmpro_report_sales_page()
 		$discount_code = '';
 	}
 
+	$currently_in_period = false;
+
 	//calculate start date and how to group dates returned from DB
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
 		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-32';
 		$date_function = 'DAY';
+		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
 	elseif($period == "monthly")
 	{
 		$startdate = $year . '-01-01';
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
+		$currently_in_period = ( intval( date( 'Y' ) ) == $year );
 	}
 	else
 	{
 		$startdate = '1960-01-01';	//all time
 		$date_function = 'YEAR';
+		$currently_in_period = true;
 	}
 
 	//testing or live data
@@ -190,29 +198,50 @@ function pmpro_report_sales_page()
 
 	//fill in blanks in dates
 	$cols = array();
+	$total_in_period = 0;
+	$units_in_period = 0; // Used for averages.
+	
 	if($period == "daily")
 	{
 		$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
-
+		$day_of_month = intval( date( 'j' ) );
+		
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = 0;
+			if ( ! $currently_in_period || $i < $day_of_month ) {
+				$units_in_period++;
+			}
+			
 			foreach($dates as $date)
 			{
-				if($date->date == $i)
+				if($date->date == $i) {
 					$cols[$i] = $date->value;
+					if ( ! $currently_in_period || $i < $day_of_month ) {
+						$total_in_period += $date->value;
+					}
+				}	
 			}
 		}
 	}
 	elseif($period == "monthly")
 	{
+		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = 0;
+			if ( ! $currently_in_period || $i < $month_of_year ) {
+				$units_in_period++;
+			}
+
 			foreach($dates as $date)
 			{
-				if($date->date == $i)
+				if($date->date == $i) {
 					$cols[$i] = $date->value;
+					if ( ! $currently_in_period || $i < $month_of_year ) {
+						$total_in_period += $date->value;
+					}
+				}
 			}
 		}
 	}
@@ -227,14 +256,27 @@ function pmpro_report_sales_page()
 			$max = max($max, $date->date);
 		}
 
+		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
+			if ( $i < $current_year ) {
+				$units_in_period++;
+			}
 			foreach($dates as $date)
 			{
-				if($date->date == $i)
+				if($date->date == $i) {
 					$cols[$i] = $date->value;
+					if ( $i < $current_year ) {
+						$total_in_period += $date->value;
+					}
+				}
 			}
 		}
+	}
+	
+	$average = 0;
+	if ( 0 !== $units_in_period ) {
+		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
 	?>
 	<form id="posts-filter" method="get" action="">
@@ -294,7 +336,7 @@ function pmpro_report_sales_page()
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
-
+	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -336,6 +378,7 @@ function pmpro_report_sales_page()
 			var data = google.visualization.arrayToDataTable([
 				[
 					{ label: '<?php echo $date_function;?>' },
+					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
 					{ label: '<?php echo ucwords($type);?>' }
 				],
 				<?php foreach($cols as $date => $value) { ?>
@@ -344,7 +387,7 @@ function pmpro_report_sales_page()
 							echo date_i18n("M", mktime(0,0,0,$date,2));
 						} else {
 						echo $date;
-					} ?>', <?php echo $value;?>],
+					} ?>', <?php echo $value;?>, <?php echo $average;?>],
 				<?php } ?>
 			]);
 
@@ -370,6 +413,7 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
+				series: {1: {type: 'line', color: 'red'}},
 				legend: {position: 'none'},
 			};
 
@@ -383,6 +427,7 @@ function pmpro_report_sales_page()
 					?>
 					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
 					formatter.format(data, 1);
+					formatter.format(data, 2);
 					<?php
 				}
 			?>

@@ -239,7 +239,9 @@
 						$expiration_period = 'Month';
 					}
 
-
+					if ( ! empty( $expiration ) && ! empty( $recurring ) ) {
+						$expiration_warning_flag = true;
+					}
 
 					//okay, do the insert
 					$wpdb->insert(
@@ -347,6 +349,14 @@
 		{
 			$pmpro_msg = __("Code not found.", 'paid-memberships-pro' );
 			$pmpro_msgt = "error";
+		}
+	}
+	
+	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
+		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
+		
+		if( $pmpro_msgt == 'success' ) {
+			$pmpro_msgt = 'warning';
 		}
 	}
 
@@ -792,7 +802,12 @@
 							<td>
 								<a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
 								<a title="<?php _e('copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => -1, 'copy' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-secondary"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
-								<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a>	
+								<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a>
+								<?php if ( (int)$uses > 0 ) { ?>
+									<a title="<?php _e('view orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount_code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>" class="button-secondary"><?php _e( 'orders', 'paid-memberships-pro' ); ?></a>
+								<?php } else { ?>
+									<a title="<?php _e('no orders', 'paid-memberships-pro' ); ?>" href="#" class="button-secondary button-disabled"><?php _e( 'orders', 'paid-memberships-pro' ); ?></a>
+								<?php } ?>
 							</td>
 						</tr>
 					<?php

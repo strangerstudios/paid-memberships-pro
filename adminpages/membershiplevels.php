@@ -161,8 +161,16 @@
 				$msgt = __("Membership level updated successfully.", 'paid-memberships-pro' );
 			} else {
 				$msg = -2;
-				$msg = true;
 				$msgt = __("Error updating membership level.", 'paid-memberships-pro' );
+			}
+		}
+		
+		if( ! empty( $msgt ) && $ml_recurring && $ml_expiration ) {
+			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
+				
+			// turn success to errors
+			if( $msg > 0 ) {
+				$msg = 0 - $msg;
 			}
 		}
 
@@ -517,7 +525,7 @@
 					<td><input id="expiration" name="expiration" type="checkbox" value="yes" <?php if(pmpro_isLevelExpiring($level)) { echo "checked='checked'"; } ?> onclick="if(jQuery('#expiration').is(':checked')) { jQuery('.expiration_info').show(); } else { jQuery('.expiration_info').hide();}" /> <label for="expiration"><?php _e('Check this to set when membership access expires.', 'paid-memberships-pro' );?></label></a></td>
 				</tr>
 
-				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
+				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>					
 					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Expires In', 'paid-memberships-pro' );?>:</label></th>
 					<td>
 						<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo esc_attr($level->expiration_number);?>" />
@@ -532,6 +540,25 @@
 						  ?>
 						</select>
 						<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
+						
+						<div id="pmpro_expiration_warning" style="display: none;" class="notice error inline">
+							<p><?php printf( __( 'WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ); ?></p>
+						</div>
+						<script>
+							jQuery(document).ready(function() {
+								function pmpro_expirationWarningCheck() {
+									if( jQuery('#recurring:checked').length && jQuery('#expiration:checked').length) {
+										jQuery('#pmpro_expiration_warning').show();
+									} else {
+										jQuery('#pmpro_expiration_warning').hide();
+									}
+								}
+								
+								pmpro_expirationWarningCheck();
+								
+								jQuery('#recurring,#expiration').change(function() { pmpro_expirationWarningCheck(); });
+							});
+						</script>
 					</td>
 				</tr>
 			</tbody>
