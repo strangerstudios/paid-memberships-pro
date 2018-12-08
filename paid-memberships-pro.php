@@ -35,6 +35,7 @@ require_once( PMPRO_DIR . '/includes/functions.php' );              // misc func
 require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
 require_once( PMPRO_DIR . '/includes/deprecated.php' );              // deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/pointers.php' );              // admin pointers
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
