@@ -455,7 +455,7 @@
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
-			$amount = round((float)$order->subtotal + (float)$tax, 2);
+			$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
 
 			//combine address
 			$address = $order->Address1;
@@ -608,8 +608,8 @@
 			$amount_tax = $order->getTaxForPrice($amount);
 			$trial_tax = $order->getTaxForPrice($trialAmount);
 
-			$amount = round((float)$amount + (float)$amount_tax, 2);
-			$trialAmount = round((float)$trialAmount + (float)$trial_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$trialAmount = pmpro_round_price((float)$trialAmount + (float)$trial_tax);
 
 			//authorize.net doesn't support different periods between trial and actual
 
