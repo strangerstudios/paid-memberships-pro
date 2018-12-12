@@ -7,6 +7,7 @@ const {
     PanelBody,
     PanelRow,
     TextControl,
+    SelectControl,
 } = wp.components;
 const {
     InspectorControls,
@@ -35,12 +36,13 @@ export default class Inspector extends Component {
                  />
               </PanelBody>
               <PanelBody>
-                 <TextControl
-                     label={ __( 'Level ID', 'paid-memberships-pro' ) }
-                     help={ __( 'Level id to check out', 'paid-memberships-pro' ) }
-                     value={ level }
-                     onChange={ level => setAttributes( { level } ) }
-                 />
+                  <SelectControl
+                      label={ __( 'Level ID', 'paid-memberships-pro' ) }
+                      help={ __( 'Level id to check out', 'paid-memberships-pro' ) }
+                      value={ level }
+                      onChange={ level => setAttributes( { level } ) }
+                      options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
+                  />
               </PanelBody>
               <PanelBody>
                  <TextControl

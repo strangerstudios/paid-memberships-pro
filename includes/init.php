@@ -12,7 +12,17 @@ function pmpro_init()
 
 	if(is_admin())
 	{
-		wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
+		wp_register_script( 'pmpro_admin', plugins_url( 'js/paid-memberships-pro.js', dirname(__FILE__) ), array( 'jquery' ) );
+		$all_levels = pmpro_getAllLevels( true, true );
+		$all_level_values_and_labels = array();
+		foreach( $all_levels as $level ) {
+			$all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
+		}
+		wp_localize_script( 'pmpro_admin', 'pmpro', array(
+			'all_levels' => $all_levels,
+			'all_level_values_and_labels' => $all_level_values_and_labels
+		));
+		wp_enqueue_script( 'pmpro_admin' );
 
 		$admin_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {

@@ -21,6 +21,7 @@
 const {
     PanelBody,
     TextControl,
+    SelectControl,
 } = wp.components;
 
 const {
@@ -77,10 +78,11 @@ const {
                        value={ text }
                        onChange={ text => setAttributes( { text } ) }
                    />
-                   <TextControl
+                   <SelectControl
                        label={ __( 'Level ID', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
+                       options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
                    />
                    <TextControl
                        label={ __( 'CSS Class', 'paid-memberships-pro' ) }
