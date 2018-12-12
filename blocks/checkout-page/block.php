@@ -23,6 +23,13 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
  * @return void
  */
 function register_dynamic_block() {
+	// Need to explicitly register the default level meta
+	register_meta( 'post', 'pmpro_default_level', array(
+	   'show_in_rest' => true,
+	   'single' => true,
+	   'type' => 'integer',
+   	) );
+	
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-page', [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
@@ -36,12 +43,6 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	/*$atts = '';
-	if ( ! empty( $attributes['level'] ) ) {
-		$atts = [ 'level' => intval( $attributes['level'] ) ];
-	}*/
-	// TO DO: Apply the specificed Level ID to the checkout page. 
-	// d ( $atts );
 	return pmpro_loadTemplate( 'checkout', 'local', 'pages' );
 }
 

@@ -22,7 +22,7 @@
 } = wp.blocks;
 const {
     PanelBody,
-    TextControl,
+    SelectControl,
 } = wp.components;
 
 const {
@@ -47,17 +47,25 @@ const {
          supports: {
          },
          attributes: {
-             level: {
+             pmpro_default_level: {
                  type: 'integer',
+                 source: 'meta',
+                 meta: 'pmpro_default_level',
              },
          },
          edit: props => {
-             const { attributes: { fields }, className, setAttributes, isSelected } = props;
+             const { attributes: { pmpro_default_level }, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className }>
                   <span>Paid Memberships Pro</span>
                   <span>Membership Checkout Form</span>
+                  <SelectControl
+                      label={ __( 'Membership Level', 'paid-memberships-pro' ) }
+                      value={ pmpro_default_level }
+                      onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
+                      options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
+                  />
                 </div>
             ];
          },
