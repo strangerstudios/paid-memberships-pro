@@ -14,7 +14,6 @@ if ( ! function_exists( 'register_block_type' ) ) {
 	return;
 }
 
-add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 /**
  * Register the dynamic block.
  *
@@ -35,6 +34,7 @@ function register_dynamic_block() {
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
+add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 
 /**
  * Server rendering for checkout-page block.

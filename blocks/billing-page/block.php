@@ -14,7 +14,6 @@ if ( ! function_exists( 'register_block_type' ) ) {
 	return;
 }
 
-add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 /**
  * Register the dynamic block.
  *
@@ -28,6 +27,7 @@ function register_dynamic_block() {
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
+add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 
 /**
  * Server rendering for billing-page block.
@@ -38,3 +38,13 @@ function register_dynamic_block() {
 function render_dynamic_block( $attributes ) {
 	return pmpro_loadTemplate( 'billing', 'local', 'pages' );
 }
+
+/**
+ * Load preheaders/billing.php if a page has the checkout block.
+ */
+function load_billing_preheader() {
+	if ( has_block( 'pmpro/billing-page' ) ) {
+		require_once( PMPRO_DIR . "/preheaders/billing.php" );
+	}
+}
+add_action( 'wp', __NAMESPACE__ . '\load_billing_preheader', 1 );

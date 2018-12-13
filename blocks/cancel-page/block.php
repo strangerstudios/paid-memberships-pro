@@ -14,7 +14,6 @@ if ( ! function_exists( 'register_block_type' ) ) {
 	return;
 }
 
-add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 /**
  * Register the dynamic block.
  *
@@ -28,6 +27,7 @@ function register_dynamic_block() {
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
+add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 
 /**
  * Server rendering for cancel-page block.
@@ -38,3 +38,14 @@ function register_dynamic_block() {
 function render_dynamic_block( $attributes ) {
 	return pmpro_loadTemplate( 'cancel', 'local', 'pages' );
 }
+
+/**
+ * Load preheaders/cancel.php if a page has the checkout block.
+ */
+function load_cancel_preheader() {
+	if ( has_block( 'pmpro/cancel-page' ) ) {
+		require_once( PMPRO_DIR . "/preheaders/cancel.php" );
+	}
+}
+add_action( 'wp', __NAMESPACE__ . '\load_cancel_preheader', 1 );
+
