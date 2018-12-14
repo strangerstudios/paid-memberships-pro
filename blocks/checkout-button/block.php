@@ -26,6 +26,7 @@ function register_dynamic_block() {
 
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-button', [
+		'attributes' => array( 'all_levels' => pmpro_getAllLevels( true, true ) ),
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }

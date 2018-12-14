@@ -18,6 +18,12 @@ if ( isset( $_REQUEST['l'] ) ) {
 	$l = false;
 }
 
+if ( isset( $_REQUEST['discount_code'] ) ) {
+	$discount_code = intval( $_REQUEST['discount_code'] );
+} else {
+	$discount_code = false;
+}
+
 if ( isset( $_REQUEST['start-month'] ) ) {
 	$start_month = intval( $_REQUEST['start-month'] );
 } else {
@@ -108,7 +114,7 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$start_date = $start_date . ' 00:00:00';
 	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'predefined-date-range' ) {
 	if ( $predefined_date == 'Last Month' ) {
 		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of last month', current_time( 'timestamp' ) ) );
@@ -130,15 +136,17 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$start_date = $start_date . ' 00:00:00';
 	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'within-a-level' ) {
-	$condition = 'membership_id = ' . esc_sql( $l );
+	$condition = 'o.membership_id = ' . esc_sql( $l );
+} elseif ( $filter == 'with-discount-code' ) {
+	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
 } elseif ( $filter == 'within-a-status' ) {
-	$condition = "status = '" . esc_sql( $status ) . "' ";
+	$condition = "o.status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
-	$condition = "total > 0";
+	$condition = "o.total > 0";
 } elseif( $filter == 'only-free' ) {
-	$condition = "total = 0";
+	$condition = "o.total = 0";
 }
 
 // emailing?
@@ -296,6 +304,11 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 
 	// save
 	if ( $order->saveOrder() !== false && $nonceokay ) {
+		// also update the discount code if needed
+		if( isset( $_REQUEST['discount_code_id'] ) ) {
+			$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
+		}
+
 		// handle timestamp
 		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ) ) !== false ) {
 			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
@@ -337,6 +350,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->billing->zip = '';
 			$order->billing->country = '';
 			$order->billing->phone = '';
+			$order->discount_code = '';
 			$order->subtotal = '';
 			$order->tax = '';
 			$order->couponamount = '';
@@ -541,7 +555,33 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<?php } ?>
 				</td>
 			</tr>
+			<?php
+			if ( $order_id > 0 ) {
+				$order->getDiscountCode();
+			}
 
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery .= "ORDER BY id DESC ";
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+			if ( ! empty( $codes ) ) { ?>
+			<tr>
+				<th scope="row" valign="top"><label for="discount_code_id"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?>:</label></th>
+				<td>
+					<?php
+						if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
+							echo esc_html( $order->discount_code->code );
+						} else { ?>
+							<select id="discount_code_id" name="discount_code_id">
+								<option value="0" <?php selected( $order->discount_code->id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+								<?php foreach ( $codes as $code ) { ?>
+									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $order->discount_code->id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+								<?php } ?>
+							</select>
+							<?php
+						} ?>
+				</td>
+			</tr>
+			<?php } ?>
 			<tr>
 				<th scope="row" valign="top"><label for="subtotal"><?php _e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -958,6 +998,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				'end-day'         => $end_day,
 				'end-year'        => $end_year,
 				'predefined-date' => $predefined_date,
+				'discount-code'	  => $discount_code,
 				'status'          => $status,
 			);
 			$export_url = add_query_arg( $url_params, $export_url );
@@ -991,6 +1032,8 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 						value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php _e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
 					<option
 						value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php _e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
+					<option
+						value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php _e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
 					<option
 						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php _e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
 					<option 
@@ -1053,6 +1096,19 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					<?php } ?>
 
 				</select>
+				
+				<?php
+				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+				$sqlQuery .= "ORDER BY id DESC ";
+				$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				if ( ! empty( $codes ) ) { ?>
+				<select id="discount_code" name="discount_code">
+					<?php foreach ( $codes as $code ) { ?>
+						<option
+							value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+					<?php } ?>
+				</select>
+				<?php } ?>
 
 				<?php
 					$statuses = pmpro_getOrderStatuses();
@@ -1089,6 +1145,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
 					jQuery('#submit').show();
@@ -1104,6 +1161,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').show();
 					jQuery('#to').show();
@@ -1119,6 +1177,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').show();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1134,6 +1193,23 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').show();
+					jQuery('#discount_code').hide();
+					jQuery('#submit').show();
+					jQuery('#from').hide();
+					jQuery('#to').hide();
+					jQuery('#filterby').show();
+				}
+				else if (filter == 'with-discount-code') {
+					jQuery('#start-month').hide();
+					jQuery('#start-day').hide();
+					jQuery('#start-year').hide();
+					jQuery('#end-month').hide();
+					jQuery('#end-day').hide();
+					jQuery('#end-year').hide();
+					jQuery('#predefined-date').hide();
+					jQuery('#status').hide();
+					jQuery('#l').hide();
+					jQuery('#discount_code').show();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1149,6 +1225,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').hide();
 					jQuery('#status').show();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1164,6 +1241,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1184,13 +1262,16 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 		</p>
 
 		<?php
-		// string search
 		if ( $s ) {
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
 
 			$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
 			if ( $join_with_usermeta ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+			}
+			
+			if ( $filter === 'with-discount-code' ) {
+				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
 
 			$sqlQuery .= 'WHERE (1=2 ';
@@ -1233,13 +1314,19 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 
 			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 		} else {
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders WHERE " . $condition . ' ORDER BY id DESC, timestamp DESC ';
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
+			
+			if ( $filter === 'with-discount-code' ) {
+				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+			}
+			
+			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
 		$sqlQuery .= "LIMIT $start, $limit";
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
-
+		
 		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
 
 		if ( $order_ids ) {
@@ -1262,6 +1349,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				<th><?php _e( 'Transaction IDs', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Discount Code', 'paid-memberships-pro' );?></th>
 				<th></th>
 				<th></th>
 				<th></th>
@@ -1378,6 +1466,13 @@ class="alternate"<?php } ?>>
 					<td>
 						<?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?><br/>
 						<?php echo date_i18n( get_option( 'time_format' ), $order->timestamp ); ?>
+					</td>
+					<td>
+						<?php if ( $order->getDiscountCode() ) { ?>
+							<a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ); ?>">
+								<?php echo $order->discount_code->code; ?>
+							</a>
+						<?php } ?>							
 					</td>
 					<td align="center">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>

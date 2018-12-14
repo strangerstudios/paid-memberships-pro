@@ -309,6 +309,57 @@
 		}
 
 		/**
+		 * Update the discount code used in this order.
+		 *
+		 * @param int $discount_code_id The ID of the discount code to update.
+		 *
+		 */
+		function updateDiscountCode( $discount_code_id ) {
+			global $wpdb;
+
+			// Assumes one discount code per order
+			$sqlQuery = $wpdb->prepare("
+				SELECT id FROM $wpdb->pmpro_discount_codes_uses
+				WHERE order_id = %d
+				LIMIT 1",
+				$this->id
+			);
+			$discount_codes_uses_id = $wpdb->get_var( $sqlQuery );
+
+			// INSTEAD: Delete the code use if found
+			if ( empty( $discount_code_id ) ) {
+				if ( ! empty( $discount_codes_uses_id ) ) {
+					$wpdb->delete(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'id' => $discount_codes_uses_id ),
+						array( '%d' )
+					);
+				}
+			} else {
+				if ( ! empty( $discount_codes_uses_id ) ) {
+					// Update existing row
+					$wpdb->update(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'code_id' => $discount_code_id, 'user_id' => $this->user_id, 'order_id' => $this->id ),
+						array( 'id' => $discount_codes_uses_id ),
+						array( '%d', '%d', '%d' ),
+						array( '%d' )
+					);
+				} else {
+					// Insert a new row
+					$wpdb->insert(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'code_id' => $discount_code_id, 'user_id' => $this->user_id, 'order_id' => $this->id ),
+						array( '%d', '%d', '%d' )
+					);
+				}
+			}
+
+			// Make sure to reset properties on this object
+			return $this->getDiscountCode( true );
+		}
+
+		/**
 		 * Get a user object for the user associated with this order.
 		 */
 		function getUser()
@@ -523,9 +574,9 @@
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
 			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date_i18n("Y-m-d H:i:s", current_time("timestamp"));		//use current time
+				$this->datetime = date("Y-m-d H:i:s", current_time("timestamp"));		//use current time
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
-				$this->datetime = date_i18n("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
 			elseif(empty($this->datetime) && !empty($this->timestamp))
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 

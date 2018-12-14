@@ -14,7 +14,6 @@ if ( ! function_exists( 'register_block_type' ) ) {
 	return;
 }
 
-add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 /**
  * Register the dynamic block.
  *
@@ -23,11 +22,19 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
  * @return void
  */
 function register_dynamic_block() {
+	// Need to explicitly register the default level meta
+	register_meta( 'post', 'pmpro_default_level', array(
+	   'show_in_rest' => true,
+	   'single' => true,
+	   'type' => 'integer',
+   	) );
+	
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-page', [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
+add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 
 /**
  * Server rendering for checkout-page block.
@@ -36,11 +43,15 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	/*$atts = '';
-	if ( ! empty( $attributes['level'] ) ) {
-		$atts = [ 'level' => intval( $attributes['level'] ) ];
-	}*/
-	// TO DO: Apply the specificed Level ID to the checkout page. 
-	// d ( $atts );
 	return pmpro_loadTemplate( 'checkout', 'local', 'pages' );
 }
+
+/**
+ * Load preheaders/checkout.php if a page has the checkout block.
+ */
+function load_checkout_preheader() {
+	if ( has_block( 'pmpro/checkout-page' ) ) {
+		require_once( PMPRO_DIR . "/preheaders/checkout.php" );
+	}
+}
+add_action( 'wp', __NAMESPACE__ . '\load_checkout_preheader', 1 );

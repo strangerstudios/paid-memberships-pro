@@ -276,7 +276,7 @@
 							<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'cancelled', 's' => $s ) ) ); ?>"><?php _e( 'Cancelled Members', 'paid-memberships-pro' ); ?></a></li>
 							<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'expired', 's' => $s ) ) ); ?>"><?php _e( 'Expired Members', 'paid-memberships-pro' ); ?></a></li>
 							<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'oldmembers', 's' => $s ) ) ); ?>"><?php _e( 'Old Members', 'paid-memberships-pro' ); ?></a></li>
-							<li><a href="<?php echo admin_url( 'users.php?s=' . esc_attr( $s ) ); ?>"><?php _e( 'All Users', 'paid-memberships-pro' ); ?></a></li>
+							<li><a href="<?php echo esc_url( add_query_arg( array( 's' => $s ), admin_url( 'users.php' ) ) ); ?>"><?php _e( 'All Users', 'paid-memberships-pro' ); ?></a></li>
 						</ul>
 					</td>
 				</tr>

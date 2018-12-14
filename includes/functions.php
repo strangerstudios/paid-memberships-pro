@@ -1425,7 +1425,7 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 		if ( $l ) {
 			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		}
-		$user_ids_query .= ')';
+		$user_ids_query .= ")";
 	} else {
 		$user_ids_query = '';
 	}
@@ -1583,7 +1583,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ') LIMIT 1' );
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" );
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -1926,7 +1926,23 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// no level, check for a default level in the custom fields for this post
 	if ( empty( $level_id ) && ! empty( $post ) ) {
+
 		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
+
+		// if still empty, let's try get first available level.
+		if ( empty( $level_id ) ) {
+			$all_levels = pmpro_getAllLevels( false, false );
+
+			// Get lowest level ID.
+			$default_level =  min( array_keys( $all_levels ) );
+
+			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
+			
+			// Bail back to levels page if level ID is empty or less than 1.
+			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+				return;
+			}
+		}
 	}
 
 	// default to discount code passed in
@@ -2451,11 +2467,12 @@ function pmpro_getGateway() {
 	return $gateway;
 }
 
-/*
+/**
  * Does the date provided fall in this month.
  * Used in logins/visits/views report.
  *
  * @since 1.8.3
+ * @param	$str	Date to check. Will be passed through strtotime().
  */
 function pmpro_isDateThisMonth( $str ) {
 	$now = current_time( 'timestamp' );
@@ -2467,6 +2484,44 @@ function pmpro_isDateThisMonth( $str ) {
 	$date_year = intval( date_i18n( 'Y', $date ) );
 
 	if ( $date_month === $this_month && $date_year === $this_year ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Does the date provided fall within the current week?
+ * Merged in from the Better Logins Report Add On.
+ * @since 2.0
+ * @param	$str	Date to check. Will be passed through strtotime().
+ */
+function pmpro_isDateThisWeek( $str ) {
+	$now = current_time( 'timestamp' );
+	$this_week = intval( date( "W", $now ) );
+	$this_year = intval( date( "Y", $now ) );
+	$date = strtotime( $str, $now );
+	$date_week = intval( date( "W", $date ) );
+	$date_year = intval( date( "Y", $date ) );
+	if( $date_week === $this_week && $date_year === $this_year ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+	
+/**
+ * Does the dave provided fall within the current year?
+ * Merged in from the Better Logins Report Add On.
+ * @since 2.0
+ * @param	$str	Date to check. Will be passed through strtotime().
+ */
+function pmpro_isDateThisYear( $str ) {
+	$now = current_time( 'timestamp' );
+	$this_year = intval( date("Y", $now ) );
+	$date = strtotime( $str, $now);
+	$date_year = intval( date("Y", $date ) );
+	if( $date_year === $this_year ) {
 		return true;
 	} else {
 		return false;

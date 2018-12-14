@@ -75,6 +75,32 @@ fieldset[disabled] .pmpro_btn {
 .pmpro_btn.pmpro_btn-submit-checkout {
 	width: auto;
 }
+
+input[type="button"]#discount_code_button,
+input[type="button"]#discount_code_button:hover,
+input[type="button"]#discount_code_button:focus,
+input[type="button"]#other_discount_code_button,
+input[type="button"]#other_discount_code_button:hover,
+input[type="button"]#other_discount_code_button:focus {
+	-webkit-appearance: none;
+    -moz-appearance: none;
+	background: none;
+    border: none;
+	box-shadow: none;
+	color: inherit;
+    cursor: pointer;
+	display: inline-block;
+	font-family: inherit;
+    font-size: 100%;
+	font-weight: normal;
+	margin: 0 0 0 5px;
+	outline: none;
+    padding: 0;
+	text-align: center;
+    text-decoration: underline;
+	text-transform: none;
+}
+
 /*---------------------------------------
 	Forms
 ---------------------------------------*/

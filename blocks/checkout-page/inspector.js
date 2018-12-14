@@ -6,7 +6,7 @@ const { Component } = wp.element;
 const {
     PanelBody,
     PanelRow,
-    TextControl,
+    SelectControl,
 } = wp.components;
 const {
     InspectorControls,
@@ -27,11 +27,12 @@ export default class Inspector extends Component {
         return (
           <InspectorControls>
           <PanelBody>
-             <TextControl
+             <SelectControl
                  label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                  help={ __( 'Choose a default level for Membership Checkout.', 'paid-memberships-pro' ) }
                  value={ pmpro_default_level }
                  onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
+                 options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
              />
           </PanelBody>
           </InspectorControls>

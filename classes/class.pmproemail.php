@@ -214,6 +214,13 @@
 			
 			if(!$user)
 				return false;
+				
+			$confirmation_in_email = get_pmpro_membership_level_meta( $user->membership_level->id, 'confirmation_in_email', true );
+			if ( ! empty( $confirmation_in_email ) ) {
+				$confirmation_message = $user->membership_level->confirmation;
+			} else {
+				$confirmation_message = '';
+			}
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership confirmation for %s", 'paid-memberships-pro' ), get_option("blogname"));	
@@ -226,6 +233,7 @@
 								"siteemail" => pmpro_getOption("from_email"),
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
+								"membership_level_confirmation_message" => $confirmation_message,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
