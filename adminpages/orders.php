@@ -230,9 +230,15 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'tax', $read_only_fields ) && isset( $_POST['tax'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
-	if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-		$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+
+	// Hiding couponamount by default.
+	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+	if ( ! empty( $coupons ) ) {
+		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
+			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+		}
 	}
+
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -611,19 +617,28 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php } ?>
 				</td>
 			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
+			<?php
+				// Hiding couponamount by default.
+				$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+				if ( ! empty( $coupons ) ) { ?>
+				<tr>
+					<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
+					</th>
+					<td>
 					<?php
-					if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->couponamount );
-					} else {
+						if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
+							echo $order->couponamount;
+						} else {
+						?>
+							<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
+						<?php 
+						}
 					?>
-						<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
 			<tr>
 				<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -635,7 +650,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 											<input id="total" name="total" type="text" size="10"
 												   value="<?php echo esc_attr( $order->total ); ?>"/>
 					<?php } ?>
-					<p class="description"><?php esc_html_e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 
