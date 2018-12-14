@@ -230,6 +230,55 @@ function pmpro_memberslist() {
 }
 
 
+/**
+ * [pmpro_memberslisttable] After we build the admin screen/submenu page, we need to call the List Table to be built.
+ * 
+ * @return void This function delivers html.
+ */
+function pmpro_memberslisttable() {
+	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
+	global $pmp_member_list_table;
+
+	$pmp_member_list_table = new PMPro_Members_List_Table();
+
+	$pmp_member_list_table->prepare_items();
+
+	include_once PMPRO_DIR . '/adminpages/admin_header.php';
+	?>
+	<style type="text/css">
+		#the-list > tr > td.ID.column-ID, #ID {
+			text-align: center;
+			width: 5%;
+		}
+		#ID > a > span {
+			text-align: center;
+			float: none;
+		}
+		#list-table-replace > table > tfoot > tr > th.manage-column.column-ID.column-primary.sorted.asc > a > span.sorting-indicator,
+		#ID > a > span.sorting-indicator {
+			/*text-align: center;*/
+			float: left;
+		}
+	</style>
+		<h2><?php _e( 'PMPro Members List Table', 'paid-memberships-pro' ); ?> 
+		<a target="_blank" href="<?php echo admin_url( 'admin-ajax.php' ); ?>?action=memberslist_csv" class="add-new-h2"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a></h2>
+			<div id="member-list-table-demo">			
+				<div id="pmpro-post-body">		
+					<form id="member-list-form" method="post">
+						<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+						<?php
+							$pmp_member_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'pmpro-find-member' );
+							echo '<div id="list-table-replace">';
+							$pmp_member_list_table->display();
+							echo '</div>'
+						?>
+				</form>
+			</div>			
+		</div>
+	<?php
+}
+
+
 function pmpro_discountcodes() {
 	require_once( PMPRO_DIR . '/adminpages/discountcodes.php' );
 }
@@ -291,6 +340,30 @@ function pmpro_fix_orphaned_sub_menu_pages( ) {
 	}
 }
 add_action( 'admin_init', 'pmpro_fix_orphaned_sub_menu_pages', 99 );
+
+/**
+ * Screen options for the List Table
+ *
+ * Callback for the load-($page_hook_suffix)
+ * Called when the plugin page is loaded
+ *
+ * @since    2.0.0
+ */
+function pmpro_list_table_screen_options() {
+	global $pmp_member_list_table;
+	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
+	$arguments = array(
+		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
+		'default' => 15,
+		'option'  => 'users_per_page',
+	);
+
+	add_screen_option( 'per_page', $arguments );
+
+	// instantiate the User List Table
+	$pmp_member_list_table = new PMPro_Members_List_Table();
+}
+
 
 /**
  * Add a post display state for special PMPro pages in the page list table.
