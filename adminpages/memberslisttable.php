@@ -84,20 +84,20 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		// required for pagination
-		$members_per_page = $this->get_items_per_page( 'members_per_page' );
+		$users_per_page = $this->get_items_per_page( 'users_per_page' );
 		$table_page     = $this->get_pagenum();
 
 		// provide the ordered data to the List Table.
 		// we need to manually slice the data based on the current pagination.
-		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $members_per_page ), $members_per_page );
+		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $users_per_page ), $users_per_page );
 
 		// set the pagination arguments
 		$total_users = $this->total_users = count( $table_data );
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_users,
-				'per_page'    => $members_per_page,
-				'total_pages' => ceil( $total_users / $members_per_page ),
+				'per_page'    => $users_per_page,
+				'total_pages' => ceil( $total_users / $users_per_page ),
 			)
 		);
 	}
@@ -123,8 +123,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'membership'     => 'Membership',
 			'membership_id'  => 'Level ID',
 			'billing_amount' => 'Fee',
-			'startdate'      => 'Subscribe Date',
-			'joindate'       => 'Joined',
+			'startdate'      => 'Joined',
+			'joindate'       => 'Initial Date',
 			'enddate'        => 'Expires',
 		);
 		return $columns;
@@ -137,12 +137,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function get_hidden_columns() {
 		$hidden = array(
-			'first_name',
-			'last_name',
-			'address',
+			// 'first_name',
+			// 'last_name',
+			// 'address',
 			'membership_id',
 			'display_name',
-			'startdate',
+			'joindate',
 		);
 		return $hidden;
 	}
@@ -337,7 +337,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				return date( 'Y-m-d', $startdate );
 			case 'enddate':
 				if ( 0 == $item[ $column_name ] ) {
-					return 'Recurring';
+					return 'Never';
 				} else {
 					return date( 'Y-m-d', $item[ $column_name ] );
 				}
@@ -452,9 +452,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( $which == 'top' ) {
 			// echo $existing_levels = $this->get_levels_dropdown( 'levels-dropdown' );
 			echo $this->get_views();
-			echo '<b> ' . $this->total_users . ' members queried</b>';
+			echo '<br><b> ' . $this->total_users . ' members queried</b>';
 		}
 		if ( $which == 'bottom' ) {
+			echo '<b> ' . $this->total_users . ' members queried</b>';
 		}
 	}
 
@@ -488,12 +489,3 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 }
 
-// add_filter( 'add_to_levels_array', 'members_list_research_levels' );
-function members_list_research_levels( $added_levels ) {
-	$added_levels = array(
-		__( 'Cancelled', 'paid-memberships-pro' ),
-		__( 'Expired', 'paid-memberships-pro' ),
-		__( 'Old Members', 'paid-memberships-pro' ),
-	);
-	return $added_levels;
-}
