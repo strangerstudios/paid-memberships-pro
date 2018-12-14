@@ -21,6 +21,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @var      string    $plugin_text_domain    The text domain of this plugin.
 	 */
 	protected $plugin_text_domain;
+	protected $total_users;
 
 	/**
 	 * Call the parent constructor to override the defaults $args
@@ -91,7 +92,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $members_per_page ), $members_per_page );
 
 		// set the pagination arguments
-		$total_users = count( $table_data );
+		$total_users = $this->total_users = count( $table_data );
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_users,
@@ -404,7 +405,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function column_address( $item ) {
 		$user_object = get_userdata( $item['ID'] );
 		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
-		// return ( $user_object->last_name ?: '---' );
 	}
 
 	public function get_levels_object() {
@@ -450,8 +450,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ) {
-			echo $existing_levels = $this->get_levels_dropdown( 'levels-dropdown' );
-			$views = $this->get_views();
+			// echo $existing_levels = $this->get_levels_dropdown( 'levels-dropdown' );
+			echo $this->get_views();
+			echo '<b> ' . $this->total_users . ' members queried</b>';
 		}
 		if ( $which == 'bottom' ) {
 		}
