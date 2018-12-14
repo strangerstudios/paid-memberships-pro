@@ -351,11 +351,13 @@ add_action( 'admin_init', 'pmpro_fix_orphaned_sub_menu_pages', 99 );
  */
 function pmpro_list_table_screen_options() {
 	global $pmp_member_list_table;
+
 	require_once( PMPRO_DIR . '/adminpages/memberslisttable.php' );
+
 	$arguments = array(
 		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
 		'default' => 15,
-		'option'  => 'users_per_page',
+		'option'  => 'members_per_page',
 	);
 
 	add_screen_option( 'per_page', $arguments );

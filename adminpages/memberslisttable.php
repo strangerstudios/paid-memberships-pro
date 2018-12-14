@@ -83,20 +83,20 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		// required for pagination
-		$users_per_page = $this->get_items_per_page( 'users_per_page' );
+		$members_per_page = $this->get_items_per_page( 'members_per_page' );
 		$table_page     = $this->get_pagenum();
 
 		// provide the ordered data to the List Table.
 		// we need to manually slice the data based on the current pagination.
-		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $users_per_page ), $users_per_page );
+		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $members_per_page ), $members_per_page );
 
 		// set the pagination arguments
 		$total_users = count( $table_data );
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_users,
-				'per_page'    => $users_per_page,
-				'total_pages' => ceil( $total_users / $users_per_page ),
+				'per_page'    => $members_per_page,
+				'total_pages' => ceil( $total_users / $members_per_page ),
 			)
 		);
 	}
