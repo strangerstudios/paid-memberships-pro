@@ -430,7 +430,23 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		return $existing_levels;
 	}
 
-	public function get_levels_dropdown( $selector ) {
+	public function get_levels_dropdown() {
+		$existing_levels = $this->get_levels_object();
+		$pmpro_levels_dropdown = '<form action="" method="get">';
+		$pmpro_levels_dropdown .= '<select name="' . preg_replace( '/_+/', '-', __FUNCTION__ ) . '" id="' . preg_replace( '/_+/', '-', __FUNCTION__ ) . '">';
+		$pmpro_levels_dropdown .= '<option value="">All</option>';
+		foreach ( $existing_levels as $key => $value ) {
+			$pmpro_levels_dropdown .= '<option value="' . $value->name . '">Level ' . $value->id . ' => ' . $value->name . '</option>';
+		}
+		$pmpro_levels_dropdown .= '</select>';
+
+		$pmpro_levels_dropdown .= '<input type="hidden" action="' . admin_url( '/admin.php?page=pmpro-memberslisttable' ) . '"/>';
+		$pmpro_levels_dropdown .= '<input type="submit" class="button-secondary"  />';
+
+		return $pmpro_levels_dropdown;
+	}
+
+	public function get_levels_ajax_dropdown( $selector ) {
 		$existing_levels = $this->get_levels_object();
 		if ( 1 < count( $existing_levels ) ) {
 			$pmpro_levels_dropdown  = '<select name="' . $selector . '" id="' . $selector . '">';
@@ -438,7 +454,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			foreach ( $existing_levels as $key => $value ) {
 				$pmpro_levels_dropdown .= '<option value="' . $value->name . '">' . $value->id . ' => ' . $value->name . '</option>';
 			}
-			$pmpro_levels_dropdown .= '<select>';
+			$pmpro_levels_dropdown .= '</select>';
 		}
 		return $pmpro_levels_dropdown;
 	}
@@ -450,8 +466,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ) {
-			// echo $existing_levels = $this->get_levels_dropdown( 'levels-dropdown' );
+			// echo $existing_levels = $this->get_levels_ajax_dropdown( 'levels-dropdown' );
 			echo $this->get_views();
+			echo $this->get_levels_dropdown();
 			echo '<br><b> ' . $this->total_users . ' members queried</b>';
 		}
 		if ( $which == 'bottom' ) {
