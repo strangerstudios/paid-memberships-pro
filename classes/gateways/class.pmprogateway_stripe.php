@@ -1933,10 +1933,16 @@
 					//get the subscription and return the current_period end or false
 					$subscription = $order->Gateway->getSubscription($order);
 
-					if(!empty($subscription->current_period_end))
-						return $subscription->current_period_end;
-					else
-						return false;
+                    if( !empty( $subscription ) ) {
+                        $customer = $order->Gateway->getCustomer();
+                        if( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
+                            return $subscription->current_period_end;
+                        } elseif ( $customer->delinquent && ! empty( $subscription->current_period_start ) ) {
+                            return $subscription->current_period_start;
+                        } else {
+                            return $false;  // shouldn't really get here
+                        }
+                    }
 				}
 			}
 
