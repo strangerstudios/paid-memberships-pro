@@ -558,6 +558,13 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 			<?php
 			if ( $order_id > 0 ) {
 				$order->getDiscountCode();
+				if ( ! empty( $order->discount_code ) ) {
+					$discount_code_id = $order->discount_code->id;
+				} else {
+					$discount_code_id = 0;
+				}
+			} else {
+				$discount_code_id = 0;
 			}
 
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
@@ -569,12 +576,16 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 				<td>
 					<?php
 						if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
-							echo esc_html( $order->discount_code->code );
+							if( ! empty( $order->discount_code ) ) {
+								echo esc_html( $order->discount_code->code );
+							} else {
+								esc_html_e( 'N/A', 'paid-memberships-pro' );
+							}
 						} else { ?>
 							<select id="discount_code_id" name="discount_code_id">
-								<option value="0" <?php selected( $order->discount_code->id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+								<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
 								<?php foreach ( $codes as $code ) { ?>
-									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $order->discount_code->id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 								<?php } ?>
 							</select>
 							<?php
