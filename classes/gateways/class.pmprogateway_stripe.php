@@ -1042,6 +1042,14 @@
 			if(!is_user_logged_in())
 				return;
 
+            //check the $pmpro_cancel_previous_subscriptions filter
+            //this is used in add ons like Gift Memberships to stop PMPro from cancelling old memberships
+            $pmpro_cancel_previous_subscriptions = true;
+            $pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );        
+            if( ! $pmpro_cancel_previous_subscriptions ) {
+                return;
+            }
+
 			//get user and membership level
 			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
