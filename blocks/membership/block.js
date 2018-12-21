@@ -32,7 +32,7 @@ const {
     InnerBlocks,
 } = wp.editor;
 
-var all_levels = [{ value: 0, label: "Non-Members" }];
+const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
 
 function get_ajax_url() {
  var i = window.location.href.indexOf("/wp-admin/post.php?");
