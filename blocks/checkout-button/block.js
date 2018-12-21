@@ -8,7 +8,7 @@
 /**
  * Block dependencies
  */
-import './style.css';
+import './editor.css';
 import classnames from 'classnames';
 import Inspector from './inspector';
 
@@ -57,7 +57,7 @@ export default registerBlockType(
              },
              css_class: {
                  type: 'string',
-                 default: 'wp-block-paid-memberships-pro-checkout-button',
+                 default: 'pmpro_btn',
              },
              level: {
                   type: 'string'

@@ -40,7 +40,7 @@ function register_dynamic_block() {
 function render_dynamic_block( $attributes ) {
 	$text      = 'Buy Now';
 	$level     = null;
-	$css_class = 'wp-block-paid-memberships-pro-checkout-button';
+	$css_class = 'pmpro_btn';
 
 	if ( empty( $attributes['level'] ) ) {
 		return '';
@@ -50,8 +50,8 @@ function render_dynamic_block( $attributes ) {
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
 	}
-	if ( ! empty( $attributes['cssClass'] ) ) {
-		$css_class = $attributes['cssClass'];
+	if ( ! empty( $attributes['css_class'] ) ) {
+		$css_class = $attributes['css_class'];
 	}
 
 	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
