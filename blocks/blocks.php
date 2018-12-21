@@ -55,7 +55,7 @@ function pmpro_block_editor_scripts() {
 	wp_enqueue_style(
 		 'pmpro_blocks_editor', plugins_url( 'css/blocks.editor.css',  PMPRO_BASE_FILE ),
 		array(),
-		PMPRO_VERSION . '.1'
+		PMPRO_VERSION
 	);
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );
