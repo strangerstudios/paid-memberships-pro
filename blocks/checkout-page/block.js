@@ -7,7 +7,7 @@
  /**
   * Block dependencies
   */
- import './style.css';
+ import './editor.css';
  import classnames from 'classnames';
  import Inspector from './inspector';
  /**
