@@ -29,6 +29,8 @@ const {
     InspectorControls,
 } = wp.editor;
 
+const button_levels = pmpro.all_level_values_and_labels;
+
 /**
  * Register block
  */
@@ -53,14 +55,15 @@ export default registerBlockType(
          attributes: {
              text: {
                  type: 'string',
-                 default: 'Buy Now',
+                 default: 'Buy JS',
              },
              css_class: {
                  type: 'string',
                  default: 'pmpro_btn',
              },
              level: {
-                  type: 'string'
+                  type: 'integer',
+                  default: button_levels[0].value,
              }
          },
          edit: props => {
@@ -83,7 +86,7 @@ export default registerBlockType(
                        label={ __( 'Level ID', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
-                       options={ window.pmpro.all_level_values_and_labels }
+                       options={ button_levels }
                    />
                    <TextControl
                        label={ __( 'CSS Class', 'paid-memberships-pro' ) }

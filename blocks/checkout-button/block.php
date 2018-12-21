@@ -23,10 +23,8 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
  * @return void
  */
 function register_dynamic_block() {
-
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-button', [
-		'attributes' => array( 'all_levels' => pmpro_getAllLevels( true, true ) ),
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
@@ -38,15 +36,15 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	$text      = 'Buy Now';
-	$level     = null;
+	$text      = 'Buy PHP';
 	$css_class = 'pmpro_btn';
 
 	if ( empty( $attributes['level'] ) ) {
-		return '';
+		$level = array(0);
+	} else {
+		$level = $attributes['level'];
 	}
-	$level = $attributes['level'];
-
+	
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
 	}
