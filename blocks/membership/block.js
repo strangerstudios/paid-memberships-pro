@@ -34,34 +34,6 @@ const {
 
 const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
 
-function get_ajax_url() {
- var i = window.location.href.indexOf("/wp-admin/post.php?");
-
- if(i > 0)
-  return  window.location.href.slice(0, i+10)+"admin-ajax.php";
- else
-  return "";
-}
-
-jQuery(document).ready(function($) {
-	var data = {
-		'action': 'pmpro_get_all_levels',
-	};
-
-	var ajax_url = get_ajax_url();
-  if ( ajax_url === "" ) {
-    return;
-  }
-	jQuery.post(ajax_url, data, function(response) {
-	  var temp_levels = JSON.parse(response.slice(0, -1));
-    for (var level in temp_levels){
-        if (temp_levels.hasOwnProperty(level)) {
-             all_levels.push({ value: level, label: temp_levels[level] })
-        }
-    }
-	});
-});
-
  /**
   * Register block
   */
