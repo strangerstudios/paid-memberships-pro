@@ -64,7 +64,7 @@ const {
                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       value={ pmpro_default_level }
                       onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
-                      options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
+                      options={ window.pmpro.all_level_values_and_labels }
                   />
                 </div>
             ];

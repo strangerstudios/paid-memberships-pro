@@ -3,6 +3,9 @@
     padding: 20px;
     text-align: center;
 }
+.edit-post-layout .wp-block-pmpro-checkout-page .components-base-control {
+    text-align: left;
+}
 .edit-post-layout .wp-block-pmpro-checkout-page span {
     color: #AAA;
     display: block;
