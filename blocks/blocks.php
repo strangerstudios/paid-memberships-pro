@@ -47,19 +47,16 @@ function pmpro_block_editor_scripts() {
 	wp_enqueue_script(
 		'pmpro-blocks-js',
 		plugins_url( 'js/editor.blocks.js', PMPRO_BASE_FILE ),
-		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor'),
+		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api-fetch', 'wp-editor'),
 		PMPRO_VERSION
 	);
 
-	/*
 	// Enqueue optional editor only styles.
 	wp_enqueue_style(
-		'pmpro-editor-css',
-		plugins_url( $editor_style_path, PMPRO_DIR ),
-		array( 'wp-blocks' ),
-		PMPRO_VERSION )
+		 'pmpro_blocks_editor', plugins_url( 'css/blocks.editor.css',  PMPRO_BASE_FILE ),
+		array(),
+		PMPRO_VERSION . '.1'
 	);
-	*/
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );
 
@@ -82,6 +79,5 @@ function pmpro_block_scripts() {
 		array( 'wp-blocks' ),
 		PMPRO_VERSION
 	);
-
 }
 add_action( 'enqueue_block_assets', 'pmpro_block_scripts' );

@@ -2,6 +2,7 @@
 /*
 	Code that runs on the init, set_current_user, or wp hooks to set up PMPro
 */
+
 //init code
 function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/countries.php');
@@ -13,21 +14,20 @@ function pmpro_init() {
 
 	if( is_admin() ) {
 		// Admin scripts and styles. We could use the admin_enqueue_scripts, but this works too.
-		
+
 		wp_register_script( 'pmpro_admin', plugins_url( 'js/paid-memberships-pro.js', dirname(__FILE__) ), array( 'jquery' ) );
 		$all_levels = pmpro_getAllLevels( true, true );
 		$all_level_values_and_labels = array();
 		foreach( $all_levels as $level ) {
 			$all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
 		}
-		wp_localize_script( 'pmpro_admin', 'pmpro', array(
-			'all_levels' => $all_levels,
-			'all_level_values_and_labels' => $all_level_values_and_labels
-		));
+		wp_localize_script( 'pmpro_admin', 'pmpro',
+			array(
+				'all_levels' => $all_levels,
+				'all_level_values_and_labels' => $all_level_values_and_labels
+			)
+		);
 		wp_enqueue_script( 'pmpro_admin' );
-
-		// Block styles loaded in the editor only.
-		wp_enqueue_style( 'pmpro_blocks_editor', plugins_url( 'css/blocks.editor.css', dirname(__FILE__), array(), PMPRO_VERSION, 'screen' ) );
 
 		$admin_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
