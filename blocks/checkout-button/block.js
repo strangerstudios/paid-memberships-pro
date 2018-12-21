@@ -4,17 +4,19 @@
  * Add a styled link to the PMPro checkout page for a specific level.
  *
  */
- /**
-  * Block dependencies
-  */
- import './style.css';
- import classnames from 'classnames';
- import Inspector from './inspector';
- /**
-  * Internal block libraries
-  */
- const { __ } = wp.i18n;
- const {
+
+/**
+ * Block dependencies
+ */
+import './style.css';
+import classnames from 'classnames';
+import Inspector from './inspector';
+
+/**
+ * Internal block libraries
+ */
+const { __ } = wp.i18n;
+const {
     registerBlockType,
     BlockControls,
 } = wp.blocks;
@@ -23,15 +25,14 @@ const {
     TextControl,
     SelectControl,
 } = wp.components;
-
 const {
     InspectorControls,
 } = wp.editor;
 
- /**
-  * Register block
-  */
- export default registerBlockType(
+/**
+ * Register block
+ */
+export default registerBlockType(
      'pmpro/checkout-button',
      {
          title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
@@ -59,7 +60,7 @@ const {
                  default: 'wp-block-paid-memberships-pro-checkout-button',
              },
              level: {
-                  type: 'integer'
+                  type: 'string'
              }
          },
          edit: props => {
@@ -96,4 +97,4 @@ const {
            return null;
          },
        }
- );
+);

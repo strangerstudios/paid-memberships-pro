@@ -48,7 +48,7 @@ const {
          },
          attributes: {
              pmpro_default_level: {
-                 type: 'integer',
+                 type: 'string',
                  source: 'meta',
                  meta: 'pmpro_default_level',
              },
