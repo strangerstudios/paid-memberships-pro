@@ -26,7 +26,7 @@ function register_dynamic_block() {
 
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-button', [
-		'attributes' => array( 'all_levels' => pmpro_getAllLevels( true, true ) ),
+		'backup_levels' => array( 'backup_levels' => pmpro_getAllLevels( true, true ) ),
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
@@ -37,7 +37,7 @@ function register_dynamic_block() {
  * @param array $attributes contains text, level, and css_class strings.
  * @return string
  **/
-function render_dynamic_block( $attributes ) {
+function render_dynamic_block( $attributes, $backup_levels ) {
 	$text      = 'Buy Now';
 	$level     = null;
 	$css_class = 'pmpro_btn';
@@ -54,5 +54,5 @@ function render_dynamic_block( $attributes ) {
 		$css_class = $attributes['css_class'];
 	}
 
-	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
+	return '<pre>' .'$backup_levels from PHP ' . print_r( $backup_levels, true ) . ' $attributes from JS ' .  print_r( $attributes, true ) . '</pre>' . pmpro_getCheckoutButton( $level, $text, $css_class );
 }

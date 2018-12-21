@@ -39,7 +39,7 @@ export default registerBlockType(
          description: __( 'Displays a button-styled link to Membership Checkout for the specified level.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
+            background: '#29c8aa',
             foreground: '#ffffff',
             src: 'migrate',
          },
@@ -83,7 +83,7 @@ export default registerBlockType(
                        label={ __( 'Level ID', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
-                       options={ window.pmpro.all_level_values_and_labels }
+                       options={ pmpro.all_level_values_and_labels }
                    />
                    <TextControl
                        label={ __( 'CSS Class', 'paid-memberships-pro' ) }
@@ -93,8 +93,16 @@ export default registerBlockType(
                    </div>,
             ];
          },
-         save() {
-           return null;
+         save: props => {
+             const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
+             return (
+                isSelected && <Inspector { ...{ setAttributes, ...props} } />,
+                <div
+                    className={ className }
+                >
+                  <a class={css_class} >{text}</a>
+                </div>
+                );
          },
        }
 );
