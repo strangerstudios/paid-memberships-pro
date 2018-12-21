@@ -131,9 +131,6 @@
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
 
-			//make sure we clean up subs we will be cancelling after checkout before processing
-			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
-
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
@@ -160,6 +157,9 @@
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
+                
+                //make sure we clean up subs we will be cancelling after checkout before processing
+    			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
 			}
 
 			add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
