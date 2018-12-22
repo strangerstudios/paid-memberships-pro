@@ -23,8 +23,10 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
  * @return void
  */
 function register_dynamic_block() {
+
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/checkout-button', [
+		'attributes' => array( 'all_levels' => pmpro_getAllLevels( true, true ) ),
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }
@@ -36,21 +38,27 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	$text      = 'Buy PHP';
+	$text      = 'Buy Now';
+	$level     = null;
 	$css_class = 'pmpro_btn';
 
-	if ( empty( $attributes['level'] ) ) {
-		$level = array(0);
-	} else {
-		$level = $attributes['level'];
-	}
-	
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
+	} else {
+		$text = __( 'Buy Now', 'paid-memberships-pro' );
 	}
+	
 	if ( ! empty( $attributes['css_class'] ) ) {
 		$css_class = $attributes['css_class'];
 	}
 
-	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
+	if ( ! empty( $attributes['level'] ) ) {
+		$level = $attributes['level'];
+		return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
+	} else {
+		$level = array(1);
+		return( pmpro_getCheckoutButton( $level[0], $text, $css_class ) );
+	}
+
+	// return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
 }

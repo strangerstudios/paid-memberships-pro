@@ -55,15 +55,14 @@ export default registerBlockType(
          attributes: {
              text: {
                  type: 'string',
-                 default: 'Buy JS',
+                 default: 'Buy Now',
              },
              css_class: {
                  type: 'string',
                  default: 'pmpro_btn',
              },
              level: {
-                  type: 'integer',
-                  default: button_levels[0].value,
+                  type: 'string'
              }
          },
          edit: props => {
@@ -96,8 +95,8 @@ export default registerBlockType(
                    </div>,
             ];
          },
-         save() {
-           return null;
-         },
-       }
+		save() {
+			return null;
+		},
+   }
 );
