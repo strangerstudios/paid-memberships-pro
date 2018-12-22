@@ -42,16 +42,22 @@ function render_dynamic_block( $attributes ) {
 	$level     = null;
 	$css_class = 'pmpro_btn';
 
-	if ( empty( $attributes['level'] ) ) {
-		return '';
+	if ( ! empty( $attributes['level'] ) ) {
+		$level = $attributes['level'];
+	} else {
+		$level = null;
 	}
-	$level = $attributes['level'];
 
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
+	} else {
+		$text = null;
 	}
+	
 	if ( ! empty( $attributes['css_class'] ) ) {
 		$css_class = $attributes['css_class'];
+	} else {
+		$css_class = null;
 	}
 
 	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
