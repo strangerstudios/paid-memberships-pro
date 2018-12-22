@@ -51,7 +51,7 @@ function render_dynamic_block( $attributes ) {
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
 	} else {
-		$text = null;
+		$text = __( 'Buy Now', 'paid-memberships-pro' );
 	}
 	
 	if ( ! empty( $attributes['css_class'] ) ) {
