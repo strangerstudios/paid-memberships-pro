@@ -1986,23 +1986,17 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 }
 
 function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = null ) {
-	if ( empty( $button_text ) ) {
-		$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
-	}
-
-	if ( empty( $classes ) ) {
-		$classes = 'pmpro_btn';
-	}
-
-	if ( empty( $level_id ) ) {
-		$r = __( 'Please specify a level id.', 'paid-memberships-pro' );
-	} else {
+	if ( ! empty( $level_id ) ) {
 		// get level
 		$level = pmpro_getLevel( $level_id );
 
-		if ( empty( $level ) ) {
-			$r = sprintf( __( 'Level #%s not found.', 'paid-memberships-pro' ), $level_id );
-		} else {
+		if( ! empty( $level ) ) {
+			
+			// default button text with name field for replacement
+			if ( empty( $button_text ) ) {
+				$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
+			}
+			
 			// replace vars
 			$replacements = array(
 				'!!id!!' => $level->id,
@@ -2021,10 +2015,22 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 			);
 			$button_text = str_replace( array_keys( $replacements ), $replacements, $button_text );
 		}
-
-		// button text
-		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
 	}
+	
+	if ( empty( $button_text ) ) {
+		$button_text = __( 'Sign Up Now', 'paid-memberships-pro' );
+	}
+	
+	if ( empty( $classes ) ) {
+		$classes = 'pmpro_btn';
+	}
+	
+	if ( ! empty( $level_id ) ) {
+		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
+	} else {
+		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . $classes . '">' . $button_text . '</a>';
+	}
+	
 	return $r;
 }
 

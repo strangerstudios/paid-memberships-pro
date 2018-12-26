@@ -51,23 +51,21 @@ if ( isset( $_POST['bt_signature'] ) && ! isset( $_POST['bt_payload'] ) ) {
 try {
 	/**
 	 * @since 1.9.5 - BUG FIX: Unable to identify Braintree Webhook messages
-	 *        Expecting Braintree library to sanitize signature & payload since using sanitize_text_field() breaks Braintree parser
+	 * Expecting Braintree library to sanitize signature & payload 
+	 * since using sanitize_text_field() breaks Braintree parser
 	 */
 	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
 } catch ( Exception $e ) {
-	{
-		$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}";
-		$logstr[] = "Error message: " . $e->getMessage();
-		
-		pmpro_braintreeWebhookExit();
-	}
+	$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}";
+	$logstr[] = "Error message: " . $e->getMessage();
+	
+	pmpro_braintreeWebhookExit();
 }
 
 /**
  * @since 1.9.5 - ENHANCEMENT: Log if notification object has unexpected format
  */
 if ( ! isset( $webhookNotification->kind ) ) {
-	
 	$logstr[] = "Unexpected webhook message: " . print_r( $webhookNotification, true ) . "\n";
 	pmpro_braintreeWebhookExit();
 }
@@ -76,8 +74,7 @@ if ( ! isset( $webhookNotification->kind ) ) {
  * Only verifying?
  * @since 1.9.5 - Log Webhook tests with webhook supplied timestamp (verifies there's no caching).
  */
-if ( $webhookNotification->kind === Braintree_WebhookNotification::CHECK ) {
-	
+if ( $webhookNotification->kind === Braintree_WebhookNotification::CHECK ) {	
 	$when = $webhookNotification->timestamp->format( 'Y-m-d H:i:s.u' );
 	
 	$logstr[] = "Since you are just testing the URL, check that the timestamp updates on refresh to make sure this isn't being cached.";
@@ -98,7 +95,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//figure out which order to attach to
 	$old_order = new \MemberOrder();
 	$old_order->getLastMemberOrderBySubscriptionTransactionID( $webhookNotification->subscription->id );
-	
+
 	//no order?
 	if ( empty( $old_order ) ) {
 		$logstr[] = "Couldn't find the original subscription with ID={$webhookNotification->subscription->id}.";
@@ -108,16 +105,17 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//create new order
 	$user_id                = $old_order->user_id;
 	$user                   = get_userdata( $user_id );
-	$user->membership_level = pmpro_getMembershipLevelForUser( $user_id );
 	
 	if ( empty( $user ) ) {
 		$logstr[] = "Couldn't find the old order's user. Order ID = {$old_order->id}.";
 		pmpro_braintreeWebhookExit();
+	} else {
+		$user->membership_level = pmpro_getMembershipLevelForUser( $user_id );
 	}
 	
 	//data about this transaction
 	$transaction = $webhookNotification->subscription->transactions[0];
-	
+
 	//alright. create a new order/invoice
 	$morder                              = new \MemberOrder();
 	$morder->user_id                     = $old_order->user_id;
@@ -130,22 +128,42 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->gateway             = $old_order->gateway;
 	$morder->gateway_environment = $old_order->gateway_environment;
 	
-	$morder->FirstName = $transaction->billing_details->first_name;
-	$morder->LastName  = $transaction->billing_details->last_name;
-	$morder->Email     = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1" );
-	$morder->Address1  = $transaction->billing_details->street_address;
-	$morder->City      = $transaction->billing_details->locality;
-	$morder->State     = $transaction->billing_details->region;
-	//$morder->CountryCode = $old_order->billing->city;
-	$morder->Zip         = $transaction->billing_details->postal_code;
-	$morder->PhoneNumber = $old_order->billing->phone;
+	$morder->billing = new stdClass();
 	
-	$morder->billing->name    = trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->last_name );
-	$morder->billing->street  = $transaction->billing_details->street_address;
-	$morder->billing->city    = $transaction->billing_details->locality;
-	$morder->billing->state   = $transaction->billing_details->region;
-	$morder->billing->zip     = $transaction->billing_details->postal_code;
-	$morder->billing->country = $transaction->billing_details->country_code_alpha2;
+	if (! empty( $transaction->billing_details) ) {
+		$morder->FirstName = $transaction->billing_details->first_name;
+		$morder->LastName  = $transaction->billing_details->last_name;
+		$morder->Email     = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1" );
+		$morder->Address1  = $transaction->billing_details->street_address;
+		$morder->City      = $transaction->billing_details->locality;
+		$morder->State     = $transaction->billing_details->region;
+		//$morder->CountryCode = $old_order->billing->city;
+		$morder->Zip         = $transaction->billing_details->postal_code;
+		
+		$morder->billing->name    = trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->last_name );
+		$morder->billing->street  = $transaction->billing_details->street_address;
+		$morder->billing->city    = $transaction->billing_details->locality;
+		$morder->billing->state   = $transaction->billing_details->region;
+		$morder->billing->zip     = $transaction->billing_details->postal_code;
+		$morder->billing->country = $transaction->billing_details->country_code_alpha2;	
+	} else {
+		$morder->FirstName = $old_order->FirstName;
+		$morder->LastName = $old_order->LastName;
+		$morder->Email = $user->user_email;
+		$morder->Address1 = $old_order->Address1;
+		$morder->City = $old_order->billing->city;
+		$morder->State = $old_order->billing->state;
+		$morder->Zip = $old_order->billing->zip;
+		
+		$morder->billing->name    = $old_order->billing->name;
+		$morder->billing->street  = $old_order->billing->street;
+		$morder->billing->city    = $old_order->billing->city;
+		$morder->billing->state   = $old_order->billing->state;
+		$morder->billing->zip     = $old_order->billing->zip;
+		$morder->billing->country = $old_order->billing->country;
+	}
+	
+	$morder->PhoneNumber = $old_order->billing->phone;
 	$morder->billing->phone   = $old_order->billing->phone;
 	
 	//get CC info that is on file
@@ -176,7 +194,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 }
 
 /*
-	Note here: These next three checks all work the same way and send the same "billing failed" email, but kick off different actions based on the kind.
+	Note here: These next three checks all work the same way and send the same
+	"billing failed" email, but kick off different actions based on the kind.
 */
 
 //subscription charged unsuccessfully

@@ -7,7 +7,7 @@
  /**
   * Block dependencies
   */
- import './style.css';
+ import './editor.css';
  import classnames from 'classnames';
  import Inspector from './inspector';
  /**
@@ -48,7 +48,7 @@ const {
          },
          attributes: {
              pmpro_default_level: {
-                 type: 'integer',
+                 type: 'string',
                  source: 'meta',
                  meta: 'pmpro_default_level',
              },
@@ -64,7 +64,7 @@ const {
                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       value={ pmpro_default_level }
                       onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
-                      options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
+                      options={ window.pmpro.all_level_values_and_labels }
                   />
                 </div>
             ];

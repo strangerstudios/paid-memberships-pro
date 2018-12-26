@@ -40,18 +40,24 @@ function register_dynamic_block() {
 function render_dynamic_block( $attributes ) {
 	$text      = 'Buy Now';
 	$level     = null;
-	$css_class = 'wp-block-paid-memberships-pro-checkout-button';
+	$css_class = 'pmpro_btn';
 
-	if ( empty( $attributes['level'] ) ) {
-		return '';
+	if ( ! empty( $attributes['level'] ) ) {
+		$level = $attributes['level'];
+	} else {
+		$level = null;
 	}
-	$level = $attributes['level'];
 
 	if ( ! empty( $attributes['text'] ) ) {
 		$text = $attributes['text'];
+	} else {
+		$text = __( 'Buy Now', 'paid-memberships-pro' );
 	}
-	if ( ! empty( $attributes['cssClass'] ) ) {
-		$css_class = $attributes['cssClass'];
+	
+	if ( ! empty( $attributes['css_class'] ) ) {
+		$css_class = $attributes['css_class'];
+	} else {
+		$css_class = null;
 	}
 
 	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );

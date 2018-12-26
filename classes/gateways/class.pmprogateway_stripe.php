@@ -131,9 +131,6 @@
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
 
-			//make sure we clean up subs we will be cancelling after checkout before processing
-			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
-
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
@@ -160,6 +157,9 @@
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
+                
+                //make sure we clean up subs we will be cancelling after checkout before processing
+    			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
 			}
 
 			add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
@@ -1041,6 +1041,14 @@
 			//we're only worried about cases where the user is logged in
 			if(!is_user_logged_in())
 				return;
+
+            //check the $pmpro_cancel_previous_subscriptions filter
+            //this is used in add ons like Gift Memberships to stop PMPro from cancelling old memberships
+            $pmpro_cancel_previous_subscriptions = true;
+            $pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );        
+            if( ! $pmpro_cancel_previous_subscriptions ) {
+                return;
+            }
 
 			//get user and membership level
 			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
@@ -1933,10 +1941,16 @@
 					//get the subscription and return the current_period end or false
 					$subscription = $order->Gateway->getSubscription($order);
 
-					if(!empty($subscription->current_period_end))
-						return $subscription->current_period_end;
-					else
-						return false;
+                    if( !empty( $subscription ) ) {
+                        $customer = $order->Gateway->getCustomer();
+                        if( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
+                            return $subscription->current_period_end;
+                        } elseif ( $customer->delinquent && ! empty( $subscription->current_period_start ) ) {
+                            return $subscription->current_period_start;
+                        } else {
+                            return $false;  // shouldn't really get here
+                        }
+                    }
 				}
 			}
 

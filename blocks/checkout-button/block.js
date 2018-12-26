@@ -4,17 +4,19 @@
  * Add a styled link to the PMPro checkout page for a specific level.
  *
  */
- /**
-  * Block dependencies
-  */
- import './style.css';
- import classnames from 'classnames';
- import Inspector from './inspector';
- /**
-  * Internal block libraries
-  */
- const { __ } = wp.i18n;
- const {
+
+/**
+ * Block dependencies
+ */
+import './editor.css';
+import classnames from 'classnames';
+import Inspector from './inspector';
+
+/**
+ * Internal block libraries
+ */
+const { __ } = wp.i18n;
+const {
     registerBlockType,
     BlockControls,
 } = wp.blocks;
@@ -23,15 +25,14 @@ const {
     TextControl,
     SelectControl,
 } = wp.components;
-
 const {
     InspectorControls,
 } = wp.editor;
 
- /**
-  * Register block
-  */
- export default registerBlockType(
+/**
+ * Register block
+ */
+export default registerBlockType(
      'pmpro/checkout-button',
      {
          title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
@@ -56,10 +57,10 @@ const {
              },
              css_class: {
                  type: 'string',
-                 default: 'wp-block-paid-memberships-pro-checkout-button',
+                 default: 'pmpro_btn',
              },
              level: {
-                  type: 'integer'
+                  type: 'string'
              }
          },
          edit: props => {
@@ -82,7 +83,7 @@ const {
                        label={ __( 'Level ID', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
-                       options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
+                       options={ window.pmpro.all_level_values_and_labels }
                    />
                    <TextControl
                        label={ __( 'CSS Class', 'paid-memberships-pro' ) }
@@ -96,4 +97,4 @@ const {
            return null;
          },
        }
- );
+);
