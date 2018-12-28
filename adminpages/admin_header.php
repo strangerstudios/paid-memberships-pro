@@ -173,6 +173,7 @@
 			'pmpro-dashboard',
 			'pmpro-membershiplevels',
 			'pmpro-memberslist',
+			'pmpro-memberslisttable',
 			'pmpro-reports',
 			'pmpro-orders',
 			'pmpro-discountcodes',
@@ -190,6 +191,10 @@
 
 		<?php if(current_user_can('pmpro_memberslist')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-memberslist');?>" class="nav-tab<?php if($view == 'pmpro-memberslist') { ?> nav-tab-active<?php } ?>"><?php _e('Members', 'paid-memberships-pro' );?></a>
+		<?php } ?>
+
+		<?php if(current_user_can('pmpro_memberslisttable')) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-memberslisttable');?>" class="nav-tab<?php if($view == 'pmpro-memberslisttable') { ?> nav-tab-active<?php } ?>"><?php _e('Members Table', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
 		<?php if(current_user_can('pmpro_orders')) { ?>

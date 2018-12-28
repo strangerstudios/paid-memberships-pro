@@ -24,3 +24,6 @@ node_modules
 # Log files
 log/*.log
 log/*.txt
+js/editor.blocks.js
+js/editor.blocks.js
+js/editor.blocks.js
