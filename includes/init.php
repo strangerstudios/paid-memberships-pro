@@ -126,6 +126,33 @@ function pmpro_init() {
 }
 add_action("init", "pmpro_init");
 
+add_action( 'admin_enqueue_scripts', 'pmpro_add_list_table_scripts' );
+function pmpro_add_list_table_scripts() {
+	wp_register_script( 'select-level', plugins_url( '/js/select-level.js', __DIR__ ), array( 'jquery' ), time() );
+	wp_localize_script(
+		'select-level',
+		'select_level_object',
+		array(
+			'select_page'        => 'pmpro-memberslisttable',
+			'select_level_url'   => admin_url( 'admin.php?page=' ),
+			'select_level_nonce' => wp_create_nonce( 'select-nonce' ),
+		)
+	);
+	wp_enqueue_script( 'select-level' );
+}
+
+add_action( 'wp_ajax_select_level_request', 'run_list_table_ajax_function' );
+/**
+ * [run_list_table_ajax_function] Callback function for the WP List Table Levels Dropdown AJAX call
+ *
+ * @return string Return the level
+ */
+function run_list_table_ajax_function() {
+	$stuff = $_POST;
+	echo json_encode( $stuff );
+	exit();
+}
+
 //this code runs after $post is set, but before template output
 function pmpro_wp()
 {
