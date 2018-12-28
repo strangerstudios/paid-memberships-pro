@@ -38,8 +38,10 @@ function pmpro_upgrade_1()
 	pmpro_setOption("email_admin_changes", "1");
 	pmpro_setOption("email_admin_cancels", "1");
 	pmpro_setOption("email_admin_billing", "1");
-	update_option( 'pmpro_not_applicable', array( 'pmpro_v2_menu_moved' ) );
 	pmpro_setOption("tospage", "");
+	
+	//don't want these pointers to show on new installs
+	update_option( 'pmpro_dismissed_wp_pointers', array( 'pmpro_v2_menu_moved' ) );
 
 	//let's pause the nag for the first week of use
 	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
