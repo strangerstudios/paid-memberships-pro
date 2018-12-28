@@ -38,7 +38,7 @@ function pmpro_upgrade_1()
 	pmpro_setOption("email_admin_changes", "1");
 	pmpro_setOption("email_admin_cancels", "1");
 	pmpro_setOption("email_admin_billing", "1");
-
+	update_option( 'pmpro_not_applicable', array( 'pmpro_v2_menu_moved' ) );
 	pmpro_setOption("tospage", "");
 
 	//let's pause the nag for the first week of use

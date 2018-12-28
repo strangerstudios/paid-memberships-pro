@@ -9,10 +9,17 @@ add_action( 'admin_enqueue_scripts', 'pmpro_enqueue_admin_pointer_scripts' );
  * @return void
  */
 function pmpro_enqueue_admin_pointer_scripts() {
-	wp_enqueue_style( 'wp-pointer' );
-	wp_enqueue_script( 'wp-pointer' );
-	// hook the pointer
-	add_action( 'admin_print_footer_scripts', 'pmpro_prepare_pointer_scripts' );
+	if ( ! current_user_can( 'pmpro_memberships_menu' ) ) {
+		return;
+	}
+	$get_not_applicable = get_option( 'pmpro_not_applicable' );
+
+	if ( ! empty( $get_not_applicable ) && ! in_array( 'pmpro_v2_menu_moved', $get_not_applicable ) ) {
+		wp_enqueue_style( 'wp-pointer' );
+		wp_enqueue_script( 'wp-pointer' );
+		// hook the pointer
+		add_action( 'admin_print_footer_scripts', 'pmpro_prepare_pointer_scripts' );
+	}
 }
 /**
  * Details about PMPro 2.0 that are added to the Admin Pointer
@@ -37,7 +44,7 @@ function pmpro_prepare_pointer_scripts() {
 	$function = '';
 
 	$dismissed_pointers = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
-	if ( ! in_array( 'pmpro_v2_tour', $dismissed_pointers ) ) {
+	if ( ! in_array( 'pmpro_v2_menu_moved', $dismissed_pointers ) ) {
 		pmpro_build_pointer_script( $id, $options, __( 'Close', 'paid-memberships-pro' ), $button2, $function );
 	}
 }
@@ -72,7 +79,7 @@ function pmpro_build_pointer_script( $id, $options, $button1, $button2 = false, 
 			close: function () {
 				// Post to admin ajax to disable pointers when user clicks "Close"
 				$.post (ajaxurl, {
-					pointer: 'pmpro_v2_tour',
+					pointer: 'pmpro_v2_menu_moved',
 					action: 'dismiss-wp-pointer'
 				});
 			}
@@ -90,7 +97,7 @@ function pmpro_build_pointer_script( $id, $options, $button1, $button2 = false, 
 				jQuery ('#pointer-close').click (function () {
 					// Post to admin ajax to disable pointers when user clicks "Close"
 					$.post (ajaxurl, {
-						pointer: 'pmpro_v2_tour',
+						pointer: 'pmpro_v2_menu_moved',
 						action: 'dismiss-wp-pointer'
 					});
 				})
