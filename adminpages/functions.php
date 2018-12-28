@@ -22,10 +22,43 @@
 	Checks if PMPro settings are complete or if there are any errors.
 	
 	Stripe currently does not support:
-	[No current incompatibilities]
+	* Billing Limits.
 */
 function pmpro_checkLevelForStripeCompatibility($level = NULL)
 {
+	$gateway = pmpro_getOption("gateway");
+	if($gateway == "stripe")
+	{
+		global $wpdb;
+
+		//check ALL the levels
+		if(empty($level))
+		{
+			$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
+			$levels = $wpdb->get_results($sqlQuery, OBJECT);
+			if(!empty($levels))
+			{
+				foreach($levels as $level)
+				{
+					if(!pmpro_checkLevelForStripeCompatibility($level))
+						return false;
+				}
+			}
+		}
+		else
+		{
+			//need to look it up?
+			if(is_numeric($level))
+				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
+
+			//check this level
+			if($level->billing_limit > 0)
+			{
+				return false;
+			}
+		}
+	}
+
 	return true;
 }
 
