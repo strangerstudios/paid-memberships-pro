@@ -440,9 +440,7 @@
 						</select>
 						<br /><small>
 							<?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?>
-							<?php if($gateway == "stripe") { ?>
-								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently only supports billing periods of "Week", "Month" or "Year".', 'paid-memberships-pro' );?>
-							<?php } elseif($gateway == "braintree") { ?>
+							<?php if($gateway == "braintree") { ?>
 								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'paid-memberships-pro' );?>
 							<?php } ?>
 						</small>
