@@ -1,6 +1,7 @@
 <?php
 
 defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * Plugin Name: PMPro Members List Table
  *
@@ -32,7 +33,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function __construct() {
 		$this->plugin_text_domain = 'paid-memberships-pro';
-
 		parent::__construct(
 			array(
 				'plural'   => __( 'members', $this->plugin_text_domain ),
@@ -432,18 +432,20 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 	public function get_levels_dropdown() {
 		$existing_levels = $this->get_levels_object();
-		$pmpro_levels_dropdown = '<form action="" method="get">';
-		$pmpro_levels_dropdown .= '<select name="' . preg_replace( '/_+/', '-', __FUNCTION__ ) . '" id="' . preg_replace( '/_+/', '-', __FUNCTION__ ) . '">';
-		$pmpro_levels_dropdown .= '<option value="">All</option>';
-		foreach ( $existing_levels as $key => $value ) {
-			$pmpro_levels_dropdown .= '<option value="' . $value->name . '">Level ' . $value->id . ' => ' . $value->name . '</option>';
-		}
-		$pmpro_levels_dropdown .= '</select>';
-
-		$pmpro_levels_dropdown .= '<input type="hidden" action="' . admin_url( '/admin.php?page=pmpro-memberslisttable' ) . '"/>';
-		$pmpro_levels_dropdown .= '<input type="submit" class="button-secondary"  />';
-
-		return $pmpro_levels_dropdown;
+		?>
+		<select name="requested-level" id="filter-memberslisttable">
+			<option value=" ">Select a Level</option>
+			<?php
+			foreach ( $existing_levels as $key => $value ) {
+				?>
+				<option value="<?php esc_attr_e( $value->name ); ?>" <?php selected( $value->name ); ?>><?php esc_attr_e( $value->name ); ?></option>
+		<?php } ?>
+			<p class="search-filtered" style="float:left;">
+				<input type="hidden" name="page" value="pmpro-memberslisttable">
+				<a id="redraw-table" class="button-primary" href=" ">Filter Levels</a>
+			</p>
+		</select>
+		<?php
 	}
 
 	public function get_levels_ajax_dropdown( $selector ) {
@@ -466,8 +468,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ) {
-			// echo $existing_levels = $this->get_levels_ajax_dropdown( 'levels-dropdown' );
-			echo $this->get_views();
 			echo $this->get_levels_dropdown();
 			echo '<br><b> ' . $this->total_users . ' members queried</b>';
 		}
@@ -485,6 +485,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function graceful_exit() {
 		exit;
+
 	}
 
 	/**
