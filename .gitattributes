@@ -1,5 +1,9 @@
 # Items to ignore when downloading a zip
 
+.babelrc export-ignore
 .editorconfig export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
+package-lock.json export-ignore
+package.json export-ignore
+webpack.config.js export-ignore
