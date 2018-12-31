@@ -1,5 +1,46 @@
 == Changelog ==
 
+= 2.0 - 2018-12-31 =
+* SECURITY: Fixing how we escape things in the Memberships report SQL queries.
+* BUG FIX: Fixed issue where code in the Stripe gateway was cancelling old subscriptions early if users renewed with a different gateway.
+* BUG FIX: Fixed a warning on the Stripe Webhook service.
+* BUG FIX/ENHANCEMENT: Removing unused images from core plugin.
+* BUG FIX/ENHANCEMENT: Removed unused `getTimestamp` function.
+* BUG FIX/ENHANCEMENT: Updated Braintree/PHP Library to 3.36.0
+* BUG FIX/ENHANCEMENT: Prefixing Braintree plan name with `pmpro_#`
+* BUG FIX/ENHANCEMENT: Better table naming in queries for Memberships and Sales reports.
+* BUG FIX/ENHANCEMENT: Changing "blacklist" to "blocklist".
+* BUG FIX/ENHANCEMENT: Changing the appearance of the Discount Code "Apply" button on checkout to look more like a text link.
+* BUG FIX/ENHANCEMENT: Now calculating the next payment date with time, not SQL.
+* BUG FIX/ENHANCEMENT: Updated the pmpro_next_payment method of Stripe to check if a customer is delinquent to avoid returning a next payment date in the future if the last payment failed.
+* BUG FIX/ENHANCEMENT: Saving user ID in MemberOrder when a user already exists and they are checking out via an offsite gateway.
+* BUG FIX/ENHANCEMENT: Updating Stripe Webhook and PayPal IPN Handler to send the cancelled level ID for better cancellation emails.
+* BUG FIX/ENHANCEMENT: Brought back the Stripe Billing limit warnings. Here is a plugin to get billing limits working with Stripe https://github.com/strangerstudios/pmpro-stripe-billing-limits/blob/master/pmpro-stripe-billing-limits.php
+* FEATURE: Gutenberg / v5.0 Editor Blocks for Paid Memberships Pro pages, the Checkout Button and Membership "shortcode" functionality.
+* FEATURE: Added new "Dashboard" page and adjusted the entire menu structure for "Memberships".
+* FEATURE: Created new compatibility checks and included compatability functions for Beaver Builder, Elementor, and SiteOrigin Page Builder. 
+* FEATURE: Added REST API routes for post membership access, and user membership level.
+* FEATURE: Added option to include the level's Confirmation Message in the Confirmation Email.
+* FEATURE: Added a filter by discount code to Memberships and Sales reports.
+* FEATURE: Added a filter by discount code to the Orders admin page.
+* FEATURE: Added a "Copy" option to discount codes.
+* FEATURE: Now allowing you to edit or add a discount code to a single Order edit.  
+* FEATURE: Added the ability to export orders by discount code used.
+* FEATURE: Added new file for deprecated functions or hooks.
+* ENHANCEMENT: Moved "Memberships" menu page up in sidebar below Comments.
+* ENHANCEMENT: Replaced the Visits, Views, Logins report with the "Better Logins Report" Add On functionality.
+* ENHANCEMENT: Updating reports that use the Google Charts library to use the updated chart library (corechart.js).
+* ENHANCEMENT: Reports admin page is now loading reports via the `add_meta_box` WordPress function.
+* ENHANCEMENT: Added ability to filter membership reports for free or paid levels only.
+* ENHANCEMENT: Setting a default level at checkout so that the page doesn't redirect to the Levels page.
+* ENHANCEMENT: Showing the discount code used on the All Orders and single Order edit page.
+* ENHANCEMENT: Added ability to filter Orders by Free (Orders equal to $0), Paid (Orders greater than $0)
+* ENHANCEMENT: Now showing the Invoice's Order Status on the Membership Account page for orders (Paid, Pending or Refunded).
+* ENHANCEMENT: Adding additional quick search links when no members are found in members list search.
+* ENHANCEMENT: Added a check on the Add Ons page to hide Add Ons that are no longer supported or recommended.
+* ENHANCEMENT: Improved Responsive layout of the Memberships admin area for smaller devices.
+* ENHANCEMENT: Adding .gitattributes and gitignore. Important now for node stuff in particular.
+
 = 1.9.5.6 - 2018-11-15 =
 * BUG FIX: Fixed issue where Braintree would try to cancel a subscription twice if it was cancelled on the Braintree side.
 * BUG FIX: Fixed bug in Braintree webhook when using certain versions of PHP.
