@@ -616,7 +616,9 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->status = "review";
+				if ($order->status != "success") {
+					$order->status = "review";
+				}
 
 				//update order
 				$order->saveOrder();
