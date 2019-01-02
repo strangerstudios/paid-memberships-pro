@@ -19,39 +19,28 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a>
 	<?php
 } else {
-	/**
-	* Add all the meta boxes for the reports.
-	*/
-	function pmpro_reports_custom_meta_boxes() {
-		global $pmpro_reports;
-		$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
-		foreach ( $pieces[0] as $report => $title ) {
-			add_meta_box(
-				'pmpro_report_' . $report,
-				$title,
-				'pmpro_report_' . $report . '_widget',
-				'memberships_page_pmpro-reports',
-				'advanced'
-			);
-		}
-		
-		foreach ( $pieces[1] as $report => $title ) {
-			add_meta_box(
-				'pmpro_report_' . $report,
-				$title,
-				'pmpro_report_' . $report . '_widget',
-				'memberships_page_pmpro-reports',
-				'side'
-			);
-		}
+	$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+	foreach ( $pieces[0] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'advanced'
+		);
 	}
-	add_action( 'add_meta_boxes', 'pmpro_reports_custom_meta_boxes', 10, 2 );
-
-	/**
-	* Enable add_meta_boxes function in this page.
-	*/
-	do_action( 'add_meta_boxes', 'memberships_page_pmpro-dashboard' ); ?>
-
+	
+	foreach ( $pieces[1] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'side'
+		);
+	}
+	
+	?>
 	<form id="pmpro-reports-form" method="post" action="admin-post.php">
 
 		<div class="dashboard-widgets-wrap">
@@ -87,8 +76,8 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 
 	<?php
 }
+
 /**
 * Load the Paid Memberships Pro dashboard-area footer
 */
 require_once(dirname(__FILE__) . "/admin_footer.php");
-?>

@@ -4,66 +4,58 @@
  * @since 2.0
  */
 
- /**
-  * Add all the meta boxes for the dashboard.
-  */
- function pmpro_dashboard_custom_meta_boxes() {
- 	add_meta_box(
- 		'pmpro_dashboard_welcome',
- 		__( 'Welcome to Paid Memberships Pro' ),
- 		'pmpro_dashboard_welcome_callback',
- 		'toplevel_page_pmpro-dashboard',
- 		'normal'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_report_sales',
- 		__( 'Sales and Revenue' ),
- 		'pmpro_report_sales_widget',
- 		'toplevel_page_pmpro-dashboard',
- 		'advanced'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_report_membership_stats',
- 		__( 'Membership Stats' ),
- 		'pmpro_report_memberships_widget',
- 		'toplevel_page_pmpro-dashboard',
- 		'advanced'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_report_logins',
- 		__( 'Visits, Views, and Logins' ),
- 		'pmpro_report_login_widget',
- 		'toplevel_page_pmpro-dashboard',
- 		'advanced'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_report_recent_members',
- 		__( 'Recent Members' ),
- 		'pmpro_dashboard_report_recent_members_callback',
- 		'toplevel_page_pmpro-dashboard',
- 		'side'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_report_recent_orders',
- 		__( 'Recent Orders' ),
- 		'pmpro_dashboard_report_recent_orders_callback',
- 		'toplevel_page_pmpro-dashboard',
- 		'side'
- 	);
-	add_meta_box(
- 		'pmpro_dashboard_news_updates',
- 		__( 'Paid Memberships Pro News and Updates' ),
- 		'pmpro_dashboard_news_updates_callback',
- 		'toplevel_page_pmpro-dashboard',
- 		'side'
- 	);
- }
- add_action( 'add_meta_boxes', 'pmpro_dashboard_custom_meta_boxes', 10, 2 );
-
 /**
- * Enable add_meta_boxes function in this page.
+ * Add all the meta boxes for the dashboard.
  */
-do_action( 'add_meta_boxes', 'toplevel_page_pmpro-dashboard' );
+add_meta_box(
+	'pmpro_dashboard_welcome',
+	__( 'Welcome to Paid Memberships Pro' ),
+	'pmpro_dashboard_welcome_callback',
+	'toplevel_page_pmpro-dashboard',
+	'normal'
+);
+add_meta_box(
+	'pmpro_dashboard_report_sales',
+	__( 'Sales and Revenue' ),
+	'pmpro_report_sales_widget',
+	'toplevel_page_pmpro-dashboard',
+	'advanced'
+);
+add_meta_box(
+	'pmpro_dashboard_report_membership_stats',
+	__( 'Membership Stats' ),
+	'pmpro_report_memberships_widget',
+	'toplevel_page_pmpro-dashboard',
+	'advanced'
+);
+add_meta_box(
+	'pmpro_dashboard_report_logins',
+	__( 'Visits, Views, and Logins' ),
+	'pmpro_report_login_widget',
+	'toplevel_page_pmpro-dashboard',
+	'advanced'
+);
+add_meta_box(
+	'pmpro_dashboard_report_recent_members',
+	__( 'Recent Members' ),
+	'pmpro_dashboard_report_recent_members_callback',
+	'toplevel_page_pmpro-dashboard',
+	'side'
+);
+add_meta_box(
+	'pmpro_dashboard_report_recent_orders',
+	__( 'Recent Orders' ),
+	'pmpro_dashboard_report_recent_orders_callback',
+	'toplevel_page_pmpro-dashboard',
+	'side'
+);
+add_meta_box(
+	'pmpro_dashboard_news_updates',
+	__( 'Paid Memberships Pro News and Updates' ),
+	'pmpro_dashboard_news_updates_callback',
+	'toplevel_page_pmpro-dashboard',
+	'side'
+);
 
 /**
  * Load the Paid Memberships Pro dashboard-area header
