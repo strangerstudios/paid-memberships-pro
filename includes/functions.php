@@ -2432,12 +2432,14 @@ function pmpro_round_price( $price, $currency = '' ) {
 		$decimals = $pmpro_currencies[ $currency ]['decimals'];
 	}
 
-	$formatted = number_format( round( (double) $price, $decimals ), $decimals );
+	$rounded = round( (double) $price, $decimals );
+	
 	/**
 	 * Filter for result of pmpro_round_price.
 	 */
-	$formatted = apply_filters( 'pmpro_round_price', $formatted );
-	return $formatted;
+	$rounded = apply_filters( 'pmpro_round_price', $rounded );
+	
+	return $rounded;
 }
 
 /*
