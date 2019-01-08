@@ -2371,7 +2371,7 @@ function pmpro_is_ready() {
 function pmpro_formatPrice( $price ) {
 	global $pmpro_currency, $pmpro_currency_symbol, $pmpro_currencies;
 
-	// start with the price formatted with two decimals
+	// start with the rounded price
 	$formatted = pmpro_round_price( $price );
 
 	// settings stored in array?
