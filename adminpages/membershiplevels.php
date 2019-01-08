@@ -401,7 +401,7 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="initial_payment" type="text" size="20" value="<?php echo esc_attr($level->initial_payment);?>" />
+						<input name="initial_payment" type="text" size="20" value="<?php echo esc_attr((float)$level->initial_payment);?>" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
@@ -421,7 +421,7 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="billing_amount" type="text" size="20" value="<?php echo esc_attr($level->billing_amount);?>" />
+						<input name="billing_amount" type="text" size="20" value="<?php echo esc_attr((float)$level->billing_amount);?>" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
@@ -486,7 +486,7 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="trial_amount" type="text" size="20" value="<?php echo esc_attr($level->trial_amount);?>" />
+						<input name="trial_amount" type="text" size="20" value="<?php echo esc_attr((float)$level->trial_amount);?>" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
