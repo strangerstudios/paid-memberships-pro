@@ -378,8 +378,8 @@ function pmpro_report_sales_page()
 			var data = google.visualization.arrayToDataTable([
 				[
 					{ label: '<?php echo $date_function;?>' },
+					{ label: '<?php echo ucwords($type);?>' },
 					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
-					{ label: '<?php echo ucwords($type);?>' }
 				],
 				<?php foreach($cols as $date => $value) { ?>
 					['<?php
@@ -387,7 +387,7 @@ function pmpro_report_sales_page()
 							echo date_i18n("M", mktime(0,0,0,$date,2));
 						} else {
 						echo $date;
-					} ?>', <?php echo $value;?>, <?php echo $average;?>],
+					} ?>', <?php echo pmpro_round_price( $value );?>, <?php echo pmpro_round_price( $average );?>],
 				<?php } ?>
 			]);
 
@@ -419,13 +419,25 @@ function pmpro_report_sales_page()
 
 			<?php
 				if($type != "sales")
-				{
-					if(pmpro_getCurrencyPosition() == "right")
+				{	
+					$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2;
+					
+					$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
+					
+					$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
+					
+					if ( pmpro_getCurrencyPosition() == 'right' ) {
 						$position = "suffix";
-					else
+					} else {
 						$position = "prefix";
+					}
 					?>
-					var formatter = new google.visualization.NumberFormat({<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol);?>'});
+					var formatter = new google.visualization.NumberFormat({
+						<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol); ?>',
+						'decimalSymbol': '<?php echo html_entity_decode( $decimal_separator ); ?>',
+						'fractionDigits': <?php echo intval( $decimals ); ?>,
+						'groupingSymbol': '<?php echo html_entity_decode( $thousands_separator ); ?>',
+					});
 					formatter.format(data, 1);
 					formatter.format(data, 2);
 					<?php

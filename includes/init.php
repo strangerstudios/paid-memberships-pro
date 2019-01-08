@@ -117,9 +117,13 @@ function pmpro_init() {
 	}
 
 	//figure out what symbol to show for currency
-	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
-		$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
-	elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency])) {
+		if ( isset( $pmpro_currencies[$pmpro_currency]['symbol'] ) ) {
+			$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
+		} else {
+			$pmpro_currency_symbol = '';
+		}
+	} elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
 		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);
 	else
 		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code

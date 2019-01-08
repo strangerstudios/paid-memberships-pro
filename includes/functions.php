@@ -2391,7 +2391,8 @@ function pmpro_formatPrice( $price ) {
 			$formatted = $formatted . $pmpro_currency_symbol;
 		}
 	} else {
-		$formatted = $pmpro_currency_symbol . $formatted;   // default to symbol on the left
+		// default to symbol on the left, 2 decimals using . and ,
+		$formatted = $pmpro_currency_symbol . number_format( $formatted, 2 );
 	}
 
 	// filter
