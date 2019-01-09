@@ -111,3 +111,31 @@
 		}
 		return $position;
 	}
+	
+	/**
+	 * Get an array of data for a specified currency.
+	 * Defaults to the current currency set in the global.
+	 */
+	function pmpro_get_currency( $currency = null ) {
+		global $pmpro_currency, $pmpro_currencies;
+		
+		// Defaults
+		$currency_array = array(
+			'name' =>__('US Dollars (&#36;)', 'paid-memberships-pro' ),
+			'decimals' => '2',
+			'thousands_separator' => ',',
+			'decimal_separator' => '.',
+			'symbol' => '&#36;',
+			'position' => 'left',
+		);
+		
+		if ( ! empty( $pmpro_currency ) ) {
+			if ( is_array( $pmpro_currencies[$pmpro_currency] ) ) {
+				$currency_array = array_merge( $currency_array, $pmpro_currencies[$pmpro_currency] );
+			} else {
+				$currency_array['name'] = $pmpro_currencies[$pmpro_currency];
+			}
+		}
+		
+		return $currency_array;
+	}
