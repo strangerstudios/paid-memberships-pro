@@ -2443,6 +2443,50 @@ function pmpro_round_price( $price, $currency = '' ) {
 	return $rounded;
 }
 
+/**
+ * Cast to floast and pad zeroes after the decimal
+ * when editing the price on the edit level page.
+ * Only do this for currency with decimals = 2
+ * Only do this if using . as the decimal separator.
+ * Only pad zeroes to the decimal portion if there is exactly one number
+ * after the decimal.
+ *
+ * @since  2.0.2
+ */
+function pmpro_filter_price_for_text_field( $price, $currency = null ) {
+	global $pmpro_currency, $pmpro_currencies;
+
+	// We always want to cast to float
+	$price = floatval( $price );
+
+	// Only do this currencies with 2 decimals
+	if ( ! empty( $pmpro_currency )
+		&& is_array( $pmpro_currencies[$pmpro_currency] )
+		&& isset( $pmpro_currencies[$pmpro_currency]['decimals'] )
+		&& $pmpro_currencies[$pmpro_currency]['decimals'] != 2 ) {
+		return $price;
+	}
+
+	// Only do this if using . as the decimal separator.
+	if ( strpos( $price, '.' ) === false ) {
+		return $price;
+	}
+
+	$parts = explode( '.', (string)$price );
+
+	// If no significant decimals, return the whole number.
+	if ( empty( $parts[1] ) ) {
+		return $price;
+	}
+
+	// Do we need an extra 0?
+	if ( strlen( $parts[1] ) == 1 ) {
+		$price = (string)$price . '0';
+	}
+
+	return $price;
+}
+
 /*
  * What gateway should we be using?
  *
