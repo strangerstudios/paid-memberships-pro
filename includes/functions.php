@@ -2429,8 +2429,10 @@ function pmpro_round_price( $price, $currency = '' ) {
 		$currency = $pmpro_currency;
 	}
 
-	if ( ! empty( $pmpro_currencies[ $currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) && ! empty( $pmpro_currencies[ $currency ]['decimals'] ) && is_int( $pmpro_currencies[ $currency ]['decimals'] ) ) {
-		$decimals = $pmpro_currencies[ $currency ]['decimals'];
+	if ( ! empty( $pmpro_currencies[ $currency ] )
+		&& is_array( $pmpro_currencies[ $pmpro_currency ] )
+		&& ! empty( $pmpro_currencies[ $currency ]['decimals'] ) ) {
+		$decimals = intval( $pmpro_currencies[ $currency ]['decimals'] );
 	}
 
 	$rounded = round( (double) $price, $decimals );
