@@ -415,6 +415,13 @@
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
 			}
+			
+			// Round prices to avoid extra decimals.
+			if( ! empty( $this->membership_level ) ) {
+				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
+				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
+				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
+			}
 
 			return $this->membership_level;
 		}

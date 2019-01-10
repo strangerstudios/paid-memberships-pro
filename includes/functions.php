@@ -1726,6 +1726,19 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 		if ( empty( $all_membership_levels[ $user_id ] ) ) {
 			$all_membership_levels[ $user_id ] = false;
 		}
+		
+		// Round off prices
+		if ( ! empty( $all_membership_levels[$user_id] ) ) {
+			if ( isset( $all_membership_levels[$user_id]->initial_payment ) ) {
+				$all_membership_levels[$user_id]->initial_payment = pmpro_round_price( $all_membership_levels[$user_id]->initial_payment );
+			}
+			if ( isset( $all_membership_levels[$user_id]->billing_amount ) ) {
+				$all_membership_levels[$user_id]->billing_amount = pmpro_round_price( $all_membership_levels[$user_id]->billing_amount );
+			}
+			if ( isset( $all_membership_levels[$user_id]->trial_amount ) ) {
+				$all_membership_levels[$user_id]->trial_amount = pmpro_round_price( $all_membership_levels[$user_id]->trial_amount );
+			}
+		}
 
 		/**
 		 * pmpro_get_membership_level_for_user filter.
@@ -1791,6 +1804,16 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 							WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
 							GROUP BY ID" )
 	);
+	
+	// Round off prices
+	if ( ! empty( $levels ) ) {
+		foreach( $levels as $key => $level ) {
+			$levels[$key]->initial_payment = pmpro_round_price( $level->initial_payment );
+			$levels[$key]->billing_amount = pmpro_round_price( $level->billing_amount );
+			$levels[$key]->trial_amount = pmpro_round_price( $level->trial_amount );
+		}
+	}
+	
 	/**
 	 * pmpro_get_membership_levels_for_user filter.
 	 *
@@ -1863,7 +1886,6 @@ function pmpro_getLevel( $level ) {
 		} else {
 			global $wpdb;
 			$pmpro_levels[ $level_id ] = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
-			return $pmpro_levels[ $level_id ];
 		}
 	} else {
 		global $wpdb;
@@ -1875,9 +1897,17 @@ function pmpro_getLevel( $level ) {
 			return false;
 		}
 
-		$pmpro_levels[ $level_id ] = $level_obj;
-		return $pmpro_levels[ $level_id ];
+		$pmpro_levels[ $level_id ] = $level_obj;	
 	}
+	
+	// Round prices
+	if ( ! empty( $pmpro_levels[ $level_id ] ) ) {
+		$pmpro_levels[ $level_id ]->initial_payment = pmpro_round_price( $pmpro_levels[ $level_id ]->initial_payment );
+		$pmpro_levels[ $level_id ]->billing_amount = pmpro_round_price( $pmpro_levels[ $level_id ]->billing_amount );
+		$pmpro_levels[ $level_id ]->trial_amount = pmpro_round_price( $pmpro_levels[ $level_id ]->trial_amount );
+	}
+	
+	return $pmpro_levels[ $level_id ];
 }
 
 /*
@@ -1904,6 +1934,9 @@ function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 	// lets put them into an array where the key is the id of the level
 	$pmpro_levels = array();
 	foreach ( $raw_levels as $raw_level ) {
+		$raw_level->initial_payment = pmpro_round_price( $raw_level->initial_payment );
+		$raw_level->billing_amount = pmpro_round_price( $raw_level->billing_amount );
+		$raw_level->trial_amount = pmpro_round_price( $raw_level->trial_amount );
 		$pmpro_levels[ $raw_level->id ] = $raw_level;
 	}
 
@@ -2003,12 +2036,12 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 				'!!name!!' => $level->name,
 				'!!description!!' => $level->description,
 				'!!confirmation!!' => $level->confirmation,
-				'!!initial_payment!!' => $level->initial_payment,
-				'!!billing_amount!!' => $level->billing_amount,
+				'!!initial_payment!!' => pmpro_filter_price_for_text_field( $level->initial_payment ),
+				'!!billing_amount!!' => pmpro_filter_price_for_text_field( $level->billing_amount ),
 				'!!cycle_number!!' => $level->cycle_number,
 				'!!cycle_period!!' => $level->cycle_period,
 				'!!billing_limit!!' => $level->billing_limit,
-				'!!trial_amount!!' => $level->trial_amount,
+				'!!trial_amount!!' => pmpro_filter_price_for_text_field( $level->trial_amount ),
 				'!!trial_limit!!' => $level->trial_limit,
 				'!!expiration_number!!' => $level->expiration_number,
 				'!!expiration_period!!' => $level->expiration_period,

@@ -402,7 +402,7 @@
 		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
-		{
+		{	
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
