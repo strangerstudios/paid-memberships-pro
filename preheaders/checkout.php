@@ -480,8 +480,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->setGateway();
 
 					//setup level var
-					$morder->getMembershipLevel();
-					$morder->membership_level = apply_filters( "pmpro_checkout_level", $morder->membership_level );
+					$morder->getMembershipLevelAtCheckout();
 
 					//tax
 					$morder->subtotal = $morder->InitialPayment;
