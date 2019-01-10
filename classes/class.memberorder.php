@@ -425,6 +425,44 @@
 
 			return $this->membership_level;
 		}
+		
+		/**
+		 * Get a membership level object at checkout
+		 * for the level associated with this order.
+		 *
+		 * @since 2.0.2
+		 * @param bool $force If true, it will reset the property.
+		 *
+		 */
+		function getMembershipLevelAtCheckout($force = false) {
+			global $pmpro_level;
+
+			if( ! empty( $this->membership_level ) && empty( $force ) ) {
+				return $this->membership_level;
+			}
+			
+			// If for some reason, we haven't setup pmpro_level yet, do that.
+			if ( empty( $pmpro_level ) ) {
+				$pmpro_level = pmpro_getLevelAtCheckout();
+			}
+			
+			// Set the level to the checkout level global.
+			$this->membership_level = $pmpro_level;
+			
+			// Fix the membership level id.
+			if(!empty( $this->membership_level) && !empty($this->membership_level->level_id)) {
+				$this->membership_level->id = $this->membership_level->level_id;
+			}
+			
+			// Round prices to avoid extra decimals.
+			if( ! empty( $this->membership_level ) ) {
+				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
+				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
+				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
+			}
+			
+			return $this->membership_level;
+		}
 
 		/**
 		 * Apply tax rules for the price given.
