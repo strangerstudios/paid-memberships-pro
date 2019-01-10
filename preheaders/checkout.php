@@ -425,8 +425,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->membership_id    = $pmpro_level->id;
 					$morder->membership_name  = $pmpro_level->name;
 					$morder->discount_code    = $discount_code;
-					$morder->InitialPayment   = $pmpro_level->initial_payment;
-					$morder->PaymentAmount    = $pmpro_level->billing_amount;
+					$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
+					$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
 					$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
 					$morder->BillingPeriod    = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
@@ -439,7 +439,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
 						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
 						$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
-						$morder->TrialAmount           = $pmpro_level->trial_amount;
+						$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
 					}
 
 					//credit card values
