@@ -1038,9 +1038,16 @@
 		static function pmpro_checkout_before_processing() {
 			global $wpdb, $current_user;
 
-			//we're only worried about cases where the user is logged in
-			if(!is_user_logged_in())
-				return;
+			// we're only worried about cases where the user is logged in
+			if( ! is_user_logged_in() ) {
+                return;
+            }
+
+            // make sure we're checking out with Stripe
+            $current_gateway = pmpro_getGateway();
+            if ( $current_gateway != 'stripe' ) {
+                return;
+            }
 
             //check the $pmpro_cancel_previous_subscriptions filter
             //this is used in add ons like Gift Memberships to stop PMPro from cancelling old memberships
