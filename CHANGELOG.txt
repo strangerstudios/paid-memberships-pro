@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 2.0.3 - 2019-01-11 =
+* BUG FIX: Fixed issue where code in the Stripe gateway was cancelling old subscriptions early if users renewed with a different gateway. NOTE: There was a fix for this in version 2.0, but it wasn't implemented fully.
+* BUG FIX: Filtering pmpro_other_order_ids_to_cancel to make sure the current checkout's order doesn't get cancelled. This started happening in version 2.0 since we started setting the user_id on orders for existing users before the checkout was fully processed. This fix along with the one above and others will fix cases where users were being cancelled immediately after checkout.
+* BUG FIX: Fixed warning on edit levels page by defaulting $confirmation_in_email to 0.
+
 = 2.0.2 - 2019-01-10 =
 * BUG FIX: Fixed issues when using non-US currencies. Using the pmpro_round_price function in a few places it was needed. Prepared for a later update that will increase the number of decimals on certain columns in the DB to 8 to support currencies like Bitcoin, but shelving the actual DB update for version 2.1.
 * BUG FIX: Fixed issue where existing users who checked out could run into problems. Added a getMembershipLevelAtCheckout method to the MemberOrder class and using that during checkout. The getMembershipLevel method would see the user_id property of the order (added to orders at checkout in version 2.0) and lookup the level data from the pmpro_memberships_users table instead of using the pmpro_level global. Then gateways like PayPal Express (but others also) would use the wrong data when making calls to pmpro_isLevelRecurring/etc.
