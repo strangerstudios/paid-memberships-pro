@@ -234,3 +234,28 @@ function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
 	return $order;
 }
 add_filter( 'pmpro_subscribe_order', 'pmpro_pmpro_subscribe_order_startdate_limit', 99, 2 );
+
+/**
+ * Before changing membership at checkout,
+ * let's remember the order for checkout
+ * so we can ignore that when cancelling old orders.
+ */
+function pmpro_set_checkout_order_before_changing_membership_levels( $user_id, $order ) {
+	global $pmpro_checkout_order;
+	$pmpro_checkout_order = $order;
+}
+add_action( 'pmpro_checkout_before_change_membership_level', 'pmpro_set_checkout_order_before_changing_membership_levels', 10, 2);
+
+/**
+ * Ignore the checkout order when cancelling old orders.
+ */
+function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
+	global $pmpro_checkout_order;
+
+	if ( ! empty( $pmpro_checkout_order ) && ! empty( $pmpro_checkout_order->id ) ) {
+		$order_ids = array_diff( $order_ids, array( $pmpro_checkout_order->id ) );
+	}
+
+	return $order_ids;
+}
+add_filter( 'pmpro_other_order_ids_to_cancel', 'pmpro_ignore_checkout_order_when_cancelling_old_orders' );

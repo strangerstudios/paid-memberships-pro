@@ -993,6 +993,11 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		);
 	}
 
+	/**
+	 * Filter the other/old order ids in case we want to exclude some.
+	 * NOTE: As of version 2.0.3, includes/filters.php has code to
+	 * ignore the order for the current checkout.
+	 */
 	$other_order_ids = apply_filters( 'pmpro_other_order_ids_to_cancel', $other_order_ids );
 
 	// cancel any other subscriptions they have (updates pmpro_membership_orders table)

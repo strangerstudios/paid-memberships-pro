@@ -19,7 +19,7 @@ function pmpro_check_admin_capabilities()
         pmpro_set_capabilities_for_role('administrator');
     }
 }
-add_action('admin_init', 'pmpro_check_admin_capabilities', 10, 2);
+add_action('admin_init', 'pmpro_check_admin_capabilities', 5, 2);
 
 // use the capability definition for $role_name and add/remove capabilities as requested
 function pmpro_set_capabilities_for_role( $role_name, $action = 'enable' )

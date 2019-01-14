@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.0.2
-Stable tag: 2.0.2
+Tested up to: 5.0.3
+Stable tag: 2.0.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,19 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 2.0.4 - 2019-01-14 =
+* BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
+* BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
+* BUG FIX: Removed duplicate id attribute on the Membership Account page "cancel" action link.
+* BUG FIX/PERFORMANCE: No longer enqueueing frontend.blocks.js which had no functional code, but loaded a lot of Gutenberg JS that wasn't needed on the frontend. When/if our blogs have frontend JS, we will load it again, but also make sure the dependencies are correct.
+* BUG FIX/PERFORMANCE: No longer loading blocks.style.css. These frontend styles were redundant with CSS in css/frontend.css.
+* NOTE: The SVN repository was missing the 2.0.3 tag when that update went out. Some users may have updated or tried to update and not gotten the correct files for 2.0.3. Everyone should update to 2.0.4, which is Gucci.
+
+= 2.0.3 - 2019-01-11 =
+* BUG FIX: Fixed issue where code in the Stripe gateway was cancelling old subscriptions early if users renewed with a different gateway. NOTE: There was a fix for this in version 2.0, but it wasn't implemented fully.
+* BUG FIX: Filtering pmpro_other_order_ids_to_cancel to make sure the current checkout's order doesn't get cancelled. This started happening in version 2.0 since we started setting the user_id on orders for existing users before the checkout was fully processed. This fix along with the one above and others will fix cases where users were being cancelled immediately after checkout.
+* BUG FIX: Fixed warning on edit levels page by defaulting $confirmation_in_email to 0.
 
 = 2.0.2 - 2019-01-10 =
 * BUG FIX: Fixed issues when using non-US currencies. Using the pmpro_round_price function in a few places it was needed. Prepared for a later update that will increase the number of decimals on certain columns in the DB to 8 to support currencies like Bitcoin, but shelving the actual DB update for version 2.1.

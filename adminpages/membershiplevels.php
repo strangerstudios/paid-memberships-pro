@@ -331,6 +331,8 @@
 			// grab the meta for the given level...
 			if ( ! empty( $temp_id ) ) {
 				$confirmation_in_email = get_pmpro_membership_level_meta( $temp_id, 'confirmation_in_email', true );
+			} else {
+				$confirmation_in_email = 0;
 			}
 
 		?>

@@ -51,37 +51,12 @@ function pmpro_block_editor_scripts() {
 		PMPRO_VERSION
 	);
 
-	/*
 	// Enqueue optional editor only styles.
 	wp_enqueue_style(
 		'pmpro-editor-css',
-		plugins_url( $editor_style_path, PMPRO_DIR ),
-		array( 'wp-blocks' ),
-		PMPRO_VERSION )
+		plugins_url( 'css/blocks.editor.css', PMPRO_BASE_FILE ),
+		array(),
+		PMPRO_VERSION
 	);
-	*/
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );
-
-/**
- * Enqueue front end and editor JavaScript and CSS
- */
-function pmpro_block_scripts() {
-	// Enqueue the bundled block JS file.
-	wp_enqueue_script(
-		'pmpro-blocks-frontend-js',
-		plugins_url( 'js/frontend.blocks.js', PMPRO_BASE_FILE ),
-		array( 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api' ),
-		PMPRO_VERSION
-	);
-
-	// Enqueue frontend and editor block styles.
-	wp_enqueue_style(
-		'pmpro-blocks-css',
-		plugins_url( 'css/blocks.style.css', PMPRO_BASE_FILE ),
-		array( 'wp-blocks' ),
-		PMPRO_VERSION
-	);
-
-}
-add_action( 'enqueue_block_assets', 'pmpro_block_scripts' );

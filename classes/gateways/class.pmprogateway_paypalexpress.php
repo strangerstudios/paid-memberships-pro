@@ -330,9 +330,8 @@
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
 
-					//set up level var
-					$morder->getMembershipLevel();
-					$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
+					//setup level var
+					$morder->getMembershipLevelAtCheckout();
 
 					//tax
 					$morder->subtotal = $morder->InitialPayment;
