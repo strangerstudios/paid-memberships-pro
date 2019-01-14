@@ -131,6 +131,7 @@ Not sure? You can find out by doing a bit a research.
 
 = 2.0.4 - 2019-01-14 =
 * BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
+* BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
 
 = 2.0.3 - 2019-01-11 =
 * BUG FIX: Fixed issue where code in the Stripe gateway was cancelling old subscriptions early if users renewed with a different gateway. NOTE: There was a fix for this in version 2.0, but it wasn't implemented fully.
