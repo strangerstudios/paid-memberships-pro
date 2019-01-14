@@ -129,6 +129,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+<<<<<<< HEAD
 = 2.0.4 - 2019-01-14 =
 * BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
 * BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
@@ -137,6 +138,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/PERFORMANCE: No longer loading blocks.style.css. These frontend styles were redundant with CSS in css/frontend.css.
 * NOTE: The SVN repository was missing the 2.0.3 tag when that update went out. Some users may have updated or tried to update and not gotten the correct files for 2.0.3. Everyone should update to 2.0.4, which is Gucci.
 
+=======
+>>>>>>> 6ede08701b3476b8dece91649b575c84dbb00025
 = 2.0.3 - 2019-01-11 =
 * BUG FIX: Fixed issue where code in the Stripe gateway was cancelling old subscriptions early if users renewed with a different gateway. NOTE: There was a fix for this in version 2.0, but it wasn't implemented fully.
 * BUG FIX: Filtering pmpro_other_order_ids_to_cancel to make sure the current checkout's order doesn't get cancelled. This started happening in version 2.0 since we started setting the user_id on orders for existing users before the checkout was fully processed. This fix along with the one above and others will fix cases where users were being cancelled immediately after checkout.
