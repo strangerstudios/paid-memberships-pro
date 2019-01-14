@@ -8,9 +8,6 @@ function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/states.php');
 	require_once(PMPRO_DIR . '/includes/currencies.php');
 
-	// Block styles loaded early in frontend and dashboard.
-	wp_enqueue_style( 'pmpro_blocks_style', plugins_url( 'css/blocks.style.css', dirname(__FILE__), array(), PMPRO_VERSION, 'screen' ) );
-
 	if( is_admin() ) {
 		// Admin scripts and styles. We could use the admin_enqueue_scripts, but this works too.
 		
@@ -25,9 +22,6 @@ function pmpro_init() {
 			'all_level_values_and_labels' => $all_level_values_and_labels
 		));
 		wp_enqueue_script( 'pmpro_admin' );
-
-		// Block styles loaded in the editor only.
-		wp_enqueue_style( 'pmpro_blocks_editor', plugins_url( 'css/blocks.editor.css', dirname(__FILE__), array(), PMPRO_VERSION, 'screen' ) );
 
 		$admin_css_rtl = false;
 		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
@@ -157,20 +151,6 @@ function pmpro_wp()
 				{
 					global $pmpro_page_name;
 					$temp_content = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
-
-					/*
-					ob_start();
-
-					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
-						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
-					elseif(file_exists(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
-						include(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
-					else
-						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
-
-					$temp_content = ob_get_contents();
-//					ob_end_clean();
-					*/
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
