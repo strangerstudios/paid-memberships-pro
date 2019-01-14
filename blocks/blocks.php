@@ -68,12 +68,14 @@ add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );
  */
 function pmpro_block_scripts() {
 	// Enqueue the bundled block JS file.
+	/* No blocks have frontend JS yet. When they do, uncomment this.
 	wp_enqueue_script(
 		'pmpro-blocks-frontend-js',
 		plugins_url( 'js/frontend.blocks.js', PMPRO_BASE_FILE ),
-		array( 'wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api' ),
+		array(),
 		PMPRO_VERSION
 	);
+	*/
 
 	// Enqueue frontend and editor block styles.
 	wp_enqueue_style(
