@@ -252,7 +252,7 @@ add_action( 'pmpro_checkout_before_change_membership_level', 'pmpro_set_checkout
 function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
 	global $pmpro_checkout_order;
 	
-	if ( ! empty( $pmpro_checkout_order ) ) {
+	if ( ! empty( $pmpro_checkout_order ) && ! empty( $pmpro_checkout_order->id ) ) {
 		$order_ids = array_diff( $order_ids, array( $pmpro_checkout_order->id ) );
 	}
 	
