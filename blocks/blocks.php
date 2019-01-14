@@ -45,7 +45,7 @@ add_filter( 'block_categories', 'pmpro_place_blocks_in_panel', 10, 2 );
 function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
-		'pmpro-blocks-js',
+		'pmpro-blocks-editor-js',
 		plugins_url( 'js/editor.blocks.js', PMPRO_BASE_FILE ),
 		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor'),
 		PMPRO_VERSION
@@ -53,7 +53,7 @@ function pmpro_block_editor_scripts() {
 
 	// Enqueue optional editor only styles.
 	wp_enqueue_style(
-		'pmpro-editor-css',
+		'pmpro-blocks-editor-css',
 		plugins_url( 'css/blocks.editor.css', PMPRO_BASE_FILE ),
 		array(),
 		PMPRO_VERSION
