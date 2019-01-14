@@ -5,6 +5,7 @@
 * BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
 * BUG FIX: Removed duplicate id attribute on the Membership Account page "cancel" action link.
 * BUG FIX/PERFORMANCE: No longer enqueueing frontend.blocks.js which had no functional code, but loaded a lot of Gutenberg JS that wasn't needed on the frontend. When/if our blogs have frontend JS, we will load it again, but also make sure the dependencies are correct.
+* BUG FIX/PERFORMANCE: No longer loading blocks.style.css. These frontend styles were redundant with CSS in css/frontend.css.
 * NOTE: The SVN repository was missing the 2.0.3 tag when that update went out. Some users may have updated or tried to update and not gotten the correct files for 2.0.3. Everyone should update to 2.0.4, which is Gucci.
 
 = 2.0.3 - 2019-01-11 =
