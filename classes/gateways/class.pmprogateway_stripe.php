@@ -438,16 +438,6 @@
 					}
 					add_action("wp_head", "pmpro_stripe_javascript");
 				}
-
-				if ( ! function_exists( 'pmpro_stripe_dont_require_CVV' ) ) {
-					//don't require the CVV
-					function pmpro_stripe_dont_require_CVV($fields)
-					{
-						unset($fields['CVV']);
-						return $fields;
-					}
-					add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
-				}
 			}
 		}
 
