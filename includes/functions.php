@@ -1082,6 +1082,10 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// remove cached level
 	global $all_membership_levels;
 	unset( $all_membership_levels[ $user_id ] );
+	
+	// remove levels cache for user
+	$cache_key = 'user_' . $user_id . '_levels';
+	wp_cache_delete( $cache_key, 'pmpro' );
 
 	// update user data and call action
 	pmpro_set_current_user();
