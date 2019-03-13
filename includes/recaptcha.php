@@ -36,23 +36,22 @@ function pmpro_init_recaptcha()
 			if( '1' == $recaptcha_invisible ) { ?>
 
 			<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" <?php if( $recaptcha_invisible == '1' ) { ?> data-size="invisible" <?php } ?>></div>
-			<script type="text/javascript"
-				src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&hl=<?php echo $lang;?>&render=explicit" async defer>
-			</script>
 			<script type="text/javascript">
-				var onSubmit = function(token) {
+				var pmpro_recaptcha_onSubmit = function(token) {
 					//submit the form if everything is okay!
          			jQuery('#pmpro_form').submit();
         		};
 
-				var onloadCallback = function() {
+				var pmpro_recaptcha_onloadCallback = function() {
           			grecaptcha.render('pmpro_btn-submit', {
             		'sitekey' : '<?php echo $pubkey;?>',
-            		'callback' : onSubmit
+            		'callback' : pmpro_recaptcha_onSubmit
           			});
         		};
-       			
     		 </script>
+			 <script type="text/javascript"
+ 				src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo $lang;?>&render=explicit" async defer>
+ 			</script>
 
 			<?php }else{ ?>
 
