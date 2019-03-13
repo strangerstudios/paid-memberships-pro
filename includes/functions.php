@@ -1792,31 +1792,37 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	$user_id = intval( $user_id );
 
 	global $wpdb;
-
-	$levels = $wpdb->get_results(
-		"SELECT
-								l.id AS ID,
-								l.id as id,
-								mu.id as subscription_id,
-								l.name,
-								l.description,
-								l.expiration_number,
-								l.expiration_period,
-								mu.initial_payment,
-								mu.billing_amount,
-								mu.cycle_number,
-								mu.cycle_period,
-								mu.billing_limit,
-								mu.trial_amount,
-								mu.trial_limit,
-								mu.code_id as code_id,
-								UNIX_TIMESTAMP(startdate) as startdate,
-								UNIX_TIMESTAMP(enddate) as enddate
-							FROM {$wpdb->pmpro_membership_levels} AS l
-							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-							WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
-							GROUP BY ID" )
-	);
+	
+	$cache_key = 'user_' . $user_id . '_levels';
+    	$levels = wp_cache_get( $cache_key, 'pmpro' );
+	
+	if ( ! $levels ) {
+		$levels = $wpdb->get_results(
+			"SELECT
+									l.id AS ID,
+									l.id as id,
+									mu.id as subscription_id,
+									l.name,
+									l.description,
+									l.expiration_number,
+									l.expiration_period,
+									mu.initial_payment,
+									mu.billing_amount,
+									mu.cycle_number,
+									mu.cycle_period,
+									mu.billing_limit,
+									mu.trial_amount,
+									mu.trial_limit,
+									mu.code_id as code_id,
+									UNIX_TIMESTAMP(startdate) as startdate,
+									UNIX_TIMESTAMP(enddate) as enddate
+								FROM {$wpdb->pmpro_membership_levels} AS l
+								JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+								WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
+								GROUP BY ID" )
+		);
+		wp_cache_set( $cache_key, $levels, 'pmpro', DAY_IN_SECONDS );
+	}
 	
 	// Round off prices
 	if ( ! empty( $levels ) ) {
