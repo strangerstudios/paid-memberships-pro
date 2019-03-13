@@ -8,6 +8,8 @@ function pmpro_init_recaptcha()
 	//use recaptcha?
 	global $recaptcha;
 	$recaptcha = pmpro_getOption("recaptcha");
+	
+
 	if($recaptcha)
 	{
 		global $recaptcha_publickey, $recaptcha_privatekey;
@@ -28,10 +30,39 @@ function pmpro_init_recaptcha()
 			//filter
 			$lang = apply_filters('pmpro_recaptcha_lang', $lang);
 			?>
+
+			<?php $recaptcha_invisible = pmpro_getOption("recaptcha_invisible"); 
+
+			if( '1' == $recaptcha_invisible ) { ?>
+
+			<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" <?php if( $recaptcha_invisible == '1' ) { ?> data-size="invisible" <?php } ?>></div>
+			<script type="text/javascript"
+				src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&hl=<?php echo $lang;?>&render=explicit" async defer>
+			</script>
+			<script type="text/javascript">
+				var onSubmit = function(token) {
+					//submit the form if everything is okay!
+         			jQuery('#pmpro_form').submit();
+        		};
+
+				var onloadCallback = function() {
+          			grecaptcha.render('pmpro_btn-submit', {
+            		'sitekey' : '<?php echo $pubkey;?>',
+            		'callback' : onSubmit
+          			});
+        		};
+       			
+    		 </script>
+
+			<?php }else{ ?>
+
 			<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>"></div>
 			<script type="text/javascript"
 				src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang;?>">
 			</script>
+
+			<?php }	?>
+			
 			<?php				
 		}
 		
