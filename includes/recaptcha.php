@@ -32,12 +32,39 @@ function pmpro_init_recaptcha() {
 				<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" <?php if( $recaptcha_invisible == '1' ) { ?> data-size="invisible" <?php } ?>></div>
 				<script type="text/javascript">
 					var pmpro_recaptcha_onSubmit = function(token) {
-						//submit the form if everything is okay!
-	         			jQuery('#pmpro_form').submit();
+						
+						jQuery.ajax({
+							url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
+							type: 'GET',
+							timeout: 30000,
+							dataType: 'html',
+							data: {
+								'action': 'pmpro_validate_recaptcha',
+								'g-recaptcha-response': token,
+							},
+							error: function(xml){
+								alert('Error validating ReCAPTCHA.');
+							},
+							success: function(response){
+								if ( response == '1' ) {
+									//get a new token to be submitted with the form
+									grecaptcha.reset();
+									
+									//submit the form if everything is okay!
+				         			jQuery('#pmpro_form').submit();
+								} else {
+									//warn user validation failed
+									alert( 'ReCAPTCHA validation failed. Try again.' );
+									
+									//get a new token to be submitted with the form
+									grecaptcha.reset();
+								}
+							}
+						});
 	        		};
 
 					var pmpro_recaptcha_onloadCallback = function() {
-	          			grecaptcha.render('pmpro_btn-submit', {
+						grecaptcha.render('pmpro_btn-submit', {
 	            		'sitekey' : '<?php echo $pubkey;?>',
 	            		'callback' : pmpro_recaptcha_onSubmit
 	          			});
@@ -66,3 +93,25 @@ function pmpro_init_recaptcha() {
 	}
 }
 add_action( 'init', 'pmpro_init_recaptcha', 20);
+
+/**
+ * AJAX Method to Validate a ReCAPTCHA Response Token
+ */
+function pmpro_wp_ajax_validate_recaptcha() {
+	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
+	
+	$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
+	
+	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
+	$resp      = $reCaptcha->verifyResponse( $_SERVER['REMOTE_ADDR'], $_REQUEST['g-recaptcha-response'] );
+
+	if ( $resp->success ) {
+		echo "1";
+	} else {
+		echo "0";
+	}
+	
+	exit;	
+} 
+add_action( 'wp_ajax_nopriv_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
+add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
