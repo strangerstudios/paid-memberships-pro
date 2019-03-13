@@ -1797,6 +1797,13 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 	global $wpdb;
 	
+	/**
+	 * We are going to see if cache is set before doing the query and use that if it is.
+	 * 
+	 * In a default environment with no external object cache, the value is cached in that request and
+	 * reduces future MySQL requests. If there is an external object cache like Redis then it will be
+	 * persisted until the user level changes.
+	 **/
 	$cache_key = 'user_' . $user_id . '_levels';
     	$levels = wp_cache_get( $cache_key, 'pmpro' );
 	
@@ -1825,7 +1832,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 								WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
 								GROUP BY ID" )
 		);
-		wp_cache_set( $cache_key, $levels, 'pmpro', DAY_IN_SECONDS );
+		wp_cache_set( $cache_key, $levels, 'pmpro' );
 	}
 	
 	// Round off prices
