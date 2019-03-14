@@ -30,10 +30,14 @@ function pmpro_init_recaptcha() {
 
 			if( '1' == $recaptcha_invisible ) { ?>
 				<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" <?php if( $recaptcha_invisible == '1' ) { ?> data-size="invisible" <?php } ?>></div>
-				<script type="text/javascript">
+				<script type="text/javascript">															
+					var pmpro_recaptcha_validated = false;
 					var pmpro_recaptcha_onSubmit = function(token) {
-						
-						jQuery.ajax({
+						if ( pmpro_recaptcha_validated ) {
+							jQuery('#pmpro_form').submit();
+							return;
+						} else {
+							jQuery.ajax({
 							url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
 							type: 'GET',
 							timeout: 30000,
@@ -47,27 +51,31 @@ function pmpro_init_recaptcha() {
 							},
 							success: function(response){
 								if ( response == '1' ) {
+									pmpro_recaptcha_validated = true;
+									
 									//get a new token to be submitted with the form
 									grecaptcha.reset();
-									
-									//submit the form if everything is okay!
-				         			jQuery('#pmpro_form').submit();
+									grecaptcha.execute();
 								} else {
+									pmpro_recaptcha_validated = false;
+									
 									//warn user validation failed
 									alert( 'ReCAPTCHA validation failed. Try again.' );
 									
 									//get a new token to be submitted with the form
 									grecaptcha.reset();
+									grecaptcha.execute();
 								}
 							}
-						});
+							});
+						}						
 	        		};
 
-					var pmpro_recaptcha_onloadCallback = function() {
+					var pmpro_recaptcha_onloadCallback = function() {						
 						grecaptcha.render('pmpro_btn-submit', {
 	            		'sitekey' : '<?php echo $pubkey;?>',
 	            		'callback' : pmpro_recaptcha_onSubmit
-	          			});
+	          			});						
 	        		};
 	    		 </script>
 				 <script type="text/javascript"
