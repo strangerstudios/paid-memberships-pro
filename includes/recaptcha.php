@@ -54,7 +54,6 @@ function pmpro_init_recaptcha() {
 									pmpro_recaptcha_validated = true;
 									
 									//get a new token to be submitted with the form
-									grecaptcha.reset();
 									grecaptcha.execute();
 								} else {
 									pmpro_recaptcha_validated = false;
@@ -63,7 +62,6 @@ function pmpro_init_recaptcha() {
 									alert( 'ReCAPTCHA validation failed. Try again.' );
 									
 									//get a new token to be submitted with the form
-									grecaptcha.reset();
 									grecaptcha.execute();
 								}
 							}
@@ -72,6 +70,7 @@ function pmpro_init_recaptcha() {
 	        		};
 
 					var pmpro_recaptcha_onloadCallback = function() {						
+						// TODO: How to get this to work with the PayPal submit button/etc.
 						grecaptcha.render('pmpro_btn-submit', {
 	            		'sitekey' : '<?php echo $pubkey;?>',
 	            		'callback' : pmpro_recaptcha_onSubmit
