@@ -69,12 +69,23 @@ function pmpro_init_recaptcha() {
 						}						
 	        		};
 
-					var pmpro_recaptcha_onloadCallback = function() {						
-						// TODO: How to get this to work with the PayPal submit button/etc.
+					var pmpro_recaptcha_onloadCallback = function() {
+						// Render on main submit button.
 						grecaptcha.render('pmpro_btn-submit', {
 	            		'sitekey' : '<?php echo $pubkey;?>',
 	            		'callback' : pmpro_recaptcha_onSubmit
-	          			});						
+	          			});
+						
+						// Update other submit buttons.
+						var submit_buttons = jQuery('.pmpro_btn-submit-checkout');
+						submit_buttons.each(function() {
+							if(jQuery(this).attr('id') != 'pmpro_btn-submit') {
+								jQuery(this).click(function(event) {
+									event.preventDefault();
+									grecaptcha.execute();
+								});
+							}
+						});
 	        		};
 	    		 </script>
 				 <script type="text/javascript"
