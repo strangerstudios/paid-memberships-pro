@@ -1755,7 +1755,9 @@
 			$update_order->BillingFrequency = $update['cycle_number'];
 
 			//need filter to reset ProfileStartDate
-			add_filter('pmpro_profile_start_date', create_function('$startdate, $order', 'return "' . $update_order->ProfileStartDate . 'T0:0:0";'), 10, 2);
+			add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $update_order ) {
+				return "{$update_order->ProfileStartDate}T0:0:0";
+			}, 10, 2);
 
 			//update subscription
 			$update_order->Gateway->subscribe($update_order, false);
