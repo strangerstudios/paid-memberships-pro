@@ -129,6 +129,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 2.0.5 =
+* BUG FIX/ENHANCEMENT: Added pmpro_checkout_preheader_before_get_level_at_checkout and pmpro_checkout_preheader_after_get_level_at_checkout action hooks. Using pmpro_checkout_preheader_before_get_level_at_checkout to start the session earlier now.
+
 = 2.0.4 - 2019-01-14 =
 * BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
 * BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
