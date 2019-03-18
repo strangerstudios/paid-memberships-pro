@@ -130,6 +130,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 
 = 2.0.5 =
+* BUG FIX/ENHANCEMENT: Now searching for the last order with "success" or "pending" status on the Billing page.
 * BUG FIX/ENHANCEMENT: Added pmpro_checkout_preheader_before_get_level_at_checkout and pmpro_checkout_preheader_after_get_level_at_checkout action hooks. Using pmpro_checkout_preheader_before_get_level_at_checkout to start the session earlier now.
 
 = 2.0.4 - 2019-01-14 =
