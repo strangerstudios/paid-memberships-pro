@@ -1591,7 +1591,7 @@
                     "amount" => $amount * $currency_unit_multiplier,
                     "interval_count" => $order->BillingFrequency,
                     "interval" => strtolower($order->BillingPeriod),
-                    "trial_period_days" => $trial_period_days,
+                    "trial_period_days" => apply_filters( 'pmpro_gateway_change_subscription_delay', $trial_period_days, $order ), 
                     "name" => $order->membership_name . " for order " . $order->code,
                     "currency" => strtolower($pmpro_currency),
                     "id" => $order->code
