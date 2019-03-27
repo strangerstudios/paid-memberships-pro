@@ -129,6 +129,10 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 2.0.4 - 2019-03-28 =
+* BUG FIX: Removed error when installing PMPro via WP-CLI.
+* BUG FIX/ENHANCEMENT: Now sending display_name to the $data array passed to PMPro email filters. (Thanks, David Cervantes Caballero)
+
 = 2.0.4 - 2019-01-14 =
 * BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
 * BUG FIX: Setting priority of pmpro_check_admin_capabilities to 5 to ensure it runs before dashboard redirect.
