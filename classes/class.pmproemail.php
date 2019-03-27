@@ -142,7 +142,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__('Your membership at %s has been CANCELLED', 'paid-memberships-pro'), get_option("blogname"));
 
-			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
+			$this->data = array("user_email" => $user->user_email, "display_name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
 
 			if(!empty($old_level_id)) {
 				if(!is_array($old_level_id))
