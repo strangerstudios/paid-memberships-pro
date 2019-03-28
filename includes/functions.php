@@ -1805,9 +1805,10 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	 * persisted until the user level changes.
 	 **/
 	$cache_key = 'user_' . $user_id . '_levels';
-    	$levels = wp_cache_get( $cache_key, 'pmpro' );
-	
-	if ( ! $levels ) {
+    $levels = wp_cache_get( $cache_key, 'pmpro' );
+		
+	if ( $levels === false ) {
+				
 		$levels = $wpdb->get_results(
 			"SELECT
 									l.id AS ID,
