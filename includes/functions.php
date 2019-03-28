@@ -1806,7 +1806,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	 **/
 	$cache_key = 'user_' . $user_id . '_levels';
     $levels = wp_cache_get( $cache_key, 'pmpro' );
-		
+	
 	if ( $levels === false ) {
 				
 		$levels = $wpdb->get_results(
@@ -1833,7 +1833,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 								WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
 								GROUP BY ID" )
 		);
-		wp_cache_set( $cache_key, $levels, 'pmpro' );
+		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
 	
 	// Round off prices
