@@ -387,7 +387,7 @@
 							}
 						?>
 						</div>
-						<input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> /> <label for="confirmation_in_email"><?php _e('Check to include this message in the membership confiramtion email.', 'paid-memberships-pro' );?></label>
+						<input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> /> <label for="confirmation_in_email"><?php _e('Check to include this message in the membership confirmation email.', 'paid-memberships-pro' );?></label>
 					</td>
 				</tr>
 			</tbody>
