@@ -131,7 +131,11 @@ Not sure? You can find out by doing a bit a research.
 
 = 2.0.4 - 2019-03-28 =
 * BUG FIX: Removed error when installing PMPro via WP-CLI.
+* BUG FIX: Fixed fatal error on return from 2Checkout.
+* BUG FIX: Fix database upgrade error on localhost environment. (Thanks, codezz on GitHub)
+* BUG FIX: Fixed issue where the credit card expiring email didn't include user info because the user ID wasn't passed in properly. (Thanks, David Cervantes Caballero)
 * BUG FIX/ENHANCEMENT: Now sending display_name to the $data array passed to PMPro email filters. (Thanks, David Cervantes Caballero)
+* REFACTOR: Now running the pmpro_billing_preheader hook after the jquery.creditCardValidator script is enqueued in preheader/billing.php to match how we do it in preheader/checkout.php. (Thanks, Rafe Colton)
 
 = 2.0.4 - 2019-01-14 =
 * BUG FIX: Fixed warning in code added in 2.0.3 that could cause issues at checkout.
