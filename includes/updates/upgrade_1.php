@@ -23,10 +23,15 @@ function pmpro_upgrade_1()
 	$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
 	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
 
-	$parsed = parse_url(home_url());
+	$parsed = parse_url( home_url() );
 	$hostname = $parsed['host'];
-	$hostparts = explode(".", $hostname);
-	$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];
+	$host_parts = explode( ".", $hostname );
+	if ( count( $host_parts ) > 1 ) {
+		$email_domain = $host_parts[count($host_parts) - 2] . "." . $host_parts[count($host_parts) - 1];
+	} else {
+		$email_domain = $parsed['host'];
+	}
+	
 	$from_email = "wordpress@" . $email_domain;
 	pmpro_setOption("from_email", $from_email);
 
@@ -38,8 +43,10 @@ function pmpro_upgrade_1()
 	pmpro_setOption("email_admin_changes", "1");
 	pmpro_setOption("email_admin_cancels", "1");
 	pmpro_setOption("email_admin_billing", "1");
-
 	pmpro_setOption("tospage", "");
+	
+	//don't want these pointers to show on new installs
+	update_option( 'pmpro_dismissed_wp_pointers', array( 'pmpro_v2_menu_moved' ) );
 
 	//let's pause the nag for the first week of use
 	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);

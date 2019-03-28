@@ -6,7 +6,6 @@ namespace Braintree;
  *
  * @package    Braintree
  * @category   Resources
- * @copyright  2015 Braintree, a division of PayPal, Inc.
  */
 
 /**
@@ -17,8 +16,6 @@ namespace Braintree;
  *
  * @package    Braintree
  * @category   Resources
- * @copyright  2015 Braintree, a division of PayPal, Inc.
- *
  */
 class PaymentMethodNonce extends Base
 {
@@ -49,6 +46,10 @@ class PaymentMethodNonce extends Base
 
         if(isset($nonceAttributes['threeDSecureInfo'])) {
             $this->_set('threeDSecureInfo', ThreeDSecureInfo::factory($nonceAttributes['threeDSecureInfo']));
+        }
+
+        if(isset($nonceAttributes['binData'])) {
+            $this->_set('binData', BinData::factory($nonceAttributes['binData']));
         }
     }
 }

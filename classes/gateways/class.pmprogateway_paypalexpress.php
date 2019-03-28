@@ -35,7 +35,7 @@
 				it there.
 			*/
 			//add_filter('pmpro_next_payment', array('PMProGateway_paypalexpress', 'pmpro_next_payment'), 10, 3);
-			
+
 			/*
 				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
 				So we only load it if we haven't already.
@@ -229,13 +229,11 @@
 		 *
 		 * @since 1.8
 		 */
-		static function pmpro_checkout_before_processing()
-		{
+		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
 
 			//save user fields for PayPal Express
-			if(!$current_user->ID)
-			{
+			if(!$current_user->ID) {
 				//get values from post
 				if(isset($_REQUEST['username']))
 					$username = trim(sanitize_text_field($_REQUEST['username']));
@@ -254,6 +252,14 @@
 				$_SESSION['pmpro_signup_username'] = $username;
 				$_SESSION['pmpro_signup_password'] = $password;
 				$_SESSION['pmpro_signup_email'] = $bemail;
+			}
+
+			if( !empty( $_REQUEST['tos'] ) ) {
+				$tospost = get_post( pmpro_getOption( 'tospage' ) );
+				$_SESSION['tos'] = array(
+					'post_id' => $tospost->ID,
+					'post_modified' => $tospost->post_modified,
+				);
 			}
 
 			//can use this hook to save some other variables to the session
@@ -302,7 +308,7 @@
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
-			
+
 			if(empty($pmpro_msg) &&
 				(!empty($_REQUEST['confirm']) ||
 				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
@@ -317,16 +323,15 @@
 					$morder->membership_id = $pmpro_level->id;
 					$morder->membership_name = $pmpro_level->name;
 					$morder->discount_code = $discount_code;
-					$morder->InitialPayment = $pmpro_level->initial_payment;
-					$morder->PaymentAmount = $pmpro_level->billing_amount;
+					$morder->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
+					$morder->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
 					$morder->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
 					$morder->BillingPeriod = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
 
-					//set up level var
-					$morder->getMembershipLevel();
-					$morder->membership_level = apply_filters("pmpro_checkout_level", $morder->membership_level);
+					//setup level var
+					$morder->getMembershipLevelAtCheckout();
 
 					//tax
 					$morder->subtotal = $morder->InitialPayment;
@@ -339,7 +344,7 @@
 						$morder->TrialBillingPeriod = $pmpro_level->cycle_period;
 						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
 						$morder->TrialBillingCycles = $pmpro_level->trial_limit;
-						$morder->TrialAmount = $pmpro_level->trial_amount;
+						$morder->TrialAmount = pmpro_round_price( $pmpro_level->trial_amount );
 					}
 
 					if($morder->confirm())
@@ -396,7 +401,7 @@
 		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
-		{
+		{	
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
@@ -435,12 +440,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
-			
+
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -501,12 +506,12 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -528,7 +533,7 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -637,7 +642,7 @@
 			$amount = $order->InitialPayment;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -693,12 +698,12 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = round((float)$initial_payment + (float)$initial_payment_tax, 2);
+			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			//$amount = round((float)$amount + (float)$amount_tax, 2);
+			//$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -720,7 +725,7 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = round((float)$trial_amount + (float)$trial_tax, 2);
+				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -755,9 +760,16 @@
 			}
 		}
 
-		function cancel(&$order)
-		{
-			//paypal profile stuff
+		function cancel(&$order) {
+			// Always cancel the order locally even if PayPal might fail
+			$order->updateStatus("cancelled");
+
+			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal
+			if( !empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) {
+				return true;
+			}
+
+			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
 
@@ -765,13 +777,9 @@
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
-			{
-				$order->updateStatus("cancelled");
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
-			}
-			else
-			{
+			} else {
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
@@ -808,7 +816,7 @@
 				return false;
 			}
 		}
-		
+
 		/**
 		 * Filter pmpro_next_payment to get date via API if possible
 		 *
@@ -822,16 +830,16 @@
 				//get last order
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
-				
+
 				//check if this is a paypal express order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "paypalexpress")
 				{
 					//get the subscription status
-					$status = $order->getGatewaySubscriptionStatus();					
-										
+					$status = $order->getGatewaySubscriptionStatus();
+
 					if(!empty($status) && !empty($status['NEXTBILLINGDATE']))
 					{
-						//found the next billing date at PayPal, going to use that						
+						//found the next billing date at PayPal, going to use that
 						$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
 					}
 					elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled")
@@ -843,7 +851,7 @@
 					}
 				}
 			}
-						
+
 			return $timestamp;
 		}
 

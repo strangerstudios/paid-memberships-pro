@@ -51,8 +51,12 @@
 	{
 		$parsed = parse_url(home_url()); 
 		$hostname = $parsed["host"];
-		$hostparts = explode(".", $hostname);
-		$email_domain = $hostparts[count($hostparts) - 2] . "." . $hostparts[count($hostparts) - 1];		
+		$host_parts = explode(".", $hostname);
+		if ( count( $host_parts ) > 1 ) {
+			$email_domain = $host_parts[count($host_parts) - 2] . "." . $host_parts[count($host_parts) - 1];
+		} else {
+			$email_domain = $parsed['host'];
+		}		
 		$from_email = "wordpress@" . $email_domain;
 		pmpro_setOption("from_email", $from_email);
 	}

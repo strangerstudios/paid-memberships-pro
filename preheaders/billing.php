@@ -3,8 +3,12 @@
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
 global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-if($current_user->ID)
-    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+if (! is_user_logged_in()) {	
+	wp_redirect(pmpro_url('levels'));
+	exit();
+} else {
+	$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+}
 
 //need to be secure?
 global $besecure, $show_paypal_link;
@@ -30,11 +34,11 @@ if (empty($user_order->gateway)) {
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
 $gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
 
-//action to run extra code for gateways/etc
-do_action( 'pmpro_billing_preheader' );
-
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+
+//action to run extra code for gateways/etc
+do_action( 'pmpro_billing_preheader' );
 
 //_x stuff in case they clicked on the image button with their mouse
 if (isset($_REQUEST['update-billing']))

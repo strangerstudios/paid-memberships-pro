@@ -5,6 +5,8 @@
     use Stripe\Plan as Stripe_Plan;
     use Stripe\Charge as Stripe_Charge;
 
+    define( "PMPRO_STRIPE_API_VERSION", "2017-08-15" );
+
 	//include pmprogateway
 	require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 
@@ -41,10 +43,10 @@
 			if( true === $this->dependencies() ) {
 				$this->loadStripeLibrary();
 				Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-				Stripe\Stripe::setAPIVersion("2017-08-15");
+				Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
                 self::$is_loaded = true;
 			}
-			
+
 			return $this->gateway;
 		}
 
@@ -76,14 +78,14 @@
 
 			foreach($modules as $module){
 				if(!extension_loaded($module)){
-					$pmpro_stripe_error = true;					
+					$pmpro_stripe_error = true;
 					$msg = -1;
 					$msgt = sprintf(__("The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Stripe', $module);
-					
+
 					//throw error on checkout page
 					if(!is_admin())
 						pmpro_setMessage($msgt, 'pmpro_error');
-					
+
 					return false;
 				}
 			}
@@ -128,10 +130,7 @@
 			global $pmpro_stripe_lite;
 			$pmpro_stripe_lite = apply_filters("pmpro_stripe_lite", !pmpro_getOption("stripe_billingaddress"));	//default is oposite of the stripe_billingaddress setting
 			add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
-			
-			//make sure we clean up subs we will be cancelling after checkout before processing
-			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
-			
+
 			//updates cron
 			add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
@@ -144,7 +143,7 @@
 				it there.
 			*/
 			//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
-			
+
 			//code to add at checkout if Stripe is the current gateway
 			$default_gateway = pmpro_getOption('gateway');
 			$current_gateway = pmpro_getGateway();
@@ -158,6 +157,9 @@
 				add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
+                
+                //make sure we clean up subs we will be cancelling after checkout before processing
+    			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
 			}
 
 			add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
@@ -167,25 +169,25 @@
 		 * Clear any saved (preserved) subscription IDs that should have been processed and are now timed out.
 		 */
 		public static function pmpro_clear_saved_subscriptions() {
-			
+
 		    if ( ! is_user_logged_in() ) {
 		        return;
 		    }
-		    
+
 		    global $current_user;
 		    $preserve = get_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', true );
-			
+
 			// Clean up the subscription timeout values (if applicable)
 		    if ( !empty( $preserve ) ) {
-			    
+
 			    foreach ( $preserve as $sub_id => $timestamp ) {
-			        
+
 			        // Make sure the ID has "timed out" (more than 3 days since it was last updated/added.
 				    if ( intval( $timestamp ) >= ( current_time( 'timestamp' ) + ( 3 * DAY_IN_SECONDS ) ) ) {
 					    unset( $preserve[ $sub_id ] );
 				    }
 			    }
-			    
+
 			    update_user_meta( $current_user->ID, 'pmpro_stripe_dont_cancel', $preserve );
 		    }
 		}
@@ -233,7 +235,7 @@
 		 * @since 1.8
 		 */
 		static function pmpro_payment_options($options)
-		{			
+		{
 			//get stripe options
 			$stripe_options = self::getGatewayOptions();
 
@@ -241,7 +243,7 @@
 			$options = array_merge($stripe_options, $options);
 
 			return $options;
-		}				
+		}
 
 		/**
 		 * Display fields for Stripe options.
@@ -271,7 +273,7 @@
 					}
 				?>
 			</td>
-		</tr>		
+		</tr>
 		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_secretkey"><?php _e('Secret Key', 'paid-memberships-pro' );?>:</label>
@@ -300,6 +302,11 @@
 				<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
 			</td>
 		</tr>
+
+		<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
+			<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
+			<td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
+		</tr>
 		<?php
 		}
 
@@ -313,12 +320,12 @@
 			global $gateway, $pmpro_level;
 
 			$default_gateway = pmpro_getOption("gateway");
-			
+
 			if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level))
 			{
 				//stripe js library
 				wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
-				
+
 				if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 
 					//stripe js code for checkout
@@ -330,22 +337,22 @@
 						<!--
 						// this identifies your website in the createToken call below
 						Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-	
+
 						pmpro_require_billing = true;
-	
+
 						var tokenNum = 0;
-	
+
 						jQuery(document).ready(function() {
 							jQuery(".pmpro_form").submit(function(event) {
-							
+
 							// prevent the form from submitting with the default action
 							event.preventDefault();
-							
+
 							//double check in case a discount code made the level free
 							if(pmpro_require_billing) {
 								//build array for creating token
 								var args = {
-									number: jQuery('#AccountNumber').val(),								
+									number: jQuery('#AccountNumber').val(),
 									exp_month: jQuery('#ExpirationMonth').val(),
 									exp_year: jQuery('#ExpirationYear').val()
 									<?php
@@ -363,15 +370,15 @@
 										}
 									?>
 								};
-	
+
 								//add CVC if not blank
 								if(jQuery('#CVV').val().length)
 									args['cvc'] = jQuery('#CVV').val();
-	
+
 								//add first and last name if not blank
 								if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 									args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
-	
+
 								//create token(s)
 								if (jQuery('#level').length) {
 									var levelnums = jQuery("#level").val().split(",");
@@ -381,13 +388,13 @@
 								} else {
 									Stripe.createToken(args, stripeResponseHandler);
 								}
-									
-								// prevent the form from submitting with the default action							
+
+								// prevent the form from submitting with the default action
 								return false;
 							} else {
 								this.submit();
 								return true;	//not using Stripe anymore
-							}														
+							}
 							});
 						});
 
@@ -395,10 +402,10 @@
 							if (response.error) {
 								// re-enable the submit button
 								jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-	
+
 								//hide processing message
 								jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-	
+
 								// show the errors on the form
 								alert(response.error.message);
 								jQuery(".payment-errors").text(response.error.message);
@@ -409,18 +416,18 @@
 								// insert the token into the form so it gets submitted to the server
 								form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
 								tokenNum++;
-								
+
 								//console.log(response);
-	
+
 								//insert fields for other card fields
 								if(jQuery('#CardType[name=CardType]').length)
 									jQuery('#CardType').val(response['card']['brand']);
 								else
-									form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");							
+									form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
 								form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
 								form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
 								form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
-	
+
 								// and submit
 								form$.get(0).submit();
 							}
@@ -431,31 +438,21 @@
 					}
 					add_action("wp_head", "pmpro_stripe_javascript");
 				}
-				
-				if ( ! function_exists( 'pmpro_stripe_dont_require_CVV' ) ) {
-					//don't require the CVV
-					function pmpro_stripe_dont_require_CVV($fields)
-					{
-						unset($fields['CVV']);
-						return $fields;
-					}
-					add_filter("pmpro_required_billing_fields", "pmpro_stripe_dont_require_CVV");
-				}
 			}
 		}
-		
+
 		/**
 		 * Don't require the CVV.
 		 * Don't require address fields if they are set to hide.
 		 */
 		static function pmpro_required_billing_fields($fields)
 		{
-			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;			
-			
+			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
+
 			//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
-			unset($fields['CVV']);	
-			
-			//if using stripe lite, remove some fields from the required array			
+			unset($fields['CVV']);
+
+			//if using stripe lite, remove some fields from the required array
 			if ($pmpro_stripe_lite) {
 				//some fields to remove
 				$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
@@ -469,7 +466,7 @@
 				foreach ($remove as $field)
 					unset($fields[$field]);
 			}
-			
+
 			return $fields;
 		}
 
@@ -528,7 +525,7 @@
 
 			if($gateway == "stripe")
 			{
-				if(static::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
+				if(self::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id))
 				{
 					update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 				}
@@ -549,14 +546,14 @@
 		}
 
 		/**
-		 * Use our own payment fields at checkout. (Remove the name attributes.)		
+		 * Use our own payment fields at checkout. (Remove the name attributes.)
 		 * @since 1.8
 		 */
 		static function pmpro_include_payment_information_fields($include)
 		{
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-			
+
 			//get accepted credit cards
 			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
@@ -926,8 +923,8 @@
 
 			//save date of next on-date update to make it easier to query for these in cron job
 			update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
-		}		
-		
+		}
+
 		/**
 		 * Cron activation for subscription updates.
 		 *
@@ -965,7 +962,7 @@
 							AND meta_value <> ''
 							AND meta_value < '" . date_i18n("Y-m-d", strtotime("+1 day", current_time('timestamp'))) . "'";
 			$updates = $wpdb->get_results($sqlQuery);
-			
+
 			if(!empty($updates))
 			{
 				//loop through
@@ -975,19 +972,19 @@
 					$user_id = $update->user_id;
 
 					$user = get_userdata($user_id);
-					
+
 					//if user is missing, delete the update info and continue
 					if(empty($user) || empty($user->ID))
-					{						
+					{
 						delete_user_meta($user_id, "pmpro_stripe_updates");
 						delete_user_meta($user_id, "pmpro_stripe_next_on_date_update");
-					
+
 						continue;
 					}
-					
+
 					$user_updates = $user->pmpro_stripe_updates;
-					$next_on_date_update = "";					
-					
+					$next_on_date_update = "";
+
 					//loop through updates looking for updates happening today or earlier
 					if(!empty($user_updates))
 					{
@@ -1021,48 +1018,63 @@
 				}
 			}
 		}
-		
+
 		/**
 		 * Before processing a checkout, check for pending invoices we want to clean up.
 		 * This prevents double billing issues in cases where Stripe has pending invoices
 		 * because of an expired credit card/etc and a user checks out to renew their subscription
 		 * instead of updating their billing information via the billing info page.
 		 */
-		static function pmpro_checkout_before_processing() {			
+		static function pmpro_checkout_before_processing() {
 			global $wpdb, $current_user;
-			
-			//we're only worried about cases where the user is logged in
-			if(!is_user_logged_in())
-				return;
-			
-			//get user and membership level			
+
+			// we're only worried about cases where the user is logged in
+			if( ! is_user_logged_in() ) {
+                return;
+            }
+
+            // make sure we're checking out with Stripe
+            $current_gateway = pmpro_getGateway();
+            if ( $current_gateway != 'stripe' ) {
+                return;
+            }
+
+            //check the $pmpro_cancel_previous_subscriptions filter
+            //this is used in add ons like Gift Memberships to stop PMPro from cancelling old memberships
+            $pmpro_cancel_previous_subscriptions = true;
+            $pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );        
+            if( ! $pmpro_cancel_previous_subscriptions ) {
+                return;
+            }
+
+			//get user and membership level
 			$membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
-			
+
 			//no level, then probably no subscription at Stripe anymore
 			if(empty($membership_level))
 				return;
-						
+
 			/**
 			 * Filter which levels to cancel at the gateway.
 			 * MMPU will set this to all levels that are going to be cancelled during this checkout.
 			 * Others may want to display this by add_filter('pmpro_stripe_levels_to_cancel_before_checkout', __return_false);
 			 */
 			$levels_to_cancel = apply_filters('pmpro_stripe_levels_to_cancel_before_checkout', array($membership_level->id), $current_user);
-						
+
 			foreach($levels_to_cancel as $level_to_cancel) {
 				//get the last order for this user/level
 				$last_order = new MemberOrder();
 				$last_order->getLastMemberOrder($current_user->ID, 'success', $level_to_cancel, 'stripe');
-								
+
 				//so let's cancel the user's susbcription
-				if(!empty($last_order) && !empty($last_order->subscription_transaction_id)) {										
+				if(!empty($last_order) && !empty($last_order->subscription_transaction_id)) {
 					$subscription = $last_order->Gateway->getSubscription($last_order);
-					if(!empty($subscription)) {					
+					if(!empty($subscription)) {
 						$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true);
-						
+
 						//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
 						$memberships_users_row = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1");
-												
+
 						if(!empty($memberships_users_row) && (empty($memberships_users_row->enddate) || $memberships_users_row->enddate == '0000-00-00 00:00:00')) {
 							/**
 							 * Filter graced period days when canceling existing subscriptions at checkout.
@@ -1075,10 +1087,10 @@
 							$days_grace = apply_filters('pmpro_stripe_days_grace_when_canceling_existing_subscriptions_at_checkout', 3, $memberships_users_row);
 							$new_enddate = date('Y-m-d H:i:s', current_time('timestamp')+3600*24*$days_grace);
 							$wpdb->update( $wpdb->pmpro_memberships_users, array('enddate'=>$new_enddate), array('user_id'=>$current_user->ID, 'membership_id'=>$level_to_cancel, 'status'=>'active'), array('%s'), array('%d', '%d', '%s') );
-						}						
+						}
 					}
 				}
-			}			
+			}
 		}
 
 		/**
@@ -1146,11 +1158,11 @@
 		{
 			global $pmpro_currency, $pmpro_currencies;
 			$currency_unit_multiplier = 100; //ie 100 cents per USD
-			
+
 			//account for zero-decimal currencies like the Japanese Yen
 			if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
 				$currency_unit_multiplier = 1;
-			
+
 			//create a code for the order
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -1161,7 +1173,7 @@
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
-			$amount = round((float)$order->subtotal + (float)$tax, 2);
+			$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
 
 			//create a customer
 			$result = $this->getCustomer($order);
@@ -1256,7 +1268,7 @@
 				}
 
 				//look up by transaction id
-				if(empty($customer_id) && !empty($user_id)) 
+				if(empty($customer_id) && !empty($user_id))
 				{
 					//user id from this order or the user's last stripe order
 					if(!empty($order->payment_transaction_id))
@@ -1264,7 +1276,7 @@
 					else
 					{
 						//find the user's last stripe order
-						$last_order = new MemberOrder();						
+						$last_order = new MemberOrder();
 						$last_order->getLastMemberOrder($user_id, array('success', 'cancelled'), NULL, 'stripe', $order->Gateway->gateway_environment);
 						if(!empty($last_order->payment_transaction_id))
 							$payment_transaction_id = $last_order->payment_transaction_id;
@@ -1276,14 +1288,26 @@
 						if(strpos($payment_transaction_id, "ch_") !== false)
 						{
 							//charge, look it up
-							$charge = Stripe_Charge::retrieve($payment_transaction_id);
+							try {
+								$charge = Stripe_Charge::retrieve($payment_transaction_id);
+							} catch( \Exception $exception ) {
+								$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+								return false;
+							}
+
 							if(!empty($charge) && !empty($charge->customer))
 								$customer_id = $charge->customer;
-						} 
+						}
 						else if(strpos($payment_transaction_id, "in_") !== false)
 						{
 							//invoice look it up
-							$invoice = Stripe_Invoice::retrieve($payment_transaction_id);
+							try {
+								$invoice = Stripe_Invoice::retrieve($payment_transaction_id);
+							} catch( \Exception $exception ) {
+								$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+								return false;
+							}
+
 							if(!empty($invoice) && !empty($invoice->customer))
 								$customer_id = $invoice->customer;
 						}
@@ -1301,7 +1325,7 @@
 			elseif(!empty($order->FirstName))
 				$name = $order->FirstName;
 			elseif(!empty($order->LastName))
-				$name = $order->LastName;	
+				$name = $order->LastName;
 
 			if(empty($name) && !empty($user->ID))
 			{
@@ -1354,7 +1378,7 @@
 			{
 				try
 				{
-					$this->customer = Stripe_Customer::create(array(							 
+					$this->customer = Stripe_Customer::create(array(
 							  "description" => $name . " (" . $email . ")",
 							  "email" => $order->Email,
 							  "card" => $order->stripeToken
@@ -1428,7 +1452,7 @@
 
 				return $sub;
 			}
-			
+
 			//no subscriptions object in customer
 			if(empty($this->customer->subscriptions))
 				return false;
@@ -1464,9 +1488,9 @@
 		function subscribe(&$order, $checkout = true)
 		{
 			global $pmpro_currency, $pmpro_currencies;
-			
+
 			$currency_unit_multiplier = 100; //ie 100 cents per USD
-			
+
 			//account for zero-decimal currencies like the Japanese Yen
 			if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0)
 				$currency_unit_multiplier = 1;
@@ -1498,7 +1522,7 @@
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = round((float)$amount + (float)$amount_tax, 2);
+			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
 			/*
 				There are two parts to the trial. Part 1 is simply the delay until the first payment
@@ -1557,7 +1581,7 @@
 				//now amount to equal the trial #s
 				$amount = $order->TrialAmount;
 				$amount_tax = $order->getTaxForPrice($amount);
-				$amount = round((float)$amount + (float)$amount_tax, 2);
+				$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 			}
 
 			//create a plan
@@ -1652,7 +1676,7 @@
 
 			return true;
 		}
-		
+
 		/**
 		 * Helper method to save the subscription ID to make sure the membership doesn't get cancelled by the webhook
 		 */
@@ -1661,26 +1685,26 @@
 				global $current_user;
 				$user_id = $current_user->ID;
 			}
-			
+
 			$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
-			
+
 			// No previous values found, init the array
 			if ( empty( $preserve ) ) {
 				$preserve = array();
 			}
-			
+
 			// Store or update the subscription ID timestamp (for cleanup)
 			$preserve[$subscription_id] = current_time( 'timestamp' );
 
 			update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
 		}
-			
+
 		/**
 		 * Helper method to process a Stripe subscription update
 		 */
 		static function updateSubscription($update, $user_id) {
 			global $wpdb;
-			
+
 			//get level for user
 			$user_level = pmpro_getMembershipLevelForUser($user_id);
 
@@ -1695,7 +1719,7 @@
 			if(!empty($subscription))
 			{
 				$end_timestamp = $subscription->current_period_end;
-				
+
 				//cancel the old subscription
 				if(!$last_order->Gateway->cancelSubscriptionAtGateway($subscription, true))
 				{
@@ -1705,7 +1729,7 @@
 						function pmpro_stripe_user_profile_fields_save_error( $errors, $update, $user ) {
 							$errors->add( 'pmpro_stripe_updates', __( 'Could not cancel the old subscription. Updates have not been processed.', 'paid-memberships-pro' ) );
 						}
-					
+
 						add_filter( 'user_profile_update_errors', 'pmpro_stripe_user_profile_fields_save_error', 10, 3 );
 					}
 
@@ -1731,7 +1755,9 @@
 			$update_order->BillingFrequency = $update['cycle_number'];
 
 			//need filter to reset ProfileStartDate
-			add_filter('pmpro_profile_start_date', create_function('$startdate, $order', 'return "' . $update_order->ProfileStartDate . 'T0:0:0";'), 10, 2);
+			add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $update_order ) {
+				return "{$update_order->ProfileStartDate}T0:0:0";
+			}, 10, 2);
 
 			//update subscription
 			$update_order->Gateway->subscribe($update_order, false);
@@ -1752,7 +1778,7 @@
 
 			//save order so we know which plan to look for at stripe (order code = plan id)
 			$update_order->status = "success";
-			$update_order->saveOrder();			
+			$update_order->saveOrder();
 		}
 
 		/**
@@ -1782,6 +1808,8 @@
 		 */
 		function cancel(&$order, $update_status = true)
 		{
+			global $pmpro_stripe_event;
+
 			//no matter what happens below, we're going to cancel the order in our system
 			if($update_status)
 				$order->updateStatus("cancelled");
@@ -1798,7 +1826,8 @@
 				//find subscription with this order code
 				$subscription = $this->getSubscription($order);
 
-				if(!empty($subscription))
+				if(!empty($subscription) 
+					&& ( empty( $pmpro_stripe_event ) || empty( $pmpro_stripe_event->type ) || $pmpro_stripe_event->type != 'customer.subscription.deleted' ) )
 				{
 					if($this->cancelSubscriptionAtGateway($subscription))
 					{
@@ -1877,9 +1906,9 @@
 				}
 
 				//sometimes we don't want to cancel the local membership when Stripe sends its webhook
-				if($preserve_local_membership)					
+				if($preserve_local_membership)
 					PMProGateway_stripe::ignoreCancelWebhookForThisSubscription($subscription->id, $order->user_id);
-				
+
 				//cancel
 				$r = $subscription->cancel();
 
@@ -1890,7 +1919,7 @@
 				return false;
 			}
 		}
-		
+
 		/**
 		 * Filter pmpro_next_payment to get date via API if possible
 		 *
@@ -1904,20 +1933,26 @@
 				//get last order
 				$order = new MemberOrder();
 				$order->getLastMemberOrder($user_id, $order_status);
-				
+
 				//check if this is a Stripe order with a subscription transaction id
 				if(!empty($order->id) && !empty($order->subscription_transaction_id) && $order->gateway == "stripe")
 				{
 					//get the subscription and return the current_period end or false
-					$subscription = $order->Gateway->getSubscription($order);					
-					
-					if(!empty($subscription->current_period_end))
-						return $subscription->current_period_end;
-					else
-						return false;
+					$subscription = $order->Gateway->getSubscription($order);
+
+                    if( !empty( $subscription ) ) {
+                        $customer = $order->Gateway->getCustomer();
+                        if( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
+                            return $subscription->current_period_end;
+                        } elseif ( $customer->delinquent && ! empty( $subscription->current_period_start ) ) {
+                            return $subscription->current_period_start;
+                        } else {
+                            return $false;  // shouldn't really get here
+                        }
+                    }
 				}
 			}
-						
+
 			return $timestamp;
 		}
 
@@ -1970,7 +2005,7 @@
 				$order->errorcode = "";
 				$order->error = "";
 				$order->shorterror = "";
-				
+
 				return false;
 			}
 
@@ -1998,7 +2033,7 @@
 				$order->errorcode = true;
 				$order->error = sprintf(__("Error: Unkown error while refunding charge #%s", 'paid-memberships-pro' ), $transaction_id);
 				$order->shorterror = $order->error;
-				
+
 				return false;
 			}
 		}

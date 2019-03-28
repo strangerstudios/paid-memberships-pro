@@ -309,6 +309,57 @@
 		}
 
 		/**
+		 * Update the discount code used in this order.
+		 *
+		 * @param int $discount_code_id The ID of the discount code to update.
+		 *
+		 */
+		function updateDiscountCode( $discount_code_id ) {
+			global $wpdb;
+
+			// Assumes one discount code per order
+			$sqlQuery = $wpdb->prepare("
+				SELECT id FROM $wpdb->pmpro_discount_codes_uses
+				WHERE order_id = %d
+				LIMIT 1",
+				$this->id
+			);
+			$discount_codes_uses_id = $wpdb->get_var( $sqlQuery );
+
+			// INSTEAD: Delete the code use if found
+			if ( empty( $discount_code_id ) ) {
+				if ( ! empty( $discount_codes_uses_id ) ) {
+					$wpdb->delete(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'id' => $discount_codes_uses_id ),
+						array( '%d' )
+					);
+				}
+			} else {
+				if ( ! empty( $discount_codes_uses_id ) ) {
+					// Update existing row
+					$wpdb->update(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'code_id' => $discount_code_id, 'user_id' => $this->user_id, 'order_id' => $this->id ),
+						array( 'id' => $discount_codes_uses_id ),
+						array( '%d', '%d', '%d' ),
+						array( '%d' )
+					);
+				} else {
+					// Insert a new row
+					$wpdb->insert(
+						$wpdb->pmpro_discount_codes_uses,
+						array( 'code_id' => $discount_code_id, 'user_id' => $this->user_id, 'order_id' => $this->id ),
+						array( '%d', '%d', '%d' )
+					);
+				}
+			}
+
+			// Make sure to reset properties on this object
+			return $this->getDiscountCode( true );
+		}
+
+		/**
 		 * Get a user object for the user associated with this order.
 		 */
 		function getUser()
@@ -364,7 +415,52 @@
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
 			}
+			
+			// Round prices to avoid extra decimals.
+			if( ! empty( $this->membership_level ) ) {
+				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
+				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
+				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
+			}
 
+			return $this->membership_level;
+		}
+		
+		/**
+		 * Get a membership level object at checkout
+		 * for the level associated with this order.
+		 *
+		 * @since 2.0.2
+		 * @param bool $force If true, it will reset the property.
+		 *
+		 */
+		function getMembershipLevelAtCheckout($force = false) {
+			global $pmpro_level;
+
+			if( ! empty( $this->membership_level ) && empty( $force ) ) {
+				return $this->membership_level;
+			}
+			
+			// If for some reason, we haven't setup pmpro_level yet, do that.
+			if ( empty( $pmpro_level ) ) {
+				$pmpro_level = pmpro_getLevelAtCheckout();
+			}
+			
+			// Set the level to the checkout level global.
+			$this->membership_level = $pmpro_level;
+			
+			// Fix the membership level id.
+			if(!empty( $this->membership_level) && !empty($this->membership_level->level_id)) {
+				$this->membership_level->id = $this->membership_level->level_id;
+			}
+			
+			// Round prices to avoid extra decimals.
+			if( ! empty( $this->membership_level ) ) {
+				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
+				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
+				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
+			}
+			
 			return $this->membership_level;
 		}
 
@@ -523,9 +619,9 @@
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 
 			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date_i18n("Y-m-d H:i:s", current_time("timestamp"));		//use current time
+				$this->datetime = date("Y-m-d H:i:s", time());
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
-				$this->datetime = date_i18n("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
 			elseif(empty($this->datetime) && !empty($this->timestamp))
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 
@@ -806,6 +902,21 @@
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->getTransactionStatus( $this );
 			}
+		}
+
+		/** 
+		 * Get TOS consent information.
+		 * @since  1.9.5
+		 */
+		function get_tos_consent_log_entry() {
+			$consent_log = pmpro_get_consent_log( $this->user_id );
+			foreach( $consent_log as $entry ) {
+				if( $entry['order_id'] == $this->id ) {
+					return $entry;
+				}
+			}
+
+			return false;
 		}
 
 		/**

@@ -142,7 +142,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__('Your membership at %s has been CANCELLED', 'paid-memberships-pro'), get_option("blogname"));
 
-			$this->data = array("name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
+			$this->data = array("user_email" => $user->user_email, "display_name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
 
 			if(!empty($old_level_id)) {
 				if(!is_array($old_level_id))
@@ -214,6 +214,13 @@
 			
 			if(!$user)
 				return false;
+				
+			$confirmation_in_email = get_pmpro_membership_level_meta( $user->membership_level->id, 'confirmation_in_email', true );
+			if ( ! empty( $confirmation_in_email ) ) {
+				$confirmation_message = $user->membership_level->confirmation;
+			} else {
+				$confirmation_message = '';
+			}
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership confirmation for %s", 'paid-memberships-pro' ), get_option("blogname"));	
@@ -221,11 +228,13 @@
 			$this->data = array(
 								"subject" => $this->subject, 
 								"name" => $user->display_name, 
+								"display_name" => $user->display_name,
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
+								"membership_level_confirmation_message" => $confirmation_message,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
 								"login_link" => wp_login_url(pmpro_url("account")),
 								"display_name" => $user->display_name,
@@ -824,7 +833,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been changed", "paid-memberships-pro"), get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
 
 			if($user->membership_level->ID)
 				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
@@ -862,16 +871,24 @@
 			//make sure we have the current membership level data
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						
+			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
+				$membership_level_name = $user->membership_level->name;
+			} else {
+				$membership_level_name = __('None', 'paid-memberships-pro');
+			}
+
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_level_name" => $user->membership_level->name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
-			if($user->membership_level->ID)
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_level_name" => $membership_level_name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
+
+			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
 				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
-			else
-				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );
+			} else {
+				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );	
+			}
 			
-			if(!empty($user->membership_level->enddate))
+			if(!empty($user->membership_level) && !empty($user->membership_level->enddate))
 			{
 					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}

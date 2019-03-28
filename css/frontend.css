@@ -4,7 +4,7 @@
 .pmpro_btn, .pmpro_btn:link, .pmpro_content_message a, .pmpro_content_message a:link {
 	background-color: #EFEFEF;
 	background-image: none;
-	border: 1px solid #D6D6D6;	
+	border: 1px solid #D6D6D6;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
@@ -13,7 +13,6 @@
 	color: #444;
 	cursor: pointer;
 	display: inline-block;
-	font-size: 12px;
 	font-weight: 700;
 	margin: 0;
 	padding: 6px 12px;
@@ -33,10 +32,17 @@
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px;
 }
-.pmpro_btn:hover, .pmpro_btn:focus, .pmpro_checkout .pmpro_btn:hover, .pmpro_checkout .pmpro_btn:focus, .pmpro_content_message a:focus, .pmpro_content_message a:hover {
+.pmpro_btn:hover,
+a.pmpro_btn:hover,
+.entry-content a.pmpro_btn:hover,
+.pmpro_btn:focus,
+.pmpro_checkout .pmpro_btn:hover,
+.pmpro_checkout .pmpro_btn:focus,
+.pmpro_content_message a:focus,
+.pmpro_content_message a:hover {
 	-webkit-box-shadow: none;
+	border: 1px solid #D6D6D6;
 	box-shadow: none;
-	color: #000;
 	text-decoration: none;
 }
 .pmpro_btn:active,
@@ -56,16 +62,45 @@ fieldset[disabled] .pmpro_btn {
 	opacity: 0.65;
 	pointer-events: none;
 }
-input[type="button"].pmpro_btn.pmpro_btn-cancel {
-	background: #CCC;
-	margin: 0 0 0 10px;
-}
-input[type="button"].pmpro_btn.pmpro_btn-cancel:hover {
-	background: #EFEFEF;
+.pmpro_btn.pmpro_btn-cancel,
+.pmpro_btn.pmpro_btn-cancel:link,
+.pmpro_btn.pmpro_btn-cancel:hover,
+.entry-content a.pmpro_btn.pmpro_btn-cancel:hover {
+	background: none;
+	border: none;
+	box-shadow: none;
+    color: #666;
+    text-decoration: underline;
 }
 .pmpro_btn.pmpro_btn-submit-checkout {
 	width: auto;
 }
+
+input[type="button"]#discount_code_button,
+input[type="button"]#discount_code_button:hover,
+input[type="button"]#discount_code_button:focus,
+input[type="button"]#other_discount_code_button,
+input[type="button"]#other_discount_code_button:hover,
+input[type="button"]#other_discount_code_button:focus {
+	-webkit-appearance: none;
+    -moz-appearance: none;
+	background: none;
+    border: none;
+	box-shadow: none;
+	color: inherit;
+    cursor: pointer;
+	display: inline-block;
+	font-family: inherit;
+    font-size: 100%;
+	font-weight: normal;
+	margin: 0 0 0 5px;
+	outline: none;
+    padding: 0;
+	text-align: center;
+    text-decoration: underline;
+	text-transform: none;
+}
+
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
@@ -79,8 +114,8 @@ form.pmpro_form label {
 	text-align: left;
 }
 form.pmpro_form .pmpro_checkout-field-checkbox label {
-	cursor: pointer; 
-	display: inline-block; 
+	cursor: pointer;
+	display: inline-block;
 	width: auto;
 }
 form.pmpro_form label.pmpro_label-inline {
@@ -223,7 +258,7 @@ body.pmpro-confirmation .entry-content ul {
 body.pmpro-invoice .entry-content ul {
 	margin-left: 1.5em;
 }
-.pmpro_invoice_details { 
+.pmpro_invoice_details {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-gap: 1em;
@@ -259,18 +294,13 @@ body.pmpro-invoice .entry-content ul {
 #pmpro_account #pmpro_account-billing { }
 #pmpro_account #pmpro_account-invoices { }
 #pmpro_account #pmpro_account-links { }
-.pmpro_actionlinks {
-	font-size: .8em;
-	margin: .25em 0 0 0;
-}
 .pmpro_actionlinks a {
 	display: inline-block;
-	margin: 0;
-	padding: 0 5px 0 0;
+	margin-right: .5rem;
 	text-decoration: none;
 }
 .pmpro_actionlinks a:last-child {
-	padding: 0;
+	margin-right: 0;
 }
 .pmpro_hidden {
 	display: none;
@@ -301,7 +331,7 @@ li.pmpro_more {
 	width: auto;
 }
 .pmpro_a-print {
-	background: url(../images/printer.gif) top left no-repeat;
+	background: url(../images/printer-icon.svg) top left no-repeat;
 	color: #345395;
 	cursor: pointer;
 	float: right;

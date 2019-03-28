@@ -6,11 +6,9 @@ namespace Braintree;
  *
  *
  * @package    Braintree
- * @copyright  2016 Braintree, a division of PayPal, Inc.
  *
  * @property-read string $reportUrl
  * @property-read date   $reportDate
- * @property-read date   $receivedDate
  */
 class AccountUpdaterDailyReport extends Base
 {

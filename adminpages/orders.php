@@ -1,15 +1,15 @@
 <?php
-//only admins can get this
-if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_orders" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+// only admins can get this
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
+	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
-//vars
+// vars
 global $wpdb;
 if ( isset( $_REQUEST['s'] ) ) {
 	$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
 } else {
-	$s = "";
+	$s = '';
 }
 
 if ( isset( $_REQUEST['l'] ) ) {
@@ -18,61 +18,67 @@ if ( isset( $_REQUEST['l'] ) ) {
 	$l = false;
 }
 
+if ( isset( $_REQUEST['discount_code'] ) ) {
+	$discount_code = intval( $_REQUEST['discount_code'] );
+} else {
+	$discount_code = false;
+}
+
 if ( isset( $_REQUEST['start-month'] ) ) {
 	$start_month = intval( $_REQUEST['start-month'] );
 } else {
-	$start_month = "1";
+	$start_month = '1';
 }
 
 if ( isset( $_REQUEST['start-day'] ) ) {
 	$start_day = intval( $_REQUEST['start-day'] );
 } else {
-	$start_day = "1";
+	$start_day = '1';
 }
 
 if ( isset( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
-	$start_year = date_i18n( "Y" );
+	$start_year = date_i18n( 'Y' );
 }
 
 if ( isset( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
-	$end_month = date_i18n( "n" );
+	$end_month = date_i18n( 'n' );
 }
 
 if ( isset( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
-	$end_day = date_i18n( "j" );
+	$end_day = date_i18n( 'j' );
 }
 
 if ( isset( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
-	$end_year = date_i18n( "Y" );
+	$end_year = date_i18n( 'Y' );
 }
 
 if ( isset( $_REQUEST['predefined-date'] ) ) {
 	$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
 } else {
-	$predefined_date = "This Month";
+	$predefined_date = 'This Month';
 }
 
 if ( isset( $_REQUEST['status'] ) ) {
 	$status = sanitize_text_field( $_REQUEST['status'] );
 } else {
-	$status = "";
+	$status = '';
 }
 
 if ( isset( $_REQUEST['filter'] ) ) {
 	$filter = sanitize_text_field( $_REQUEST['filter'] );
 } else {
-	$filter = "all";
+	$filter = 'all';
 }
 
-//some vars for the search
+// some vars for the search
 if ( isset( $_REQUEST['pn'] ) ) {
 	$pn = intval( $_REQUEST['pn'] );
 } else {
@@ -96,94 +102,102 @@ if ( isset( $_REQUEST['limit'] ) ) {
 $end   = $pn * $limit;
 $start = $end - $limit;
 
-//filters
-if ( empty( $filter ) || $filter === "all" ) {
-	$condition = "1=1";
-	$filter    = "all";
-} elseif ( $filter == "within-a-date-range" ) {
-	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
-	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
+// filters
+if ( empty( $filter ) || $filter === 'all' ) {
+	$condition = '1=1';
+	$filter    = 'all';
+} elseif ( $filter == 'within-a-date-range' ) {
+	$start_date = $start_year . '-' . $start_month . '-' . $start_day;
+	$end_date   = $end_year . '-' . $end_month . '-' . $end_day;
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	// add times to dates
+	$start_date = $start_date . ' 00:00:00';
+	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-} elseif ( $filter == "predefined-date-range" ) {
-	if ( $predefined_date == "Last Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of last month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Month" ) {
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of this month", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of this month", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "This Year" ) {
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+} elseif ( $filter == 'predefined-date-range' ) {
+	if ( $predefined_date == 'Last Month' ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of last month', current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'This Month' ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of this month', current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'This Year' ) {
 		$year       = date_i18n( 'Y' );
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
-	} elseif ( $predefined_date == "Last Year" ) {
+		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
+	} elseif ( $predefined_date == 'Last Year' ) {
 		$year       = date_i18n( 'Y' ) - 1;
-		$start_date = date_i18n( "Y-m-d", strtotime( "first day of January $year", current_time( "timestamp" ) ) );
-		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
+		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
+		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
 	}
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	// add times to dates
+	$start_date = $start_date . ' 00:00:00';
+	$end_date   = $end_date . ' 23:59:59';
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
-} elseif ( $filter == "within-a-level" ) {
-	$condition = "membership_id = " . esc_sql( $l );
-} elseif ( $filter == "within-a-status" ) {
-	$condition = "status = '" . esc_sql( $status ) . "' ";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+} elseif ( $filter == 'within-a-level' ) {
+	$condition = 'o.membership_id = ' . esc_sql( $l );
+} elseif ( $filter == 'with-discount-code' ) {
+	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
+} elseif ( $filter == 'within-a-status' ) {
+	$condition = "o.status = '" . esc_sql( $status ) . "' ";
+} elseif ( $filter == 'only-paid' ) {
+	$condition = "o.total > 0";
+} elseif( $filter == 'only-free' ) {
+	$condition = "o.total = 0";
 }
 
-//emailing?
+// emailing?
 if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
 	$email = new PMProEmail();
-	$user  = get_user_by( 'email', sanitize_email($_REQUEST['email']) );
+	$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
 	$order = new MemberOrder( $_REQUEST['order'] );
 	if ( $email->sendBillableInvoiceEmail( $user, $order ) ) {
-		$pmpro_msg  = __( "Invoice emailed successfully.", 'paid-memberships-pro' );
-		$pmpro_msgt = "success";
+		$pmpro_msg  = __( 'Invoice emailed successfully.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'success';
 	} else {
-		$pmpro_msg  = __( "Error emailing invoice.", 'paid-memberships-pro' );
-		$pmpro_msgt = "error";
+		$pmpro_msg  = __( 'Error emailing invoice.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
 	}
 
-	//clean up so we stay on the orders list view
+	// clean up so we stay on the orders list view
 	unset( $_REQUEST['order'] );
 	$order = null;
 }
 
-//deleting?
+// deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
 	if ( $dorder->deleteMe() ) {
-		$pmpro_msg  = __( "Order deleted successfully.", 'paid-memberships-pro' );
-		$pmpro_msgt = "success";
+		$pmpro_msg  = __( 'Order deleted successfully.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'success';
 	} else {
-		$pmpro_msg  = __( "Error deleting order.", 'paid-memberships-pro' );
-		$pmpro_msgt = "error";
+		$pmpro_msg  = __( 'Error deleting order.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
 	}
 }
 
-$thisyear = date_i18n( "Y" );
+$thisyear = date_i18n( 'Y' );
 
-//this array stores fields that should be read only
-$read_only_fields = apply_filters( "pmpro_orders_read_only_fields", array(
-	"code",
-	"payment_transaction_id",
-	"subscription_transaction_id"
-) );
+// this array stores fields that should be read only
+$read_only_fields = apply_filters(
+	'pmpro_orders_read_only_fields', array(
+		'code',
+		'payment_transaction_id',
+		'subscription_transaction_id',
+	)
+);
 
-//if this is a new order or copy of one, let's make all fields editable
-if( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] < 0 ) {
+// if this is a new order or copy of one, let's make all fields editable
+if ( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] < 0 ) {
 	$read_only_fields = array();
 }
 
-//saving?
+// saving?
 if ( ! empty( $_REQUEST['save'] ) ) {
-	//start with old order if applicable
+	// start with old order if applicable
 	$order_id = intval( $_REQUEST['order'] );
 	if ( $order_id > 0 ) {
 		$order = new MemberOrder( $order_id );
@@ -192,118 +206,123 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->billing = new stdClass();
 	}
 
-	//update values
-	if ( ! in_array( "code", $read_only_fields ) && isset( $_POST['code'] ) ) {
+	// update values
+	if ( ! in_array( 'code', $read_only_fields ) && isset( $_POST['code'] ) ) {
 		$order->code = sanitize_text_field( $_POST['code'] );
 	}
-	if ( ! in_array( "user_id", $read_only_fields ) && isset( $_POST['user_id'] ) ) {
+	if ( ! in_array( 'user_id', $read_only_fields ) && isset( $_POST['user_id'] ) ) {
 		$order->user_id = intval( $_POST['user_id'] );
 	}
-	if ( ! in_array( "membership_id", $read_only_fields ) && isset( $_POST['membership_id'] ) ) {
+	if ( ! in_array( 'membership_id', $read_only_fields ) && isset( $_POST['membership_id'] ) ) {
 		$order->membership_id = intval( $_POST['membership_id'] );
 	}
-	if ( ! in_array( "billing_name", $read_only_fields ) && isset( $_POST['billing_name'] ) ) {
-		$order->billing->name = sanitize_text_field(wp_unslash( $_POST['billing_name'] ));
+	if ( ! in_array( 'billing_name', $read_only_fields ) && isset( $_POST['billing_name'] ) ) {
+		$order->billing->name = sanitize_text_field( wp_unslash( $_POST['billing_name'] ) );
 	}
-	if ( ! in_array( "billing_street", $read_only_fields ) && isset( $_POST['billing_street'] ) ) {
-		$order->billing->street = sanitize_text_field(wp_unslash( $_POST['billing_street'] ));
+	if ( ! in_array( 'billing_street', $read_only_fields ) && isset( $_POST['billing_street'] ) ) {
+		$order->billing->street = sanitize_text_field( wp_unslash( $_POST['billing_street'] ) );
 	}
-	if ( ! in_array( "billing_city", $read_only_fields ) && isset( $_POST['billing_city'] ) ) {
-		$order->billing->city = sanitize_text_field(wp_unslash( $_POST['billing_city'] ));
+	if ( ! in_array( 'billing_city', $read_only_fields ) && isset( $_POST['billing_city'] ) ) {
+		$order->billing->city = sanitize_text_field( wp_unslash( $_POST['billing_city'] ) );
 	}
-	if ( ! in_array( "billing_state", $read_only_fields ) && isset( $_POST['billing_state'] ) ) {
-		$order->billing->state = sanitize_text_field(wp_unslash( $_POST['billing_state'] ));
+	if ( ! in_array( 'billing_state', $read_only_fields ) && isset( $_POST['billing_state'] ) ) {
+		$order->billing->state = sanitize_text_field( wp_unslash( $_POST['billing_state'] ) );
 	}
-	if ( ! in_array( "billing_zip", $read_only_fields ) && isset( $_POST['billing_zip'] ) ) {
+	if ( ! in_array( 'billing_zip', $read_only_fields ) && isset( $_POST['billing_zip'] ) ) {
 		$order->billing->zip = sanitize_text_field( $_POST['billing_zip'] );
 	}
-	if ( ! in_array( "billing_country", $read_only_fields ) && isset( $_POST['billing_country'] ) ) {
-		$order->billing->country = sanitize_text_field(wp_unslash( $_POST['billing_country'] ));
+	if ( ! in_array( 'billing_country', $read_only_fields ) && isset( $_POST['billing_country'] ) ) {
+		$order->billing->country = sanitize_text_field( wp_unslash( $_POST['billing_country'] ) );
 	}
-	if ( ! in_array( "billing_phone", $read_only_fields ) && isset( $_POST['billing_phone'] ) ) {
+	if ( ! in_array( 'billing_phone', $read_only_fields ) && isset( $_POST['billing_phone'] ) ) {
 		$order->billing->phone = sanitize_text_field( $_POST['billing_phone'] );
 	}
-	if ( ! in_array( "subtotal", $read_only_fields ) && isset( $_POST['subtotal'] ) ) {
+	if ( ! in_array( 'subtotal', $read_only_fields ) && isset( $_POST['subtotal'] ) ) {
 		$order->subtotal = sanitize_text_field( $_POST['subtotal'] );
 	}
-	if ( ! in_array( "tax", $read_only_fields ) && isset( $_POST['tax'] ) ) {
+	if ( ! in_array( 'tax', $read_only_fields ) && isset( $_POST['tax'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
-	if ( ! in_array( "couponamount", $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
+	if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
 		$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
 	}
-	if ( ! in_array( "total", $read_only_fields ) && isset( $_POST['total'] ) ) {
+	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
-	if ( ! in_array( "payment_type", $read_only_fields ) && isset( $_POST['payment_type'] ) ) {
+	if ( ! in_array( 'payment_type', $read_only_fields ) && isset( $_POST['payment_type'] ) ) {
 		$order->payment_type = sanitize_text_field( $_POST['payment_type'] );
 	}
-	if ( ! in_array( "cardtype", $read_only_fields ) && isset( $_POST['cardtype'] ) ) {
+	if ( ! in_array( 'cardtype', $read_only_fields ) && isset( $_POST['cardtype'] ) ) {
 		$order->cardtype = sanitize_text_field( $_POST['cardtype'] );
 	}
-	if ( ! in_array( "accountnumber", $read_only_fields ) && isset( $_POST['accountnumber'] ) ) {
+	if ( ! in_array( 'accountnumber', $read_only_fields ) && isset( $_POST['accountnumber'] ) ) {
 		$order->accountnumber = sanitize_text_field( $_POST['accountnumber'] );
 	}
-	if ( ! in_array( "expirationmonth", $read_only_fields ) && isset( $_POST['expirationmonth'] ) ) {
+	if ( ! in_array( 'expirationmonth', $read_only_fields ) && isset( $_POST['expirationmonth'] ) ) {
 		$order->expirationmonth = sanitize_text_field( $_POST['expirationmonth'] );
 	}
-	if ( ! in_array( "expirationyear", $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
+	if ( ! in_array( 'expirationyear', $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
 		$order->expirationyear = sanitize_text_field( $_POST['expirationyear'] );
 	}
-	
-	if ( ! in_array( "status", $read_only_fields ) && isset( $_POST['status'] ) ) {
+
+	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
 		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() );
 	}
-	if ( ! in_array( "gateway", $read_only_fields ) && isset( $_POST['gateway'] ) ) {
+	if ( ! in_array( 'gateway', $read_only_fields ) && isset( $_POST['gateway'] ) ) {
 		$order->gateway = sanitize_text_field( $_POST['gateway'] );
 	}
-	if ( ! in_array( "gateway_environment", $read_only_fields ) && isset( $_POST['gateway_environment'] ) ) {
+	if ( ! in_array( 'gateway_environment', $read_only_fields ) && isset( $_POST['gateway_environment'] ) ) {
 		$order->gateway_environment = sanitize_text_field( $_POST['gateway_environment'] );
 	}
-	if ( ! in_array( "payment_transaction_id", $read_only_fields ) && isset( $_POST['payment_transaction_id'] ) ) {
+	if ( ! in_array( 'payment_transaction_id', $read_only_fields ) && isset( $_POST['payment_transaction_id'] ) ) {
 		$order->payment_transaction_id = sanitize_text_field( $_POST['payment_transaction_id'] );
 	}
-	if ( ! in_array( "subscription_transaction_id", $read_only_fields ) && isset( $_POST['subscription_transaction_id'] ) ) {
+	if ( ! in_array( 'subscription_transaction_id', $read_only_fields ) && isset( $_POST['subscription_transaction_id'] ) ) {
 		$order->subscription_transaction_id = sanitize_text_field( $_POST['subscription_transaction_id'] );
 	}
-	if ( ! in_array( "notes", $read_only_fields ) && isset( $_POST['notes'] ) ) {
+	if ( ! in_array( 'notes', $read_only_fields ) && isset( $_POST['notes'] ) ) {
 		global $allowedposttags;
-		$order->notes = wp_kses(wp_unslash($_REQUEST['notes']), $allowedposttags);
+		$order->notes = wp_kses( wp_unslash( $_REQUEST['notes'] ), $allowedposttags );
 	}
 
-	//affiliate stuff
-	$affiliates = apply_filters( "pmpro_orders_show_affiliate_ids", false );
+	// affiliate stuff
+	$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
 	if ( ! empty( $affiliates ) ) {
-		if ( ! in_array( "affiliate_id", $read_only_fields ) ) {
+		if ( ! in_array( 'affiliate_id', $read_only_fields ) ) {
 			$order->affiliate_id = sanitize_text_field( $_POST['affiliate_id'] );
 		}
-		if ( ! in_array( "affiliate_subid", $read_only_fields ) ) {
+		if ( ! in_array( 'affiliate_subid', $read_only_fields ) ) {
 			$order->affiliate_subid = sanitize_text_field( $_POST['affiliate_subid'] );
 		}
 	}
 
-	//check nonce for saving
+	// check nonce for saving
 	$nonceokay = true;
-	if (empty($_REQUEST['pmpro_orders_nonce']) || !check_admin_referer('save', 'pmpro_orders_nonce')) {		
+	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'save', 'pmpro_orders_nonce' ) ) {
 		$nonceokay = false;
 	}
-	
-	//save
-	if ( $order->saveOrder() !== false && $nonceokay) {
-		//handle timestamp
-		if ( $order->updateTimestamp( intval($_POST['ts_year']), intval($_POST['ts_month']), intval($_POST['ts_day']) ) !== false ) {
-			$pmpro_msg  = __( "Order saved successfully.", 'paid-memberships-pro' );
-			$pmpro_msgt = "success";
+
+	// save
+	if ( $order->saveOrder() !== false && $nonceokay ) {
+		// also update the discount code if needed
+		if( isset( $_REQUEST['discount_code_id'] ) ) {
+			$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
+		}
+
+		// handle timestamp
+		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ) ) !== false ) {
+			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'success';
 		} else {
-			$pmpro_msg  = __( "Error updating order timestamp.", 'paid-memberships-pro' );
-			$pmpro_msgt = "error";
+			$pmpro_msg  = __( 'Error updating order timestamp.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'error';
 		}
 	} else {
-		$pmpro_msg  = __( "Error saving order.", 'paid-memberships-pro' );
-		$pmpro_msgt = "error";
+		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
 	}
 } else {
-	//order passed?
+	// order passed?
 	if ( ! empty( $_REQUEST['order'] ) ) {
 		$order_id = intval( $_REQUEST['order'] );
 		if ( $order_id > 0 ) {
@@ -311,90 +330,101 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		} elseif ( ! empty( $_REQUEST['copy'] ) ) {
 			$order = new MemberOrder( intval( $_REQUEST['copy'] ) );
 
-			//new id
+			// new id
 			$order->id = null;
 
-			//new code
+			// new code
 			$order->code = $order->getRandomCode();
 		} else {
-			$order = new MemberOrder();            //new order
+			$order = new MemberOrder();            // new order
 
-			//defaults
+			// defaults
 			$order->code = $order->getRandomCode();
-			$order->user_id = "";
-			$order->membership_id = "";
+			$order->user_id = '';
+			$order->membership_id = '';
 			$order->billing = new stdClass();
-			$order->billing->name = "";
-			$order->billing->street = "";
-			$order->billing->city = "";
-			$order->billing->state = "";
-			$order->billing->zip = "";
-			$order->billing->country = "";
-			$order->billing->phone = "";
-			$order->subtotal = "";
-			$order->tax = "";
-			$order->couponamount = "";
-			$order->total = "";
-			$order->payment_type = "";
-			$order->cardtype = "";
-			$order->accountnumber = "";
-			$order->expirationmonth = "";
-			$order->expirationyear = "";
-			$order->status = "success";
-			$order->gateway = pmpro_getOption("gateway");
-			$order->gateway_environment = pmpro_getOption("gateway_environment");
-			$order->payment_transaction_id = "";
-			$order->subscription_transaction_id = "";
-			$order->affiliate_id = "";
-			$order->affiliate_subid = "";
-			$order->notes = "";
+			$order->billing->name = '';
+			$order->billing->street = '';
+			$order->billing->city = '';
+			$order->billing->state = '';
+			$order->billing->zip = '';
+			$order->billing->country = '';
+			$order->billing->phone = '';
+			$order->discount_code = '';
+			$order->subtotal = '';
+			$order->tax = '';
+			$order->couponamount = '';
+			$order->total = '';
+			$order->payment_type = '';
+			$order->cardtype = '';
+			$order->accountnumber = '';
+			$order->expirationmonth = '';
+			$order->expirationyear = '';
+			$order->status = 'success';
+			$order->gateway = pmpro_getOption( 'gateway' );
+			$order->gateway_environment = pmpro_getOption( 'gateway_environment' );
+			$order->payment_transaction_id = '';
+			$order->subscription_transaction_id = '';
+			$order->affiliate_id = '';
+			$order->affiliate_subid = '';
+			$order->notes = '';
 		}
 	}
 }
 
-require_once( dirname( __FILE__ ) . "/admin_header.php" );
+require_once( dirname( __FILE__ ) . '/admin_header.php' );
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
 
 	<h2>
 		<?php if ( ! empty( $order->id ) ) { ?>
-			<?php _e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id ?>: <?php echo $order->code ?>
+			<?php _e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?>
 		<?php } else { ?>
 			<?php _e( 'New Order', 'paid-memberships-pro' ); ?>
 		<?php } ?>
 	</h2>
 
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
-		<div id="message" class="<?php if ( $pmpro_msgt == "success" ) {
-			echo "updated fade";
+		<div id="message" class="
+		<?php
+		if ( $pmpro_msgt == 'success' ) {
+			echo 'updated fade';
 		} else {
-			echo "error";
-		} ?>"><p><?php echo $pmpro_msg ?></p></div>
+			echo 'error';
+		}
+		?>
+		"><p><?php echo $pmpro_msg; ?></p></div>
 	<?php } ?>
 
 	<form method="post" action="">
-		<?php wp_nonce_field('save', 'pmpro_orders_nonce');?>
+		<?php wp_nonce_field( 'save', 'pmpro_orders_nonce' ); ?>
 
 		<table class="form-table">
 			<tbody>
 			<tr>
 				<th scope="row" valign="top"><label>ID:</label></th>
-				<td><?php if ( ! empty( $order->id ) ) {
+				<td>
+				<?php
+				if ( ! empty( $order->id ) ) {
 						echo $order->id;
-					} else {
-						echo __( "This will be generated when you save.", 'paid-memberships-pro' );
-					} ?></td>
+				} else {
+					echo __( 'This will be generated when you save.', 'paid-memberships-pro' );
+				}
+					?>
+					</td>
 			</tr>
 
 			<tr>
 				<th scope="row" valign="top"><label for="code"><?php _e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "code", $read_only_fields ) ) {
+					<?php
+					if ( in_array( 'code', $read_only_fields ) ) {
 						echo $order->code;
-					} else { ?>
-						<input id="code" name="code" type="text" size="50"
-						       value="<?php echo esc_attr( $order->code ); ?>"/>
+					} else {
+										?>
+											<input id="code" name="code" type="text" size="50"
+												   value="<?php echo esc_attr( $order->code ); ?>"/>
 					<?php } ?>
 					<?php if ( $order_id < 0 ) { ?>
 						<small
@@ -405,11 +435,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			<tr>
 				<th scope="row" valign="top"><label for="user_id"><?php _e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "user_id", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->user_id;
-					} else { ?>
-						<input id="user_id" name="user_id" type="text" size="50"
-						       value="<?php echo esc_attr( $order->user_id ); ?>"/>
+					} else {
+										?>
+											<input id="user_id" name="user_id" type="text" size="50"
+												   value="<?php echo esc_attr( $order->user_id ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -418,11 +450,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="membership_id"><?php _e( 'Membership Level ID', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "membership_id", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->membership_id;
-					} else { ?>
-						<input id="membership_id" name="membership_id" type="text" size="50"
-						       value="<?php echo esc_attr( $order->membership_id ); ?>"/>
+					} else {
+										?>
+											<input id="membership_id" name="membership_id" type="text" size="50"
+												   value="<?php echo esc_attr( $order->membership_id ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -431,11 +465,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="billing_name"><?php _e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php if ( in_array( "billing_name", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_name', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_name;
-					} else { ?>
-						<input id="billing_name" name="billing_name" type="text" size="50"
-						       value="<?php echo esc_attr( $order->billing->name ); ?>"/>
+					} else {
+										?>
+											<input id="billing_name" name="billing_name" type="text" size="50"
+												   value="<?php echo esc_attr( $order->billing->name ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -443,55 +479,65 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="billing_street"><?php _e( 'Billing Street', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "billing_street", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_street', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_street;
-					} else { ?>
-					<input id="billing_street" name="billing_street" type="text" size="50"
-					       value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
-				<?php } ?>
+					} else {
+										?>
+										<input id="billing_street" name="billing_street" type="text" size="50"
+											   value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
+									<?php } ?>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_city"><?php _e( 'Billing City', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php if ( in_array( "billing_city", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_city', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_city;
-					} else { ?>
-					<input id="billing_city" name="billing_city" type="text" size="50"
-					       value="<?php echo esc_attr( $order->billing->city ); ?>"/></td>
-				<?php } ?>
+					} else {
+										?>
+										<input id="billing_city" name="billing_city" type="text" size="50"
+											   value="<?php echo esc_attr( $order->billing->city ); ?>"/></td>
+									<?php } ?>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_state"><?php _e( 'Billing State', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "billing_state", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_state', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_state;
-					} else { ?>
-					<input id="billing_state" name="billing_state" type="text" size="50"
-					       value="<?php echo esc_attr( $order->billing->state ); ?>"/></td>
-				<?php } ?>
+					} else {
+										?>
+										<input id="billing_state" name="billing_state" type="text" size="50"
+											   value="<?php echo esc_attr( $order->billing->state ); ?>"/></td>
+									<?php } ?>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_zip"><?php _e( 'Billing Postal Code', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "billing_zip", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_zip', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_zip;
-					} else { ?>
-					<input id="billing_zip" name="billing_zip" type="text" size="50"
-					       value="<?php echo esc_attr( $order->billing->zip ); ?>"/></td>
-				<?php } ?>
+					} else {
+										?>
+										<input id="billing_zip" name="billing_zip" type="text" size="50"
+											   value="<?php echo esc_attr( $order->billing->zip ); ?>"/></td>
+									<?php } ?>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_country"><?php _e( 'Billing Country', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "billing_country", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_country', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_country;
-					} else { ?>
-						<input id="billing_country" name="billing_country" type="text" size="50"
-						       value="<?php echo esc_attr( $order->billing->country ); ?>"/>
+					} else {
+										?>
+											<input id="billing_country" name="billing_country" type="text" size="50"
+												   value="<?php echo esc_attr( $order->billing->country ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -499,34 +545,77 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="billing_phone"><?php _e( 'Billing Phone', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "billing_phone", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'billing_phone', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->billing_phone;
-					} else { ?>
-						<input id="billing_phone" name="billing_phone" type="text" size="50"
-						       value="<?php echo esc_attr( $order->billing->phone ); ?>"/>
+					} else {
+										?>
+											<input id="billing_phone" name="billing_phone" type="text" size="50"
+												   value="<?php echo esc_attr( $order->billing->phone ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
+			<?php
+			if ( $order_id > 0 ) {
+				$order->getDiscountCode();
+				if ( ! empty( $order->discount_code ) ) {
+					$discount_code_id = $order->discount_code->id;
+				} else {
+					$discount_code_id = 0;
+				}
+			} else {
+				$discount_code_id = 0;
+			}
 
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery .= "ORDER BY id DESC ";
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+			if ( ! empty( $codes ) ) { ?>
+			<tr>
+				<th scope="row" valign="top"><label for="discount_code_id"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?>:</label></th>
+				<td>
+					<?php
+						if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
+							if( ! empty( $order->discount_code ) ) {
+								echo esc_html( $order->discount_code->code );
+							} else {
+								esc_html_e( 'N/A', 'paid-memberships-pro' );
+							}
+						} else { ?>
+							<select id="discount_code_id" name="discount_code_id">
+								<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+								<?php foreach ( $codes as $code ) { ?>
+									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+								<?php } ?>
+							</select>
+							<?php
+						} ?>
+				</td>
+			</tr>
+			<?php } ?>
 			<tr>
 				<th scope="row" valign="top"><label for="subtotal"><?php _e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "subtotal", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'subtotal', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->subtotal;
-					} else { ?>
-						<input id="subtotal" name="subtotal" type="text" size="10"
-						       value="<?php echo esc_attr( $order->subtotal ); ?>"/>
+					} else {
+										?>
+											<input id="subtotal" name="subtotal" type="text" size="10"
+												   value="<?php echo esc_attr( $order->subtotal ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="tax"><?php _e( 'Tax', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "tax", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'tax', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->tax;
-					} else { ?>
-						<input id="tax" name="tax" type="text" size="10"
-						       value="<?php echo esc_attr( $order->tax ); ?>"/>
+					} else {
+										?>
+											<input id="tax" name="tax" type="text" size="10"
+												   value="<?php echo esc_attr( $order->tax ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -534,22 +623,26 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="couponamount"><?php _e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php if ( in_array( "couponamount", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->couponamount;
-					} else { ?>
-						<input id="couponamount" name="couponamount" type="text" size="10"
-						       value="<?php echo esc_attr( $order->couponamount ); ?>"/>
+					} else {
+										?>
+											<input id="couponamount" name="couponamount" type="text" size="10"
+												   value="<?php echo esc_attr( $order->couponamount ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label for="total"><?php _e( 'Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "total", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'total', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->total;
-					} else { ?>
-						<input id="total" name="total" type="text" size="10"
-						       value="<?php echo esc_attr( $order->total ); ?>"/>
+					} else {
+										?>
+											<input id="total" name="total" type="text" size="10"
+												   value="<?php echo esc_attr( $order->total ); ?>"/>
 					<?php } ?>
 					<small
 						class="pmpro_lite"><?php _e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></small>
@@ -560,11 +653,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="payment_type"><?php _e( 'Payment Type', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php if ( in_array( "payment_type", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'payment_type', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->payment_type;
-					} else { ?>
-						<input id="payment_type" name="payment_type" type="text" size="50"
-						       value="<?php echo esc_attr( $order->payment_type ); ?>"/>
+					} else {
+										?>
+											<input id="payment_type" name="payment_type" type="text" size="50"
+												   value="<?php echo esc_attr( $order->payment_type ); ?>"/>
 					<?php } ?>
 					<small
 						class="pmpro_lite"><?php _e( 'e.g. PayPal Express, PayPal Standard, Credit Card.', 'paid-memberships-pro' ); ?></small>
@@ -573,11 +668,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			<tr>
 				<th scope="row" valign="top"><label for="cardtype"><?php _e( 'Card Type', 'paid-memberships-pro' ); ?></label></th>
 				<td>
-					<?php if ( in_array( "cardtype", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'cardtype', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->cardtype;
-					} else { ?>
-						<input id="cardtype" name="cardtype" type="text" size="50"
-						       value="<?php echo esc_attr( $order->cardtype ); ?>"/>
+					} else {
+										?>
+											<input id="cardtype" name="cardtype" type="text" size="50"
+												   value="<?php echo esc_attr( $order->cardtype ); ?>"/>
 					<?php } ?>
 					<small class="pmpro_lite"><?php _e( 'e.g. Visa, MasterCard, AMEX, etc', 'paid-memberships-pro' ); ?></small>
 				</td>
@@ -586,33 +683,37 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label for="accountnumber"><?php _e( 'Account Number', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "accountnumber", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'accountnumber', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->accountnumber;
-					} else { ?>
-						<input id="accountnumber" name="accountnumber" type="text" size="50"
-						       value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
+					} else {
+										?>
+											<input id="accountnumber" name="accountnumber" type="text" size="50"
+												   value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
 					<?php } ?>
 					<small class="pmpro_lite"><?php _e( 'Obscure all but last 4 digits.', 'paid-memberships-pro' ); ?></small>
 				</td>
 			</tr>
-			<?php if ( in_array( "ExpirationDate", $read_only_fields ) && $order_id > 0 ) {
+			<?php
+			if ( in_array( 'ExpirationDate', $read_only_fields ) && $order_id > 0 ) {
 				echo $order->ExpirationDate;
-			} else { ?>
-				<tr>
-					<th scope="row" valign="top"><label
+			} else {
+						?>
+							<tr>
+								<th scope="row" valign="top"><label
 							for="expirationmonth"><?php _e( 'Expiration Month', 'paid-memberships-pro' ); ?>:</label></th>
 					<td>
 						<input id="expirationmonth" name="expirationmonth" type="text" size="10"
-						       value="<?php echo esc_attr( $order->expirationmonth ); ?>"/>
+				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/>
 						<small class="pmpro_lite">MM</small>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row" valign="top"><label for="expirationyear"><?php _e( 'Expiration Year', 'paid-memberships-pro' ); ?>
-							:</label></th>
+				:</label></th>
 					<td>
 						<input id="expirationyear" name="expirationyear" type="text" size="10"
-						       value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
+				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
 						<small class="pmpro_lite">YYYY</small>
 					</td>
 				</tr>
@@ -620,25 +721,12 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			<tr>
 				<th scope="row" valign="top"><label for="status"><?php _e( 'Status', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "status", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->status;
 					} else { ?>
-						<?php
-						$statuses         = array();
-						$default_statuses = array(
-							"",
-							"success",
-							"cancelled",
-							"review",
-							"token",
-							"refunded",
-							"pending",
-							"error",
-						);
-						$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
-						$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
-						asort( $statuses );
-						$statuses = apply_filters( "pmpro_order_statuses", $statuses );
+					<?php
+						$statuses = pmpro_getOrderStatuses();
 						?>
 						<select id="status" name="status">
 							<?php foreach ( $statuses as $status ) { ?>
@@ -646,42 +734,54 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo $status; ?></option>
 							<?php } ?>
 						</select>
-					<?php } ?>
+						<?php 
+						} 
+					?>
 				</td>
 			</tr>
 
 			<tr>
 				<th scope="row" valign="top"><label for="gateway"><?php _e( 'Gateway', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "gateway", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'gateway', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->gateway;
-					} else { ?>
-						<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
-							<?php
-							$pmpro_gateways = pmpro_gateways();
-							foreach ( $pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label ) {
-								?>
-								<option
-									value="<?php echo esc_attr( $pmpro_gateway_name ); ?>" <?php selected( $order->gateway, $pmpro_gateway_name ); ?>><?php echo $pmpro_gateway_label; ?></option>
+					} else {
+										?>
+											<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
+												<?php
+												$pmpro_gateways = pmpro_gateways();
+												foreach ( $pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label ) {
+													?>
+													<option
+														value="<?php echo esc_attr( $pmpro_gateway_name ); ?>" <?php selected( $order->gateway, $pmpro_gateway_name ); ?>><?php echo $pmpro_gateway_label; ?></option>
 								<?php
-							}
-							?>
-						</select>
-					<?php } ?>
+												}
+												?>
+											</select>
+										<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label
 						for="gateway_environment"><?php _e( 'Gateway Environment', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "gateway_environment", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'gateway_environment', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->gateway_environment;
-					} else { ?>
-						<select name="gateway_environment">
-							<option value="sandbox"
-							        <?php if ( $order->gateway_environment == "sandbox" ) { ?>selected="selected"<?php } ?>><?php _e( 'Sandbox/Testing', 'paid-memberships-pro' ); ?></option>
+					} else {
+										?>
+											<select name="gateway_environment">
+												<option value="sandbox"
+									<?php
+									if ( $order->gateway_environment == 'sandbox' ) {
+					?>
+					selected="selected"<?php } ?>><?php _e( 'Sandbox/Testing', 'paid-memberships-pro' ); ?></option>
 							<option value="live"
-							        <?php if ( $order->gateway_environment == "live" ) { ?>selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro' ); ?></option>
+				<?php
+				if ( $order->gateway_environment == 'live' ) {
+?>
+selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro' ); ?></option>
 						</select>
 					<?php } ?>
 				</td>
@@ -691,11 +791,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th scope="row" valign="top"><label
 						for="payment_transaction_id"><?php _e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "payment_transaction_id", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'payment_transaction_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->payment_transaction_id;
-					} else { ?>
-						<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50"
-						       value="<?php echo esc_attr( $order->payment_transaction_id ); ?>"/>
+					} else {
+										?>
+											<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50"
+												   value="<?php echo esc_attr( $order->payment_transaction_id ); ?>"/>
 					<?php } ?>
 					<small
 						class="pmpro_lite"><?php _e( 'Generated by the gateway. Useful to cross reference orders.', 'paid-memberships-pro' ); ?></small>
@@ -706,11 +808,13 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						for="subscription_transaction_id"><?php _e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?>
 						:</label></th>
 				<td>
-					<?php if ( in_array( "subscription_transaction_id", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->subscription_transaction_id;
-					} else { ?>
-						<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50"
-						       value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
+					} else {
+										?>
+											<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50"
+												   value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
 					<?php } ?>
 					<small
 						class="pmpro_lite"><?php _e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></small>
@@ -720,26 +824,31 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			<tr>
 				<th scope="row" valign="top"><label for="ts_month"><?php _e( 'Date', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "timestamp", $read_only_fields ) && $order_id > 0 ) {
-						echo date_i18n( get_option( 'date_format' ) . " " . get_option( 'time_format' ), $order->timestamp );
-					} else { ?>
-						<?php
-						//set up date vars
-						if ( ! empty( $order->timestamp ) ) {
-							$timestamp = $order->timestamp;
-						} else {
-							$timestamp = current_time( 'timestamp' );
-						}
-						$year  = date_i18n( "Y", $timestamp );
-						$month = date_i18n( "n", $timestamp );
-						$day   = date_i18n( "j", $timestamp );
-						?>
-						<select id="ts_month" name="ts_month">
+					<?php
+					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
+						echo date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->timestamp );
+					} else {
+										?>
+											<?php
+											// set up date vars
+											if ( ! empty( $order->timestamp ) ) {
+												$timestamp = $order->timestamp;
+											} else {
+												$timestamp = current_time( 'timestamp' );
+											}
+											$year  = date_i18n( 'Y', $timestamp );
+											$month = date_i18n( 'n', $timestamp );
+											$day   = date_i18n( 'j', $timestamp );
+											?>
+											<select id="ts_month" name="ts_month">
 							<?php
 							for ( $i = 1; $i < 13; $i ++ ) {
 								?>
-								<option value="<?php echo $i ?>"
-								        <?php if ( $i == $month ) { ?>selected="selected"<?php } ?>><?php echo date_i18n( "M", strtotime( $i . "/1/" . $year, current_time( "timestamp" ) ) ) ?></option>
+								<option value="<?php echo $i; ?>"
+					<?php
+					if ( $i == $month ) {
+?>
+selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' . $year, current_time( 'timestamp' ) ) ); ?></option>
 								<?php
 							}
 							?>
@@ -751,18 +860,20 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			</tr>
 
 			<?php
-			$affiliates = apply_filters( "pmpro_orders_show_affiliate_ids", false );
+			$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
 			if ( ! empty( $affiliates ) ) {
 				?>
 				<tr>
 					<th scope="row" valign="top"><label for="affiliate_id"><?php _e( 'Affiliate ID', 'paid-memberships-pro' ); ?>
 							:</label></th>
 					<td>
-						<?php if ( in_array( "affiliate_id", $read_only_fields ) && $order_id > 0 ) {
+						<?php
+						if ( in_array( 'affiliate_id', $read_only_fields ) && $order_id > 0 ) {
 							echo $order->affiliate_id;
-						} else { ?>
-							<input id="affiliate_id" name="affiliate_id" type="text" size="50"
-							       value="<?php echo esc_attr( $order->affiliate_id ); ?>"/>
+						} else {
+												?>
+													<input id="affiliate_id" name="affiliate_id" type="text" size="50"
+														   value="<?php echo esc_attr( $order->affiliate_id ); ?>"/>
 						<?php } ?>
 					</td>
 				</tr>
@@ -770,42 +881,73 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					<th scope="row" valign="top"><label for="affiliate_subid"><?php _e( 'Affiliate SubID', 'paid-memberships-pro' ); ?>
 							:</label></th>
 					<td>
-						<?php if ( in_array( "affiliate_subid", $read_only_fields ) && $order_id > 0 ) {
+						<?php
+						if ( in_array( 'affiliate_subid', $read_only_fields ) && $order_id > 0 ) {
 							echo $order->affiliate_subid;
-						} else { ?>
-							<input id="affiliate_subid" name="affiliate_subid" type="text" size="50"
-							       value="<?php echo esc_attr( $order->affiliate_subid ); ?>"/>
+						} else {
+												?>
+													<input id="affiliate_subid" name="affiliate_subid" type="text" size="50"
+														   value="<?php echo esc_attr( $order->affiliate_subid ); ?>"/>
 						<?php } ?>
 					</td>
 				</tr>
 			<?php } ?>
 
+			<?php
+				$tospage_id = pmpro_getOption( 'tospage' );
+				$consent_entry = $order->get_tos_consent_log_entry();
+
+				if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+				?>
+				<tr>
+					<th scope="row" valign="top"><label for="tos_consent"><?php _e( 'TOS Consent', 'paid-memberships-pro' ); ?>:</label></th>
+					<td id="tos_consent">
+						<?php
+							
+							if( !empty( $consent_entry ) ) {
+								echo pmpro_consent_to_text( $consent_entry );
+							} else {
+								echo __( 'N/A' );
+							}
+						?>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
+
 			<tr>
 				<th scope="row" valign="top"><label for="notes"><?php _e( 'Notes', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
-					<?php if ( in_array( "notes", $read_only_fields ) && $order_id > 0 ) {
+					<?php
+					if ( in_array( 'notes', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->notes;
-					} else { ?>
-						<textarea id="notes" name="notes" rows="5"
-						          cols="80"><?php echo esc_textarea( $order->notes ); ?></textarea>
+					} else {
+										?>
+											<textarea id="notes" name="notes" rows="5"
+								  cols="80"><?php echo esc_textarea( $order->notes ); ?></textarea>
 					<?php } ?>
 				</td>
 			</tr>
 
-			<?php do_action( "pmpro_after_order_settings", $order ); ?>
+			<?php do_action( 'pmpro_after_order_settings', $order ); ?>
 
 			</tbody>
 		</table>
 
 		<p class="submit topborder">
-			<input name="order" type="hidden" value="<?php if ( ! empty( $order->id ) ) {
+			<input name="order" type="hidden" value="
+			<?php
+			if ( ! empty( $order->id ) ) {
 				echo $order->id;
 			} else {
 				echo $order_id;
-			} ?>"/>
+			}
+			?>
+			"/>
 			<input name="save" type="submit" class="button-primary" value="<?php _e( 'Save Order', 'paid-memberships-pro' ); ?>"/>
 			<input name="cancel" type="button" class="cancel button-secondary" value="<?php _e( 'Cancel', 'paid-memberships-pro' ); ?>"
-			       onclick="location.href='<?php echo get_admin_url( null, '/admin.php?page=pmpro-orders' ) ?>';"/>
+				   onclick="location.href='<?php echo get_admin_url( null, '/admin.php?page=pmpro-orders' ); ?>';"/>
 		</p>
 
 	</form>
@@ -854,20 +996,21 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 			   class="add-new-h2">+ <?php _e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 			<?php
-			//build the export URL
+			// build the export URL
 			$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
 			$url_params = array(
-				"filter"          => $filter,
-				"s"               => $s,
-				"l"               => $l,
-				"start-month"     => $start_month,
-				"start-day"       => $start_day,
-				"start-year"      => $start_year,
-				"end-month"       => $end_month,
-				"end-day"         => $end_day,
-				"end-year"        => $end_year,
-				"predefined-date" => $predefined_date,
-				"status"          => $status
+				'filter'          => $filter,
+				's'               => $s,
+				'l'               => $l,
+				'start-month'     => $start_month,
+				'start-day'       => $start_day,
+				'start-year'      => $start_year,
+				'end-month'       => $end_month,
+				'end-day'         => $end_day,
+				'end-year'        => $end_year,
+				'predefined-date' => $predefined_date,
+				'discount-code'	  => $discount_code,
+				'status'          => $status,
 			);
 			$export_url = add_query_arg( $url_params, $export_url );
 			?>
@@ -877,50 +1020,60 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
-			<div id="message" class="<?php if ( $pmpro_msgt == "success" ) {
-				echo "updated fade";
+			<div id="message" class="
+			<?php
+			if ( $pmpro_msgt == 'success' ) {
+				echo 'updated fade';
 			} else {
-				echo "error";
-			} ?>"><p><?php echo $pmpro_msg ?></p></div>
+				echo 'error';
+			}
+			?>
+			"><p><?php echo $pmpro_msg; ?></p></div>
 		<?php } ?>
 
 
 		<ul class="subsubsub">
 			<li>
-				<?php _e( 'Show', 'paid-memberships-pro' ) ?>
+				<?php _e( 'Show', 'paid-memberships-pro' ); ?>
 				<select id="filter" name="filter">
-					<option value="all" <?php selected( $filter, "all" ); ?>><?php _e( 'All', 'paid-memberships-pro' ); ?></option>
+					<option value="all" <?php selected( $filter, 'all' ); ?>><?php _e( 'All', 'paid-memberships-pro' ); ?></option>
 					<option
-						value="within-a-date-range" <?php selected( $filter, "within-a-date-range" ); ?>><?php _e( 'Within a Date Range', 'paid-memberships-pro' ); ?></option>
+						value="within-a-date-range" <?php selected( $filter, 'within-a-date-range' ); ?>><?php _e( 'Within a Date Range', 'paid-memberships-pro' ); ?></option>
 					<option
-						value="predefined-date-range" <?php selected( $filter, "predefined-date-range" ); ?>><?php _e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
+						value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php _e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
 					<option
-						value="within-a-level" <?php selected( $filter, "within-a-level" ); ?>><?php _e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
+						value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php _e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
 					<option
-						value="within-a-status" <?php selected( $filter, "within-a-status" ); ?>><?php _e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
+						value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php _e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
+					<option
+						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php _e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
+					<option 
+						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php _e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
+					<option 
+						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php _e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
 				</select>
 
-				<span id="from"><?php _e( 'From', 'paid-memberships-pro' ) ?></span>
+				<span id="from"><?php _e( 'From', 'paid-memberships-pro' ); ?></span>
 
 				<select id="start-month" name="start-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date_i18n( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 
 				<input id='start-day' name="start-day" type="text" size="2"
-				       value="<?php echo esc_attr( $start_day ); ?>"/>
+					   value="<?php echo esc_attr( $start_day ); ?>"/>
 				<input id='start-year' name="start-year" type="text" size="4"
-				       value="<?php echo esc_attr( $start_year ); ?>"/>
+					   value="<?php echo esc_attr( $start_year ); ?>"/>
 
 
-				<span id="to"><?php _e( 'To', 'paid-memberships-pro' ) ?></span>
+				<span id="to"><?php _e( 'To', 'paid-memberships-pro' ); ?></span>
 
 				<select id="end-month" name="end-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date_i18n( "F", mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -928,23 +1081,23 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<input id='end-day' name="end-day" type="text" size="2" value="<?php echo esc_attr( $end_day ); ?>"/>
 				<input id='end-year' name="end-year" type="text" size="4" value="<?php echo esc_attr( $end_year ); ?>"/>
 
-				<span id="filterby"><?php _e( 'filter by ', 'paid-memberships-pro' ) ?></span>
+				<span id="filterby"><?php _e( 'filter by ', 'paid-memberships-pro' ); ?></span>
 
 				<select id="predefined-date" name="predefined-date">
 
 					<option
-						value="<?php echo "This Month"; ?>" <?php selected( $predefined_date, "This Month" ); ?>><?php echo "This Month"; ?></option>
+						value="<?php echo 'This Month'; ?>" <?php selected( $predefined_date, 'This Month' ); ?>><?php echo 'This Month'; ?></option>
 					<option
-						value="<?php echo "Last Month"; ?>" <?php selected( $predefined_date, "Last Month" ); ?>><?php echo "Last Month"; ?></option>
+						value="<?php echo 'Last Month'; ?>" <?php selected( $predefined_date, 'Last Month' ); ?>><?php echo 'Last Month'; ?></option>
 					<option
-						value="<?php echo "This Year"; ?>" <?php selected( $predefined_date, "This Year" ); ?>><?php echo "This Year"; ?></option>
+						value="<?php echo 'This Year'; ?>" <?php selected( $predefined_date, 'This Year' ); ?>><?php echo 'This Year'; ?></option>
 					<option
-						value="<?php echo "Last Year"; ?>" <?php selected( $predefined_date, "Last Year" ); ?>><?php echo "Last Year"; ?></option>
+						value="<?php echo 'Last Year'; ?>" <?php selected( $predefined_date, 'Last Year' ); ?>><?php echo 'Last Year'; ?></option>
 
 				</select>
 
 				<?php
-				//Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
+				// Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
 				$levels = pmpro_getAllLevels( true, true );
 				?>
 				<select id="l" name="l">
@@ -954,8 +1107,21 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					<?php } ?>
 
 				</select>
+				
+				<?php
+				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+				$sqlQuery .= "ORDER BY id DESC ";
+				$codes = $wpdb->get_results($sqlQuery, OBJECT);
+				if ( ! empty( $codes ) ) { ?>
+				<select id="discount_code" name="discount_code">
+					<?php foreach ( $codes as $code ) { ?>
+						<option
+							value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+					<?php } ?>
+				</select>
+				<?php } ?>
 
-				<?php				
+				<?php
 					$statuses = pmpro_getOrderStatuses();
 				?>
 				<select id="status" name="status">
@@ -990,6 +1156,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
 					jQuery('#submit').show();
@@ -1005,6 +1172,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').show();
 					jQuery('#to').show();
@@ -1020,6 +1188,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					jQuery('#predefined-date').show();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1035,6 +1204,23 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').show();
+					jQuery('#discount_code').hide();
+					jQuery('#submit').show();
+					jQuery('#from').hide();
+					jQuery('#to').hide();
+					jQuery('#filterby').show();
+				}
+				else if (filter == 'with-discount-code') {
+					jQuery('#start-month').hide();
+					jQuery('#start-day').hide();
+					jQuery('#start-year').hide();
+					jQuery('#end-month').hide();
+					jQuery('#end-day').hide();
+					jQuery('#end-year').hide();
+					jQuery('#predefined-date').hide();
+					jQuery('#status').hide();
+					jQuery('#l').hide();
+					jQuery('#discount_code').show();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1050,10 +1236,27 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 					jQuery('#predefined-date').hide();
 					jQuery('#status').show();
 					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
 					jQuery('#filterby').show();
+				}
+				else if(filter == 'only-paid' || filter == 'only-free' ) {
+					jQuery('#start-month').hide();
+					jQuery('#start-day').hide();
+					jQuery('#start-year').hide();
+					jQuery('#end-month').hide();
+					jQuery('#end-day').hide();
+					jQuery('#end-year').hide();
+					jQuery('#predefined-date').hide();
+					jQuery('#status').hide();
+					jQuery('#l').hide();
+					jQuery('#discount_code').hide();
+					jQuery('#submit').show();
+					jQuery('#from').hide();
+					jQuery('#to').hide();
+					jQuery('#filterby').hide();
 				}
 			}
 
@@ -1070,67 +1273,76 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 		</p>
 
 		<?php
-		//string search
 		if ( $s ) {
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
 
-			$join_with_usermeta = apply_filters( "pmpro_orders_search_usermeta", false );
+			$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
 			if ( $join_with_usermeta ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 			}
+			
+			if ( $filter === 'with-discount-code' ) {
+				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+			}
 
-			$sqlQuery .= "WHERE (1=2 ";
+			$sqlQuery .= 'WHERE (1=2 ';
 
 			$fields = array(
-				"o.id",
-				"o.code",
-				"o.billing_name",
-				"o.billing_street",
-				"o.billing_city",
-				"o.billing_state",
-				"o.billing_zip",
-				"o.billing_phone",
-				"o.payment_type",
-				"o.cardtype",
-				"o.accountnumber",
-				"o.status",
-				"o.gateway",
-				"o.gateway_environment",
-				"o.payment_transaction_id",
-				"o.subscription_transaction_id",
-				"u.user_login",
-				"u.user_email",
-				"u.display_name",
-				"l.name"
+				'o.id',
+				'o.code',
+				'o.billing_name',
+				'o.billing_street',
+				'o.billing_city',
+				'o.billing_state',
+				'o.billing_zip',
+				'o.billing_phone',
+				'o.payment_type',
+				'o.cardtype',
+				'o.accountnumber',
+				'o.status',
+				'o.gateway',
+				'o.gateway_environment',
+				'o.payment_transaction_id',
+				'o.subscription_transaction_id',
+				'u.user_login',
+				'u.user_email',
+				'u.display_name',
+				'l.name',
 			);
 
 			if ( $join_with_usermeta ) {
-				$fields[] = "um.meta_value";
+				$fields[] = 'um.meta_value';
 			}
 
-			$fields = apply_filters( "pmpro_orders_search_fields", $fields );
+			$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
 
 			foreach ( $fields as $field ) {
-				$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
+				$sqlQuery .= ' OR ' . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
 			}
-			$sqlQuery .= ") ";
+			$sqlQuery .= ') ';
 
-			$sqlQuery .= "AND " . $condition . " ";
+			$sqlQuery .= 'AND ' . $condition . ' ';
 
-			$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
+			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 		} else {
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders WHERE " . $condition . " ORDER BY id DESC, timestamp DESC ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
+			
+			if ( $filter === 'with-discount-code' ) {
+				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+			}
+			
+			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
 		$sqlQuery .= "LIMIT $start, $limit";
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
-
-		$totalrows = $wpdb->get_var( "SELECT FOUND_ROWS() as found_rows" );
+		
+		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
 
 		if ( $order_ids ) {
 			?>
-			<p class="clear"><?php printf( __( "%d orders found.", 'paid-memberships-pro' ), $totalrows ); ?></span></p>
+			<p class="clear"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span></p>
 			<?php
 		}
 		?>
@@ -1140,7 +1352,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th><?php _e( 'ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
-				<?php do_action( "pmpro_orders_extra_cols_header", $order_ids ); ?>
+				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
 				<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
@@ -1148,6 +1360,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				<th><?php _e( 'Transaction IDs', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Discount Code', 'paid-memberships-pro' );?></th>
 				<th></th>
 				<th></th>
 				<th></th>
@@ -1163,19 +1376,25 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 				$order->nogateway = true;
 				$order->getMemberOrderByID( $order_id );
 				?>
-				<tr <?php if ( $count ++ % 2 == 0 ) { ?>class="alternate"<?php } ?>>
+				<tr 
+				<?php
+				if ( $count ++ % 2 == 0 ) {
+?>
+class="alternate"<?php } ?>>
 					<td>
-						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id ?>"><?php echo $order->id; ?></a>
+						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->id; ?></a>
 					</td>
 					<td>
-						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id ?>"><?php echo $order->code; ?></a>
+						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
 					</td>
 					<td class="username column-username">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
-							<a href="user-edit.php?user_id=<?php echo $order->user->ID ?>"><?php echo $order->user->user_login ?></a>
-						<?php } else { ?>
+							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+						<?php } elseif ( $order->user_id > 0 ) { ?>
 							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+						<?php } else { ?>
+							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
 						<?php } ?>
 						<br/>
 						<?php
@@ -1195,13 +1414,15 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						}
 						?>
 					</td>
-					<?php do_action( "pmpro_orders_extra_cols_body", $order ); ?>
+					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td><?php echo $order->membership_id; ?></td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 					<td>
-						<?php if ( ! empty( $order->payment_type ) ) {
-							echo $order->payment_type . "<br />";
-						} ?>
+						<?php
+						if ( ! empty( $order->payment_type ) ) {
+							echo $order->payment_type . '<br />';
+						}
+						?>
 						<?php if ( ! empty( $order->accountnumber ) ) { ?>
 							<?php echo $order->cardtype; ?>: x<?php echo last4( $order->accountnumber ); ?><br/>
 						<?php } ?>
@@ -1211,35 +1432,58 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						<?php if ( ! empty( $order->billing->street ) ) { ?>
 							<?php echo $order->billing->street; ?><br/>
 							<?php if ( $order->billing->city && $order->billing->state ) { ?>
-								<?php echo $order->billing->city ?>, <?php echo $order->billing->state ?><?php echo $order->billing->zip ?><?php if ( ! empty( $order->billing->country ) )
-									echo $order->billing->country ?><br/>
+								<?php echo $order->billing->city; ?>, <?php echo $order->billing->state; ?><?php echo $order->billing->zip; ?>
+											<?php
+											if ( ! empty( $order->billing->country ) ) {
+												echo $order->billing->country; }
+									?>
+									<br/>
 							<?php } ?>
 						<?php } ?>
-						<?php if ( ! empty( $order->billing->phone ) ) {
+						<?php
+						if ( ! empty( $order->billing->phone ) ) {
 							echo formatPhone( $order->billing->phone );
-						} ?>
+						}
+						?>
 					</td>
-					<td><?php echo $order->gateway; ?><?php if ( $order->gateway_environment == "test" ) {
-							echo "(test)";
-						} ?></td>
+					<td><?php echo $order->gateway; ?>
+									<?php
+									if ( $order->gateway_environment == 'test' ) {
+											echo '(test)';
+									}
+						?>
+						</td>
 					<td>
-						<?php _e( 'Payment', 'paid-memberships-pro' ); ?>: <?php if ( ! empty( $order->payment_transaction_id ) ) {
-							echo $order->payment_transaction_id;
-						} else {
-							echo "N/A";
-						} ?>
+						<?php _e( 'Payment', 'paid-memberships-pro' ); ?>: 
+									<?php
+									if ( ! empty( $order->payment_transaction_id ) ) {
+										echo $order->payment_transaction_id;
+									} else {
+										_e( 'N/A', 'paid-memberships-pro' );
+									}
+						?>
 						<br/>
 						<?php _e( 'Subscription', 'paid-memberships-pro' ); ?>
-						: <?php if ( ! empty( $order->subscription_transaction_id ) ) {
+						: 
+						<?php
+						if ( ! empty( $order->subscription_transaction_id ) ) {
 							echo $order->subscription_transaction_id;
 						} else {
-							echo "N/A";
-						} ?>
+							_e( 'N/A', 'paid-memberships-pro' );
+						}
+						?>
 					</td>
 					<td><?php echo $order->status; ?></td>
 					<td>
 						<?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?><br/>
 						<?php echo date_i18n( get_option( 'time_format' ), $order->timestamp ); ?>
+					</td>
+					<td>
+						<?php if ( $order->getDiscountCode() ) { ?>
+							<a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ); ?>">
+								<?php echo $order->discount_code->code; ?>
+							</a>
+						<?php } ?>							
 					</td>
 					<td align="center">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
@@ -1248,7 +1492,7 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 						<a href="admin.php?page=pmpro-orders&order=-1&copy=<?php echo $order->id; ?>"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
 					</td>
 					<td align="center">
-						<a href="javascript:askfirst('<?php echo str_replace( "'", "\'", sprintf( __( "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?", 'paid-memberships-pro' ), str_replace( "'", "", $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
+						<a href="javascript:askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
 					</td>
 					<td align="center">
 						<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>"
@@ -1274,12 +1518,11 @@ require_once( dirname( __FILE__ ) . "/admin_header.php" );
 		</table>
 	</form>
 	<?php
-	//add normal args
-	$pagination_url = add_query_arg( $url_params, get_admin_url( null, "/admin.php?page=pmpro-orders" ) );
+	// add normal args
+	$pagination_url = add_query_arg( $url_params, get_admin_url( null, '/admin.php?page=pmpro-orders' ) );
 	echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
 	?>
 
 <?php } ?>
 <?php
-require_once( dirname( __FILE__ ) . "/admin_footer.php" );
-?>
+require_once( dirname( __FILE__ ) . '/admin_footer.php' );

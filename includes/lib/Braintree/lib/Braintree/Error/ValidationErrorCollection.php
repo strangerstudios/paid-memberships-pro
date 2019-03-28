@@ -8,11 +8,10 @@ use Braintree\Collection;
  *
  * <b>== More information ==</b>
  *
- * For more detailed information on Validation errors, see {@link http://www.braintreepayments.com/gateway/validation-errors http://www.braintreepaymentsolutions.com/gateway/validation-errors}
+ * For more detailed information on Validation errors, see {@link https://developers.braintreepayments.com/reference/general/validation-errors/overview/php https://developers.braintreepayments.com/reference/general/validation-errors/overview/php}
  *
  * @package    Braintree
  * @subpackage Error
- * @copyright  2015 Braintree, a division of PayPal, Inc.
  *
  * @property-read array $errors
  * @property-read array $nested
