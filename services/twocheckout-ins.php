@@ -460,7 +460,8 @@
 	function pmpro_insRecurringStopped( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments stop
-		do_action("pmpro_subscription_recuring_stopped", $last_order);
+		do_action( 'pmpro_subscription_recuring_stopped', $morder );
+		do_action( 'pmpro_subscription_recurring_stopped', $morder);
 
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {
@@ -492,7 +493,8 @@
 	function pmpro_insRecurringRestarted( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments restart
-		do_action("pmpro_subscription_recuring_restarted", $last_order);
+		do_action( 'pmpro_subscription_recuring_restarted', $morder);
+		do_action( 'pmpro_subscription_recurring_restarted', $morder);
 
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
 		if( $worked === true ) {
