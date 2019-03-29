@@ -26,10 +26,10 @@ function pmpro_init_recaptcha() {
 			$lang = apply_filters( 'pmpro_recaptcha_lang', $lang );
 
 			// Check which version of ReCAPTCHA we are using.
-			$recaptcha_invisible = pmpro_getOption( 'recaptcha_invisible' ); 
+			$recaptcha_version = pmpro_getOption( 'recaptcha_version' ); 
 
-			if( '1' == $recaptcha_invisible ) { ?>
-				<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" <?php if( $recaptcha_invisible == '1' ) { ?> data-size="invisible" <?php } ?>></div>
+			if( $recaptcha_version == '3_invisible' ) { ?>
+				<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" data-size="invisible" data-callback="onSubmit"></div>
 				<script type="text/javascript">															
 					var pmpro_recaptcha_validated = false;
 					var pmpro_recaptcha_onSubmit = function(token) {

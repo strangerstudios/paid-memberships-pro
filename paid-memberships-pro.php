@@ -107,7 +107,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php'
 global $wpdb;
 
 // check if the DB needs to be upgraded
-if ( is_admin() ) {
+if ( is_admin() || defined('WP_CLI') ) {
 	pmpro_checkForUpgrades();
 }
 

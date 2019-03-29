@@ -2123,7 +2123,7 @@ msgid "Confirmation Message"
 msgstr ""
 
 #: adminpages/membershiplevels.php:388 adminpages/membershiplevels.php:388
-msgid "Check to include this message in the membership confiramtion email."
+msgid "Check to include this message in the membership confirmation email."
 msgstr ""
 
 #: adminpages/membershiplevels.php:394 adminpages/membershiplevels.php:715
