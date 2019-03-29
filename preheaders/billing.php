@@ -11,9 +11,9 @@ if (! is_user_logged_in()) {
 }
 
 //need to be secure?
-global $besecure, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link;
 $user_order = new MemberOrder();
-$user_order->getLastMemberOrder();
+$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
     //no order
     $besecure = false;

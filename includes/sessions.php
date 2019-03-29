@@ -29,7 +29,7 @@ function pmpro_start_session() {
 	}
 }
 
-add_action( 'pmpro_checkout_preheader', 'pmpro_start_session', -1 );
+add_action( 'pmpro_checkout_preheader_before_get_level_at_checkout', 'pmpro_start_session', -1 );
 
 /**
  * Close the session object for new updates

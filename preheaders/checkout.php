@@ -35,8 +35,22 @@ if ( ! in_array( $gateway, $valid_gateways ) ) {
 	$pmpro_msgt = "pmpro_error";
 }
 
+/**
+ * Action to run extra preheader code before setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_before_get_level_at_checkout' );
+
 //what level are they purchasing? (discount code passed)
 $pmpro_level = pmpro_getLevelAtCheckout();
+
+/**
+ * Action to run extra preheader code after setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );

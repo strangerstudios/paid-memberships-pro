@@ -129,7 +129,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
-= 2.0.4 - 2019-03-28 =
+= 2.0.5 - 2019-03-28 =
 * BUG FIX: Fixed fatal error on return from 2Checkout.
 * BUG FIX: Removed error when installing PMPro via WP-CLI.
 * BUG FIX: Fix database upgrade error on localhost environment. (Thanks, codezz on GitHub)
@@ -138,6 +138,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed bug with daily revenue reports not showing up in some cases.
 * BUG FIX/ENHANCEMENT: Now caching the query results in pmpro_getMembershipLevelsForUser(). This improves performance, especially when there are many posts on one page to check membership for. (Thanks, Seagyn Davis)
 * BUG FIX/ENHANCEMENT: Now sending display_name to the $data array passed to PMPro email filters. (Thanks, David Cervantes Caballero)
+* BUG FIX/ENHANCEMENT: Now searching for the last order with "success" or "pending" status on the Billing page.
+* BUG FIX/ENHANCEMENT: Added pmpro_checkout_preheader_before_get_level_at_checkout and pmpro_checkout_preheader_after_get_level_at_checkout action hooks. Using pmpro_checkout_preheader_before_get_level_at_checkout to start the session earlier now.
 * REFACTOR: Now running the pmpro_billing_preheader hook after the jquery.creditCardValidator script is enqueued in preheader/billing.php to match how we do it in preheader/checkout.php. (Thanks, Rafe Colton)
 
 = 2.0.4 - 2019-01-14 =
