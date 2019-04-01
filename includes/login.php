@@ -1,11 +1,11 @@
 <?php
 //redirect control
-function pmpro_login_redirect($redirect_to, $request, $user)
+function pmpro_login_redirect($redirect_to, $request = NULL, $user = NULL)
 {
 	global $wpdb;
 
 	//is a user logging in?
-	if(!empty($user->ID))
+	if(!empty($user) && !empty($user->ID))
 	{
 		//logging in, let's figure out where to send them
 		if(pmpro_isAdmin($user->ID))
