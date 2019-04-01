@@ -1827,6 +1827,7 @@
 				$subscription = $this->getSubscription($order);
 
 				if(!empty($subscription) 
+				        && empty( $subscription->canceled_at )
 					&& ( empty( $pmpro_stripe_event ) || empty( $pmpro_stripe_event->type ) || $pmpro_stripe_event->type != 'customer.subscription.deleted' ) )
 				{
 					if($this->cancelSubscriptionAtGateway($subscription))
