@@ -539,7 +539,7 @@ $pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confir
  * @todo Refactor this to avoid using extract.
  */
 if ( is_array( $pmpro_confirmed_data ) ) {
-	extract( $pmpro_confirmeddata );
+	extract( $pmpro_confirmed_data );
 }
 
 //if payment was confirmed create/update the user.
