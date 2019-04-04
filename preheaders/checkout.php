@@ -540,10 +540,12 @@ $pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confir
  */
 if ( is_array( $pmpro_confirmed_data ) ) {
 	extract( $pmpro_confirmed_data );
+} else {
+	$pmpro_confirmed = $pmpro_confirmed_data;
 }
 
 //if payment was confirmed create/update the user.
-if ( ! empty( $pmpro_confirmed_data ) ) {
+if ( ! empty( $pmpro_confirmed ) ) {
 	//just in case this hasn't been set yet
 	$submit = true;
 
