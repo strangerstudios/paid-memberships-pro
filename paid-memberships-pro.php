@@ -121,8 +121,13 @@ if ( is_admin() ) {
 */
 define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
 $urlparts = explode( '//', home_url() );
-define( 'SITEURL', $urlparts[1] );
-define( 'SECUREURL', str_replace( 'http://', 'https://', get_bloginfo( 'wpurl' ) ) );
+if ( ! defined( 'SITEURL'  ) ) {
+	define( 'SITEURL', $urlparts[1] );
+}
+
+if ( ! defined( 'SECUREURL'  ) ) {
+	define( 'SECUREURL', str_replace( 'http://', 'https://', get_bloginfo( 'wpurl' ) ) );
+}
 define( 'PMPRO_URL', WP_PLUGIN_URL . '/paid-memberships-pro' );
 define( 'PMPRO_DOMAIN', pmpro_getDomainFromURL( site_url() ) );
 define( 'PAYPAL_BN_CODE', 'PaidMembershipsPro_SP' );
