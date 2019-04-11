@@ -533,9 +533,15 @@ if ( empty( $morder ) ) {
 }
 
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
-$pmpro_confirmed = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
-if ( is_array( $pmpro_confirmed ) ) {
-	extract( $pmpro_confirmed );
+$pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
+
+/**
+ * @todo Refactor this to avoid using extract.
+ */
+if ( is_array( $pmpro_confirmed_data ) ) {
+	extract( $pmpro_confirmed_data );
+} else {
+	$pmpro_confirmed = $pmpro_confirmed_data;
 }
 
 //if payment was confirmed create/update the user.
