@@ -145,12 +145,17 @@ add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
 
 /**
  * Filter the password reset email for compatibility with the HTML format.
+ * We double check the wp_mail_content_type filter hasn't been disabled.
+ * We check if there are already <br /> tags before running nl2br.
+ * Running make_clickable() multiple times has no effect.
  */
-function pmpro_retrieve_password_message( $message ) {	
-	// Double check that our filter (and thus HTML emails) hasn't been disabled.
-	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {
-		$message = make_clickable( $message );		
-		$message = nl2br( $message );
+function pmpro_retrieve_password_message( $message ) {		
+	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {		
+		$message = make_clickable( $message );
+		
+		if ( strpos( '<br />', $message ) === false ) {
+			$message = nl2br( $message );
+		}		
 	}	
 
 	return $message;
