@@ -26,7 +26,6 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		'membership_name',
 		'membership_description',
 		'membership_confirmation',
-		'membership_code_id',
 		'membership_initial_payment',
 		'membership_billing_amount',
 		'membership_cycle_number',
