@@ -135,3 +135,13 @@ function pmpro_wp_mail_content_type( $content_type ) {
 	return $content_type;
 }
 add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
+
+// Also filter the password reset email for compatibility with the HTML format.
+function pmpro_retrieve_password_message( $message ) {
+        $message = str_replace('<','',$message);
+        $message = str_replace('>','',$message);
+        $message = str_replace("\n",'<br>',$message);
+        return $message;
+}
+add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 1 );
+
