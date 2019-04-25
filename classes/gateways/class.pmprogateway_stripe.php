@@ -1770,10 +1770,15 @@ class PMProGateway_stripe extends PMProGateway
 	 */
 	function cancelSubscriptionAtGateway($subscription, $preserve_local_membership = false) {
 		// Check if a valid sub.
-		if(empty($subscription->id)) {
+		if( empty( $subscription) || empty( $subscription->id ) ) {
 			return false;
 		}
-	
+
+		// If this is already cancelled, return true.
+		if( !empty( $subscription->canceled_at ) ) {
+			return true;
+		}
+
 		// Make sure we get the customer for this subscription.
 		$order = new MemberOrder();
 		$order->getLastMemberOrderBySubscriptionTransactionID($subscription->id);
