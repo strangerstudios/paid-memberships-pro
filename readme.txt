@@ -136,6 +136,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue where the credit card expiring email didn't include user info because the user ID wasn't passed in properly. (Thanks, David Cervantes Caballero)
 * BUG FIX: Fixed typo on edit level page. (Thanks, Theuns Coetzee)
 * BUG FIX: Fixed bug with daily revenue reports not showing up in some cases.
+* BUG FIX: Now checking before cancelling a Stripe subscription at the gateway to see if it has already been cancelled.
 * BUG FIX/ENHANCEMENT: Now caching the query results in pmpro_getMembershipLevelsForUser(). This improves performance, especially when there are many posts on one page to check membership for. (Thanks, Seagyn Davis)
 * BUG FIX/ENHANCEMENT: Now sending display_name to the $data array passed to PMPro email filters. (Thanks, David Cervantes Caballero)
 * BUG FIX/ENHANCEMENT: Now searching for the last order with "success" or "pending" status on the Billing page.
