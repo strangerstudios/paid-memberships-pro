@@ -1769,16 +1769,16 @@ class PMProGateway_stripe extends PMProGateway
 	 * @since 1.8
 	 */
 	function cancelSubscriptionAtGateway($subscription, $preserve_local_membership = false) {
-		//need a valid sub
+		// Check if a valid sub.
 		if(empty($subscription->id)) {
 			return false;
 		}
 	
-		//make sure we get the customer for this subscription
+		// Make sure we get the customer for this subscription.
 		$order = new MemberOrder();
 		$order->getLastMemberOrderBySubscriptionTransactionID($subscription->id);
 
-		//no order?
+		// No order?
 		if(empty($order)) {
 			//lets cancel anyway, but this is suspicious
 			$r = $subscription->cancel();
@@ -1786,16 +1786,16 @@ class PMProGateway_stripe extends PMProGateway
 			return true;
 		}
 
-		//okay have an order, so get customer so we can cancel invoices too
+		// Okay have an order, so get customer so we can cancel invoices too
 		$this->getCustomer($order);
 
-		//get open invoices
+		// Get open invoices.
 		$invoices = $this->customer->invoices();
 		$invoices = $invoices->all();
 
-		//found it, cancel it
+		// Found it, cancel it.
 		try {
-			//find any open invoices for this subscription and forgive them
+			// Find any open invoices for this subscription and forgive them.
 			if(!empty($invoices)) {
 				foreach($invoices->data as $invoice) {
 					if(!$invoice->closed && $invoice->subscription == $subscription->id) {
@@ -1805,12 +1805,12 @@ class PMProGateway_stripe extends PMProGateway
 				}
 			}
 
-			//sometimes we don't want to cancel the local membership when Stripe sends its webhook
+			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
 			if($preserve_local_membership) {
 				PMProGateway_stripe::ignoreCancelWebhookForThisSubscription($subscription->id, $order->user_id);
 			}
 
-			//cancel
+			// Cancel
 			$r = $subscription->cancel();
 
 			return true;
