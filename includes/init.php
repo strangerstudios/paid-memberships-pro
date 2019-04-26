@@ -257,7 +257,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
         $level_names = array();
         if(!empty($levels)) {
             foreach($levels as $key => $level)
-                $level_names[] = $level->name;
+                $level_names[] = $level->id. ' - '. $level->name;
             $column_data = implode(',', $level_names);
         }
         else

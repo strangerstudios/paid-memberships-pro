@@ -563,7 +563,7 @@
 				<div>
 					<input type="hidden" name="all_levels[]" value="<?php echo $level->id?>" />
 					<input type="checkbox" id="levels_<?php echo $level->id;?>" name="levels[]" value="<?php echo $level->id?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().next().show();	else jQuery(this).next().next().hide();" />
-					<label for="levels_<?php echo $level->id;?>"><?php echo $level->name?></label>
+					<label for="levels_<?php echo $level->id;?>"><?php echo $level->id. " - ". $level->name?></label>
 					<div class="pmpro_discount_levels_pricing level_<?php echo $level->id?>" <?php if(empty($level->checked)) { ?>style="display: none;"<?php } ?>>
 						<table class="form-table">
 						<tbody>
@@ -791,7 +791,7 @@
 
 									$level_names = array();
 									foreach($levels as $level)
-										$level_names[] = "<a target=\"_blank\" href=\"" . pmpro_url("checkout", "?level=" . $level->id . "&discount_code=" . $code->code) . "\">" . $level->name . "</a>";
+										$level_names[] = "<a target=\"_blank\" href=\"" . pmpro_url("checkout", "?level=" . $level->id . "&discount_code=" . $code->code) . "\">" . $level->id . ' - ' . $level->name . "</a>";
 									if($level_names)
 										echo implode(", ", $level_names);
 									else

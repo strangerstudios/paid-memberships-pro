@@ -50,7 +50,7 @@ function pmpro_membership_level_profile_fields($user)
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->name?></option>
+					<option value="<?php echo $level->id?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->id." - ". $level->name?></option>
 				<?php
 					}
 				?>
