@@ -52,7 +52,7 @@
 			if($gateway == "paypalexpress")
 			{
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_paypalexpress', 'pmpro_include_payment_information_fields'));
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
 				add_filter('pmpro_checkout_confirmed', array('PMProGateway_paypalexpress', 'pmpro_checkout_confirmed'));
@@ -62,7 +62,12 @@
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
 		}
-
+		
+		static function pmpro_include_payment_information_fields( $include ) {
+			pmpro_getDiscountCodeFieldHTML( );
+			return false;
+		}
+		
 		/**
 		 * Update the SSLVERSION for CURL to support PayPal Express moving to TLS 1.2
 		 *

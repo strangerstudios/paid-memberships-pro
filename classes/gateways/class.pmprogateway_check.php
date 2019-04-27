@@ -33,9 +33,14 @@
 			if($gateway == "check")
 			{
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_check', 'pmpro_include_payment_information_fields'));
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_check', 'pmpro_required_billing_fields'));
 			}
+		}
+		
+		static function pmpro_include_payment_information_fields( $include ) {
+			pmpro_getDiscountCodeFieldHTML( );
+			return false;
 		}
 		
 		/**

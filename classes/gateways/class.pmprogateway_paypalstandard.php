@@ -49,13 +49,17 @@
 			if($gateway == "paypalstandard")
 			{
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_paypalstandard', 'pmpro_include_payment_information_fields'));
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalstandard', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalstandard', 'pmpro_checkout_default_submit_button'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_paypalstandard', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
-
+		
+		static function pmpro_include_payment_information_fields( $include ) {
+			pmpro_getDiscountCodeFieldHTML();
+		}
+		 
 		/**
 		 * Make sure this gateway is in the gateways list
 		 *
