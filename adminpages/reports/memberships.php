@@ -71,13 +71,15 @@ function pmpro_report_memberships_widget() {
 		);
 
 		foreach( $reports as $report_type => $report_name ) {
-			$signups = number_format_i18n( pmpro_getSignups( $report_type ) );
-			$cancellations = number_format_i18n( pmpro_getCancellations( $report_type) );
+			$signups = pmpro_getSignups( $report_type, "all", true );
+			$cancellations = pmpro_getCancellations( $report_type, "all", array('inactive','expired','cancelled','admin_cancelled'), true );
+			error_log("SIGNUPS: " . var_export( $signups, true ) );
+			error_log("CANCELLATIONS: " . var_export( $cancellations, true ) );
 		?>
 		<tbody>
 			<tr class="pmpro_report_tr">
 				<th scope="row">
-					<?php if ( empty( $signups ) && empty( $cancellations) ) { ?>
+					<?php if ( empty( $signups["all"] ) && empty( $cancellations["all"] ) ) { ?>
 						<?php echo $report_name; ?>
 					<?php } else { ?>
 						<button class="pmpro_report_th pmpro_report_th_closed">
@@ -85,21 +87,17 @@ function pmpro_report_memberships_widget() {
 						</button>
 					<?php } ?>
 				</th>
-				<td><?php echo $signups; ?></td>
-				<td><?php echo $cancellations; ?></td>
+				<td><?php echo number_format_i18n( $signups["all"] ); ?></td>
+				<td><?php echo number_format_i18n( $cancellations["all"] ); ?></td>
 			</tr>
 			<?php
 				//level stats
-				$count = 0;
-				$max_level_count = apply_filters( 'pmpro_admin_reports_included_levels', 3 );
-
 				foreach($pmpro_levels as $level) {
-					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo $level->name;?></th>
-					<td><?php echo number_format_i18n(pmpro_getSignups($report_type, $level->id)); ?></td>
-					<td><?php echo number_format_i18n(pmpro_getCancellations($report_type, $level->id)); ?></td>
+					<td><?php echo number_format_i18n( $signups["level$level->id"] ); ?></td>
+					<td><?php echo number_format_i18n( $cancellations["level$level->id"] ); ?></td>
 				</tr>
 			<?php
 				}
@@ -505,13 +503,48 @@ function pmpro_report_memberships_page()
 	Other code required for your reports. This file is loaded every time WP loads with PMPro enabled.
 */
 
-//get signups
-function pmpro_getSignups($period = false, $levels = 'all')
+// combine multiple reports into one SQL query.
+// this gets called in pmpro_getSignups and pmpro_getCancellations when $aggregate === true
+function pmpro_reports_sql_aggregate( $levels, $table_name )
 {
+	$sqlQuery = '';
+	if( $levels == 'all' ) {
+		$pmpro_levels = pmpro_getAllLevels(true, true);
+		$level_string = '';
+		foreach( $pmpro_levels as $key=>$level ) {
+			$level_string .= (string) $key . ",";
+		}
+		//take off the trailing comma
+		$level_string = substr( $level_string, 0, -1 );
+		$level_array = explode(',', $level_string );
+	} elseif( is_string( $levels ) ) {
+		$level_array = explode(',', $levels);
+	}
+	foreach( $level_array as $level ) {
+		$sqlQuery .= ", SUM(DISTINCT CASE WHEN " . esc_sql( $table_name ) . ".membership_id = " . esc_sql( $level );
+		$sqlQuery .= " THEN " . esc_sql( $table_name ) . ".membership_id ELSE NULL END) level" . esc_sql( $level );
+	}
+	return $sqlQuery;
+}
+
+// function to clean up results array when $aggregate === true
+function pmpro_reports_clean_up_results( $results, $table_name )
+{
+	$results = $results[0];
+	$all_levels = "\"COUNT(DISTINCT $table_name.user_id, $table_name.membership_id)\":";
+	error_log( $all_levels );
+	$results_json = str_replace( $all_levels, '"all":', json_encode($results));
+	return json_decode($results_json, true);
+}
+
+//get signups
+function pmpro_getSignups( $period = false, $levels = 'all', $aggregate = false )
+{
+	/** // !-----UNCOMMENT AFTER TESTING-----!
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_signups' );
 	if( ! empty( $cache ) && ! empty( $cache[$period] ) && ! empty( $cache[$period][$levels] ) )
-		return $cache[$period][$levels];
+		return $cache[$period][$levels];*/
 
 	//a sale is an order with status = success
 	if( $period == 'today' )
@@ -527,13 +560,26 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	//build query
 	global $wpdb;
 
-	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
+	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id, mu.membership_id)";
+	
+	if( $aggregate === true ){
+		$sqlQuery .= pmpro_reports_sql_aggregate( $levels, "mu" );
+	}
+	
+	$sqlQuery .= " FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all')
 		$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $levels ) . ") ";
 
-	$signups = $wpdb->get_var($sqlQuery);
+	// if $aggregate is set to true, pmpro_getSignups returns an array, not a single value
+	if( $aggregate ) {
+		$signups_results = $wpdb->get_results($sqlQuery, ARRAY_A);
+		$signups = pmpro_reports_clean_up_results( $signups_results, "mu" );
+	}
+	else {
+		$signups = $wpdb->get_var($sqlQuery);
+	}
 
 	//save in cache
 	if(!empty($cache) && !empty($cache[$period]))
@@ -557,17 +603,17 @@ function pmpro_getSignups($period = false, $levels = 'all')
  * @param array(string) $status - Array of statuses to fetch data for
  * @return null|int - The # of cancellations for the period specified
  */
-function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','admin_cancelled') )
+function pmpro_getCancellations($period = null, $levels = 'all', $status = array('inactive','expired','cancelled','admin_cancelled'), $aggregate = false )
 {
 	//make sure status is an array
 	if(!is_array($status))
 		$status = array($status);
-
+	/** // !-----UNCOMMENT AFTER TESTING-----!
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_cancellations' );
 	$hash = md5($period . $levels . implode(',', $status));
 	if( ! empty( $cache ) && ! empty( $cache[$hash] ) )
-		return $cache[$hash];
+		return $cache[$hash]; */
 
 	//figure out start date
 	$now = current_time('timestamp');
@@ -605,9 +651,13 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	// Note here that we no longer esc_sql the $startdate and $enddate
 	// Escaping broke the MYSQL we passed in.
 	// We generated these vars and can trust them.
-    $sqlQuery = "
-		SELECT COUNT( DISTINCT mu1.user_id )
-		FROM {$wpdb->pmpro_memberships_users} AS mu1
+    $sqlQuery = "SELECT COUNT(DISTINCT mu1.user_id, mu1.membership_id)";
+		
+		if( $aggregate === true ){
+			$sqlQuery .= pmpro_reports_sql_aggregate( $levels, "mu1" );
+		}
+
+		$sqlQuery .= " FROM {$wpdb->pmpro_memberships_users} AS mu1
 		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
 			AND mu1.enddate >= '" . $startdate . "'
 			AND mu1.enddate <= " . $enddate  . "
@@ -636,9 +686,16 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	 * @param array(string) $status Statuses to include as cancelled.
 	 */
 	$sqlQuery = apply_filters('pmpro_reports_get_cancellations_sql', $sqlQuery, $period, $levels, $status);
-
-	$cancellations = $wpdb->get_var($sqlQuery);
-
+	error_log( $sqlQuery );
+	// if $aggregate is set to true, pmpro_getCancellations will return an array, not a single value
+	if( $aggregate ) {
+		$cancellations_results = $wpdb->get_results($sqlQuery, ARRAY_A);
+		$cancellations = pmpro_reports_clean_up_results( $cancellations_results, "mu1" );
+	}
+	else {
+		$cancellations = $wpdb->get_var($sqlQuery);
+	}
+	/** // !-----UNCOMMENT AFTER TESTING-----!
 	//save in cache
 	if(!empty($cache) && !empty($cache[$hash]))
 		$cache[$hash] = $cancellations;
@@ -647,7 +704,7 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	else
 		$cache = array($hash => $cancellations);
 
-	set_transient("pmpro_report_memberships_cancellations", $cache, 3600*24);
+	set_transient("pmpro_report_memberships_cancellations", $cache, 3600*24);*/
 
 	return $cancellations;
 }
