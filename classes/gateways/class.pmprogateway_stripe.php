@@ -1670,7 +1670,7 @@ class PMProGateway_stripe extends PMProGateway
 
 		//need filter to reset ProfileStartDate
 		add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $update_order ) {
-			return "{$update_order->ProfileStartDate}T0:0:0";
+			return "{$update_order->ProfileStartDate}";
 		}, 10, 2);
 
 		//update subscription
