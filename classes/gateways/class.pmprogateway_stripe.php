@@ -91,6 +91,10 @@ class PMProGateway_stripe extends PMProGateway
 		self::$is_loaded = true;
 		return true;
 	}
+	
+	public function getWebhookEndpoints($limit = 100) {
+		return \Stripe\WebhookEndpoint::all(["limit" => $limit]);
+	}
 
 	/**
 	 * Load the Stripe API library.
@@ -237,6 +241,11 @@ class PMProGateway_stripe extends PMProGateway
 
 		return $options;
 	}
+	
+	static function get_pmpro_webhook_URL() {
+		return admin_url("admin-ajax.php") . "?action=stripe_webhook";
+	}
+	
 
 	/**
 	 * Display fields for Stripe options.
@@ -291,7 +300,7 @@ class PMProGateway_stripe extends PMProGateway
 			<label><?php _e('Web Hook URL', 'paid-memberships-pro' );?>:</label>
 		</th>
 		<td>
-			<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=stripe_webhook";?></pre></p>
+			<p><?php _e('To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?> <pre><?php echo self::get_pmpro_webhook_URL()?></pre></p>
 		</td>
 	</tr>
 

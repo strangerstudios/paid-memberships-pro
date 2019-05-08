@@ -166,14 +166,47 @@
 		}
 		
 		if( ! empty( $msgt ) && $ml_recurring && $ml_expiration ) {
-			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
+			$msgt .= '<p> <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
 				
 			// turn success to errors
 			if( $msg > 0 ) {
 				$msg = 0 - $msg;
 			}
 		}
-
+		
+		if( $ml_recurring) {
+			if( $gateway == 'stripe') {
+				
+				$stripe_gateway = new PMProGateway_stripe();
+				
+				$webhooks = $stripe_gateway->getWebhookEndpoints();
+				$found_webhook = false;
+				
+				foreach($webhooks as $webhook) {
+					
+					if($stripe_gateway->gateway_environment == 'sandbox' && $webhook->livemode == false && $webhook->url == $stripe_gateway->get_pmpro_webhook_URL()) {
+						//sandbox mode webhook found...quit
+						$found_webhook = true;
+						break;
+					}
+						
+					if($stripe_gateway->gateway_environment == 'live' && $webhook->livemode == true && $webhook->url == $stripe_gateway->get_pmpro_webhook_URL())	{
+							//live mode webhook found...quit
+							$found_webhook = true;
+							break;
+					}
+				}
+			
+				if(!$found_webhook &&  ! empty( $msgt )) {
+					$msgt .= '<p> <strong class="red">' . sprintf( __( 'WARNING: An active Stripe Webhook was not detected. An active webhook is recommended for recurring orders. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/gateway/stripe/' ) . '</strong>';
+						
+						// turn success to errors
+					if( $msg > 0 ) {
+						$msg = 0 - $msg;
+					}							}
+				}
+		}
+		
 		// Update the Level Meta to Add Confirmation Message to Email.
 		if ( isset( $ml_confirmation_in_email ) ) {
 			update_pmpro_membership_level_meta( $saveid, 'confirmation_in_email', $ml_confirmation_in_email );
