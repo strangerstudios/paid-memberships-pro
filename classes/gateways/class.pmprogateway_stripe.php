@@ -1449,26 +1449,28 @@ class PMProGateway_stripe extends PMProGateway
 		$amount_tax = $order->getTaxForPrice($amount);
 		$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
 
-		/*
-			There are two parts to the trial. Part 1 is simply the delay until the first payment
-			since we are doing the first payment as a separate transaction.
-			The second part is the actual "trial" set by the admin.
-
-			Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-		*/
-		//figure out the trial length (first payment handled by initial charge)
-		if($order->BillingPeriod == "Year") {
-			$trial_period_days = $order->BillingFrequency * 365;	//annual
-		} elseif($order->BillingPeriod == "Day") {
-			$trial_period_days = $order->BillingFrequency * 1;		//daily
-		} elseif($order->BillingPeriod == "Week") {
-			$trial_period_days = $order->BillingFrequency * 7;		//weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
-		}			
 
 		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+		if ( empty( $order->ProfileStartDate ) ) {
+			/*
+				There are two parts to the trial. Part 1 is simply the delay until the first payment
+				since we are doing the first payment as a separate transaction.
+				The second part is the actual "trial" set by the admin.
+
+				Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
+			*/
+			//figure out the trial length (first payment handled by initial charge)
+			if($order->BillingPeriod == "Year") {
+				$trial_period_days = $order->BillingFrequency * 365;	//annual
+			} elseif($order->BillingPeriod == "Day") {
+				$trial_period_days = $order->BillingFrequency * 1;		//daily
+			} elseif($order->BillingPeriod == "Week") {
+				$trial_period_days = $order->BillingFrequency * 7;		//weekly
+			} else {
+				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
+			}			
+			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+		}
 
 		//filter the start date
 		$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -1670,7 +1672,7 @@ class PMProGateway_stripe extends PMProGateway
 
 		//need filter to reset ProfileStartDate
 		add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $update_order ) {
-			return "{$update_order->ProfileStartDate}T0:0:0";
+			return "{$update_order->ProfileStartDate}";
 		}, 10, 2);
 
 		//update subscription
