@@ -35,14 +35,13 @@ function pmpro_prepare_pointer_scripts() {
 			'align' => 'left',
 		),
 	);
-	$function = '';
 
 	$globally_dismissed_pointers = get_option( 'pmpro_dismissed_wp_pointers', array() );
 	$user_dismissed_pointers = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
 	$dismissed_pointers = array_merge( $globally_dismissed_pointers, $user_dismissed_pointers );
-	
+
 	if ( ! in_array( 'pmpro_v2_menu_moved', $dismissed_pointers ) ) {
-		pmpro_build_pointer_script( $id, $options, __( 'Close', 'paid-memberships-pro' ), $button2, $function );
+		pmpro_build_pointer_script( $id, $options, __( 'Close', 'paid-memberships-pro' ) );
 	}
 }
 

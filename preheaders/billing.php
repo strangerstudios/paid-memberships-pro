@@ -11,9 +11,9 @@ if (! is_user_logged_in()) {
 }
 
 //need to be secure?
-global $besecure, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link;
 $user_order = new MemberOrder();
-$user_order->getLastMemberOrder();
+$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
     //no order
     $besecure = false;
@@ -34,11 +34,11 @@ if (empty($user_order->gateway)) {
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
 $gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
 
-//action to run extra code for gateways/etc
-do_action( 'pmpro_billing_preheader' );
-
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+
+//action to run extra code for gateways/etc
+do_action( 'pmpro_billing_preheader' );
 
 //_x stuff in case they clicked on the image button with their mouse
 if (isset($_REQUEST['update-billing']))

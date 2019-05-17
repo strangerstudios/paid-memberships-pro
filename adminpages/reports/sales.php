@@ -152,7 +152,7 @@ function pmpro_report_sales_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-32';
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
 		$date_function = 'DAY';
 		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
@@ -183,7 +183,7 @@ function pmpro_report_sales_page()
 	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= '" . esc_sql( $startdate ) . "' AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp < '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND o.timestamp <= '" . esc_sql( $enddate ) . "' ";
 
 	if(!empty($l))
 		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";

@@ -549,7 +549,15 @@ function pmpro_getLevelsExpiration( &$levels ) {
 	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
 	 */
 	$expiration_text = apply_filters( 'pmpro_levels_expiration_text', $expiration_text, $levels );
-	$expiration_text = apply_filters( 'pmpro_level_expiration_text', $expiration_text, $levels ); // Backwards compatible
+	
+	// Backwards compatible
+	if ( ! empty( $levels ) ) {
+		$first_level = reset($levels);
+	} else {
+		$first_level = false;
+	}
+	$expiration_text = apply_filters( 'pmpro_level_expiration_text', $expiration_text, $first_level );
+	
 	return $expiration_text;
 }
 
@@ -1074,6 +1082,10 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// remove cached level
 	global $all_membership_levels;
 	unset( $all_membership_levels[ $user_id ] );
+	
+	// remove levels cache for user
+	$cache_key = 'user_' . $user_id . '_levels';
+	wp_cache_delete( $cache_key, 'pmpro' );
 
 	// update user data and call action
 	pmpro_set_current_user();
@@ -1784,31 +1796,45 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	$user_id = intval( $user_id );
 
 	global $wpdb;
-
-	$levels = $wpdb->get_results(
-		"SELECT
-								l.id AS ID,
-								l.id as id,
-								mu.id as subscription_id,
-								l.name,
-								l.description,
-								l.expiration_number,
-								l.expiration_period,
-								mu.initial_payment,
-								mu.billing_amount,
-								mu.cycle_number,
-								mu.cycle_period,
-								mu.billing_limit,
-								mu.trial_amount,
-								mu.trial_limit,
-								mu.code_id as code_id,
-								UNIX_TIMESTAMP(startdate) as startdate,
-								UNIX_TIMESTAMP(enddate) as enddate
-							FROM {$wpdb->pmpro_membership_levels} AS l
-							JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-							WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
-							GROUP BY ID" )
-	);
+	
+	/**
+	 * We are going to see if cache is set before doing the query and use that if it is.
+	 * 
+	 * In a default environment with no external object cache, the value is cached in that request and
+	 * reduces future MySQL requests. If there is an external object cache like Redis then it will be
+	 * persisted until the user level changes.
+	 **/
+	$cache_key = 'user_' . $user_id . '_levels';
+    $levels = wp_cache_get( $cache_key, 'pmpro' );
+	
+	if ( $levels === false ) {
+				
+		$levels = $wpdb->get_results(
+			"SELECT
+				l.id AS ID,
+				l.id as id,
+				mu.id as subscription_id,
+				l.name,
+				l.description,
+				l.expiration_number,
+				l.expiration_period,
+				mu.initial_payment,
+				mu.billing_amount,
+				mu.cycle_number,
+				mu.cycle_period,
+				mu.billing_limit,
+				mu.trial_amount,
+				mu.trial_limit,
+				mu.code_id as code_id,
+				UNIX_TIMESTAMP(startdate) as startdate,
+				UNIX_TIMESTAMP(enddate) as enddate
+			FROM {$wpdb->pmpro_membership_levels} AS l
+			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
+			GROUP BY ID" )
+		);
+		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
+	}
 	
 	// Round off prices
 	if ( ! empty( $levels ) ) {

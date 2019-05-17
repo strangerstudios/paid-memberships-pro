@@ -3,20 +3,20 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2018	Stranger Studios
+ * Copyright 2011-2019	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.0.4' );
+define( 'PMPRO_VERSION', '2.0.5' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -107,7 +107,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php'
 global $wpdb;
 
 // check if the DB needs to be upgraded
-if ( is_admin() ) {
+if ( is_admin() || defined('WP_CLI') ) {
 	pmpro_checkForUpgrades();
 }
 
@@ -121,8 +121,13 @@ if ( is_admin() ) {
 */
 define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
 $urlparts = explode( '//', home_url() );
-define( 'SITEURL', $urlparts[1] );
-define( 'SECUREURL', str_replace( 'http://', 'https://', get_bloginfo( 'wpurl' ) ) );
+if ( ! defined( 'SITEURL'  ) ) {
+	define( 'SITEURL', $urlparts[1] );
+}
+
+if ( ! defined( 'SECUREURL'  ) ) {
+	define( 'SECUREURL', str_replace( 'http://', 'https://', get_bloginfo( 'wpurl' ) ) );
+}
 define( 'PMPRO_URL', WP_PLUGIN_URL . '/paid-memberships-pro' );
 define( 'PMPRO_DOMAIN', pmpro_getDomainFromURL( site_url() ) );
 define( 'PAYPAL_BN_CODE', 'PaidMembershipsPro_SP' );

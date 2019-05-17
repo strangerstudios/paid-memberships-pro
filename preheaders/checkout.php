@@ -35,8 +35,22 @@ if ( ! in_array( $gateway, $valid_gateways ) ) {
 	$pmpro_msgt = "pmpro_error";
 }
 
+/**
+ * Action to run extra preheader code before setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_before_get_level_at_checkout' );
+
 //what level are they purchasing? (discount code passed)
 $pmpro_level = pmpro_getLevelAtCheckout();
+
+/**
+ * Action to run extra preheader code after setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
@@ -519,9 +533,15 @@ if ( empty( $morder ) ) {
 }
 
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
-$pmpro_confirmed = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
-if ( is_array( $pmpro_confirmed ) ) {
-	extract( $pmpro_confirmed );
+$pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
+
+/**
+ * @todo Refactor this to avoid using extract.
+ */
+if ( is_array( $pmpro_confirmed_data ) ) {
+	extract( $pmpro_confirmed_data );
+} else {
+	$pmpro_confirmed = $pmpro_confirmed_data;
 }
 
 //if payment was confirmed create/update the user.

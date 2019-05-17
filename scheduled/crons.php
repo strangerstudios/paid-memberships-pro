@@ -179,7 +179,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 				continue;
 
 			//okay send them an email
-			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->user_id);
+			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->ID);
 
 			if($send_email)
 			{
