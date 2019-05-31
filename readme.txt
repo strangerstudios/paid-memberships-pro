@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.2.1
-Stable tag: 2.0.6
+Stable tag: 2.0.7
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,13 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 2.0.7 - 2019-05-30 =
+* BUG FIX: Fixed issue where the profile start date would sometimes be set incorrectly on the Stripe subscription.
+* BUG FIX: Fixed issue where the membership shortcode would not work properly if more than one level name was given.
+* BUG FIX: Fixed issue where an incorrect email address was sometimes set in the confirm email field on the update billing page. (Thanks, Jessica Thomas)
+* BUG FIX/ENHANCEMENT: Fixed placement of the hr tag above the user fields at checkout for consistency.
+* ENHANCEMENT: Set the priority on the Require Membership meta box to "high" so it appears higher in the right sidebar.
 
 = 2.0.6 - 2019-05-30 =
 * SECURITY: Now using wp_safe_redirect when possible, especially in includes/login.php where the user-provided redirect_to URL parameter is used. (Thanks PluginVulnerabilities.com)
