@@ -825,7 +825,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 					$found_level = false;
 
 					foreach ( $membership_levels as $membership_level ) {
-						if ( $membership_level->id == $level_obj->id ) {
+						if ( $membership_level->id == $level_obj->id || $membership_level->name == $level_obj->name) {
 							$found_level = true;
 						}
 					}
@@ -834,8 +834,8 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 						$return = true;
 					} elseif ( is_numeric( $level ) && intval( $level ) > 0 && $found_level ) {
 						$return = true;
-					} elseif ( ! is_numeric( $level ) ) { // if a level name was passed
-						$return = $found_level;
+					} elseif ( ! is_numeric( $level ) && $found_level) { // if a level name was passed
+						$return = true;
 					}
 				}
 			}
