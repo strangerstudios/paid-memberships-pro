@@ -102,8 +102,8 @@ function pmpro_page_save($post_id)
 //wrapper to add meta boxes
 function pmpro_page_meta_wrapper()
 {
-	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'page', 'side');
-	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'post', 'side');
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'page', 'side', 'high' );
+	add_meta_box('pmpro_page_meta', __('Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'post', 'side', 'high' );
 }
 if (is_admin())
 {
