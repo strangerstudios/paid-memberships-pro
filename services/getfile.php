@@ -120,7 +120,7 @@
 		else
 			$uri = "http://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
 				
-		wp_redirect($uri);
+		wp_safe_redirect($uri);
 		exit;
 	}
 		
@@ -128,4 +128,3 @@
 	header("Content-type: " . $file_mimetype); 	
 	readfile($filename);
 	exit;
-?>

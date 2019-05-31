@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.1.1
-Stable tag: 2.0.5
+Tested up to: 5.2.1
+Stable tag: 2.0.6
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,9 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 2.0.6 - 2019-05-30 =
+* SECURITY: Now using wp_safe_redirect when possible, especially in includes/login.php where the user-provided redirect_to URL parameter is used. (Thanks PluginVulnerabilities.com)
 
 = 2.0.5 - 2019-04-25 =
 * BUG FIX: Fixed fatal error on return from 2Checkout.
