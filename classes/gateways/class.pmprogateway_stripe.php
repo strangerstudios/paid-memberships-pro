@@ -109,6 +109,7 @@ class PMProGateway_stripe extends PMProGateway
 	 * Run on WP init
 	 *
 	 * @since 1.8
+	 * TODO Update docblock.
 	 */
 	static function init() {
 		//make sure Stripe is a gateway option
@@ -156,6 +157,9 @@ class PMProGateway_stripe extends PMProGateway
 			
 			//make sure we clean up subs we will be cancelling after checkout before processing
 			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
+			
+			// Create a PaymentIntent as soon as the amount is known.
+			add_action('pmpro_checkout_preheader_after_get_level_at_checkout', array('PMProGateway_stripe', 'pmpro_checkout_preheader_after_get_level_at_checkout'));
 		}
 
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
@@ -981,6 +985,44 @@ class PMProGateway_stripe extends PMProGateway
 				update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
 			}
 		}
+	}
+	
+	/**
+	 * Make sure we have a PaymentIntent.
+	 *
+	 * TODO Update docblock.
+	 */
+	function pmpro_checkout_preheader_after_get_level_at_checkout() {
+        // Check for existing PaymentIntent ID in session.
+		if ( ! empty( $_SESSION['pmpro_stripe_pi_id'] ) ) {
+			$payment_intent_id = $_SESSION['pmpro_stripe_pi_id'];
+		} else {
+			$payment_intent_id = $this->create_payment_intent;
+		}
+	}
+	
+	/**
+	 * Create a PaymentIntent.
+	 *
+	 * TODO Update docblock.
+	 * TODO Update code -- use user, level settings, etc.
+	 */
+	static function create_payment_intent( $level = null ) {
+		$intent = \Stripe\PaymentIntent::create([
+		  'amount' => 1099,
+		  'currency' => 'usd',
+		  'confirmation_method' => 'manual',
+		  'confirm' => true,
+		]);
+	}
+	
+	/**
+	 * Retrieve a PaymentIntent by ID.
+	 *
+	 * TODO Update docblock.
+	 */
+	static function get_payment_intent( $ID = null ) {
+		
 	}
 
 	/**
