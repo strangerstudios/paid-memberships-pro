@@ -225,6 +225,17 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = '1.944';
 		pmpro_setOption('db_version', '1.944');
 	}
+
+	/**
+	 * Run dbDelta again to update decimal fields
+	 * TODO: Update this to 2.1 on release.
+	 */
+	if( $pmpro_db_version < 2.0999 ) {
+	    pmpro_db_delta();
+
+	    $pmpro_db_version = 2.0999;
+	    pmpro_setOption("db_version", "2.0999");
+	}
 }
 
 function pmpro_db_delta()
@@ -250,12 +261,12 @@ function pmpro_db_delta()
 		  `name` varchar(255) NOT NULL,
 		  `description` longtext NOT NULL,
 		  `confirmation` longtext NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
 		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-		  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
@@ -354,12 +365,12 @@ function pmpro_db_delta()
 		   `user_id` int(11) unsigned NOT NULL,
 		   `membership_id` int(11) unsigned NOT NULL,
 		   `code_id` int(11) unsigned NOT NULL,
-		   `initial_payment` decimal(10,2) NOT NULL,
-		   `billing_amount` decimal(10,2) NOT NULL,
+		   `initial_payment` decimal(18,8) NOT NULL,
+		   `billing_amount` decimal(18,8) NOT NULL,
 		   `cycle_number` int(11) NOT NULL,
 		   `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
 		   `billing_limit` int(11) NOT NULL,
-		   `trial_amount` decimal(10,2) NOT NULL,
+		   `trial_amount` decimal(18,8) NOT NULL,
 		   `trial_limit` int(11) NOT NULL,
 		   `status` varchar(20) NOT NULL DEFAULT 'active',
 		   `startdate` datetime NOT NULL,
@@ -397,12 +408,12 @@ function pmpro_db_delta()
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
 		  `code_id` int(11) unsigned NOT NULL,
 		  `level_id` int(11) unsigned NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
 		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-		  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
 		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
