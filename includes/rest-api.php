@@ -27,7 +27,10 @@ class PMPro_REST_API_Routes extends WP_REST_Controller {
 		$user_id = $params['id'];
 		
 		$level = pmpro_getMembershipLevelForUser($user_id);
-		return new WP_REST_Response((array)$level, 200 );
+		if ( ! empty( $level ) ) {
+			$level = (array)$level;
+		}
+		return new WP_REST_Response($level, 200 );
 	}
 	
 	//Ex: http://example.com/wp-json/wp/v2/posts/58/user_id/2/pmpro_has_membership_access
