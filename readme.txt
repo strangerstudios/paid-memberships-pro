@@ -11,7 +11,7 @@ Get Paid with Paid Memberships Pro: The most complete member management and memb
 = The most complete member management and membership subscriptions plugin for WordPress =
 Paid Memberships Pro is designed for premium content sites, clubs/associations, subscription products, newsletters and more! The plugin adds a new revenue source to your site and is flexible enough to fit the needs of almost all online and offline businesses.
 
-[youtube http://www.youtube.com/watch?v=7bmml48fylw]
+[youtube http://www.youtube.com/watch?v=-M3aoEHvGZ4]
 
 = Simple to install and get running – deeply customizable! =
 * Unlimited Levels with Flexible Membership Pricing
