@@ -224,7 +224,7 @@
 
 			<div class="pmpro_hidden">
 				<label for="fullname"><?php _e('Full Name', 'paid-memberships-pro' );?></label>
-				<input id="fullname" name="fullname" type="text" class="input <?php echo pmpro_getClassForField("fullname");?>" size="30" value="" /> <strong><?php _e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
+				<input id="fullname" name="fullname" type="text" class="input <?php echo pmpro_getClassForField("fullname");?>" size="30" value="" autocomplete="off"/> <strong><?php _e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
 			</div> <!-- end pmpro_hidden -->
 
 			<div class="pmpro_checkout-field pmpro_captcha">
