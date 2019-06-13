@@ -164,11 +164,16 @@
 	?>
 
 	<?php if(!$skip_account_fields && !$pmpro_review) { ?>
+
+	<?php 
+		// Get discount code from URL parameter, so if the user logs in it will keep it applied.
+		$discount_code_link = !empty( $discount_code) ? '&discount_code=' . $discount_code : ''; 
+	?>
 	<div id="pmpro_user_fields" class="pmpro_checkout">
 		<hr />
 		<h3>
 			<span class="pmpro_checkout-h3-name"><?php _e('Account Information', 'paid-memberships-pro' );?></span>
-			<span class="pmpro_checkout-h3-msg"><?php _e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo wp_login_url(pmpro_url("checkout", "?level=" . $pmpro_level->id)); ?>"><?php _e('Log in here', 'paid-memberships-pro' );?></a></span>
+			<span class="pmpro_checkout-h3-msg"><?php _e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo wp_login_url( pmpro_url("checkout", "?level=" . $pmpro_level->id . $discount_code_link) ); ?>"><?php _e('Log in here', 'paid-memberships-pro' );?></a></span>
 		</h3>
 		<div class="pmpro_checkout-fields">
 			<div class="pmpro_checkout-field pmpro_checkout-field-username">
