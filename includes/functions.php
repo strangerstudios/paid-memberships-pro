@@ -2443,7 +2443,7 @@ function pmpro_formatPrice( $price ) {
 		// format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format(
 			$formatted,
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2 ),
+			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place() ),
 			( isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.' ),
 			( isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',' )
 		);
@@ -2456,13 +2456,27 @@ function pmpro_formatPrice( $price ) {
 		}
 	} else {
 		// default to symbol on the left, 2 decimals using . and ,
-		$formatted = $pmpro_currency_symbol . number_format( $formatted, 2 );
+		$formatted = $pmpro_currency_symbol . number_format( $formatted, pmpro_get_decimal_place() );
 	}
 
 	// filter
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
 }
 
+/**
+ * Allow users to adjust the allowed decimal places.
+ * @since 2.1
+ */
+function pmpro_get_decimal_place() {
+	// filter this to support different decimal places.
+	$decimal_place = apply_filters( 'pmpro_decimal_places', 2 );
+
+	if ( intval( $decimal_place ) > 8 ) {
+		$decimal_place = 8;
+	}
+
+	return $decimal_place;
+}
 /**
  * Which side does the currency symbol go on?
  *
@@ -2487,7 +2501,7 @@ function pmpro_getCurrencyPosition() {
  */
 function pmpro_round_price( $price, $currency = '' ) {
 	global $pmpro_currency, $pmpro_currencies;
-	$decimals = 2;
+	$decimals = pmpro_get_decimal_place();
 
 	if ( '' === $currency && ! empty( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		$currency = $pmpro_currency;
