@@ -2459,6 +2459,8 @@ function pmpro_formatPrice( $price ) {
 		$formatted = $pmpro_currency_symbol . number_format( $formatted, pmpro_get_decimal_place() );
 	}
 
+	$formatted = rtrim( $formatted, 0 );
+
 	// filter
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
 }
