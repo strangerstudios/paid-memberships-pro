@@ -155,6 +155,10 @@ function pmpro_gateways() {
 		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
 
+	if ( pmpro_onlyFreeLevels() ) {
+		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+	}
+
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
 }
 
