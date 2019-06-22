@@ -10,7 +10,9 @@ notifications:
 
 branches:
   only:
+    - dev
     - master
+    - /^v.*/
 
 cache:
   directories:
