@@ -14,14 +14,13 @@
 	$gateway = pmpro_getOption("gateway");
 
 	$level = $current_user->membership_level;
-
-
+	
 	//Make sure the $level object is a valid level definition
 	if(isset($level->id) && !empty($level->id))
 	{
 	?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
-		<?php
+	<?php
 		 /**
 		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
 		 *
@@ -374,6 +373,36 @@
 			-->
 		</script>
 	<?php } ?>
-<?php } else { ?>
-	<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
-<?php } ?>
+
+<?php } // End for recurring level check.
+	?>
+	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url();?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+	<?php
+	// Check to see if the user has a cancelled order
+	$order = new MemberOrder();
+	$order->getLastMemberOrder( $current_user->ID, array( 'cancelled', 'expired', 'admin_cancelled' ) );
+
+	if ( isset( $order->membership_id ) && ! empty( $order->membership_id ) && empty( $level->id ) ) {
+
+		$level = pmpro_getLevel( $order->membership_id );
+		$new_level = false;
+		
+		// Get first available level if the level is no longer available at all or for signup.
+		if ( ! isset( $level ) && empty( $level->id ) || ! $level->allow_signups ) {
+			$levels = pmpro_getAllLevels( false, true );
+			$level->id = key( $levels );
+			$new_level = true;
+		}
+
+		$level = apply_filters( 'pmpro_default_level', intval( $level->id ) );
+		$url = esc_url( pmpro_url( 'checkout', 'level=' . $level ) );
+		
+		if ( $new_level ) {
+			printf( __( "You currently don't have a membership level. %s.", 'paid-memberships-pro' ), "<a href='$url'>" . __( 'Sign up for a membership', 'paid-memberships-pro' ) . "</a>" );
+		} else {
+			printf( __( "You currently don't have a membership level. %s.", 'paid-memberships-pro' ), "<a href='$url'>" . __( 'Renew your membership', 'paid-memberships-pro' ) . "</a>" );
+		}
+
+	} else { ?>
+		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
+	<?php } ?>
