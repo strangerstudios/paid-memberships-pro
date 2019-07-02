@@ -26,7 +26,7 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 // Start up the WP testing environment.
 require_once $_tests_dir . '/includes/bootstrap.php';
 
-require_once __DIR__ . '/helpers/helpers.php';
+require_once __DIR__ . '/_helpers/helpers.php';
 require_once __DIR__ . '/class-base.php';
 
 // Activate PMPro and run upgrade check to setup DB/etc
