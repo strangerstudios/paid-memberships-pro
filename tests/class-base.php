@@ -10,6 +10,7 @@ abstract class Base Extends \WP_UnitTestCase {
 			return $this->_pmp_factory();
 		}
 	}
+
 	/**
 	 * Fetches the factory object for generating WordPress & PMP fixtures.
 	 *
