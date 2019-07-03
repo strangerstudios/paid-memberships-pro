@@ -5,6 +5,61 @@ use PMP\Tests\Base;
 
 class Functions extends Base {
 
+	public function data_pmpro_getMembershipLevelsForUser() {
+		return [
+			[],
+		];
+	}
+
+	/**
+	 * @covers ::pmpro_getMembershipLevelsForUser()
+	 * @dataProvider data_pmpro_getMembershipLevelsForUser
+	 *
+	 * @param null $user_id
+	 * @param bool $include_inactive
+	 * @param bool $compare
+	 */
+	public function test_pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false, $compare = false ) {
+		$this->assertSame( $compare, pmpro_getMembershipLevelsForUser( $user_id, $include_inactive ) );
+	}
+
+	public function data_pmpro_changeMembershipLevel() {
+		$level_id   = $this->factory->pmp_level->create();
+		$level_id_2 = $this->factory->pmp_level->create();
+		$user_id    = $this->factory->user->create();
+
+		return [
+			[
+				null,
+			],
+			[
+				null,
+				$user_id,
+				'inactive',
+				null,
+				'assertTrue', // nothing should have changed here.
+			],
+			[
+				$level_id,
+				$user_id,
+			],
+		];
+	}
+
+	/**
+	 * @covers ::pmpro_changeMembershipLevel()
+	 * @dataProvider data_pmpro_changeMembershipLevel
+	 *
+	 * @param        $level
+	 * @param null   $user_id
+	 * @param string $old_level_status
+	 * @param null   $cancel_level
+	 * @param string $assert
+	 */
+	public function test_pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status = 'inactive', $cancel_level = null, $assert = 'assertFalse' ) {
+		$this->$assert( pmpro_changeMembershipLevel( $level, $user_id, $old_level_status, $cancel_level ) );
+	}
+
 	public function data_pmpro_hasMembershipLevel() {
 		$level_id   = $this->factory->pmp_level->create();
 		$level_id_2 = $this->factory->pmp_level->create();
@@ -13,100 +68,84 @@ class Functions extends Base {
 
 		pmpro_changeMembershipLevel( $level_id, $user_id );
 
-		$return = [
+		return [
 			[
-				null,
-				null,
-				false,
-				false,
 			],
 			[
 				[],
-				null,
-				false,
-				false,
 			],
 			[
 				[ 0, $level_id ],
 				null,
 				false,
-				true, // shouldn't be true?
+				'assertTrue', // shouldn't be true?
 			],
 			[
 				0,
 				null,
 				false,
-				true, // this doesn't seem right. see line 774
+				'assertTrue', // this doesn't seem right. see line 774
 			],
 			[
 				'0',
 				null,
 				false,
-				true, // this doesn't seem right. see line 774
+				'assertTrue', // this doesn't seem right. see line 774
 			],
 			[
 				'',
-				null,
-				false,
-				false,
 			],
 			[
 				-1,
 				null,
 				false,
-				true, // shouldn't be true?
+				'assertTrue', // shouldn't be true?
 			],
 			[
 				-1,
 				$user_id,
-				false,
-				false,
 			],
 			[
 				null,
 				$user_id,
 				false,
-				true, // shouldn't be true?
+				'assertTrue', // shouldn't be true?
 			],
 			[
 				$level_id,
 				$user_id,
 				false,
-				true,
+				'assertTrue',
 			],
 			[
 				[ $level_id, $level_id_2 ],
 				$user_id,
 				false,
-				true,
+				'assertTrue',
 			],
 			[
 				$level_id,
 				null,
 				$user_id,
-				true,
+				'assertTrue',
 			],
 			[
 				'L',
 				$user_id_2,
 				$user_id_2,
-				true,
+				'assertTrue',
 			],
 			[
 				'-L',
 				$user_id_2,
 				$user_id_2,
-				false,
 			],
 			[
 				'E',
 				$user_id_2,
 				$user_id_2,
-				false,
 			],
 		];
-
-		return $return;
 	}
 
 	/**
@@ -116,14 +155,14 @@ class Functions extends Base {
 	 * @param $levels
 	 * @param $user_id
 	 * @param $current_user
-	 * @param $compare
+	 * @param $assert
 	 */
-	public function test_pmpro_hasMembershipLevel( $levels, $user_id, $current_user, $compare ) {
+	public function test_pmpro_hasMembershipLevel( $levels = null, $user_id = null, $current_user = false, $assert = 'assertFalse' ) {
 		if ( $current_user ) {
 			wp_set_current_user( $current_user );
 		}
 
-		$this->assertSame( $compare, pmpro_hasMembershipLevel( $levels, $user_id ) );
+		$this->$assert( pmpro_hasMembershipLevel( $levels, $user_id ) );
 	}
 
 }
