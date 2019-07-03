@@ -35,13 +35,13 @@ class Functions extends Base {
 			[
 				null,
 				$user_id,
-				'inactive',
-				null,
-				'assertTrue', // nothing should have changed here.
 			],
 			[
 				$level_id,
 				$user_id,
+				'inactive',
+				null,
+				'assertTrue',
 			],
 		];
 	}
