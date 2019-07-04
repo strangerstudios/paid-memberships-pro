@@ -24,13 +24,10 @@ abstract class Base Extends \WP_UnitTestCase {
 		return $factory;
 	}
 
-	/**
-	 * Runs the routine after all tests have been run.
-	 */
-	public static function tearDownAfterClass() {
-		self::_delete_all_pmp_data();
+	public function tearDown() {
+		$this->_delete_all_pmp_data();
 
-		parent::tearDownAfterClass();
+		parent::tearDown();
 	}
 
 	protected static function _delete_all_pmp_data() {

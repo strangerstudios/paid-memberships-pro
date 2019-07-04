@@ -16,7 +16,7 @@ class Functions extends Base {
 			],
 			[ // #1
 				$level->name,
-				$level,
+				false,
 			],
 			[ // #2
 				$level,
@@ -106,19 +106,19 @@ class Functions extends Base {
 		$user_id    = $this->factory->user->create();
 
 		return [
-			[
+			[ // #0
 				null,
 			],
-			[
+			[ // #1
 				null,
 				$user_id,
 			],
-			[
+			[ // #2
 				$level_id,
 				$user_id,
 				'inactive',
 				null,
-				'assertTrue',
+				'assertFalse',
 			],
 		];
 	}
@@ -191,25 +191,25 @@ class Functions extends Base {
 				null,
 				$user_id,
 				false,
-				'assertTrue', // shouldn't be true?
+				'assertFalse',
 			],
 			[ // #9
 				$level_id,
 				$user_id,
 				false,
-				'assertTrue',
+				'assertFalse',
 			],
 			[ // #10
 				[ $level_id, $level_id_2 ],
 				$user_id,
 				false,
-				'assertTrue',
+				'assertFalse',
 			],
 			[ // #11
 				$level_id,
 				null,
 				$user_id,
-				'assertTrue',
+				'assertFalse',
 			],
 			[ // #12
 				'L',
@@ -248,7 +248,7 @@ class Functions extends Base {
 				$level->name,
 				null,
 				$user_id,
-				'assertTrue',
+				'assertFalse',
 			],
 			[ // #19
 				'Not Level Name',
