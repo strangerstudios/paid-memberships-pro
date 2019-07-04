@@ -181,12 +181,12 @@ class Functions extends Base {
 				false,
 				'assertTrue', // true?
 			],
-			[ // #7
-				-1,
-				$user_id,
-				false,
-				'assertTrue', // true?
-			],
+//			[ // #7
+//				-1,
+//				$user_id,
+//				false,
+//				'assertTrue', // true?
+//			],
 			[ // #8
 				null,
 				$user_id,
