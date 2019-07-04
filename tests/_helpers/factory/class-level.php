@@ -50,10 +50,6 @@ class Level extends \WP_UnitTest_Factory_For_Thing {
 	public function create_object( $args ) {
 		$format = $this->_format;
 
-//		if ( ! isset( $args['id'] ) ) {
-//			$format = array_shift( $format );
-//		}
-
 		$this->_wpdb->insert( $this->_table, $args, $format );
 
 		return $this->_wpdb->insert_id;

@@ -16,7 +16,7 @@ class Functions extends Base {
 			],
 			[ // #1
 				$level->name,
-				false,
+				$level,
 			],
 			[ // #2
 				$level,
@@ -118,7 +118,7 @@ class Functions extends Base {
 				$user_id,
 				'inactive',
 				null,
-				'assertFalse',
+				'assertTrue',
 			],
 		];
 	}
@@ -158,19 +158,19 @@ class Functions extends Base {
 				[ 0, $level_id ],
 				null,
 				false,
-				'assertTrue', // shouldn't be true?
+				'assertTrue', // true?
 			],
 			[ // #3
 				0,
 				null,
 				false,
-				'assertTrue', // this doesn't seem right. see line 774
+				'assertTrue', // true? see line 774
 			],
 			[ // #4
 				'0',
 				null,
 				false,
-				'assertTrue', // this doesn't seem right. see line 774
+				'assertTrue', // true?see line 774
 			],
 			[ // #5
 				'',
@@ -179,37 +179,37 @@ class Functions extends Base {
 				-1,
 				null,
 				false,
-				'assertTrue', // shouldn't be true?
+				'assertTrue', // true?
 			],
 			[ // #7
 				-1,
 				$user_id,
 				false,
-				'assertTrue', // shouldn't be true?
+				'assertTrue', // true?
 			],
 			[ // #8
 				null,
 				$user_id,
 				false,
-				'assertFalse',
+				'assertTrue', // true?
 			],
 			[ // #9
 				$level_id,
 				$user_id,
 				false,
-				'assertFalse',
+				'assertTrue',
 			],
 			[ // #10
 				[ $level_id, $level_id_2 ],
 				$user_id,
 				false,
-				'assertFalse',
+				'assertTrue',
 			],
 			[ // #11
 				$level_id,
 				null,
 				$user_id,
-				'assertFalse',
+				'assertTrue',
 			],
 			[ // #12
 				'L',
@@ -248,7 +248,7 @@ class Functions extends Base {
 				$level->name,
 				null,
 				$user_id,
-				'assertFalse',
+				'assertTrue',
 			],
 			[ // #19
 				'Not Level Name',
@@ -271,6 +271,8 @@ class Functions extends Base {
 	public function test_pmpro_hasMembershipLevel( $levels = null, $user_id = null, $current_user = false, $assert = 'assertFalse' ) {
 		if ( $current_user ) {
 			wp_set_current_user( $current_user );
+		} else {
+			wp_set_current_user( null );
 		}
 
 		$this->$assert( pmpro_hasMembershipLevel( $levels, $user_id ) );
