@@ -247,7 +247,7 @@ if ($submit) {
     $bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
     $bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
     $bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
+    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
     $CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
     //$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
     $ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
