@@ -33,7 +33,7 @@ abstract class Base Extends \WP_UnitTestCase {
 		parent::tearDownAfterClass();
 	}
 
-	private static function _delete_all_pmp_data() {
+	protected static function _delete_all_pmp_data() {
 		global $wpdb;
 
 		$tables = [
@@ -50,6 +50,7 @@ abstract class Base Extends \WP_UnitTestCase {
 
 		foreach ( $tables as $table ) {
 			$wpdb->query( "DELETE FROM {$table}" );
+			$wpdb->query( "ALTER TABLE {$table} AUTO_INCREMENT = 0" );
 		}
 	}
 

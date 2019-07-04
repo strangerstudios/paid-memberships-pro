@@ -30,6 +30,7 @@ class Level extends \WP_UnitTest_Factory_For_Thing {
 		$this->_wpdb                          = $wpdb;
 		$this->_table                         = $wpdb->pmpro_membership_levels;
 		$this->default_generation_definitions = [
+			'id'                => '',
 			'name'              => new \WP_UnitTest_Generator_Sequence( 'Level name %s' ),
 			'description'       => new \WP_UnitTest_Generator_Sequence( 'Level description %s' ),
 			'confirmation'      => '',
@@ -49,9 +50,9 @@ class Level extends \WP_UnitTest_Factory_For_Thing {
 	public function create_object( $args ) {
 		$format = $this->_format;
 
-		if ( ! isset( $args['id'] ) ) {
-			$format = array_shift( $format );
-		}
+//		if ( ! isset( $args['id'] ) ) {
+//			$format = array_shift( $format );
+//		}
 
 		$this->_wpdb->insert( $this->_table, $args, $format );
 
