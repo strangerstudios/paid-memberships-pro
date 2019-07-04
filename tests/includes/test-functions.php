@@ -269,13 +269,17 @@ class Functions extends Base {
 	 * @param $assert
 	 */
 	public function test_pmpro_hasMembershipLevel( $levels = null, $user_id = null, $current_user = false, $assert = 'assertFalse' ) {
+
+		$global_current_user = $GLOBALS['current_user'];
+
 		if ( $current_user ) {
 			wp_set_current_user( $current_user );
-		} else {
-			wp_set_current_user( null );
 		}
 
 		$this->$assert( pmpro_hasMembershipLevel( $levels, $user_id ) );
+
+		$GLOBALS['current_user'] = $global_current_user;
+
 	}
 
 }
