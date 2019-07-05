@@ -1366,6 +1366,11 @@ class PMProGateway_stripe extends PMProGateway
 			return false;
 		}			
 
+		//no subscriptions?
+		if(empty($this->customer->subscriptions)) {
+			return false;
+		}			
+		
 		//is there a subscription transaction id pointing to a sub?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "sub_") !== false) {
 			try {
