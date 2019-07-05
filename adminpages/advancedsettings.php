@@ -213,7 +213,7 @@ if(pmpro_displayAds())
 
 						jQuery('.checkbox_box div.clickable').click(function() {
 							var checkbox = jQuery(this).find(':checkbox');
-							checkbox.attr('checked', !checkbox.prop('checked'));
+							checkbox.attr('checked', !checkbox.attr('checked'));
 						});
 					</script>
 				</td>
