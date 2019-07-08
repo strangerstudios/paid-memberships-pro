@@ -49,8 +49,9 @@ $pmpro_level = pmpro_getLevelAtCheckout();
  * Action to run extra preheader code after setting checkout level.
  *
  * @since 2.0.5
+ * //TODO update docblock
  */
-do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );

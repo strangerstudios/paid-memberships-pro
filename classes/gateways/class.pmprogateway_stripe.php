@@ -4,6 +4,7 @@ use Stripe\Customer as Stripe_Customer;
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Plan as Stripe_Plan;
 use Stripe\Charge as Stripe_Charge;
+use Stripe\PaymentIntent as Stripe_PaymentIntent;
 
 define( "PMPRO_STRIPE_API_VERSION", "2017-08-15" );
 
@@ -97,14 +98,15 @@ class PMProGateway_stripe extends PMProGateway
 	 *
 	 * @since 1.8
 	 * Moved into a method in version 1.8 so we only load it when needed.
+	 * //TODO Update docblock.
 	 */
-	function loadStripeLibrary() {
+	static function loadStripeLibrary() {
 		//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 		if(!class_exists("Stripe\Stripe")) {
 			require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 		}
 	}
-
+	
 	/**
 	 * Run on WP init
 	 *
@@ -130,6 +132,10 @@ class PMProGateway_stripe extends PMProGateway
 
 		//updates cron
 		add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
+		
+		// AJAX functions.
+		add_action('wp_ajax_confirm_payment_intent', array( 'PMProGateway_stripe', 'confirm_payment_intent' ) );
+		add_action('wp_ajax_nopriv_confirm_payment_intent', array( 'PMProGateway_stripe', 'confirm_payment_intent' ) );
 
 		/*
 			Filter pmpro_next_payment to get actual value
@@ -310,6 +316,7 @@ class PMProGateway_stripe extends PMProGateway
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
+	 * //TODO Update docblock.
 	 */
 	static function pmpro_checkout_preheader() {
 		global $gateway, $pmpro_level;
@@ -320,6 +327,7 @@ class PMProGateway_stripe extends PMProGateway
 		{
 			//stripe js library
 			wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
+			// wp_enqueue_script("stripe", "https://js.stripe.com/v3/", array(), NULL);
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 
@@ -327,6 +335,9 @@ class PMProGateway_stripe extends PMProGateway
 				function pmpro_stripe_javascript()
 				{
 					global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
+					
+					$payment_intent = PMProGateway_Stripe::get_payment_intent();
+					$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
 				?>
 				<script type="text/javascript">
 					<!--
@@ -334,8 +345,12 @@ class PMProGateway_stripe extends PMProGateway
 					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 
 					pmpro_require_billing = true;
-
+					
+					// Set paymentIntentID.
+					// TODO: Localize and enqueue JS.
+					var paymentIntentID = '<?php echo $payment_intent->id; ?>';
 					var tokenNum = 0;
+					var ajaxurl = '<?php echo admin_url( "admin-ajax.php" ); ?>';
 
 					jQuery(document).ready(function() {
 						jQuery(".pmpro_form").submit(function(event) {
@@ -373,7 +388,7 @@ class PMProGateway_stripe extends PMProGateway
 							//add first and last name if not blank
 							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
 								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
-
+								
 							//create token(s)
 							if (jQuery('#level').length) {
 								var levelnums = jQuery("#level").val().split(",");
@@ -383,6 +398,16 @@ class PMProGateway_stripe extends PMProGateway
 							} else {
 								Stripe.createToken(args, stripeResponseHandler);
 							}
+								
+							// Try creating a PaymentMethod from card details.
+							// card = {
+							// 	cardNumber: jQuery('#AccountNumber').val(),
+							// 	cardExpiry: jQuery('#ExpirationMonth').val() + jQuery('#ExpirationYear').val(),
+							// 	cardCvc: jQuery('#CVV').val(),
+							// }
+							// debugger;
+							// paymentMethod = Stripe.createPaymentMethod('card', card);
+							
 
 							// prevent the form from submitting with the default action
 							return false;
@@ -405,6 +430,18 @@ class PMProGateway_stripe extends PMProGateway
 							alert(response.error.message);
 							jQuery(".payment-errors").text(response.error.message);
 						} else {
+							var card = response['card'];
+							
+							// Confirm PaymentIntent.
+							// var data = {
+							// 	action: 'confirm_payment_intent',
+							// 	card: card['id'],
+							// 	payment_intent_id: paymentIntentID,
+							// };
+							// jQuery.post( ajaxurl, data, function( response ) {
+							// 
+							// });
+							
 							var form$ = jQuery("#pmpro_form, .pmpro_form");
 							// token contains id, last4, and card type
 							var token = response['id'];
@@ -992,12 +1029,25 @@ class PMProGateway_stripe extends PMProGateway
 	 *
 	 * TODO Update docblock.
 	 */
-	function pmpro_checkout_preheader_after_get_level_at_checkout() {
+	static function pmpro_checkout_preheader_after_get_level_at_checkout( $level ) {
         // Check for existing PaymentIntent ID in session.
-		if ( ! empty( $_SESSION['pmpro_stripe_pi_id'] ) ) {
-			$payment_intent_id = $_SESSION['pmpro_stripe_pi_id'];
+		if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
+			$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
+			
+		// TODO: Update PaymentIntent if $level has changed.
 		} else {
-			$payment_intent_id = $this->create_payment_intent;
+			// Load Stripe library early.
+			PMProGateway_Stripe::loadStripeLibrary();
+			Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
+			
+			// Create new PaymentIntent.
+			$payment_intent = PMProGateway_Stripe::get_new_payment_intent( $level );
+			
+			// Store in session.
+			if ( ! empty( $payment_intent->id ) ) {
+				$_SESSION['pmpro_stripe_payment_intent_id'] = $payment_intent->id;
+			}
 		}
 	}
 	
@@ -1007,13 +1057,16 @@ class PMProGateway_stripe extends PMProGateway
 	 * TODO Update docblock.
 	 * TODO Update code -- use user, level settings, etc.
 	 */
-	static function create_payment_intent( $level = null ) {
-		$intent = \Stripe\PaymentIntent::create([
-		  'amount' => 1099,
-		  'currency' => 'usd',
-		  'confirmation_method' => 'manual',
-		  'confirm' => true,
-		]);
+	static function get_new_payment_intent( $level ) {
+		// Convert to cents for Stripe.
+		$amount = $level->initial_payment * 100;
+		$params = array(
+			'amount' => $amount,
+			'currency' => 'USD', //TODO
+			'confirmation_method' => 'manual'
+		);
+		$intent = Stripe_PaymentIntent::create( $params );		
+		return $intent;
 	}
 	
 	/**
@@ -1021,10 +1074,60 @@ class PMProGateway_stripe extends PMProGateway
 	 *
 	 * TODO Update docblock.
 	 */
-	static function get_payment_intent( $ID = null ) {
+	static function get_payment_intent( $payment_intent_id = null ) {
 		
+		// Load Stripe library early.
+		PMProGateway_Stripe::loadStripeLibrary();
+		Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
+		
+		if ( empty( $payment_intent_id ) ) {
+			// Check for existing PaymentIntent ID in session.
+			if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
+				$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
+			} else {
+				// Create new PaymentIntent.
+				$payment_intent = PMProGateway_Stripe::get_new_payment_intent( $level );
+				$payment_intent_id = $payment_intent->id;
+			}
+		}
+		return Stripe_PaymentIntent::retrieve( $payment_intent_id );
+	}
+	
+	/**
+	 * Update a PaymentIntent.
+	 *
+	 * TODO Update docblock.
+	 * TODO Update code
+	 */
+	static function update_payment_intent( $level ) {
 	}
 
+	/**
+	 * Confirm a PaymentIntent.
+	 *
+	 * TODO Update docblock.
+	 * TODO Update code
+	 */
+	static function confirm_payment_intent( $payment_intent_id = null ) {
+		
+		// Get values from request.
+		$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
+		$payment_method_id = sanitize_text_field( $_REQUEST['card'] );
+		
+		// Load Stripe library early.
+		PMProGateway_Stripe::loadStripeLibrary();
+		Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
+		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
+		
+		$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
+		$params = array(
+			'payment_method' => $payment_method_id,
+			'save_payment_method' => true,
+		);
+		$payment_intent->confirm( $params );
+	}
+	
 	/**
 	 * Before processing a checkout, check for pending invoices we want to clean up.
 	 * This prevents double billing issues in cases where Stripe has pending invoices
