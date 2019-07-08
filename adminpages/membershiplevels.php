@@ -570,6 +570,32 @@
 		<?php do_action("pmpro_membership_level_after_other_settings"); ?>
 
 		<h3 class="topborder"><?php _e('Content Settings', 'paid-memberships-pro' );?></h3>
+		<?php
+			// Get the Advanced Settings for filtering queries and showing excerpts.
+			$filterqueries = pmpro_getOption('filterqueries');
+			$showexcerpts = pmpro_getOption("showexcerpts");
+
+			$allowed_html = array (
+				'a' => array (
+					'href' => array(),
+					'target' => array(),
+					'title' => array(),
+				),
+			);
+
+			if ( $filterqueries == 1 ) {
+				// Show a message that posts in these categories are hidden.
+				echo '<p>' . sprintf( wp_kses( __( 'Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), admin_url( 'admin.php?page=pmpro-advancedsettings' ) ) . '</p>';
+			} else {
+				if ( $showexcerpts == 1 ) {
+					// Show a message that posts in these categories will show title and excerpt.
+					echo '<p>' . sprintf( wp_kses( __( 'Non-members will see the title and excerpt for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), admin_url( 'admin.php?page=pmpro-advancedsettings' ) ) . '</p>';
+				} else {
+					// Show a message that posts in these categories will show only the title.
+					echo '<p>' . sprintf( wp_kses( __( 'Non-members will see the title only for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), admin_url( 'admin.php?page=pmpro-advancedsettings' ) ) . '</p>';
+				}
+			}
+		?>
 		<table class="form-table">
 			<tbody>
 				<tr class="membership_categories">

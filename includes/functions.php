@@ -1468,54 +1468,74 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 	return $total;
 }
 
+/**
+ * Generate a Username from the provided first name, last name or email address.
+ *
+ * @param string $firstname User-submitted First Name.
+ * @param string $lastname User-submitted Last Name.
+ * @param string $email User-submitted Email Address.
+ *
+ * @return string $username.
+ */
 function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) {
-	global $wpdb;
+	// Strip all non-alpha characters from first and last name.
+	if ( ! empty( $firstname) ) {
+		$firstname = preg_replace( '/[^A-Za-z]/', '', $firstname );
+	}
+	if ( ! empty( $lastname ) ) {
+		$lastname = preg_replace( '/[^A-Za-z]/', '', $lastname );
+	}
 
-	// try first initial + last name, firstname, lastname
-	$firstname = preg_replace( '/[^A-Za-z]/', '', $firstname );
-	$lastname = preg_replace( '/[^A-Za-z]/', '', $lastname );
-	if ( $firstname && $lastname ) {
+	// Try to create username using first and last name.
+	if ( ! empty( $firstname ) && ! empty( $lastname ) ) {
+		// Create username using first initial + last name.
 		$username = substr( $firstname, 0, 1 ) . $lastname;
-	} elseif ( $firstname ) {
+	} elseif ( ! empty( $firstname ) ) {
+		// Create username using only first name.
 		$username = $firstname;
-	} elseif ( $lastname ) {
+	} elseif ( ! empty( $lastname ) ) {
+		// Create username using only last name.
 		$username = $lastname;
 	}
 
-	// is it taken?
-	$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
-
-	if ( ! $taken ) {
-		return $username;
+	// If no username yet or one based on name exisdts,
+	// try to create username using email address.
+	if ( ( empty( $username ) || username_exists( $username ) )
+		&& ! empty( $email ) && is_email( $email ) ) {
+		// Break email into two parts, before and after the @ symbol.
+		$emailparts = explode( '@', $email );
+		if ( ! empty( $emailparts ) ) {
+			// Set username to the string before the email's @ symbol.
+			$email = preg_replace( '/[^A-Za-z0-9]/', '', $emailparts[0] );
+			$username = $email;
+		}
 	}
 
-	// try the beginning of the email address
-	$emailparts = explode( '@', $email );
-	if ( is_array( $emailparts ) ) {
-		$email = preg_replace( '/[^A-Za-z]/', '', $emailparts[0] );
+	// No Username yet. Generate a random one.
+	if ( empty( $username ) ) {
+		$username = wp_generate_password( 10, false );
 	}
 
-	if ( ! empty( $email ) ) {
-		$username = $email;
-	}
-
-	// is this taken? if not, add numbers until it works
+	// Check if username is taken and continue to append an incremented number until it is unique.
 	$taken = true;
 	$count = 0;
 	while ( $taken ) {
-		// add a # to the end
+		// Append a number to the end of the username.
 		if ( $count ) {
 			$username = preg_replace( '/[0-9]/', '', $username ) . $count;
 		}
 
-		// taken?
-		$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
+		// Check if the username is taken.
+		$taken = username_exists( $username );
 
-		// increment the number
+		// Increment the number.
 		$count++;
 	}
 
-	// must have a good username now
+	// Sanitize the username.
+	$username = sanitize_user( $username );
+
+	// We must have a good username now.
 	return $username;
 }
 
