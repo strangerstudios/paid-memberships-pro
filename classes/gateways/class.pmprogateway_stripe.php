@@ -1472,11 +1472,11 @@ class PMProGateway_stripe extends PMProGateway
 			try {
 				$this->customer = Stripe_Customer::retrieve($customer_id);
 
-				//update the customer description and card
+				// Update the customer description.
 				if(!empty($order->stripeToken)) {
 					$this->customer->description = $name . " (" . $email . ")";
 					$this->customer->email = $email;
-					$this->customer->card = $order->stripeToken;
+					// $this->customer->card = $order->stripeToken;
 					$this->customer->save();
 				}
 
