@@ -1040,10 +1040,6 @@ class PMProGateway_stripe extends PMProGateway
 				unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
 				$payment_intent_id = '';
 			}
-			
-			// TODO: Update PaymentIntent if $level has changed.
-			
-			
 		}
 		
 		// Create a new PaymentIntent if we don't already have one.
@@ -1055,6 +1051,13 @@ class PMProGateway_stripe extends PMProGateway
 				$_SESSION['pmpro_stripe_payment_intent_id'] = $payment_intent->id;
 			} else {
 				//TODO: Handle errors.
+			}
+		} else {
+			// Update PaymentIntent if initial payment has changed.
+			if ( intval($level->initial_payment) * 100 != $payment_intent->amount ) {
+				xdebug_break();
+				$payment_intent->amount = $level->initial_payment * 100;
+				$payment_intent->save();
 			}
 		}
 	}
@@ -1116,6 +1119,7 @@ class PMProGateway_stripe extends PMProGateway
 	 *
 	 * TODO Update docblock.
 	 * TODO Update code
+	 * TODO: Do we even need this anymore?
 	 */
 	static function confirm_payment_intent( $payment_intent_id = null ) {
 		
