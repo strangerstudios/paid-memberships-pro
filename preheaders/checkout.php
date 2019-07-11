@@ -334,6 +334,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 
 	if ( ! empty( $pmpro_error_fields ) ) {
+		xdebug_break();
 		pmpro_setMessage( __( "Please complete all required fields.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 	if ( ! empty( $password ) && $password != $password2 ) {
