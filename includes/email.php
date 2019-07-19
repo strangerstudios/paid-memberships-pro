@@ -42,14 +42,32 @@ function pmpro_wp_mail_from($from_email)
 	return $from_email;
 }
 
+/**
+ * Wrapper for pmpro_wp_mail_add_from_filters.
+ * Allows pmpro_wp_mail_add_from_filters to be called directly with args.
+ */
+function pmpro_wp_mail_add_from_filters_wrapper() {
+	pmpro_wp_mail_add_from_filters();
+}	
+
+/**
+ * Adds the wp_mail filters for from name and from email
+ */
+function pmpro_wp_mail_add_from_filters( $from_name = null, $from_email = null ) {
+	add_filter('wp_mail_from_name', function( $original_from_name ) use ( $from_name ) {
+		return $from_name ?? pmpro_wp_mail_from_name( $original_from_name );
+		
+	});
+	
+	add_filter('wp_mail_from', function( $original_from_email ) use ( $from_email ) {
+		return $from_email ?? pmpro_wp_mail_from( $original_from_email );
+	});
+}
+
 // Are we filtering all WP emails or just PMPro ones?
 $only_filter_pmpro_emails = pmpro_getOption("only_filter_pmpro_emails");
-if($only_filter_pmpro_emails) {
-	add_filter('pmpro_email_sender_name', 'pmpro_wp_mail_from_name');
-	add_filter('pmpro_email_sender', 'pmpro_wp_mail_from');
-} else {
-	add_filter('wp_mail_from_name', 'pmpro_wp_mail_from_name');
-	add_filter('wp_mail_from', 'pmpro_wp_mail_from');
+if( ! $only_filter_pmpro_emails ) {
+	add_action( 'plugins_loaded', 'pmpro_wp_mail_add_from_filters_wrapper' );
 }
 
 /**
