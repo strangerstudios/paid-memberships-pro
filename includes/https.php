@@ -67,13 +67,13 @@ function pmpro_besecure()
 		if($besecure && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off" || $_SERVER['HTTPS'] == "false"))
 		{
 			//need to be secure		
-			wp_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			wp_safe_redirect("https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 			exit;
 		}
 		elseif(!$besecure && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off" && $_SERVER['HTTPS'] != "false")
 		{
 			//don't need to be secure		
-			wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			wp_safe_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 			exit;
 		}	
 	}
@@ -139,7 +139,7 @@ function pmpro_admin_https_handler()
 			if(substr(get_option("siteurl"), 0, 5) == "http:" && !force_ssl_admin())
 			{
 				//need to redirect to non https
-				wp_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+				wp_safe_redirect("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 				exit;
 			}
 		}

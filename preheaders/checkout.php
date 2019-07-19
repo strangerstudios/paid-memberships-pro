@@ -35,8 +35,22 @@ if ( ! in_array( $gateway, $valid_gateways ) ) {
 	$pmpro_msgt = "pmpro_error";
 }
 
+/**
+ * Action to run extra preheader code before setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_before_get_level_at_checkout' );
+
 //what level are they purchasing? (discount code passed)
 $pmpro_level = pmpro_getLevelAtCheckout();
+
+/**
+ * Action to run extra preheader code after setting checkout level.
+ *
+ * @since 2.0.5
+ */
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
@@ -216,7 +230,7 @@ if ( isset( $_REQUEST['discount_code'] ) ) {
 	$discount_code = "";
 }
 if ( isset( $_REQUEST['username'] ) ) {
-	$username = sanitize_user( $_REQUEST['username'] );
+	$username = sanitize_user( $_REQUEST['username'] , true);
 } else {
 	$username = "";
 }
@@ -289,13 +303,15 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		pmpro_setMessage( __( "There are JavaScript errors on the page. Please contact the webmaster.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 
-	//if we're skipping the account fields and there is no user, we need to create a username and password
+	// If we're skipping the account fields and there is no user, we need to create a username and password.
 	if ( $skip_account_fields && ! $current_user->ID ) {
+		// Generate the username using the first name, last name and/or email address.
 		$username = pmpro_generateUsername( $bfirstname, $blastname, $bemail );
-		if ( empty( $username ) ) {
-			$username = pmpro_getDiscountCode();
-		}
-		$password  = pmpro_getDiscountCode() . pmpro_getDiscountCode();    //using two random discount codes
+
+		// Generate the password.
+		$password  = wp_generate_password();
+
+		// Set the password confirmation to the generated password.
 		$password2 = $password;
 	}
 
@@ -425,8 +441,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->membership_id    = $pmpro_level->id;
 					$morder->membership_name  = $pmpro_level->name;
 					$morder->discount_code    = $discount_code;
-					$morder->InitialPayment   = $pmpro_level->initial_payment;
-					$morder->PaymentAmount    = $pmpro_level->billing_amount;
+					$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
+					$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
 					$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
 					$morder->BillingPeriod    = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
@@ -439,7 +455,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
 						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
 						$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
-						$morder->TrialAmount           = $pmpro_level->trial_amount;
+						$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
 					}
 
 					//credit card values
@@ -454,6 +470,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//not saving email in order table, but the sites need it
 					$morder->Email = $bemail;
 
+					//save the user ID if logged in
+					if ( $current_user->ID ) {
+						$morder->user_id = $current_user->ID;
+					}
+					
 					//sometimes we need these split up
 					$morder->FirstName = $bfirstname;
 					$morder->LastName  = $blastname;
@@ -475,8 +496,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->setGateway();
 
 					//setup level var
-					$morder->getMembershipLevel();
-					$morder->membership_level = apply_filters( "pmpro_checkout_level", $morder->membership_level );
+					$morder->getMembershipLevelAtCheckout();
 
 					//tax
 					$morder->subtotal = $morder->InitialPayment;
@@ -515,9 +535,15 @@ if ( empty( $morder ) ) {
 }
 
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
-$pmpro_confirmed = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
-if ( is_array( $pmpro_confirmed ) ) {
-	extract( $pmpro_confirmed );
+$pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
+
+/**
+ * @todo Refactor this to avoid using extract.
+ */
+if ( is_array( $pmpro_confirmed_data ) ) {
+	extract( $pmpro_confirmed_data );
+} else {
+	$pmpro_confirmed = $pmpro_confirmed_data;
 }
 
 //if payment was confirmed create/update the user.
@@ -663,12 +689,12 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			'user_id'         => $user_id,
 			'membership_id'   => $pmpro_level->id,
 			'code_id'         => $discount_code_id,
-			'initial_payment' => $pmpro_level->initial_payment,
-			'billing_amount'  => $pmpro_level->billing_amount,
+			'initial_payment' => pmpro_round_price( $pmpro_level->initial_payment ),
+			'billing_amount'  => pmpro_round_price( $pmpro_level->billing_amount ),
 			'cycle_number'    => $pmpro_level->cycle_number,
 			'cycle_period'    => $pmpro_level->cycle_period,
 			'billing_limit'   => $pmpro_level->billing_limit,
-			'trial_amount'    => $pmpro_level->trial_amount,
+			'trial_amount'    => pmpro_round_price( $pmpro_level->trial_amount ),
 			'trial_limit'     => $pmpro_level->trial_limit,
 			'startdate'       => $startdate,
 			'enddate'         => $enddate

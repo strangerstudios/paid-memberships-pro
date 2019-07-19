@@ -19,7 +19,7 @@ function pmpro_check_admin_capabilities()
         pmpro_set_capabilities_for_role('administrator');
     }
 }
-add_action('admin_init', 'pmpro_check_admin_capabilities', 10, 2);
+add_action('admin_init', 'pmpro_check_admin_capabilities', 5, 2);
 
 // use the capability definition for $role_name and add/remove capabilities as requested
 function pmpro_set_capabilities_for_role( $role_name, $action = 'enable' )
@@ -48,6 +48,7 @@ function pmpro_get_capability_defs($role)
     // caps for the administrator role
     $cap_array = array(
         'pmpro_memberships_menu',
+        'pmpro_dashboard',
         'pmpro_membershiplevels',
         'pmpro_edit_memberships',
         'pmpro_pagesettings',
@@ -61,7 +62,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_orders',
         'pmpro_orderscsv',
         'pmpro_discountcodes',
-        'pmpro_updates'
+        'pmpro_updates',
     );
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);

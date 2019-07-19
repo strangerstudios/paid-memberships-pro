@@ -7,7 +7,6 @@ namespace Braintree;
  *
  * @package    Braintree
  * @subpackage Utility
- * @copyright  2015 Braintree, a division of PayPal, Inc.
  */
 
 class Configuration
@@ -28,12 +27,14 @@ class Configuration
     private $_proxyPassword = null;
     private $_timeout = 60;
     private $_sslVersion = null;
+    private $_acceptGzipEncoding = true;
 
     /**
      * Braintree API version to use
      * @access public
      */
-     const API_VERSION =  4;
+    const API_VERSION =  5;
+    const GRAPHQL_API_VERSION = '2018-09-10';
 
     public function __construct($attribs = [])
     {
@@ -50,6 +51,12 @@ class Configuration
             }
             if ($kind == 'privateKey') {
                 $this->_privateKey = $value;
+            }
+            if ($kind == 'timeout') {
+                $this->_timeout = $value;
+            }
+            if ($kind == 'acceptGzipEncoding') {
+                $this->_acceptGzipEncoding = $value;
             }
         }
 
@@ -130,7 +137,7 @@ class Configuration
 
     /**
      * Sets or gets the SSL version to use for making requests. See
-     * http://php.net/manual/en/function.curl-setopt.php for possible
+     * https://php.net/manual/en/function.curl-setopt.php for possible
      * CURLOPT_SSLVERSION values.
      *
      * @param integer $value If provided, sets the SSL version
@@ -226,6 +233,20 @@ class Configuration
         $proxyUser = self::$global->getProxyUser();
         $proxyPwd = self::$global->getProxyPassword();
         return !empty($proxyUser) && !empty($proxyPwd);
+    }
+
+    /**
+     * Specify if the HTTP client is able to decode gzipped responses.
+     *
+     * @param bool $value If true, will send an Accept-Encoding header with a gzip value. If false, will not send an Accept-Encoding header with a gzip value.
+     * @return bool true if an Accept-Encoding header with a gzip value will be sent, false if not
+     */
+    public static function acceptGzipEncoding($value = null)
+    {
+        if (is_null($value)) {
+            return self::$global->getAcceptGzipEncoding();
+        }
+        self::$global->setAcceptGzipEncoding($value);
     }
 
     public static function assertGlobalHasAccessTokenOrKeys()
@@ -400,6 +421,16 @@ class Configuration
         return $this->_sslVersion;
     }
 
+    public function getAcceptGzipEncoding()
+    {
+        return $this->_acceptGzipEncoding;
+    }
+
+    private function setAcceptGzipEncoding($value)
+    {
+        $this->_acceptGzipEncoding = $value;
+    }
+
     public function getAccessToken()
     {
         return $this->_accessToken;
@@ -425,6 +456,18 @@ class Configuration
     {
         return sprintf('%s://%s:%d', $this->protocol(), $this->serverName(), $this->portNumber());
     }
+
+    /**
+     * returns the base URL for Braintree's GraphQL endpoint based on config values
+     *
+     * @access public
+     * @param none
+     * @return string Braintree GraphQL URL
+     */
+     public function graphQLBaseUrl()
+     {
+        return sprintf('%s://%s:%d/graphql', $this->protocol(), $this->graphQLServerName(), $this->graphQLPortNumber());
+     }
 
     /**
      * sets the merchant path based on merchant ID
@@ -475,6 +518,21 @@ class Configuration
     }
 
     /**
+     * returns the graphql port number depending on environment
+     *
+     * @access public
+     * @param none
+     * @return int graphql portnumber
+     */
+    public function graphQLPortNumber()
+    {
+        if ($this->sslOn()) {
+            return 443;
+        }
+        return getenv("GRAPHQL_PORT") ?: 8080;
+    }
+
+    /**
      * returns http protocol depending on environment
      *
      * @access public
@@ -513,6 +571,35 @@ class Configuration
         }
 
         return $serverName;
+    }
+
+    /**
+     * returns Braintree GraphQL server name depending on environment
+     *
+     * @access public
+     * @param none
+     * @return string graphql domain name
+     */
+    public function graphQLServerName()
+    {
+        switch($this->_environment) {
+         case 'production':
+             $graphQLServerName = 'payments.braintree-api.com';
+             break;
+         case 'qa':
+             $graphQLServerName = 'payments-qa.dev.braintree-api.com';
+             break;
+         case 'sandbox':
+             $graphQLServerName = 'payments.sandbox.braintree-api.com';
+             break;
+         case 'development':
+         case 'integration':
+         default:
+             $graphQLServerName = 'graphql.bt.local';
+             break;
+        }
+
+        return $graphQLServerName;
     }
 
     public function authUrl()

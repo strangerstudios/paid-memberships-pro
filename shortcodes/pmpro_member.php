@@ -24,8 +24,8 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 	$pmpro_level_fields = array(
 		'membership_id',
 		'membership_name',
-		'membership_code_id',
-		'membership_code',
+		'membership_description',
+		'membership_confirmation',
 		'membership_initial_payment',
 		'membership_billing_amount',
 		'membership_cycle_number',

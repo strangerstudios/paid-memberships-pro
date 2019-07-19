@@ -36,6 +36,7 @@
 
 		//captcha
 		pmpro_setOption("recaptcha");
+		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
 		pmpro_setOption("recaptcha_privatekey");
 
@@ -72,6 +73,7 @@
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 
 	$recaptcha = pmpro_getOption("recaptcha");
+	$recaptcha_version = pmpro_getOption("recaptcha_version");
 	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
 	$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
 
@@ -245,6 +247,13 @@ if(pmpro_displayAds())
 			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
+					<label for="recaptcha_version"><?php _e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label>
+					<select id="recaptcha_version" name="recaptcha_version">
+						<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php _e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
+						<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php _e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
+					</select>
+					<small><?php _e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></small>
+					<br /><br />
 					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label>
 					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
 					<br /><br />

@@ -235,9 +235,9 @@
 
 		//is this a return call or notification
 		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 		else
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
@@ -351,7 +351,7 @@
 			}
 
 			//hook
-			do_action("pmpro_after_checkout", $morder->user_id);
+			do_action("pmpro_after_checkout", $morder->user_id, $morder);
 
 			//setup some values for the emails
 			if(!empty($morder))
@@ -459,9 +459,10 @@
 	*/
 	function pmpro_insRecurringStopped( $morder ) {
 		global $pmpro_error;
-		//hook to do other stuff when payments stop
-		do_action("pmpro_subscription_recuring_stopped", $last_order);
-
+		//hook to do other stuff when payments stop		
+		do_action( 'pmpro_subscription_recurring_stopped', $morder );
+    do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
+    
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
@@ -492,7 +493,8 @@
 	function pmpro_insRecurringRestarted( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments restart
-		do_action("pmpro_subscription_recuring_restarted", $last_order);
+		do_action( 'pmpro_subscription_recuring_restarted', $morder);
+		do_action( 'pmpro_subscription_recurring_restarted', $morder);
 
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
 		if( $worked === true ) {

@@ -60,7 +60,7 @@ function pmpro_ipnhandler_level_extend_memberships( $level, $user_id ) {
 	// does this level expire? are they an existing user of this level?
 	if ( ! empty( $level ) && ! empty( $level->expiration_number ) && pmpro_hasMembershipLevel( $level->id, $user_id ) ) {
 		// get the current enddate of their membership
-		$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $level->id );
 
 		// bail if their existing level doesn't have an end date
 		if ( empty( $user_level ) || empty( $user_level->enddate ) ) {
@@ -165,13 +165,13 @@ if ( empty( $_REQUEST['discount_code'] ) && ! empty( $_REQUEST['other_discount_c
 
 // apply all the_content filters to confirmation messages for levels
 function pmpro_pmpro_confirmation_message( $message ) {
-	return apply_filters( 'the_content', $message );
+	return wpautop( $message );
 }
 add_filter( 'pmpro_confirmation_message', 'pmpro_pmpro_confirmation_message' );
 
 // apply all the_content filters to level descriptions
 function pmpro_pmpro_level_description( $description ) {
-	return apply_filters( 'the_content', $description );
+	return wpautop( $description );
 }
 add_filter( 'pmpro_level_description', 'pmpro_pmpro_level_description' );
 
@@ -235,3 +235,27 @@ function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
 }
 add_filter( 'pmpro_subscribe_order', 'pmpro_pmpro_subscribe_order_startdate_limit', 99, 2 );
 
+/**
+ * Before changing membership at checkout,
+ * let's remember the order for checkout
+ * so we can ignore that when cancelling old orders.
+ */
+function pmpro_set_checkout_order_before_changing_membership_levels( $user_id, $order ) {
+	global $pmpro_checkout_order;
+	$pmpro_checkout_order = $order;
+}
+add_action( 'pmpro_checkout_before_change_membership_level', 'pmpro_set_checkout_order_before_changing_membership_levels', 10, 2);
+
+/**
+ * Ignore the checkout order when cancelling old orders.
+ */
+function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
+	global $pmpro_checkout_order;
+
+	if ( ! empty( $pmpro_checkout_order ) && ! empty( $pmpro_checkout_order->id ) ) {
+		$order_ids = array_diff( $order_ids, array( $pmpro_checkout_order->id ) );
+	}
+
+	return $order_ids;
+}
+add_filter( 'pmpro_other_order_ids_to_cancel', 'pmpro_ignore_checkout_order_when_cancelling_old_orders' );

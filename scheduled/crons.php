@@ -7,7 +7,9 @@ function pmpro_cron_expire_memberships()
 {
 	global $wpdb;
 
-	//make sure we only run once a day
+	//clean up errors in the memberships_users table that could cause problems
+	pmpro_cleanup_memberships_users_table();
+
 	$today = date_i18n("Y-m-d", current_time("timestamp"));
 
 	//look for memberships that expired before today
@@ -51,7 +53,9 @@ function pmpro_cron_expiration_warnings()
 {
 	global $wpdb;
 
-	//make sure we only run once a day
+	//clean up errors in the memberships_users table that could cause problems
+	pmpro_cleanup_memberships_users_table();
+
 	$today = date_i18n("Y-m-d 00:00:00", current_time("timestamp"));
 
 	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
@@ -123,6 +127,9 @@ function pmpro_cron_credit_card_expiring_warnings()
 {
 	global $wpdb;
 
+	//clean up errors in the memberships_users table that could cause problems
+	pmpro_cleanup_memberships_users_table();
+
 	$next_month_date = date_i18n("Y-m-01", strtotime("+2 months", current_time("timestamp")));
 
 	$sqlQuery = "SELECT mu.user_id
@@ -172,7 +179,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 				continue;
 
 			//okay send them an email
-			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->user_id);
+			$send_email = apply_filters("pmpro_send_credit_card_expiring_email", true, $euser->ID);
 
 			if($send_email)
 			{
@@ -203,7 +210,9 @@ function pmpro_cron_trial_ending_warnings()
 {
 	global $wpdb;
 
-	//make sure we only run once a day
+	//clean up errors in the memberships_users table that could cause problems
+	pmpro_cleanup_memberships_users_table();
+
 	$today = date_i18n("Y-m-d 00:00:00", current_time("timestamp"));
 
 	$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);

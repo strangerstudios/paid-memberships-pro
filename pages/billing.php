@@ -1,16 +1,16 @@
 <?php
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-	
+
 	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 * 
+	 *
 	 * @since 1.8.4.5
 	 *
 	 * @param bool $use_email_type, true to use email type, false to use text type
 	 */
 	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
-	
+
 	$gateway = pmpro_getOption("gateway");
 
 	$level = $current_user->membership_level;
@@ -30,7 +30,7 @@
 		 do_action('pmpro_billing_message_top'); ?>
 
 		<ul>
-			<?php 
+			<?php
 			 /**
 			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the top).
 			 *
@@ -51,14 +51,14 @@
 						echo pmpro_formatPrice($current_user->membership_level->billing_amount);
 					}
 				?>
-				
+
 			</li>
 		<?php } ?>
 
 		<?php if($level->billing_limit) { ?>
 			<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
 		<?php } ?>
-		<?php 
+		<?php
 		 /**
 		 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
 		 *
@@ -92,7 +92,7 @@
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if($pmpro_include_billing_address_fields)
-				{ 
+				{
 			?>
 			<div id="pmpro_billing_address_fields" class="pmpro_checkout">
 				<hr />
@@ -245,9 +245,9 @@
 			//make sure gateways will show up credit card fields
 			global $pmpro_requirebilling;
 			$pmpro_requirebilling = true;
-			
+
 			//do we need to show the payment information (credit card) fields? gateways will override this
-			$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);						
+			$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
 			if($pmpro_include_payment_information_fields)
 			{
 				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
@@ -350,13 +350,13 @@
 							</div>
 						<?php } ?>
 					</div> <!-- end pmpro_checkout-fields -->
-				</div> <!-- end pmpro_payment_information_fields -->	
-			<?php 
+				</div> <!-- end pmpro_payment_information_fields -->
+			<?php
 			}
-			?>	
-				
+			?>
+
 			<?php do_action("pmpro_billing_before_submit_button"); ?>
-			
+
 			<div align="center">
 				<input type="hidden" name="update-billing" value="1" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update', 'paid-memberships-pro' );?>" />

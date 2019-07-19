@@ -1,31 +1,32 @@
-<?php 
+<?php
 	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
-	
+
 	if($pmpro_msg)
 	{
 	?>
 	<div class="pmpro_message <?php echo $pmpro_msgt?>"><?php echo $pmpro_msg?></div>
 	<?php
 	}
-?>	
+?>
 
-<?php 
-	if($pmpro_invoice) 
-	{ 
+<?php
+	if($pmpro_invoice)
+	{
 		?>
 		<?php
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
 		?>
-		
+
 		<h3>
-			<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>	
+			<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>
 		</h3>
 		<a class="pmpro_a-print" href="javascript:window.print()"><?php _e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 			<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 			<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
+			<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong> <?php echo ! empty( $pmpro_invoice->status ) ? $pmpro_invoice->status : __( 'success', 'paid-memberships-pro' ); ?></li>
 			<?php if($current_user->membership_level->enddate) { ?>
 				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 			<?php } ?>
@@ -34,22 +35,22 @@
 			<?php } ?>
 			<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 		</ul>
-		
+
 		<?php
-			//check instructions		
+			//check instructions
 			if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
 				echo wpautop(pmpro_getOption("instructions"));
 		?>
-		
-		<hr />	
+
+		<hr />
 		<div class="pmpro_invoice_details">
 			<?php if(!empty($pmpro_invoice->billing->name)) { ?>
 				<div class="pmpro_invoice-billing-address">
 					<strong><?php _e('Billing Address', 'paid-memberships-pro' );?></strong>
 					<p><?php echo $pmpro_invoice->billing->name?><br />
-					<?php echo $pmpro_invoice->billing->street?><br />						
+					<?php echo $pmpro_invoice->billing->street?><br />
 					<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />												
+						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />
 					<?php } ?>
 					<?php echo formatPhone($pmpro_invoice->billing->phone)?>
 					</p>
@@ -78,19 +79,19 @@
 						<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
 					<?php } else { ?>
 						<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
-					<?php } ?>						
+					<?php } ?>
 				<?php } else { ?>
 					<small class="pmpro_grey"><?php echo pmpro_formatPrice(0);?></small>
 				<?php } ?></p>
 			</div> <!-- end pmpro_invoice-total -->
 		</div> <!-- end pmpro_invoice -->
 		<hr />
-		<?php 
-	} 
-	else 
+		<?php
+	}
+	else
 	{
-		//Show all invoices for user if no invoice ID is passed	
-		$invoices = $wpdb->get_results("SELECT o.*, UNIX_TIMESTAMP(o.timestamp) as timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' ORDER BY timestamp DESC");
+		//Show all invoices for user if no invoice ID is passed
+		$invoices = $wpdb->get_results("SELECT o.*, UNIX_TIMESTAMP(o.timestamp) as timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' AND o.status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC");
 		if($invoices)
 		{
 			?>
@@ -100,19 +101,19 @@
 					<th><?php _e('Date', 'paid-memberships-pro' ); ?></th>
 					<th><?php _e('Invoice #', 'paid-memberships-pro' ); ?></th>
 					<th><?php _e('Level', 'paid-memberships-pro' ); ?></th>
-					<th><?php _e('Total Billed', 'paid-memberships-pro' ); ?></th>					
+					<th><?php _e('Total Billed', 'paid-memberships-pro' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php
 				foreach($invoices as $invoice)
-				{ 
+				{
 					?>
 					<tr>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->timestamp)?></a></td>
 						<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo $invoice->code; ?></a></td>
 						<td><?php echo $invoice->membership_level_name;?></td>
-						<td><?php echo pmpro_formatPrice($invoice->total);?></td>											
+						<td><?php echo pmpro_formatPrice($invoice->total);?></td>
 					</tr>
 					<?php
 				}
@@ -127,7 +128,7 @@
 			<p><?php _e('No invoices found.', 'paid-memberships-pro' );?></p>
 			<?php
 		}
-	} 
+	}
 ?>
 <nav id="nav-below" class="navigation" role="navigation">
 	<div class="nav-next alignright">
