@@ -55,11 +55,11 @@ function pmpro_wp_mail_add_from_filters_wrapper() {
  */
 function pmpro_wp_mail_add_from_filters( $from_name = null, $from_email = null ) {
 	add_filter('wp_mail_from_name', function( $original_from_name ) use ( $from_name ) {
-		return $from_name ?? pmpro_wp_mail_from_name( $original_from_name );		
+		return $from_name ?: pmpro_wp_mail_from_name( $original_from_name );		
 	});
 	
 	add_filter('wp_mail_from', function( $original_from_email ) use ( $from_email ) {
-		return $from_email ?? pmpro_wp_mail_from( $original_from_email );
+		return $from_email ?: pmpro_wp_mail_from( $original_from_email );
 	});
 }
 
