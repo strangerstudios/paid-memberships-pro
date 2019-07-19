@@ -115,10 +115,12 @@
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
 			$this->subject = apply_filters("pmpro_email_subject", $temail->subject, $this);
-			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+			
+			// Filter from and fromname
+			pmpro_wp_mail_add_from_filters( $this->fromname, $this->from );
 			
 			if(wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments))
 			{
