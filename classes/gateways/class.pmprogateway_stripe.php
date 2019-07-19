@@ -1395,6 +1395,7 @@ class PMProGateway_stripe extends PMProGateway
 	 * Make a one-time charge with Stripe
 	 *
 	 * @since 1.4
+	 * //TODO: Update docblock.
 	 */
 	function charge(&$order) {
 		global $pmpro_currency, $pmpro_currencies;
@@ -1444,19 +1445,17 @@ class PMProGateway_stripe extends PMProGateway
 			// Update PaymentIntent with order information.
 			$params = array(
 				'customer' => $this->customer->id,
-				'description' => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order)
+				'description' => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order),
+				'payment_method' => $order->stripeToken,
 			);
+			cw( 'Updating PaymentIntent' );
 			$response = $payment_intent->update( $payment_intent_id, $params );
 
 			// xdebug_break();
 			//charge
 			try {
-				$params = array(
-					'payment_method' => $order->stripeToken,
-				);
-				
-				// TODO: Remove API key?
-				$response = $payment_intent->confirm( $params, $api_key );
+				cw( 'Confirming PaymentIntent' );
+				$response = $payment_intent->confirm();
 			} catch (Exception $e) {
 				//$order->status = "error";
 				$order->errorcode = true;
@@ -1465,9 +1464,8 @@ class PMProGateway_stripe extends PMProGateway
 				return false;
 			}
 
-			// Requires Authentication.
+			// Requires Authentication
 			if ( 'requires_action' == $response->status ) {
-				// Requires Authentication
 				$order->errorcode = true;
 				$order->error = __( 'Customer authentication is required. Please complete the verification steps issued by your bank.' ); // TODO: escape, change wording?
 				// $order->shorterror = $order->error;
@@ -1529,7 +1527,7 @@ class PMProGateway_stripe extends PMProGateway
 			$user = NULL;	
 		}			
 		
-		xdebug_break();
+		// xdebug_break();
 
 		//transaction id?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "cus_") !== false) {
@@ -1633,14 +1631,20 @@ class PMProGateway_stripe extends PMProGateway
 		if(!empty($customer_id)) {
 			try {
 				$this->customer = Stripe_Customer::retrieve($customer_id);
-
-				// Update the customer description.
+				$this->customer->description = $name . " (" . $email . ")";
+				$this->customer->email = $email;
+				$this->customer->save();
+				
+				$params = array(
+					'customer' => $customer_id,
+				);
+				
+				// TODO: Refactor. Attach PaymentMethod to order.
 				if(!empty($order->stripeToken)) {
-					$this->customer->description = $name . " (" . $email . ")";
-					$this->customer->email = $email;
-					// $this->customer->default_source = $order->stripeToken;
-					$this->customer->save();
+					$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
+					$payment_method->attach( $params );
 				}
+				
 				return $this->customer;
 				
 			} catch (Exception $e) {
@@ -1654,8 +1658,18 @@ class PMProGateway_stripe extends PMProGateway
 				$this->customer = Stripe_Customer::create(array(
 						  "description" => $name . " (" . $email . ")",
 						  "email" => $order->Email,
-						  "payment_method" => $order->stripeToken
+						  // "payment_method" => $order->stripeToken // TODO: Remove?
 						));
+						
+				$params = array(
+					'customer' => $this->customer->id,
+				);
+				
+				// TODO: Refactor. Attach PaymentMethod to order.
+				if(!empty($order->stripeToken)) {
+					$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
+					$payment_method->attach( $params );
+				}
 			} catch (Exception $e) {
 				$order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
 				$order->shorterror = $order->error;
@@ -1854,11 +1868,10 @@ class PMProGateway_stripe extends PMProGateway
 				"interval_count" => $order->BillingFrequency,
 				"interval" => strtolower($order->BillingPeriod),
 				"trial_period_days" => $trial_period_days,
-				"name" => $order->membership_name . " for order " . $order->code,
+				'product' => array( 'name' => $order->membership_name . " for order " . $order->code),
 				"currency" => strtolower($pmpro_currency),
 				"id" => $order->code
 			);
-
 			$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
 		} catch (Exception $e) {
 			$order->error = __("Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
@@ -1887,8 +1900,7 @@ class PMProGateway_stripe extends PMProGateway
 				),
 				'expand' => array(
 					'latest_invoice.payment_intent'
-				),
-				'payment_behavior' => 'allow_incomplete'	//TODO: Remove after updating API version.
+				)
 			);
 			$result = Stripe_Subscription::create( $params );
 			xdebug_break();
@@ -1912,6 +1924,8 @@ class PMProGateway_stripe extends PMProGateway
 		$plan = Stripe_Plan::retrieve($order->code);
 		$plan->delete();
 
+		xdebug_break();
+		
 		//if we got this far, we're all good
 		$order->status = "success";
 		$order->subscription_transaction_id = $result['id'];
@@ -2156,9 +2170,14 @@ class PMProGateway_stripe extends PMProGateway
 			// Find any open invoices for this subscription and forgive them.
 			if(!empty($invoices)) {
 				foreach($invoices->data as $invoice) {
-					if(!$invoice->closed && $invoice->subscription == $subscription->id) {
-						$invoice->closed = true;
-						$invoice->save();
+					// if(!$invoice->closed && $invoice->subscription == $subscription->id) {
+					// 	$invoice->closed = true;
+					// 	$invoice->save();
+					// }
+					// TODO: Test voiding open invoices with same sub ID.
+					if( 'open' == $invoice->status && $invoice->subscription == $subscription->id) {
+						$invoice->void();
+						// $invoice->save();
 					}
 				}
 			}
