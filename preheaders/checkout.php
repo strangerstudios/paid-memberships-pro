@@ -1,5 +1,7 @@
 <?php
+cw( 'Loading checkout preheader' );
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+// xdebug_break();
 
 //make sure we know current user's membership level
 if ( $current_user->ID ) {
@@ -334,7 +336,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 	}
 
 	if ( ! empty( $pmpro_error_fields ) ) {
-		xdebug_break();
 		pmpro_setMessage( __( "Please complete all required fields.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 	if ( ! empty( $password ) && $password != $password2 ) {
@@ -701,6 +702,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		);
 
 		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
+			cw( 'Membership Level changed' );
 			//we're good
 			//blank order for free levels
 			if ( empty( $morder ) ) {
