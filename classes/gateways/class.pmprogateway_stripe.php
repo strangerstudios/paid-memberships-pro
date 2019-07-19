@@ -8,7 +8,7 @@ use Stripe\PaymentIntent as Stripe_PaymentIntent;
 use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
 
-define( "PMPRO_STRIPE_API_VERSION", "2017-08-15" );
+define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
 
 //include pmprogateway
 require_once(dirname(__FILE__) . "/class.pmprogateway.php");
@@ -345,7 +345,7 @@ class PMProGateway_stripe extends PMProGateway
 					if ( isset( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
 						$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
 						$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
-						if ( 'requires_source_action' == $payment_intent->status ) {
+						if ( 'requires_action' == $payment_intent->status ) {
 							$requires_source_action = true;
 						}
 					}
@@ -1144,7 +1144,7 @@ class PMProGateway_stripe extends PMProGateway
 			$payment_intent_id = $payment_intent->id;
 			
 			// Cancel PaymentIntent if it belongs to another customer.
-			if ( ! empty( $payment_intent->customer ) && 'requires_source' == $payment_intent->status ) {
+			if ( ! empty( $payment_intent->customer ) && 'requires_payment_method' == $payment_intent->status ) {
 				if ( is_user_logged_in() && get_user_meta( $current_user->ID, 'pmpro_stripe_customerid', true ) != $payment_intent->customer ) {
 					$payment_intent->cancel();
 					$payment_intent_id = '';
@@ -1162,7 +1162,7 @@ class PMProGateway_stripe extends PMProGateway
 			} else {
 				//TODO: Handle errors?
 			}
-		} else if ( 'requires_source' == $payment_intent->status ) {
+		} else if ( 'requires_payment_method' == $payment_intent->status ) {
 			// Update PaymentIntent amount if necessary.
 			// TODO: Handle subscriptions.
 			if ( intval($level->initial_payment) * 100 != $payment_intent->amount ) {
@@ -1171,7 +1171,6 @@ class PMProGateway_stripe extends PMProGateway
 			}
 			$payment_intent->save();
 		}
-		
 	}
 	
 	/**
@@ -1430,7 +1429,7 @@ class PMProGateway_stripe extends PMProGateway
 		
 		$api_key = pmpro_getOption("stripe_secretkey");
 		
-		// TODO: Get PaymentIntent from session instead?
+		// TODO: Get PaymentIntent from session/order instead.
 		$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
 		$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
 		
@@ -1452,22 +1451,12 @@ class PMProGateway_stripe extends PMProGateway
 			// xdebug_break();
 			//charge
 			try {
-				
 				$params = array(
 					'payment_method' => $order->stripeToken,
 				);
 				
 				// TODO: Remove API key?
 				$response = $payment_intent->confirm( $params, $api_key );
-				
-				if ( 'requires_source_action' == $response->status ) {
-					// Requires Authentication
-					$order->errorcode = true;
-					$order->error = __( 'Additional verification is required.' ); // TODO: escape
-					// $order->shorterror = $order->error;
-					return false;
-				}
-				
 			} catch (Exception $e) {
 				//$order->status = "error";
 				$order->errorcode = true;
@@ -1476,6 +1465,15 @@ class PMProGateway_stripe extends PMProGateway
 				return false;
 			}
 
+			// Requires Authentication.
+			if ( 'requires_action' == $response->status ) {
+				// Requires Authentication
+				$order->errorcode = true;
+				$order->error = __( 'Customer authentication is required. Please complete the verification steps issued by your bank.' ); // TODO: escape, change wording?
+				// $order->shorterror = $order->error;
+				return false;
+			}
+			
 			// TODO: Handle this better?
 			if(empty($response["failure_message"])) {
 				//successful charge
@@ -1491,7 +1489,6 @@ class PMProGateway_stripe extends PMProGateway
 				return false;
 			}
 		}
-		
 	}
 
 	/**
