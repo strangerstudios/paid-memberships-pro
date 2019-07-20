@@ -1,7 +1,7 @@
 <?php
-namespace PMP\Tests;
+namespace PMPro\Tests;
 
-use PMP\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Factory\Level;
 
 abstract class Base Extends \WP_UnitTestCase {
 

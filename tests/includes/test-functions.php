@@ -1,7 +1,7 @@
 <?php
-namespace PMP\Tests\Includes;
+namespace PMPro\Tests\Includes;
 
-use PMP\Tests\Base;
+use PMPro\Tests\Base;
 
 class Functions extends Base {
 
