@@ -1667,10 +1667,11 @@ class PMProGateway_stripe extends PMProGateway
 		$update_order->ProfileStartDate = date_i18n("Y-m-d", $end_timestamp);
 		$update_order->BillingPeriod = $update['cycle_period'];
 		$update_order->BillingFrequency = $update['cycle_number'];
-
+		
 		//need filter to reset ProfileStartDate
-		add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $update_order ) {
-			return "{$update_order->ProfileStartDate}T0:0:0";
+		$profile_start_date = $update_order->ProfileStartDate;
+		add_filter('pmpro_profile_start_date', function( $startdate, $order ) use ( $profile_start_date ) {
+			return "{$profile_start_date}T0:0:0";
 		}, 10, 2);
 
 		//update subscription
