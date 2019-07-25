@@ -516,6 +516,7 @@ class PMProGateway_stripe extends PMProGateway
 								form$.get(0).submit();
 							} else if ( response.paymentIntent ) {
 								
+								debugger;
 								var paymentMethodID = response.paymentIntent.payment_method;
 								
 								// insert the PaymentMethod ID into the form so it gets submitted to the server
@@ -1402,7 +1403,7 @@ class PMProGateway_stripe extends PMProGateway
 	 */
 	static function confirm_payment_intent() {
 		
-		$api_key = pmpro_getOption("stripe_secretkey");
+		xdebug_break();
 		
 		// Get values from request.
 		$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
@@ -1410,6 +1411,7 @@ class PMProGateway_stripe extends PMProGateway
 		
 		// TODO: Refactor
 		// Load Stripe library early.
+		$api_key = pmpro_getOption("stripe_secretkey");
 		PMProGateway_Stripe::loadStripeLibrary();
 		Stripe\Stripe::setApiKey( $api_key );
 		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
@@ -1423,7 +1425,7 @@ class PMProGateway_stripe extends PMProGateway
 			),
 		);
 		
-		if ( 'requires_action' == $payment_intent->status ) {
+		if ( 'requires_confirmation' == $payment_intent->status ) {
 			$payment_intent->confirm();
 		}
 		
@@ -1590,6 +1592,9 @@ class PMProGateway_stripe extends PMProGateway
 	 * //TODO: Update docblock.
 	 */
 	function charge(&$order) {
+		
+		xdebug_break();
+		
 		global $pmpro_currency, $pmpro_currencies;
 		$currency_unit_multiplier = 100; //ie 100 cents per USD
 
@@ -1612,26 +1617,9 @@ class PMProGateway_stripe extends PMProGateway
 		$tax = $order->getTax(true);
 		$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
 
-		//create a customer
-		$result = $this->getCustomer($order);
-		
-		// TODO: Refactor? Attach PaymentMethod to order.
-		if(!empty($order->stripeToken)) {
-			$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-			if ( $this->customer->id != $payment_method->customer ) {
-				$params = array(
-					'customer' => $this->customer->id,
-				);
-				$payment_method->attach( $params );
-			}
-		}
 		
 		// xdebug_break();
 		
-		if(empty($result)) {
-			//failed to create customer
-			return false;
-		}
 		
 		// TODO: Remove this?
 		$api_key = pmpro_getOption("stripe_secretkey");
@@ -1652,6 +1640,25 @@ class PMProGateway_stripe extends PMProGateway
 			
 			return true;
 		} else {
+			//create a customer
+			$result = $this->getCustomer($order);
+			
+			if(empty($result)) {
+				//failed to create customer
+				return false;
+			}
+			
+			// TODO: Refactor? Attach PaymentMethod to order.
+			if(!empty($order->stripeToken)) {
+				$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
+				if ( $this->customer->id != $payment_method->customer ) {
+					$params = array(
+						'customer' => $this->customer->id,
+					);
+					$payment_method->attach( $params );
+				}
+			}
+			
 			// Update PaymentIntent with order information.
 			$params = array(
 				'customer' => $this->customer->id,
@@ -1728,6 +1735,7 @@ class PMProGateway_stripe extends PMProGateway
 	 * //TODO: Update docblock.
 	 */
 	function getCustomer(&$order = false, $force = false) {
+		xdebug_break();
 		global $current_user;
 
 		//already have it?
@@ -1882,15 +1890,15 @@ class PMProGateway_stripe extends PMProGateway
 						  // "payment_method" => $order->stripeToken // TODO: Remove?
 						));
 						
-				$params = array(
-					'customer' => $this->customer->id,
-				);
+				// $params = array(
+				// 	'customer' => $this->customer->id,
+				// );
 				
-				// TODO: Refactor. Attach PaymentMethod to order.
-				if(!empty($order->stripeToken)) {
-					$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-					$payment_method->attach( $params );
-				}
+				// // TODO: Refactor. Attach PaymentMethod to order.
+				// if(!empty($order->stripeToken)) {
+				// 	$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
+				// 	$payment_method->attach( $params );
+				// }
 			} catch (Exception $e) {
 				$order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
 				$order->shorterror = $order->error;
