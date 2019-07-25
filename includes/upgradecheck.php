@@ -226,15 +226,11 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption('db_version', '1.944');
 	}
 
-	/**
-	 * Run dbDelta again to update decimal fields
-	 * TODO: Update this to 2.1 on release.
-	 */
-	if( $pmpro_db_version < 2.0999 ) {
-	    pmpro_db_delta();
+	if ( $pmpro_db_version < 2.1 ) {
+		pmpro_db_delta();
 
-	    $pmpro_db_version = 2.0999;
-	    pmpro_setOption("db_version", "2.0999");
+		$pmpro_db_version = 2.1;
+		pmpro_setOption( 'db_version', '2.1' );
 	}
 }
 
