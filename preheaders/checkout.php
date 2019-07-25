@@ -1,7 +1,7 @@
 <?php
+// xdebug_break();
 cw( 'Loading checkout preheader' );
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
-// xdebug_break();
 
 //make sure we know current user's membership level
 if ( $current_user->ID ) {
@@ -77,6 +77,10 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	$pmpro_requirebilling = false;
 	$besecure             = false;
 }
+
+// Allow for filters.
+// TODO: docblock.
+$pmpro_requirebilling = apply_filters( 'pmpro_require_billing', $pmpro_requirebilling, $pmpro_level );
 
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
@@ -285,7 +289,9 @@ $pmpro_required_billing_fields = array(
 	"ExpirationYear"  => $ExpirationYear,
 	"CVV"             => $CVV
 );
+xdebug_break();
 $pmpro_required_billing_fields = apply_filters( "pmpro_required_billing_fields", $pmpro_required_billing_fields );
+xdebug_break();
 $pmpro_required_user_fields    = array(
 	"username"      => $username,
 	"password"      => $password,
@@ -335,6 +341,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		}
 	}
 
+	// xdebug_break();
 	if ( ! empty( $pmpro_error_fields ) ) {
 		pmpro_setMessage( __( "Please complete all required fields.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
@@ -435,6 +442,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			//no errors yet
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
+				// xdebug_break();
 
 				//process checkout if required
 				if ( $pmpro_requirebilling ) {
@@ -458,6 +466,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
 						$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
 					}
+					
+					// xdebug_break();
 
 					//credit card values
 					$morder->cardtype              = $CardType;
@@ -506,6 +516,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//filter for order, since v1.8
 					$morder = apply_filters( "pmpro_checkout_order", $morder );
 
+					// xdebug_break();
 					$pmpro_processed = $morder->process();
 
 					if ( ! empty( $pmpro_processed ) ) {
