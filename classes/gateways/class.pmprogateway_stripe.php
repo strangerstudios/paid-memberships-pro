@@ -1445,6 +1445,7 @@ class PMProGateway_stripe extends PMProGateway
 		$api_key = pmpro_getOption("stripe_secretkey");
 		
 		// Get values from session.
+		// TODO: Refactor? Start session earlier?
 		pmpro_start_session();
 		if ( ! empty( $_SESSION['pmpro_stripe_subscription_id'] ) ) {
 			$subscription_id = $_SESSION['pmpro_stripe_subscription_id'];
@@ -1870,9 +1871,10 @@ class PMProGateway_stripe extends PMProGateway
 			try {
 				$this->customer = Stripe_Customer::retrieve($customer_id);
 				$this->customer->description = $name . " (" . $email . ")";
-				$this->customer->email = $email;
+				if ( 'No Email' !== $email ) {
+					$this->customer->email = $email;
+				}
 				$this->customer->save();
-				
 				
 				return $this->customer;
 				
