@@ -2,12 +2,15 @@
 namespace PMPro\Tests;
 
 use PMPro\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Traits\Utility;
 
 abstract class Base Extends \WP_UnitTestCase {
 
+	use Utility;
+
 	function __get( $name ) {
 		if ( 'factory' === $name ) {
-			return $this->_pmp_factory();
+			return $this->_pmpro_factory();
 		}
 	}
 
@@ -16,10 +19,10 @@ abstract class Base Extends \WP_UnitTestCase {
 	 *
 	 * @return WP_UnitTest_Factory The fixture factory.
 	 */
-	protected function _pmp_factory() {
+	protected function _pmpro_factory() {
 		$factory = self::factory();
 
-		$factory->pmp_level = new Level( $this );
+		$factory->pmpro_level = new Level( $this );
 
 		return $factory;
 	}
