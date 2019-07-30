@@ -19,12 +19,15 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( __FILE__ ) . '/../paid-memberships-pro.php';
+	require_once dirname( __FILE__ ) . '/../paid-memberships-pro.php';
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
-require $_tests_dir . '/includes/bootstrap.php';
+require_once $_tests_dir . '/includes/bootstrap.php';
+
+require_once dirname( __FILE__ ) . '/_helpers/helpers.php';
+require_once dirname( __FILE__ ) . '/class-base.php';
 
 // Activate PMPro and run upgrade check to setup DB/etc
 echo "Installing Paid Memberships Pro...\n";

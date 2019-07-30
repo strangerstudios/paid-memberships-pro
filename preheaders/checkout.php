@@ -303,13 +303,15 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		pmpro_setMessage( __( "There are JavaScript errors on the page. Please contact the webmaster.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
 
-	//if we're skipping the account fields and there is no user, we need to create a username and password
+	// If we're skipping the account fields and there is no user, we need to create a username and password.
 	if ( $skip_account_fields && ! $current_user->ID ) {
+		// Generate the username using the first name, last name and/or email address.
 		$username = pmpro_generateUsername( $bfirstname, $blastname, $bemail );
-		if ( empty( $username ) ) {
-			$username = pmpro_getDiscountCode();
-		}
-		$password  = pmpro_getDiscountCode() . pmpro_getDiscountCode();    //using two random discount codes
+
+		// Generate the password.
+		$password  = wp_generate_password();
+
+		// Set the password confirmation to the generated password.
 		$password2 = $password;
 	}
 
