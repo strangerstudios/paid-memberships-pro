@@ -61,6 +61,9 @@
 		'PLN' => __('Polish Zloty', 'paid-memberships-pro' ),
 		'RUB' => array(
 			'name' => __('Russian Ruble (&#8381;)', 'paid-memberships-pro'),
+			'decimals' => '0',
+			'thousands_separator' => '.',
+			'decimal_separator' => ',',
 			'symbol' => '&#8381;',
 			'position' => 'right'
 		),
