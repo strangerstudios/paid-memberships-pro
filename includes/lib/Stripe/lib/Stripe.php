@@ -47,7 +47,7 @@ class Stripe
     public static $maxNetworkRetries = 0;
 
     // @var boolean Whether client telemetry is enabled. Defaults to false.
-    public static $enableTelemetry = false;
+    public static $enableTelemetry = true;
 
     // @var float Maximum delay between retries, in seconds
     private static $maxNetworkRetryDelay = 2.0;
@@ -55,7 +55,7 @@ class Stripe
     // @var float Initial delay between retries, in seconds
     private static $initialNetworkRetryDelay = 0.5;
 
-    const VERSION = '6.37.0';
+    const VERSION = '6.40.0';
 
     /**
      * @return string The API key used for requests.
