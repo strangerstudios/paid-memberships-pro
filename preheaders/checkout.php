@@ -289,9 +289,9 @@ $pmpro_required_billing_fields = array(
 	"ExpirationYear"  => $ExpirationYear,
 	"CVV"             => $CVV
 );
-xdebug_break();
+// xdebug_break();
 $pmpro_required_billing_fields = apply_filters( "pmpro_required_billing_fields", $pmpro_required_billing_fields );
-xdebug_break();
+// xdebug_break();
 $pmpro_required_user_fields    = array(
 	"username"      => $username,
 	"password"      => $password,
