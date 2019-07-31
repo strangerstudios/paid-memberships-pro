@@ -1433,7 +1433,7 @@ class PMProGateway_stripe extends PMProGateway
 	 */
 	static function confirm_payment_intent() {
 		
-		xdebug_break();
+		// xdebug_break();
 		
 		// Get values from request.
 		$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
@@ -1681,6 +1681,7 @@ class PMProGateway_stripe extends PMProGateway
 			
 			//successful charge
 			//TODO: Make sure we get the initial payment charge for subscriptions.
+			//TODO: Check for charge errors.
 			if ( empty( $order->payment_transaction_id ) && ! empty( $payment_intent->charges ) ) {
 				$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
 			}
@@ -1749,11 +1750,14 @@ class PMProGateway_stripe extends PMProGateway
 				return false;
 			}
 			
-			// TODO: Handle this better? Do we even need it?
-			if(empty($response["failure_message"])) {
-				// xdebug_break();
+			xdebug_break();
+			
+			// Only check the first charge for now.
+			$charge = $response->charges->data[0];
+			
+			if(empty($charge["failure_message"])) {
 				//successful charge
-				$order->payment_transaction_id = $response->charge;
+				$order->payment_transaction_id = $charge->id;
 				$order->updateStatus("success");
 				// $order->saveOrder();
 				
@@ -1764,8 +1768,8 @@ class PMProGateway_stripe extends PMProGateway
 			} else {
 				//$order->status = "error";
 				$order->errorcode = true;
-				$order->error = $response['failure_message'];
-				$order->shorterror = $response['failure_message'];
+				$order->error = $charge['failure_message'];
+				$order->shorterror = $charge['failure_message'];
 				return false;
 				
 				// TODO: Unset PaymentIntent?
@@ -2289,14 +2293,14 @@ class PMProGateway_stripe extends PMProGateway
 		} else if ( ! empty( $result->pending_setup_intent ) ) {
 			$payment_intent = $result->pending_setup_intent;
 		} else {
-			$payment_intent = '';
+			// $payment_intent = '';
 		}
 		if ( ! empty( $payment_intent->id ) ) {
 			$_SESSION['pmpro_stripe_payment_intent_id'] = $payment_intent->id;
 		}
 		
 		//successful subscribe
-		if ( ! empty( $payment_intent ) && 'succeeded' == $payment_intent->status ) {
+		if ( 'trialing' == $result->status || 'active' == $result->status || ( ! empty( $payment_intent ) && 'succeeded' == $payment_intent->status ) ) {
 			
 			// If there was a successful charge, add it to the order.
 			if ( empty( $order->payment_transaction_id ) && ! empty( $latest_invoice->charge ) ) {
