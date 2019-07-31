@@ -2460,6 +2460,16 @@ class PMProGateway_stripe extends PMProGateway
 	 * //TODO: Update docblock.
 	 */
 	function update(&$order) {
+		xdebug_break();
+		
+		// Check for SetupIntent.
+		if ( ! empty( $order->stripePaymentIntentId ) ) {
+			$setup_intent = Stripe_SetupIntent::retrieve( $order->stripePaymentIntentId );
+			if ( 'succeeded' == $setup_intent ) {
+				return true;
+			}
+		}
+		
 		$this->getCustomer($order);
 
 		// TODO: Refactor? Attach PaymentMethod to order.
@@ -2474,23 +2484,32 @@ class PMProGateway_stripe extends PMProGateway
 		}
 		
 		
-		// TODO: Try/catch errors.
+		// TODO: Try/catch errors. Handle multiple subscriptions?
 		
 		// Update subscription(s).
 		foreach( $this->customer->subscriptions as $subscription ) {
 			$subscription->default_payment_method = $payment_method->id;
 			$subscription->save();
+			
+			// Requires Authentication
+			if ( ! empty( $subscription->pending_setup_intent ) ) {
+				$_SESSION['pmpro_stripe_payment_intent_id'] = $subscription->pending_setup_intent;
+				$order->errorcode = true;
+				$order->error = __( 'Customer authentication is required to finish setting up this payment method. Please complete the verification steps issued by your payment provider.' ); // TODO: escape, change wording?
+				// $order->shorterror = $order->error;
+				return false;
+			}
 		}
 		
 		// If we made it here, the subscriptions were successfully updated.
 		return true;
 		
-		// TODO: Remove?
-		if(!empty($result)) {
-			return true;
-		} else {
-			return false;	//couldn't find the customer
-		}
+		// // TODO: Remove?
+		// if(!empty($result)) {
+		// 	return true;
+		// } else {
+		// 	return false;	//couldn't find the customer
+		// }
 	}
 
 	/**
