@@ -2457,11 +2457,35 @@ class PMProGateway_stripe extends PMProGateway
 	 * Helper method to update the customer info via getCustomer
 	 *
 	 * @since 1.4
+	 * //TODO: Update docblock.
 	 */
 	function update(&$order) {
-		//we just have to run getCustomer which will look for the customer and update it with the new token
-		$result = $this->getCustomer($order);
+		$this->getCustomer($order);
 
+		// TODO: Refactor? Attach PaymentMethod to order.
+		if(!empty($order->stripeToken)) {
+			$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
+			if ( $this->customer->id != $payment_method->customer ) {
+				$params = array(
+					'customer' => $this->customer->id,
+				);
+				$payment_method->attach( $params );
+			}
+		}
+		
+		
+		// TODO: Try/catch errors.
+		
+		// Update subscription(s).
+		foreach( $this->customer->subscriptions as $subscription ) {
+			$subscription->default_payment_method = $payment_method->id;
+			$subscription->save();
+		}
+		
+		// If we made it here, the subscriptions were successfully updated.
+		return true;
+		
+		// TODO: Remove?
 		if(!empty($result)) {
 			return true;
 		} else {
