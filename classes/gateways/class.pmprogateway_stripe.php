@@ -1594,7 +1594,7 @@ class PMProGateway_stripe extends PMProGateway
 			if($this->charge($order)) {
 				if(pmpro_isLevelRecurring($order->membership_level)) {
 					// Reset PaymentIntent
-					$order->stripePaymentIntentId = null;
+					// $order->stripePaymentIntentId = null;
 					if($this->subscribe($order)) {
 						//yay!
 						return true;
@@ -1678,6 +1678,7 @@ class PMProGateway_stripe extends PMProGateway
 			// xdebug_break();
 			
 			//successful charge
+			//TODO: Make sure we get the initial payment charge for subscriptions.
 			if ( empty( $order->payment_transaction_id ) && ! empty( $payment_intent->charges ) ) {
 				$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
 			}
@@ -2070,6 +2071,7 @@ class PMProGateway_stripe extends PMProGateway
 				$order->status = "success";
 				$order->subscription_transaction_id = $_SESSION['pmpro_stripe_subscription_id'];
 
+				// TODO: Test this?
 				//save new updates if this is at checkout
 				if($checkout) {
 					//empty out updates unless set above
@@ -2123,6 +2125,7 @@ class PMProGateway_stripe extends PMProGateway
 		}
 
 		//set up customer
+		// TODO: Test updating same customer from initial payment.
 		$result = $this->getCustomer($order);
 		if(empty($result)) {
 			return false;	//error retrieving customer
@@ -2232,6 +2235,7 @@ class PMProGateway_stripe extends PMProGateway
 			update_user_meta($user_id, "pmpro_stripe_updates", array());
 		}
 
+		// TODO: Remove?
 		if(empty($order->subscription_transaction_id) && !empty($this->customer['id'])) {
 			$order->subscription_transaction_id = $this->customer['id'];
 		}
