@@ -1597,6 +1597,7 @@ class PMProGateway_stripe extends PMProGateway
 					// $order->stripePaymentIntentId = null;
 					if($this->subscribe($order)) {
 						//yay!
+						$order->saveOrder();
 						return true;
 					} else {
 						//try to refund initial charge
@@ -1605,6 +1606,7 @@ class PMProGateway_stripe extends PMProGateway
 				} else {
 					//only a one time charge
 					$order->status = "success";	//saved on checkout page
+					$order->saveOrder();
 					return true;
 				}
 			} else {
@@ -1683,7 +1685,7 @@ class PMProGateway_stripe extends PMProGateway
 				$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
 			}
 			$order->updateStatus("success");
-			$order->saveOrder();
+			// $order->saveOrder();
 			
 			// We don't need this PaymentIntent anymore.
 			unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
@@ -1753,7 +1755,7 @@ class PMProGateway_stripe extends PMProGateway
 				//successful charge
 				$order->payment_transaction_id = $response->charge;
 				$order->updateStatus("success");
-				$order->saveOrder();
+				// $order->saveOrder();
 				
 				// We don't need this PaymentIntent anymore.
 				unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
