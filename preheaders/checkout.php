@@ -785,6 +785,22 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$ExpirationMonth,
 				$ExpirationYear
 			);
+			// $meta_values = array(
+			// 	$pmpro_required_billing_fields['bfirstname'],
+			// 	$pmpro_required_billing_fields['blastname'],
+			// 	$pmpro_required_billing_fields['baddress1'],
+			// 	$pmpro_required_billing_fields['baddress2'],
+			// 	$pmpro_required_billing_fields['bcity'],
+			// 	$pmpro_required_billing_fields['bstate'],
+			// 	$pmpro_required_billing_fields['bzipcode'],
+			// 	$pmpro_required_billing_fields['bcountry'],
+			// 	$pmpro_required_billing_fields['bphone'],
+			// 	$pmpro_required_billing_fields['bemail'],
+			// 	$pmpro_required_billing_fields['CardType'],
+			// 	hideCardNumber( $pmpro_required_billing_fields['AccountNumber'] ),
+			// 	$pmpro_required_billing_fields['ExpirationMonth'],
+			// 	$pmpro_required_billing_fields['ExpirationYear'],
+			// );
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields

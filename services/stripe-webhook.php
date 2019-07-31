@@ -62,13 +62,15 @@
 		catch(Exception $e)
 		{
 			$logstr .= "Could not find an event with ID #" . $event_id . ". " . $e->getMessage();
-			pmpro_stripeWebhookExit();
-			//$pmpro_stripe_event = $post_event;			//for testing you may want to assume that the passed in event is legit
+			// pmpro_stripeWebhookExit();
+			$pmpro_stripe_event = $post_event;			//for testing you may want to assume that the passed in event is legit
 		}
 	}
 
 	global $wpdb;
 
+	xdebug_break();
+	
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
@@ -222,10 +224,13 @@
 				pmpro_stripeWebhookExit();
 			}
 		}
+		//TODO: Test subs with SCA.
 		elseif($pmpro_stripe_event->type == "charge.failed")
 		{
 			//last order for this subscription
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			// $old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$old_order = new MemberOrder(1867);
+			
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
 

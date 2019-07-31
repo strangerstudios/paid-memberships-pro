@@ -440,7 +440,7 @@ class PMProGateway_stripe extends PMProGateway
 						if(pmpro_require_billing) {
 							
 							var billing_details;
-							//TODO: fix billing details
+							//TODO: test billing details
 							<?php $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress')); ?>
 							<?php if ( $pmpro_stripe_verify_address ): ?>
 							billing_details = {
@@ -627,7 +627,7 @@ class PMProGateway_stripe extends PMProGateway
 		
 		// xdebug_break();
 		
-		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
+		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
 		
 		// Set fields from PaymentMethod.
 		
@@ -688,6 +688,12 @@ class PMProGateway_stripe extends PMProGateway
 			$fields['ExpirationMonth'] = $card->exp_month;
 			$fields['ExpirationYear'] = $card->exp_year;
 			// $fields['CVV'] = $card->cvc;
+			
+			// Set global variables too for user meta, etc.
+			$CardType = $card->brand;
+			$AccountNumber = $card->last4;
+			$ExpirationMonth = $card->exp_month;
+			$ExpirationYear = $card->exp_year;
 		}
 		
 		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
