@@ -35,6 +35,10 @@ class PMProGateway_stripe extends TestCase {
 		\Stripe\ApiRequestor::setHttpClient( $curl );
 	}
 
+	//*********************************************
+	// Miscellaneous Tests
+	//*********************************************
+	 
 	/**
 	 * Test if the gateway can be initialized.
 	 *
@@ -54,7 +58,7 @@ class PMProGateway_stripe extends TestCase {
 		// Order with PaymentMethod
 		$order1 = new \MemberOrder();
 		$order1->setGateway( 'stripe' );
-		$order1->stripeToken = 'tok_12345';
+		$order1->stripeToken = 'pm_12345';
 		$order1->Email       = 'test@example.com';
 
 		// Order with Customer ID
@@ -80,7 +84,7 @@ class PMProGateway_stripe extends TestCase {
 			],
 		];
 	}
-
+	
 	 /**
 	  * Test the getCustomer() method of the PMProGateway_stripe class.
 	  *
@@ -103,4 +107,72 @@ class PMProGateway_stripe extends TestCase {
 			$this->assertEquals( $expected, $result );
 		}
 	}
+	
+	//*********************************************
+	// Checkout Tests
+	//*********************************************
+	 
+	/**
+	  * Test the set_payment_intent() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can set PaymentIntent
+	  */
+	function test_set_payment_intent() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the update_payment_intent() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can update PaymentIntent
+	  */
+	function test_update_payment_intent() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the create_payment_intent() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can create PaymentIntent
+	  */
+	function test_create_payment_intent() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the confirm_payment_intent() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can confirm PaymentIntent
+	  */
+	function test_confirm_payment_intent() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the set_setup_intent() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can set SetupIntent
+	  */
+	function test_set_setup_intent() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the set_payment_method() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can set PaymentMethod
+	  */
+	function test_set_payment_method() {
+		$this->markTestIncomplete();
+	}
+	
+	/**
+	  * Test the attach_payment_method() method of the PMProGateway_stripe class.
+	  *
+	  * @testdox can attach PaymentMethod to Customer
+	  */
+	function test_attach_payment_method() {
+		$this->markTestIncomplete();
+	}
+	
 }
