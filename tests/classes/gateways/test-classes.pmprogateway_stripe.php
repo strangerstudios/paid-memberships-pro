@@ -6,6 +6,7 @@ use \PHPUnit\Framework\TestCase;
 
 /**
  * @testdox Stripe Gateway
+ * @covers \PMProGateway_stripe
  */
 class PMProGateway_stripe extends TestCase {
 
@@ -46,17 +47,17 @@ class PMProGateway_stripe extends TestCase {
 	}
 
 	 /**
-	  * Data provider for test_get_customer.
+	  * Data provider for getCustomer() test.
 	  */
-	function data_get_customer() {
+	function data_getCustomer() {
 
-		// New Customer
+		// Order with PaymentMethod
 		$order1 = new \MemberOrder();
 		$order1->setGateway( 'stripe' );
 		$order1->stripeToken = 'tok_12345';
 		$order1->Email       = 'test@example.com';
 
-		// Order with Customer
+		// Order with Customer ID
 		$order2 = new \MemberOrder();
 		$order2->setGateway( 'stripe' );
 		$order2->Gateway->customer = 'cus_12345';
@@ -67,7 +68,7 @@ class PMProGateway_stripe extends TestCase {
 			// $force,
 			// $expected
 			// ],
-			'New Customer - force'                 => [
+			'Order with PaymentMethod - force'     => [
 				$order1,
 				true,
 				'cus_',
@@ -84,9 +85,9 @@ class PMProGateway_stripe extends TestCase {
 	  * Test the getCustomer() method of the PMProGateway_stripe class.
 	  *
 	  * @testdox can get Customer
-	  * @dataProvider data_get_customer
+	  * @dataProvider data_getCustomer
 	  */
-	function test_get_customer( $order, $force, $expected ) {
+	function test_getCustomer( $order, $force, $expected ) {
 
 		$gateway = $order->Gateway;
 
@@ -94,11 +95,11 @@ class PMProGateway_stripe extends TestCase {
 		$gateway->customer = $gateway->getCustomer( $order, $force );
 		$result            = $gateway->customer;
 
-		// If a Customer was returned, check the ID.
 		if ( ! empty( $result->id ) ) {
+			// If a Customer was returned, check the ID.
 			$this->assertContains( $expected, $result->id );
-			// If a Customer ID was returned, make sure it's the same.
 		} else {
+			// If a Customer ID was returned, make sure it's the same.
 			$this->assertEquals( $expected, $result );
 		}
 	}
