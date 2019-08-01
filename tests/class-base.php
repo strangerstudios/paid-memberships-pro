@@ -2,7 +2,7 @@
 namespace PMPro\Tests;
 
 use PMPro\Tests\Helpers\Factory\Level;
-// use PMPro\Tests\Helpers\Factory\Order;
+use PMPro\Tests\Helpers\Factory\Order;
 
 abstract class Base Extends \WP_UnitTestCase {
 
@@ -21,7 +21,7 @@ abstract class Base Extends \WP_UnitTestCase {
 		$factory = self::factory();
 
 		$factory->pmpro_level = new Level( $this );
-		// $factory->pmpro_order = new Order( $this );
+		$factory->pmpro_order = new Order( $this );
 
 		return $factory;
 	}
