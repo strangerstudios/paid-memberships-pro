@@ -1,25 +1,27 @@
 <?php
-namespace PMP\Tests;
+namespace PMPro\Tests;
 
-use PMP\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Factory\Order;
 
 abstract class Base Extends \WP_UnitTestCase {
 
 	function __get( $name ) {
 		if ( 'factory' === $name ) {
-			return $this->_pmp_factory();
+			return $this->_pmpro_factory();
 		}
 	}
 
 	/**
-	 * Fetches the factory object for generating WordPress & PMP fixtures.
+	 * Fetches the factory object for generating WordPress & PMPro fixtures.
 	 *
 	 * @return WP_UnitTest_Factory The fixture factory.
 	 */
-	protected function _pmp_factory() {
+	protected function _pmpro_factory() {
 		$factory = self::factory();
 
-		$factory->pmp_level = new Level( $this );
+		$factory->pmpro_level = new Level( $this );
+		$factory->pmpro_order = new Order( $this );
 
 		return $factory;
 	}
@@ -28,12 +30,12 @@ abstract class Base Extends \WP_UnitTestCase {
 	 * Runs the routine after all tests have been run.
 	 */
 	public static function tearDownAfterClass() {
-		self::_delete_all_pmp_data();
+		self::_delete_all_pmpro_data();
 
 		parent::tearDownAfterClass();
 	}
 
-	protected static function _delete_all_pmp_data() {
+	protected static function _delete_all_pmpro_data() {
 		global $wpdb;
 
 		$tables = [

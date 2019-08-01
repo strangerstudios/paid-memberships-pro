@@ -160,6 +160,11 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 			$url = str_replace( 'http:', 'https:', $url );
 		}
 	}
+	
+	/**
+	 * Filter the URL before returning.
+	 */
+	$url = apply_filters( 'pmpro_url', $url, $page, $querystring, $scheme );
 
 	return $url;
 }
