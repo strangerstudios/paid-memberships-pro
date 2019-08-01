@@ -5,11 +5,13 @@ namespace PMPro\Tests\Classes\Gateways;
 use \PHPUnit\Framework\TestCase;
 
 /**
- * @testdox Stripe Gateway
+ * @testdox PMProGateway_stripe
  * @covers \PMProGateway_stripe
  */
 class PMProGateway_stripe extends TestCase {
 
+	private static $mock_api_initialized;
+	private static $gateway;
 	private static $order;
 
 	/**
@@ -19,12 +21,6 @@ class PMProGateway_stripe extends TestCase {
 	 */
 	public static function setup_mock_stripe_api() {
 
-		echo "Setting up mock Stripe API...\n";
-
-		// Load the Stripe library.
-		self::$order = new \MemberOrder();
-		self::$order->setGateway( 'stripe' );
-
 		// Set API key and base.
 		\Stripe\Stripe::setApiKey( 'sk_test_123' );
 		\Stripe\Stripe::$apiBase = 'http://api.stripe.com';
@@ -33,23 +29,22 @@ class PMProGateway_stripe extends TestCase {
 		$curl = new \Stripe\HttpClient\CurlClient( [ CURLOPT_PROXY => 'localhost:12111' ] );
 		// tell Stripe to use the tweaked client
 		\Stripe\ApiRequestor::setHttpClient( $curl );
+		
+		// Test the gateway.
+		try {
+			$charge = \Stripe\Charge::retrieve( 'ch_123' );
+			if ( ! empty( $charge->id ) ) {
+				self::$mock_api_initialized = true;
+			}
+		} catch ( \Exception $e ) {
+			self::$mock_api_initialized = false;
+		}
 	}
 
 	//*********************************************
 	// Miscellaneous Tests
 	//*********************************************
 	 
-	/**
-	 * Test if the gateway can be initialized.
-	 *
-	 * @testdox is initialized.
-	 */
-	function test_is_initialized() {
-		$order  = self::$order;
-		$result = $order->gateway;
-		$this->assertEquals( $result, 'stripe' );
-	}
-
 	 /**
 	  * Data provider for getCustomer() test.
 	  */
@@ -92,6 +87,10 @@ class PMProGateway_stripe extends TestCase {
 	  * @dataProvider data_getCustomer
 	  */
 	function test_getCustomer( $order, $force, $expected ) {
+		
+		if ( ! self::$mock_api_initialized ) {
+			$this->markTestSkipped( 'Unable to use stripe-mock server.' );
+		}
 
 		$gateway = $order->Gateway;
 
