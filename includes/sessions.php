@@ -55,3 +55,42 @@ function pmpro_close_session() {
 }
 
 add_action( 'pmpro_after_checkout', 'pmpro_close_session', 32768 );
+
+/**
+ * Set a session variable.
+ *
+ * @since 2.1.0
+ *
+ * TODO: Update docblock.
+ */
+function pmpro_set_session_var( $key, $value ) {
+	// Make sure we have a session.
+	pmpro_start_session();
+	$_SESSION[$key] = $value;
+}
+
+/**
+ * Get a session variable.
+ *
+ * @since 2.1.0
+ *
+ * TODO: Update docblock.
+ */
+function pmpro_get_session_var( $key ) {
+	// Make sure we have a session.
+	pmpro_start_session();
+	return $_SESSION[$key];
+}
+
+/**
+ * Unset a session variable.
+ *
+ * @since 2.1.0
+ *
+ * TODO: Update docblock.
+ */
+function pmpro_unset_session_var( $key ) {
+	// Make sure we have a session.
+	pmpro_start_session();
+	unset( $_SESSION[$key] );
+}

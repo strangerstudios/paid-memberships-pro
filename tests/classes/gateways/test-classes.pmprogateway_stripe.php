@@ -46,7 +46,7 @@ class PMProGateway_stripe extends TestCase {
 	//*********************************************
 	 
 	 /**
-	  * Data provider for getCustomer() test.
+	  * Data provider for test_getCustomer.
 	  */
 	function data_getCustomer() {
 
@@ -83,7 +83,7 @@ class PMProGateway_stripe extends TestCase {
 	 /**
 	  * Test the getCustomer() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can get Customer
+	  * @testdox get Customer
 	  * @dataProvider data_getCustomer
 	  */
 	function test_getCustomer( $order, $force, $expected ) {
@@ -114,7 +114,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the set_payment_intent() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can set PaymentIntent
+	  * @testdox set PaymentIntent
 	  */
 	function test_set_payment_intent() {
 		$this->markTestIncomplete();
@@ -123,7 +123,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the update_payment_intent() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can update PaymentIntent
+	  * @testdox update PaymentIntent
 	  */
 	function test_update_payment_intent() {
 		$this->markTestIncomplete();
@@ -132,7 +132,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the create_payment_intent() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can create PaymentIntent
+	  * @testdox create PaymentIntent
 	  */
 	function test_create_payment_intent() {
 		$this->markTestIncomplete();
@@ -141,7 +141,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the confirm_payment_intent() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can confirm PaymentIntent
+	  * @testdox confirm PaymentIntent
 	  */
 	function test_confirm_payment_intent() {
 		$this->markTestIncomplete();
@@ -150,7 +150,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the set_setup_intent() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can set SetupIntent
+	  * @testdox set SetupIntent
 	  */
 	function test_set_setup_intent() {
 		$this->markTestIncomplete();
@@ -159,7 +159,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the set_payment_method() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can set PaymentMethod
+	  * @testdox set PaymentMethod
 	  */
 	function test_set_payment_method() {
 		$this->markTestIncomplete();
@@ -168,7 +168,7 @@ class PMProGateway_stripe extends TestCase {
 	/**
 	  * Test the attach_payment_method() method of the PMProGateway_stripe class.
 	  *
-	  * @testdox can attach PaymentMethod to Customer
+	  * @testdox attach PaymentMethod to Customer
 	  */
 	function test_attach_payment_method() {
 		$this->markTestIncomplete();
