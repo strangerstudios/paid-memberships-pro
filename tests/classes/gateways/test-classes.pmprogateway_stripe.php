@@ -2,13 +2,14 @@
 
 namespace PMPro\Tests\Classes\Gateways;
 
-use \PHPUnit\Framework\TestCase;
+use PMPro\Tests\Base;
 
 /**
+ * @group stripe
  * @testdox PMProGateway_stripe
  * @covers \PMProGateway_stripe
  */
-class PMProGateway_stripe extends TestCase {
+class PMProGateway_stripe extends Base {
 
 	private static $mock_api_initialized;
 	private static $gateway;
