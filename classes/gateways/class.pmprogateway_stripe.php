@@ -217,13 +217,7 @@ class PMProGateway_stripe extends PMProGateway
 			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards',
-			'stripe_cardinal_apikey',
-			'stripe_cardinal_apiidentifier',
-			'stripe_cardinal_orgunitid',
-			'stripe_cardinal_songbirdurl',
-			'stripe_cardinal_merchantid',
-			'stripe_cardinal_processorid'
+			'accepted_credit_cards'
 		);
 
 		return $options;
@@ -304,59 +298,6 @@ class PMProGateway_stripe extends PMProGateway
 	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
 		<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
 		<td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
-	</tr>
-	<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<td colspan="2">
-			<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_apikey" name="stripe_cardinal_apikey" size="60" value="<?php echo esc_attr($values['stripe_cardinal_apikey'])?>" />
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_apiidentifier" name="stripe_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['stripe_cardinal_apiidentifier'])?>" />
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_orgunitid" name="stripe_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['stripe_cardinal_orgunitid'])?>" />
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_songbirdurl" name="stripe_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['stripe_cardinal_songbirdurl'])?>" />
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_merchantid" name="stripe_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['stripe_cardinal_merchantid'])?>" />
-		</td>
-	</tr>
-	<tr class="gateway gateway_stripe" <?php if($gateway != "stripe") { ?>style="display: none;"<?php } ?>>
-		<th scope="row" valign="top">
-			<label for="stripe_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
-		</th>
-		<td>
-			<input type="text" id="stripe_cardinal_processorid" name="stripe_cardinal_processorid" size="60" value="<?php echo esc_attr($values['stripe_cardinal_processorid'])?>" />
-		</td>
 	</tr>
 	<?php
 	}
