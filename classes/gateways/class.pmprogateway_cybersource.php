@@ -62,12 +62,12 @@
 				'tax_state',
 				'tax_rate',
 				'accepted_credit_cards',
-				'cardinal_apikey',
-				'cardinal_apiidentifier',
-				'cardinal_orgunitid',
-				'cardinal_songbirdurl',
-				'cardinal_merchantid',
-				'cardinal_processorid'
+				'cybersource_cardinal_apikey',
+				'cybersource_cardinal_apiidentifier',
+				'cybersource_cardinal_orgunitid',
+				'cybersource_cardinal_songbirdurl',
+				'cybersource_cardinal_merchantid',
+				'cybersource_cardinal_processorid'
 			);
 
 			return $options;
@@ -121,6 +121,59 @@
 			</th>
 			<td>
 				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
+			</td>
+		</tr>
+		<tr class="pmpro_settings_divider gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_apikey" name="cybersource_cardinal_apikey" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_apikey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_apiidentifier" name="cybersource_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_apiidentifier'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_orgunitid" name="cybersource_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_orgunitid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_songbirdurl" name="cybersource_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_songbirdurl'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_merchantid" name="cybersource_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_merchantid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="cybersource_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="cybersource_cardinal_processorid" name="cybersource_cardinal_processorid" size="60" value="<?php echo esc_attr($values['cybersource_cardinal_processorid'])?>" />
 			</td>
 		</tr>
 		<?php

@@ -91,12 +91,12 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'cardinal_apikey',
-				'cardinal_apiidentifier',
-				'cardinal_orgunitid',
-				'cardinal_songbirdurl',
-				'cardinal_merchantid',
-				'cardinal_processorid'
+				'paypal_cardinal_apikey',
+				'paypal_cardinal_apiidentifier',
+				'paypal_cardinal_orgunitid',
+				'paypal_cardinal_songbirdurl',
+				'paypal_cardinal_merchantid',
+				'paypal_cardinal_processorid'
 			);
 
 			return $options;

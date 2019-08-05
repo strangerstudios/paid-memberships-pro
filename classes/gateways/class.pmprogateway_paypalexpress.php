@@ -46,7 +46,7 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
-
+			
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -105,13 +105,13 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'paypalexpress_skip_confirmation',
-				'cardinal_apikey',
-				'cardinal_apiidentifier',
-				'cardinal_orgunitid',
-				'cardinal_songbirdurl',
-				'cardinal_merchantid',
-				'cardinal_processorid'
+				'paypal_skip_confirmation',
+				'paypal_cardinal_apikey',
+				'paypal_cardinal_apiidentifier',
+				'paypal_cardinal_orgunitid',
+				'paypal_cardinal_songbirdurl',
+				'paypal_cardinal_merchantid',
+				'paypal_cardinal_processorid'
 			);
 
 			return $options;
