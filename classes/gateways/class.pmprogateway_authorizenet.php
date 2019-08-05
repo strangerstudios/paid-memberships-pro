@@ -58,7 +58,13 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards'
+				'accepted_credit_cards',
+				'cardinal_apikey',
+				'cardinal_apiidentifier',
+				'cardinal_orgunitid',
+				'cardinal_songbirdurl',
+				'cardinal_merchantid',
+				'cardinal_processorid'
 			);
 
 			return $options;
