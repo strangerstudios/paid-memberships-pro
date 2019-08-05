@@ -90,7 +90,13 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'cardinal_apikey',
+				'cardinal_apiidentifier',
+				'cardinal_orgunitid',
+				'cardinal_songbirdurl',
+				'cardinal_merchantid',
+				'cardinal_processorid'
 			);
 
 			return $options;

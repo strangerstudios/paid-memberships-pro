@@ -90,7 +90,13 @@
 				'tax_state',
 				'tax_rate',
 				'accepted_credit_cards',
-				'paypalexpress_skip_confirmation'
+				'paypalexpress_skip_confirmation',
+				'cardinal_apikey',
+				'cardinal_apiidentifier',
+				'cardinal_orgunitid',
+				'cardinal_songbirdurl',
+				'cardinal_merchantid',
+				'cardinal_processorid'
 			);
 
 			return $options;

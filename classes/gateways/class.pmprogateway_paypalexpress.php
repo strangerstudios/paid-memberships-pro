@@ -105,7 +105,13 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'paypalexpress_skip_confirmation'
+				'paypalexpress_skip_confirmation',
+				'cardinal_apikey',
+				'cardinal_apiidentifier',
+				'cardinal_orgunitid',
+				'cardinal_songbirdurl',
+				'cardinal_merchantid',
+				'cardinal_processorid'
 			);
 
 			return $options;

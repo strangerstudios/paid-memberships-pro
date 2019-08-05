@@ -160,6 +160,63 @@
 			<?php /* Gateway Specific Settings */ ?>
 			<?php do_action('pmpro_payment_option_fields', $payment_option_values, $gateway); ?>
 
+			<?php /* CardinalCommerce settings for SCA */ ?>
+			<?php $cardinal_gateways = array('cybersource','stripe', 'paypal', 'paypalexpress', 'paypalstandard', 'payflowpro', 'braintree'); ?>
+
+			<tr class="pmpro_settings_divider gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<td colspan="2">
+					<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_apikey" name="cardinal_apikey" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_apikey'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_apiidentifier" name="cardinal_apiidentifier" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_apiidentifier'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_orgunitid" name="cardinal_orgunitid" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_orgunitid'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_songbirdurl" name="cardinal_songbirdurl" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_songbirdurl'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_merchantid" name="cardinal_merchantid" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_merchantid'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_stripe gateway_cybersource gateway_paypal gateway_paypalexpress gateway_paypalstandard gateway_payflowpro gateway_braintree" <?php if(!in_array( $gateway, $cardinal_gateways )) { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="cardinal_processorid" name="cardinal_processorid" size="60" value="<?php echo esc_attr($payment_option_values['cardinal_processorid'])?>" />
+				</td>
+			</tr>
+
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
 					<?php _e('Currency and Tax Settings', 'paid-memberships-pro' ); ?>
