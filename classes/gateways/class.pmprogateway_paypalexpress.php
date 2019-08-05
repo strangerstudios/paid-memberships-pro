@@ -105,7 +105,7 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'paypal_skip_confirmation',
+				'paypalexpress_skip_confirmation',
 				'paypal_cardinal_apikey',
 				'paypal_cardinal_apiidentifier',
 				'paypal_cardinal_orgunitid',
