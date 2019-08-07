@@ -954,21 +954,13 @@
 			return $this->sendEmail();
 		}
 
-		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL)
 		{
 			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
 			if(!$user || !$order)
-				return false;
-
-			// if an invoice URL wasn't passed in, grab it from the order
-			if(empty($invoice_url) && isset($order->invoice_url))
-				$invoice_url = $order->invoice_url;
-
-			// still no invoice URL? bail
-			if(empty($invoice_url))
 				return false;
 				
 			$this->email = $user->user_email;
@@ -985,27 +977,21 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"invoice_url" => $invoice_url,
+								"membership_level_name" => $user->membership_level->name,
+								"user_email" => $user->user_email,
+								"invoice_url" => $order->invoice_url,
 							);
 						
 			return $this->sendEmail();
 		}
 
-		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL)
 		{
 			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
 			if(!$user || !$order)
-				return false;
-
-			// if an invoice URL wasn't passed in, grab it from the order
-			if(empty($invoice_url) && isset($order->invoice_url))
-				$invoice_url = $order->invoice_url;
-
-			// still no invoice URL? bail
-			if(empty($invoice_url))
 				return false;
 				
 			$this->email = get_bloginfo("admin_email");
@@ -1022,8 +1008,9 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"membership_level_name" => $user->membership_level->name,
 								"user_email" => $user->user_email,
-								"invoice_url" => $invoice_url,
+								"invoice_url" => $order->invoice_url,
 							);
 						
 			return $this->sendEmail();
