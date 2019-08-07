@@ -228,7 +228,7 @@
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
 			//TODO: Test subs with SCA.
 			// $old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-			$old_order = new MemberOrder(1867);
+			$old_order = new MemberOrder(495);
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
 			
