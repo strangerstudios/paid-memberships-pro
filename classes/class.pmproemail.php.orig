@@ -954,7 +954,11 @@
 			return $this->sendEmail();
 		}
 
+<<<<<<< HEAD
 		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+=======
+		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL)
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 		{
 			global $wpdb, $current_user;
 			if(!$user)
@@ -962,6 +966,7 @@
 			
 			if(!$user || !$order)
 				return false;
+<<<<<<< HEAD
 
 			// if an invoice URL wasn't passed in, grab it from the order
 			if(empty($invoice_url) && isset($order->invoice_url))
@@ -970,6 +975,8 @@
 			// still no invoice URL? bail
 			if(empty($invoice_url))
 				return false;
+=======
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 				
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Payment action required for your %s membership", 'paid-memberships-pro' ), get_option("blogname"));	
@@ -985,13 +992,23 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+<<<<<<< HEAD
 								"invoice_url" => $invoice_url,
+=======
+								"membership_level_name" => $user->membership_level->name,
+								"user_email" => $user->user_email,
+								"invoice_url" => $order->invoice_url,
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 							);
 						
 			return $this->sendEmail();
 		}
 
+<<<<<<< HEAD
 		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+=======
+		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL)
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 		{
 			global $wpdb, $current_user;
 			if(!$user)
@@ -999,6 +1016,7 @@
 			
 			if(!$user || !$order)
 				return false;
+<<<<<<< HEAD
 
 			// if an invoice URL wasn't passed in, grab it from the order
 			if(empty($invoice_url) && isset($order->invoice_url))
@@ -1007,6 +1025,8 @@
 			// still no invoice URL? bail
 			if(empty($invoice_url))
 				return false;
+=======
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 				
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Payment action required: membership for %s at %s", 'paid-memberships-pro' ), $user->user_login, get_option("blogname"));	
@@ -1022,8 +1042,14 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+<<<<<<< HEAD
 								"user_email" => $user->user_email,
 								"invoice_url" => $invoice_url,
+=======
+								"membership_level_name" => $user->membership_level->name,
+								"user_email" => $user->user_email,
+								"invoice_url" => $order->invoice_url,
+>>>>>>> 635c85aad676a92db4365a64dbffcc3f107457c7
 							);
 						
 			return $this->sendEmail();
