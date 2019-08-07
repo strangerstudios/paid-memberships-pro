@@ -184,6 +184,19 @@ function pmpro_areLevelsFree( $levelarr ) {
 	return true;
 }
 
+/**
+ * Check to see if only free levels are available.
+ * @return boolean This will return true if only free levels are available for signup.
+ * @internal Creates a filter 'pmpro_only_free_levels'.
+ * @since 2.1
+ */
+function pmpro_onlyFreeLevels() {
+	// Get levels that are available for checkout only.
+	$levels = pmpro_getAllLevels( false, true );
+	
+	return apply_filters( 'pmpro_only_free_levels', pmpro_areLevelsFree( $levels ) );
+}
+
 function pmpro_isLevelRecurring( &$level ) {
 	if ( ! empty( $level ) && ( $level->billing_amount > 0 || $level->trial_amount > 0 ) ) {
 		return true;
