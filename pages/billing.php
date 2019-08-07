@@ -16,10 +16,12 @@
 	$level = $current_user->membership_level;
 	
 	//Make sure the $level object is a valid level definition
-	if(isset($level->id) && !empty($level->id))
+	if(!empty($level) && !empty($level->id))
 	{
+		$checkout_url = pmpro_url( 'checkout', '?level=' . $level->id );
+		$logout_url = wp_logout_url( $checkout_url );
 	?>
-		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( $logout_url ); ?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
 	<?php
 		 /**
 		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
@@ -376,7 +378,7 @@
 
 <?php } // End for recurring level check.
 	?>
-	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url();?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( wp_logout_url() );?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
 	<?php
 	// Check to see if the user has a cancelled order
 	$order = new MemberOrder();
