@@ -291,10 +291,11 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Valid types: 'email', 'pages'
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
 	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		$templates = $user_templates;
+		array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
