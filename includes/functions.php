@@ -160,6 +160,11 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 			$url = str_replace( 'http:', 'https:', $url );
 		}
 	}
+	
+	/**
+	 * Filter the URL before returning.
+	 */
+	$url = apply_filters( 'pmpro_url', $url, $page, $querystring, $scheme );
 
 	return $url;
 }
@@ -304,10 +309,11 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Valid types: 'email', 'pages'
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
 	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		$templates = $user_templates;
+		array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
@@ -2471,18 +2477,23 @@ function pmpro_formatPrice( $price ) {
 	// start with the rounded price
 	$formatted = pmpro_round_price( $price );
 
+	$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place();
+	$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
+	$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
+	$symbol_position = isset( $pmpro_currencies[ $pmpro_currency ]['position'] ) ? $pmpro_currencies[ $pmpro_currency ]['position'] : 'left';
+
 	// settings stored in array?
 	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		// format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format(
 			$formatted,
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place() ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.' ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',' )
+			$decimals,
+			$decimal_separator,
+			$thousands_separator
 		);
 
 		// which side is the symbol on?
-		if ( ! empty( $pmpro_currencies[ $pmpro_currency ]['position'] ) && $pmpro_currencies[ $pmpro_currency ]['position'] == 'left' ) {
+		if ( ! empty( $symbol_position ) && $symbol_position == 'left' ) {
 			$formatted = $pmpro_currency_symbol . $formatted;
 		} else {
 			$formatted = $formatted . $pmpro_currency_symbol;
@@ -2492,10 +2503,50 @@ function pmpro_formatPrice( $price ) {
 		$formatted = $pmpro_currency_symbol . number_format( $formatted, pmpro_get_decimal_place() );
 	}
 
-	$formatted = rtrim( $formatted, 0 );
+	// Trim the trailing zero values.
+	$formatted = pmpro_trim_trailing_zeroes( $formatted, $decimals, $decimal_separator, $pmpro_currency_symbol, $symbol_position );
 
 	// filter
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
+}
+
+
+/**
+ * Function to trim trailing zeros from an amount.
+ * @since 2.1
+ * @return float $amount The trimmed amount (removed trailing zeroes).
+ */
+function pmpro_trim_trailing_zeroes( $amount, $decimals, $decimal_separator, $symbol, $symbol_position = "left" ) {
+
+	if ( $decimals <= 2 ) {
+		return $amount;
+	}
+	//Check to see if decimal places are only 0. if so, then don't trim it.
+	$decimal_value = explode( $decimal_separator, $amount );
+
+	if ( empty( $decimal_value[1] ) ) {
+		return $amount;
+	}
+
+	$is_zero = round( intval( $decimal_value[1] ) );
+	// Store this in a variable for another time.
+	$original_amount = $amount;
+
+	if ( $is_zero > 0 ) {
+		if ( $symbol_position == 'right' ) {
+			$amount = rtrim( $amount, $symbol ); // remove currency symbol.
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+
+			// put the symbol back.
+			$amount .= $symbol;
+		} else {
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+		}
+	}
+
+	$amount = apply_filters( 'pmpro_trim_cost_amount', $amount, $original_amount, $decimal_separator, $symbol, $symbol_position );
+
+	return $amount;
 }
 
 /**

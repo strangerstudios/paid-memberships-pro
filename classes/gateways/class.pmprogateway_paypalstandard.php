@@ -90,7 +90,13 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
+				'paypal_cardinal_apikey',
+				'paypal_cardinal_apiidentifier',
+				'paypal_cardinal_orgunitid',
+				'paypal_cardinal_songbirdurl',
+				'paypal_cardinal_merchantid',
+				'paypal_cardinal_processorid'
 			);
 
 			return $options;
@@ -174,7 +180,7 @@
 				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('Here is your IPN URL for reference. You SHOULD NOT set this in your PayPal settings.', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<p><?php _e('Here is your IPN URL for reference. You SHOULD NOT set this in your PayPal settings.', 'paid-memberships-pro' );?> <pre><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></pre></p>
 			</td>
 		</tr>
 		<?php
