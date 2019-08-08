@@ -268,7 +268,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards'
+				'accepted_credit_cards',
+				'braintree_cardinal_apikey',
+				'braintree_cardinal_apiidentifier',
+				'braintree_cardinal_orgunitid',
+				'braintree_cardinal_songbirdurl',
+				'braintree_cardinal_merchantid',
+				'braintree_cardinal_processorid'
 			);
 
 			return $options;
@@ -347,6 +353,59 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						echo add_query_arg( 'action', 'braintree_webhook', admin_url( 'admin-ajax.php' ) );
 					?></pre>
 				</p>
+			</td>
+		</tr>
+		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_apikey" name="braintree_cardinal_apikey" size="60" value="<?php echo esc_attr($values['braintree_cardinal_apikey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_apiidentifier" name="braintree_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['braintree_cardinal_apiidentifier'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_orgunitid" name="braintree_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['braintree_cardinal_orgunitid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_songbirdurl" name="braintree_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['braintree_cardinal_songbirdurl'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_merchantid" name="braintree_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['braintree_cardinal_merchantid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="braintree_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="braintree_cardinal_processorid" name="braintree_cardinal_processorid" size="60" value="<?php echo esc_attr($values['braintree_cardinal_processorid'])?>" />
 			</td>
 		</tr>
 		<?php
