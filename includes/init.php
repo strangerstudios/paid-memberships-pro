@@ -11,7 +11,7 @@ function pmpro_init() {
 	if( is_admin() ) {
 		// Admin scripts and styles. We could use the admin_enqueue_scripts, but this works too.
 		
-		wp_register_script( 'pmpro_admin', plugins_url( 'js/paid-memberships-pro.js', dirname(__FILE__) ), array( 'jquery' ) );
+		wp_register_script( 'pmpro_admin', plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ), array( 'jquery' ) );
 		$all_levels = pmpro_getAllLevels( true, true );
 		$all_level_values_and_labels = array();
 		foreach( $all_levels as $level ) {
