@@ -1,12 +1,12 @@
 <?php
-namespace PMP\Tests\Includes;
+namespace PMPro\Tests\Includes;
 
-use PMP\Tests\Base;
+use PMPro\Tests\Base;
 
 class Functions extends Base {
 
 	public function data_pmpro_getLevel() {
-		$level_id = $this->factory->pmp_level->create();
+		$level_id = $this->factory->pmpro_level->create();
 		$level    = pmpro_getLevel( $level_id );
 
 		return [
@@ -45,7 +45,7 @@ class Functions extends Base {
 
 	public function data_pmpro_getAllLevels() {
 
-		$level_id = $this->factory->pmp_level->create();
+		$level_id = $this->factory->pmpro_level->create();
 		$level    = pmpro_getLevel( $level_id );
 
 		return [
@@ -101,8 +101,8 @@ class Functions extends Base {
 	}
 
 	public function data_pmpro_changeMembershipLevel() {
-		$level_id   = $this->factory->pmp_level->create();
-		$level_id_2 = $this->factory->pmp_level->create();
+		$level_id   = $this->factory->pmpro_level->create();
+		$level_id_2 = $this->factory->pmpro_level->create();
 		$user_id    = $this->factory->user->create();
 
 		return [
@@ -138,8 +138,8 @@ class Functions extends Base {
 	}
 
 	public function data_pmpro_hasMembershipLevel() {
-		$level_id   = $this->factory->pmp_level->create();
-		$level_id_2 = $this->factory->pmp_level->create();
+		$level_id   = $this->factory->pmpro_level->create();
+		$level_id_2 = $this->factory->pmpro_level->create();
 		$level      = pmpro_getLevel( $level_id );
 
 		$user_id   = $this->factory->user->create();

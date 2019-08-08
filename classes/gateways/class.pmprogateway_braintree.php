@@ -200,7 +200,9 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		static function checkLevelForPlan($level_id) {
 			$Gateway = new PMProGateway_braintree();
-			$plan = $Gateway->getPlanByID('pmpro_' . $level_id);
+
+			$plan = $Gateway->getPlanByID( $Gateway->get_plan_id( $level_id ) );
+
 			if(!empty($plan))
 				return true;
 			else
@@ -976,9 +978,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//subscribe to the plan
 			try
 			{
+				
 				$details = array(
 				  'paymentMethodToken' => $this->customer->creditCards[0]->token,
-				  'planId' => 'pmpro_' . $order->membership_id,
+				  'planId' => $this->get_plan_id( $order->membership_id ),
 				  'price' => $amount
 				);
 
@@ -1117,4 +1120,23 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				update_user_meta($user_id, 'pmpro_braintree_customerid', $pmpro_braintree_customerid);
 			}
 		}
+
+		/**
+		 * Gets the Braintree plan ID for a given level ID
+		 * @param  int $level_id level to get plan ID for
+		 * @return string        Braintree plan ID
+		 */
+	static function get_plan_id( $level_id ) {
+		/**
+			* Filter pmpro_braintree_plan_id
+			*
+			* Used to change the Braintree plan ID for a given level
+			*
+			* @since 2.1.0
+			*
+			* @param string  $plan_id for the given level
+			* @param int $level_id the level id to make a plan id for
+			*/
+			return apply_filters( 'pmpro_braintree_plan_id', 'pmpro_' . $level_id, $level_id );
 	}
+}
