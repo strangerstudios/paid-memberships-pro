@@ -1366,12 +1366,12 @@ class PMProGateway_stripe extends PMProGateway
 			return false;
 		}			
 
-		//no subscriptions object in customer
+		//no subscriptions?
 		if(empty($this->customer->subscriptions)) {
 			return false;
-		}
+		}			
 
-		//is there a subscription transaction id pointing to a sub?
+    //is there a subscription transaction id pointing to a sub?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "sub_") !== false) {
 			try {
 				$sub = $this->customer->subscriptions->retrieve($order->subscription_transaction_id);

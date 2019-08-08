@@ -27,8 +27,8 @@
 			<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 			<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
 			<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong> <?php echo ! empty( $pmpro_invoice->status ) ? $pmpro_invoice->status : __( 'success', 'paid-memberships-pro' ); ?></li>
-			<?php if($current_user->membership_level->enddate) { ?>
-				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
+			<?php if($pmpro_invoice->membership_level->enddate) { ?>
+				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $pmpro_invoice->membership_level->enddate)?></li>
 			<?php } ?>
 			<?php if($pmpro_invoice->getDiscountCode()) { ?>
 				<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>

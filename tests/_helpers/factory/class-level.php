@@ -1,5 +1,5 @@
 <?php
-namespace PMP\Tests\Helpers\Factory;
+namespace PMPro\Tests\Helpers\Factory;
 
 class Level extends \WP_UnitTest_Factory_For_Thing {
 
