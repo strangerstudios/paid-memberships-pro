@@ -714,6 +714,13 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 				$morder->InitialPayment = $_POST['payment_gross'];    //not the initial payment, but the class is expecting that
 				$morder->PaymentAmount  = $_POST['payment_gross'];
 			}
+			
+			//check for tax
+			if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
+				$morder->tax = (float) $_POST['tax'];
+				$morder->total = $morder->InitialPayment;	//so tax isn't added into the subtotal again
+				$morder->subtotal = $morder->total - $morder->tax;
+			}
 		}
 
 		$morder->FirstName = $_POST['first_name'];
