@@ -371,32 +371,7 @@
 							</select>
 						</div>
 					<?php } else { ?>
-						<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-						<script>
-							<!--
-							jQuery(document).ready(function() {
-									jQuery('#AccountNumber').validateCreditCard(function(result) {
-										var cardtypenames = {
-											"amex"                      : "American Express",
-											"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-											"diners_club_international" : "Diners Club International",
-											"discover"                  : "Discover",
-											"jcb"                       : "JCB",
-											"laser"                     : "Laser",
-											"maestro"                   : "Maestro",
-											"mastercard"                : "Mastercard",
-											"visa"                      : "Visa",
-											"visa_electron"             : "Visa Electron"
-										};
-
-										if(result.card_type)
-											jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-										else
-											jQuery('#CardType').val('Unknown Card Type');
-									});
-							});
-							-->
-						</script>
+						<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />						
 					<?php } ?>
 				<div class="pmpro_checkout-field pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
