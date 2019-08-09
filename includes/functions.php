@@ -2861,7 +2861,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 	}
 }
 
- /**
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -2916,4 +2916,39 @@ function pmpro_cleanup_memberships_users_table() {
 				ON t1.id = t2.id
 				SET status = 'inactive'";
 	$wpdb->query( $sqlQuery );
+}
+
+/**
+ * Are we on the PMPro checkout page?
+ * @since 2.1
+ * @return bool True if we are on the checkout page, false otherwise
+ */
+function pmpro_is_checkout() {
+	global $pmpro_pages;
+	
+	// try is_page first
+	if ( isset( $pmpro_pages['checkout'] ) ) {
+		$is_checkout = is_page( $pmpro_pages['checkout'] );
+	} else {
+		$is_checkout = false;
+	}
+	
+	// page might not be setup yet or a custom page
+	$queried_object = get_queried_object();
+	
+	if ( ! $is_checkout &&
+		 ! empty( $queried_object ) &&
+		 ! empty( $queried_object->post_content ) &&
+	 	 has_shortcode( 'pmpro_checkout' ) || has_block( 'pmpro/checkout-page' ) ) {
+		$is_checkout = true;
+	}
+	
+	/**
+	 * Filter for pmpro_is_checkout return value.
+	 * @since 2.1
+	 * @param bool $is_checkout true if we are on the checkout page, false otherwise
+	 */
+	$is_checkout = apply_filters( 'pmpro_is_checkout', $is_checkout );
+	
+	return $is_checkout;
 }
