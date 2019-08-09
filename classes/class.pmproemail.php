@@ -119,17 +119,22 @@
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
 			
-			// Filter from and fromname
+			// Filter the from name and email
 			pmpro_wp_mail_add_from_filters( $this->fromname, $this->from );
 			
 			if(wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments))
 			{
-				return true;
+				$result = true;
 			}
 			else
 			{
-				return false;
-			}		
+				$result = false;
+			}
+			
+			// Remove from name and email filters
+			pmpro_wp_mail_remove_from_filters();
+			
+			return $result;
 		}
 		
 		function sendCancelEmail($user = NULL, $old_level_id = NULL)
