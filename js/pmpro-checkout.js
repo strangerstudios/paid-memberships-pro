@@ -1,6 +1,6 @@
 jQuery(document).ready(function(){
     
-    // Discount code JS if we are showing them.
+    // Discount code JS if we are showing discount codes.
     if ( pmpro.show_discount_code ) {
         //update discount code link to show field at top of form
         jQuery('#other_discount_code_a').attr('href', 'javascript:void(0);');
@@ -26,7 +26,7 @@ jQuery(document).ready(function(){
             jQuery('#other_discount_code').val(jQuery('#discount_code').val());
         });
 
-        //applying a discount code
+        // Top discount code field click handler.
         jQuery('#other_discount_code_button').click(function() {
             var code = jQuery('#other_discount_code').val();
             var level_id = jQuery('#level').val();
@@ -65,6 +65,46 @@ jQuery(document).ready(function(){
                 });
             }
         });
+		
+		// Bottom discount code field click handler.
+		jQuery('#discount_code_button').click(function() {
+			var code = jQuery('#discount_code').val();
+			var level_id = jQuery('#level').val();
+
+			if(code)
+			{
+				//hide any previous message
+				jQuery('.pmpro_discount_code_msg').hide();
+
+				//disable the apply button
+				jQuery('#discount_code_button').attr('disabled', 'disabled');
+
+				jQuery.ajax({
+					url: pmpro.ajaxurl,type:'GET',timeout: pmpro.ajax_timeout,
+					dataType: 'html',
+					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
+					error: function(xml){
+						alert('Error applying discount code [1]');
+
+						//enable apply button
+						jQuery('#discount_code_button').removeAttr('disabled');
+					},
+					success: function(responseHTML){
+						if (responseHTML == 'error')
+						{
+							alert('Error applying discount code [2]');
+						}
+						else
+						{
+							jQuery('#discount_code_message').html(responseHTML);
+						}
+
+						//enable invite button
+						jQuery('#discount_code_button').removeAttr('disabled');
+					}
+				});
+			}
+		});
     }
 	
 	// Validate credit card number and determine card type.

@@ -425,50 +425,7 @@
 			</div> <!-- end pmpro_checkout-fields-display-seal -->
 			<?php } ?>
 		</div> <!-- end pmpro_payment_information_fields -->
-	<?php } ?>
-	<script>
-		<!--
-		//checking a discount code
-		jQuery('#discount_code_button').click(function() {
-			var code = jQuery('#discount_code').val();
-			var level_id = jQuery('#level').val();
-
-			if(code)
-			{
-				//hide any previous message
-				jQuery('.pmpro_discount_code_msg').hide();
-
-				//disable the apply button
-				jQuery('#discount_code_button').attr('disabled', 'disabled');
-
-				jQuery.ajax({
-					url: '<?php echo admin_url('admin-ajax.php'); ?>',type:'GET',timeout:<?php echo apply_filters("pmpro_ajax_timeout", 5000, "applydiscountcode");?>,
-					dataType: 'html',
-					data: "action=applydiscountcode&code=" + code + "&level=" + level_id + "&msgfield=discount_code_message",
-					error: function(xml){
-						alert('Error applying discount code [1]');
-
-						//enable apply button
-						jQuery('#discount_code_button').removeAttr('disabled');
-					},
-					success: function(responseHTML){
-						if (responseHTML == 'error')
-						{
-							alert('Error applying discount code [2]');
-						}
-						else
-						{
-							jQuery('#discount_code_message').html(responseHTML);
-						}
-
-						//enable invite button
-						jQuery('#discount_code_button').removeAttr('disabled');
-					}
-				});
-			}
-		});
-		-->
-	</script>
+	<?php } ?>	
 
 	<?php do_action('pmpro_checkout_after_payment_information_fields'); ?>
 
