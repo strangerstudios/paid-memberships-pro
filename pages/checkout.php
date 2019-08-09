@@ -425,7 +425,7 @@
 			</div> <!-- end pmpro_checkout-fields-display-seal -->
 			<?php } ?>
 		</div> <!-- end pmpro_payment_information_fields -->
-	<?php } ?>	
+	<?php } ?>
 
 	<?php do_action('pmpro_checkout_after_payment_information_fields'); ?>
 
@@ -490,67 +490,3 @@
 <?php do_action('pmpro_checkout_after_form'); ?>
 
 </div> <!-- end pmpro_level-ID -->
-
-<script>
-<!--
-	// Find ALL <form> tags on your page
-	jQuery('form').submit(function(){
-		// On submit disable its submit button
-		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
-		jQuery('input[type=image]', this).attr('disabled', 'disabled');
-		jQuery('#pmpro_processing_message').css('visibility', 'visible');
-	});
-
-	//iOS Safari fix (see: http://stackoverflow.com/questions/20210093/stop-safari-on-ios7-prompting-to-save-card-data)
-	var userAgent = window.navigator.userAgent;
-	if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
-		jQuery('input[type=submit]').click(function() {
-			try{
-				jQuery("input[type=password]").attr("type", "hidden");
-			} catch(ex){
-				try {
-					jQuery("input[type=password]").prop("type", "hidden");
-				} catch(ex) {}
-			}
-		});
-	}
-
-	//add required to required fields
-	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
-
-	//unhighlight error fields when the user edits them
-	jQuery('.pmpro_error').bind("change keyup input", function() {
-		jQuery(this).removeClass('pmpro_error');
-	});
-
-	//click apply button on enter in discount code box
-	jQuery('#discount_code').keydown(function (e){
-	    if(e.keyCode == 13){
-		   e.preventDefault();
-		   jQuery('#discount_code_button').click();
-	    }
-	});
-
-	//hide apply button if a discount code was passed in
-	<?php if(!empty($_REQUEST['discount_code'])) {?>
-		jQuery('#discount_code_button').hide();
-		jQuery('#discount_code').bind('change keyup', function() {
-			jQuery('#discount_code_button').show();
-		});
-	<?php } ?>
-
-	//click apply button on enter in *other* discount code box
-	jQuery('#other_discount_code').keydown(function (e){
-	    if(e.keyCode == 13){
-		   e.preventDefault();
-		   jQuery('#other_discount_code_button').click();
-	    }
-	});
--->
-</script>
-<script>
-<!--
-//add javascriptok hidden field to checkout
-jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
--->
-</script>

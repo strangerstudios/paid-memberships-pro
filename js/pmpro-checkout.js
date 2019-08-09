@@ -1,5 +1,4 @@
-jQuery(document).ready(function(){
-    
+jQuery(document).ready(function(){ 
     // Discount code JS if we are showing discount codes.
     if ( pmpro.show_discount_code ) {
         //update discount code link to show field at top of form
@@ -127,4 +126,61 @@ jQuery(document).ready(function(){
 		else
 			jQuery('#CardType').val('Unknown Card Type');
 	});
+	
+	// Find ALL <form> tags on your page
+	jQuery('form').submit(function(){
+		// On submit disable its submit button
+		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
+		jQuery('input[type=image]', this).attr('disabled', 'disabled');
+		jQuery('#pmpro_processing_message').css('visibility', 'visible');
+	});
+
+	//iOS Safari fix (see: http://stackoverflow.com/questions/20210093/stop-safari-on-ios7-prompting-to-save-card-data)
+	var userAgent = window.navigator.userAgent;
+	if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
+		jQuery('input[type=submit]').click(function() {
+			try{
+				jQuery("input[type=password]").attr("type", "hidden");
+			} catch(ex){
+				try {
+					jQuery("input[type=password]").prop("type", "hidden");
+				} catch(ex) {}
+			}
+		});
+	}
+
+	//add required to required fields
+	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
+
+	//unhighlight error fields when the user edits them
+	jQuery('.pmpro_error').bind("change keyup input", function() {
+		jQuery(this).removeClass('pmpro_error');
+	});
+
+	//click apply button on enter in discount code box
+	jQuery('#discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   jQuery('#discount_code_button').click();
+	    }
+	});
+
+	//hide apply button if a discount code was passed in
+	if( pmpro.discount_code_passed_in ) {
+		jQuery('#discount_code_button').hide();
+		jQuery('#discount_code').bind('change keyup', function() {
+			jQuery('#discount_code_button').show();
+		});
+	}
+
+	//click apply button on enter in *other* discount code box
+	jQuery('#other_discount_code').keydown(function (e){
+	    if(e.keyCode == 13){
+		   e.preventDefault();
+		   jQuery('#other_discount_code_button').click();
+	    }
+	});
+	
+	//add javascriptok hidden field to checkout
+	jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
 });
