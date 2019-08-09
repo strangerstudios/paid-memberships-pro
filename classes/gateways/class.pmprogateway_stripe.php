@@ -312,122 +312,20 @@ class PMProGateway_stripe extends PMProGateway
 
 		$default_gateway = pmpro_getOption("gateway");
 
-		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level))
-		{
+		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level)) {
 			//stripe js library
 			wp_enqueue_script("stripe", "https://js.stripe.com/v2/", array(), NULL);
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
-
-				//stripe js code for checkout
-				function pmpro_stripe_javascript()
-				{
-					global $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite;
-				?>
-				<script type="text/javascript">
-					<!--
-					// this identifies your website in the createToken call below
-					Stripe.setPublishableKey('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-
-					pmpro_require_billing = true;
-
-					var tokenNum = 0;
-
-					jQuery(document).ready(function() {
-						jQuery(".pmpro_form").submit(function(event) {
-
-						// prevent the form from submitting with the default action
-						event.preventDefault();
-
-						//double check in case a discount code made the level free
-						if(pmpro_require_billing) {
-							//build array for creating token
-							var args = {
-								number: jQuery('#AccountNumber').val(),
-								exp_month: jQuery('#ExpirationMonth').val(),
-								exp_year: jQuery('#ExpirationYear').val()
-								<?php
-									$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
-									if(!empty($pmpro_stripe_verify_address))
-									{
-									?>
-									,address_line1: jQuery('#baddress1').val(),
-									address_line2: jQuery('#baddress2').val(),
-									address_city: jQuery('#bcity').val(),
-									address_state: jQuery('#bstate').val(),
-									address_zip: jQuery('#bzipcode').val(),
-									address_country: jQuery('#bcountry').val()
-								<?php
-									}
-								?>
-							};
-
-							//add CVC if not blank
-							if(jQuery('#CVV').val().length)
-								args['cvc'] = jQuery('#CVV').val();
-
-							//add first and last name if not blank
-							if (jQuery('#bfirstname').length && jQuery('#blastname').length)
-								args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
-
-							//create token(s)
-							if (jQuery('#level').length) {
-								var levelnums = jQuery("#level").val().split(",");
-								for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
-									Stripe.createToken(args, stripeResponseHandler);
-								}
-							} else {
-								Stripe.createToken(args, stripeResponseHandler);
-							}
-
-							// prevent the form from submitting with the default action
-							return false;
-						} else {
-							this.submit();
-							return true;	//not using Stripe anymore
-						}
-						});
-					});
-
-					function stripeResponseHandler(status, response) {
-						if (response.error) {
-							// re-enable the submit button
-							jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-
-							//hide processing message
-							jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-
-							// show the errors on the form
-							alert(response.error.message);
-							jQuery(".payment-errors").text(response.error.message);
-						} else {
-							var form$ = jQuery("#pmpro_form, .pmpro_form");
-							// token contains id, last4, and card type
-							var token = response['id'];
-							// insert the token into the form so it gets submitted to the server
-							form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
-							tokenNum++;
-
-							//console.log(response);
-
-							//insert fields for other card fields
-							if(jQuery('#CardType[name=CardType]').length)
-								jQuery('#CardType').val(response['card']['brand']);
-							else
-								form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
-							form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-							form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
-							form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
-
-							// and submit
-							form$.get(0).submit();
-						}
-					}
-					-->
-				</script>
-				<?php
-				}
-				add_action("wp_head", "pmpro_stripe_javascript");
+				wp_register_script( 'pmpro_stripe',
+                            plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
+                            array( 'jquery' ),
+                            PMPRO_VERSION );
+				wp_localize_script( 'pmpro_stripe', 'pmpro_stripe', array(
+					'publishablekey' => pmpro_getOption( 'stripe_publishablekey' ),
+					'verify_address' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
+				));
+				wp_enqueue_script( 'pmpro_stripe' );
 			}
 		}
 	}
@@ -563,32 +461,7 @@ class PMProGateway_stripe extends PMProGateway
 						</select>
 					</div>
 				<?php } else { ?>
-					<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-					<script>
-						<!--
-						jQuery(document).ready(function() {
-								jQuery('#AccountNumber').validateCreditCard(function(result) {
-									var cardtypenames = {
-										"amex":"American Express",
-										"diners_club_carte_blanche":"Diners Club Carte Blanche",
-										"diners_club_international":"Diners Club International",
-										"discover":"Discover",
-										"jcb":"JCB",
-										"laser":"Laser",
-										"maestro":"Maestro",
-										"mastercard":"Mastercard",
-										"visa":"Visa",
-										"visa_electron":"Visa Electron"
-									}
-
-									if(result.card_type)
-										jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-									else
-										jQuery('#CardType').val('Unknown Card Type');
-								});
-						});
-						-->
-					</script>
+					<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />					
 				<?php } ?>
 				<div class="pmpro_checkout-field pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
