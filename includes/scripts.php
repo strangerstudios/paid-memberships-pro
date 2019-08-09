@@ -34,6 +34,21 @@ function pmpro_enqueue_scripts() {
     else
         $print_css = plugins_url('css/print.css',dirname(__FILE__) );
     wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
+    
+    // Checkout page JS
+    if ( pmpro_is_checkout() ) {
+        wp_register_script( 'pmpro_checkout',
+                            plugins_url( 'js/pmpro-checkout.js', dirname(__FILE__) ),
+                            array( 'jquery' ),
+                            PMPRO_VERSION );
+
+        wp_localize_script( 'pmpro_checkout', 'pmpro', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
+            'show_discount_code' => pmpro_show_discount_code(),
+        ));
+        wp_enqueue_script( 'pmpro_checkout' );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
 

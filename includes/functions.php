@@ -2952,3 +2952,24 @@ function pmpro_is_checkout() {
 	
 	return $is_checkout;
 }
+
+/**
+ * Are we showing discount codes at checkout?
+ */
+function pmpro_show_discount_code() {
+	global $wpdb;
+	static $show;
+	
+	// check DB if we haven't yet
+	if ( !isset( $show ) ) {
+		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+			$show = true;
+		} else {
+			$show = false;
+		}
+	}
+	
+	$show = apply_filters( "pmpro_show_discount_code", $show );
+	
+	return $show;
+}
