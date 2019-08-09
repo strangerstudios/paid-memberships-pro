@@ -2939,7 +2939,9 @@ function pmpro_is_checkout() {
 	if ( ! $is_checkout &&
 		 ! empty( $queried_object ) &&
 		 ! empty( $queried_object->post_content ) &&
-	 	 has_shortcode( 'pmpro_checkout' ) || has_block( 'pmpro/checkout-page' ) ) {
+	 	 ( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
+		   has_block( 'pmpro/checkout-page', $queried_object->post_content ) )
+		) {
 		$is_checkout = true;
 	}
 	
