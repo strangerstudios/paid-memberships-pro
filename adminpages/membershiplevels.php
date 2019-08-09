@@ -452,7 +452,7 @@
 						    $has_bt_plan = PMProGateway_braintree::checkLevelForPlan( $level->id );
 							?>
 							<p class="pmpro_message <?php if ( ! $has_bt_plan ) {?>pmpro_error<?php } ?>">
-                                <strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php printf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), 'pmpro_' . $level->id ); ?></p>
+                                <strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php printf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), PMProGateway_braintree::get_plan_id( $level->id ) ); ?></p>
 						<?php } ?>
 					</td>
 				</tr>
