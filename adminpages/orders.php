@@ -1492,7 +1492,7 @@ class="alternate"<?php } ?>>
 						<a href="admin.php?page=pmpro-orders&order=-1&copy=<?php echo $order->id; ?>"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
 					</td>
 					<td align="center">
-						<a href="javascript:askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
+						<a href="javascript:pmpro_askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
 					</td>
 					<td align="center">
 						<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>"

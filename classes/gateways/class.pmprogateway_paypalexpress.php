@@ -46,7 +46,7 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
-
+			
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -105,7 +105,13 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'paypalexpress_skip_confirmation'
+				'paypalexpress_skip_confirmation',
+				'paypal_cardinal_apikey',
+				'paypal_cardinal_apiidentifier',
+				'paypal_cardinal_orgunitid',
+				'paypal_cardinal_songbirdurl',
+				'paypal_cardinal_merchantid',
+				'paypal_cardinal_processorid'
 			);
 
 			return $options;
@@ -193,7 +199,7 @@
 				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=ipnhandler";?></pre></p>
+				<p><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?> <pre><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></pre></p>
 			</td>
 		</tr>
 		<?php
@@ -521,7 +527,7 @@
 			if(!empty($order->BillingFrequency))
 				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling&L_BILLINGTYPE0=RecurringPayments";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1&L_BILLINGAGREEMENTDESCRIPTION0=" . urlencode(substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127)) . "&L_PAYMENTTYPE0=Any";
 
 			//if billing cycles are defined
@@ -656,7 +662,7 @@
 			if(!empty($order->BillingFrequency))
 				$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
 			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";
@@ -713,7 +719,7 @@
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . $amount_tax;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
-			$nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			//if billing cycles are defined

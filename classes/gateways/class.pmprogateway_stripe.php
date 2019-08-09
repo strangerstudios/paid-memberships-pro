@@ -335,285 +335,36 @@ class PMProGateway_stripe extends PMProGateway
 		global $gateway, $pmpro_level;
 
 		$default_gateway = pmpro_getOption("gateway");
-		
-		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level))
-		{
+		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level)) {
+
+		    $payment_intent = pmpro_get_session_var( 'pmpro_stripe_payment_intent' );
+            $setup_intent = pmpro_get_session_var( 'pmpro_stripe_setup_intent' );
+            $auth_action = false;
+            $client_secret = false;
+            if ( ! empty( $payment_intent) && 'requires_action' == $payment_intent->status ) ) {
+                $auth_action = 'handleCardAction';
+                $client_secret = $payment_intent->client_secret;
+            } else if ( ! empty( $setup_intent) && 'requires_action' == $setup_intent->status ) {
+                $auth_action = 'handleCardSetup';
+                $client_secret = $setup_intent->client_secret;
+            }
+
 			//stripe js library
 			wp_enqueue_script("stripe", "https://js.stripe.com/v3/", array(), NULL);
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
-
-				//stripe js code for checkout
-				function pmpro_stripe_javascript()
-				{
-					global $current_user, $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite, $pmpro_requirebilling;
-					
-					// TODO: Localize and enuque JS.
-					
-					// xdebug_break();
-					
-					// PaymentIntent stuff.
-					$requires_source_action = false;
-					if ( isset( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-						$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-						
-						// Is this a SetupIntent or PaymentIntent?
-						if ( 0 === strpos( $payment_intent_id, 'seti_' ) ) {
-							$payment_intent = Stripe_SetupIntent::retrieve( $payment_intent_id );
-						} else {
-							$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
-						}
-						if ( 'requires_action' == $payment_intent->status ) {
-							$requires_source_action = true;
-							if ( ! empty( $payment_intent->confirmation_method ) ) {
-								$confirmation_method = $payment_intent->confirmation_method;
-							}
-						}
-						if ( ! empty( $payment_intent->customer ) ) {
-							$customer_id = $payment_intent->customer;
-						}
-					}
-					
-					$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
-				?>
-				<script type="text/javascript">
-					jQuery(document).ready(function() {
-						// debugger;
-						
-						//TODO: Localize and enqueue JS.
-						var ajaxurl = '<?php echo admin_url( "admin-ajax.php" ); ?>';
-						
-						// Initialize Stripe.js
-						var stripe = Stripe('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
-						var elements = stripe.elements();
-						
-						// Create Elements
-						cardNumber = elements.create('cardNumber');
-						cardExpiry = elements.create('cardExpiry');
-						cardCvc = elements.create('cardCvc');
-						
-						// Mount Elements
-						cardNumber.mount('#AccountNumber');
-						cardExpiry.mount('#Expiry');
-						cardCvc.mount('#CVV');
-						
-						// Customer stuff.
-						<?php if ( ! empty( $customer_id ) ): ?>
-						customer = '<?php echo $customer_id; ?>';
-						<?php endif; ?>
-						
-						// PaymentIntent stuff.
-						<?php if ( ! empty( $payment_intent_id ) ): ?>
-						paymentIntentID = '<?php echo $payment_intent_id; ?>';
-						var clientSecret = '<?php echo $payment_intent->client_secret; ?>';
-						<?php endif; ?>
-						
-						<?php if ( ! empty( $payment_intent->confirmation_method ) ): ?>
-						var confirmationMethod = '<?php echo $payment_intent->confirmation_method; ?>';
-						<?php endif; ?>
-						
-						// Authentication JS
-						<?php if ( $requires_source_action ): ?>
-						pmpro_require_billing = false;
-						//TODO: Disable submit. Show "processing"
-						if (typeof(confirmationMethod) == 'undefined') {
-							stripe.handleCardSetup(clientSecret).then(stripeResponseHandler);
-						} else if (confirmationMethod == 'manual') {
-							stripe.handleCardAction(clientSecret).then(stripeResponseHandler);
-						} else {
-							stripe.handleCardPayment(clientSecret).then(stripeResponseHandler);
-						}
-						<?php else: ?>
-						pmpro_require_billing = true;
-						<?php endif; ?>
-						
-						// TODO: Remove token stuff?
-						var tokenNum = 0;
-						
-						jQuery(".pmpro_form").submit(function(event) {
-						// debugger;
-
-						// prevent the form from submitting with the default action
-						event.preventDefault();
-
-						//double check in case a discount code made the level free
-						if(pmpro_require_billing) {
-							
-							var billing_details;
-							//TODO: test billing details
-							<?php $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress')); ?>
-							<?php if ( $pmpro_stripe_verify_address ): ?>
-							billing_details = {
-								address_line1: jQuery('#baddress1').val(),
-								address_line2: jQuery('#baddress2').val(),
-								address_city: jQuery('#bcity').val(),
-								address_state: jQuery('#bstate').val(),
-								address_zip: jQuery('#bzipcode').val(),
-								address_country: jQuery('#bcountry').val()
-							};
-							<?php endif; ?>
-							
-							// Try creating a PaymentMethod from card element.
-							paymentMethod = stripe.createPaymentMethod('card', cardNumber, {
-								billing_details: billing_details,
-							}).then(stripeResponseHandler);
-
-							// prevent the form from submitting with the default action
-							return false;
-						} else {
-							this.submit();
-							return true;	//not using Stripe anymore
-						}
-						});
-						
-						function stripeResponseHandler(response) {
-							debugger;
-							console.log(response);
-							
-							var form$ = jQuery("#pmpro_form, .pmpro_form");
-							
-							if (response.error) {
-
-								// show the errors on the form
-								// alert(response.error.message);
-								jQuery(".pmpro_error").text(response.error.message);
-								
-								// TODO: Test this.
-								// Reset billing if necessary.
-								// if (typeof(response.error.payment_intent) !== 'undefined') {
-								// 	var payment_intent_status = response.error.payment_intent.status;
-								// 	if ('requires_payment_method' == payment_intent_status) {
-								// 	}
-								// }
-								
-								// re-enable the submit button
-								jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-
-								//hide processing message
-								jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-								
-								pmpro_require_billing = true;
-								
-								// Delete any incomplete subscriptions.
-								var data = {
-									action: 'delete_incomplete_subscription',
-								};
-								jQuery.post( ajaxurl, data, function( response ) {
-									// TODO: Handle this better?
-								});
-								
-							} else if ( response.paymentMethod ) {
-								var paymentMethodID = response.paymentMethod.id;
-								var card = response.paymentMethod.card;
-								
-								// insert the PaymentMethod ID into the form so it gets submitted to the server
-								form$.append("<input type='hidden' name='payment_method_id' value='" + paymentMethodID + "'/>");
-								<?php if ( ! empty( $payment_intent_id ) ): ?>
-								// insert the PaymentIntent ID into the form so it gets submitted to the server
-								form$.append("<input type='hidden' name='payment_intent_id' value='" + paymentIntentID + "'/>");
-								<?php endif; ?>
-								
-								// TODO: Remove token stuff?
-								// tokenum++;
-
-								//TODO: Set all of this in pmpro_required_billing_fields based on PaymentMethod.
-								// We need this for now because the checkout order doesn't use the values set in $pmpro_required_billing_fields.
-								// insert fields for other card fields
-								// if(jQuery('#CardType[name=CardType]').length)
-								// 	jQuery('#CardType').val(card.brand);
-								// else
-								// form$.append("<input type='hidden' name='CardType' value='" + card.brand + "'/>");
-								// form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + card.last4 + "'/>");
-								// form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + card.exp_month).slice(-2) + "'/>");
-								// form$.append("<input type='hidden' name='ExpirationYear' value='" + card.exp_year + "'/>");
-								// and submit
-								form$.get(0).submit();
-							} else if ( response.paymentIntent || response.setupIntent ) {
-								
-								if (response.paymentIntent) {
-									var intent = response.paymentIntent;
-								} else {
-									var intent = response.setupIntent;
-								}
-								var paymentMethodID = intent.payment_method;
-								
-								// insert the PaymentMethod ID into the form so it gets submitted to the server
-								form$.append("<input type='hidden' name='payment_method_id' value='" + paymentMethodID + "'/>");
-								// insert the PaymentIntent ID into the form so it gets submitted to the server
-								form$.append("<input type='hidden' name='payment_intent_id' value='" + paymentIntentID + "'/>");
-								
-								// If PaymentIntent succeeded, we don't have to confirm again.
-								if ( 'succeeded' == intent.status ) {
-									// debugger;
-									
-									// Authentication was successful.
-									// var card = response.payment_method.card;
-									
-									//TODO: Set all of this in pmpro_required_billing_fields based on PaymentMethod.
-									// We need this for now because the checkout order doesn't use the values set in $pmpro_required_billing_fields.
-									// // insert fields for other card fields
-									// if(jQuery('#CardType[name=CardType]').length)
-									// 	jQuery('#CardType').val(card.brand);
-									// else
-									// form$.append("<input type='hidden' name='CardType' value='" + card.brand + "'/>");
-									// form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + card.last4 + "'/>");
-									// form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + card.exp_month).slice(-2) + "'/>");
-									// form$.append("<input type='hidden' name='ExpirationYear' value='" + card.exp_year + "'/>");
-									form$.get(0).submit();
-									return true;
-								}
-								
-								// Confirm PaymentIntent again.
-								var data = {
-									action: 'confirm_payment_intent',
-									payment_method_id: paymentMethodID,
-									payment_intent_id: paymentIntentID,
-								};
-								jQuery.post( ajaxurl, data, function( response ) {
-									response = JSON.parse(response);
-									if (response.error) {
-										// Authentication failed.
-										
-										// re-enable the submit button
-										jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-								
-										//hide processing message
-										jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-								
-										// show the errors on the form
-										alert(response.error.message);
-										jQuery(".payment-errors").text(response.error.message);
-									} else {
-										// Authentication was successful.
-										// var card = response.payment_method.card;
-										
-										//TODO: Set all of this in pmpro_required_billing_fields based on PaymentMethod.
-										// insert fields for other card fields
-										// if(jQuery('#CardType[name=CardType]').length)
-										// 	jQuery('#CardType').val(card.brand);
-										// else
-										// form$.append("<input type='hidden' name='CardType' value='" + card.brand + "'/>");
-										// form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + card.last4 + "'/>");
-										// form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + card.exp_month).slice(-2) + "'/>");
-										// form$.append("<input type='hidden' name='ExpirationYear' value='" + card.exp_year + "'/>");
-										
-										form$.get(0).submit();
-										return true;
-									}
-								});
-							}
-							else {
-								console.log( 'other response ');
-								console.log(response);
-							}
-						}
-					});
-
-					-->
-				</script>
-				<?php
-				}
-				add_action("wp_head", "pmpro_stripe_javascript");
+				wp_register_script( 'pmpro_stripe',
+                    plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
+//                    plugins_url( 'js/pmpro-stripe2.js', PMPRO_BASE_FILE ),
+                    array( 'jquery' ),
+                            PMPRO_VERSION );
+				wp_localize_script( 'pmpro_stripe', 'pmpro_stripe', array(
+					'publishablekey' => pmpro_getOption( 'stripe_publishablekey' ),
+					'verify_address' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
+                    'auth_action' => $auth_action,
+                    'clientSecret' => $client_secret,
+				));
+				wp_enqueue_script( 'pmpro_stripe' );
 			}
 		}
 	}
@@ -887,32 +638,7 @@ class PMProGateway_stripe extends PMProGateway
 						</select>
 					</div>
 				<?php } else { ?>
-					<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-					<script>
-						<!--
-						jQuery(document).ready(function() {
-								jQuery('#AccountNumber').validateCreditCard(function(result) {
-									var cardtypenames = {
-										"amex":"American Express",
-										"diners_club_carte_blanche":"Diners Club Carte Blanche",
-										"diners_club_international":"Diners Club International",
-										"discover":"Discover",
-										"jcb":"JCB",
-										"laser":"Laser",
-										"maestro":"Maestro",
-										"mastercard":"Mastercard",
-										"visa":"Visa",
-										"visa_electron":"Visa Electron"
-									}
-
-									if(result.card_type)
-										jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-									else
-										jQuery('#CardType').val('Unknown Card Type');
-								});
-						});
-						-->
-					</script>
+					<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />					
 				<?php } ?>
 				<div class="pmpro_checkout-field pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
@@ -2017,8 +1743,8 @@ class PMProGateway_stripe extends PMProGateway
 		if(empty($this->customer->subscriptions)) {
 			return false;
 		}			
-		
-		//is there a subscription transaction id pointing to a sub?
+
+    //is there a subscription transaction id pointing to a sub?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "sub_") !== false) {
 			try {
 				$sub = $this->customer->subscriptions->retrieve($order->subscription_transaction_id);
@@ -2029,11 +1755,6 @@ class PMProGateway_stripe extends PMProGateway
 			}
 
 			return $sub;
-		}
-
-		//no subscriptions object in customer
-		if(empty($this->customer->subscriptions)) {
-			return false;
 		}
 
 		//find subscription based on customer id and order/plan id

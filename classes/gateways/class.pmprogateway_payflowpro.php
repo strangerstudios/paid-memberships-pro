@@ -60,7 +60,13 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards'
+				'accepted_credit_cards',
+				'payflow_cardinal_apikey',
+				'payflow_cardinal_apiidentifier',
+				'payflow_cardinal_orgunitid',
+				'payflow_cardinal_songbirdurl',
+				'payflow_cardinal_merchantid',
+				'payflow_cardinal_processorid'
 			);
 
 			return $options;
@@ -138,6 +144,59 @@
 				</p>
 			</td>
 		</tr>
+		<tr class="pmpro_settings_divider gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<td colspan="2">
+					<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_apikey" name="payflow_cardinal_apikey" size="60" value="<?php echo esc_attr($values['payflow_cardinal_apikey'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_apiidentifier" name="payflow_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['payflow_cardinal_apiidentifier'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_orgunitid" name="payflow_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['payflow_cardinal_orgunitid'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_songbirdurl" name="payflow_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['payflow_cardinal_songbirdurl'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_merchantid" name="payflow_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['payflow_cardinal_merchantid'])?>" />
+				</td>
+			</tr>
+			<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top">
+					<label for="payflow_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<input type="text" id="payflow_cardinal_processorid" name="payflow_cardinal_processorid" size="60" value="<?php echo esc_attr($values['payflow_cardinal_processorid'])?>" />
+				</td>
+			</tr>
 		<?php
 		}
 
@@ -218,7 +277,7 @@
 
 			$nvpStr .="&AMT=1.00";
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
 			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;
@@ -313,7 +372,7 @@
 			$nvpStr = "";
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
 			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;
@@ -383,7 +442,7 @@
 			$nvpStr = "&ACTION=A";
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
 			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
@@ -489,7 +548,7 @@
 			//paypal profile stuff
 			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=M";
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode(admin_url('admin-ajax.php') . "?action=ipnhandler");
+			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 
 			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 

@@ -189,6 +189,19 @@ function pmpro_areLevelsFree( $levelarr ) {
 	return true;
 }
 
+/**
+ * Check to see if only free levels are available.
+ * @return boolean This will return true if only free levels are available for signup.
+ * @internal Creates a filter 'pmpro_only_free_levels'.
+ * @since 2.1
+ */
+function pmpro_onlyFreeLevels() {
+	// Get levels that are available for checkout only.
+	$levels = pmpro_getAllLevels( false, true );
+	
+	return apply_filters( 'pmpro_only_free_levels', pmpro_areLevelsFree( $levels ) );
+}
+
 function pmpro_isLevelRecurring( &$level ) {
 	if ( ! empty( $level ) && ( $level->billing_amount > 0 || $level->trial_amount > 0 ) ) {
 		return true;
@@ -296,10 +309,11 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Valid types: 'email', 'pages'
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
 	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		$templates = $user_templates;
+		array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
@@ -2463,18 +2477,23 @@ function pmpro_formatPrice( $price ) {
 	// start with the rounded price
 	$formatted = pmpro_round_price( $price );
 
+	$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place();
+	$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
+	$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
+	$symbol_position = isset( $pmpro_currencies[ $pmpro_currency ]['position'] ) ? $pmpro_currencies[ $pmpro_currency ]['position'] : 'left';
+
 	// settings stored in array?
 	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		// format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format(
 			$formatted,
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place() ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.' ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',' )
+			$decimals,
+			$decimal_separator,
+			$thousands_separator
 		);
 
 		// which side is the symbol on?
-		if ( ! empty( $pmpro_currencies[ $pmpro_currency ]['position'] ) && $pmpro_currencies[ $pmpro_currency ]['position'] == 'left' ) {
+		if ( ! empty( $symbol_position ) && $symbol_position == 'left' ) {
 			$formatted = $pmpro_currency_symbol . $formatted;
 		} else {
 			$formatted = $formatted . $pmpro_currency_symbol;
@@ -2484,10 +2503,50 @@ function pmpro_formatPrice( $price ) {
 		$formatted = $pmpro_currency_symbol . number_format( $formatted, pmpro_get_decimal_place() );
 	}
 
-	$formatted = rtrim( $formatted, 0 );
+	// Trim the trailing zero values.
+	$formatted = pmpro_trim_trailing_zeroes( $formatted, $decimals, $decimal_separator, $pmpro_currency_symbol, $symbol_position );
 
 	// filter
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
+}
+
+
+/**
+ * Function to trim trailing zeros from an amount.
+ * @since 2.1
+ * @return float $amount The trimmed amount (removed trailing zeroes).
+ */
+function pmpro_trim_trailing_zeroes( $amount, $decimals, $decimal_separator, $symbol, $symbol_position = "left" ) {
+
+	if ( $decimals <= 2 ) {
+		return $amount;
+	}
+	//Check to see if decimal places are only 0. if so, then don't trim it.
+	$decimal_value = explode( $decimal_separator, $amount );
+
+	if ( empty( $decimal_value[1] ) ) {
+		return $amount;
+	}
+
+	$is_zero = round( intval( $decimal_value[1] ) );
+	// Store this in a variable for another time.
+	$original_amount = $amount;
+
+	if ( $is_zero > 0 ) {
+		if ( $symbol_position == 'right' ) {
+			$amount = rtrim( $amount, $symbol ); // remove currency symbol.
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+
+			// put the symbol back.
+			$amount .= $symbol;
+		} else {
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+		}
+	}
+
+	$amount = apply_filters( 'pmpro_trim_cost_amount', $amount, $original_amount, $decimal_separator, $symbol, $symbol_position );
+
+	return $amount;
 }
 
 /**
@@ -2802,7 +2861,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 	}
 }
 
- /**
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -2857,4 +2916,62 @@ function pmpro_cleanup_memberships_users_table() {
 				ON t1.id = t2.id
 				SET status = 'inactive'";
 	$wpdb->query( $sqlQuery );
+}
+
+/**
+ * Are we on the PMPro checkout page?
+ * @since 2.1
+ * @return bool True if we are on the checkout page, false otherwise
+ */
+function pmpro_is_checkout() {
+	global $pmpro_pages;
+	
+	// try is_page first
+	if ( isset( $pmpro_pages['checkout'] ) ) {
+		$is_checkout = is_page( $pmpro_pages['checkout'] );
+	} else {
+		$is_checkout = false;
+	}
+	
+	// page might not be setup yet or a custom page
+	$queried_object = get_queried_object();
+	
+	if ( ! $is_checkout &&
+		 ! empty( $queried_object ) &&
+		 ! empty( $queried_object->post_content ) &&
+	 	 ( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
+		   has_block( 'pmpro/checkout-page', $queried_object->post_content ) )
+		) {
+		$is_checkout = true;
+	}
+	
+	/**
+	 * Filter for pmpro_is_checkout return value.
+	 * @since 2.1
+	 * @param bool $is_checkout true if we are on the checkout page, false otherwise
+	 */
+	$is_checkout = apply_filters( 'pmpro_is_checkout', $is_checkout );
+	
+	return $is_checkout;
+}
+
+/**
+ * Are we showing discount codes at checkout?
+ */
+function pmpro_show_discount_code() {
+	global $wpdb;
+	static $show;
+	
+	// check DB if we haven't yet
+	if ( !isset( $show ) ) {
+		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+			$show = true;
+		} else {
+			$show = false;
+		}
+	}
+	
+	$show = apply_filters( "pmpro_show_discount_code", $show );
+	
+	return $show;
 }
