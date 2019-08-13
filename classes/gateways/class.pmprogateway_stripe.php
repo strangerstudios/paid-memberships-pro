@@ -341,7 +341,7 @@ class PMProGateway_stripe extends PMProGateway
             $setup_intent = pmpro_get_session_var( 'pmpro_stripe_setup_intent' );
             $auth_action = false;
             $client_secret = false;
-            if ( ! empty( $payment_intent) && 'requires_action' == $payment_intent->status ) ) {
+            if ( ! empty( $payment_intent) && 'requires_action' == $payment_intent->status ) {
                 $auth_action = 'handleCardAction';
                 $client_secret = $payment_intent->client_secret;
             } else if ( ! empty( $setup_intent) && 'requires_action' == $setup_intent->status ) {
@@ -355,14 +355,14 @@ class PMProGateway_stripe extends PMProGateway
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 				wp_register_script( 'pmpro_stripe',
                     plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
-//                    plugins_url( 'js/pmpro-stripe2.js', PMPRO_BASE_FILE ),
                     array( 'jquery' ),
                             PMPRO_VERSION );
-				wp_localize_script( 'pmpro_stripe', 'pmpro_stripe', array(
-					'publishablekey' => pmpro_getOption( 'stripe_publishablekey' ),
-					'verify_address' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
-                    'auth_action' => $auth_action,
+				wp_localize_script( 'pmpro_stripe', 'pmproStripe', array(
+					'publishableKey' => pmpro_getOption( 'stripe_publishablekey' ),
+					'verifyAddress' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
+                    'authAction' => $auth_action,
                     'clientSecret' => $client_secret,
+                    'ajaxUrl' => admin_url( "admin-ajax.php" ),
 				));
 				wp_enqueue_script( 'pmpro_stripe' );
 			}
@@ -1316,7 +1316,6 @@ class PMProGateway_stripe extends PMProGateway
 	 * @since 1.4
 	 */
 	function process(&$order) {
-		// xdebug_break();
 		//check for initial payment
 		if(floatval($order->InitialPayment) == 0) {
 			//just subscribe
