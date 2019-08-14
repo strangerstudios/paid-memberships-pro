@@ -109,7 +109,7 @@
 		 */
 		static function pmpro_payment_options($options)
 		{
-			//get stripe options
+			//get options
 			$paypal_options = PMProGateway_paypal::getGatewayOptions();
 
 			//merge with others.
