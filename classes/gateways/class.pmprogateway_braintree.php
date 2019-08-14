@@ -228,7 +228,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			$current_gateway = pmpro_getGateway();
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
-			    add_action( 'pmpro_save_membership_level', array( 'PMProGateway_braintree', 'pmpro_save_level_action') );
+			    add_action('pmpro_checkout_preheader', array('PMProGateway_braintree', 'pmpro_checkout_preheader'));
+				add_action( 'pmpro_save_membership_level', array( 'PMProGateway_braintree', 'pmpro_save_level_action') );
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_filter('pmpro_checkout_order', array('PMProGateway_braintree', 'pmpro_checkout_order'));
@@ -412,6 +413,29 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		</tr>
 		<?php
 		}
+		
+		/**
+		 * Code added to checkout preheader.
+		 *
+		 * @since 2.1
+		 */
+		static function pmpro_checkout_preheader() {
+			global $gateway, $pmpro_level;
+
+			$default_gateway = pmpro_getOption("gateway");
+
+			if(($gateway == "braintree" || $default_gateway == "braintree") && !pmpro_isLevelFree($pmpro_level)) {
+				wp_enqueue_script("stripe", "https://js.braintreegateway.com/v1/braintree.js", array(), NULL);
+				wp_register_script( 'pmpro_braintree',
+                            plugins_url( 'js/pmpro-braintree.js', PMPRO_BASE_FILE ),
+                            array( 'jquery' ),
+                            PMPRO_VERSION );
+				wp_localize_script( 'pmpro_braintree', 'pmpro_braintree', array(
+					'encryptionkey' => pmpro_getOption( 'braintree_encryptionkey' )
+				));
+				wp_enqueue_script( 'pmpro_braintree' );
+			}
+		}
 
 		/**
 		 * Filtering orders at checkout.
@@ -464,39 +488,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		?>
 		<input type='hidden' data-encrypted-name='expiration_date' id='credit_card_exp' />
 		<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
-		<script type="text/javascript" src="https://js.braintreegateway.com/v1/braintree.js"></script>
-		<script type="text/javascript">
-            <!--
-            /**
-             * @since 1.9.5 - BUG FIX: substr() on undefined error
-             */
-            jQuery(document).ready(function() {
-                //set up braintree encryption
-                var braintree = Braintree.create('<?php echo pmpro_getOption("braintree_encryptionkey"); ?>');
-                braintree.onSubmitEncryptForm('pmpro_form');
-
-                //pass expiration dates in original format
-                function pmpro_updateBraintreeCardExp()
-                {
-                    jQuery('#credit_card_exp').val(jQuery('#ExpirationMonth').val() + "/" + jQuery('#ExpirationYear').val());
-                }
-                jQuery('#ExpirationMonth, #ExpirationYear').change(function() {
-                    pmpro_updateBraintreeCardExp();
-                });
-                pmpro_updateBraintreeCardExp();
-
-                //pass last 4 of credit card
-                function pmpro_updateBraintreeAccountNumber()
-                {
-                    jQuery('#BraintreeAccountNumber').val('XXXXXXXXXXXXX' + jQuery('#AccountNumber').val().substr(jQuery('#AccountNumber').val().length - 4));
-                }
-                jQuery('#AccountNumber').change(function() {
-                    pmpro_updateBraintreeAccountNumber();
-                });
-                pmpro_updateBraintreeAccountNumber();
-                });
-			-->
-		</script>
 		<?php
 		}
 
