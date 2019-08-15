@@ -373,15 +373,7 @@ class PMProGateway_stripe extends PMProGateway
                     PMPRO_VERSION);
                 wp_localize_script('pmpro_stripe', 'pmproStripe', $localize_vars );
                 wp_enqueue_script('pmpro_stripe');
-            wp_register_script( 'pmpro_stripe',
-                            plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
-                            array( 'jquery' ),
-                            PMPRO_VERSION );
-				wp_localize_script( 'pmpro_stripe', 'pmpro_stripe', array(
-					'publishablekey' => pmpro_getOption( 'stripe_publishablekey' ),
-					'verify_address' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
-				));
-				wp_enqueue_script( 'pmpro_stripe' );}
+            }
         }
     }
 
@@ -2324,7 +2316,6 @@ class PMProGateway_stripe extends PMProGateway
                 ),
             );
             $this->payment_intent->confirm( $params );
-            pmpro_set_session_var( 'pmpro_stripe_payment_intent', $this->payment_intent );
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
@@ -2332,8 +2323,8 @@ class PMProGateway_stripe extends PMProGateway
 
         if ( 'requires_action' == $this->payment_intent->status ) {
             $order->errorcode = true;
-// TODO: escape, change wording?
-            $order->error = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+            // TODO escape, change wording?
+            $order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
             return false;
         }
 

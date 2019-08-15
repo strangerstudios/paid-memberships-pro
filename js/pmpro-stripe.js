@@ -28,7 +28,8 @@ jQuery( document ).ready( function( $ ) {
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
 				.then( stripeResponseHandler );
 		}
-	} else if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
+	}
+	if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
 		if ( 'requires_action' === pmproStripe.setupIntent.status ) {
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
 				.then( stripeResponseHandler );
@@ -122,13 +123,18 @@ jQuery( document ).ready( function( $ ) {
 		} else if ( response.paymentIntent || response.setupIntent ) {
 
 		    // TODO Refactor
-			if ( response.paymentIntent) {
+			if ( pmproStripe.paymentIntent ) {
 				customer = pmproStripe.paymentIntent.customer;
 				paymentMethod = pmproStripe.paymentIntent.payment_method;
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
-			} else {
-				customer = pmproStripe.setupIntent.customer;
-				paymentMethod = pmproStripe.setupIntent.payment_method;
+			}
+			if ( pmproStripe.setupIntent ) {
+				if ( ! customer ) {
+					customer = pmproStripe.setupIntent.customer;
+				}
+				if ( ! paymentMethod ) {
+					paymentMethod = pmproStripe.setupIntent.payment_method;
+				}
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
 				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
