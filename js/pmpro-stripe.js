@@ -124,7 +124,7 @@ jQuery( document ).ready( function( $ ) {
 		    // TODO Refactor
 			if ( response.paymentIntent) {
 				customer = pmproStripe.paymentIntent.customer;
-				paymentMethod = pmproStripe.Intent.payment_method;
+				paymentMethod = pmproStripe.paymentIntent.payment_method;
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
 			} else {
 				customer = pmproStripe.setupIntent.customer;

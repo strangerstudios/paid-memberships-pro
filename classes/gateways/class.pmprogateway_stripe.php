@@ -384,26 +384,6 @@ class PMProGateway_stripe extends PMProGateway
         }
     }
 
-    /**
-     * Don't require the CVV.
-     * Don't require address fields if they are set to hide.
-     * //TODO: Update docblock.
-     */
-    static function pmpro_required_billing_fields($fields)
-    {
-
-        global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
-
-//      TODO Unset card fields. Stripe won't let us create a PaymentMethod without them already.
-//        $card_fields = array( 'CardType', 'AccountNumber', 'ExpirationMonth', 'ExpirationYear' );
-//        foreach( $card_fields as $field ) {
-//            if ( array_key_exists( $field, $fields ) ) {
-//                unset( $fields[$field] );
-//            }
-//        }
-
-        //CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
-        unset($fields['CVV']);
 	/**
 	 * Don't require the CVV.
 	 * Don't require address fields if they are set to hide.
@@ -431,8 +411,6 @@ class PMProGateway_stripe extends PMProGateway
 
         return $fields;
     }
-
-
 
     /**
      * Filtering orders at checkout.
@@ -1191,27 +1169,8 @@ class PMProGateway_stripe extends PMProGateway
                 $customer_id = get_user_meta($user_id, "pmpro_stripe_customerid", true);
             }
 
-            // TODO Fix this
-//            if ( empty( $customer_id ) ) {
-//
-//				if ( ! empty( $order->stripePaymentIntentId ) ) {
-//					// Try based on PaymentIntent.
-//					$payment_intent = Stripe_PaymentIntent::retrieve( $order->stripePaymentIntentId );
-//					if ( ! empty( $payment_intent->customer ) ) {
-//						$customer_id = $payment_intent->customer;
-//					}
-//				} else if ( ! empty( $order->stripeToken ) ) {
-//					// TODO: Refactor. Add PaymentMethod to order.
-//					// Try based on PaymentMethod.
-//					$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-//					if ( ! empty( $payment_method->customer ) ) {
-//						$customer_id = $payment_method->customer;
-//					}
-//				}
-//			}
-
-            //look up by transaction idif (empty($customer_id) && !empty($user_id)) {
-                //user id from this order or the user's last stripe order
+            //look up by transaction id
+            if (empty($customer_id) && !empty($user_id)) {//user id from this order or the user's last stripe order
                 if (!empty($order->payment_transaction_id)) {
                     $payment_transaction_id = $order->payment_transaction_id;
                 } else {
@@ -1322,7 +1281,6 @@ class PMProGateway_stripe extends PMProGateway
                 //user logged in/etc
                 update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);
             } else {
-                // TODO Test this.
                 //user not registered yet, queue it up
                 global $pmpro_stripe_customer_id;
                 $pmpro_stripe_customer_id = $this->customer->id;
