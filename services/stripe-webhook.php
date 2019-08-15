@@ -260,7 +260,7 @@
 			// Email admin so they are aware.
 			// TODO: Remove?
 			$pmproemail = new PMProEmail();
-			$pmproemail->sendPaymentActionRequiredAdminEmail(get_bloginfo("admin_email"), $morder);
+			$pmproemail->sendPaymentActionRequiredAdminEmail($user, $morder);
 
 			$logstr .= "Subscription payment for order ID #" . $old_order->id . " requires customer authentication. Sent email to the member and site admin.";
 			pmpro_stripeWebhookExit();
