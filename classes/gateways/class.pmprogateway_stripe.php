@@ -2082,15 +2082,49 @@ class PMProGateway_stripe extends PMProGateway
             return true;
         }
 
+        // TODO Refactor
+        //before subscribing, let's clear out the updates so we don't trigger any during sub
+        if(!empty($user_id)) {
+            $old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
+            update_user_meta($user_id, "pmpro_stripe_updates", array());
+        }
+
         $this->set_setup_intent( $order );
         $this->confirm_setup_intent( $order );
 
         if ( ! empty( $order->error ) ) {
             $order->error = __( "Subscription failed: " . $order->error, 'paid-memberships-pro' );
+
+            // TODO Refactor
+            //give the user any old updates back
+            if(!empty($user_id)) {
+                update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
+            }
+
             return false;
         }
 
-// TODO: Subscription updates?
+        // TODO Refactor
+        // TODO Test this?
+        //save new updates if this is at checkout
+        //empty out updates unless set above
+        if(empty($new_user_updates)) {
+            $new_user_updates = array();
+        }
+
+        //update user meta
+        if(!empty($user_id)) {
+            update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
+        } else {
+            //need to remember the user updates to save later
+            global $pmpro_stripe_updates;
+            $pmpro_stripe_updates = $new_user_updates;
+            function pmpro_user_register_stripe_updates($user_id) {
+                global $pmpro_stripe_updates;
+                update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
+            }
+            add_action("user_register", "pmpro_user_register_stripe_updates");
+        }
 
         return true;
     }
