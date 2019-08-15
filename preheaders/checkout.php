@@ -1,8 +1,5 @@
 <?php
-// xdebug_break();
-cw( 'Loading checkout preheader' );
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
-
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
 
@@ -287,9 +284,7 @@ $pmpro_required_billing_fields = array(
 	"ExpirationYear"  => $ExpirationYear,
 	"CVV"             => $CVV
 );
-// xdebug_break();
 $pmpro_required_billing_fields = apply_filters( "pmpro_required_billing_fields", $pmpro_required_billing_fields );
-// xdebug_break();
 $pmpro_required_user_fields    = array(
 	"username"      => $username,
 	"password"      => $password,
@@ -341,7 +336,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		}
 	}
 
-	// xdebug_break();
 	if ( ! empty( $pmpro_error_fields ) ) {
 		pmpro_setMessage( __( "Please complete all required fields.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
@@ -516,7 +510,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//filter for order, since v1.8
 					$morder = apply_filters( "pmpro_checkout_order", $morder );
 
-					// xdebug_break();
 					$pmpro_processed = $morder->process();
 
 					if ( ! empty( $pmpro_processed ) ) {
@@ -783,22 +776,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$ExpirationMonth,
 				$ExpirationYear
 			);
-			// $meta_values = array(
-			// 	$pmpro_required_billing_fields['bfirstname'],
-			// 	$pmpro_required_billing_fields['blastname'],
-			// 	$pmpro_required_billing_fields['baddress1'],
-			// 	$pmpro_required_billing_fields['baddress2'],
-			// 	$pmpro_required_billing_fields['bcity'],
-			// 	$pmpro_required_billing_fields['bstate'],
-			// 	$pmpro_required_billing_fields['bzipcode'],
-			// 	$pmpro_required_billing_fields['bcountry'],
-			// 	$pmpro_required_billing_fields['bphone'],
-			// 	$pmpro_required_billing_fields['bemail'],
-			// 	$pmpro_required_billing_fields['CardType'],
-			// 	hideCardNumber( $pmpro_required_billing_fields['AccountNumber'] ),
-			// 	$pmpro_required_billing_fields['ExpirationMonth'],
-			// 	$pmpro_required_billing_fields['ExpirationYear'],
-			// );
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
@@ -899,3 +876,6 @@ if ( empty( $submit ) ) {
 if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
 	$AccountNumber = "";
 }
+
+// TODO Docblock
+do_action( 'pmpro_after_checkout_preheader', $morder );

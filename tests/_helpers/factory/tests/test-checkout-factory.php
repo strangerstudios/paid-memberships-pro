@@ -18,22 +18,15 @@ class Checkout_Factory_Test extends Base {
      */
     function data_create() {
         return [
-            'empty order' => [
+            'Empty order' => [
                 [
                     'order' => new \MemberOrder(),
-                    'globals' => [
-                        'SESSION' => [],
-                        'REQUEST' => [],
-                    ]
                 ]
             ],
-            'order 1' => [
+            'Logged in user' => [
                 [
                     'order' => new \MemberOrder(),
-                    'globals' => [
-                        'SESSION' => [],
-                        'REQUEST' => [],
-                    ]
+                    'is_logged_in' => 3,
                 ]
             ],
         ];
@@ -49,8 +42,15 @@ class Checkout_Factory_Test extends Base {
     function test_create( $args ) {
         $checkout = $this->factory->checkout->create( $args );
         $this->assertInstanceOf( \StdClass::class, $checkout );
+        // TODO: Check for callbacks?
         foreach ( $args as $key => $value ) {
             $this->assertEquals( $args[$key], $checkout->$key );
+            
+            // Test logged in users.
+            if ( 'is_logged_in' == $key && ! empty( $value ) ) {
+                $this->assertEquals( $value, $GLOBALS['current_user']->ID );
+                $this->assertTrue( is_user_logged_in(), 'User was not logged in.' );
+            }
         }
     }
     
@@ -107,27 +107,28 @@ class Checkout_Factory_Test extends Base {
         }
     }
     
-    /**
-     *  Data provider for the test_set_scenario() method.
-     */
-    function data_set_scenario() {
-        return [
-            // 'Scenario 1' => [
-            //     'scenario' => NEW_CHECKOUT_FOR_LEVEL_1
-            // ],
-        ];
-    }
-    
-    /**
-     * Test the set_scenario() method of the Checkout_Factory class.
-     * 
-     * @testdox set_scenario() 
-     * 
-     * @dataProvider data_set_scenario
-     */
-    function test_set_scenario( $args ) {
-        $this->markTestIncomplete( 'Test makes no assertions.' );
-        $checkout = $this->factory->checkout->create( $args );
-    }
-    
+//    /**
+//     *  Data provider for the test_set_scenario() method.
+//     */
+//    function data_set_scenario() {
+//        return [
+//            // 'Scenario 1' => [
+//            //     'scenario' => NEW_CHECKOUT_FOR_LEVEL_1
+//            // ],
+//        ];
+//    }
+//
+//    /**
+//     * Test the set_scenario() method of the Checkout_Factory class.
+//     *
+//     * @testdox set_scenario()
+//     *
+//     * @dataProvider data_set_scenario
+//     */
+//    function test_set_scenario( $args ) {
+//        $this->markTestIncomplete( 'Test makes no assertions.' );
+//        $checkout = $this->factory->checkout->create( $args );
+//    }
+//
+
 }
