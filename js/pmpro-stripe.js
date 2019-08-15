@@ -130,6 +130,7 @@ jQuery( document ).ready( function( $ ) {
 				customer = pmproStripe.setupIntent.customer;
 				paymentMethod = pmproStripe.setupIntent.payment_method;
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
+				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
 
 			card = paymentMethod.card;

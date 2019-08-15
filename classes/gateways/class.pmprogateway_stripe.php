@@ -363,6 +363,7 @@ class PMProGateway_stripe extends PMProGateway
                     }
                     if ( ! empty( $order->Gateway->setup_intent ) ) {
                         $localize_vars['setupIntent'] = $order->Gateway->setup_intent;
+                        $localize_vars['subscription'] = $order->Gateway->subscription;
                     }
                 }
 
@@ -435,6 +436,11 @@ class PMProGateway_stripe extends PMProGateway
             $morder->setup_intent_id = sanitize_text_field( $_REQUEST['setup_intent_id'] );
         }
 
+        // Add the Subscription ID to the order.
+        if ( ! empty ( $_REQUEST['subscription_id'] ) ) {
+            $morder->subscription_transaction_id = sanitize_text_field( $_REQUEST['subscription_id'] );
+        }
+
         // Add the PaymentMethod ID to the order.
         if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
             $morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
@@ -464,13 +470,12 @@ class PMProGateway_stripe extends PMProGateway
      * Code to run after checkout
      *
      * @since 1.8
-     * /
-    static function pmpro_after_checkout($user_id, $morder)
-    {
+     */
+    static function pmpro_after_checkout($user_id, $morder) {
         global $gateway;
 
-        if ($gateway == "stripe") {
-            if (self::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id)) {
+        if($gateway == "stripe") {
+            if(self::$is_loaded && !empty($morder) && !empty($morder->Gateway) && !empty($morder->Gateway->customer) && !empty($morder->Gateway->customer->id)) {
                 update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
             }
         }
@@ -1256,6 +1261,25 @@ class PMProGateway_stripe extends PMProGateway
                 }
                 $this->customer->save();
 
+                // TODO Refactor?
+                if (!empty($user_id)) {
+                    //user logged in/etc
+                    update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);
+                } else {
+                    //user not registered yet, queue it up
+                    global $pmpro_stripe_customer_id;
+                    $pmpro_stripe_customer_id = $this->customer->id;
+                    if (!function_exists('pmpro_user_register_stripe_customerid')) {
+                        function pmpro_user_register_stripe_customerid($user_id)
+                        {
+                            global $pmpro_stripe_customer_id;
+                            update_user_meta($user_id, "pmpro_stripe_customerid", $pmpro_stripe_customer_id);
+                        }
+
+                        add_action("user_register", "pmpro_user_register_stripe_customerid");
+                    }
+                }
+
                 return $this->customer;
 
             } catch (Exception $e) {
@@ -1277,6 +1301,7 @@ class PMProGateway_stripe extends PMProGateway
                 return false;
             }
 
+            // TODO Refactor?
             if (!empty($user_id)) {
                 //user logged in/etc
                 update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);
@@ -2301,18 +2326,10 @@ class PMProGateway_stripe extends PMProGateway
         // TODO Refactor. Hook into pmpro_process_order_success ?
         if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
             $order->payment_transaction_id = $this->payment_intent->charges->data[0]->id;
-            // TODO Do we even need session stuff?
-            pmpro_unset_session_var( 'pmpro_stripe_payment_intent' );
         }
 
-        if ( ! empty( $this->subscription ) ) {
+        if ( empty( $order->subscription_transaction_id ) && ! empty( $this->subscription ) ) {
             $order->subscription_transaction_id = $this->subscription->id;
-        }
-
-        // TODO Remove?
-        if ( ! empty( $this->setup_intent ) && 'succeeded' == $this->seetup_intent->status ) {
-            // TODO Do we even need session stuff?
-            pmpro_unset_session_var( 'pmpro_stripe_setup_intent' );
         }
     }
 
