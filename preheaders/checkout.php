@@ -3,6 +3,9 @@ global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pm
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
 
+// we are on the checkout page
+add_filter( 'pmpro_is_checkout', '__return_true' );
+
 //make sure we know current user's membership level
 if ( $current_user->ID ) {
 	$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );

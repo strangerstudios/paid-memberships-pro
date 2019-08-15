@@ -41,8 +41,8 @@
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypal")
 			{
+				add_action('pmpro_checkout_preheader', array('PMProGateway_paypal', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));
-				add_action('pmpro_checkout_after_form', array('PMProGateway_paypal', 'pmpro_checkout_after_form'));
 				add_action('http_api_curl', array('PMProGateway_paypal', 'http_api_curl'), 10, 3);
 			}
 		}
@@ -109,7 +109,7 @@
 		 */
 		static function pmpro_payment_options($options)
 		{
-			//get stripe options
+			//get options
 			$paypal_options = PMProGateway_paypal::getGatewayOptions();
 
 			//merge with others.
@@ -244,6 +244,26 @@
 		}
 
 		/**
+		 * Code added to checkout preheader.
+		 *
+		 * @since 2.1
+		 */
+		static function pmpro_checkout_preheader() {
+			global $gateway, $pmpro_level;
+
+			$default_gateway = pmpro_getOption("gateway");
+
+			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
+				wp_register_script( 'pmpro_paypal',
+                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
+                            array( 'jquery' ),
+                            PMPRO_VERSION );
+				//wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', array());
+				wp_enqueue_script( 'pmpro_paypal' );
+			}
+		}
+
+		/**
 		 * Swap in our submit buttons.
 		 *
 		 * @since 1.8
@@ -269,43 +289,6 @@
 
 			//don't show the default
 			return false;
-		}
-
-		/**
-		 * Scripts for checkout page.
-		 *
-		 * @since 1.8
-		 */
-		static function pmpro_checkout_after_form()
-		{
-		?>
-		<script>
-			<!--
-			//choosing payment method
-			jQuery('input[name=gateway]').click(function() {
-				if(jQuery(this).val() == 'paypal')
-				{
-					jQuery('#pmpro_paypalexpress_checkout').hide();
-					jQuery('#pmpro_billing_address_fields').show();
-					jQuery('#pmpro_payment_information_fields').show();
-					jQuery('#pmpro_submit_span').show();
-				}
-				else
-				{
-					jQuery('#pmpro_billing_address_fields').hide();
-					jQuery('#pmpro_payment_information_fields').hide();
-					jQuery('#pmpro_submit_span').hide();
-					jQuery('#pmpro_paypalexpress_checkout').show();
-				}
-			});
-
-			//select the radio button if the label is clicked on
-			jQuery('a.pmpro_radio').click(function() {
-				jQuery(this).prev().click();
-			});
-			-->
-		</script>
-		<?php
 		}
 
 		/**
