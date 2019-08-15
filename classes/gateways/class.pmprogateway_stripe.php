@@ -103,13 +103,13 @@ class PMProGateway_stripe extends PMProGateway
 	 * Moved into a method in version 1.8 so we only load it when needed.
 	 * //TODO Update docblock.
 	 */
-	static function loadStripeLibrary() {
+	function loadStripeLibrary() {
 		//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 		if(!class_exists("Stripe\Stripe")) {
 			require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 		}
 	}
-	
+
 	/**
 	 * Run on WP init
 	 *
@@ -135,7 +135,7 @@ class PMProGateway_stripe extends PMProGateway
 
 		//updates cron
 		add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
-		
+
 		// AJAX functions.
 		add_action('wp_ajax_confirm_payment_intent', array( 'PMProGateway_stripe', 'confirm_payment_intent' ) );
 		add_action('wp_ajax_nopriv_confirm_payment_intent', array( 'PMProGateway_stripe', 'confirm_payment_intent' ) );
@@ -169,16 +169,6 @@ class PMProGateway_stripe extends PMProGateway
 			//make sure we clean up subs we will be cancelling after checkout before processing
 			// TODO: Test this.
 			add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
-			
-			// TODO: Remove this?
-			// Don't require billing if we already have a PaymentMethod.
-			// add_action('pmpro_require_billing', array('PMProGateway_stripe', 'pmpro_require_billing'), 10, 2 );
-			
-			// Create a PaymentIntent as soon as the amount is known.
-			add_action('pmpro_checkout_preheader_after_get_level_at_checkout', array('PMProGateway_stripe', 'pmpro_checkout_preheader_after_get_level_at_checkout'));
-			
-			// Clean up some things after checkout.
-			add_action( 'pmpro_after_checkout', array('PMProGateway_stripe', 'pmpro_after_checkout'), 10, 2 );
 		}
 
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
@@ -335,9 +325,8 @@ class PMProGateway_stripe extends PMProGateway
 		global $gateway, $pmpro_level;
 
 		$default_gateway = pmpro_getOption("gateway");
-		
-		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level))
-		{
+
+		if(($gateway == "stripe" || $default_gateway == "stripe") && !pmpro_isLevelFree($pmpro_level)) {
 			//stripe js library
 			wp_enqueue_script("stripe", "https://js.stripe.com/v3/", array(), NULL);
 
@@ -347,16 +336,16 @@ class PMProGateway_stripe extends PMProGateway
 				function pmpro_stripe_javascript()
 				{
 					global $current_user, $pmpro_gateway, $pmpro_level, $pmpro_stripe_lite, $pmpro_requirebilling;
-					
+
 					// TODO: Localize and enuque JS.
-					
+
 					// xdebug_break();
-					
+
 					// PaymentIntent stuff.
 					$requires_source_action = false;
 					if ( isset( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
 						$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-						
+
 						// Is this a SetupIntent or PaymentIntent?
 						if ( 0 === strpos( $payment_intent_id, 'seti_' ) ) {
 							$payment_intent = Stripe_SetupIntent::retrieve( $payment_intent_id );
@@ -373,45 +362,45 @@ class PMProGateway_stripe extends PMProGateway
 							$customer_id = $payment_intent->customer;
 						}
 					}
-					
+
 					$pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress'));
 				?>
 				<script type="text/javascript">
 					jQuery(document).ready(function() {
 						// debugger;
-						
+
 						//TODO: Localize and enqueue JS.
 						var ajaxurl = '<?php echo admin_url( "admin-ajax.php" ); ?>';
-						
+
 						// Initialize Stripe.js
 						var stripe = Stripe('<?php echo pmpro_getOption("stripe_publishablekey"); ?>');
 						var elements = stripe.elements();
-						
+
 						// Create Elements
 						cardNumber = elements.create('cardNumber');
 						cardExpiry = elements.create('cardExpiry');
 						cardCvc = elements.create('cardCvc');
-						
+
 						// Mount Elements
 						cardNumber.mount('#AccountNumber');
 						cardExpiry.mount('#Expiry');
 						cardCvc.mount('#CVV');
-						
+
 						// Customer stuff.
 						<?php if ( ! empty( $customer_id ) ): ?>
 						customer = '<?php echo $customer_id; ?>';
 						<?php endif; ?>
-						
+
 						// PaymentIntent stuff.
 						<?php if ( ! empty( $payment_intent_id ) ): ?>
 						paymentIntentID = '<?php echo $payment_intent_id; ?>';
 						var clientSecret = '<?php echo $payment_intent->client_secret; ?>';
 						<?php endif; ?>
-						
+
 						<?php if ( ! empty( $payment_intent->confirmation_method ) ): ?>
 						var confirmationMethod = '<?php echo $payment_intent->confirmation_method; ?>';
 						<?php endif; ?>
-						
+
 						// Authentication JS
 						<?php if ( $requires_source_action ): ?>
 						pmpro_require_billing = false;
@@ -426,10 +415,10 @@ class PMProGateway_stripe extends PMProGateway
 						<?php else: ?>
 						pmpro_require_billing = true;
 						<?php endif; ?>
-						
+
 						// TODO: Remove token stuff?
 						var tokenNum = 0;
-						
+
 						jQuery(".pmpro_form").submit(function(event) {
 						// debugger;
 
@@ -438,7 +427,7 @@ class PMProGateway_stripe extends PMProGateway
 
 						//double check in case a discount code made the level free
 						if(pmpro_require_billing) {
-							
+
 							var billing_details;
 							//TODO: test billing details
 							<?php $pmpro_stripe_verify_address = apply_filters("pmpro_stripe_verify_address", pmpro_getOption('stripe_billingaddress')); ?>
@@ -452,7 +441,7 @@ class PMProGateway_stripe extends PMProGateway
 								address_country: jQuery('#bcountry').val()
 							};
 							<?php endif; ?>
-							
+
 							// Try creating a PaymentMethod from card element.
 							paymentMethod = stripe.createPaymentMethod('card', cardNumber, {
 								billing_details: billing_details,
@@ -465,19 +454,19 @@ class PMProGateway_stripe extends PMProGateway
 							return true;	//not using Stripe anymore
 						}
 						});
-						
+
 						function stripeResponseHandler(response) {
 							debugger;
 							console.log(response);
-							
+
 							var form$ = jQuery("#pmpro_form, .pmpro_form");
-							
+
 							if (response.error) {
 
 								// show the errors on the form
 								// alert(response.error.message);
 								jQuery(".pmpro_error").text(response.error.message);
-								
+
 								// TODO: Test this.
 								// Reset billing if necessary.
 								// if (typeof(response.error.payment_intent) !== 'undefined') {
@@ -485,15 +474,15 @@ class PMProGateway_stripe extends PMProGateway
 								// 	if ('requires_payment_method' == payment_intent_status) {
 								// 	}
 								// }
-								
+
 								// re-enable the submit button
 								jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
 
 								//hide processing message
 								jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-								
+
 								pmpro_require_billing = true;
-								
+
 								// Delete any incomplete subscriptions.
 								var data = {
 									action: 'delete_incomplete_subscription',
@@ -501,18 +490,18 @@ class PMProGateway_stripe extends PMProGateway
 								jQuery.post( ajaxurl, data, function( response ) {
 									// TODO: Handle this better?
 								});
-								
+
 							} else if ( response.paymentMethod ) {
 								var paymentMethodID = response.paymentMethod.id;
 								var card = response.paymentMethod.card;
-								
+
 								// insert the PaymentMethod ID into the form so it gets submitted to the server
 								form$.append("<input type='hidden' name='payment_method_id' value='" + paymentMethodID + "'/>");
 								<?php if ( ! empty( $payment_intent_id ) ): ?>
 								// insert the PaymentIntent ID into the form so it gets submitted to the server
 								form$.append("<input type='hidden' name='payment_intent_id' value='" + paymentIntentID + "'/>");
 								<?php endif; ?>
-								
+
 								// TODO: Remove token stuff?
 								// tokenum++;
 
@@ -529,26 +518,26 @@ class PMProGateway_stripe extends PMProGateway
 								// and submit
 								form$.get(0).submit();
 							} else if ( response.paymentIntent || response.setupIntent ) {
-								
+
 								if (response.paymentIntent) {
 									var intent = response.paymentIntent;
 								} else {
 									var intent = response.setupIntent;
 								}
 								var paymentMethodID = intent.payment_method;
-								
+
 								// insert the PaymentMethod ID into the form so it gets submitted to the server
 								form$.append("<input type='hidden' name='payment_method_id' value='" + paymentMethodID + "'/>");
 								// insert the PaymentIntent ID into the form so it gets submitted to the server
 								form$.append("<input type='hidden' name='payment_intent_id' value='" + paymentIntentID + "'/>");
-								
+
 								// If PaymentIntent succeeded, we don't have to confirm again.
 								if ( 'succeeded' == intent.status ) {
 									// debugger;
-									
+
 									// Authentication was successful.
 									// var card = response.payment_method.card;
-									
+
 									//TODO: Set all of this in pmpro_required_billing_fields based on PaymentMethod.
 									// We need this for now because the checkout order doesn't use the values set in $pmpro_required_billing_fields.
 									// // insert fields for other card fields
@@ -562,7 +551,7 @@ class PMProGateway_stripe extends PMProGateway
 									form$.get(0).submit();
 									return true;
 								}
-								
+
 								// Confirm PaymentIntent again.
 								var data = {
 									action: 'confirm_payment_intent',
@@ -573,20 +562,20 @@ class PMProGateway_stripe extends PMProGateway
 									response = JSON.parse(response);
 									if (response.error) {
 										// Authentication failed.
-										
+
 										// re-enable the submit button
 										jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
-								
+
 										//hide processing message
 										jQuery('#pmpro_processing_message').css('visibility', 'hidden');
-								
+
 										// show the errors on the form
 										alert(response.error.message);
 										jQuery(".payment-errors").text(response.error.message);
 									} else {
 										// Authentication was successful.
 										// var card = response.payment_method.card;
-										
+
 										//TODO: Set all of this in pmpro_required_billing_fields based on PaymentMethod.
 										// insert fields for other card fields
 										// if(jQuery('#CardType[name=CardType]').length)
@@ -596,7 +585,7 @@ class PMProGateway_stripe extends PMProGateway
 										// form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + card.last4 + "'/>");
 										// form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + card.exp_month).slice(-2) + "'/>");
 										// form$.append("<input type='hidden' name='ExpirationYear' value='" + card.exp_year + "'/>");
-										
+
 										form$.get(0).submit();
 										return true;
 									}
@@ -614,6 +603,15 @@ class PMProGateway_stripe extends PMProGateway
 				<?php
 				}
 				add_action("wp_head", "pmpro_stripe_javascript");
+				wp_register_script( 'pmpro_stripe',
+                            plugins_url( 'js/pmpro-stripe.js', PMPRO_BASE_FILE ),
+                            array( 'jquery' ),
+                            PMPRO_VERSION );
+				wp_localize_script( 'pmpro_stripe', 'pmpro_stripe', array(
+					'publishablekey' => pmpro_getOption( 'stripe_publishablekey' ),
+					'verify_address' => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
+				));
+				wp_enqueue_script( 'pmpro_stripe' );
 			}
 		}
 	}
@@ -621,88 +619,17 @@ class PMProGateway_stripe extends PMProGateway
 	/**
 	 * Don't require the CVV.
 	 * Don't require address fields if they are set to hide.
-	 * //TODO: Update docblock.
 	 */
 	static function pmpro_required_billing_fields($fields) {
-		
-		// xdebug_break();
-		
-		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $CVV;
-		
-		// Set fields from PaymentMethod.
-		
-		// Try getting the PaymentMethod from the PaymentIntent.
-		if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-			
-			$intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-			
-			// TODO: Refactor.
-			PMProGateway_Stripe::loadStripeLibrary();
-			Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-			
-			$params = array(
-				'expand' => array(
-					'payment_method'
-				)
-			);
-			
-			// TODO: Refactor.
-			if ( 0 === strpos( $intent_id, 'pi_' ) ) {
-				$payment_intent = Stripe_PaymentIntent::retrieve( $_SESSION['pmpro_stripe_payment_intent_id'] );
-			} else {
-				$payment_intent = Stripe_SetupIntent::retrieve( $_SESSION['pmpro_stripe_payment_intent_id'] );
-			}
-			
-			if ( ! empty( $payment_intent->payment_method ) ) {
-				$payment_method = $payment_intent->payment_method;
-				if ( empty( $payment_method->id ) ) {
-					// xdebug_break();
-					$payment_method = Stripe_PaymentMethod::retrieve( $payment_method );
-				}
-			}
-			
-			// Try getting the PaymentMethod from $_REQUEST.
-			if ( empty( $payment_method ) && ! empty( $_REQUEST['payment_method_id'] ) ) {
-				$payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
-				$payment_method = Stripe_PaymentMethod::retrieve( $payment_method_id );
-			}
-		
-		// TODO: Refactor. Get PaymentMethod from subscription instead.
-		} else if ( ! empty( $_REQUEST['payment_method_id'] ) ) {
-			
-			// TODO: Refactor.
-			PMProGateway_Stripe::loadStripeLibrary();
-			Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-			
-			$payment_method = Stripe_PaymentMethod::retrieve( $_REQUEST['payment_method_id'] );
-		}
+		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
 
-		if ( ! empty( $payment_method->card ) ) {
-			// xdebug_break();
-			$card = $payment_method->card;
-			// Fill in fields.
-			$fields['CardType'] = $card->brand;
-			$fields['AccountNumber'] = $card->last4;
-			$fields['ExpirationMonth'] = $card->exp_month;
-			$fields['ExpirationYear'] = $card->exp_year;
-			// $fields['CVV'] = $card->cvc;
-			
-			// Set global variables too for user meta, etc.
-			$CardType = $card->brand;
-			$AccountNumber = $card->last4;
-			$ExpirationMonth = $card->exp_month;
-			$ExpirationYear = $card->exp_year;
-		}
-		
 		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
 		unset($fields['CVV']);
 
 		//if using stripe lite, remove some fields from the required array
 		if ($pmpro_stripe_lite) {
 			//some fields to remove
-			$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry' );
+			$remove = array('bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType');
 			//if a user is logged in, don't require bemail either
 			if (!empty($current_user->user_email)) {
 				$remove[] = 'bemail';
@@ -716,22 +643,6 @@ class PMProGateway_stripe extends PMProGateway
 
 		return $fields;
 	}
-	
-	/**
-	 * Don't require billing if we already have a PaymentMethod.
-	 * //TODO: Update docblock.
-	 */
-	// static function pmpro_require_billing( $require_billing, $level ) {
-	// 
-	// 	// Set fields from PaymentMethod.
-	// 	if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-	// 		$payment_intent = Stripe_PaymentIntent::retrieve( $_SESSION['pmpro_stripe_payment_intent_id'] );
-	// 		if ( ! empty( $payment_intent->payment_method ) ) {
-	// 			$require_billing = false;
-	// 		}
-	// 	}
-	// 	return $require_billing;
-	// }
 
 	/**
 	 * Filtering orders at checkout.
@@ -739,11 +650,6 @@ class PMProGateway_stripe extends PMProGateway
 	 * @since 1.8
 	 */
 	static function pmpro_checkout_order($morder) {
-		
-		global $pmpro_required_billing_fields;
-		
-		// xdebug_break();
-		// TODO: Remove token stuff
 		//load up token values
 		if(isset($_REQUEST['stripeToken0']))
 		{
@@ -760,7 +666,7 @@ class PMProGateway_stripe extends PMProGateway
 			}
 			$morder->stripeToken = $thetoken;
 		}
-		
+
 		// Add the PaymentIntent ID to the order.
 		// TODO: Get this from session?
 		if(isset($_REQUEST['payment_intent_id']))
@@ -768,9 +674,9 @@ class PMProGateway_stripe extends PMProGateway
 			$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
 			$morder->stripePaymentIntentId = $payment_intent_id;
 		}
-		
+
 		// xdebug_break();
-		
+
 		// Add the PaymentMethod ID to the order.
 		if(isset($_REQUEST['payment_method_id']))
 		{
@@ -780,7 +686,7 @@ class PMProGateway_stripe extends PMProGateway
 			$morder->stripePaymentMethodID = $card_id;
 			unset($_REQUEST['payment_method_id']);
 		}
-		
+
 		// TODO: Refactor?
 		// Add billing information if necessary.
 		// xdebug_break();
@@ -821,7 +727,6 @@ class PMProGateway_stripe extends PMProGateway
 	 * Code to run after checkout
 	 *
 	 * @since 1.8
-	 * //TODO: Update docblock.
 	 */
 	static function pmpro_after_checkout($user_id, $morder) {
 		global $gateway;
@@ -831,10 +736,6 @@ class PMProGateway_stripe extends PMProGateway
 				update_user_meta($user_id, "pmpro_stripe_customerid", $morder->Gateway->customer->id);
 			}
 		}
-		
-		// Reset PaymentIntent.
-		unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-		unset( $_SESSION['pmpro_stripe_subscription_id'] );
 	}
 
 	/**
@@ -857,7 +758,7 @@ class PMProGateway_stripe extends PMProGateway
 	static function pmpro_include_payment_information_fields($include) {
 		//global vars
 		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-		
+
 		//get accepted credit cards
 		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
 		$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
@@ -888,31 +789,6 @@ class PMProGateway_stripe extends PMProGateway
 					</div>
 				<?php } else { ?>
 					<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-					<script>
-						<!--
-						jQuery(document).ready(function() {
-								jQuery('#AccountNumber').validateCreditCard(function(result) {
-									var cardtypenames = {
-										"amex":"American Express",
-										"diners_club_carte_blanche":"Diners Club Carte Blanche",
-										"diners_club_international":"Diners Club International",
-										"discover":"Discover",
-										"jcb":"JCB",
-										"laser":"Laser",
-										"maestro":"Maestro",
-										"mastercard":"Mastercard",
-										"visa":"Visa",
-										"visa_electron":"Visa Electron"
-									}
-
-									if(result.card_type)
-										jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-									else
-										jQuery('#CardType').val('Unknown Card Type');
-								});
-						});
-						-->
-					</script>
 				<?php } ?>
 				<div class="pmpro_checkout-field pmpro_payment-account-number">
 					<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
@@ -1282,234 +1158,14 @@ class PMProGateway_stripe extends PMProGateway
 				}
 
 				//save updates in case we removed some
+				update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
 
 				//save date of next on-date update to make it easier to query for these in cron job
 				update_user_meta($user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update);
 			}
 		}
 	}
-	
-	/**
-	 * Make sure we have a PaymentIntent.
-	 *
-	 * TODO Update docblock.
-	 */
-	static function pmpro_checkout_preheader_after_get_level_at_checkout( $level ) {
-		
-		// xdebug_break();
-		
-		// // TODO: Testing stuff - remove.
-		// if ( isset( $_REQUEST['pi'] ) ) {
-		// 	$_SESSION['pmpro_stripe_payment_intent_id'] = $_REQUEST['pi'];
-		// 	$_SESSION['pmpro_stripe_subscription_id'] = $_REQUEST['pi'];
-		// 	cw( 'Unsetting session variables.' );
-		// }
-		
-		global $pmpro_stripe_payment_intent_id, $current_user;
-		
-		// If there's no initial payment, bail.
-		// xdebug_break();
-		if ( 0 == $level->initial_payment ) {
-			if ( isset( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-				unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-			}
-			return;
-		}
-		
-		// TODO: Refactor/Remove?
-		// Load Stripe library early.
-		PMProGateway_Stripe::loadStripeLibrary();
-		Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-		
-        // Check for existing PaymentIntent ID in session.
-		if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-			$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-			if ( 0 === strpos( $payment_intent_id, 'pi_' ) ) {
-				$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
-			} else {
-				$payment_intent = Stripe_SetupIntent::retrieve( $payment_intent_id );
-			}
-			$payment_intent_id = $payment_intent->id;
-			
-			// Cancel PaymentIntent if it belongs to another customer.
-			if ( ! empty( $payment_intent->customer ) && 'requires_payment_method' == $payment_intent->status ) {
-				if ( is_user_logged_in() && get_user_meta( $current_user->ID, 'pmpro_stripe_customerid', true ) != $payment_intent->customer ) {
-					$payment_intent->cancel();
-					$payment_intent_id = '';
-				} 
-			}
-		}
-		
-		// Create a new PaymentIntent if we don't already have one.
-		if ( empty( $payment_intent_id ) ) {
-			$payment_intent = PMProGateway_Stripe::create_payment_intent_from_level( $level );
-			
-			// Store in session.
-			if ( ! empty( $payment_intent->id ) ) {
-				$_SESSION['pmpro_stripe_payment_intent_id'] = $payment_intent->id;
-			} else {
-				//TODO: Handle errors?
-			}
-		} else if ( 'requires_payment_method' == $payment_intent->status ) {
-			// Update PaymentIntent amount if necessary.
-			// TODO: Handle subscriptions.
-			if ( intval($level->initial_payment) * 100 != $payment_intent->amount ) {
-				cw( 'Updating PaymentIntent amount.' );
-				$payment_intent->amount = $level->initial_payment * 100;	//TODO: Use currency multiplier.
-				$payment_intent->save();
-			}
-		}
-	}
-	
-	/**
-	 * Create a PaymentIntent based on level settings.
-	 *
-	 * TODO Update docblock.
-	 * TODO Update code -- use user, level settings, etc.
-	 */
-	static function create_payment_intent_from_level( $level ) {
-		
-		// xdebug_break();
-		global $current_user;
-		
-		cw( 'Creating new PaymentIntent' );
-		
-		// Convert to cents for Stripe.
-		// TODO: Handle subscriptions better.
-		$amount = $level->initial_payment * 100; //TODO: Use pmpro_currency stuff.
-		$params = array(
-			'amount' => $amount,
-			'currency' => 'USD', //TODO: fix based on settings
-			'confirmation_method' => 'manual'
-		);
-		
-		// Try to get customer from user meta.
-		if ( is_user_logged_in() ) {
-			$customer_id = get_user_meta( $current_user->ID, 'pmpro_stripe_customerid', true );
-		}
-		
-		if ( ! empty( $customer_id ) ) {
-			$params['customer'] = $customer_id;
-		}
-		
-		$intent = Stripe_PaymentIntent::create( $params );		
-		return $intent;
-	}
-	
-	/**
-	 * Retrieve a PaymentIntent by ID.
-	 *
-	 * TODO Update docblock.
-	 */
-	static function get_payment_intent( $payment_intent_id = null ) {
-		
-		// Load Stripe library early.
-		PMProGateway_Stripe::loadStripeLibrary();
-		Stripe\Stripe::setApiKey(pmpro_getOption("stripe_secretkey"));
-		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-		
-		if ( empty( $payment_intent_id ) ) {
-			// Check for existing PaymentIntent ID in session.
-			if ( ! empty( $_SESSION['pmpro_stripe_payment_intent_id'] ) ) {
-				$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-			} else {
-				// Create new PaymentIntent.
-				$payment_intent = PMProGateway_Stripe::create_payment_intent_from_level( $level );
-				$payment_intent_id = $payment_intent->id;
-			}
-		}
-		return Stripe_PaymentIntent::retrieve( $payment_intent_id );
-	}
-	
-	/**
-	 * Update a PaymentIntent.
-	 *
-	 * TODO Update docblock.
-	 * TODO Update code
-	 */
-	static function update_payment_intent( $level ) {
-	}
 
-	/**
-	 * Confirm a PaymentIntent and return the result.
-	 *
-	 * TODO Update docblock.
-	 * TODO Update code
-	 */
-	static function confirm_payment_intent() {
-		
-		// xdebug_break();
-		
-		// Get values from request.
-		$payment_intent_id = sanitize_text_field( $_REQUEST['payment_intent_id'] );
-		$payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
-		
-		// TODO: Refactor
-		// Load Stripe library early.
-		$api_key = pmpro_getOption("stripe_secretkey");
-		PMProGateway_Stripe::loadStripeLibrary();
-		Stripe\Stripe::setApiKey( $api_key );
-		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-		
-		// Is this a PaymentIntent or SetupIntent?
-		// TODO: Refactor
-		if ( 0 === strpos( $payment_intent_id, 'pi_' ) ) {
-			$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
-		} else {
-			$payment_intent = Stripe_SetupIntent::retrieve( $payment_intent_id );
-		}
-		
-		// Add the PaymentMethod to the result.
-		$params = array(
-			'expand' => array(
-				'payment_method'
-			),
-		);
-		
-		if ( 'requires_confirmation' == $payment_intent->status ) {
-			$payment_intent->confirm();
-		}
-		
-		echo json_encode( $payment_intent );
-		exit;
-	}
-	
-	/**
-	 * Delete an incomplete subscription.
-	 *
-	 * TODO Update docblock.
-	 * TODO Update code
-	 */
-	static function delete_incomplete_subscription() {
-		// xdebug_break();
-		
-		$api_key = pmpro_getOption("stripe_secretkey");
-		
-		// Get values from session.
-		// TODO: Refactor? Start session earlier?
-		pmpro_start_session();
-		if ( ! empty( $_SESSION['pmpro_stripe_subscription_id'] ) ) {
-			$subscription_id = $_SESSION['pmpro_stripe_subscription_id'];
-		} else {
-			exit;
-		}
-		
-		// TODO: Refactor
-		// Load Stripe library early.
-		PMProGateway_Stripe::loadStripeLibrary();
-		Stripe\Stripe::setApiKey( $api_key );
-		Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
-
-		$subscription = Stripe_Subscription::retrieve( $subscription_id );
-		if ( 'incomplete' == $subscription->status ) {
-			$subscription->delete();
-			unset( $_SESSION['pmpro_stripe_subscription_id'] );
-			// TODO: Handle errors.
-		}
-		exit;
-	}
-	
 	/**
 	 * Before processing a checkout, check for pending invoices we want to clean up.
 	 * This prevents double billing issues in cases where Stripe has pending invoices
@@ -1590,7 +1246,6 @@ class PMProGateway_stripe extends PMProGateway
 	 * @since 1.4
 	 */
 	function process(&$order) {
-		// xdebug_break();
 		//check for initial payment
 		if(floatval($order->InitialPayment) == 0) {
 			//just subscribe
@@ -1599,11 +1254,8 @@ class PMProGateway_stripe extends PMProGateway
 			//charge then subscribe
 			if($this->charge($order)) {
 				if(pmpro_isLevelRecurring($order->membership_level)) {
-					// Reset PaymentIntent
-					// $order->stripePaymentIntentId = null;
 					if($this->subscribe($order)) {
 						//yay!
-						$order->saveOrder();
 						return true;
 					} else {
 						//try to refund initial charge
@@ -1612,7 +1264,6 @@ class PMProGateway_stripe extends PMProGateway
 				} else {
 					//only a one time charge
 					$order->status = "success";	//saved on checkout page
-					$order->saveOrder();
 					return true;
 				}
 			} else {
@@ -1636,152 +1287,66 @@ class PMProGateway_stripe extends PMProGateway
 	 * Make a one-time charge with Stripe
 	 *
 	 * @since 1.4
-	 * //TODO: Update docblock.
 	 */
 	function charge(&$order) {
-		
-		xdebug_break();
-		
-		// TODO: Refactor. Calculate all of this during creation of PaymentIntent.
-		// global $pmpro_currency, $pmpro_currencies;
-		// $currency_unit_multiplier = 100; //ie 100 cents per USD
-		// 
-		// //account for zero-decimal currencies like the Japanese Yen
-		// if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0) {
-		// 	$currency_unit_multiplier = 1;
-		// }			
-		// 
-		
+		global $pmpro_currency, $pmpro_currencies;
+		$currency_unit_multiplier = 100; //ie 100 cents per USD
+
+		//account for zero-decimal currencies like the Japanese Yen
+		if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0) {
+			$currency_unit_multiplier = 1;
+		}			
+
 		//create a code for the order
 		if(empty($order->code)) {
 			$order->code = $order->getRandomCode();	
 		}			
-		// 
-		// // TODO: Remove this. We already have a PaymentIntent.
-		// //what amount to charge?
-		// $amount = $order->InitialPayment;
-		// 
-		// //tax
-		// $order->subtotal = $amount;
-		// $tax = $order->getTax(true);
-		// $amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
 
-		
-		// xdebug_break();
-		
-		// TODO: Remove this?
-		$api_key = pmpro_getOption("stripe_secretkey");
-		
-		// TODO: Refactor. Get PaymentIntent from order instead.
-		$payment_intent_id = $_SESSION['pmpro_stripe_payment_intent_id'];
-		if ( 0 === strpos( $payment_intent_id, 'pi_' ) ) {
-			$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
-		} else {
-			$payment_intent = Stripe_SetupIntent::retrieve( $payment_intent_id );
+		//what amount to charge?
+		$amount = $order->InitialPayment;
+
+		//tax
+		$order->subtotal = $amount;
+		$tax = $order->getTax(true);
+		$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+
+		//create a customer
+		$result = $this->getCustomer($order);
+
+		if(empty($result)) {
+			//failed to create customer
+			return false;
 		}
-		
-		// If PaymentIntent already succeeded, just return true.
-		if ( 'succeeded' == $payment_intent->status ) {
-			
-			// xdebug_break();
-			
+
+		//charge
+		try {
+			$response = Stripe_Charge::create(array(
+			  "amount" => $amount * $currency_unit_multiplier, # amount in cents, again
+			  "currency" => strtolower($pmpro_currency),
+			  "customer" => $this->customer->id,
+			  "description" => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order)
+			  )
+			);
+		} catch (Exception $e) {
+			//$order->status = "error";
+			$order->errorcode = true;
+			$order->error = "Error: " . $e->getMessage();
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		if(empty($response["failure_message"])) {
 			//successful charge
-			//TODO: Make sure we get the initial payment charge for subscriptions.
-			//TODO: Check for charge errors.
-			if ( empty( $order->payment_transaction_id ) && ! empty( $payment_intent->charges ) ) {
-				$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
-			}
+			$order->payment_transaction_id = $response["id"];
 			$order->updateStatus("success");
-			// $order->saveOrder();
-			
-			// We don't need this PaymentIntent anymore.
-			unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-			
+			$order->saveOrder();
 			return true;
 		} else {
-			//create a customer
-			$result = $this->getCustomer($order);
-			
-			if(empty($result)) {
-				//failed to create customer
-				return false;
-			}
-			
-			// TODO: Refactor? Attach PaymentMethod to order.
-			if(!empty($order->stripeToken)) {
-				$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-				if ( $this->customer->id != $payment_method->customer ) {
-					$params = array(
-						'customer' => $this->customer->id,
-					);
-					$payment_method->attach( $params );
-				}
-			}
-			
-			// Update PaymentIntent with order information.
-			$params = array(
-				'customer' => $this->customer->id,
-				'description' => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order),
-				// TODO: Use PaymentMethod instead of Token.
-				'payment_method' => $order->stripeToken,
-			);
-			cw( 'Updating PaymentIntent' );
-			$response = $payment_intent->update( $payment_intent_id, $params );
-
-			// xdebug_break();
-			//charge
-			try {
-				cw( 'Confirming PaymentIntent' );
-				$response = $payment_intent->confirm();
-			} catch (Exception $e) {
-				
-				// TODO: Unset PaymentIntent?
-				// // We don't need this PaymentIntent anymore.
-				// unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-				
-				//$order->status = "error";
-				$order->errorcode = true;
-				$order->error = "Error: " . $e->getMessage();
-				$order->shorterror = $order->error;
-				return false;
-			}
-			
-			// xdebug_break();
-
-			// Requires Authentication
-			if ( 'requires_action' == $response->status ) {
-				$order->errorcode = true;
-				$order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.' ); // TODO: escape, change wording?
-				// $order->shorterror = $order->error;
-				return false;
-			}
-			
-			xdebug_break();
-			
-			// Only check the first charge for now.
-			$charge = $response->charges->data[0];
-			
-			if(empty($charge["failure_message"])) {
-				//successful charge
-				$order->payment_transaction_id = $charge->id;
-				$order->updateStatus("success");
-				// $order->saveOrder();
-				
-				// We don't need this PaymentIntent anymore.
-				unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-				
-				return true;
-			} else {
-				//$order->status = "error";
-				$order->errorcode = true;
-				$order->error = $charge['failure_message'];
-				$order->shorterror = $charge['failure_message'];
-				return false;
-				
-				// TODO: Unset PaymentIntent?
-				// We don't need this PaymentIntent anymore.
-				// unset( $_SESSION['pmpro_stripe_payment_intent_id'] );
-			}
+			//$order->status = "error";
+			$order->errorcode = true;
+			$order->error = $response['failure_message'];
+			$order->shorterror = $response['failure_message'];
+			return false;
 		}
 	}
 
@@ -1800,7 +1365,6 @@ class PMProGateway_stripe extends PMProGateway
 	 * //TODO: Update docblock.
 	 */
 	function getCustomer(&$order = false, $force = false) {
-		// xdebug_break();
 		global $current_user;
 
 		//already have it?
@@ -1823,8 +1387,6 @@ class PMProGateway_stripe extends PMProGateway
 		} else {
 			$user = NULL;	
 		}			
-		
-		// xdebug_break();
 
 		//transaction id?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "cus_") !== false) {
@@ -1834,7 +1396,7 @@ class PMProGateway_stripe extends PMProGateway
 			if(!empty($user_id)) {
 				$customer_id = get_user_meta($user_id, "pmpro_stripe_customerid", true);
 			}
-			
+
 			if ( empty( $customer_id ) ) {
 				if ( ! empty( $order->stripePaymentIntentId ) ) {
 					// TODO: Refactor. Add PaymentIntent to order.
@@ -1853,6 +1415,7 @@ class PMProGateway_stripe extends PMProGateway
 				}
 			}
 
+			//look up by transaction id
 			if(empty($customer_id) && !empty($user_id)) {
 				//user id from this order or the user's last stripe order
 				if(!empty($order->payment_transaction_id)) {
@@ -1898,7 +1461,7 @@ class PMProGateway_stripe extends PMProGateway
 				}					
 			}
 		}
-		
+
 		//get name and email values from order in case we update
 		if(!empty($order->FirstName) && !empty($order->LastName)) {
 			$name = trim($order->FirstName . " " . $order->LastName);
@@ -1939,9 +1502,9 @@ class PMProGateway_stripe extends PMProGateway
 					$this->customer->email = $email;
 				}
 				$this->customer->save();
-				
+
 				return $this->customer;
-				
+
 			} catch (Exception $e) {
 				//assume no customer found
 			}
@@ -1953,18 +1516,8 @@ class PMProGateway_stripe extends PMProGateway
 				$this->customer = Stripe_Customer::create(array(
 						  "description" => $name . " (" . $email . ")",
 						  "email" => $order->Email,
-						  // "payment_method" => $order->stripeToken // TODO: Remove?
+						  "card" => $order->stripeToken
 						));
-						
-				// $params = array(
-				// 	'customer' => $this->customer->id,
-				// );
-				
-				// // TODO: Refactor. Attach PaymentMethod to order.
-				// if(!empty($order->stripeToken)) {
-				// 	$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-				// 	$payment_method->attach( $params );
-				// }
 			} catch (Exception $e) {
 				$order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
 				$order->shorterror = $order->error;
@@ -2017,8 +1570,8 @@ class PMProGateway_stripe extends PMProGateway
 		if(empty($this->customer->subscriptions)) {
 			return false;
 		}			
-		
-		//is there a subscription transaction id pointing to a sub?
+
+    //is there a subscription transaction id pointing to a sub?
 		if(!empty($order->subscription_transaction_id) && strpos($order->subscription_transaction_id, "sub_") !== false) {
 			try {
 				$sub = $this->customer->subscriptions->retrieve($order->subscription_transaction_id);
@@ -2029,11 +1582,6 @@ class PMProGateway_stripe extends PMProGateway
 			}
 
 			return $sub;
-		}
-
-		//no subscriptions object in customer
-		if(empty($this->customer->subscriptions)) {
-			return false;
 		}
 
 		//find subscription based on customer id and order/plan id
@@ -2062,62 +1610,8 @@ class PMProGateway_stripe extends PMProGateway
 	 * Create a new subscription with Stripe
 	 *
 	 * @since 1.4
-	 * // TODO: Update docblock.
 	 */
 	function subscribe(&$order, $checkout = true) {
-		
-		xdebug_break();
-		
-		// Check PaymentIntent first.
-		// TODO: Refactor. Move to process() ?
-		if ( ! empty( $order->stripePaymentIntentId ) ) {
-			if ( 0 === strpos( $order->stripePaymentIntentId, 'pi_' ) ) {
-				$payment_intent = Stripe_PaymentIntent::retrieve( $order->stripePaymentIntentId );
-			} else {
-				$payment_intent = Stripe_SetupIntent::retrieve( $order->stripePaymentIntentId );
-			}
-			if ( 'succeeded' == $payment_intent->status && empty( $payment_intent->confirmation_method ) || 'automatic' == $payment_intent->confirmation_method ) {
-				
-				// Subscription was already created and authenticated.
-				
-				// xdebug_break();
-				// TODO: Add charge as payment transaction ID if available.
-				$order->payment_transaction_id = $payment_intent->id;
-
-				//if we got this far, we're all good
-				$order->status = "success";
-				$order->subscription_transaction_id = $_SESSION['pmpro_stripe_subscription_id'];
-
-				// TODO: Test this?
-				//save new updates if this is at checkout
-				if($checkout) {
-					//empty out updates unless set above
-					if(empty($new_user_updates)) {
-						$new_user_updates = array();
-					}
-
-					//update user meta
-					if(!empty($user_id)) {
-						update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
-					} else {
-						//need to remember the user updates to save later
-						global $pmpro_stripe_updates;
-						$pmpro_stripe_updates = $new_user_updates;
-						function pmpro_user_register_stripe_updates($user_id) {
-							global $pmpro_stripe_updates;
-							update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
-						}
-						add_action("user_register", "pmpro_user_register_stripe_updates");
-					}
-				} else {
-					//give them their old updates back
-					update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
-				}
-
-				return true;
-			}
-		}
-		
 		global $pmpro_currency, $pmpro_currencies;
 
 		$currency_unit_multiplier = 100; //ie 100 cents per USD
@@ -2142,25 +1636,12 @@ class PMProGateway_stripe extends PMProGateway
 		}
 
 		//set up customer
-		// TODO: Test updating same customer from initial payment.
 		$result = $this->getCustomer($order);
 		if(empty($result)) {
 			return false;	//error retrieving customer
 		}
-		
-		// TODO: Refactor? Attach PaymentMethod to order.
-		if(!empty($order->stripeToken)) {
-			$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-			if ( $this->customer->id != $payment_method->customer ) {
-				$params = array(
-					'customer' => $this->customer->id,
-				);
-				$payment_method->attach( $params );
-			}
-		}
-		
+
 		//set subscription id to custom id
-		// TODO: Remove?
 		$order->subscription_transaction_id = $this->customer['id'];	//transaction id is the customer id, we save it in user meta later too
 
 		//figure out the amounts
@@ -2234,10 +1715,11 @@ class PMProGateway_stripe extends PMProGateway
 				"interval_count" => $order->BillingFrequency,
 				"interval" => strtolower($order->BillingPeriod),
 				"trial_period_days" => $trial_period_days,
-				'product' => array( 'name' => $order->membership_name . " for order " . $order->code),
+				"name" => $order->membership_name . " for order " . $order->code,
 				"currency" => strtolower($pmpro_currency),
 				"id" => $order->code
 			);
+
 			$plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
 		} catch (Exception $e) {
 			$order->error = __("Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
@@ -2245,35 +1727,20 @@ class PMProGateway_stripe extends PMProGateway
 			return false;
 		}
 
-		// TODO: Test this?
 		//before subscribing, let's clear out the updates so we don't trigger any during sub
 		if(!empty($user_id)) {
 			$old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
 			update_user_meta($user_id, "pmpro_stripe_updates", array());
 		}
 
-		// TODO: Remove?
 		if(empty($order->subscription_transaction_id) && !empty($this->customer['id'])) {
 			$order->subscription_transaction_id = $this->customer['id'];
 		}
 
-		// xdebug_break();
 		//subscribe to the plan
 		try {
-			$params = array(
-				'customer' => $this->customer->id,
-				'default_payment_method' => $order->stripeToken,
-				'items' => array(
-					array( 'plan' => $order->code ),
-				),
-				'trial_period_days' => $trial_period_days,
-				'expand' => array(
-					'latest_invoice.payment_intent',
-					'pending_setup_intent',
-				),
-				'payment_behavior' => 'allow_incomplete',
-			);
-			$result = Stripe_Subscription::create( $params );
+			$subscription = array("plan" => $order->code);
+			$result = $this->customer->subscriptions->create(apply_filters('pmpro_stripe_create_subscription_array', $subscription));
 		} catch (Exception $e) {
 			//try to delete the plan
 			$plan->delete();
@@ -2288,80 +1755,41 @@ class PMProGateway_stripe extends PMProGateway
 			$order->shorterror = $order->error;
 			return false;
 		}
-		
-		// TODO: Refactor?
+
 		//delete the plan
 		$plan = Stripe_Plan::retrieve($order->code);
 		$plan->delete();
-		
-		// xdebug_break();
-		
-		// Save PaymentIntent and Subscription IDs to session.
-		// TODO: Refactor?
-		$_SESSION['pmpro_stripe_subscription_id'] = $result->id;
-		if ( ! empty( $result->latest_invoice->payment_intent ) ) {
-			$payment_intent = $result->latest_invoice->payment_intent;
-		} else if ( ! empty( $result->pending_setup_intent ) ) {
-			$payment_intent = $result->pending_setup_intent;
-		} else {
-			// $payment_intent = '';
-		}
-		if ( ! empty( $payment_intent->id ) ) {
-			$_SESSION['pmpro_stripe_payment_intent_id'] = $payment_intent->id;
-		}
-		
-		//successful subscribe
-		if ( 'trialing' == $result->status || 'active' == $result->status || ( ! empty( $payment_intent ) && 'succeeded' == $payment_intent->status ) ) {
-			
-			// If there was a successful charge, add it to the order.
-			if ( empty( $order->payment_transaction_id ) && ! empty( $latest_invoice->charge ) ) {
-				// xdebug_break();
-				$order->payment_transaction_id = $latest_invoice->charge;
+
+		//if we got this far, we're all good
+		$order->status = "success";
+		$order->subscription_transaction_id = $result['id'];
+
+		//save new updates if this is at checkout
+		if($checkout) {
+			//empty out updates unless set above
+			if(empty($new_user_updates)) {
+				$new_user_updates = array();
 			}
-			
-			// //delete the plan
-			// $plan = Stripe_Plan::retrieve($order->code);
-			// $plan->delete();
 
-			//if we got this far, we're all good
-			$order->status = "success";
-			$order->subscription_transaction_id = $result['id'];
-
-			//save new updates if this is at checkout
-			if($checkout) {
-				//empty out updates unless set above
-				if(empty($new_user_updates)) {
-					$new_user_updates = array();
-				}
-
-				//update user meta
-				if(!empty($user_id)) {
-					update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
-				} else {
-					//need to remember the user updates to save later
-					global $pmpro_stripe_updates;
-					$pmpro_stripe_updates = $new_user_updates;
-					function pmpro_user_register_stripe_updates($user_id) {
-						global $pmpro_stripe_updates;
-						update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
-					}
-					add_action("user_register", "pmpro_user_register_stripe_updates");
-				}
+			//update user meta
+			if(!empty($user_id)) {
+				update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
 			} else {
-				//give them their old updates back
-				update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
+				//need to remember the user updates to save later
+				global $pmpro_stripe_updates;
+				$pmpro_stripe_updates = $new_user_updates;
+				function pmpro_user_register_stripe_updates($user_id) {
+					global $pmpro_stripe_updates;
+					update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
+				}
+				add_action("user_register", "pmpro_user_register_stripe_updates");
 			}
-
-			return true;
-		} else if ( 'requires_action' == $payment_intent->status ) {
-			
-			//TODO: Store subscription ID in session so we can refer it to later.
-			// Requires Authentication
-			$order->errorcode = true;
-			$order->error = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.' ); // TODO: escape, change wording?
-			// $order->shorterror = $order->error;
-			return false;
+		} else {
+			//give them their old updates back
+			update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
 		}
+
+		return true;
 	}
 
 	/**
@@ -2472,59 +1900,16 @@ class PMProGateway_stripe extends PMProGateway
 	 * Helper method to update the customer info via getCustomer
 	 *
 	 * @since 1.4
-	 * //TODO: Update docblock.
 	 */
 	function update(&$order) {
-		xdebug_break();
-		
-		// Check for SetupIntent.
-		if ( ! empty( $order->stripePaymentIntentId ) ) {
-			$setup_intent = Stripe_SetupIntent::retrieve( $order->stripePaymentIntentId );
-			if ( 'succeeded' == $setup_intent ) {
-				return true;
-			}
-		}
-		
-		$this->getCustomer($order);
+		//we just have to run getCustomer which will look for the customer and update it with the new token
+		$result = $this->getCustomer($order);
 
-		// TODO: Refactor? Attach PaymentMethod to order.
-		if(!empty($order->stripeToken)) {
-			$payment_method = Stripe_PaymentMethod::retrieve( $order->stripeToken );
-			if ( $this->customer->id != $payment_method->customer ) {
-				$params = array(
-					'customer' => $this->customer->id,
-				);
-				$payment_method->attach( $params );
-			}
+		if(!empty($result)) {
+			return true;
+		} else {
+			return false;	//couldn't find the customer
 		}
-		
-		
-		// TODO: Try/catch errors. Handle multiple subscriptions?
-		
-		// Update subscription(s).
-		foreach( $this->customer->subscriptions as $subscription ) {
-			$subscription->default_payment_method = $payment_method->id;
-			$subscription->save();
-			
-			// Requires Authentication
-			if ( ! empty( $subscription->pending_setup_intent ) ) {
-				$_SESSION['pmpro_stripe_payment_intent_id'] = $subscription->pending_setup_intent;
-				$order->errorcode = true;
-				$order->error = __( 'Customer authentication is required to finish setting up this payment method. Please complete the verification steps issued by your payment provider.' ); // TODO: escape, change wording?
-				// $order->shorterror = $order->error;
-				return false;
-			}
-		}
-		
-		// If we made it here, the subscriptions were successfully updated.
-		return true;
-		
-		// // TODO: Remove?
-		// if(!empty($result)) {
-		// 	return true;
-		// } else {
-		// 	return false;	//couldn't find the customer
-		// }
 	}
 
 	/**

@@ -2,9 +2,12 @@
 namespace PMPro\Tests;
 
 use PMPro\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Traits\Utility;
 use PMPro\Tests\Helpers\Factory\Order;
 
 abstract class Base Extends \WP_UnitTestCase {
+
+	use Utility;
 
 	function __get( $name ) {
 		if ( 'factory' === $name ) {
