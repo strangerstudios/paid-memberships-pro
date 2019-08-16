@@ -162,7 +162,7 @@ class PMProGateway_stripe extends PMProGateway
         if (($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))    //$_REQUEST['review'] means the PayPal Express review page
         {
             add_action('pmpro_after_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_after_preheader'));
-            add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
+            add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_after_preheader'));
             add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
             add_filter('pmpro_billing_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
             add_filter('pmpro_include_billing_address_fields', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
