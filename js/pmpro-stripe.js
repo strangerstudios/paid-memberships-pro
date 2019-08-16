@@ -21,16 +21,23 @@ jQuery( document ).ready( function( $ ) {
 	cardCvc.mount('#CVV');
 
 	// TODO Refactor
-	// TODO Hide form, disable submit button, etc.
 	// Handle authentication if required.
 	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
 		if ( 'requires_action' === pmproStripe.paymentIntent.status ) {
+			// On submit disable its submit button
+			$('input[type=submit]', this).attr('disabled', 'disabled');
+			$('input[type=image]', this).attr('disabled', 'disabled');
+			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
 				.then( stripeResponseHandler );
 		}
 	}
 	if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
 		if ( 'requires_action' === pmproStripe.setupIntent.status ) {
+			// On submit disable its submit button
+			$('input[type=submit]', this).attr('disabled', 'disabled');
+			$('input[type=image]', this).attr('disabled', 'disabled');
+			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
 				.then( stripeResponseHandler );
 		}

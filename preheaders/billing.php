@@ -204,7 +204,6 @@ if ($submit) {
 			 */
 			$morder = apply_filters( "pmpro_billing_order", $morder );
 			
-			xdebug_break();
             $worked = $morder->updateBilling();
 
             if ($worked) {
