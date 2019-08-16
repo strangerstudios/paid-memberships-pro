@@ -161,7 +161,7 @@ class PMProGateway_stripe extends PMProGateway
 
         if (($default_gateway == "stripe" || $current_gateway == "stripe") && empty($_REQUEST['review']))    //$_REQUEST['review'] means the PayPal Express review page
         {
-            add_action('pmpro_after_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
+            add_action('pmpro_after_checkout_preheader', array('PMProGateway_stripe', 'pmpro_checkout_after_preheader'));
             add_action('pmpro_billing_preheader', array('PMProGateway_stripe', 'pmpro_checkout_preheader'));
             add_filter('pmpro_checkout_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
             add_filter('pmpro_billing_order', array('PMProGateway_stripe', 'pmpro_checkout_order'));
@@ -338,8 +338,8 @@ class PMProGateway_stripe extends PMProGateway
      * @since 1.8
      * TODO Update docblock.
      */
-    static function pmpro_checkout_preheader( $order )
-    {
+    static function pmpro_checkout_after_preheader( $order ) {
+
         global $gateway, $pmpro_level, $current_user;
 
 		$default_gateway = pmpro_getOption("gateway");
@@ -356,13 +356,6 @@ class PMProGateway_stripe extends PMProGateway
                     'verifyAddress' => apply_filters('pmpro_stripe_verify_address', pmpro_getOption('stripe_billingaddress')),
                     'ajaxUrl' => admin_url("admin-ajax.php"),
                 );
-
-//                if ( ! empty( $current_user->ID ) ) {
-//                    $customer_id = get_user_meta( $current_user->ID, 'pmpro_stripe_customerid' );
-//                    if ( ! empty( $customer_id ) ) {
-//                        $localize_vars['customer_id'] = $customer_id;
-//                    }
-//                }
 
                 if ( ! empty( $order ) ) {
                     if ( ! empty( $order->Gateway->payment_intent ) ) {
@@ -1941,8 +1934,8 @@ class PMProGateway_stripe extends PMProGateway
     function process2( &$order ) {
 
         $steps = array(
-            'set_source',
             'set_customer',
+            'set_source',
             'attach_source_to_customer',
             'process_charges',
             'process_subscriptions',
@@ -2015,15 +2008,16 @@ class PMProGateway_stripe extends PMProGateway
         );
 
         try {
-            Stripe_Customer::createSource( $this->customer->id, $params );
+            $this->customer->createSource( $this->customer->id, $params );
+            if ( ! empty ( $this->customer->default_source ) ) {
+                $this->customer->default_source = $this->source->id;
+                $this->customer->save();
+            }
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
         }
 
-//        if ( ! empty( $order->source_id ) && ! empty( $this->source->customer ) ) {
-//            $this->customer->default_source = $order->source_id;
-//        }
 
         return true;
     }
