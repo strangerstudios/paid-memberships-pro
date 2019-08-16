@@ -6,7 +6,7 @@ use Stripe\Plan as Stripe_Plan;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\PaymentIntent as Stripe_PaymentIntent;
 use Stripe\SetupIntent as Stripe_SetupIntent;
-use Stripe\PaymentMethod as Stripe_PaymentMethod;
+use Stripe\Source as Stripe_Source;
 use Stripe\Subscription as Stripe_Subscription;
 
 define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
@@ -340,7 +340,7 @@ class PMProGateway_stripe extends PMProGateway
      */
     static function pmpro_checkout_preheader( $order )
     {
-        global $gateway, $pmpro_level;
+        global $gateway, $pmpro_level, $current_user;
 
 		$default_gateway = pmpro_getOption("gateway");
 
@@ -356,6 +356,13 @@ class PMProGateway_stripe extends PMProGateway
                     'verifyAddress' => apply_filters('pmpro_stripe_verify_address', pmpro_getOption('stripe_billingaddress')),
                     'ajaxUrl' => admin_url("admin-ajax.php"),
                 );
+
+//                if ( ! empty( $current_user->ID ) ) {
+//                    $customer_id = get_user_meta( $current_user->ID, 'pmpro_stripe_customerid' );
+//                    if ( ! empty( $customer_id ) ) {
+//                        $localize_vars['customer_id'] = $customer_id;
+//                    }
+//                }
 
                 if ( ! empty( $order ) ) {
                     if ( ! empty( $order->Gateway->payment_intent ) ) {
@@ -410,8 +417,7 @@ class PMProGateway_stripe extends PMProGateway
      *
      * @since 1.8
      */
-    static function pmpro_checkout_order( $morder )
-    {
+    static function pmpro_checkout_order( $morder ) {
 
         // Create a code for the order.
         if ( empty( $morder->code ) ) {
@@ -433,12 +439,20 @@ class PMProGateway_stripe extends PMProGateway
             $morder->subscription_transaction_id = sanitize_text_field( $_REQUEST['subscription_id'] );
         }
 
+        // Add the Source ID to the order.
+        if ( ! empty ( $_REQUEST['source_id'] ) ) {
+            $morder->source_id = sanitize_text_field( $_REQUEST['source_id'] );
+        }
+
         // Add the PaymentMethod ID to the order.
         if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
             $morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
         }
 
         // Add the Customer ID to the order.
+        if ( empty( $morder->customer_id ) ) {
+
+        }
         if ( ! empty ( $_REQUEST['customer_id'] ) ) {
             $morder->customer_id = sanitize_text_field( $_REQUEST['customer_id'] );
         }
@@ -1245,6 +1259,7 @@ class PMProGateway_stripe extends PMProGateway
 
         //check for an existing stripe customer
         if (!empty($customer_id)) {
+            // TODO Only update if values have changed?
             try {
                 $this->customer = Stripe_Customer::retrieve($customer_id);
                 $this->customer->description = $name . " (" . $email . ")";
@@ -1280,11 +1295,12 @@ class PMProGateway_stripe extends PMProGateway
         }
 
         //no customer id, create one
-        if ( ! empty( $order->payment_method_id ) ) {
+        if ( ! empty( $order->source_id ) ) {
             try {
                 $this->customer = Stripe_Customer::create( array(
                     "description" => $name . " (" . $email . ")",
                     "email" => $order->Email,
+//                    'source' => $order->source_id,
                 ) );
             } catch ( \Stripe\Error $e ) {
                 $order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro') . " " . $e->getMessage();
@@ -1383,6 +1399,7 @@ class PMProGateway_stripe extends PMProGateway
 	 *
 	 * @since 1.4
 	 */
+	// TODO Update docblock.
 	function subscribe(&$order, $checkout = true) {
 		global $pmpro_currency, $pmpro_currencies;
 
@@ -1489,7 +1506,7 @@ class PMProGateway_stripe extends PMProGateway
                 "interval_count" => $order->BillingFrequency,
                 "interval" => strtolower($order->BillingPeriod),
                 "trial_period_days" => $trial_period_days,
-                "name" => $order->membership_name . " for order " . $order->code,
+                'product' => array( 'name' => $order->membership_name . " for order " . $order->code),
                 "currency" => strtolower($pmpro_currency),
                 "id" => $order->code);
 
@@ -1513,9 +1530,7 @@ class PMProGateway_stripe extends PMProGateway
 
         // subscribe to the plan
         try {
-            $subscription =
-                    array("plan" => $order->code);
-
+            $subscription = array("plan" => $order->code);
             $result = $this->customer->subscriptions->create(apply_filters('pmpro_stripe_create_subscription_array', $subscription));
         } catch (Exception $e) {
             //try to delete the plan
@@ -1787,14 +1802,8 @@ class PMProGateway_stripe extends PMProGateway
             // Find any open invoices for this subscription and forgive them.
             if (!empty($invoices)) {
                 foreach ($invoices->data as $invoice) {
-                    // if(!$invoice->closed && $invoice->subscription == $subscription->id) {
-                    // 	$invoice->closed = true;
-                    // 	$invoice->save();
-                    // }
-                    // TODO: Test voiding open invoices with same sub ID.
                     if ('open' == $invoice->status && $invoice->subscription == $subscription->id) {
-                        $invoice->void();
-                        // $invoice->save();
+                        $invoice->voidInvoice();
                     }
                 }
             }
@@ -1932,9 +1941,9 @@ class PMProGateway_stripe extends PMProGateway
     function process2( &$order ) {
 
         $steps = array(
-            'set_payment_method',
+            'set_source',
             'set_customer',
-            'attach_customer_to_payment_method',
+            'attach_source_to_customer',
             'process_charges',
             'process_subscriptions',
         );
@@ -1955,37 +1964,37 @@ class PMProGateway_stripe extends PMProGateway
         return true;
     }
 
-    function set_payment_method( &$order, $force = false  ) {
-        if ( ! empty( $this->payment_method ) && ! $force ) {
+    function set_source( &$order, $force = false  ) {
+        if ( ! empty( $this->source ) && ! $force ) {
             return true;
         }
 
-        $payment_method = $this->get_payment_method( $order );
+        $source = $this->get_source( $order );
 
-        if ( empty( $payment_method ) ) {
+        if ( empty( $source ) ) {
             return false;
         }
 
-        $this->payment_method = $payment_method;
+        $this->source = $source;
         return true;
     }
 
-    function get_payment_method( &$order ) {
+    function get_source( &$order ) {
 
-        if ( ! empty( $order->payment_method_id ) ) {
+        if ( ! empty( $order->source_id ) ) {
             try {
-                $payment_method = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
+                $source = Stripe_Source::retrieve( $order->source_id );
             } catch ( \Stripe\Error $e ) {
                 $order->error = $e->message;
                 return false;
             }
         }
 
-        if ( empty( $payment_method ) ) {
+        if ( empty( $source ) ) {
             return false;
         }
 
-        return $payment_method;
+        return $source;
     }
 
     function set_customer( &$order, $force = false  ) {
@@ -1995,22 +2004,26 @@ class PMProGateway_stripe extends PMProGateway
         $this->getCustomer( $order );
     }
 
-    function attach_customer_to_payment_method( &$order ) {
+    function attach_source_to_customer( &$order ) {
 
-        if ( ! empty( $this->payment_method->customer ) ) {
+        if ( ! empty( $this->source->customer ) ) {
             return true;
         }
 
         $params = array(
-            'customer' => $this->customer->id,
+            'source' => $this->source->id
         );
 
         try {
-            $this->payment_method->attach( $params );
+            Stripe_Customer::createSource( $this->customer->id, $params );
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
         }
+
+//        if ( ! empty( $order->source_id ) && ! empty( $this->source->customer ) ) {
+//            $this->customer->default_source = $order->source_id;
+//        }
 
         return true;
     }
@@ -2092,7 +2105,7 @@ class PMProGateway_stripe extends PMProGateway
 
         $params = array(
             'customer' => $this->customer->id,
-            'payment_method' => $order->payment_method_id,
+            'source' => $this->source->id,
             'amount' => $amount * $currency_unit_multiplier,
             'currency' => $pmpro_currency,
             'confirmation_method' => 'manual',
@@ -2255,17 +2268,14 @@ class PMProGateway_stripe extends PMProGateway
         try {
             $params = array(
                 'customer' => $this->customer->id,
-                'default_payment_method' => $order->payment_method_id,
+                'default_source' => $this->source,
                 'items' => array(
                     array( 'plan' => $order->code ),
                 ),
                 'trial_period_days' => $order->TrialPeriodDays,
                 'expand' => array(
                     'pending_setup_intent',
-                    'pending_setup_intent.payment_method',
-                    'pending_setup_intent.customer',
                 ),
-                'payment_behavior' => 'allow_incomplete',
             );
             $order->subscription = Stripe_Subscription::create( $params );
         } catch ( \Stripe\Error $e) {
@@ -2353,7 +2363,7 @@ class PMProGateway_stripe extends PMProGateway
         try {
             $params = array(
                 'expand' => array(
-                    'payment_method',
+                    'source',
                     'customer',
                 ),
             );

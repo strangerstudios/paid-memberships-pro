@@ -439,7 +439,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			//no errors yet
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
-				// xdebug_break();
 
 				//process checkout if required
 				if ( $pmpro_requirebilling ) {

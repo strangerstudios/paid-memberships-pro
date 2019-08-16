@@ -61,7 +61,12 @@ jQuery( document ).ready( function( $ ) {
 				billingDetails['name'] = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
 
 			// Try creating a PaymentMethod from card element.
-			paymentMethod = stripe.createPaymentMethod( 'card', cardNumber, {
+			// paymentMethod = stripe.createPaymentMethod( 'card', cardNumber, {
+			// 	billingDetails: billingDetails,
+			// }).then( stripeResponseHandler );
+
+			source = stripe.createSource( cardNumber, {
+				type: 'card',
 				billingDetails: billingDetails,
 			}).then( stripeResponseHandler );
 
@@ -76,7 +81,7 @@ jQuery( document ).ready( function( $ ) {
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
 
-		var form, data, card, paymentMethod, customer;
+		var form, data, card, source, customer;
 
 		form = $('#pmpro_form, .pmpro_form');
 
@@ -99,12 +104,12 @@ jQuery( document ).ready( function( $ ) {
 			$.post(pmproStripe.ajaxUrl, data, function (response) {
 				// Do stuff?
 			});
-		} else if ( response.paymentMethod ) {
-			paymentMethodId = response.paymentMethod.id;
-			card = response.paymentMethod.card;
+		} else if ( response.source ) {
+			sourceId = response.source.id;
+			card = response.source.card;
 
-			// insert the PaymentMethod ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
+			// insert the Source ID into the form so it gets submitted to the server
+			form.append( '<input type="hidden" name="source_id" value="' + sourceId + '" />' );
 
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
@@ -125,27 +130,27 @@ jQuery( document ).ready( function( $ ) {
 		    // TODO Refactor
 			if ( pmproStripe.paymentIntent ) {
 				customer = pmproStripe.paymentIntent.customer;
-				paymentMethod = pmproStripe.paymentIntent.payment_method;
+				source = pmproStripe.paymentIntent.source;
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
 			}
 			if ( pmproStripe.setupIntent ) {
 				if ( ! customer ) {
 					customer = pmproStripe.setupIntent.customer;
 				}
-				if ( ! paymentMethod ) {
-					paymentMethod = pmproStripe.setupIntent.payment_method;
+				if ( ! source ) {
+					source = pmproStripe.setupIntent.source;
 				}
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
 				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
 
-			card = paymentMethod.card;
+			card = source.card;
 
 			// insert the Customer ID into the form so it gets submitted to the server
 			form.append( '<input type="hidden" name="customer_id" value="' + customer.id + '" />' );
 
 			// insert the PaymentMethod ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethod.id + '" />' );
+			form.append( '<input type="hidden" name="source_id" value="' + source.id + '" />' );
 
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
