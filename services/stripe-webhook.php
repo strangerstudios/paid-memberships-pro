@@ -266,9 +266,8 @@
 		} elseif($pmpro_stripe_event->type == "charge.failed")
 		{
 			//last order for this subscription
-			// $old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-			$old_order = new MemberOrder(1867);
-			
+			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
 
@@ -450,6 +449,8 @@
 			return false;
 	}
 
+	// TODO Test this
+    // TODO docblock
 	function getOldOrderFromInvoiceEvent($pmpro_stripe_event)
 	{
 		//pause here to give PMPro a chance to finish checkout
@@ -458,7 +459,12 @@
 		global $wpdb;
 
 		$customer_id = $pmpro_stripe_event->data->object->customer;
-		$subscription_id = $pmpro_stripe_event->data->object->id;
+
+		if ( ! empty( $pmpro_stripe_event->data->object->subscription ) ) {
+            $subscription_id = $pmpro_stripe_event->data->object->subscription;
+        } else {
+            $subscription_id = $pmpro_stripe_event->data->object->id;
+        }
 
 		// no customer passed? we can't cross reference
 		if(empty($customer_id))
