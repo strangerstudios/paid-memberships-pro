@@ -101,7 +101,6 @@ class PMProGateway_stripe extends PMProGateway
      *
      * @since 1.8
      * Moved into a method in version 1.8 so we only load it when needed.
-     * //TODO Update docblock.
      */
      function loadStripeLibrary()
     {
@@ -138,13 +137,6 @@ class PMProGateway_stripe extends PMProGateway
         //updates cron
         add_action('pmpro_cron_stripe_subscription_updates', array('PMProGateway_stripe', 'pmpro_cron_stripe_subscription_updates'));
 
-        // AJAX functions.
-        // TODO Do we need this?
-        add_action('wp_ajax_confirm_payment_intent', array('PMProGateway_stripe', 'confirm_payment_intent'));
-        add_action('wp_ajax_nopriv_confirm_payment_intent', array('PMProGateway_stripe', 'confirm_payment_intent'));
-        add_action('wp_ajax_delete_incomplete_subscription', array('PMProGateway_stripe', 'delete_incomplete_subscription'));
-        add_action('wp_ajax_nopriv_delete_incomplete_subscription', array('PMProGateway_stripe', 'delete_incomplete_subscription'));
-
         /*
             Filter pmpro_next_payment to get actual value
             via the Stripe API. This is disabled by default
@@ -169,7 +161,6 @@ class PMProGateway_stripe extends PMProGateway
             add_filter('pmpro_include_cardtype_field', array('PMProGateway_stripe', 'pmpro_include_billing_address_fields'));
             add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'pmpro_include_payment_information_fields'));
 
-            // TODO: Test this.
             //make sure we clean up subs we will be cancelling after checkout before processing
             add_action('pmpro_checkout_before_processing', array('PMProGateway_stripe', 'pmpro_checkout_before_processing'));
         }
@@ -1142,7 +1133,6 @@ class PMProGateway_stripe extends PMProGateway
             return $this->customer;
         }
 
-        // TODO Move this
         // Is it already on the order?
         if ( ! empty( $order->customer_id ) ) {
             $customer_id = $order->customer_id;
@@ -1252,7 +1242,6 @@ class PMProGateway_stripe extends PMProGateway
 
         //check for an existing stripe customer
         if (!empty($customer_id)) {
-            // TODO Only update if values have changed?
             try {
                 $this->customer = Stripe_Customer::retrieve($customer_id);
                 // TODO Update Customer after checkout instead?
@@ -1263,7 +1252,6 @@ class PMProGateway_stripe extends PMProGateway
                     $this->customer->save();
                 }
 
-                // TODO Refactor?
                 if (!empty($user_id)) {
                     //user logged in/etc
                     update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);
@@ -1303,7 +1291,6 @@ class PMProGateway_stripe extends PMProGateway
                 return false;
             }
 
-            // TODO Refactor?
             if (!empty($user_id)) {
                 //user logged in/etc
                 update_user_meta($user_id, "pmpro_stripe_customerid", $this->customer->id);
@@ -2129,7 +2116,6 @@ class PMProGateway_stripe extends PMProGateway
             return true;
         }
 
-        // TODO Refactor
         //before subscribing, let's clear out the updates so we don't trigger any during sub
         if(!empty($user_id)) {
             $old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
@@ -2142,7 +2128,6 @@ class PMProGateway_stripe extends PMProGateway
         if ( ! empty( $order->error ) ) {
             $order->error = __( "Subscription failed: " . $order->error, 'paid-memberships-pro' );
 
-            // TODO Refactor
             //give the user any old updates back
             if(!empty($user_id)) {
                 update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
@@ -2151,8 +2136,6 @@ class PMProGateway_stripe extends PMProGateway
             return false;
         }
 
-        // TODO Refactor
-        // TODO Test this?
         //save new updates if this is at checkout
         //empty out updates unless set above
         if(empty($new_user_updates)) {
@@ -2235,7 +2218,6 @@ class PMProGateway_stripe extends PMProGateway
             }
         } elseif(!empty($order->TrialBillingCycles)) {
 
-// TODO: Test this.
         }
 
 // Save $trial_period_days to order for now too.
@@ -2301,7 +2283,6 @@ class PMProGateway_stripe extends PMProGateway
         return true;
     }
 
-    // TODO Refactor. get_intent()?
     function get_setup_intent( &$order ) {
 
         if ( ! empty( $order->setup_intent_id ) ) {
@@ -2324,7 +2305,6 @@ class PMProGateway_stripe extends PMProGateway
         return $setup_intent;
     }
 
-    // TODO Refactor. set_intent()?
     function set_setup_intent( &$order, $force = false ) {
 
         if ( ! empty( $this->setup_intent ) && ! $force ) {
@@ -2383,7 +2363,6 @@ class PMProGateway_stripe extends PMProGateway
         return true;
     }
 
-    // TODO Refactor. confirm_intent()?
     function confirm_setup_intent( &$order  ) {
 
         if ( empty( $this->setup_intent ) ) {
