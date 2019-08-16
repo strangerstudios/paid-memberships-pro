@@ -1932,18 +1932,21 @@ class PMProGateway_stripe extends PMProGateway
 
     function process2( &$order ) {
 
-        // TODO Refactor and check for errors after each step in the process.
-        $this->set_customer( $order );
-        if ( ! empty( $order->error ) ) {
-            return false;
-        }
-        $this->process_charges( $order );
-        if ( ! empty( $order->error ) ) {
-            return false;
-        }
-        $this->process_subscriptions( $order );
-        if ( ! empty( $order->error ) ) {
-            return false;
+        $steps = array(
+            'set_payment_method',
+            'set_customer',
+            'attach_customer_to_payment_method',
+            'process_charges',
+            'process_subscriptions',
+        );
+
+        foreach( $steps as $key => $step ) {
+            do_action( "pmpro_process_order_before_{$step}", $order );
+            call_user_func( array( $this, $steps[$key] ), $order );
+            do_action( "pmpro_process_order_after_{$step}", $order );
+            if ( ! empty( $order->error ) ) {
+                return false;
+            }
         }
 
         $this->clean_up( $order );
@@ -1953,11 +1956,64 @@ class PMProGateway_stripe extends PMProGateway
         return true;
     }
 
+    function set_payment_method( &$order, $force = false  ) {
+        if ( ! empty( $this->payment_method ) && ! $force ) {
+            return true;
+        }
+
+        $payment_method = $this->get_payment_method( $order );
+
+        if ( empty( $payment_method ) ) {
+            return false;
+        }
+
+        $this->payment_method = $payment_method;
+        return true;
+    }
+
+    function get_payment_method( &$order ) {
+
+        if ( ! empty( $order->payment_method_id ) ) {
+            try {
+                $payment_method = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
+            } catch ( \Stripe\Error $e ) {
+                $order->error = $e->message;
+                return false;
+            }
+        }
+
+        if ( empty( $payment_method ) ) {
+            return false;
+        }
+
+        return $payment_method;
+    }
+
     function set_customer( &$order, $force = false  ) {
         if ( ! empty( $this->customer ) && ! $force ) {
             return true;
         }
         $this->getCustomer( $order );
+    }
+
+    function attach_customer_to_payment_method( &$order ) {
+
+        if ( ! empty( $this->payment_method->customer ) ) {
+            return true;
+        }
+
+        $params = array(
+            'customer' => $this->customer->id,
+        );
+
+        try {
+            $this->payment_method->attach( $params );
+        } catch ( \Stripe\Error $e ) {
+            $order->error = $e->message;
+            return false;
+        }
+
+        return true;
     }
 
     function process_charges( &$order ) {
@@ -2050,19 +2106,6 @@ class PMProGateway_stripe extends PMProGateway
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
-        }
-
-// for unit testing
-        if ( defined( '__PHPUNIT_PHAR__') ) {
-//            switch( $order->stripeToken ) {
-//                case 'pm_no_auth':
-//                    $status = 'succeeded';
-//                    break;
-//                case 'pm_requires_auth':
-//                    $status = 'pi_requires_action';
-//                    break;
-//            }
-            $payment_intent->status = 'requires_confirmation';
         }
 
         return $payment_intent;
