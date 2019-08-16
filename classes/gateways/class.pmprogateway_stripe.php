@@ -1687,20 +1687,31 @@ class PMProGateway_stripe extends PMProGateway
         $update_order->saveOrder();
     }
 
+    // TODO Update docblock
 	/**
 	 * Helper method to update the customer info via getCustomer
 	 *
 	 * @since 1.4
 	 */
 	function update(&$order) {
-		//we just have to run getCustomer which will look for the customer and update it with the new token
-		$result = $this->getCustomer($order);
 
-		if(!empty($result)) {
-			return true;
-		} else {
-			return false;	//couldn't find the customer
-		}
+        $steps = array(
+            'set_customer',
+            'set_source',
+            'attach_source_to_customer',
+        );
+
+        foreach( $steps as $key => $step ) {
+            do_action( "pmpro_update_billing_before_{$step}", $order );
+            call_user_func( array( $this, $steps[$key] ), $order );
+            do_action( "pmpro_update_billing_after_{$step}", $order );
+            if ( ! empty( $order->error ) ) {
+                return false;
+            }
+        }
+
+        return true;
+
 	}
 
     /**
