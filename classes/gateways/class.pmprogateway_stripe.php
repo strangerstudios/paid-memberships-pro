@@ -1255,11 +1255,13 @@ class PMProGateway_stripe extends PMProGateway
             // TODO Only update if values have changed?
             try {
                 $this->customer = Stripe_Customer::retrieve($customer_id);
-                $this->customer->description = $name . " (" . $email . ")";
-                if ('No Email' !== $email) {
+                // TODO Update Customer after checkout instead?
+                // Update description.
+                if( ! empty( $order->source_id ) ) {
+                    $this->customer->description = $name . " (" . $email . ")";
                     $this->customer->email = $email;
+                    $this->customer->save();
                 }
-                $this->customer->save();
 
                 // TODO Refactor?
                 if (!empty($user_id)) {
@@ -1999,20 +2001,13 @@ class PMProGateway_stripe extends PMProGateway
 
     function attach_source_to_customer( &$order ) {
 
-        if ( ! empty( $this->source->customer ) ) {
+        if ( ! empty( $this->customer->default_source ) && $this->customer->default_source === $this->source->id ) {
             return true;
         }
 
-        $params = array(
-            'source' => $this->source->id
-        );
-
         try {
-            $this->customer->createSource( $this->customer->id, $params );
-            if ( ! empty ( $this->customer->default_source ) ) {
-                $this->customer->default_source = $this->source->id;
-                $this->customer->save();
-            }
+            $this->customer->source = $order->source_id;
+            $this->customer->save();
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
