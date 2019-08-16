@@ -1285,7 +1285,6 @@ class PMProGateway_stripe extends PMProGateway
                 $this->customer = Stripe_Customer::create( array(
                     "description" => $name . " (" . $email . ")",
                     "email" => $order->Email,
-                    "payment_method" => $order->payment_method_id,
                 ) );
             } catch ( \Stripe\Error $e ) {
                 $order->error = __("Error creating customer record with Stripe:", 'paid-memberships-pro') . " " . $e->getMessage();
