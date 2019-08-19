@@ -253,3 +253,6 @@ if ($submit) {
     $ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
     $ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);
 }
+
+// TODO Docblock
+do_action( 'pmpro_billing_after_preheader', $morder );

@@ -880,4 +880,4 @@ if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
 }
 
 // TODO Docblock
-do_action( 'pmpro_after_checkout_preheader', $morder );
+do_action( 'pmpro_checkout_after_preheader', $morder );
