@@ -21,3 +21,27 @@ if ( typeof askfirst !== 'function' ) {
         return pmpro_askfirst( text, url );
     }
 }
+
+/*
+ * Toggle fields with a specific CSS class selector.
+ * @since v2.1
+ */
+function pmpro_toggle_fields_by_selector( selector, checked ) {
+	if( checked === undefined ) {
+		jQuery( selector ).toggle();
+	} else if ( checked ) {
+		jQuery( selector ).show();
+	} else {
+		jQuery( selector ).hide();
+	}
+}
+
+/*
+ * Clicking on the Enable 3DSecure checkbox toggles settings.
+ * @since v2.1
+ */
+jQuery(document).ready(function() {
+	jQuery( '#paypal_enable_3dsecure' ).change( function() {		
+		pmpro_toggle_fields_by_selector( 'tr.pmpro_paypal_3dsecure', jQuery( this ).prop( 'checked' ) );
+	});
+});
