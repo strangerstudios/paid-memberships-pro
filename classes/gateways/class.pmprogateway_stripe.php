@@ -1690,7 +1690,7 @@ class PMProGateway_stripe extends PMProGateway
 
         foreach( $steps as $key => $step ) {
             do_action( "pmpro_update_billing_before_{$step}", $order );
-            call_user_func( array( $this, $steps[$key] ), $order );
+			$this->$step( $order );
             do_action( "pmpro_update_billing_after_{$step}", $order );
             if ( ! empty( $order->error ) ) {
                 return false;
@@ -1942,9 +1942,9 @@ class PMProGateway_stripe extends PMProGateway
         );
 
         foreach( $steps as $key => $step ) {
-            do_action( "pmpro_process_order_before_{$step}", $order );
-            call_user_func( array( $this, $steps[$key] ), $order );
-            do_action( "pmpro_process_order_after_{$step}", $order );
+            do_action( "pmpro_process_order_before_{$step}", $order );            
+            $this->$step( $order );
+			do_action( "pmpro_process_order_after_{$step}", $order );
             if ( ! empty( $order->error ) ) {
                 return false;
             }
