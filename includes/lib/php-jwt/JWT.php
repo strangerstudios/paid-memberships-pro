@@ -1,6 +1,6 @@
 <?php
-
-namespace Firebase\JWT;
+// Added PMPro to namespace to avoid conflicts.
+namespace PMPro\Firebase\JWT;
 use \DomainException;
 use \InvalidArgumentException;
 use \UnexpectedValueException;
