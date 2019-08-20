@@ -157,8 +157,10 @@
 							
 							//hide sub settings and toggle them on based on triggers
 							jQuery('tr.pmpro_toggle_target').hide();
-							jQuery( 'input[pmpro_toggle_trigger_for]' ).each( function() {		
-								pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
+							jQuery( 'input[pmpro_toggle_trigger_for]' ).each( function() {										
+								if ( jQuery( this ).is( ':visible' ) ) {
+									pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
+								}
 							});							
 
 							if ( jQuery('#gateway').val() === '' ) {
