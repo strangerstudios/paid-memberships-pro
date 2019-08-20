@@ -1,122 +1,200 @@
-// Identify with Stripe.
-Stripe.setPublishableKey( pmpro_stripe.publishablekey );
-
-// Used by plugns that hide/show the billing fields.
-pmpro_require_billing = true;
-
-// Used to keep track of Stripe tokens.
-var tokenNum = 0;
-
 // Wire up the form for Stripe.
-jQuery(document).ready(function() {
-	jQuery(".pmpro_form").submit(function(event) {
-		// prevent the form from submitting with the default action
+jQuery( document ).ready( function( $ ) {
+
+	var stripe, elements, pmproRequireBilling, cardNumber, cardExpiry, cardCvc;
+
+	// Identify with Stripe.
+	stripe = Stripe( pmproStripe.publishableKey );
+	elements = stripe.elements();
+
+	// Used by plugns that hide/show the billing fields.
+	pmproRequireBilling = true;
+
+	// Create Elements.
+	cardNumber = elements.create('cardNumber');
+	cardExpiry = elements.create('cardExpiry');
+	cardCvc = elements.create('cardCvc');
+
+	// Mount Elements.
+	cardNumber.mount('#AccountNumber');
+	cardExpiry.mount('#Expiry');
+	cardCvc.mount('#CVV');
+
+	// TODO Refactor
+	// Handle authentication if required.
+	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
+		if ( 'requires_action' === pmproStripe.paymentIntent.status ) {
+			// On submit disable its submit button
+			$('input[type=submit]', this).attr('disabled', 'disabled');
+			$('input[type=image]', this).attr('disabled', 'disabled');
+			$('#pmpro_processing_message').css('visibility', 'visible');
+			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
+				.then( stripeResponseHandler );
+		}
+	}
+	if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
+		if ( 'requires_action' === pmproStripe.setupIntent.status ) {
+			// On submit disable its submit button
+			$('input[type=submit]', this).attr('disabled', 'disabled');
+			$('input[type=image]', this).attr('disabled', 'disabled');
+			$('#pmpro_processing_message').css('visibility', 'visible');
+			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
+				.then( stripeResponseHandler );
+		}
+	}
+
+	$( '.pmpro_form' ).submit( function( event ) {
+		var billingDetails, paymentMethod;
+
+		// Prevent the form from submitting with the default action.
 		event.preventDefault();
 
-		//double check in case a discount code made the level free
-		if ( pmpro_require_billing ) {
-			//build array for creating token
-			var args = {
-				number: jQuery('#AccountNumber').val(),
-				exp_month: jQuery('#ExpirationMonth').val(),
-				exp_year: jQuery('#ExpirationYear').val()			
-			};
-			
-			if ( pmpro_stripe.verify_address ) {
-				var more_args = {
-					address_line1: jQuery('#baddress1').val(),
-					address_line2: jQuery('#baddress2').val(),
-					address_city: jQuery('#bcity').val(),
-					address_state: jQuery('#bstate').val(),
-					address_zip: jQuery('#bzipcode').val(),
-					address_country: jQuery('#bcountry').val()
-				}
-				
-				args = args.concat( more_args );
-			}
+		// Double check in case a discount code made the level free.
+		if ( pmproRequireBilling ) {
 
-			//add CVC if not blank
-			if ( jQuery('#CVV').val().length )
-				args['cvc'] = jQuery('#CVV').val();
+			if ( pmproStripe.verifyAddress ) {
+				billingDetails = {
+					addressLine1: $( '#baddress1' ).val(),
+					addressLine2: $( '#baddress2' ).val(),
+					addressCity: $( '#bcity' ).val(),
+					addressState: $( '#bstate' ).val(),
+					addressZip: $( '#bzipcode' ).val(),
+					addressCountry: $( '#bcountry' ).val(),
+				};
+			}
 
 			//add first and last name if not blank
-			if ( jQuery('#bfirstname').length && jQuery('#blastname').length )
-				args['name'] = jQuery.trim(jQuery('#bfirstname').val() + ' ' + jQuery('#blastname').val());
+			if ( $( '#bfirstname' ).length && $( '#blastname' ).length )
+				billingDetails['name'] = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
 
-			//create token(s)
-			if ( jQuery('#level').length ) {
-				var levelnums = jQuery("#level").val().split(",");
-				for(var cnt = 0, len = levelnums.length; cnt < len; cnt++) {
-					Stripe.createToken(args, stripeResponseHandler);
-				}
-			} else {
-				Stripe.createToken(args, stripeResponseHandler);
-			}
+			// Try creating a PaymentMethod from card element.
+			// paymentMethod = stripe.createPaymentMethod( 'card', cardNumber, {
+			// 	billingDetails: billingDetails,
+			// }).then( stripeResponseHandler );
 
-			// prevent the form from submitting with the default action
+			source = stripe.createSource( cardNumber, {
+				type: 'card',
+				billingDetails: billingDetails,
+			}).then( stripeResponseHandler );
+
+			// Prevent the form from submitting with the default action.
 			return false;
 		} else {
 			this.submit();
 			return true;	//not using Stripe anymore
 		}
 	});
-});
 
-// Handle the response from Stripe.
-function stripeResponseHandler(status, response) {
-	if (response.error) {
-		// re-enable the submit button
-		jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr("disabled");
+	// Handle the response from Stripe.
+	function stripeResponseHandler( response ) {
 
-		//hide processing message
-		jQuery('#pmpro_processing_message').css('visibility', 'hidden');
+		var form, data, card, source, customer;
 
-		// show the errors on the form
-		alert(response.error.message);
-		jQuery(".payment-errors").text(response.error.message);
-	} else {
-		var form$ = jQuery("#pmpro_form, .pmpro_form");
-		// token contains id, last4, and card type
-		var token = response['id'];
-		// insert the token into the form so it gets submitted to the server
-		form$.append("<input type='hidden' name='stripeToken" + tokenNum + "' value='" + token + "'/>");
-		tokenNum++;
+		form = $('#pmpro_form, .pmpro_form');
 
-		//console.log(response);
+		if (response.error) {
+			// Re-enable the submit button.
+			$('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
 
-		//insert fields for other card fields
-		if(jQuery('#CardType[name=CardType]').length)
-			jQuery('#CardType').val(response['card']['brand']);
-		else
-			form$.append("<input type='hidden' name='CardType' value='" + response['card']['brand'] + "'/>");
-		form$.append("<input type='hidden' name='AccountNumber' value='XXXXXXXXXXXX" + response['card']['last4'] + "'/>");
-		form$.append("<input type='hidden' name='ExpirationMonth' value='" + ("0" + response['card']['exp_month']).slice(-2) + "'/>");
-		form$.append("<input type='hidden' name='ExpirationYear' value='" + response['card']['exp_year'] + "'/>");
+			// Hide processing message.
+			$('#pmpro_processing_message').css('visibility', 'hidden');
 
-		// and submit
-		form$.get(0).submit();
+			$('.pmpro_error').text(response.error.message);
+
+			pmproRequireBilling = true;
+
+			// TODO Handle this better? Let the user know?
+			// Delete any incomplete subscriptions if 3DS auth failed.
+			data = {
+				action: 'delete_incomplete_subscription',
+			};
+			$.post(pmproStripe.ajaxUrl, data, function (response) {
+				// Do stuff?
+			});
+		} else if ( response.source ) {
+			sourceId = response.source.id;
+			card = response.source.card;
+
+			// insert the Source ID into the form so it gets submitted to the server
+			form.append( '<input type="hidden" name="source_id" value="' + sourceId + '" />' );
+
+			// TODO Get card info for order and user meta after checkout instead.
+			//	We need this for now to make sure user meta gets updated.
+			// insert fields for other card fields
+			if( $( '#CardType[name=CardType]' ).length )
+				$( '#CardType' ).val( card.brand );
+			else
+				form.append( '<input type="hidden" name="CardType" value="' + card.brand + '"/>' );
+
+			form.append( '<input type="hidden" name="AccountNumber" value="XXXXXXXXXXXX' + card.last4 + '"/>' );
+			form.append( '<input type="hidden" name="ExpirationMonth" value="' + ( '0' + card.exp_month ).slice( -2 ) + '"/>' );
+			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
+
+			// and submit
+			form.get(0).submit();
+		} else if ( response.paymentIntent || response.setupIntent ) {
+
+		    // TODO Refactor
+			if ( pmproStripe.paymentIntent ) {
+				customer = pmproStripe.paymentIntent.customer;
+				source = pmproStripe.paymentIntent.source;
+				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
+			}
+			if ( pmproStripe.setupIntent ) {
+				if ( ! customer ) {
+					customer = pmproStripe.setupIntent.customer;
+				}
+				if ( ! source ) {
+					source = pmproStripe.setupIntent.source;
+				}
+				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
+				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
+			}
+
+			card = source.card;
+
+			// insert the Customer ID into the form so it gets submitted to the server
+			form.append( '<input type="hidden" name="customer_id" value="' + customer.id + '" />' );
+
+			// insert the PaymentMethod ID into the form so it gets submitted to the server
+			form.append( '<input type="hidden" name="source_id" value="' + source.id + '" />' );
+
+			// TODO Get card info for order and user meta after checkout instead.
+			//	We need this for now to make sure user meta gets updated.
+			// insert fields for other card fields
+			if( $( '#CardType[name=CardType]' ).length )
+				$( '#CardType' ).val( card.brand );
+			else
+				form.append( '<input type="hidden" name="CardType" value="' + card.brand + '"/>' );
+
+			form.append( '<input type="hidden" name="AccountNumber" value="XXXXXXXXXXXX' + card.last4 + '"/>' );
+			form.append( '<input type="hidden" name="ExpirationMonth" value="' + ( '0' + card.exp_month ).slice( -2 ) + '"/>' );
+			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
+			form.get(0).submit();
+			return true;
+		}
 	}
-}
 
-// Validate credit card and set card type.
-jQuery(document).ready(function() {
-	jQuery('#AccountNumber').validateCreditCard(function(result) {
+	// TODO Do we still need this?
+	// Validate credit card and set card type.
+	$( '#AccountNumber' ).validateCreditCard(function (result) {
 		var cardtypenames = {
-			"amex":"American Express",
-			"diners_club_carte_blanche":"Diners Club Carte Blanche",
-			"diners_club_international":"Diners Club International",
-			"discover":"Discover",
-			"jcb":"JCB",
-			"laser":"Laser",
-			"maestro":"Maestro",
-			"mastercard":"Mastercard",
-			"visa":"Visa",
-			"visa_electron":"Visa Electron"
+			"amex": "American Express",
+			"diners_club_carte_blanche": "Diners Club Carte Blanche",
+			"diners_club_international": "Diners Club International",
+			"discover": "Discover",
+			"jcb": "JCB",
+			"laser": "Laser",
+			"maestro": "Maestro",
+			"mastercard": "Mastercard",
+			"visa": "Visa",
+			"visa_electron": "Visa Electron"
 		}
 
-		if(result.card_type)
-			jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+		if (result.card_type)
+			$( '#CardType' ).val(cardtypenames[result.card_type.name]);
 		else
-			jQuery('#CardType').val('Unknown Card Type');
+			$( '#CardType' ).val( 'Unknown Card Type' );
 	});
+
 });

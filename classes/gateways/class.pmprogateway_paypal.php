@@ -251,7 +251,7 @@
 		</tr>
 		<?php
 		}
-		
+
 		/**
 		 * Code added to checkout preheader.
 		 *

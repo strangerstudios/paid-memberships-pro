@@ -1,5 +1,7 @@
 <?php
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+// we are on the checkout page
+add_filter( 'pmpro_is_checkout', '__return_true' );
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
@@ -52,8 +54,9 @@ $pmpro_level = pmpro_getLevelAtCheckout();
  * Action to run extra preheader code after setting checkout level.
  *
  * @since 2.0.5
+ * //TODO update docblock
  */
-do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
@@ -77,6 +80,10 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	$pmpro_requirebilling = false;
 	$besecure             = false;
 }
+
+// Allow for filters.
+// TODO: docblock.
+$pmpro_requirebilling = apply_filters( 'pmpro_require_billing', $pmpro_requirebilling, $pmpro_level );
 
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
@@ -455,6 +462,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
 						$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
 					}
+					
+					// xdebug_break();
 
 					//credit card values
 					$morder->cardtype              = $CardType;
@@ -699,6 +708,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		);
 
 		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
+			cw( 'Membership Level changed' );
 			//we're good
 			//blank order for free levels
 			if ( empty( $morder ) ) {
@@ -868,3 +878,6 @@ if ( empty( $submit ) ) {
 if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
 	$AccountNumber = "";
 }
+
+// TODO Docblock
+do_action( 'pmpro_after_checkout_preheader', $morder );
