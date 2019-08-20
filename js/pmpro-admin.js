@@ -23,10 +23,11 @@ if ( typeof askfirst !== 'function' ) {
 }
 
 /*
- * Toggle fields with a specific CSS class selector.
+ * Toggle elements with a specific CSS class selector.
+ * Used to hide/show sub settings when a main setting is enabled.
  * @since v2.1
  */
-function pmpro_toggle_fields_by_selector( selector, checked ) {
+function pmpro_toggle_elements_by_selector( selector, checked ) {
 	if( checked === undefined ) {
 		jQuery( selector ).toggle();
 	} else if ( checked ) {
@@ -37,11 +38,12 @@ function pmpro_toggle_fields_by_selector( selector, checked ) {
 }
 
 /*
- * Clicking on the Enable 3DSecure checkbox toggles settings.
+ * Find inputs with a custom attribute pmpro_toggle_trigger_for,
+ * and bind change to toggle the specified elements.
  * @since v2.1
  */
 jQuery(document).ready(function() {
-	jQuery( '#paypal_enable_3dsecure' ).change( function() {		
-		pmpro_toggle_fields_by_selector( 'tr.pmpro_paypal_3dsecure', jQuery( this ).prop( 'checked' ) );
+	jQuery( 'input[pmpro_toggle_trigger_for]' ).change( function() {		
+		pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
 	});
 });

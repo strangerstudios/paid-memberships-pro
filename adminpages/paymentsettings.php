@@ -154,6 +154,12 @@
 							//hide all gateway options
 							jQuery('tr.gateway').hide();
 							jQuery('tr.gateway_'+gateway).show();
+							
+							//hide sub settings and toggle them on based on triggers
+							jQuery('tr.pmpro_toggle_target').hide();
+							jQuery( 'input[pmpro_toggle_trigger_for]' ).each( function() {		
+								pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
+							});							
 
 							if ( jQuery('#gateway').val() === '' ) {
 								jQuery('#pmpro-default-gateway-message').show();
