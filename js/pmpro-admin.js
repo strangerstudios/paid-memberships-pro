@@ -21,3 +21,29 @@ if ( typeof askfirst !== 'function' ) {
         return pmpro_askfirst( text, url );
     }
 }
+
+/*
+ * Toggle elements with a specific CSS class selector.
+ * Used to hide/show sub settings when a main setting is enabled.
+ * @since v2.1
+ */
+function pmpro_toggle_elements_by_selector( selector, checked ) {
+	if( checked === undefined ) {
+		jQuery( selector ).toggle();
+	} else if ( checked ) {
+		jQuery( selector ).show();
+	} else {
+		jQuery( selector ).hide();
+	}
+}
+
+/*
+ * Find inputs with a custom attribute pmpro_toggle_trigger_for,
+ * and bind change to toggle the specified elements.
+ * @since v2.1
+ */
+jQuery(document).ready(function() {
+	jQuery( 'input[pmpro_toggle_trigger_for]' ).change( function() {		
+		pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
+	});
+});

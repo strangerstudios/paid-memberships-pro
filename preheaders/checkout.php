@@ -708,7 +708,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		);
 
 		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
-			cw( 'Membership Level changed' );
 			//we're good
 			//blank order for free levels
 			if ( empty( $morder ) ) {
