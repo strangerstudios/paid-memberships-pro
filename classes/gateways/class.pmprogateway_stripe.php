@@ -991,53 +991,33 @@ class PMProGateway_stripe extends PMProGateway
 
     /**
      * Process checkout and decide if a charge and or subscribe is needed
-     *
-     * @since 1.4
+     * Updated in v2.1 to work with Stripe v3 payment intents.
+     * @since 1.4	 
      */
     function process(&$order)
     {
-        // Just use the new process2() method for now.
-        return $this->process2($order);
+        $steps = array(
+            'set_customer',
+            'set_source',
+            'attach_source_to_customer',
+            'process_charges',
+            'process_subscriptions',
+        );
 
-        //check for initial payment
-        if (floatval($order->InitialPayment) == 0) {
-            //just subscribe
-            return $this->subscribe($order);
-        } else {
-            //charge then subscribe
-            if ($this->charge($order)) {
-                if (pmpro_isLevelRecurring($order->membership_level)) {
-                    // Reset PaymentIntent
-                    // $order->stripePaymentIntentId = null;
-                    if ($this->subscribe($order)) {
-                        //yay!
-                        $order->saveOrder();
-                        return true;
-                    } else {
-                        //try to refund initial charge
-                        return false;
-                    }
-                } else {
-                    //only a one time charge
-                    $order->status = "success";    //saved on checkout page
-                    $order->saveOrder();
-                    return true;
-                }
-            } else {
-                if (empty($order->error)) {
-                    if (!self::$is_loaded) {
-
-                        $order->error = __("Payment error: Please contact the webmaster (stripe-load-error)", 'paid-memberships-pro');
-
-                    } else {
-
-                        $order->error = __("Unknown error: Initial payment failed.", 'paid-memberships-pro');
-                    }
-                }
-
+        foreach( $steps as $key => $step ) {
+            do_action( "pmpro_process_order_before_{$step}", $order );            
+            $this->$step( $order );
+			do_action( "pmpro_process_order_after_{$step}", $order );
+            if ( ! empty( $order->error ) ) {
                 return false;
             }
         }
+
+        $this->clean_up( $order );
+        $order->status = 'success';
+        $order->saveOrder();
+
+        return true;
     }
 
 	/**
@@ -1690,7 +1670,7 @@ class PMProGateway_stripe extends PMProGateway
 
         foreach( $steps as $key => $step ) {
             do_action( "pmpro_update_billing_before_{$step}", $order );
-            call_user_func( array( $this, $steps[$key] ), $order );
+			$this->$step( $order );
             do_action( "pmpro_update_billing_after_{$step}", $order );
             if ( ! empty( $order->error ) ) {
                 return false;
@@ -1929,33 +1909,7 @@ class PMProGateway_stripe extends PMProGateway
 
             return false;
         }
-    }
-
-    function process2( &$order ) {
-
-        $steps = array(
-            'set_customer',
-            'set_source',
-            'attach_source_to_customer',
-            'process_charges',
-            'process_subscriptions',
-        );
-
-        foreach( $steps as $key => $step ) {
-            do_action( "pmpro_process_order_before_{$step}", $order );
-            call_user_func( array( $this, $steps[$key] ), $order );
-            do_action( "pmpro_process_order_after_{$step}", $order );
-            if ( ! empty( $order->error ) ) {
-                return false;
-            }
-        }
-
-        $this->clean_up( $order );
-        $order->status = 'success';
-        $order->saveOrder();
-
-        return true;
-    }
+    }   
 
     function set_source( &$order, $force = false  ) {
         if ( ! empty( $this->source ) && ! $force ) {

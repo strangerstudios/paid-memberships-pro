@@ -91,6 +91,7 @@
 				'tax_rate',
 				'accepted_credit_cards',
 				'paypalexpress_skip_confirmation',
+				'paypal_enable_3dsecure',
 				'paypal_cardinal_apikey',
 				'paypal_cardinal_apiidentifier',
 				'paypal_cardinal_orgunitid',
@@ -189,58 +190,66 @@
 		</tr>
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 				<td colspan="2">
-					<?php _e('CardinalCommerce Settings', 'paid-memberships-pro' ); ?>
+					<?php _e('3DSecure Settings', 'paid-memberships-pro' ); ?>
 				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_apikey" name="paypal_cardinal_apikey" size="60" value="<?php echo esc_attr($values['paypal_cardinal_apikey'])?>" />
-				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_apiidentifier" name="paypal_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['paypal_cardinal_apiidentifier'])?>" />
-				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_orgunitid" name="paypal_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_orgunitid'])?>" />
-				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_songbirdurl" name="paypal_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['paypal_cardinal_songbirdurl'])?>" />
-				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_merchantid" name="paypal_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_merchantid'])?>" />
-				</td>
-			</tr>
-			<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">
-					<label for="paypal_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="text" id="paypal_cardinal_processorid" name="paypal_cardinal_processorid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_processorid'])?>" />
-				</td>
-			</tr>
-			<?php
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_enable_3dsecure"><?php _e('3DSecure', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="checkbox" id="paypal_enable_3dsecure" name="paypal_enable_3dsecure" value="1" pmpro_toggle_trigger_for="tr.pmpro_paypal_3dsecure" <?php checked( $values['paypal_enable_3dsecure'], 1 );?> /><label for="paypal_enable_3dsecure"><?php _e('Check to enable 3DSecure with Cardinal Cruise.', 'paid-memberships-pro' );?></label>
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_apikey"><?php _e('API Key', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_apikey" name="paypal_cardinal_apikey" size="60" value="<?php echo esc_attr($values['paypal_cardinal_apikey'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_apiidentifier"><?php _e('API Identifier', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_apiidentifier" name="paypal_cardinal_apiidentifier" size="60" value="<?php echo esc_attr($values['paypal_cardinal_apiidentifier'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_orgunitid"><?php _e('Org Unit ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_orgunitid" name="paypal_cardinal_orgunitid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_orgunitid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_songbirdurl"><?php _e('Songbird URL', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_songbirdurl" name="paypal_cardinal_songbirdurl" size="60" value="<?php echo esc_attr($values['paypal_cardinal_songbirdurl'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_merchantid" name="paypal_cardinal_merchantid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_merchantid'])?>" />
+			</td>
+		</tr>
+		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard pmpro_toggle_target pmpro_paypal_3dsecure" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard" || empty( $values['paypal_enable_3dsecure'] ) ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="paypal_cardinal_processorid"><?php _e('Processor ID', 'paid-memberships-pro' );?>:</label>
+			</th>
+			<td>
+				<input type="text" id="paypal_cardinal_processorid" name="paypal_cardinal_processorid" size="60" value="<?php echo esc_attr($values['paypal_cardinal_processorid'])?>" />
+			</td>
+		</tr>
+		<?php
 		}
 
 		/**
@@ -254,13 +263,46 @@
 			$default_gateway = pmpro_getOption("gateway");
 
 			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
+				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
+				
 				wp_register_script( 'pmpro_paypal',
                             plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
                             array( 'jquery' ),
                             PMPRO_VERSION );
-				//wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', array());
+				$data = array( 'enable_3dsecure' => $paypal_enable_3dsecure );
+				
+				// Setup 3DSecure if enabled.
+				if( $paypal_enable_3dsecure ) {
+					wp_enqueue_script( 'pmpro_songbird', 'https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js' );
+					$data['cardinal_jwt'] = PMProGateway_paypal::get_cardinal_jwt();
+					if ( WP_DEBUG ) {
+						$data['cardinal_debug'] = 'verbose';
+						$data['cardinal_logging'] = 'On';
+					} else {
+						$data['cardinal_debug'] = '';
+						$data['cardinal_logging'] = 'Off';
+					}
+				}
+				
+				wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', $data );
 				wp_enqueue_script( 'pmpro_paypal' );
 			}
+		}
+		
+		static function get_cardinal_jwt() {			
+			require_once( PMPRO_DIR . '/includes/lib/php-jwt/JWT.php' );
+			
+			
+			$key = pmpro_getOption( 'paypal_cardinal_apikey' );
+			$token = array(
+				'jti' => 'JWT' . pmpro_getDiscountCode(),
+				'iat' => current_time( 'timestamp' ),
+				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
+				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),				
+			);
+			$jwt = \PMPro\Firebase\JWT\JWT::encode($token, $key);
+			
+			return $jwt;
 		}
 
 		/**
