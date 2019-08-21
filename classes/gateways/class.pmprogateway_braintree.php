@@ -106,7 +106,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 * @since 1.8.1
 		 * Moved into a method in version 1.8.1 so we only load it when needed.
 		 */
-		function loadBraintreeLibrary()
+		static function loadBraintreeLibrary()
 		{
 			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
 			if(!class_exists("\Braintree"))
@@ -426,13 +426,53 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			$default_gateway = pmpro_getOption("gateway");
 
 			if(($gateway == "braintree" || $default_gateway == "braintree") && !pmpro_isLevelFree($pmpro_level)) {
+
+			    // TODO Refactor all of this
+			    if ( ! self::$is_loaded ) {
+			        self::loadBraintreeLibrary();
+
+                    //convert to braintree nomenclature
+                    $environment = pmpro_getOption("gateway_environment");
+                    if($environment == "live")
+                        $environment = "production";
+
+                    $merch_id = pmpro_getOption( "braintree_merchantid" );
+                    $pk = pmpro_getOption( "braintree_publickey" );
+                    $sk = pmpro_getOption( "braintree_privatekey" );
+
+                    try {
+
+                        Braintree_Configuration::environment( $environment );
+                        Braintree_Configuration::merchantId( $merch_id );
+                        Braintree_Configuration::publicKey( $pk );
+                        Braintree_Configuration::privateKey( $sk );
+
+                    } catch( Exception $exception ) {
+                        global $msg;
+                        global $msgt;
+                        global $pmpro_braintree_error;
+
+                        error_log($exception->getMessage() );
+
+                        $pmpro_braintree_error = true;
+                        $msg                   = - 1;
+                        $msgt                  = sprintf( __( 'Attempting to load Braintree gateway: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+                        return false;
+                    }
+
+                    self::$is_loaded = true;
+                }
+
+			    $client_token = \Braintree\ClientToken::generate();
+
 				wp_enqueue_script("stripe", "https://js.braintreegateway.com/v1/braintree.js", array(), NULL);
 				wp_register_script( 'pmpro_braintree',
                             plugins_url( 'js/pmpro-braintree.js', PMPRO_BASE_FILE ),
                             array( 'jquery' ),
                             PMPRO_VERSION );
 				wp_localize_script( 'pmpro_braintree', 'pmpro_braintree', array(
-					'encryptionkey' => pmpro_getOption( 'braintree_encryptionkey' )
+					'encryptionkey' => pmpro_getOption( 'braintree_encryptionkey' ),
+                    'clientToken' => $client_token
 				));
 				wp_enqueue_script( 'pmpro_braintree' );
 			}
