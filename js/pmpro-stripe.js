@@ -44,7 +44,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	$( '.pmpro_form' ).submit( function( event ) {
-		var billingDetails, paymentMethod;
+		var owner, address, source;
 
 		// Prevent the form from submitting with the default action.
 		event.preventDefault();
@@ -53,28 +53,27 @@ jQuery( document ).ready( function( $ ) {
 		if ( pmproRequireBilling ) {
 
 			if ( pmproStripe.verifyAddress ) {
-				billingDetails = {
-					addressLine1: $( '#baddress1' ).val(),
-					addressLine2: $( '#baddress2' ).val(),
-					addressCity: $( '#bcity' ).val(),
-					addressState: $( '#bstate' ).val(),
-					addressZip: $( '#bzipcode' ).val(),
-					addressCountry: $( '#bcountry' ).val(),
-				};
+				address = {
+					line1: $( '#baddress1' ).val(),
+					line2: $( '#baddress2' ).val(),
+					city: $( '#bcity' ).val(),
+					state: $( '#bstate' ).val(),
+					postal_code: $( '#bzipcode' ).val(),
+					country: $( '#bcountry' ).val(),
+				}
+			}
+
+			owner = {
+				address: address,
 			}
 
 			//add first and last name if not blank
 			if ( $( '#bfirstname' ).length && $( '#blastname' ).length )
-				billingDetails['name'] = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
-
-			// Try creating a PaymentMethod from card element.
-			// paymentMethod = stripe.createPaymentMethod( 'card', cardNumber, {
-			// 	billingDetails: billingDetails,
-			// }).then( stripeResponseHandler );
+				owner.name = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
 
 			source = stripe.createSource( cardNumber, {
 				type: 'card',
-				billingDetails: billingDetails,
+                owner: owner
 			}).then( stripeResponseHandler );
 
 			// Prevent the form from submitting with the default action.
