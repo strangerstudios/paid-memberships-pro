@@ -540,7 +540,7 @@ class PMProGateway_stripe extends PMProGateway
                     $pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
                     if ($pmpro_show_cvv) { ?>
                         <div class="pmpro_checkout-field pmpro_payment-cvv">
-                            <label for="CVV"><?php _e('Security Code (CVC)', 'paid-memberships-pro'); ?></label>
+                            <label for="CVV"><?php _e('CVC', 'paid-memberships-pro'); ?></label>
                             <div id="CVV"></div>
                         </div>
                     <?php } ?>
