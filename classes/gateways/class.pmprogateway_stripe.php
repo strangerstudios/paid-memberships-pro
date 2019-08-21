@@ -533,7 +533,7 @@ class PMProGateway_stripe extends PMProGateway
                         <div id="AccountNumber"></div>
                     </div>
                     <div class="pmpro_checkout-field pmpro_payment-expiration">
-                        <label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro'); ?></label>
+                        <label for="Expiry"><?php _e('Expiration Date', 'paid-memberships-pro'); ?></label>
                         <div id="Expiry"></div>
                     </div>
                     <?php
@@ -542,8 +542,6 @@ class PMProGateway_stripe extends PMProGateway
                         <div class="pmpro_checkout-field pmpro_payment-cvv">
                             <label for="CVV"><?php _e('Security Code (CVC)', 'paid-memberships-pro'); ?></label>
                             <div id="CVV"></div>
-                            <small>(<a href="javascript:void(0);"
-                                       onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL) ?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro'); ?></a>)</small>
                         </div>
                     <?php } ?>
                     <?php if ($pmpro_show_discount_code) { ?>
