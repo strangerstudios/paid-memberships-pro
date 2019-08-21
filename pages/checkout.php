@@ -10,8 +10,16 @@
 	 * @param bool $use_email_type, true to use email type, false to use text type
 	 */
 	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+
+	// Set the wrapping class for the checkout div based on the default gateway;
+	$default_gateway = pmpro_getOption( 'gateway' );
+	if ( empty( $default_gateway ) ) {
+		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
+	} else {
+		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
+	}
 ?>
-<div id="pmpro_level-<?php echo $pmpro_level->id; ?>">
+<div id="pmpro_level-<?php echo $pmpro_level->id; ?>" class="<?php echo $pmpro_checkout_gateway_class; ?>">
 <form id="pmpro_form" class="pmpro_form" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
