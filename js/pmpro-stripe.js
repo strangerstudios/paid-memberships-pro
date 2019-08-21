@@ -93,24 +93,25 @@ jQuery( document ).ready( function( $ ) {
 		form = $('#pmpro_form, .pmpro_form');
 
 		if (response.error) {
+
 			// Re-enable the submit button.
 			$('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
 
 			// Hide processing message.
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
+			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
 			$('.pmpro_error').text(response.error.message);
 
 			pmproRequireBilling = true;
 
-			// TODO Handle this better? Let the user know?
-			// Delete any incomplete subscriptions if 3DS auth failed.
-			data = {
-				action: 'delete_incomplete_subscription',
-			};
-			$.post(pmproStripe.ajaxUrl, data, function (response) {
-				// Do stuff?
-			});
+			// TODO Delete any incomplete subscriptions if 3DS auth failed.
+			// data = {
+			// 	action: 'delete_incomplete_subscription',
+			// };
+			// $.post(pmproStripe.ajaxUrl, data, function (response) {
+			// 	// Do stuff?
+			// });
 		} else if ( response.source ) {
 			sourceId = response.source.id;
 			card = response.source.card;
