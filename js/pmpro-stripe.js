@@ -44,7 +44,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	$( '.pmpro_form' ).submit( function( event ) {
-		var billingDetails, paymentMethod;
+		var owner, address, source;
 
 		// Prevent the form from submitting with the default action.
 		event.preventDefault();
@@ -53,28 +53,27 @@ jQuery( document ).ready( function( $ ) {
 		if ( pmproRequireBilling ) {
 
 			if ( pmproStripe.verifyAddress ) {
-				billingDetails = {
-					addressLine1: $( '#baddress1' ).val(),
-					addressLine2: $( '#baddress2' ).val(),
-					addressCity: $( '#bcity' ).val(),
-					addressState: $( '#bstate' ).val(),
-					addressZip: $( '#bzipcode' ).val(),
-					addressCountry: $( '#bcountry' ).val(),
-				};
+				address = {
+					line1: $( '#baddress1' ).val(),
+					line2: $( '#baddress2' ).val(),
+					city: $( '#bcity' ).val(),
+					state: $( '#bstate' ).val(),
+					postal_code: $( '#bzipcode' ).val(),
+					country: $( '#bcountry' ).val(),
+				}
+			}
+
+			owner = {
+				address: address,
 			}
 
 			//add first and last name if not blank
 			if ( $( '#bfirstname' ).length && $( '#blastname' ).length )
-				billingDetails['name'] = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
-
-			// Try creating a PaymentMethod from card element.
-			// paymentMethod = stripe.createPaymentMethod( 'card', cardNumber, {
-			// 	billingDetails: billingDetails,
-			// }).then( stripeResponseHandler );
+				owner.name = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
 
 			source = stripe.createSource( cardNumber, {
 				type: 'card',
-				billingDetails: billingDetails,
+                owner: owner
 			}).then( stripeResponseHandler );
 
 			// Prevent the form from submitting with the default action.
@@ -93,24 +92,25 @@ jQuery( document ).ready( function( $ ) {
 		form = $('#pmpro_form, .pmpro_form');
 
 		if (response.error) {
+
 			// Re-enable the submit button.
 			$('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
 
 			// Hide processing message.
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
+			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
 			$('.pmpro_error').text(response.error.message);
 
 			pmproRequireBilling = true;
 
-			// TODO Handle this better? Let the user know?
-			// Delete any incomplete subscriptions if 3DS auth failed.
-			data = {
-				action: 'delete_incomplete_subscription',
-			};
-			$.post(pmproStripe.ajaxUrl, data, function (response) {
-				// Do stuff?
-			});
+			// TODO Delete any incomplete subscriptions if 3DS auth failed.
+			// data = {
+			// 	action: 'delete_incomplete_subscription',
+			// };
+			// $.post(pmproStripe.ajaxUrl, data, function (response) {
+			// 	// Do stuff?
+			// });
 		} else if ( response.source ) {
 			sourceId = response.source.id;
 			card = response.source.card;

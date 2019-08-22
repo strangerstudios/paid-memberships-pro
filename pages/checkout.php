@@ -402,7 +402,9 @@
 						<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
 					</select>/<select id="ExpirationYear" name="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
 						<?php
-							for($i = date_i18n("Y"); $i < intval( date_i18n("Y") ) + 10; $i++)
+							$num_years = apply_filters( 'pmpro_num_expiration_years', 10 );
+
+							for($i = date_i18n("Y"); $i < intval( date_i18n("Y") ) + intval( $num_years ); $i++)
 							{
 						?>
 							<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
