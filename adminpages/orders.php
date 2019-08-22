@@ -1370,7 +1370,7 @@ class="alternate"<?php } ?>>
 							$action_count = count( $actions );
 							$i            = 0;
 							if ( $action_count ) {
-								echo ' | ';
+								$out = ' | ';
 								foreach ( $actions as $action => $link ) {
 									++ $i;
 									( $i == $action_count ) ? $sep = '' : $sep = ' | ';

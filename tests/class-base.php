@@ -2,7 +2,9 @@
 namespace PMPro\Tests;
 
 use PMPro\Tests\Helpers\Factory\Level;
-use PMPro\Tests\Helpers\Factory\Order;
+use PMPro\Tests\Helpers\Factory\Order_Factory;
+use PMPro\Tests\Helpers\Factory\Checkout_Factory;
+use PMPro\Tests\Helpers\Traits\Utility;
 
 abstract class Base Extends \WP_UnitTestCase {
 

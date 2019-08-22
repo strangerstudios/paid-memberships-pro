@@ -160,6 +160,40 @@ form.pmpro_form #pmpro_processing_message {
 	margin: 1em 0 0 0;
 	text-align: right;
 }
+
+form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+form.pmpro_form #pmpro_payment_information_fields div#CVV {
+	color: #666;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	padding: 0.625em 0.4375em;
+}
+
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
+	display: -ms-grid;
+	display: grid;
+	-ms-grid-rows: auto 1em auto;
+	grid-template-areas:
+		"AccountNumber AccountNumber"
+		"Expiry CVV";
+	grid-gap: 1em;
+	-ms-grid-columns: 1fr 1em 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields div {
+	margin: 0;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
+	grid-area: AccountNumber;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration{
+	grid-area: Expiry;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
+	grid-area: CVV;
+}
+
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
@@ -233,7 +267,9 @@ select.pmpro_error {
 	margin-left: 2em;
 }
 #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
 	grid-gap: 1em;
 }
@@ -259,7 +295,9 @@ body.pmpro-invoice .entry-content ul {
 	margin-left: 1.5em;
 }
 .pmpro_invoice_details {
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-columns: 1fr 1em 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-gap: 1em;
 }
@@ -363,18 +401,18 @@ li.pmpro_more {
 	font-size: .8em;
 }
 @media (max-width:768px) {
+	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+		display: block;
+	}
+	.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
+		display: block;
+		margin-bottom: 1em;
+	}
 	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
 		width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
-	}
-	form.pmpro_form #pmpro_payment_information_fields .pmpro_thead-msg {
-		float: none;
-		margin-bottom: 10px;
-		text-align: left;
-		text-wrap: normal;
-		white-space: normal;
 	}
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
