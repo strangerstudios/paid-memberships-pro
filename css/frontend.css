@@ -161,16 +161,8 @@ form.pmpro_form #pmpro_processing_message {
 	text-align: right;
 }
 
-form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
-form.pmpro_form #pmpro_payment_information_fields div#Expiry,
-form.pmpro_form #pmpro_payment_information_fields div#CVV {
-	color: #666;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	padding: 0.625em 0.4375em;
-}
-
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
 	display: -ms-grid;
 	display: grid;
 	-ms-grid-rows: auto 1em auto;
@@ -181,16 +173,31 @@ form.pmpro_form #pmpro_payment_information_fields div#CVV {
 	-ms-grid-columns: 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr;
 }
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields div {
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV {
+	color: #666;
+	border: 1px solid #ccc;
+	border-radius: 3px;
 	margin: 0;
+	padding: 0.625em 0.4375em;
 }
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields div {
+	
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
 	grid-area: AccountNumber;
 }
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration{
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration {
 	grid-area: Expiry;
 }
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
 	grid-area: CVV;
 }
 
