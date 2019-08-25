@@ -1,14 +1,11 @@
 // Wire up the form for Stripe.
 jQuery( document ).ready( function( $ ) {
 
-	var stripe, elements, pmpro_require_billing, cardNumber, cardExpiry, cardCvc;
+	var stripe, elements, cardNumber, cardExpiry, cardCvc;
 
 	// Identify with Stripe.
 	stripe = Stripe( pmproStripe.publishableKey );
 	elements = stripe.elements();
-
-	// Used by plugns that hide/show the billing fields.
-	pmpro_require_billing = true;
 
 	// Create Elements.
 	cardNumber = elements.create('cardNumber');
@@ -50,7 +47,7 @@ jQuery( document ).ready( function( $ ) {
 		event.preventDefault();
 
 		// Double check in case a discount code made the level free.
-		if ( pmpro_require_billing ) {
+		if ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) {
 
 			if ( pmproStripe.verifyAddress ) {
 				address = {
@@ -101,8 +98,6 @@ jQuery( document ).ready( function( $ ) {
 
 			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
 			$('.pmpro_error').text(response.error.message);
-
-			pmpro_require_billing = true;
 
 			// TODO Delete any incomplete subscriptions if 3DS auth failed.
 			// data = {
