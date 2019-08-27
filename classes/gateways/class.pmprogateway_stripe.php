@@ -1962,13 +1962,8 @@ class PMProGateway_stripe extends PMProGateway
 
         try {
 	    $this->source->attach( ['customer' => $this->customer->id] );
-	
-	    Stripe_Customer::update(
-		$this->customer->id,
-		[
-		    'invoice_settings' => ['default_payment_method' => $order->payment_method_id],
-	        ]
-	    );
+	    $this->customer->invoice_settings->default_payment_method = $this->source->id;
+	    $this->customer->save();
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
