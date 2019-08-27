@@ -1961,8 +1961,7 @@ class PMProGateway_stripe extends PMProGateway
         }
 
         try {
-	    $payment_method = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
-	    $payment_method->attach( ['customer' => $this->customer->id] );
+	    $this->source->attach( ['customer' => $this->customer->id] );
 	
 	    Stripe_Customer::update(
 		$this->customer->id,
