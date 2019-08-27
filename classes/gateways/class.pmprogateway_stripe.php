@@ -2299,13 +2299,7 @@ class PMProGateway_stripe extends PMProGateway
         }
 
         try {
-            $params = array(
-                'expand' => array(
-                    'source',
-                    'customer',
-                ),
-            );
-            $this->payment_intent->confirm( $params );
+            $this->payment_intent->confirm();
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
