@@ -350,10 +350,7 @@ class PMProGateway_stripe extends PMProGateway
                 );
 
                 if ( ! empty( $order ) ) {
-		    if ( ! empty( $order->Gateway->source ) ) {
-                        $localize_vars['source'] = $order->Gateway->source;	// Access last4 etc.
-                    }
-                    if ( ! empty( $order->Gateway->payment_intent ) ) {
+		    if ( ! empty( $order->Gateway->payment_intent ) ) {
                         $localize_vars['paymentIntent'] = $order->Gateway->payment_intent;
                     }
                     if ( ! empty( $order->Gateway->setup_intent ) ) {
@@ -2214,7 +2211,7 @@ class PMProGateway_stripe extends PMProGateway
                 ),
                 'trial_period_days' => $order->TrialPeriodDays,
                 'expand' => array(
-                    'pending_setup_intent',
+                    'pending_setup_intent.payment_method',
                 ),
             );
             $order->subscription = Stripe_Subscription::create( $params );
@@ -2299,7 +2296,12 @@ class PMProGateway_stripe extends PMProGateway
         }
 
         try {
-            $this->payment_intent->confirm();
+	    $params = array(
+                'expand' => array(
+                    'payment_method',
+                ),
+            );
+            $this->payment_intent->confirm( $params );	
         } catch ( \Stripe\Error $e ) {
             $order->error = $e->message;
             return false;
