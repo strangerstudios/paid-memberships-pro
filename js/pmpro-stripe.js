@@ -65,7 +65,7 @@ jQuery( document ).ready( function( $ ) {
 				name = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
 			}
 			
-			stripe.createPaymentMethod(	'card',	cardNumber, {
+			stripe.createPaymentMethod( 'card', cardNumber, {
 				billing_details: {
 					address: address,
 					name: name,
@@ -83,7 +83,7 @@ jQuery( document ).ready( function( $ ) {
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
 
-		var form, data, card, source, paymentMethod, customerId;
+		var form, data, card, paymentMethod, customerId;
 
 		form = $('#pmpro_form, .pmpro_form');
 
