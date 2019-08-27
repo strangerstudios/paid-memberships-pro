@@ -162,10 +162,11 @@ jQuery( document ).ready( function( $ ) {
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
 			// insert fields for other card fields
-			if( $( '#CardType[name=CardType]' ).length )
+			if( $( '#CardType[name=CardType]' ).length ) {
 				$( '#CardType' ).val( card.brand );
-			else
+			} else {
 				form.append( '<input type="hidden" name="CardType" value="' + card.brand + '"/>' );
+			}
 
 			form.append( '<input type="hidden" name="AccountNumber" value="XXXXXXXXXXXX' + card.last4 + '"/>' );
 			form.append( '<input type="hidden" name="ExpirationMonth" value="' + ( '0' + card.exp_month ).slice( -2 ) + '"/>' );
