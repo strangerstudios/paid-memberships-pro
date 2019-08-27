@@ -1,14 +1,11 @@
 // Wire up the form for Stripe.
 jQuery( document ).ready( function( $ ) {
 
-	var stripe, elements, pmproRequireBilling, cardNumber, cardExpiry, cardCvc;
+	var stripe, elements, cardNumber, cardExpiry, cardCvc;
 
 	// Identify with Stripe.
 	stripe = Stripe( pmproStripe.publishableKey );
 	elements = stripe.elements();
-
-	// Used by plugns that hide/show the billing fields.
-	pmproRequireBilling = true;
 
 	// Create Elements.
 	cardNumber = elements.create('cardNumber');
@@ -44,13 +41,13 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	$( '.pmpro_form' ).submit( function( event ) {
-		var owner, address, source;
+		var name, address;
 
 		// Prevent the form from submitting with the default action.
 		event.preventDefault();
 
 		// Double check in case a discount code made the level free.
-		if ( pmproRequireBilling ) {
+		if ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) {
 
 			if ( pmproStripe.verifyAddress ) {
 				address = {
@@ -63,19 +60,18 @@ jQuery( document ).ready( function( $ ) {
 				}
 			}
 
-			owner = {
-				address: address,
-			}
-
 			//add first and last name if not blank
-			if ( $( '#bfirstname' ).length && $( '#blastname' ).length )
-				owner.name = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
-
-			source = stripe.createSource( cardNumber, {
-				type: 'card',
-                owner: owner
+			if ( $( '#bfirstname' ).length && $( '#blastname' ).length ) {
+				name = $.trim( $( '#bfirstname' ).val() + ' ' + $( '#blastname' ).val() );
+			}
+			
+			stripe.createPaymentMethod(	'card',	cardNumber, {
+				billing_details: {
+					address: address,
+					name: name,
+				}
 			}).then( stripeResponseHandler );
-
+			
 			// Prevent the form from submitting with the default action.
 			return false;
 		} else {
@@ -87,7 +83,7 @@ jQuery( document ).ready( function( $ ) {
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
 
-		var form, data, card, source, customer;
+		var form, data, card, source, paymentMethod, customerId;
 
 		form = $('#pmpro_form, .pmpro_form');
 
@@ -102,8 +98,6 @@ jQuery( document ).ready( function( $ ) {
 			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
 			$('.pmpro_error').text(response.error.message);
 
-			pmproRequireBilling = true;
-
 			// TODO Delete any incomplete subscriptions if 3DS auth failed.
 			// data = {
 			// 	action: 'delete_incomplete_subscription',
@@ -111,53 +105,58 @@ jQuery( document ).ready( function( $ ) {
 			// $.post(pmproStripe.ajaxUrl, data, function (response) {
 			// 	// Do stuff?
 			// });
-		} else if ( response.source ) {
-			sourceId = response.source.id;
-			card = response.source.card;
-
+		} else if ( response.paymentMethod ) {
+			
+			paymentMethodId = response.paymentMethod.id;
+			card = response.paymentMethod.card;
+			
 			// insert the Source ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="source_id" value="' + sourceId + '" />' );
-
+			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
+			
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
 			// insert fields for other card fields
-			if( $( '#CardType[name=CardType]' ).length )
+			if( $( '#CardType[name=CardType]' ).length ) {
+				
 				$( '#CardType' ).val( card.brand );
-			else
+			} else {
+				
 				form.append( '<input type="hidden" name="CardType" value="' + card.brand + '"/>' );
-
+			}
+			
 			form.append( '<input type="hidden" name="AccountNumber" value="XXXXXXXXXXXX' + card.last4 + '"/>' );
 			form.append( '<input type="hidden" name="ExpirationMonth" value="' + ( '0' + card.exp_month ).slice( -2 ) + '"/>' );
 			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
 
 			// and submit
-			form.get(0).submit();
+			form.get(0).submit();			
+			
 		} else if ( response.paymentIntent || response.setupIntent ) {
-
+			
 		    // TODO Refactor
 			if ( pmproStripe.paymentIntent ) {
-				customer = pmproStripe.paymentIntent.customer;
-				source = pmproStripe.paymentIntent.source;
+				customerId = pmproStripe.paymentIntent.customer.id;
+				paymentMethod = pmproStripe.paymentIntent.payment_method;
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
 			}
 			if ( pmproStripe.setupIntent ) {
-				if ( ! customer ) {
-					customer = pmproStripe.setupIntent.customer;
+				if ( ! customerId ) {
+					customerId = pmproStripe.setupIntent.customer;
 				}
-				if ( ! source ) {
-					source = pmproStripe.setupIntent.source;
+				if ( ! paymentMethod ) {
+					paymentMethod = pmproStripe.setupIntent.payment_method;
 				}
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
 				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
 
-			card = source.card;
-
+			card = pmproStripe.source.card;
+			
 			// insert the Customer ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="customer_id" value="' + customer.id + '" />' );
+			form.append( '<input type="hidden" name="customer_id" value="' + customerId + '" />' );
 
 			// insert the PaymentMethod ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="source_id" value="' + source.id + '" />' );
+			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethod + '" />' );
 
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
