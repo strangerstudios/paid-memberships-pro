@@ -83,7 +83,7 @@ jQuery( document ).ready( function( $ ) {
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
 
-		var form, data, card, paymentMethod, customerId;
+		var form, data, card, paymentMethodId, customerId;
 
 		form = $('#pmpro_form, .pmpro_form');
 
@@ -132,31 +132,32 @@ jQuery( document ).ready( function( $ ) {
 			form.get(0).submit();			
 			
 		} else if ( response.paymentIntent || response.setupIntent ) {
+			
+			customerId = pmproStripe.paymentIntent 
+				? pmproStripe.paymentIntent.customer
+				: pmproStripe.setupIntent.customer;
+			
+			paymentMethodId = pmproStripe.paymentIntent
+				? pmproStripe.paymentIntent.payment_method.id
+				: pmproStripe.setupIntent.payment_method.id;
+				
+			card = pmproStripe.paymentIntent
+				? pmproStripe.paymentIntent.payment_method.card
+				: pmproStripe.setupIntent.payment_method.card;
 
-		    // TODO Refactor
-			if ( pmproStripe.paymentIntent ) {
-				customerId = pmproStripe.paymentIntent.customer;
-				paymentMethod = pmproStripe.paymentIntent.payment_method;
+		    	if ( pmproStripe.paymentIntent ) {
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
 			}
 			if ( pmproStripe.setupIntent ) {
-				if ( ! customerId ) {
-					customerId = pmproStripe.setupIntent.customer;
-				}
-				if ( ! paymentMethod ) {
-					paymentMethod = pmproStripe.setupIntent.payment_method;
-				}
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
 				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
-
-			card = pmproStripe.source.card;
 
 			// insert the Customer ID into the form so it gets submitted to the server
 			form.append( '<input type="hidden" name="customer_id" value="' + customerId + '" />' );
 
 			// insert the PaymentMethod ID into the form so it gets submitted to the server
-			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethod + '" />' );
+			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
 
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
