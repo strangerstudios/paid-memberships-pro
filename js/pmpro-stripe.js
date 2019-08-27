@@ -71,7 +71,7 @@ jQuery( document ).ready( function( $ ) {
 					name: name,
 				}
 			}).then( stripeResponseHandler );
-			
+
 			// Prevent the form from submitting with the default action.
 			return false;
 		} else {
@@ -112,7 +112,7 @@ jQuery( document ).ready( function( $ ) {
 			
 			// insert the Source ID into the form so it gets submitted to the server
 			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
-			
+
 			// TODO Get card info for order and user meta after checkout instead.
 			//	We need this for now to make sure user meta gets updated.
 			// insert fields for other card fields
@@ -132,7 +132,7 @@ jQuery( document ).ready( function( $ ) {
 			form.get(0).submit();			
 			
 		} else if ( response.paymentIntent || response.setupIntent ) {
-			
+
 		    // TODO Refactor
 			if ( pmproStripe.paymentIntent ) {
 				customerId = pmproStripe.paymentIntent.customer.id;
@@ -151,7 +151,7 @@ jQuery( document ).ready( function( $ ) {
 			}
 
 			card = pmproStripe.source.card;
-			
+
 			// insert the Customer ID into the form so it gets submitted to the server
 			form.append( '<input type="hidden" name="customer_id" value="' + customerId + '" />' );
 
