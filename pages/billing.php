@@ -376,7 +376,7 @@
 		</script>
 	<?php } ?>
 
-<?php } // End for recurring level check.
+<?php } else { // End for recurring level check.
 	?>
 	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( wp_logout_url() );?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
 	<?php
@@ -405,4 +405,5 @@
 		}
 	} else { ?>
 		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
-	<?php } ?>
+	<?php }
+}
