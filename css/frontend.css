@@ -274,6 +274,7 @@ select.pmpro_error {
 	margin-left: 2em;
 }
 #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	clear: both;
 	display: -ms-grid;
 	display: grid;
 	-ms-grid-columns: 3fr 1em 1fr;
