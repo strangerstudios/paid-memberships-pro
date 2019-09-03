@@ -2925,33 +2925,36 @@ function pmpro_cleanup_memberships_users_table() {
  */
 function pmpro_is_checkout() {
 	global $pmpro_pages;
-	
-	// try is_page first
+
+	// Try is_page first.
 	if ( isset( $pmpro_pages['checkout'] ) ) {
 		$is_checkout = is_page( $pmpro_pages['checkout'] );
 	} else {
 		$is_checkout = false;
 	}
-	
-	// page might not be setup yet or a custom page
+
+	// Page might not be setup yet or a custom page.
 	$queried_object = get_queried_object();
-	
+
 	if ( ! $is_checkout &&
-		 ! empty( $queried_object ) &&
-		 ! empty( $queried_object->post_content ) &&
-	 	 ( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
-		   has_block( 'pmpro/checkout-page', $queried_object->post_content ) )
-		) {
+		! empty( $queried_object ) &&
+		! empty( $queried_object->post_content ) &&
+		( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
+			( function_exists( 'has_block' ) &&
+				has_block( 'pmpro/checkout-page', $queried_object->post_content )
+			)
+		)
+	) {
 		$is_checkout = true;
 	}
-	
+
 	/**
 	 * Filter for pmpro_is_checkout return value.
 	 * @since 2.1
 	 * @param bool $is_checkout true if we are on the checkout page, false otherwise
 	 */
 	$is_checkout = apply_filters( 'pmpro_is_checkout', $is_checkout );
-	
+
 	return $is_checkout;
 }
 
