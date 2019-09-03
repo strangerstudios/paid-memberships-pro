@@ -125,6 +125,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$columns['enddate'] = 'Canceled';
 		}
 
+		$columns = apply_filters( 'pmpro_memberslist_extra_cols', $columns );
+
 		return $columns;
 	}
 
@@ -389,7 +391,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'ID':
-			case 'user_login':
 			case 'display_name':
 			case 'user_email':
 			case 'membership':
@@ -397,6 +398,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			case 'cycle_period':
 			case 'cycle_number':
 				return $item[ $column_name ];
+			case 'user_login':
+				$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
+				$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
+				return $userlink;
 			case 'billing_amount':
 				return pmpro_formatPrice( $item[ $column_name ] );
 			case 'startdate':
@@ -404,13 +409,19 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$date = $item[ $column_name ];
 				return date( 'Y-m-d', $date );
 			case 'enddate':
-				if ( 0 == $item[ $column_name ] ) {
-					return 'Never';
+				$user_object = apply_filters( 'pmpro_members_list_user', get_userdata( $item['ID'] ) );
+				if ( 0 == $item['enddate'] ) {
+					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'pmpro');
 				} else {
-					return date( 'Y-m-d', $item[ $column_name ] );
+					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
 				}
 			default:
-				return print_r( $item, true );
+				$user_object = apply_filters( 'pmpro_members_list_user', get_userdata( $item['ID'] ) );
+				if ( isset( $user_object->$column_name ) ) {
+					return $user_object->$column_name;
+				} else {
+					return print_r( $item, true );
+				}
 		}
 	}
 
