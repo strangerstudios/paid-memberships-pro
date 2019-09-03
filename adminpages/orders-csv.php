@@ -588,10 +588,18 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 			ini_set( 'zlib.output_compression', 'Off' );
 		}
 
-		// open and send the file contents to the remote location
-		$fh = fopen( $filename, 'rb' );
-		fpassthru( $fh );
-		fclose( $fh );
+		if( function_exists('fpassthru') )
+		{
+			// open and send the file contents to the remote location
+			$fh = fopen( $filename, 'rb' );
+			fpassthru($fh);
+			fclose($fh);
+		}
+		else
+		{
+			// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
+			readfile($fh);
+		}
 
 		// remove the temp file
 		unlink( $filename );
