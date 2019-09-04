@@ -449,7 +449,14 @@
 				<div id="pmpro_license" class="pmpro_checkout-field">
 <?php echo wpautop(do_shortcode($tospage->post_content));?>
 				</div> <!-- end pmpro_license -->
-				<input type="checkbox" name="tos" value="1" id="tos" /> <label class="pmpro_label-inline pmpro_clickable" for="tos"><?php printf(__('I agree to the %s', 'paid-memberships-pro' ), $tospage->post_title);?></label>
+				<?php
+					if ( isset( $_REQUEST['tos'] ) ) {
+						$tos = intval( $_REQUEST['tos'] );
+					} else {
+						$tos = "";
+					}
+				?>
+				<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> /> <label class="pmpro_label-inline pmpro_clickable" for="tos"><?php printf(__('I agree to the %s', 'paid-memberships-pro' ), $tospage->post_title);?></label>
 			</div> <!-- end pmpro_checkout-fields -->
 		</div> <!-- end pmpro_tos_fields -->
 		<?php
