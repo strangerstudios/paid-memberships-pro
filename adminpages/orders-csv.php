@@ -428,7 +428,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	//increment starting position
-	if ( $iterations > 1 ) {
+	if ( $ic > 1 ) {
 		$i_start += $max_orders_per_loop;
 	}
 	// get the order list we should process
