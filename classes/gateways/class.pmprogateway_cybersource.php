@@ -285,7 +285,7 @@
 					$host = "ics2wstest.ic3.com";
 
 			//path
-			$path = "/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.90.wsdl";
+			$path = "/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.159.wsdl";
 
 			//build url
 			$wsdl_url = "https://" . $host . $path;
