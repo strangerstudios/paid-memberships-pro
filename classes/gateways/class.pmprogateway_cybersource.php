@@ -389,8 +389,8 @@
 			{
 				//error
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
@@ -431,8 +431,8 @@
 			{
 				//error
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
@@ -541,8 +541,8 @@
 			{
 				//error
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
@@ -737,8 +737,8 @@
 				//error
 				$order->status = "error";
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
@@ -811,8 +811,8 @@
 			{
 				//error
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
@@ -856,13 +856,13 @@
 			{
 				//error
 				$order->errorcode = $reply->reasonCode;
-				$order->error = $this->getErrorFromCode($reply->reasonCode);
-				$order->shorterror = $this->getErrorFromCode($reply->reasonCode);
+				$order->error = $this->getErrorFromCode($reply);
+				$order->shorterror = $this->getErrorFromCode($reply);
 				return false;
 			}
 		}
 
-		function getErrorFromCode($code)
+		function getErrorFromCode($reply)
 		{
 			$error_messages = array(
 				"100" => "Successful transaction.",
@@ -920,9 +920,21 @@
 				"700" => "Your order has been refused.",
 			);
 
-			if(isset($error_messages[$code]))
-				return $error_messages[$code];
+			if(isset($error_messages[$reply->reasonCode]))
+				$error = $error_messages[$reply->reasonCode];
 			else
 				return "Unknown error.";
+			
+			// list invalid fields from reply
+			if( isset($reply->invalidField) && !empty($reply->invalidField) )
+			{
+				$error .= " Invalid fields:";
+				$invalidFields = $reply->invalidField;
+				$invalidFields = str_replace("/", ",", $invalidFields);
+				$invalidFields = str_replace("c:", " ", $invalidFields);
+				$error .= $invalidFields;
+			}
+
+			return $error;
 		}
 	}
