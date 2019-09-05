@@ -902,7 +902,22 @@
 				"246" => "The capture or credit is not voidable because the capture or credit information has already been submitted to your processor. Or, you requested a void for a type of transaction that cannot be voided.",
 				"247" => "You requested a credit for a capture that was previously voided.",
 				"250" => "Error: The request was received, but there was a timeout at the payment processor.",
-				"520" => "Smart Authorization failed."
+				"254" => "Stand-alone credits are not allowed with this processor.",
+				"450" => "Apartment number missing or not found. Check that your billing address is valid.",
+				"451" => "Insufficient address information. Check that your billing address is valid.",
+				"452" => "House/Box number not found on street. Check that your billing address is valid.",
+				"453" => "Multiple address matches were found. Check that your billing address is valid.",
+				"454" => "P.O. Box identifier not found or out of range.. Check that your billing address is valid.",
+				"455" => "Route service identifier not found or out of range. Check that your billing address is valid.",
+				"456" => "Street name not found in Postal code. Check that your billing address is valid.",
+				"457" => "Postal code not found in database. Check that your billing address is valid.",
+				"458" => "Unable to verify or correct address. Check that your billing address is valid.",
+				"459" => "Multiple address matches were found (international). Check that your billing address is valid.",
+				"460" => "Address match not found. Check that your billing address is valid.",
+				"461" => "Unsupported character set. Verify the character set that you are using to process transactions.",
+				"481" => "Order has been rejected by Decision Manager.",
+				"520" => "Smart Authorization failed.",
+				"700" => "Your order has been refused.",
 			);
 
 			if(isset($error_messages[$code]))
