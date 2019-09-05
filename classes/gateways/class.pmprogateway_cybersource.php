@@ -354,6 +354,13 @@
 			$card->cvNumber = $order->CVV2;
 			$request->card = $card;
 
+			if( empty($request->card->cardType) )
+			{
+				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
+				$order->updateStatus("error");
+				return false;
+			}
+
 			//currency
 			$purchaseTotals = new stdClass();
 			$purchaseTotals->currency = $pmpro_currency;
@@ -498,6 +505,13 @@
 			$card->expirationYear = $order->expirationyear;
 			$card->cvNumber = $order->CVV2;
 			$request->card = $card;
+
+			if( empty($request->card->cardType) )
+			{
+				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
+				$order->updateStatus("error");
+				return false;
+			}
 
 			//currency
 			$purchaseTotals = new stdClass();
@@ -696,6 +710,13 @@
 			$card->cvNumber = $order->CVV2;
 			$request->card = $card;
 
+			if( empty($request->card->cardType) )
+			{
+				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
+				$order->updateStatus("error");
+				return false;
+			}
+
 			//currency
 			$purchaseTotals = new stdClass();
 			$purchaseTotals->currency = $pmpro_currency;
@@ -770,6 +791,13 @@
 			$card->expirationYear = $order->expirationyear;
 			$card->cvNumber = $order->CVV2;
 			$request->card = $card;
+
+			if( empty($request->card->cardType) )
+			{
+				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
+				$order->updateStatus("error");
+				return false;
+			}
 
 			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
