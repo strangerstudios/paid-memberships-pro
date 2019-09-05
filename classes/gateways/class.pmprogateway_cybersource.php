@@ -356,8 +356,8 @@
 
 			if( empty($request->card->cardType) )
 			{
-				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
-				$order->updateStatus("error");
+				$order->error = "Error validating credit card type. Make sure your credit card number is correct and try again.";
+				$order->shorterror = "Error validating credit card type. Make sure your credit card number is correct and try again.";
 				return false;
 			}
 
@@ -508,8 +508,8 @@
 
 			if( empty($request->card->cardType) )
 			{
-				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
-				$order->updateStatus("error");
+				$order->error = "Error validating credit card type. Make sure your credit card number is correct and try again.";
+				$order->shorterror = "Error validating credit card type. Make sure your credit card number is correct and try again.";
 				return false;
 			}
 
@@ -794,8 +794,8 @@
 
 			if( empty($request->card->cardType) )
 			{
-				$order->error = _e( "The payment gateway doesn't support this credit/debit card type.", "paid-memberships-pro" );
-				$order->updateStatus("error");
+				$order->error = "Error validating credit card type. Make sure your credit card number is correct and try again.";
+				$order->shorterror = "Error validating credit card type. Make sure your credit card number is correct and try again.";
 				return false;
 			}
 
