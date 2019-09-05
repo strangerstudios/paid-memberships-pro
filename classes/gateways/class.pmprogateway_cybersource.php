@@ -375,7 +375,7 @@
 			$item0->id = $order->membership_id;
 			$request->item = array($item0);
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
@@ -417,7 +417,7 @@
 			$request->merchantID = pmpro_getOption("cybersource_merchantid");
 			$request->merchantReferenceCode = $order->code;
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
@@ -527,7 +527,7 @@
 			$item0->id = $order->membership_id;
 			$request->item = array($item0);
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
@@ -722,7 +722,7 @@
 			$purchaseTotals->currency = $pmpro_currency;
 			$request->purchaseTotals = $purchaseTotals;
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
@@ -799,7 +799,7 @@
 				return false;
 			}
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
@@ -843,7 +843,7 @@
 			$request->merchantID = pmpro_getOption("cybersource_merchantid");
 			$request->merchantReferenceCode = $order->code;
 
-			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>pmpro_getOption("cybersource_merchantid"), "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
+			$soapClient = new CyberSourceSoapClient($wsdl_url, array("merchantID"=>$request->merchantID, "transactionKey"=>pmpro_getOption("cybersource_securitykey")));
 			$reply = $soapClient->runTransaction($request);
 
 			if($reply->reasonCode == "100")
