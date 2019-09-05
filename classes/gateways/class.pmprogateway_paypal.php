@@ -428,10 +428,15 @@
 			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 
+			// Name and email info
+			if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) && ! empty( $order->Email ) ) {
+				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName;
+			}
+
 			//billing address, etc
 			if(!empty($order->Address1))
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nvpStr .= "&STREET=" . $order->Address1;
 
 				if($order->Address2)
 					$nvpStr .= "&STREET2=" . $order->Address2;
@@ -535,10 +540,15 @@
 			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 
+			// Name and email info
+			if ( $order->FirstName && $order->LastName && $order->Email ) {
+				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName;
+			}
+
 			//billing address, etc
 			if($order->Address1)
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nvpStr .= "&STREET=" . $order->Address1;
 
 				if($order->Address2)
 					$nvpStr .= "&STREET2=" . $order->Address2;
@@ -616,10 +626,15 @@
 			if(!empty($order->StartDate))
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 
+			// Name and email info
+			if ( $order->FirstName && $order->LastName && $order->Email ) {
+				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName;
+			}
+
 			//billing address, etc
 			if($order->Address1)
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nvpStr .= "&STREET=" . $order->Address1;
 
 				if($order->Address2)
 					$nvpStr .= "&STREET2=" . $order->Address2;
@@ -667,16 +682,21 @@
 			if($order->StartDate)
 				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
 
-			//billing address, etc
-			if($order->Address1)
-			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				// Name and email info
+				if ( $order->FirstName && $order->LastName && $order->Email ) {
+					$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName;
+				}
 
-				if($order->Address2)
-					$nvpStr .= "&STREET2=" . $order->Address2;
+				//billing address, etc
+				if($order->Address1)
+				{
+					$nvpStr .= "&STREET=" . $order->Address1;
 
-				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&COUNTRYCODE=" . $order->billing->country . "&ZIP=" . $order->billing->zip;
-			}
+					if($order->Address2)
+						$nvpStr .= "&STREET2=" . $order->Address2;
+
+					$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&COUNTRYCODE=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&SHIPTOPHONENUM=" . $order->billing->phone;
+				}
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('UpdateRecurringPaymentsProfile', $nvpStr);
 
