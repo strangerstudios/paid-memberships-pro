@@ -45,7 +45,8 @@ jQuery(document).ready(function() {
 			switch(data.ActionCode){
 			  case "SUCCESS":
 			  // Handle successful transaction, send JWT to backend to verify
-			  break;
+              jQuery('.pmpro_form').submit();
+              break;
 			 
 			  case "NOACTION":
 			  // Handle no actionable outcome
@@ -92,7 +93,9 @@ jQuery(document).ready(function() {
 					}
 				}
 				
-				Cardinal.start( 'cca', order );				
+                console.log( order );
+                
+                Cardinal.start( 'cca', order, pmpro_paypal.cardinal_jwt );
 
 				// prevent the form from submitting with the default action
 				return false;

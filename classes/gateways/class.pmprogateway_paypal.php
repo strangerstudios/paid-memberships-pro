@@ -258,22 +258,23 @@
 		 * @since 2.1
 		 */
 		static function pmpro_checkout_preheader() {
-			global $gateway, $pmpro_level;
-
+			global $gateway, $gateway_environment, $pmpro_level;
 			$default_gateway = pmpro_getOption("gateway");
 
 			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
+				$dependencies = array( 'jquery' );
 				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
-				
-				wp_register_script( 'pmpro_paypal',
-                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
-                            array( 'jquery' ),
-                            PMPRO_VERSION );
-				$data = array( 'enable_3dsecure' => $paypal_enable_3dsecure );
+				$data = array( 'enable_3dsecure' => $paypal_enable_3dsecure );	
 				
 				// Setup 3DSecure if enabled.
 				if( $paypal_enable_3dsecure ) {
-					wp_enqueue_script( 'pmpro_songbird', 'https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js' );
+					if( 'sandbox' === $gateway_environment || 'beta-sandbox' === $gateway_environment ) {
+						$songbird_url = 'https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js';
+					} else {
+						$songbird_url = 'https://songbird.cardinalcommerce.com/edge/v1/songbird.js';
+					}
+					wp_enqueue_script( 'pmpro_songbird', $songbird_url );
+					$dependencies[] = 'pmpro_songbird';
 					$data['cardinal_jwt'] = PMProGateway_paypal::get_cardinal_jwt();
 					if ( WP_DEBUG ) {
 						$data['cardinal_debug'] = 'verbose';
@@ -284,6 +285,10 @@
 					}
 				}
 				
+				wp_register_script( 'pmpro_paypal',
+                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
+                            $dependencies,
+                            PMPRO_VERSION );			
 				wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', $data );
 				wp_enqueue_script( 'pmpro_paypal' );
 			}
@@ -292,11 +297,12 @@
 		static function get_cardinal_jwt() {			
 			require_once( PMPRO_DIR . '/includes/lib/php-jwt/JWT.php' );
 			
-			
 			$key = pmpro_getOption( 'paypal_cardinal_apikey' );
+			$now = current_time( 'timestamp' );
 			$token = array(
 				'jti' => 'JWT' . pmpro_getDiscountCode(),
-				'iat' => current_time( 'timestamp' ),
+				'iat' => $now,
+				'exp' => $now + 7200,
 				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
 				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),				
 			);
