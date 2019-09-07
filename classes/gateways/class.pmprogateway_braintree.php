@@ -368,7 +368,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			if(($gateway == "braintree" || $default_gateway == "braintree") && !pmpro_isLevelFree($pmpro_level)) {
 
-			    // TODO Refactor all of this
+			    // TODO Refactor all of this. Load Braintree library earlier?
 			    if ( ! self::$is_loaded ) {
 			        self::loadBraintreeLibrary();
 
@@ -406,19 +406,22 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			    $client_token = \Braintree\ClientToken::generate();
 
-				wp_enqueue_script("stripe", "https://js.braintreegateway.com/v1/braintree.js", array(), NULL);
+				wp_enqueue_script("braintree", "https://js.braintreegateway.com/web/3.50.1/js/client.min.js", array(), NULL);
+                wp_enqueue_script("braintree_3ds", "https://js.braintreegateway.com/web/3.50.1/js/three-d-secure.min.js", array(), NULL);
+                wp_enqueue_script("braintree_hosted_fields", "https://js.braintreegateway.com/web/3.50.1/js/hosted-fields.js", array(), NULL);
 				wp_register_script( 'pmpro_braintree',
-                            plugins_url( 'js/pmpro-braintree.js', PMPRO_BASE_FILE ),
-                            array( 'jquery' ),
-                            PMPRO_VERSION );
-				wp_localize_script( 'pmpro_braintree', 'pmpro_braintree', array(
-					'encryptionkey' => pmpro_getOption( 'braintree_encryptionkey' ),
-                    'clientToken' => $client_token
+                        plugins_url( 'js/pmpro-braintree.js', PMPRO_BASE_FILE ),
+                        array( 'jquery' ),
+                        PMPRO_VERSION );
+				wp_localize_script( 'pmpro_braintree', 'pmproBraintree', array(
+					'encryptionKey' => pmpro_getOption( 'braintree_encryptionkey' ),
+                    'clientToken' => $client_token,
 				));
 				wp_enqueue_script( 'pmpro_braintree' );
 			}
 		}
 
+		// TODO Update docblock.
 		/**
 		 * Filtering orders at checkout.
 		 *
@@ -442,10 +445,22 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			else
 				$braintree_cvv = "";
 
+			if(isset($_REQUEST['braintree_payment_method_nonce']))
+				$braintree_payment_method_nonce = sanitize_text_field($_REQUEST['braintree_payment_method_nonce']);
+			else
+				$braintree_threeDS_nonce = "";
+
+			if(isset($_REQUEST['braintree_threeDS_nonce']))
+				$braintree_threeDS_nonce = sanitize_text_field($_REQUEST['braintree_threeDS_nonce']);
+			else
+				$braintree_threeDS_nonce = "";
+
 			$morder->braintree = new stdClass();
 			$morder->braintree->number = $braintree_number;
 			$morder->braintree->expiration_date = $braintree_expiration_date;
 			$morder->braintree->cvv = $braintree_cvv;
+			$morder->braintree->payment_method_nonce = $braintree_payment_method_nonce;
+			$morder->braintree->threeDS_nonce = $braintree_threeDS_nonce;
 
 			return $morder;
 		}
@@ -461,6 +476,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			return $fields;
 		}
 
+		// TODO Update docblock.
 		/**
 		 * Add some hidden fields and JavaScript to checkout.
 		 *
@@ -468,8 +484,12 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function pmpro_checkout_before_submit_button()
 		{
 		?>
+        <input type='hidden' name='ExpirationMonth'/>
+        <input type='hidden' name='ExpirationYear'/>
 		<input type='hidden' data-encrypted-name='expiration_date' id='credit_card_exp' />
 		<input type='hidden' name='AccountNumber' id='BraintreeAccountNumber' />
+        <input type='hidden' name='braintree_payment_method_nonce' id='braintree_payment_method_nonce' />
+        <input type='hidden' name='braintree_threeDS_nonce' id='braintree_threeDS_nonce' />
 		<?php
 		}
 
@@ -514,36 +534,23 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					<?php } ?>
 					<div class="pmpro_checkout-field pmpro_payment-account-number">
 						<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
-						<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
+                        <div id="AccountNumber"></div>
 					</div>
-					<div class="pmpro_checkout-field pmpro_payment-expiration">
-						<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
-						<select id="ExpirationMonth" name="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
-							<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-							<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-							<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-							<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-							<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-							<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-							<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-							<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-							<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-							<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-							<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-							<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-						</select>/<select id="ExpirationYear" name="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
-							<?php for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++) { ?>
-								<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
-							<?php } ?>
-						</select>
+                    <div class="pmpro_checkout-field pmpro_payment-expiration-month">
+                        <label for="ExpirationMonth"><?php _e('Expiration Month', 'paid-memberships-pro'); ?></label>
+                        <div id="ExpirationMonth"></div>
+                    </div>
+					<div class="pmpro_checkout-field pmpro_payment-expiration-year">
+                        <label for="ExpirationYear"><?php _e('Expiration Year', 'paid-memberships-pro'); ?></label>
+                        <div id="ExpirationYear"></div>
 					</div>
 					<?php
 						$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 						if($pmpro_show_cvv) { ?>
-							<div class="pmpro_checkout-field pmpro_payment-cvv">
-								<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
-								<input class="input" id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
-							</div>
+                            <div class="pmpro_checkout-field pmpro_payment-cvv">
+                                <label for="CVV"><?php _e('CVC', 'paid-memberships-pro'); ?></label>
+                                <div id="CVV"></div>
+                            </div>
 					<?php } ?>
 					<?php if($pmpro_show_discount_code) { ?>
 						<div class="pmpro_checkout-field pmpro_payment-discount-code">
@@ -571,6 +578,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		function process(&$order)
 		{
+
+		    // TODO Check if 3DS is enabled and require it instead.
+            $use_3ds = true;
+            if ( $use_3ds ) {
+                return $this->process2( $order );
+            }
+
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{
@@ -703,6 +717,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			}
 		}
 
+		// TODO Update docblock.
 		/*
 			This function will return a Braintree customer object.
 			If $this->customer is set, it returns it.
@@ -753,15 +768,16 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						$update_array = array(
 							'firstName' => $order->FirstName,
 							'lastName' => $order->LastName,
-							'creditCard' => array(
-								'number' => $order->braintree->number,
-								'expirationDate' => $order->braintree->expiration_date,
-								'cvv' => $order->braintree->cvv,
-								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
-								'options' => array(
-									'updateExistingToken' => $this->customer->creditCards[0]->token
-								)
-							)
+							'paymentMethodNonce' => $order->braintree->payment_method_nonce,
+//							'creditCard' => array(
+//								'number' => $order->braintree->number,
+//								'expirationDate' => $order->braintree->expiration_date,
+//								'cvv' => $order->braintree->cvv,
+//								'cardholderName' => trim($order->FirstName . " " . $order->LastName),
+//								'options' => array(
+//									'updateExistingToken' => $this->customer->creditCards[0]->token
+//								)
+//							)
 						);
 
 						//address too?
@@ -825,22 +841,23 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						'lastName' => $order->LastName,
 						'email' => $order->Email,
 						'phone' => $order->billing->phone,
-						'creditCard' => array(
-							'number' => $order->braintree->number,
-							'expirationDate' => $order->braintree->expiration_date,
-							'cvv' => $order->braintree->cvv,
-							'cardholderName' =>  trim($order->FirstName . " " . $order->LastName),
-							'billingAddress' => array(
-								'firstName' => $order->FirstName,
-								'lastName' => $order->LastName,
-								'streetAddress' => $order->Address1,
-								'extendedAddress' => $order->Address2,
-								'locality' => $order->billing->city,
-								'region' => $order->billing->state,
-								'postalCode' => $order->billing->zip,
-								'countryCodeAlpha2' => $order->billing->country
-							)
-						)
+//						'paymentMethodNonce' => $order->braintree->payment_method_nonce,
+//						'creditCard' => array(
+//							'number' => $order->braintree->number,
+//							'expirationDate' => $order->braintree->expiration_date,
+//							'cvv' => $order->braintree->cvv,
+//							'cardholderName' =>  trim($order->FirstName . " " . $order->LastName),
+//							'billingAddress' => array(
+//								'firstName' => $order->FirstName,
+//								'lastName' => $order->LastName,
+//								'streetAddress' => $order->Address1,
+//								'extendedAddress' => $order->Address2,
+//								'locality' => $order->billing->city,
+//								'region' => $order->billing->state,
+//								'postalCode' => $order->billing->zip,
+//								'countryCodeAlpha2' => $order->billing->country
+//							)
+//						)
 					));
 
 					if($result->success)
@@ -1112,4 +1129,503 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			*/
 			return apply_filters( 'pmpro_braintree_plan_id', 'pmpro_' . $level_id, $level_id );
 	}
+
+    function process2( &$order ) {
+
+        // FOR TESTING
+
+        // Authenticated
+//        $this->payment_method = 'fake-three-d-secure-visa-full-authentication-nonce	';
+
+        // Failed auth
+//        $this->payment_method = 'fake-three-d-secure-visa-failed-authentication-nonce';
+
+        $steps = array(
+            'set_customer',
+            'set_payment_method',
+//            'attach_source_to_customer',
+            'process_charges',
+//            'process_subscriptions',
+        );
+
+        foreach( $steps as $key => $step ) {
+            do_action( "pmpro_process_order_before_{$step}", $order );
+            call_user_func( array( $this, $steps[$key] ), $order );
+            do_action( "pmpro_process_order_after_{$step}", $order );
+            if ( ! empty( $order->error ) ) {
+                return false;
+            }
+        }
+
+        $this->clean_up( $order );
+        $order->status = 'success';
+        $order->saveOrder();
+
+        return true;
+    }
+
+    function set_payment_method( &$order, $force = false  ) {
+
+        if ( ! empty( $this->payment_method ) && ! $force ) {
+            return true;
+        }
+
+        $payment_method = $this->get_payment_method( $order );
+
+        if ( empty( $payment_method ) ) {
+            return false;
+        }
+
+        $this->payment_method = $payment_method;
+        return true;
+    }
+
+    function get_payment_method( &$order ) {
+
+	    return $order->braintree->payment_method_nonce;
+
+    }
+
+    function set_customer( &$order, $force = false  ) {
+        if ( ! empty( $this->customer ) && ! $force ) {
+            return true;
+        }
+        $this->getCustomer( $order );
+    }
+
+    function attach_source_to_customer( &$order ) {
+
+        if ( ! empty( $this->customer->default_source ) && $this->customer->default_source === $this->source->id ) {
+            return true;
+        }
+
+        try {
+            $this->customer->source = $order->source_id;
+            $this->customer->save();
+        } catch ( \Stripe\Error $e ) {
+            $order->error = $e->message;
+            return false;
+        }
+
+
+        return true;
+    }
+
+    function process_charges( &$order ) {
+
+        if ( 0 == floatval( $order->InitialPayment ) ) {
+            return true;
+        }
+
+        if ( ! self::$is_loaded ) {
+
+            $order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", "paid-memberships-pro");
+            return false;
+        }
+
+        //create a code for the order
+        if(empty($order->code))
+            $order->code = $order->getRandomCode();
+
+        //what amount to charge?
+        $amount = $order->InitialPayment;
+
+        //tax
+        $order->subtotal = $amount;
+        $tax = $order->getTax(true);
+        $amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+
+        //charge
+        try
+        {
+            $response = Braintree_Transaction::sale(array(
+	            'amount' => $amount,
+                'customerId' => $this->customer->id,
+                'paymentMethodNonce' => $this->payment_method,
+                'options' => array(
+                    'submitForSettlement' => true,
+                    'threeDSecure' => array(
+                        'required' => true,
+                    )
+                )
+            ));
+        }
+        // TODO Better error handling.
+        catch (Exception $e)
+        {
+	        $order->status = "error";
+	        $order->errorcode = true;
+	        $order->error = "Error: " . $e->getMessage() . " (" . get_class($e) . ")";
+	        $order->shorterror = $order->error;
+	        return false;
+        }
+        if ( ! $response->success ) {
+	        $order->status = "error";
+	        $order->errorcode = true;
+	        $order->error = "Error: " . $response->message;
+	        $order->shorterror = $order->error;
+	        return false;
+        }
+
+        $order->payment_transaction_id = $response->transaction->id;
+	    return true;
+
+    }
+
+    function set_payment_intent( &$order, $force = false ) {
+
+        if ( ! empty( $this->payment_intent ) && ! $force ) {
+            return true;
+        }
+
+        $payment_intent = $this->get_payment_intent( $order );
+
+        if ( empty( $payment_intent ) ) {
+            return false;
+        }
+
+        $this->payment_intent = $payment_intent;
+        return true;
+    }
+
+    function get_payment_intent( &$order ) {
+
+        if ( ! empty( $order->payment_intent_id ) ) {
+            try {
+                $payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
+            } catch ( \Stripe\Error $e ) {
+                $order->error = $e->message;
+                return false;
+            }
+        }
+
+        if ( empty( $payment_intent ) ) {
+            $payment_intent = $this->create_payment_intent( $order );
+        }
+
+        if ( empty( $payment_intent ) ) {
+            return false;
+        }
+
+        return $payment_intent;
+    }
+
+    function create_payment_intent( &$order ) {
+
+        global $pmpro_currencies, $pmpro_currency;
+
+// TODO; Refactor: pmpro_get_currency_unit_multiplier()
+// Get currency mulitiplier.
+        $currency_unit_multiplier = 100; //ie 100 cents per USD
+// Account for zero-decimal currencies like the Japanese Yen
+        if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0) {
+            $currency_unit_multiplier = 1;
+        }
+
+// TODO: Set order totals before processing order.
+        $amount = $order->InitialPayment;
+        $order->subtotal = $amount;
+        $tax = $order->getTax(true);
+
+        $amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+
+        $params = array(
+            'customer' => $this->customer->id,
+            'source' => $this->source->id,
+            'amount' => $amount * $currency_unit_multiplier,
+            'currency' => $pmpro_currency,
+            'confirmation_method' => 'manual',
+            'description' => apply_filters('pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim($order->FirstName . " " . $order->LastName) . " (" . $order->Email . ")", $order),
+        );
+
+
+        try {
+            $payment_intent = Stripe_PaymentIntent::create( $params );
+        } catch ( \Stripe\Error $e ) {
+            $order->error = $e->message;
+            return false;
+        }
+
+        return $payment_intent;
+    }
+
+    function process_subscriptions( &$order ) {
+
+        if ( ! pmpro_isLevelRecurring( $order->membership_level ) ) {
+            return true;
+        }
+
+        //before subscribing, let's clear out the updates so we don't trigger any during sub
+        if(!empty($user_id)) {
+            $old_user_updates = get_user_meta($user_id, "pmpro_stripe_updates", true);
+            update_user_meta($user_id, "pmpro_stripe_updates", array());
+        }
+
+        $this->set_setup_intent( $order );
+        $this->confirm_setup_intent( $order );
+
+        if ( ! empty( $order->error ) ) {
+            $order->error = __( "Subscription failed: " . $order->error, 'paid-memberships-pro' );
+
+            //give the user any old updates back
+            if(!empty($user_id)) {
+                update_user_meta($user_id, "pmpro_stripe_updates", $old_user_updates);
+            }
+
+            return false;
+        }
+
+        //save new updates if this is at checkout
+        //empty out updates unless set above
+        if(empty($new_user_updates)) {
+            $new_user_updates = array();
+        }
+
+        //update user meta
+        if(!empty($user_id)) {
+            update_user_meta($user_id, "pmpro_stripe_updates", $new_user_updates);
+        } else {
+            //need to remember the user updates to save later
+            global $pmpro_stripe_updates;
+            $pmpro_stripe_updates = $new_user_updates;
+            function pmpro_user_register_stripe_updates($user_id) {
+                global $pmpro_stripe_updates;
+                update_user_meta($user_id, "pmpro_stripe_updates", $pmpro_stripe_updates);
+            }
+            add_action("user_register", "pmpro_user_register_stripe_updates");
+        }
+
+        return true;
+    }
+
+    function create_plan( &$order ) {
+
+        global $pmpro_currencies, $pmpro_currency;
+
+// TODO: Refactor and set all of this before processing the order.
+//figure out the amounts
+        $amount = $order->PaymentAmount;
+        $amount_tax = $order->getTaxForPrice($amount);
+        $amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+
+// TODO; Refactor: pmpro_get_currency_unit_multiplier()
+// Get currency mulitiplier.
+        $currency_unit_multiplier = 100; //ie 100 cents per USD
+// Account for zero-decimal currencies like the Japanese Yen
+        if(is_array($pmpro_currencies[$pmpro_currency]) && isset($pmpro_currencies[$pmpro_currency]['decimals']) && $pmpro_currencies[$pmpro_currency]['decimals'] == 0) {
+            $currency_unit_multiplier = 1;
+        }
+
+        /*
+        There are two parts to the trial. Part 1 is simply the delay until the first payment
+        since we are doing the first payment as a separate transaction.
+        The second part is the actual "trial" set by the admin.
+
+        Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
+        */
+//figure out the trial length (first payment handled by initial charge)
+        if($order->BillingPeriod == "Year") {
+            $trial_period_days = $order->BillingFrequency * 365;	//annual
+        } elseif($order->BillingPeriod == "Day") {
+            $trial_period_days = $order->BillingFrequency * 1;		//daily
+        } elseif($order->BillingPeriod == "Week") {
+            $trial_period_days = $order->BillingFrequency * 7;		//weekly
+        } else {
+            $trial_period_days = $order->BillingFrequency * 30;	//assume monthly
+        }
+
+//convert to a profile start date
+        $order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+
+//filter the start date
+        $order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+
+//convert back to days
+        $trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time("timestamp")) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+
+//for free trials, just push the start date of the subscription back
+        if(!empty($order->TrialBillingCycles) && $order->TrialAmount == 0) {
+            $trialOccurrences = (int)$order->TrialBillingCycles;
+            if($order->BillingPeriod == "Year") {
+                $trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
+            } elseif($order->BillingPeriod == "Day") {
+                $trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
+            } elseif($order->BillingPeriod == "Week") {
+                $trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+            } else {
+                $trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
+            }
+        } elseif(!empty($order->TrialBillingCycles)) {
+
+        }
+
+// Save $trial_period_days to order for now too.
+        $order->TrialPeriodDays = $trial_period_days;
+
+//create a plan
+        try {
+            $plan = array(
+                "amount" => $amount * $currency_unit_multiplier,
+                "interval_count" => $order->BillingFrequency,
+                "interval" => strtolower($order->BillingPeriod),
+                "trial_period_days" => $trial_period_days,
+                'product' => array( 'name' => $order->membership_name . " for order " . $order->code),
+                "currency" => strtolower($pmpro_currency),
+                "id" => $order->code
+            );
+            $order->plan = Stripe_Plan::create(apply_filters('pmpro_stripe_create_plan_array', $plan));
+        } catch ( \Stripe\Error $e) {
+            $order->error = __("Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
+            $order->shorterror = $order->error;
+            return false;
+        }
+
+        return $order->plan;
+    }
+
+    function create_subscription( &$order ) {
+
+//subscribe to the plan
+        try {
+            $params = array(
+                'customer' => $this->customer->id,
+                'default_source' => $this->source,
+                'items' => array(
+                    array( 'plan' => $order->code ),
+                ),
+                'trial_period_days' => $order->TrialPeriodDays,
+                'expand' => array(
+                    'pending_setup_intent',
+                ),
+            );
+            $order->subscription = Stripe_Subscription::create( $params );
+        } catch ( \Stripe\Error $e) {
+//return error
+            $order->error = __("Error subscribing customer to plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
+            $order->shorterror = $order->error;
+            return false;
+        }
+
+        return $order->subscription;
+
+    }
+
+    function delete_plan( &$order ) {
+        try {
+            $order->plan->delete();
+        } catch ( \Stripe\Error $e) {
+//return error
+            $order->error = $e->message;
+            $order->shorterror = $order->error;
+            return false;
+        }
+        return true;
+    }
+
+    function get_setup_intent( &$order ) {
+
+        if ( ! empty( $order->setup_intent_id ) ) {
+            try {
+                $setup_intent = Stripe_SetupIntent::retrieve( $order->setup_intent_id );
+            } catch ( \Stripe\Error $e ) {
+                $order->error = $e->message;
+                return false;
+            }
+        }
+
+        if ( empty( $setup_intent ) ) {
+            $setup_intent = $this->create_setup_intent( $order );
+        }
+
+        if ( empty( $setup_intent ) ) {
+            return false;
+        }
+
+        return $setup_intent;
+    }
+
+    function set_setup_intent( &$order, $force = false ) {
+
+        if ( ! empty( $this->setup_intent ) && ! $force ) {
+            return true;
+        }
+
+        $setup_intent = $this->get_setup_intent( $order );
+
+        if ( empty( $setup_intent ) ) {
+            return false;
+        }
+
+        $this->setup_intent = $setup_intent;
+        return true;
+    }
+
+    function create_setup_intent( &$order ) {
+
+        $this->create_plan( $order );
+        $this->subscription = $this->create_subscription( $order );
+        $this->delete_plan( $order );
+
+        if ( ! empty( $order->error ) || empty( $this->subscription->pending_setup_intent ) ) {
+            return false;
+        }
+
+        return $this->subscription->pending_setup_intent;
+    }
+
+    function confirm_payment_intent2( &$order  ) {
+
+        if ( 'succeeded' === $this->payment_intent->status ) {
+            return true;
+        }
+
+        try {
+            $params = array(
+                'expand' => array(
+                    'source',
+                    'customer',
+                ),
+            );
+            $this->payment_intent->confirm( $params );
+        } catch ( \Stripe\Error $e ) {
+            $order->error = $e->message;
+            return false;
+        }
+
+        if ( 'requires_action' == $this->payment_intent->status ) {
+            $order->errorcode = true;
+            // TODO escape, change wording?
+            $order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+            return false;
+        }
+
+        return true;
+    }
+
+    function confirm_setup_intent( &$order  ) {
+
+        if ( empty( $this->setup_intent ) ) {
+            return true;
+        }
+
+        if ( 'requires_action' === $this->setup_intent->status ) {
+            $order->errorcode = true;
+            $order->error = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+            return false;
+        }
+
+    }
+
+    function clean_up( &$order ) {
+
+        // TODO Refactor. Hook into pmpro_process_order_success ?
+//        if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
+//            $order->payment_transaction_id = $this->payment_intent->charges->data[0]->id;
+//        }
+//
+//        if ( empty( $order->subscription_transaction_id ) && ! empty( $this->subscription ) ) {
+//            $order->subscription_transaction_id = $this->subscription->id;
+//        }
+    }
+
 }

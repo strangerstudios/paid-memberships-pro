@@ -1,7 +1,5 @@
 <?php
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
-// we are on the checkout page
-add_filter( 'pmpro_is_checkout', '__return_true' );
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
