@@ -222,7 +222,22 @@ form.pmpro_form #pmpro_processing_message {
 	border-color: #d6e9c6;
 	color: #3c763d;
 }
-.pmpro_error {
+.pmpro_error,
+input[type="text"].pmpro_error,
+input[type="email"].pmpro_error,
+input[type="url"].pmpro_error,
+input[type="password"].pmpro_error,
+input[type="number"].pmpro_error,
+input[type="tel"].pmpro_error,
+input[type="range"].pmpro_error,
+input[type="date"].pmpro_error,
+input[type="month"].pmpro_error,
+input[type="week"].pmpro_error,
+input[type="time"].pmpro_error,
+input[type="datetime"].pmpro_error,
+input[type="datetime-local"].pmpro_error,
+input[type="color"].pmpro_error,
+textarea.pmpro_error {
 	background-color: #f2dede;
 	border-color: #ebccd1;
 	color: #a94442;
@@ -274,6 +289,7 @@ select.pmpro_error {
 	margin-left: 2em;
 }
 #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	clear: both;
 	display: -ms-grid;
 	display: grid;
 	-ms-grid-columns: 3fr 1em 1fr;
