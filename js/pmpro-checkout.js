@@ -150,9 +150,6 @@ jQuery(document).ready(function( $ ){
 			// TODO Handle errors.
 		    pmpro.order = JSON.parse(response);
 		});
-
-		this.submit();
-		return true;
 	});
 
 	//iOS Safari fix (see: http://stackoverflow.com/questions/20210093/stop-safari-on-ios7-prompting-to-save-card-data)

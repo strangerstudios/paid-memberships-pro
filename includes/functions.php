@@ -3055,6 +3055,8 @@ function pmpro_build_order_for_checkout() {
 	$morder->subtotal = $morder->InitialPayment;
 	$morder->getTax();
 
+	$morder->total = pmpro_round_price((float)$morder->subtotal + (float)$morder->tax);
+
 	//filter for order, since v1.8
 	$morder = apply_filters( "pmpro_checkout_order", $morder );
 
