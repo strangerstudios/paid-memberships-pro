@@ -1337,7 +1337,7 @@ class="alternate"<?php } ?>>
 					<td>
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
 					</td>
-					<td class="username column-username">
+					<td class="username column-username has-row-actions">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
