@@ -137,7 +137,8 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Showing a warning message when a user about to be deleted has a membership so admins know that existing subscriptions will be deleted at the gateway.
 * ENHANCEMENT: Added a pmpro_braintree_plan_id filter in case you need to adjust plan IDs. This is useful if you have several sites running on the same Braintree account.
 * ENHANCEMENT: Added a pmpro_num_expiration_years filter to adjust the number of years to include in the dropdown to set the year membership will expire.
-* ENHANCEMENT: Tweaked the UI of the orders list in the dashboard.
+* ENHANCEMENT: Tweaked the UI of the orders list and members list in the dashboard.
+* ENHANCEMENT: Added pmpro_membership_levels_table_extra_cols_header and pmpro_membership_levels_table_extra_cols_body hooks to add columns to the members list.
 * ENHANCEMENT: Showing notices to admins when categories are hidden from them on the frontend of the site.
 * ENHANCEMENT: Added a pmpro_url filter to filter URLs returned from that function.
 * ENHANCEMENT: Adding a pmpro_checkout_gateway-stripe or pmpro_checkout_gateway-paypal/etc CSS class to the wrapping div for payment fields to aid in styling.
@@ -149,12 +150,16 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Updated our pmpro_generateUsername() function to be a bit smarter.
 * BUG FIX/ENHANCEMENT: Now using wp_generate_password() when choosing a random password for a user (e.g. when using the Sign Up Shortcode add on or the $skip_account_fields global).
 * BUG FIX/ENHANCEMENT: Setting autocomplete to false on the "fullname" honeypot field. This will prevent user's with certain autocomplete tools from accidentally filling it out.
+* BUG FIX/EHNANCEMENT: Now sending name and email fields to PayPay (using Website Payments Pro) even if no address was captured.
+* BUG FIX/ENHANCEMENT: More specific CSS selectors for checkout form elements to make sure errors are highlighted/etc with different themes.
+* BUG FIX: Fixed issue where the first 2000 or so orders might be skipped when exporting orders on large sites.
 * BUG FIX: Fixed issue with setting custom trials on discount codes.
 * BUG FIX: Fixed issue in the SQL query in the pmpro_calculateInitialPaymentRevenue() function. This function is deprecated, but still used by some custom code.
 * BUG FIX: Fixed issue where default templates would fail to load if a custom template was specified.
 * BUG FIX: Fixed fatal errors that could happen when using the PMPro REST API endpoints.
 * BUG FIX: Fixed bug where the invoices page would sometimes show data for the current (admin) users instead of the user the invoice was for.
 * BUG FIX: Fixed bug where the membership stats graphs would sometimes show up blank.
+* BUG FIX: Now falling back to using readfile() if fpassthru() doesn't existing.
 * REFACTOR: Moved JavaScript out of pages/checkout.php and other places into files in the /js/ folder. This will avoid issues where other JS at checkout breaks PMPro checkout and will improve compatibility with tools that optimize JS.
 * REFACTOR: Added unit testing and a started on coverage of some functions in includes/functions.php. (Thanks, Mike Auteri)
 * REFACTOR: The JS function askfirst is now prefixed as pmpro_askfirst.
