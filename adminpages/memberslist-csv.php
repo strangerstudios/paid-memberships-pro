@@ -296,10 +296,7 @@
 			$last_uid = $theusers[($users_found - 1)];
 
 		//increment starting position
-		if(0 < $iterations)
-		{
-			$i_start += $max_users_per_loop;
-		}
+		$i_start += $max_users_per_loop;
 		
 		//escape the % for LIKE comparison with $wpdb
 		if(!empty($search))
