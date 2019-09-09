@@ -268,6 +268,9 @@ if ( isset( $submit ) && $submit === "0" ) {
 	$submit = false;
 }
 
+// TODO Update docblock.
+do_action( 'pmpro_checkout_after_parameters_set' );
+
 //require fields
 $pmpro_required_billing_fields = array(
 	"bfirstname"      => $bfirstname,

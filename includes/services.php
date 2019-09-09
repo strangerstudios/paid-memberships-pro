@@ -108,3 +108,12 @@ function pmpro_update_level_order() {
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
+
+// TODO docblock.
+function pmpro_get_checkout_order()
+{
+	require_once(dirname(__FILE__) . "/../services/get-checkout-order.php");
+	exit;
+}
+add_action("wp_ajax_pmpro_get_checkout_order", "pmpro_get_checkout_order");
+add_action("wp_ajax_nopriv_pmpro_get_checkout_order", "pmpro_get_checkout_order");
