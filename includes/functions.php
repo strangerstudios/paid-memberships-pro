@@ -3052,10 +3052,12 @@ function pmpro_build_order_for_checkout() {
 	$morder->getMembershipLevelAtCheckout();
 
 	//tax
-	$morder->subtotal = $morder->InitialPayment;
-	$morder->getTax();
+	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
+	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
 
-	$morder->total = pmpro_round_price((float)$morder->subtotal + (float)$morder->tax);
+	// amounts
+	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
+	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
 
 	//filter for order, since v1.8
 	$morder = apply_filters( "pmpro_checkout_order", $morder );
