@@ -61,48 +61,37 @@ jQuery(document).ready(function() {
 			  break;
 		  }
 		});
-		
-		jQuery('.pmpro_form').submit(function(event) {
-			// prevent the form from submitting with the default action
-			event.preventDefault();
 
-			//double check in case a discount code made the level free
-			if ( pmpro_require_billing ) {
-				var order = {
-					OrderDetails: {
-						OrderNumber: ''
+		//double check in case a discount code made the level free
+		if ( pmpro_require_billing ) {
+			var order = {
+				OrderDetails: {
+					OrderNumber: ''
+				},
+				Consumer: {
+					'Email1': jQuery( '#bemail' ).val(),
+					'BillingAddress': {
+						'FirstName': jQuery( '#bfirstname' ).val(),
+						'LastName': jQuery( '#blastname' ).val(),
+						'Address1': jQuery( '#baddress1' ).val(),
+						'Address2': jQuery( '#baddress2' ).val(),							
+						'City': jQuery( '#bcity' ).val(),
+						'State': jQuery( '#bstate' ).val(),
+						'PostalCode': jQuery( '#bzipcode' ).val(),
+						'CountryCode': jQuery( '#bcountry' ).val(),
+						'Phone1': jQuery( '#bphone' ).val(),
 					},
-					Consumer: {
-						'Email1': jQuery( '#bemail' ).val(),
-						'BillingAddress': {
-							'FirstName': jQuery( '#bfirstname' ).val(),
-							'LastName': jQuery( '#blastname' ).val(),
-							'Address1': jQuery( '#baddress1' ).val(),
-							'Address2': jQuery( '#baddress2' ).val(),							
-							'City': jQuery( '#bcity' ).val(),
-							'State': jQuery( '#bstate' ).val(),
-							'PostalCode': jQuery( '#bzipcode' ).val(),
-							'CountryCode': jQuery( '#bcountry' ).val(),
-							'Phone1': jQuery( '#bphone' ).val(),
-						},
-						Account: {
-							AccountNumber: jQuery( '#AccountNumber' ).val(),
-							ExpirationMonth: jQuery( '#ExpirationMonth' ).val(),
-							ExpirationYear: jQuery( '#ExpirationYear' ).val(),
-						}
+					Account: {
+						AccountNumber: jQuery( '#AccountNumber' ).val(),
+						ExpirationMonth: jQuery( '#ExpirationMonth' ).val(),
+						ExpirationYear: jQuery( '#ExpirationYear' ).val(),
 					}
 				}
-				
-                console.log( order );
-                
-                Cardinal.start( 'cca', order, pmpro_paypal.cardinal_jwt );
-
-				// prevent the form from submitting with the default action
-				return false;
-			} else {
-				this.submit();
-				return true;	//not using Stripe anymore
 			}
-		});
+            
+            console.log( order );
+                
+            Cardinal.start( 'cca', order, pmpro_paypal.cardinal_jwt );
+		}
 	}
 });

@@ -2978,3 +2978,25 @@ function pmpro_show_discount_code() {
 	
 	return $show;
 }
+
+/**
+ * Check if the checkout form was submitted.
+ * Accounts for image buttons/etc.
+ * @return bool True if the form was submitted, else false.
+ */
+ function pmpro_was_checkout_form_submitted() {
+	 // Default to false.
+	 $submit = false;
+	 
+	 // Basic check for a field called submit-checkout.
+	 if ( isset( $_REQUEST['submit-checkout'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 // _x stuff in case they clicked on the image button with their mouse
+	 if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 return $submit;
+ }

@@ -257,18 +257,7 @@ if ( isset( $_REQUEST['tos'] ) ) {
 	$tos = "";
 }
 
-//_x stuff in case they clicked on the image button with their mouse
-if ( isset( $_REQUEST['submit-checkout'] ) ) {
-	$submit = true;
-}
-if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
-	$submit = true;
-}
-if ( isset( $submit ) && $submit === "0" ) {
-	$submit = true;
-} elseif ( ! isset( $submit ) ) {
-	$submit = false;
-}
+$submit = pmpro_was_checkout_form_submitted();
 
 //require fields
 $pmpro_required_billing_fields = array(

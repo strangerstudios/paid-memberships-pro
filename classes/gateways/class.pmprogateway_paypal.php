@@ -255,10 +255,10 @@
 			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
 				$dependencies = array( 'jquery' );
 				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
-				$data = array( 'enable_3dsecure' => $paypal_enable_3dsecure );	
+				$data = array();	
 				
 				// Setup 3DSecure if enabled.
-				if( $paypal_enable_3dsecure ) {
+				if( pmpro_was_checkout_form_submitted() && $paypal_enable_3dsecure ) {
 					if( 'sandbox' === $gateway_environment || 'beta-sandbox' === $gateway_environment ) {
 						$songbird_url = 'https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js';
 					} else {
@@ -266,6 +266,7 @@
 					}
 					wp_enqueue_script( 'pmpro_songbird', $songbird_url );
 					$dependencies[] = 'pmpro_songbird';
+					$data['enable_3dsecure'] = $paypal_enable_3dsecure;
 					$data['cardinal_jwt'] = PMProGateway_paypal::get_cardinal_jwt();
 					if ( WP_DEBUG ) {
 						$data['cardinal_debug'] = 'verbose';
@@ -295,7 +296,8 @@
 				'iat' => $now,
 				'exp' => $now + 7200,
 				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
-				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),				
+				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),
+				
 			);
 			$jwt = \PMPro\Firebase\JWT\JWT::encode($token, $key);
 			
