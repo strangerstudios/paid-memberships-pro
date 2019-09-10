@@ -2982,6 +2982,7 @@ function pmpro_show_discount_code() {
 /**
  * Check if the checkout form was submitted.
  * Accounts for image buttons/etc.
+ * @since 2.1
  * @return bool True if the form was submitted, else false.
  */
  function pmpro_was_checkout_form_submitted() {
@@ -3000,3 +3001,82 @@ function pmpro_show_discount_code() {
 	 
 	 return $submit;
  }
+ 
+ /**
+  * Build the order object used at checkout.
+  * @since 2.1
+  * @return mixed $order Order object.
+  */
+ function pmpro_build_order_for_checkout() {    
+	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
+	
+	$morder                   = new MemberOrder();
+	$morder->membership_id    = $pmpro_level->id;
+	$morder->membership_name  = $pmpro_level->name;
+	$morder->discount_code    = $discount_code;
+	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
+	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
+	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->BillingPeriod    = $pmpro_level->cycle_period;
+	$morder->BillingFrequency = $pmpro_level->cycle_number;
+	if ( $pmpro_level->billing_limit ) {
+		$morder->TotalBillingCycles = $pmpro_level->billing_limit;
+	}
+	if ( pmpro_isLevelTrial( $pmpro_level ) ) {
+		$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
+		$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
+		$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
+		$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
+	}
+	
+	// Credit card values.
+	$morder->cardtype              = $CardType;
+	$morder->accountnumber         = $AccountNumber;
+	$morder->expirationmonth       = $ExpirationMonth;
+	$morder->expirationyear        = $ExpirationYear;
+	$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
+	$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
+	$morder->CVV2                  = $CVV;
+	
+	// Not saving email in order table, but the sites need it.
+	$morder->Email = $bemail;
+	
+	// Save the user ID if logged in.
+	if ( $current_user->ID ) {
+		$morder->user_id = $current_user->ID;
+	}
+	
+	// Sometimes we need these split up.
+	$morder->FirstName = $bfirstname;
+	$morder->LastName  = $blastname;
+	$morder->Address1  = $baddress1;
+	$morder->Address2  = $baddress2;
+	
+	// Set other values.
+	$morder->billing          = new stdClass();
+	$morder->billing->name    = $bfirstname . " " . $blastname;
+	$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
+	$morder->billing->city    = $bcity;
+	$morder->billing->state   = $bstate;
+	$morder->billing->country = $bcountry;
+	$morder->billing->zip     = $bzipcode;
+	$morder->billing->phone   = $bphone;	
+	$morder->gateway = $gateway;
+	$morder->setGateway();
+	
+	// Set up level var.
+	$morder->getMembershipLevelAtCheckout();
+	
+	// Set tax.
+	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
+	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
+	
+	// Set amounts.
+	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
+	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
+	
+	// Filter for order, since v1.8
+	$morder = apply_filters( 'pmpro_checkout_order', $morder );
+	
+	return $morder;
+}
