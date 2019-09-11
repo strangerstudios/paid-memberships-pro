@@ -2610,7 +2610,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 }
 
 /**
- * Cast to floast and pad zeroes after the decimal
+ * Cast to floats and pad zeroes after the decimal
  * when editing the price on the edit level page.
  * Only do this for currency with decimals = 2
  * Only do this if using . as the decimal separator.
