@@ -216,6 +216,7 @@ form.pmpro_form #pmpro_processing_message {
 	line-height: 1.5em;
 	margin: .5em 0;
 	padding: 10px 15px;
+	text-align: left;
 }
 .pmpro_success {
 	background-color: #dff0d8;
@@ -268,6 +269,10 @@ input.pmpro_error {
 }
 select.pmpro_error {
 	background-image: none;
+}
+
+#pmpro_message_bottom {
+	margin-bottom: 1em;
 }
 /*---------------------------------------
 	Membership Checkout

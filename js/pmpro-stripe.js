@@ -96,6 +96,7 @@ jQuery( document ).ready( function( $ ) {
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
 			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
+			$( '#pmpro_message_bottom' ).addClass( 'pmpro_error' ).show();
 			$('.pmpro_error').text(response.error.message);
 
 			// TODO Delete any incomplete subscriptions if 3DS auth failed.
