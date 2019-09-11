@@ -95,9 +95,8 @@ jQuery( document ).ready( function( $ ) {
 			// Hide processing message.
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
-			$( '#pmpro_message' ).addClass( 'pmpro_error' ).show();
-			$( '#pmpro_message_bottom' ).addClass( 'pmpro_error' ).show();
-			$('.pmpro_error').text(response.error.message);
+			// error message
+			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
 
 			// TODO Delete any incomplete subscriptions if 3DS auth failed.
 			// data = {
@@ -106,10 +105,10 @@ jQuery( document ).ready( function( $ ) {
 			// $.post(pmproStripe.ajaxUrl, data, function (response) {
 			// 	// Do stuff?
 			// });
-		} else if ( response.paymentMethod ) {
+		} else if ( response.paymentMethod ) {			
 			
 			paymentMethodId = response.paymentMethod.id;
-			card = response.paymentMethod.card;
+			card = response.paymentMethod.card;			
 			
 			// insert the Source ID into the form so it gets submitted to the server
 			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
@@ -131,6 +130,9 @@ jQuery( document ).ready( function( $ ) {
 			form.get(0).submit();			
 			
 		} else if ( response.paymentIntent || response.setupIntent ) {
+			
+			// success message
+			$( '#pmpro_message' ).text( pmproStripe.msgAuthenticationValidated ).addClass( 'pmpro_success' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_error' ).show();
 			
 			customerId = pmproStripe.paymentIntent 
 				? pmproStripe.paymentIntent.customer

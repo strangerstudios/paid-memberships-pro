@@ -589,7 +589,7 @@ class PMProGateway_stripe_Test extends Base {
 	/**
 	  * Test the confirm_payment_intent() method.
 	  *
-	  * @testdox confirm_payment_intent3()
+	  * @testdox confirm_payment_intent()
 	  *
 	  * @dataProvider data_confirm_payment_intent
 	  */
@@ -598,7 +598,7 @@ class PMProGateway_stripe_Test extends Base {
 		$this->skip_test_if_api_not_initialized;
 		
 		$checkout = $this->factory->checkout->create( $checkout_args );
-		$checkout->order->Gateway->confirm_payment_intent3( $checkout->order );
+		$checkout->order->Gateway->confirm_payment_intent( $checkout->order );
 		$order = $checkout->order;
 		$payment_intent = $order->Gateway->payment_intent;
 		
@@ -1050,10 +1050,10 @@ class PMProGateway_stripe_Test extends Base {
 		// SetupIntent already set
 		$order3 = $this->factory->order->create();
 		$order3->setGateway( 'stripe' );
-		$setup_intent3 = new \Stripe\SetupIntent( [ 'id' => 'seti_already_set' ] );
-		$setup_intent3->object = 'setup_intent';
-		$setup_intent3->amount = 1000;
-		$order3->Gateway->setup_intent = $setup_intent3;
+		$setup_intent = new \Stripe\SetupIntent( [ 'id' => 'seti_already_set' ] );
+		$setup_intent->object = 'setup_intent';
+		$setup_intent->amount = 1000;
+		$order3->Gateway->setup_intent = $setup_intent;
 		$checkout3 = [
 			'order' => $order3,
 		];
@@ -1204,8 +1204,8 @@ class PMProGateway_stripe_Test extends Base {
 		$order3->membership_level = new \stdClass();
 		$order3->membership_level->billing_amount = 10;
 		$order3->setGateway( 'stripe' );
-		$setup_intent3 = new \Stripe\SetupIntent();
-		$setup_intent3->status = 'succeeded';
+		$setup_intent = new \Stripe\SetupIntent();
+		$setup_intent->status = 'succeeded';
 		
 		$checkout3 = [
 			'order' => $order3,

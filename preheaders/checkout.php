@@ -448,7 +448,12 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
 						}
-						$pmpro_msgt = "pmpro_error";
+						
+						if ( ! empty( $morder->error_type ) ) {
+							$pmpro_msgt = $morder->error_type;
+						} else {
+							$pmpro_msgt = "pmpro_error";
+						}						
 					}
 
 				} else // !$pmpro_requirebilling

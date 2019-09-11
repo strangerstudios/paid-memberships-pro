@@ -367,6 +367,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'publishableKey' => pmpro_getOption( 'stripe_publishablekey' ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
+					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
 				);
 
 				if ( ! empty( $order ) ) {
@@ -2079,10 +2080,10 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$this->set_payment_intent( $order );
-		$this->confirm_payment_intent2( $order );
+		$this->confirm_payment_intent( $order );
 
 		if ( ! empty( $order->error ) ) {
-			$order->error = __( "Initial payment failed: " . $order->error, 'paid-memberships-pro' );
+			$order->error = $order->error;
 
 			return false;
 		}
@@ -2197,7 +2198,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->confirm_setup_intent( $order );
 
 		if ( ! empty( $order->error ) ) {
-			$order->error = __( "Subscription failed: " . $order->error, 'paid-memberships-pro' );
+			$order->error = $order->error;
 
 			//give the user any old updates back
 			if ( ! empty( $user_id ) ) {
@@ -2427,7 +2428,7 @@ class PMProGateway_stripe extends PMProGateway {
 		return $this->subscription->pending_setup_intent;
 	}
 
-	function confirm_payment_intent2( &$order ) {
+	function confirm_payment_intent( &$order ) {
 
 		if ( 'succeeded' === $this->payment_intent->status ) {
 			return true;
@@ -2455,6 +2456,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->errorcode = true;
 			// TODO escape, change wording?
 			$order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+			$order->error_type = 'pmpro_alert';
 
 			return false;
 		}
