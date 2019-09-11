@@ -183,4 +183,19 @@ jQuery(document).ready(function(){
 	
 	//add javascriptok hidden field to checkout
 	jQuery("input[name=submit-checkout]").after('<input type="hidden" name="javascriptok" value="1" />');
+	
+	// Keep bottom message box in sync with the top one.
+	jQuery('#pmpro_message').bind("DOMSubtreeModified",function(){
+		setTimeout( function(){ pmpro_copyMessageToBottom() }, 200);
+	});
+	
+	function pmpro_copyMessageToBottom() {
+		jQuery('#pmpro_message_bottom').text(jQuery('#pmpro_message').text());
+		jQuery('#pmpro_message_bottom').attr('class', jQuery('#pmpro_message').attr('class'));
+		if(jQuery('#pmpro_message').is(":visible")) {
+			jQuery('#pmpro_message_bottom').show();
+		} else {
+			jQuery('#pmpro_message_bottom').hide();
+		}
+	}
 });
