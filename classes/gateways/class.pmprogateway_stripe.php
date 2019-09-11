@@ -2082,7 +2082,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->confirm_payment_intent2( $order );
 
 		if ( ! empty( $order->error ) ) {
-			$order->error = __( "Initial payment failed: " . $order->error, 'paid-memberships-pro' );
+			$order->error = $order->error;
 
 			return false;
 		}
@@ -2197,7 +2197,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->confirm_setup_intent( $order );
 
 		if ( ! empty( $order->error ) ) {
-			$order->error = __( "Subscription failed: " . $order->error, 'paid-memberships-pro' );
+			$order->error = $order->error;
 
 			//give the user any old updates back
 			if ( ! empty( $user_id ) ) {
