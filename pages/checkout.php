@@ -469,6 +469,12 @@
 
 	<div class="pmpro_submit">
 		<hr />
+		<?php if ( $pmpro_msg ) { ?>
+			<div id="pmpro_message_bottom" class="pmpro_message <?php echo $pmpro_msgt; ?>"><?php echo $pmpro_msg; ?></div>
+		<?php } else { ?>
+			<div id="pmpro_message_bottom" class="pmpro_message" style="display: none;"></div>
+		<?php } ?>
+
 		<?php if($pmpro_review) { ?>
 
 			<span id="pmpro_submit_span">
