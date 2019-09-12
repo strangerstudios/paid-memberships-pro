@@ -16,8 +16,7 @@ jQuery( document ).ready( function( $ ) {
 	cardNumber.mount('#AccountNumber');
 	cardExpiry.mount('#Expiry');
 	cardCvc.mount('#CVV');
-
-	// TODO Refactor
+	
 	// Handle authentication if required.
 	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
 		if ( 'requires_action' === pmproStripe.paymentIntent.status ) {
@@ -26,16 +25,6 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
-				.then( stripeResponseHandler );
-		}
-	}
-	if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
-		if ( 'requires_action' === pmproStripe.setupIntent.status ) {
-			// On submit disable its submit button
-			$('input[type=submit]', this).attr('disabled', 'disabled');
-			$('input[type=image]', this).attr('disabled', 'disabled');
-			$('#pmpro_processing_message').css('visibility', 'visible');
-			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
 				.then( stripeResponseHandler );
 		}
 	}
@@ -97,25 +86,17 @@ jQuery( document ).ready( function( $ ) {
 
 			// error message
 			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
-
-			// TODO Delete any incomplete subscriptions if 3DS auth failed.
-			// data = {
-			// 	action: 'delete_incomplete_subscription',
-			// };
-			// $.post(pmproStripe.ajaxUrl, data, function (response) {
-			// 	// Do stuff?
-			// });
+			
 		} else if ( response.paymentMethod ) {			
 			
 			paymentMethodId = response.paymentMethod.id;
 			card = response.paymentMethod.card;			
 			
-			// insert the Source ID into the form so it gets submitted to the server
+			// Insert the Source ID into the form so it gets submitted to the server.
 			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
 
-			// TODO Get card info for order and user meta after checkout instead.
-			//	We need this for now to make sure user meta gets updated.
-			// insert fields for other card fields
+			// We need this for now to make sure user meta gets updated.
+			// Insert fields for other card fields.
 			if( $( '#CardType[name=CardType]' ).length ) {
 				$( '#CardType' ).val( card.brand );
 			} else {
@@ -154,15 +135,14 @@ jQuery( document ).ready( function( $ ) {
 				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
 
-			// insert the Customer ID into the form so it gets submitted to the server
+			// Insert the Customer ID into the form so it gets submitted to the server.
 			form.append( '<input type="hidden" name="customer_id" value="' + customerId + '" />' );
 
-			// insert the PaymentMethod ID into the form so it gets submitted to the server
+			// Insert the PaymentMethod ID into the form so it gets submitted to the server.
 			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
 
-			// TODO Get card info for order and user meta after checkout instead.
-			//	We need this for now to make sure user meta gets updated.
-			// insert fields for other card fields
+			// We need this for now to make sure user meta gets updated.
+			// Insert fields for other card fields.
 			if( $( '#CardType[name=CardType]' ).length ) {
 				$( '#CardType' ).val( card.brand );
 			} else {
@@ -176,27 +156,4 @@ jQuery( document ).ready( function( $ ) {
 			return true;
 		}
 	}
-
-	// TODO Do we still need this?
-	// Validate credit card and set card type.
-	$( '#AccountNumber' ).validateCreditCard(function (result) {
-		var cardtypenames = {
-			"amex": "American Express",
-			"diners_club_carte_blanche": "Diners Club Carte Blanche",
-			"diners_club_international": "Diners Club International",
-			"discover": "Discover",
-			"jcb": "JCB",
-			"laser": "Laser",
-			"maestro": "Maestro",
-			"mastercard": "Mastercard",
-			"visa": "Visa",
-			"visa_electron": "Visa Electron"
-		}
-
-		if (result.card_type)
-			$( '#CardType' ).val(cardtypenames[result.card_type.name]);
-		else
-			$( '#CardType' ).val( 'Unknown Card Type' );
-	});
-
 });

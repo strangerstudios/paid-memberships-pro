@@ -150,7 +150,9 @@ jQuery(document).ready(function(){
 	}
 
 	//add required to required fields
-	jQuery('.pmpro_required').after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
+	if ( ! jQuery( '.pmpro_required' ).next().hasClass( "pmpro_asterisk" ) ) {
+	   jQuery( '.pmpro_required' ).after( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
+  }
 
 	//unhighlight error fields when the user edits them
 	jQuery('.pmpro_error').bind("change keyup input", function() {
