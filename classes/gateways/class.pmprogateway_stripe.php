@@ -2022,13 +2022,13 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$source = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
-
+				return false;
+			} catch ( Throwable $e ) {
+				$order->error = $e->getMessage();
 				return false;
 			} catch ( Exception $e ) {
 				$order->error = $e->getMessage();
-
 				return false;
 			}
 		}
@@ -2050,25 +2050,25 @@ class PMProGateway_stripe extends PMProGateway {
 	function attach_source_to_customer( &$order ) {
 
 		if ( ! empty( $this->customer->invoice_settings->default_payment_method ) &&
-		     $this->customer->invoice_settings->default_payment_method === $this->source->id ) {
+             $this->customer->invoice_settings->default_payment_method === $this->source->id ) {
 			return true;
 		}
 
 		try {
+		    $this->source = null;
 			$this->source->attach( [ 'customer' => $this->customer->id ] );
 			$this->customer->invoice_settings->default_payment_method = $this->source->id;
 			$this->customer->save();
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
-
+			return false;
+		} catch ( Throwable $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		} catch ( Exception $e ) {
 			$order->error = $e->getMessage();
-
 			return false;
 		}
-
 
 		return true;
 	}
@@ -2114,13 +2114,13 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
-
+				return false;
+			} catch ( Throwable $e ) {
+				$order->error = $e->getMessage();
 				return false;
 			} catch ( Exception $e ) {
 				$order->error = $e->getMessage();
-
 				return false;
 			}
 		}
@@ -2169,13 +2169,13 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
-
+			return false;
+		} catch ( Throwable $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		} catch ( Exception $e ) {
 			$order->error = $e->getMessage();
-
 			return false;
 		}
 
@@ -2339,13 +2339,13 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			$order->subscription = Stripe_Subscription::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
-
+			return false;
+		} catch ( Throwable $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		} catch ( Exception $e ) {
 			$order->error = $e->getMessage();
-
 			return false;
 		}
 
@@ -2376,13 +2376,13 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$setup_intent = Stripe_SetupIntent::retrieve( $order->setup_intent_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
-
+				return false;
+			} catch ( Throwable $e ) {
+				$order->error = $e->getMessage();
 				return false;
 			} catch ( Exception $e ) {
 				$order->error = $e->getMessage();
-
 				return false;
 			}
 		}
@@ -2438,13 +2438,13 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			$this->payment_intent->confirm( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
-
+			return false;
+		} catch ( Throwable $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		} catch ( Exception $e ) {
 			$order->error = $e->getMessage();
-
 			return false;
 		}
 
