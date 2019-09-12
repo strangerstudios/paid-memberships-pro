@@ -114,6 +114,7 @@
 			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
+			$this->add_from_to_headers();
 			$this->subject = apply_filters("pmpro_email_subject", $temail->subject, $this);
 			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
@@ -128,6 +129,33 @@
 			{
 				return false;
 			}		
+		}
+		
+		/**
+		 * Add the From Name and Email to the headers.
+		 * @since 2.1
+		 */
+		function add_from_to_headers() {
+			// Make sure we have a headers array
+			if ( empty( $this->headers ) ) {
+				$this->headers = array();
+			} elseif ( ! is_array( $this->headers ) ) {
+				$this->headers = array( $this->headers );
+			}
+			
+			// Remove any previous from header
+			foreach( $this->headers as $key => $header ) {
+				if( strtolower( substr( $header, 0, 5 ) ) == 'from:' ) {
+					unset( $this->headers[$key] );
+				}
+			}
+			
+			// Add From Email and Name or Just Email
+			if( !empty( $this->from ) && !empty( $this->fromname ) ) {
+				$this->headers[] = 'From:' . $this->fromname . ' <' . $this->from . '>'; 
+			} elseif( !empty( $this->from ) ) {
+				$this->headers[] = 'From:' . $this->from;
+			}
 		}
 		
 		function sendCancelEmail($user = NULL, $old_level_id = NULL)
