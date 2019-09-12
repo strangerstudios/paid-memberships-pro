@@ -2055,7 +2055,6 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		try {
-		    $this->source = null;
 			$this->source->attach( [ 'customer' => $this->customer->id ] );
 			$this->customer->invoice_settings->default_payment_method = $this->source->id;
 			$this->customer->save();
