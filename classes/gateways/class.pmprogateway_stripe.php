@@ -116,7 +116,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Run on WP init
 	 *
 	 * @since 1.8
-	 * TODO Update docblock.
 	 */
 	static function init() {
 		//make sure Stripe is a gateway option
@@ -348,7 +347,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
-	 * TODO Update docblock.
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
 
@@ -520,7 +518,6 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Use our own payment fields at checkout. (Remove the name attributes.)
 	 * @since 1.8
-	 * //TODO: Update docblock.
 	 */
 	static function pmpro_include_payment_information_fields( $include ) {
 		//global vars
@@ -1180,7 +1177,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * If no customer is found and there is a stripeToken on the order passed, it will create a customer.
 	 *
 	 * @return Stripe_Customer|false
-	 * //TODO: Update docblock.
 	 * @since 1.4
 	 */
 	function getCustomer( &$order = false, $force = false ) {
@@ -1311,7 +1307,6 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $customer_id ) ) {
 			try {
 				$this->customer = Stripe_Customer::retrieve( $customer_id );
-				// TODO Update Customer after checkout instead?
 				// Update description.
 				if ( ! empty( $order->source_id ) ) {
 					$this->customer->description = $name . " (" . $email . ")";
@@ -1349,7 +1344,6 @@ class PMProGateway_stripe extends PMProGateway {
 				$this->customer = Stripe_Customer::create( array(
 					"description" => $name . " (" . $email . ")",
 					"email"       => $order->Email,
-//                    'source' => $order->source_id,
 				) );
 			} catch ( \Stripe\Error $e ) {
 				$order->error      = __( "Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
@@ -1447,7 +1441,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.4
 	 */
-	// TODO Update docblock.
 	function subscribe( &$order, $checkout = true ) {
 		global $pmpro_currency, $pmpro_currencies;
 
@@ -1741,8 +1734,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$update_order->saveOrder();
 	}
 
-	// TODO Update docblock
-
 	/**
 	 * Helper method to update the customer info via getCustomer
 	 *
@@ -2022,7 +2013,6 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$source = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
 
 				return false;
@@ -2059,7 +2049,6 @@ class PMProGateway_stripe extends PMProGateway {
 			$this->customer->invoice_settings->default_payment_method = $this->source->id;
 			$this->customer->save();
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2114,7 +2103,6 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
 
 				return false;
@@ -2140,15 +2128,12 @@ class PMProGateway_stripe extends PMProGateway {
 
 		global $pmpro_currencies, $pmpro_currency;
 
-// TODO; Refactor: pmpro_get_currency_unit_multiplier()
-// Get currency mulitiplier.
+		// Account for zero-decimal currencies like the Japanese Yen
 		$currency_unit_multiplier = 100; //ie 100 cents per USD
-// Account for zero-decimal currencies like the Japanese Yen
 		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
 			$currency_unit_multiplier = 1;
 		}
 
-// TODO: Set order totals before processing order.
 		$amount          = $order->InitialPayment;
 		$order->subtotal = $amount;
 		$tax             = $order->getTax( true );
@@ -2169,7 +2154,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2235,29 +2219,27 @@ class PMProGateway_stripe extends PMProGateway {
 	function create_plan( &$order ) {
 
 		global $pmpro_currencies, $pmpro_currency;
-
-// TODO: Refactor and set all of this before processing the order.
-//figure out the amounts
+		
+		//figure out the amounts
 		$amount     = $order->PaymentAmount;
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-// TODO; Refactor: pmpro_get_currency_unit_multiplier()
-// Get currency mulitiplier.
+		// Account for zero-decimal currencies like the Japanese Yen
 		$currency_unit_multiplier = 100; //ie 100 cents per USD
-// Account for zero-decimal currencies like the Japanese Yen
 		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
 			$currency_unit_multiplier = 1;
 		}
 
 		/*
-        There are two parts to the trial. Part 1 is simply the delay until the first payment
+		Figure out the trial length (first payment handled by initial charge)
+        
+		There are two parts to the trial. Part 1 is simply the delay until the first payment
         since we are doing the first payment as a separate transaction.
         The second part is the actual "trial" set by the admin.
 
         Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
         */
-//figure out the trial length (first payment handled by initial charge)
 		if ( $order->BillingPeriod == "Year" ) {
 			$trial_period_days = $order->BillingFrequency * 365;    //annual
 		} elseif ( $order->BillingPeriod == "Day" ) {
@@ -2309,7 +2291,6 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			$order->plan = Stripe_Plan::create( apply_filters( 'pmpro_stripe_create_plan_array', $plan ) );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2339,7 +2320,6 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			$order->subscription = Stripe_Subscription::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2357,7 +2337,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$order->plan->delete();
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2376,7 +2355,6 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$setup_intent = Stripe_SetupIntent::retrieve( $order->setup_intent_id );
 			} catch ( Stripe\Error\Base $e ) {
-				// TODO Create classes for better error handling.
 				$order->error = $e->getMessage();
 
 				return false;
@@ -2438,7 +2416,6 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 			$this->payment_intent->confirm( $params );
 		} catch ( Stripe\Error\Base $e ) {
-			// TODO Create classes for better error handling.
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2450,7 +2427,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( 'requires_action' == $this->payment_intent->status ) {
 			$order->errorcode = true;
-			// TODO escape, change wording?
 			$order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
 			$order->error_type = 'pmpro_alert';
 
@@ -2476,8 +2452,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	function clean_up( &$order ) {
-
-		// TODO Refactor. Hook into pmpro_process_order_success ?
 		if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
 			$order->payment_transaction_id = $this->payment_intent->charges->data[0]->id;
 		}
@@ -2486,5 +2460,5 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->subscription_transaction_id = $this->subscription->id;
 		}
 	}
-
+	
 }
