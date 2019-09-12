@@ -2430,10 +2430,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 	function confirm_payment_intent( &$order ) {
 
-		if ( 'succeeded' === $this->payment_intent->status ) {
-			return true;
-		}
-
 		try {
 			$params = array(
 				'expand' => array(

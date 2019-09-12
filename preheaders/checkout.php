@@ -392,8 +392,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		//only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
-			global $recaptcha;
+			global $recaptcha, $recaptcha_validated;
 			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+
 				global $recaptcha_privatekey;
 
 				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
@@ -422,6 +423,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					if ( $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msg = "All good!";
 					}
+					pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 				}
 			} else {
 				if ( $pmpro_msgt != "pmpro_error" ) {
