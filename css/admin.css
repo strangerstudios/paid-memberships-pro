@@ -48,7 +48,7 @@
 /* levels */
 .memberships_page_pmpro-membershiplevels .pmpro_admin #posts-filter p.search-box { margin: 2em 0 1em 0; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.pmpro_gray td {color: #AAA;}
-.memberships_page_pmpro-membershiplevels .pmpro_admin tr td.level_name a {font-size: 115%; font-weight: bold; }
+.memberships_page_pmpro-membershiplevels .pmpro_admin tr td.level_name span.level-name a {font-size: 115%; font-weight: bold; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr {background: #fff;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.alternate {background: #f1f1f1;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.ui-sortable-handle {

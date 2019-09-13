@@ -134,6 +134,9 @@
 							}
 						?>
 					</select>
+					<?php if( pmpro_onlyFreeLevels() ) { ?>
+						<div id='pmpro-default-gateway-message' style="display:none;"><small><?php echo __( 'This gateway is for membership sites with Free levels or for sites that accept payment offline.', 'paid-memberships-pro' ) . '<br/>' . __( 'It is not connected to a live gateway environment and cannot accept payments.', 'paid-memberships-pro' ); ?></small></div>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -151,6 +154,20 @@
 							//hide all gateway options
 							jQuery('tr.gateway').hide();
 							jQuery('tr.gateway_'+gateway).show();
+							
+							//hide sub settings and toggle them on based on triggers
+							jQuery('tr.pmpro_toggle_target').hide();
+							jQuery( 'input[pmpro_toggle_trigger_for]' ).each( function() {										
+								if ( jQuery( this ).is( ':visible' ) ) {
+									pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
+								}
+							});							
+
+							if ( jQuery('#gateway').val() === '' ) {
+								jQuery('#pmpro-default-gateway-message').show();
+							} else {
+								jQuery('#pmpro-default-gateway-message').hide();
+							}
 						}
 						pmpro_changeGateway(jQuery('#gateway').val());
 					</script>
