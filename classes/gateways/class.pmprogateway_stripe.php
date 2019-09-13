@@ -2208,12 +2208,14 @@ class PMProGateway_stripe extends PMProGateway {
 			//need to remember the user updates to save later
 			global $pmpro_stripe_updates;
 			$pmpro_stripe_updates = $new_user_updates;
-			function pmpro_user_register_stripe_updates( $user_id ) {
-				global $pmpro_stripe_updates;
-				update_user_meta( $user_id, "pmpro_stripe_updates", $pmpro_stripe_updates );
+			
+			if( ! function_exists( 'pmpro_user_register_stripe_updates' ) ) {
+				function pmpro_user_register_stripe_updates( $user_id ) {
+					global $pmpro_stripe_updates;
+					update_user_meta( $user_id, 'pmpro_stripe_updates', $pmpro_stripe_updates );
+				}
+				add_action( 'user_register', 'pmpro_user_register_stripe_updates' );
 			}
-
-			add_action( "user_register", "pmpro_user_register_stripe_updates" );
 		}
 
 		return true;
