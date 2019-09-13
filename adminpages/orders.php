@@ -149,24 +149,6 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$condition = "o.total = 0";
 }
 
-// emailing?
-if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
-	$email = new PMProEmail();
-	$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-	$order = new MemberOrder( $_REQUEST['order'] );
-	if ( $email->sendBillableInvoiceEmail( $user, $order ) ) {
-		$pmpro_msg  = __( 'Invoice emailed successfully.', 'paid-memberships-pro' );
-		$pmpro_msgt = 'success';
-	} else {
-		$pmpro_msg  = __( 'Error emailing invoice.', 'paid-memberships-pro' );
-		$pmpro_msgt = 'error';
-	}
-
-	// clean up so we stay on the orders list view
-	unset( $_REQUEST['order'] );
-	$order = null;
-}
-
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
@@ -373,6 +355,12 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 }
 
 require_once( dirname( __FILE__ ) . '/admin_header.php' );
+
+if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
+	// Load the email order modal.
+	pmpro_add_email_order_modal();
+}
+
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
@@ -380,6 +368,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 	<h2>
 		<?php if ( ! empty( $order->id ) ) { ?>
 			<?php _e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?>
+			<a title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>" class="add-new-h2" target="_blank" ><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
+			<a title="<?php _e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link add-new-h2" data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
 		<?php } else { ?>
 			<?php _e( 'New Order', 'paid-memberships-pro' ); ?>
 		<?php } ?>
@@ -953,42 +943,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 	</form>
 
 <?php } else { ?>
-	<?php
-	/**
-	 * Code to handle emailing billable invoices.
-	 *
-	 * @since 1.8.6
-	 */
-	?>
-	<script>
-		// Update fields in email modal.
-		jQuery(document).ready(function ($) {
-			var order, order_id;
-			$('.email_link').click(function () {
-				order_id = $(this).data('order');
-				$('input[name=order]').val(order_id);
-				// Get email address from order ID
-				data = {
-					action: 'pmpro_get_order_json',
-					order_id: order_id
-				};
-				$.post(ajaxurl, data, function (response) {
-					order = JSON.parse(response);
-					$('input[name=email]').val(order.Email);
-				});
-			});
-		});
-	</script>
-	<?php add_thickbox(); ?>
-	<div id="email_invoice" style="display:none;">
-		<h3><?php _e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
-		<form method="post" action="">
-			<input type="hidden" name="order" value=""/>
-			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
-			<input type="text" value="" name="email"/>
-			<button class="button button-primary alignright"><?php _e( 'Send Email', 'paid-memberships-pro' ); ?></button>
-		</form>
-	</div>
+
 	<form id="posts-filter" method="get" action="">
 		<h2>
 			<?php _e( 'Orders', 'paid-memberships-pro' ); ?>
@@ -1361,11 +1316,6 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Discount Code', 'paid-memberships-pro' );?></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
 			</tr>
 			</thead>
 			<tbody id="orders" class="list:order orders-list">
@@ -1387,7 +1337,7 @@ class="alternate"<?php } ?>>
 					<td>
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
 					</td>
-					<td class="username column-username">
+					<td class="username column-username has-row-actions">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
@@ -1396,23 +1346,40 @@ class="alternate"<?php } ?>>
 						<?php } else { ?>
 							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
 						<?php } ?>
-						<br/>
-						<?php
-						// Set up the hover actions for this user
-						$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
-						$action_count = count( $actions );
-						$i            = 0;
-						if ( $action_count ) {
-							$out = '<div class="row-actions">';
-							foreach ( $actions as $action => $link ) {
-								++ $i;
-								( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-								$out .= "<span class='$action'>$link$sep</span>";
+						<br />
+						<div class="row-actions">
+							<span class="edit">
+								<a title="<?php _e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $order->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Edit', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="copy">
+								<a title="<?php _e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => '-1', 'copy' => $order->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Copy', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="delete">
+								<a href="javascript:pmpro_askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'Delete', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="print">
+								<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>"><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="email">
+								<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link"
+								   data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+							</span>
+							<?php
+							// Set up the hover actions for this user
+							$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
+							$action_count = count( $actions );
+							$i            = 0;
+							if ( $action_count ) {
+								$out = ' | ';
+								foreach ( $actions as $action => $link ) {
+									++ $i;
+									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+									$out .= "<span class='$action'>$link$sep</span>";
+								}
+								echo $out;
 							}
-							$out .= '</div>';
-							echo $out;
-						}
-						?>
+							?>
+						</div>
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td><?php echo $order->membership_id; ?></td>
@@ -1484,23 +1451,6 @@ class="alternate"<?php } ?>>
 								<?php echo $order->discount_code->code; ?>
 							</a>
 						<?php } ?>							
-					</td>
-					<td align="center">
-						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="admin.php?page=pmpro-orders&order=-1&copy=<?php echo $order->id; ?>"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="javascript:askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>"
-						   target="_blank"><?php _e( 'print', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link"
-						   data-order="<?php echo $order->id; ?>"><?php _e( 'email', 'paid-memberships-pro' ); ?></a>
 					</td>
 				</tr>
 				<?php

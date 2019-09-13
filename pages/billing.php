@@ -13,6 +13,13 @@
 
 	$gateway = pmpro_getOption("gateway");
 
+	// Set the wrapping class for the checkout div based on the default gateway;
+	if ( empty( $gateway ) ) {
+		$pmpro_billing_gateway_class = 'pmpro_billing_gateway-none';
+	} else {
+		$pmpro_billing_gateway_class = 'pmpro_billing_gateway-' . $gateway;
+	}
+
 	$level = $current_user->membership_level;
 	
 	//Make sure the $level object is a valid level definition
@@ -78,7 +85,7 @@
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
 
 	<?php } else { ?>
-
+		<div id="pmpro_level-<?php echo $level->id; ?>" class="<?php echo $pmpro_billing_gateway_class; ?>">
 		<form id="pmpro_form" class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />
@@ -374,6 +381,7 @@
 			});
 			-->
 		</script>
+		</div> <!-- end pmpro_level-ID -->
 	<?php } ?>
 
 <?php } else { // End for recurring level check.

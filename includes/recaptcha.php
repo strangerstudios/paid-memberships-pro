@@ -6,15 +6,21 @@ function pmpro_init_recaptcha() {
 	}
 
 	//use recaptcha?
-	global $recaptcha;
+	global $recaptcha, $recaptcha_validated;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
-	
+
+	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
+	if ( ! empty( $recaptcha_validated ) ) {
+	    $recaptcha = false;
+    }
+
 	if($recaptcha) {
 		global $recaptcha_publickey, $recaptcha_privatekey;
 		
 		require_once(PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 		
 		function pmpro_recaptcha_get_html ($pubkey, $error = null, $use_ssl = false) {
+
 			// Figure out language.
 			$locale = get_locale();
 			if(!empty($locale)) {
@@ -124,6 +130,7 @@ function pmpro_wp_ajax_validate_recaptcha() {
 	$resp      = $reCaptcha->verifyResponse( $_SERVER['REMOTE_ADDR'], $_REQUEST['g-recaptcha-response'] );
 
 	if ( $resp->success ) {
+	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		echo "1";
 	} else {
 		echo "0";
@@ -133,3 +140,8 @@ function pmpro_wp_ajax_validate_recaptcha() {
 } 
 add_action( 'wp_ajax_nopriv_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
 add_action( 'wp_ajax_pmpro_validate_recaptcha', 'pmpro_wp_ajax_validate_recaptcha' );
+
+function pmpro_after_checkout_reset_recaptcha() {
+    pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
+}
+add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );

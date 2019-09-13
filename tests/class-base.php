@@ -2,6 +2,8 @@
 namespace PMPro\Tests;
 
 use PMPro\Tests\Helpers\Factory\Level;
+use PMPro\Tests\Helpers\Factory\Order_Factory;
+use PMPro\Tests\Helpers\Factory\Checkout_Factory;
 use PMPro\Tests\Helpers\Traits\Utility;
 
 abstract class Base Extends \WP_UnitTestCase {
@@ -15,7 +17,7 @@ abstract class Base Extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Fetches the factory object for generating WordPress & PMP fixtures.
+	 * Fetches the factory object for generating WordPress & PMPro fixtures.
 	 *
 	 * @return WP_UnitTest_Factory The fixture factory.
 	 */
@@ -23,6 +25,8 @@ abstract class Base Extends \WP_UnitTestCase {
 		$factory = self::factory();
 
 		$factory->pmpro_level = new Level( $this );
+		$factory->checkout = new Checkout_Factory( $this );
+		$factory->order = new Order_Factory( $this );
 
 		return $factory;
 	}
@@ -31,12 +35,12 @@ abstract class Base Extends \WP_UnitTestCase {
 	 * Runs the routine after all tests have been run.
 	 */
 	public static function tearDownAfterClass() {
-		self::_delete_all_pmp_data();
+		self::_delete_all_pmpro_data();
 
 		parent::tearDownAfterClass();
 	}
 
-	protected static function _delete_all_pmp_data() {
+	protected static function _delete_all_pmpro_data() {
 		global $wpdb;
 
 		$tables = [

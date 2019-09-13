@@ -41,8 +41,8 @@
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypal")
 			{
+				add_action('pmpro_checkout_preheader', array('PMProGateway_paypal', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypal', 'pmpro_checkout_default_submit_button'));
-				add_action('pmpro_checkout_after_form', array('PMProGateway_paypal', 'pmpro_checkout_after_form'));
 				add_action('http_api_curl', array('PMProGateway_paypal', 'http_api_curl'), 10, 3);
 			}
 		}
@@ -90,7 +90,13 @@
 				'tax_state',
 				'tax_rate',
 				'accepted_credit_cards',
-				'paypalexpress_skip_confirmation'
+				'paypalexpress_skip_confirmation',
+				///'paypal_enable_3dsecure',
+				//'paypal_cardinal_apikey',
+				//'paypal_cardinal_apiidentifier',
+				//'paypal_cardinal_orgunitid',
+				//'paypal_cardinal_merchantid',
+				//'paypal_cardinal_processorid'
 			);
 
 			return $options;
@@ -103,7 +109,7 @@
 		 */
 		static function pmpro_payment_options($options)
 		{
-			//get stripe options
+			//get options
 			$paypal_options = PMProGateway_paypal::getGatewayOptions();
 
 			//merge with others.
@@ -185,6 +191,67 @@
 		}
 
 		/**
+		 * Code added to checkout preheader.
+		 *
+		 * @since 2.1
+		 */
+		static function pmpro_checkout_preheader() {
+			global $gateway, $gateway_environment, $pmpro_level;
+			$default_gateway = pmpro_getOption("gateway");
+
+			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
+				$dependencies = array( 'jquery' );
+				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
+				$data = array();	
+				
+				// Setup 3DSecure if enabled.
+				if( pmpro_was_checkout_form_submitted() && $paypal_enable_3dsecure ) {
+					if( 'sandbox' === $gateway_environment || 'beta-sandbox' === $gateway_environment ) {
+						$songbird_url = 'https://songbirdstag.cardinalcommerce.com/cardinalcruise/v1/songbird.js';
+					} else {
+						$songbird_url = 'https://songbird.cardinalcommerce.com/edge/v1/songbird.js';
+					}
+					wp_enqueue_script( 'pmpro_songbird', $songbird_url );
+					$dependencies[] = 'pmpro_songbird';
+					$data['enable_3dsecure'] = $paypal_enable_3dsecure;
+					$data['cardinal_jwt'] = PMProGateway_paypal::get_cardinal_jwt();
+					if ( WP_DEBUG ) {
+						$data['cardinal_debug'] = 'verbose';
+						$data['cardinal_logging'] = 'On';
+					} else {
+						$data['cardinal_debug'] = '';
+						$data['cardinal_logging'] = 'Off';
+					}
+				}
+				
+				wp_register_script( 'pmpro_paypal',
+                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
+                            $dependencies,
+                            PMPRO_VERSION );			
+				wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', $data );
+				wp_enqueue_script( 'pmpro_paypal' );
+			}
+		}
+		
+		static function get_cardinal_jwt() {			
+			require_once( PMPRO_DIR . '/includes/lib/php-jwt/JWT.php' );
+			
+			$key = pmpro_getOption( 'paypal_cardinal_apikey' );
+			$now = current_time( 'timestamp' );
+			$token = array(
+				'jti' => 'JWT' . pmpro_getDiscountCode(),
+				'iat' => $now,
+				'exp' => $now + 7200,
+				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
+				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),
+				
+			);
+			$jwt = \PMPro\Firebase\JWT\JWT::encode($token, $key);
+			
+			return $jwt;
+		}
+
+		/**
 		 * Swap in our submit buttons.
 		 *
 		 * @since 1.8
@@ -210,43 +277,6 @@
 
 			//don't show the default
 			return false;
-		}
-
-		/**
-		 * Scripts for checkout page.
-		 *
-		 * @since 1.8
-		 */
-		static function pmpro_checkout_after_form()
-		{
-		?>
-		<script>
-			<!--
-			//choosing payment method
-			jQuery('input[name=gateway]').click(function() {
-				if(jQuery(this).val() == 'paypal')
-				{
-					jQuery('#pmpro_paypalexpress_checkout').hide();
-					jQuery('#pmpro_billing_address_fields').show();
-					jQuery('#pmpro_payment_information_fields').show();
-					jQuery('#pmpro_submit_span').show();
-				}
-				else
-				{
-					jQuery('#pmpro_billing_address_fields').hide();
-					jQuery('#pmpro_payment_information_fields').hide();
-					jQuery('#pmpro_submit_span').hide();
-					jQuery('#pmpro_paypalexpress_checkout').show();
-				}
-			});
-
-			//select the radio button if the label is clicked on
-			jQuery('a.pmpro_radio').click(function() {
-				jQuery(this).prev().click();
-			});
-			-->
-		</script>
-		<?php
 		}
 
 		/**

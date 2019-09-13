@@ -139,7 +139,7 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 	}
 
 	// some fields to remove
-	$remove = array( 'bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType' );
+	$remove = array( 'bfirstname', 'blastname', 'baddress1', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry' );
 
 	// if a user is logged in, don't require bemail either
 	global $current_user;

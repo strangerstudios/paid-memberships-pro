@@ -160,6 +160,47 @@ form.pmpro_form #pmpro_processing_message {
 	margin: 1em 0 0 0;
 	text-align: right;
 }
+
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
+	display: -ms-grid;
+	display: grid;
+	-ms-grid-rows: auto 1em auto;
+	grid-template-areas:
+		"AccountNumber AccountNumber"
+		"Expiry CVV";
+	grid-gap: 1em;
+	-ms-grid-columns: 1fr 1em 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV {
+	color: #666;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin: 0;
+	padding: 0.625em 0.4375em;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields div {
+	
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
+	grid-area: AccountNumber;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration {
+	grid-area: Expiry;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
+	grid-area: CVV;
+}
+
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
@@ -175,13 +216,29 @@ form.pmpro_form #pmpro_processing_message {
 	line-height: 1.5em;
 	margin: .5em 0;
 	padding: 10px 15px;
+	text-align: left;
 }
 .pmpro_success {
 	background-color: #dff0d8;
 	border-color: #d6e9c6;
 	color: #3c763d;
 }
-.pmpro_error {
+.pmpro_error,
+input[type="text"].pmpro_error,
+input[type="email"].pmpro_error,
+input[type="url"].pmpro_error,
+input[type="password"].pmpro_error,
+input[type="number"].pmpro_error,
+input[type="tel"].pmpro_error,
+input[type="range"].pmpro_error,
+input[type="date"].pmpro_error,
+input[type="month"].pmpro_error,
+input[type="week"].pmpro_error,
+input[type="time"].pmpro_error,
+input[type="datetime"].pmpro_error,
+input[type="datetime-local"].pmpro_error,
+input[type="color"].pmpro_error,
+textarea.pmpro_error {
 	background-color: #f2dede;
 	border-color: #ebccd1;
 	color: #a94442;
@@ -213,6 +270,10 @@ input.pmpro_error {
 select.pmpro_error {
 	background-image: none;
 }
+
+#pmpro_message_bottom {
+	margin-bottom: 1em;
+}
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
@@ -233,7 +294,10 @@ select.pmpro_error {
 	margin-left: 2em;
 }
 #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	clear: both;
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
 	grid-gap: 1em;
 }
@@ -259,7 +323,9 @@ body.pmpro-invoice .entry-content ul {
 	margin-left: 1.5em;
 }
 .pmpro_invoice_details {
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-columns: 1fr 1em 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-gap: 1em;
 }
@@ -363,18 +429,18 @@ li.pmpro_more {
 	font-size: .8em;
 }
 @media (max-width:768px) {
+	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+		display: block;
+	}
+	.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
+		display: block;
+		margin-bottom: 1em;
+	}
 	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
 		width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
-	}
-	form.pmpro_form #pmpro_payment_information_fields .pmpro_thead-msg {
-		float: none;
-		margin-bottom: 10px;
-		text-align: left;
-		text-wrap: normal;
-		white-space: normal;
 	}
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;

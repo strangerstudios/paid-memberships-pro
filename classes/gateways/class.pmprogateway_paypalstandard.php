@@ -90,7 +90,7 @@
 				'currency',
 				'use_ssl',
 				'tax_state',
-				'tax_rate'
+				'tax_rate',
 			);
 
 			return $options;
