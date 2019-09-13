@@ -428,11 +428,11 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	//increment starting position
-	if ( $iterations > 1 ) {
+	if ( $ic > 1 ) {
 		$i_start += $max_orders_per_loop;
 	}
 	// get the order list we should process
-	$order_list = array_slice( $order_ids, $i_start, ( $i_start + ( $max_orders_per_loop - 1 ) ) );
+	$order_list = array_slice( $order_ids, $i_start, $max_orders_per_loop );
 
 	if (PMPRO_BENCHMARK)
 	{
@@ -441,7 +441,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	foreach ( $order_list as $order_id ) {
-
 		$csvoutput = array();
 
 		$order            = new MemberOrder();
@@ -537,11 +536,9 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log("PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds");
 		error_log("PMPRO_BENCHMARK - Peak memory usage: " . number_format($memory_processing_data, false, '.', ',') . " bytes");
 	}
-
 	$order_list = null;
 	wp_cache_flush();
 }
-
 pmpro_transmit_order_content( $csv_fh, $filename, $headers );
 
 function pmpro_enclose( $s ) {
