@@ -113,6 +113,14 @@ form.pmpro_form label {
 	margin: 0;
 	text-align: left;
 }
+form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
+	display: block;
+	float: none;
+	max-width: initial;
+	min-width: initial;
+	text-align: left;
+	width: auto;
+}
 form.pmpro_form .pmpro_checkout-field-checkbox label {
 	cursor: pointer;
 	display: inline-block;
