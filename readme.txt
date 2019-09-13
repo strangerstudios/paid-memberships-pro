@@ -161,6 +161,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed bug where the membership stats graphs would sometimes show up blank.
 * BUG FIX: Now falling back to using readfile() if fpassthru() doesn't existing.
 * BUG FIX: Fixed issue where the from name and email were not set properly if the Only Filter PMPro Emails setting was checked. (Thanks, mjulian87 on GitHub)
+* BUG FIX: Fixed several error handling issues with the Cybersource gateway integration.
 * REFACTOR: Moved JavaScript out of pages/checkout.php and other places into files in the /js/ folder. This will avoid issues where other JS at checkout breaks PMPro checkout and will improve compatibility with tools that optimize JS.
 * REFACTOR: Added unit testing and a started on coverage of some functions in includes/functions.php. (Thanks, Mike Auteri)
 * REFACTOR: The JS function askfirst is now prefixed as pmpro_askfirst.

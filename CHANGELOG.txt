@@ -1,6 +1,6 @@
 == Changelog ==
 
-= 2.1 =
+= 2.1 - 2019-09-13 =
 * FEATURE: Updated Stripe integration to support Stripe v3, Stripe Elements, and their Secure Customer Authorization process.
 * FEATURE: Updated how we store prices to support up to 8 decimals (e.g. for Bitcoin gateway implementations).
 * ENHANCEMENT: Improved error messaging on the update billing page when a gateway doesn't support it or the user's current membership doesn't have a subscription.
@@ -32,6 +32,7 @@
 * BUG FIX: Fixed bug where the membership stats graphs would sometimes show up blank.
 * BUG FIX: Now falling back to using readfile() if fpassthru() doesn't existing.
 * BUG FIX: Fixed issue where the from name and email were not set properly if the Only Filter PMPro Emails setting was checked. (Thanks, mjulian87 on GitHub)
+* BUG FIX: Fixed several error handling issues with the Cybersource gateway integration.
 * REFACTOR: Moved JavaScript out of pages/checkout.php and other places into files in the /js/ folder. This will avoid issues where other JS at checkout breaks PMPro checkout and will improve compatibility with tools that optimize JS.
 * REFACTOR: Added unit testing and a started on coverage of some functions in includes/functions.php. (Thanks, Mike Auteri)
 * REFACTOR: The JS function askfirst is now prefixed as pmpro_askfirst.
