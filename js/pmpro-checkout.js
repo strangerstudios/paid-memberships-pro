@@ -192,7 +192,7 @@ jQuery(document).ready(function(){
 	});
 	
 	function pmpro_copyMessageToBottom() {
-		jQuery('#pmpro_message_bottom').text(jQuery('#pmpro_message').text());
+		jQuery('#pmpro_message_bottom').html(jQuery('#pmpro_message').html());
 		jQuery('#pmpro_message_bottom').attr('class', jQuery('#pmpro_message').attr('class'));
 		if(jQuery('#pmpro_message').is(":visible")) {
 			jQuery('#pmpro_message_bottom').show();
