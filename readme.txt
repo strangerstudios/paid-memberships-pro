@@ -129,6 +129,9 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
+= 2.1.1 =
+* BUG FIX: Fixed issue where pmpro_is_checkout would return true if no checkout page was set.
+
 = 2.1 - 2019-09-13 =
 * FEATURE: Updated Stripe integration to support Stripe v3, Stripe Elements, and their Secure Customer Authorization process.
 * FEATURE: Updated how we store prices to support up to 8 decimals (e.g. for Bitcoin gateway implementations).

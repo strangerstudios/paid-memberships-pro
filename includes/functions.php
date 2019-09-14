@@ -2927,7 +2927,7 @@ function pmpro_is_checkout() {
 	global $pmpro_pages;
 
 	// Try is_page first.
-	if ( isset( $pmpro_pages['checkout'] ) ) {
+	if ( ! empty( $pmpro_pages['checkout'] ) ) {
 		$is_checkout = is_page( $pmpro_pages['checkout'] );
 	} else {
 		$is_checkout = false;
