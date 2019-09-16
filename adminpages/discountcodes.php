@@ -755,7 +755,9 @@
 				<tbody>
 					<?php
 						$count = 0;
-						foreach($codes as $code) { ?>
+						foreach($codes as $code) {
+							$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
+							?>
 						<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 							<td><?php echo $code->id?></td>
 							<td class="has-row-actions">
@@ -785,7 +787,6 @@
 							</td>
 							<td>
 								<?php
-									$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
 									if($code->uses > 0)
 										echo "<strong>" . (int)$uses . "</strong>/" . $code->uses;
 									else
