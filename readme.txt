@@ -129,7 +129,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 
-= 2.1.1 =
+= 2.1.1 - 2019-09-16 =
 * BUG FIX: Fixed issue with SCA authentications via Stripe for subscriptions with a $0 initial payment. (Thanks, mjulian87 on Github.)
 * BUG FIX: Fixed issue where code was shown in the message box when applying a discount code.
 * BUG FIX: Fixed issue where pmpro_is_checkout() would always return true if no checkout page was set. This caused JavaScript issues on non-checkout pages.
