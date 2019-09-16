@@ -30,7 +30,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 	
 	// Handle authentication for subscription if required.
-	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
+	if ( 'undefined' !== typeof( pmproStripe.setupIntent ) ) {
 		if ( 'requires_action' === pmproStripe.setupIntent.status ) {
 			// On submit disable its submit button
 			$('input[type=submit]', this).attr('disabled', 'disabled');
