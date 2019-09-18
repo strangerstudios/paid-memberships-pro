@@ -313,7 +313,7 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		array_merge($allowed_default_templates, $user_templates);
+		$templates = array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
