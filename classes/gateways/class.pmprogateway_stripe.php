@@ -454,11 +454,6 @@ class PMProGateway_stripe extends PMProGateway {
 			$morder->subscription_transaction_id = sanitize_text_field( $_REQUEST['subscription_id'] );
 		}
 
-		// Add the Source ID to the order.
-		if ( ! empty ( $_REQUEST['source_id'] ) ) {
-			$morder->source_id = sanitize_text_field( $_REQUEST['source_id'] );
-		}
-
 		// Add the PaymentMethod ID to the order.
 		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
 			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
@@ -1071,8 +1066,8 @@ class PMProGateway_stripe extends PMProGateway {
 	function process( &$order ) {
 		$steps = array(
 			'set_customer',
-			'set_source',
-			'attach_source_to_customer',
+			'set_payment_method',
+			'attach_payment_method_to_customer',
 			'process_charges',
 			'process_subscriptions',
 		);
@@ -1308,7 +1303,7 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$this->customer = Stripe_Customer::retrieve( $customer_id );
 				// Update description.
-				if ( ! empty( $order->source_id ) ) {
+				if ( ! empty( $order->payment_method_id ) ) {
 					$this->customer->description = $name . " (" . $email . ")";
 					$this->customer->email       = $email;
 					$this->customer->save();
@@ -1743,8 +1738,8 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$steps = array(
 			'set_customer',
-			'set_source',
-			'attach_source_to_customer',
+			'set_payment_method',
+			'attach_payment_method_to_customer',
 		);
 
 		foreach ( $steps as $key => $step ) {
@@ -1991,27 +1986,27 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
-	function set_source( &$order, $force = false ) {
-		if ( ! empty( $this->source ) && ! $force ) {
+	function set_payment_method( &$order, $force = false ) {
+		if ( ! empty( $this->payment_method ) && ! $force ) {
 			return true;
 		}
 
-		$source = $this->get_source( $order );
+		$payment_method = $this->get_payment_method( $order );
 
-		if ( empty( $source ) ) {
+		if ( empty( $payment_method ) ) {
 			return false;
 		}
 
-		$this->source = $source;
+		$this->payment_method = $payment_method;
 
 		return true;
 	}
 
-	function get_source( &$order ) {
+	function get_payment_method( &$order ) {
 
 		if ( ! empty( $order->payment_method_id ) ) {
 			try {
-				$source = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
+				$payment_method = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
 			} catch ( Stripe\Error\Base $e ) {
 				$order->error = $e->getMessage();
 				return false;
@@ -2024,11 +2019,11 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		if ( empty( $source ) ) {
+		if ( empty( $payment_method ) ) {
 			return false;
 		}
 
-		return $source;
+		return $payment_method;
 	}
 
 	function set_customer( &$order, $force = false ) {
@@ -2038,16 +2033,16 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->getCustomer( $order );
 	}
 
-	function attach_source_to_customer( &$order ) {
+	function attach_payment_method_to_customer( &$order ) {
 
 		if ( ! empty( $this->customer->invoice_settings->default_payment_method ) &&
-             $this->customer->invoice_settings->default_payment_method === $this->source->id ) {
+             $this->customer->invoice_settings->default_payment_method === $this->payment_method->id ) {
 			return true;
 		}
 
 		try {
-			$this->source->attach( [ 'customer' => $this->customer->id ] );
-			$this->customer->invoice_settings->default_payment_method = $this->source->id;
+			$this->payment_method->attach( [ 'customer' => $this->customer->id ] );
+			$this->customer->invoice_settings->default_payment_method = $this->payment_method->id;
 			$this->customer->save();
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
@@ -2144,7 +2139,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$params = array(
 			'customer'            => $this->customer->id,
-			'payment_method'      => $this->source->id,
+			'payment_method'      => $this->payment_method->id,
 			'amount'              => $amount * $currency_unit_multiplier,
 			'currency'            => $pmpro_currency,
 			'confirmation_method' => 'manual',
@@ -2314,7 +2309,7 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$params              = array(
 				'customer'               => $this->customer->id,
-				'default_payment_method' => $this->source,
+				'default_payment_method' => $this->payment_method,
 				'items'                  => array(
 					array( 'plan' => $order->code ),
 				),
