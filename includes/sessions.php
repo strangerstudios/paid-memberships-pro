@@ -10,9 +10,7 @@
  * A general function to start sessions for Paid Memberships Pro.
  * @since 1.9.2
  */
-function pmpro_start_session()
-{
-
+function pmpro_start_session() {
     //if the session hasn't been started yet, start it (ignore if running from command line)
     if (!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
         if (defined('STDIN')) {
@@ -37,9 +35,7 @@ add_action('pmpro_checkout_preheader_before_get_level_at_checkout', 'pmpro_start
  * Close the session object for new updates
  * @since 1.9.2
  */
-function pmpro_close_session()
-{
-
+function pmpro_close_session() {
     if (!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
         if (defined('STDIN')) {
             //command line
@@ -56,7 +52,6 @@ function pmpro_close_session()
         }
     }
 }
-
 add_action('pmpro_after_checkout', 'pmpro_close_session', 32768);
 
 /**
@@ -66,8 +61,7 @@ add_action('pmpro_after_checkout', 'pmpro_close_session', 32768);
  *
  * TODO: Update docblock.
  */
-function pmpro_set_session_var($key, $value)
-{
+function pmpro_set_session_var($key, $value) {
     pmpro_start_session();
     $_SESSION[$key] = $value;
 }
@@ -95,8 +89,7 @@ function pmpro_get_session_var( $key ) {
  *
  * TODO: Update docblock.
  */
-function pmpro_unset_session_var($key)
-{
+function pmpro_unset_session_var($key) {
     pmpro_start_session();
     unset($_SESSION[$key]);
 }
