@@ -340,6 +340,16 @@ class PMProGateway_stripe extends PMProGateway {
             <th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
             <td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
         </tr>
+        <?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+				$allowed_appe_html = array (
+					'a' => array (
+						'href' => array(),
+						'target' => array(),
+						'title' => array(),
+					),
+				);
+				echo '<tr><th>&nbsp;</th><td><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</em></td></tr>';
+		} ?>
 		<?php
 	}
 

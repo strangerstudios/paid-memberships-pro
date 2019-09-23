@@ -272,8 +272,8 @@
 									__( 'View details' )
 								);
 							} elseif ( ! empty( $plugin_data['PluginURI'] ) ) {
-								$plugin_meta[] = sprintf( '<a href="%s">%s</a>',
-									esc_url( $plugin_data['PluginURI'] ),
+								$plugin_meta[] = sprintf( '<a target="_blank" href="%s">%s</a>',
+									esc_url( $plugin_data['PluginURI'] ) . '?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=add-ons',
 									__( 'Visit plugin site' )
 								);
 							}

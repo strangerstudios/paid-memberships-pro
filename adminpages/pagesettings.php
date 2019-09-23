@@ -256,6 +256,17 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                     <?php } ?>
                     <br/>
                     <small class="pmpro_lite"><?php _e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_levels].</small>
+
+					<?php if ( ! function_exists( 'pmpro_advanced_levels_shortcode' ) ) {
+						$allowed_advanced_levels_html = array (
+							'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+					echo '<p><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Customize your Membership Levels page using the <a href="%s" title="Paid Memberships Pro - Advanced Levels Page Add On" target="_blank">Advanced Levels Page Add On</a>.', 'paid-memberships-pro' ), $allowed_advanced_levels_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-advanced-levels-shortcode/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-advanced-levels-shortcode' ) . '</em></p>';
+					} ?>
                 </td>
             </tr>
             </tbody>
