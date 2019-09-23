@@ -107,8 +107,20 @@ require_once(dirname(__FILE__) . "/admin_header.php");
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
         <h2><?php _e( 'Page Settings', 'paid-memberships-pro' ); ?></h2>
         <?php
-        global $pmpro_pages_ready;
-        if ( $pmpro_pages_ready ) { ?>
+		// check if we have all pages
+		if ( $pmpro_pages['account'] ||
+			$pmpro_pages['billing'] ||
+			$pmpro_pages['cancel'] ||
+			$pmpro_pages['checkout'] ||
+			$pmpro_pages['confirmation'] ||
+			$pmpro_pages['invoice'] ||
+			$pmpro_pages['levels'] ) {
+			$pmpro_some_pages_ready = true;
+		} else {
+			$pmpro_some_pages_ready = false;
+		}
+
+        if ( $pmpro_some_pages_ready ) { ?>
             <p><?php _e('Manage the WordPress pages assigned to each required Paid Memberships Pro page.', 'paid-memberships-pro' ); ?></p>
         <?php } elseif( ! empty( $_REQUEST['manualpages'] ) ) { ?>
             <p><?php _e('Assign the WordPress pages for each required Paid Memberships Pro page or', 'paid-memberships-pro' ); ?> <a
@@ -123,7 +135,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             </div> <!-- end pmpro-new-install -->
         <?php } ?>
 
-        <?php if ( ! empty( $pmpro_pages_ready ) || ! empty( $_REQUEST['manualpages'] ) ) { ?>
+        <?php if ( ! empty( $pmpro_some_pages_ready ) || ! empty( $_REQUEST['manualpages'] ) ) { ?>
         <table class="form-table">
             <tbody>
             <tr>
