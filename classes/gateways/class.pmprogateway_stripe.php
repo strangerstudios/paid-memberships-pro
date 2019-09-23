@@ -2250,16 +2250,16 @@ class PMProGateway_stripe extends PMProGateway {
 			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
 		}
 
-//convert to a profile start date
+		//convert to a profile start date
 		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
 
-//filter the start date
+		//filter the start date
 		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
 
-//convert back to days
+		//convert back to days
 		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
 
-//for free trials, just push the start date of the subscription back
+		//for free trials, just push the start date of the subscription back
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
 			$trialOccurrences = (int) $order->TrialBillingCycles;
 			if ( $order->BillingPeriod == "Year" ) {
@@ -2275,10 +2275,10 @@ class PMProGateway_stripe extends PMProGateway {
 
 		}
 
-// Save $trial_period_days to order for now too.
+		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
 
-//create a plan
+		//create a plan
 		try {
 			$plan        = array(
 				"amount"            => $amount * $currency_unit_multiplier,
@@ -2305,7 +2305,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	function create_subscription( &$order ) {
 
-//subscribe to the plan
+		//subscribe to the plan
 		try {
 			$params              = array(
 				'customer'               => $this->customer->id,
