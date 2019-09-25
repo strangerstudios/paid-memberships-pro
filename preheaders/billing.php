@@ -254,6 +254,11 @@ if ($submit) {
     $ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);
 }
 
+// Avoid a warning in the filter below.
+if ( empty( $morder ) ) {
+	$morder = null;
+}
+
 /**
  * Hook to run actions after the billing page preheader has loaded.
  * @since 2.1
