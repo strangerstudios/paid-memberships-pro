@@ -6,8 +6,8 @@
  /**
   * Block dependencies
   */
- import './editor.css';
- import classnames from 'classnames';
+//  import './editor.css';
+//  import classnames from 'classnames';
 
  /**
   * Internal block libraries
@@ -32,7 +32,9 @@ const {
     InnerBlocks,
 } = wp.editor;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
+const member_levels = pmpro.all_level_values_and_labels;
+
+const all_levels = [{ value: 0, label: "Non-Members" }].concat( {member_levels} );
 
  /**
   * Register block

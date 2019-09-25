@@ -8,8 +8,7 @@
 /**
  * Block dependencies
  */
-import './editor.css';
-import classnames from 'classnames';
+// import './editor.css';
 import Inspector from './inspector';
 
 /**
