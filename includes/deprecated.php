@@ -36,7 +36,7 @@ add_action( 'init', 'pmpro_init_check_for_deprecated_filters', 99 );
  */
 function pmpro_admin_init_redirect_old_menu_items() {	
 	if ( is_admin()
-		&& ! empty( $_REQUEST['page'] && $_REQUEST['page'] == 'pmpro_license_settings' )
+		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings'
 		&& basename( $_SERVER['SCRIPT_NAME'] ) == 'options-general.php' ) {
 		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-license' ) );
 		exit;
