@@ -67,7 +67,7 @@ function pmpro_admin_enqueue_scripts() {
     foreach( $all_levels as $level ) {
         $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
     }
-    wp_localize_script( 'pmpro-blocks-editor-js', 'pmpro', array(
+    wp_localize_script( 'pmpro_admin', 'pmpro', array(
         'all_levels' => $all_levels,
         'all_level_values_and_labels' => $all_level_values_and_labels
     ));
