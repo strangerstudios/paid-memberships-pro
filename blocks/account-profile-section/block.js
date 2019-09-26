@@ -8,7 +8,7 @@
  /**
   * Block dependencies
   */
- import './editor.css';
+//  import './editor.css';
  /**
   * Internal block libraries
   */

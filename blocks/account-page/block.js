@@ -7,7 +7,7 @@
  /**
   * Block dependencies
   */
- import './editor.css';
+//  import './editor.css';
  import Inspector from './inspector';
  /**
   * Internal block libraries
