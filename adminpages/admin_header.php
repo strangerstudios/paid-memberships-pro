@@ -180,7 +180,8 @@
 			'pmpro-paymentsettings',
 			'pmpro-emailsettings',
 			'pmpro-advancedsettings',
-			'pmpro-addons'
+			'pmpro-addons',
+			'pmpro-license'
 		);
 		if( in_array( $view, $settings_tabs ) ) { ?>
 	<nav class="nav-tab-wrapper">
@@ -206,6 +207,10 @@
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-addons');?>" class="nav-tab<?php if($view == 'pmpro-addons') { ?> nav-tab-active<?php } ?>"><?php _e('Add Ons', 'paid-memberships-pro' );?></a>
+		<?php } ?>
+
+		<?php if(current_user_can('manage_options')) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-license');?>" class="nav-tab<?php if($view == 'pmpro-license') { ?> nav-tab-active<?php } ?>"><?php _e('License', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 	</nav>
 
