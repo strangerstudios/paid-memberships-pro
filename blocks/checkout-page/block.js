@@ -8,7 +8,6 @@
   * Block dependencies
   */
  import './editor.css';
- import classnames from 'classnames';
  import Inspector from './inspector';
  /**
   * Internal block libraries

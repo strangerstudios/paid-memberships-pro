@@ -6,8 +6,7 @@
  /**
   * Block dependencies
   */
-//  import './editor.css';
-//  import classnames from 'classnames';
+ import './editor.css';
 
  /**
   * Internal block libraries
