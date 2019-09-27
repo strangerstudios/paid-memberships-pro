@@ -1,27 +1,15 @@
 const path = require('path');
 const defaultConfig = require("./node_modules/@wordpress/scripts/config/webpack.config");
-// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-// const blocksCSSPlugin = new ExtractTextPlugin( {
-// 	filename: './css/blocks.style.css',
-//   } );
+const blocksCSSPlugin = new MiniCssExtractPlugin( {
+	filename: './css/blocks.style.css',
+  } );
 
-// const editBlocksCSSPlugin = new ExtractTextPlugin( {
-// 	filename: './css/blocks.editor.css',
-//   } );
+const editBlocksCSSPlugin = new MiniCssExtractPlugin( {
+	filename: './css/blocks.editor.css',
 
-  // Configuration for the ExtractTextPlugin.
-// const extractConfig = {
-// 	use: [
-// 	  { loader: 'raw-loader' },
-// 	  {
-// 		loader: 'postcss-loader',
-// 		options: {
-// 		  plugins: [ require( 'autoprefixer' ) ],
-// 		},
-// 	  }
-// 	],
-//   };
+  } );
 
 module.exports = {
   ...defaultConfig,
@@ -32,22 +20,22 @@ module.exports = {
 		path: path.resolve( __dirname, 'js/blocks' ),
 		filename: 'blocks.build.js'
 	},
-	// module: {
-	// 	...defaultConfig.module,
-	// 	rules: [
-	// 	...defaultConfig.module.rules,
-	// 	{
-    //     test: /style\.s?css$/,
-    //     use: blocksCSSPlugin.extract( extractConfig ),
-	// 	},
-	// 	{
-    //     test: /editor\.s?css$/,
-    //     use: editBlocksCSSPlugin.extract( extractConfig ),
-    //   	},
-	// ]
-	// },
-	// plugins: [
-	// 	blocksCSSPlugin,
-	// 	editBlocksCSSPlugin,
-	//   ],
+	module: {
+		...defaultConfig.module,
+		rules: [
+		...defaultConfig.module.rules,
+		{
+        test: /style\.s?css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+		},
+		{
+        test: /editor\.s?css$/,
+		use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      	},
+	]
+	},
+	plugins: [
+		blocksCSSPlugin,
+		editBlocksCSSPlugin
+	  ],
 };
