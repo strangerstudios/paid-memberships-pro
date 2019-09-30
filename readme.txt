@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.2.3
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,6 +128,16 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
+
+= 2.1.2 - 2019-09-26 =
+* BUG FIX: Fixed bug where Stripe subscriptions weren't updated to use the new payment method when users updated their billing method on the Update Billing page. You may have users with an updated "default payment method" but their subscriptions still need to be updated manually in Stripe to use that new method. Otherwise, payments will fail. This is fixed going forward.
+* BUG FIX: Fixed bug where PMPro Blocks were sometimes not loading on the edit post page.
+* BUG FIX: Fixed bug where discount codes would cause ugly warnings to be shown on the checkout page.
+* BUG FIX: Fixed bug where custom templates would sometimes not load.
+* BUG FIX: Fixed issue where a warning was thrown sometimes when loading SESSION vars.
+* ENHANCEMENT: Moved the License page under Memberships.
+* EHNANCEMENT: Updated our UTM tracking links in various places we link to the Paid Memberships Pro website.
+* ENHANCEMENT: Added some help text and links to popular add ons in a few places in the PMPro settings.
 
 = 2.1.1 - 2019-09-16 =
 * BUG FIX: Fixed issue with SCA authentications via Stripe for subscriptions with a $0 initial payment. (Thanks, mjulian87 on Github.)

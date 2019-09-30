@@ -1753,6 +1753,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'set_customer',
 			'set_payment_method',
 			'attach_payment_method_to_customer',
+			'update_payment_method_for_subscriptions',
 		);
 
 		foreach ( $steps as $key => $step ) {
@@ -1766,6 +1767,41 @@ class PMProGateway_stripe extends PMProGateway {
 
 		return true;
 
+	}
+	
+	/**
+	 * Update the payment method for a subscription.
+	 */
+	function update_payment_method_for_subscriptions( &$order ) {
+		// get customer
+		$this->getCustomer( $order );
+		
+		if ( empty( $this->customer ) ) {
+			return false;
+		}
+		
+		// get all subscriptions
+		if ( ! empty( $this->customer->subscriptions ) ) {
+			$subscriptions = $this->customer->subscriptions->all();
+		}
+		
+		foreach( $subscriptions as $subscription ) {
+			// check if cancelled or expired
+			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
+				continue;
+			}
+			
+			// check if we have a related order for it
+			$one_order = new MemberOrder();
+			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
+			if ( empty( $one_order ) || empty( $one_order->id ) ) {
+				continue;
+			}
+			
+			// update the payment method
+			$subscription->default_payment_method = $this->customer->invoice_settings->default_payment_method;
+			$subscription->save();
+		}
 	}
 
 	/**
