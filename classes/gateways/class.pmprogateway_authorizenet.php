@@ -90,7 +90,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Authorize.net Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h3><?php _e('Authorize.net Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
