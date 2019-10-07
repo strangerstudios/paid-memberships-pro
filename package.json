@@ -17,8 +17,6 @@
   "author": "Stranger Studios",
   "license": "GPL-2.0",
   "devDependencies": {
-    "@wordpress/scripts": "^5.0.0",
-    "css-loader": "^3.2.0",
-    "mini-css-extract-plugin": "^0.8.0"
+    "@wordpress/scripts": "^5.0.0"
   }
 }

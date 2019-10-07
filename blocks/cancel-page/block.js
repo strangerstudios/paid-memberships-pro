@@ -4,30 +4,14 @@
  * Displays the Membership Cancel page.
  *
  */
- /**
-  * Block dependencies
-  */
-//  import './editor.css';
+
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
-const {
-    PanelBody,
-    PanelRow,
-    TextControl,
-} = wp.components;
-
-const {
-    RichText,
-    InspectorControls,
-} = wp.editor;
 
  /**
   * Register block
@@ -48,12 +32,11 @@ const {
          },
          attributes: {
          },
-         edit: props => {
-             const { className } = props;
+         edit(){
              return [
-                 <div className={ className }>
-                   <span>Paid Memberships Pro</span>
-                   <span>Membership Cancel Page</span>
+                 <div className="pmpro-blocks-element">
+                   <span>{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                   <span>{ __( 'Membership Cancel Page', 'paid-memberships-pro' ) }</span>
                  </div>
             ];
          },

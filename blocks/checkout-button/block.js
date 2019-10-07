@@ -8,7 +8,6 @@
 /**
  * Block dependencies
  */
-// import './editor.css';
 import Inspector from './inspector';
 
 /**
@@ -17,16 +16,11 @@ import Inspector from './inspector';
 const { __ } = wp.i18n;
 const {
     registerBlockType,
-    BlockControls,
 } = wp.blocks;
 const {
-    PanelBody,
     TextControl,
     SelectControl,
 } = wp.components;
-const {
-    InspectorControls,
-} = wp.editor;
 
 /**
  * Register block
@@ -66,9 +60,7 @@ export default registerBlockType(
              const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div
-                    className={ className }
-                >
+                <div className={ className }>
                   <a class={css_class} >{text}</a>
                 </div>,
                 isSelected && <div>

@@ -7,29 +7,14 @@
  /**
   * Block dependencies
   */
-//  import './editor.css';
  import Inspector from './inspector';
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
-const {
-    PanelBody,
-    PanelRow,
-    TextControl,
-} = wp.components;
-
-const {
-    RichText,
-    InspectorControls,
-} = wp.editor;
-
  /**
   * Register block
   */
@@ -66,12 +51,12 @@ const {
              },
          },
          edit: props => {
-             const { attributes: { fields }, className, setAttributes, isSelected } = props;
+             const { setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div className={ className }>
-                  <span>Paid Memberships Pro</span>
-                  <span>Membership Account Page</span>
+                <div className="pmpro-block-element">
+                  <span>{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span>{ __( 'Membership Account Page', 'paid-memberships-pro' ) }</span>
                 </div>
             ];
          },
