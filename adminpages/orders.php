@@ -1334,18 +1334,8 @@ class="alternate"<?php } ?>>
 					<td>
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->id; ?></a>
 					</td>
-					<td>
+					<td class="has-row-actions">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
-					</td>
-					<td class="username column-username has-row-actions">
-						<?php $order->getUser(); ?>
-						<?php if ( ! empty( $order->user ) ) { ?>
-							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
-						<?php } elseif ( $order->user_id > 0 ) { ?>
-							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
-						<?php } else { ?>
-							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
-						<?php } ?>
 						<br />
 						<div class="row-actions">
 							<span class="edit">
@@ -1380,6 +1370,16 @@ class="alternate"<?php } ?>>
 							}
 							?>
 						</div>
+					</td>
+					<td class="username column-username has-row-actions">
+						<?php $order->getUser(); ?>
+						<?php if ( ! empty( $order->user ) ) { ?>
+							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+						<?php } elseif ( $order->user_id > 0 ) { ?>
+							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+						<?php } else { ?>
+							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+						<?php } ?>	
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td><?php echo $order->membership_id; ?></td>
