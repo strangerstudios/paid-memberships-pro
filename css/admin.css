@@ -45,6 +45,16 @@
 .checkbox_box .clickable {cursor: pointer;}
 .checkbox_box .clickable:hover {background: #FFC;}
 
+/* consent log */
+.pmpro_consent_log.pmpro_scrollable {
+	padding: .5em;
+	background: #FFF;
+	border: 1px solid #CCC;
+	height: 200px;
+	max-width: 800px;
+	overflow: auto;
+}
+
 /* levels */
 .memberships_page_pmpro-membershiplevels .pmpro_admin #posts-filter p.search-box { margin: 2em 0 1em 0; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.pmpro_gray td {color: #AAA;}
