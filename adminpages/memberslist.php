@@ -168,7 +168,7 @@
 				<th><?php _e('Email', 'paid-memberships-pro' );?></th>
 				<?php do_action("pmpro_memberslist_extra_cols_header", $theusers);?>
 				<th><?php _e('Billing Address', 'paid-memberships-pro' );?></th>
-				<th><?php _e('Membership', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Level', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Fee', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Joined', 'paid-memberships-pro' );?></th>
 				<th>
