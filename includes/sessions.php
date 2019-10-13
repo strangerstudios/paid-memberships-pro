@@ -75,8 +75,8 @@ function pmpro_set_session_var($key, $value) {
  */
 function pmpro_get_session_var( $key ) {
     pmpro_start_session();
-	if ( ! empty( $_SESSION ) && array_key_exists( $key, $_SESSION ) ) {
-		return  $_SESSION[$key] ;
+	if ( ! empty( $_SESSION ) && isset( $_SESSION[$key] ) ) {
+		return  $_SESSION[$key];
 	} else {
 		return false;
 	}
