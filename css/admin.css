@@ -71,9 +71,10 @@
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {margin-left: 25px;}
 
 /* settings */
-tr.pmpro_settings_divider td {padding: 5px; margin: 0; color: #555; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC;}
-tr.pmpro_settings_divider td:before {content: "- ";}
-tr.pmpro_settings_divider td:after {content: " -";}
+tr.pmpro_settings_divider td {
+    padding: 0;
+    margin: 0;
+}
 
 /* messages */
 .pmpro_admin .pmpro_message {
@@ -86,7 +87,8 @@ tr.pmpro_settings_divider td:after {content: " -";}
     background-color: rgba( 70, 180, 80, 0.1 );
     border-left-color: rgb( 70, 180, 80 );
 }
-.pmpro_admin .pmpro_error {
+.pmpro_admin .pmpro_error,
+.pmpro_admin tr.pmpro_error td {
     background-color: rgba( 220, 50, 50, 0.1 );
     border-left-color: rgb( 220, 50, 50 );
 }
@@ -97,8 +99,9 @@ tr.pmpro_settings_divider td:after {content: " -";}
 .pmpro_admin .pmpro_success a {
     color: #208A1B;
 }
-.pmpro_admin .pmpro_error a {
-    color: #E36154;
+.pmpro_admin .pmpro_error a,
+.pmpro_admin tr.pmpro_error td {
+    color: #CC0000;
 }
 .pmpro_admin .pmpro_alert a {
     color: #CF8516;
