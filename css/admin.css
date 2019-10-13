@@ -13,7 +13,6 @@
     background-size: 290px 40px;
     padding: 1em 0 70px 0;
 }
-
 .pmpro_admin .pmpro_banner {
     display: grid;
     grid-template-areas: "logo meta";
@@ -25,12 +24,46 @@
 .pmpro_admin .pmpro_banner .pmpro_meta {
     align-self: center;
     grid-area: meta;
+    font-size: 16px;
+    line-height: 1.5;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version,
-.pmpro_admin .pmpro_banner .pmpro_meta .button-documentation,
-.pmpro_admin .pmpro_banner .pmpro_meta .button-support {
-    margin-left: 5px;
+.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version {
+    color: #77a02e;
+    display: inline-block;
+    font-weight: bold;
+    padding: 5px 10px 5px 2px;
 }
+.pmpro_admin .pmpro_banner .pmpro_meta a {
+    border-left: 1px solid #CCC;
+    padding: 5px 10px;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag {
+    font-weight: bold;
+    padding: 5px 10px 5px 5px;
+    text-decoration: none;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag:before {
+    bottom: 7px;
+    display: inline-block;
+    font: 400 20px/1 dashicons;
+    left: 0;
+    position: relative;
+    text-decoration: none;
+    vertical-align: bottom;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid {
+    color: rgb( 70, 180, 80 );
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid:before {
+    content: "\f147";
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid {
+    color: #AAA;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
+    content: "\f335";
+}
+
 .pmpro_admin .pmpro_wp-notice-fix {
     height: 1px;
     line-height: 1px;
@@ -38,6 +71,11 @@
 }
 .pmpro_admin .topborder {border-top: 1px solid #CCC; margin-top: 1em; padding-top: 1em; }
 .pmpro_admin #editorcontainer #description {width: 100%; height: 180px; }
+
+.pmpro_admin .pmpro_icon {
+    max-width: 200px;
+    height: auto;
+}
 
 /* checkboxes */
 .checkbox_box {width: 300px; background: #FFFFFF; border: 1px solid #CCC;}
@@ -149,6 +187,14 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 @media (max-width:900px) {
 	.auto-fold .pmpro_admin .widgets-holder-wrap .widget {float: none; width: 100%; }
 	.auto-fold .pmpro_admin .widgets-holder-wrap .widget-inside, .auto-fold .pmpro_admin .widgets-holder-wrap .widget-inside p {height: auto; }
+}
+
+/* license */
+.memberships_page_pmpro-license h2 {
+    text-align: left;
+}
+.memberships_page_pmpro-license .pmpro_icon {
+    margin-top: 20px;
 }
 
 /* misc */
