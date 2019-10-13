@@ -1308,7 +1308,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Username', 'paid-memberships-pro' ); ?></th>
 				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
-				<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Level', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Gateway', 'paid-memberships-pro' ); ?></th>
@@ -1334,7 +1334,7 @@ class="alternate"<?php } ?>>
 					<td>
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->id; ?></a>
 					</td>
-					<td class="has-row-actions">
+					<td class="order_code column-order_code has-row-actions">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
 						<br />
 						<div class="row-actions">
@@ -1371,7 +1371,7 @@ class="alternate"<?php } ?>>
 							?>
 						</div>
 					</td>
-					<td class="username column-username has-row-actions">
+					<td class="username column-username">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
@@ -1382,7 +1382,12 @@ class="alternate"<?php } ?>>
 						<?php } ?>	
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
-					<td><?php echo $order->membership_id; ?></td>
+					<td>
+						<?php
+							$level = pmpro_getLevel( $order->membership_id );
+							echo $level->name;
+						?>
+					</td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 					<td>
 						<?php
