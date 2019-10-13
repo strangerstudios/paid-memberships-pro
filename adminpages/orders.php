@@ -1306,7 +1306,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 			<tr class="thead">
 				<th><?php _e( 'ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
-				<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Username', 'paid-memberships-pro' ); ?></th>
 				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
 				<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
