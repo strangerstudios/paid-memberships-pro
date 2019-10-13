@@ -1705,6 +1705,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//build order object
 		$update_order = new MemberOrder();
 		$update_order->setGateway( 'stripe' );
+		$update_order->code             = $update_order->getRandomCode();
 		$update_order->user_id          = $user_id;
 		$update_order->membership_id    = $user_level->id;
 		$update_order->membership_name  = $user_level->name;
@@ -1713,6 +1714,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$update_order->ProfileStartDate = date_i18n( "Y-m-d", $end_timestamp );
 		$update_order->BillingPeriod    = $update['cycle_period'];
 		$update_order->BillingFrequency = $update['cycle_number'];
+		$update_order->getMembershipLevel();
 
 		//need filter to reset ProfileStartDate
 		$profile_start_date = $update_order->ProfileStartDate;
@@ -1721,7 +1723,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}, 10, 2 );
 
 		//update subscription
-		$update_order->Gateway->subscribe( $update_order, false );
+		$update_order->Gateway->set_customer( $update_order, true );
+		$update_order->Gateway->process_subscriptions( $update_order );
 
 		//update membership
 		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users
