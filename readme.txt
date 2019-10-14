@@ -135,7 +135,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Moved the row actions on the orders page into the correct column. (Thanks, Tim Sparks)
 * BUG FIX: Fixed issue with CSV exports if the fpassthru function is unavailable.
 * BUG FIX: Fixed warning that occurred when the Email Log plugin was active. (Thanks, Matty Cohen)
-* BUG FIX: Fixed warrnin that occurred with sessions sometimes. (Thanks, Matty Cohen)
+* BUG FIX: Fixed warning that occurred with sessions sometimes. (Thanks, Matty Cohen)
 * ENHANCEMENT: Made labels and styling more consistant across settings pages.
 * ENHANCEMENT: The Consent Log will go into a scrollable box if more than 10 items are in the list.
 * ENHANCEMENT: Updated the copy on the license page.
