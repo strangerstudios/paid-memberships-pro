@@ -133,6 +133,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Updating Stripe subscriptions from the edit user page will no longer cause an extra charge.
 * BUG FIX: Correctly localizing the expiration date on the frontend account page.
 * BUG FIX: Moved the row actions on the orders page into the correct column. (Thanks, Tim Sparks)
+* BUG FIX: Fixed issue with CSV exports if the fpassthru function is unavailable.
 * BUG FIX: Fixed warning that occurred when the Email Log plugin was active. (Thanks, Matty Cohen)
 * BUG FIX: Fixed warrnin that occurred with sessions sometimes. (Thanks, Matty Cohen)
 * ENHANCEMENT: Made labels and styling more consistant across settings pages.
