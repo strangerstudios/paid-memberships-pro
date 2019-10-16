@@ -26,8 +26,15 @@ function pmpro_notifications() {
 			}
 		}
 
-		if ( $pmpro_notification && $pmpro_notification != 'NULL') { ?>
-			<div id="pmpro_notifications">
+		if ( $pmpro_notification == 'NULL' ){
+			// Set a default notification for testing purposes.
+			$pmpro_notification = '<div class="pmpro_notification-general"><h3><span class="dashicons dashicons-warning"></span> Title of the notification.</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor <a href="#">incididunt ut labore et</a> dolore magna aliqua.</p><p><a class="button button-primary" href="#">Install Now</a> <a class="button button-link" href="#">More Information</a></div>';
+			$pmpro_notification .= '<div class="pmpro_notification-error"><h3><span class="dashicons dashicons-flag"></span> Title of the notification.</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor <a href="#">incididunt ut labore et</a> dolore magna aliqua.</p><p><a class="button button-primary" href="#">Install Now</a> <a class="button button-secondary" href="#">More Information</a></div>';
+		}
+
+		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL') { ?>
+			<div class="pmpro_notification">
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
 				<?php echo $pmpro_notification; ?>
 			</div>
 		<?php }
