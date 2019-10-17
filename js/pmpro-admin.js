@@ -47,3 +47,26 @@ jQuery(document).ready(function() {
 		pmpro_toggle_elements_by_selector( jQuery( this ).attr( 'pmpro_toggle_trigger_for' ), jQuery( this ).prop( 'checked' ) );
 	});
 });
+
+/** JQuery to hide the notifications. */
+jQuery(document).ready(function(){
+	jQuery(document).on( 'click', '.pmpro-notice-button.notice-dismiss', function() {
+		var notification_id = jQuery( this ).val();
+
+		var postData = {
+			action: 'pmpro_hide_notice',
+			notification_id: notification_id
+		}
+
+		jQuery.ajax({
+			type: "POST",
+			data: postData,
+			url: ajaxurl,
+			success: function( response ) {
+				console.log( notification_id );
+				jQuery('#'+notification_id).hide();
+			}
+		})
+	
+	});
+});
