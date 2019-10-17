@@ -32,7 +32,15 @@ function pmpro_notifications() {
 						<?php echo $notification->content; ?></div>
 				</div>
 		<?php }
+
 		}
+
+		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL') { ?>
+			<div class="pmpro_notification">
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+				<?php echo $pmpro_notification; ?>
+			</div>
+		<?php }
 	}
 
 	// Exit so we just show this content.
@@ -61,3 +69,4 @@ function pmpro_hide_notice() {
 	update_option( 'my_pmpro_test', $notification_id );
 }
 add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
+
