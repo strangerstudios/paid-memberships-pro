@@ -160,6 +160,13 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 .top0em {margin-top: 0;}
 h2.nav-tab-wrapper {margin-bottom: 1em; }
 
+/* Dashicon Admin Setting Links */
+.pmpro_admin_dashicons_links {
+    bottom: 2px;
+    font-size: 15px;
+    position: relative;
+}
+
 /* reports */
 .pmpro_reports-holder { }
 .pmpro_reports-holder .postbox h2 {border-bottom: 1px solid #eee; font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }

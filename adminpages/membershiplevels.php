@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags, $pmpro_pages;
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
@@ -388,6 +388,23 @@
 						?>
 						</div>
 						<input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> /> <label for="confirmation_in_email"><?php _e('Check to include this message in the membership confirmation email.', 'paid-memberships-pro' );?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top"><label><?php _e('Membership Checkout URL', 'paid-memberships-pro' );?>:</label></th>
+					<td>
+						<?php
+							if ( ! empty( $pmpro_pages['checkout'] ) ) {
+								if ( ! empty( $level->id ) ) {
+									echo '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id ) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id ) . '">' . pmpro_url( 'checkout', '?level=' . $level->id ) .  '</a>';
+								} else {
+									echo '<p class="description">' . __( 'This will be generated when you save.', 'paid-memberships-pro' ) . '</p>';
+
+								}
+							} else {
+								echo '<p class="description">' . __( 'This will be generated when you assign a checkout page.', 'paid-memberships-pro' ) . '</p>';
+							}
+						?>
 					</td>
 				</tr>
 			</tbody>
@@ -776,7 +793,17 @@
 						<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
 				</td>
-				<td><?php if($level->allow_signups) { ?><a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'paid-memberships-pro' );?></a><?php } else { ?><?php _e('No', 'paid-memberships-pro' );?><?php } ?></td>
+				<td>
+					<?php if($level->allow_signups) {
+						if ( ! empty( $pmpro_pages['checkout'] ) ) { ?>
+							<a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><span class="dashicons dashicons-admin-links pmpro_admin_dashicons_links"></span><?php _e('Yes', 'paid-memberships-pro' );?></a>
+						<?php } else { ?>
+							<?php _e('Yes', 'paid-memberships-pro' );?>
+						<?php } ?>
+					<?php } else { ?>
+						<?php _e('No', 'paid-memberships-pro' );?>
+					<?php } ?>
+				</td>
 				<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
 			</tr>
 			<?php

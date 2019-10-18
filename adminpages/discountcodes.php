@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_pages;
 
 	if(isset($_REQUEST['edit']))
 		$edit = intval($_REQUEST['edit']);
@@ -669,6 +669,24 @@
 									<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
 								</td>
 							</tr>
+
+							<tr>
+								<th scope="row" valign="top"><label><?php _e('Membership Checkout URL', 'paid-memberships-pro' );?>:</label></th>
+								<td>
+									<?php
+										if ( ! empty( $pmpro_pages['checkout'] ) ) {
+											if ( ! empty( $code->id ) ) {
+												echo '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) .  '</a>';
+											} else {
+												echo '<p class="description">' . __( 'This will be generated when you save.', 'paid-memberships-pro' ) . '</p>';
+											}
+										} else {
+											echo '<p class="description">' . __( 'This will be generated when you assign a checkout page.', 'paid-memberships-pro' ) . '</p>';
+										}
+									?>
+								</td>
+							</tr>
+
 						</tbody>
 					</table>
 
@@ -805,13 +823,17 @@
 									$levels = $wpdb->get_results($sqlQuery);
 
 									$level_names = array();
-									foreach( $levels as $level ) {
-										$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+									foreach ( $levels as $level ) {
+										if ( ! empty( $pmpro_pages['checkout'] ) ) {
+									        $level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '"><span class="dashicons dashicons-admin-links pmpro_admin_dashicons_links"></span>' . $level->name . '</a>';
+									    } else {
+									        $level_names[] = $level->name;
+									    }
 									}
-									if( $level_names ) {
-										echo implode( ', ', $level_names );
+									if ( $level_names ) {
+									    echo implode( ', ', $level_names );
 									} else {
-										echo 'None';
+									    echo 'None';
 									}
 								?>
 							</td>
