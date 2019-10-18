@@ -5,7 +5,7 @@
  */
 function pmpro_notifications() {
 	if ( current_user_can( 'manage_options' ) ) {
-		// $pmpro_notification = get_transient( 'pmpro_notification_' . PMPRO_VERSION );
+		$pmpro_notification = get_transient( 'pmpro_notification_' . PMPRO_VERSION );
 		if ( empty( $pmpro_notification ) ) {
 			// Set to NULL in case the below times out or fails, this way we only check once a day.
 			set_transient( 'pmpro_notification_' . PMPRO_VERSION, 'NULL', 86400 );
@@ -15,14 +15,23 @@ function pmpro_notifications() {
 
 			// Get notification.
 			$pmpro_notification = json_decode( wp_remote_retrieve_body( $remote_notification ) );
+			
 			// Update transient if we got something.
-			// if ( ! empty( $pmpro_notification ) ) {
-			// 	set_transient( 'pmpro_notification_' . PMPRO_VERSION, $pmpro_notification, 86400 );
-			// }
+			if ( ! empty( $pmpro_notification ) ) {
+				set_transient( 'pmpro_notification_' . PMPRO_VERSION, $pmpro_notification, 86400 );
+			}
 		}
 
 		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL' ) { 
-			foreach ( $pmpro_notification as $notification ) { ?>
+
+			// Get array of hidden messages and remove from array.
+			$archived_notifications = get_option( 'pmpro_archived_notifications' );
+
+			foreach ( $pmpro_notification as $notification ) { 
+				// Skip this iteration if the notification ID is inside the archived setting.
+				if ( array_key_exists( $notification->id, $archived_notifications ) ) {
+					continue;
+				}?>
 				<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
 				<?php if ( $notification->dismiss ) { ?>
 					<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
@@ -32,15 +41,7 @@ function pmpro_notifications() {
 						<?php echo $notification->content; ?></div>
 				</div>
 		<?php }
-
 		}
-
-		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL') { ?>
-			<div class="pmpro_notification">
-				<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-				<?php echo $pmpro_notification; ?>
-			</div>
-		<?php }
 	}
 
 	// Exit so we just show this content.
@@ -66,7 +67,14 @@ add_action( 'wp_footer', 'pmpro_footer_link' );
 function pmpro_hide_notice() {
 	$notification_id = sanitize_text_field( $_POST['notification_id'] );
 
-	update_option( 'my_pmpro_test', $notification_id );
+	$archived_notifications = get_option( 'pmpro_archived_notifications' );
+
+	if ( ! is_array( $archived_notifications ) ) {
+		$archived_notifications = array();
+	}
+
+	$archived_notifications[$notification_id] = date_i18n( 'Y-m-d' );
+
+	update_option( 'pmpro_archived_notifications', $archived_notifications );
 }
 add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
-
