@@ -440,7 +440,7 @@
                 <tbody>
                     <tr>
                         <th scope="row" valign="top"><label><?php _e('ID', 'paid-memberships-pro' );?>:</label></th>
-                        <td class="pmpro_lite"><?php if(!empty($code->id)) echo $code->id; else echo __("This will be generated when you save.", 'paid-memberships-pro' );?></td>
+                        <td><p class="description"><?php if(!empty($code->id)) echo $code->id; else echo __("This will be generated when you save.", 'paid-memberships-pro' );?></p></td>
                     </tr>
 
                     <tr>
@@ -521,7 +521,7 @@
                         <th scope="row" valign="top"><label for="uses"><?php _e('Uses', 'paid-memberships-pro' );?>:</label></th>
                         <td>
 							<input name="uses" type="text" size="10" value="<?php if(!empty($code->uses)) echo str_replace("\"", "&quot;", stripslashes($code->uses));?>" />
-							<small class="pmpro_lite"><?php _e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></small>
+							<p class="description"><?php _e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></p>
 						</td>
                     </tr>
 
@@ -579,7 +579,7 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -600,7 +600,7 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small>per</small>
+									<?php _e('per', 'paid-memberships-pro' ); ?>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 									<select name="cycle_period[]" onchange="updateCyclePeriod();">
 									  <?php
@@ -612,7 +612,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -620,7 +620,7 @@
 								<th scope="row" valign="top"><label for="billing_limit"><?php _e('Billing Cycle Limit', 'paid-memberships-pro' );?>:</label></th>
 								<td>
 									<input name="billing_limit[]" type="text" size="20" value="<?php echo $level->billing_limit?>" />
-									<br /><small><?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -641,9 +641,9 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small><?php _e('for the first', 'paid-memberships-pro' );?></small>
+									<?php _e('for the first', 'paid-memberships-pro' );?>
 									<input name="trial_limit[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
-									<small><?php _e('subscription payments', 'paid-memberships-pro' );?>.</small>
+									<?php _e('subscription payments', 'paid-memberships-pro' );?>.
 								</td>
 							</tr>
 
@@ -666,7 +666,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 						</tbody>

@@ -167,7 +167,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<?php if ( ! pmpro_license_isValid() && empty( $key ) ) { ?>
     			<p class="pmpro_message pmpro_error">
     				<strong><?php echo esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
-    				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'options-general.php?page=pmpro_license_settings' ) );?>
+    				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
     			</p>
     		<?php } elseif ( ! pmpro_license_isValid() ) { ?>
     			<p class="pmpro_message pmpro_alert">

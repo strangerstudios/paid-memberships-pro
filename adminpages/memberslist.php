@@ -147,13 +147,17 @@
 				$initial_payments = pmpro_calculateInitialPaymentRevenue($s, $l);
 				$recurring_payments = pmpro_calculateRecurringRevenue($s, $l);
 				?>
-				<p class="clear"><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="pmpro_lite">(This estimate does not take into account trial periods or billing limits.)</span></p>
+				<br class="clear" />
+				<hr />
+				<p><?php echo strval($totalrows)?> members found. These members have paid <strong>$<?php echo number_format($initial_payments)?> in initial payments</strong> and will generate an estimated <strong>$<?php echo number_format($recurring_payments)?> in revenue over the next year</strong>, or <strong>$<?php echo number_format($recurring_payments/12)?>/month</strong>. <span class="description">(This estimate does not take into account trial periods or billing limits.)</span></p>
 				<?php
 			}
 			else
 			{
 			?>
-			<p class="clear"><?php printf(__("%d members found.", 'paid-memberships-pro' ), $totalrows);?></span></p>
+			<br class="clear" />
+			<hr />
+			<p class="description"><?php printf(__("%d members found.", 'paid-memberships-pro' ), $totalrows);?></p>
 			<?php
 			}
 		}
@@ -168,7 +172,7 @@
 				<th><?php _e('Email', 'paid-memberships-pro' );?></th>
 				<?php do_action("pmpro_memberslist_extra_cols_header", $theusers);?>
 				<th><?php _e('Billing Address', 'paid-memberships-pro' );?></th>
-				<th><?php _e('Membership', 'paid-memberships-pro' );?></th>
+				<th><?php _e('Level', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Fee', 'paid-memberships-pro' );?></th>
 				<th><?php _e('Joined', 'paid-memberships-pro' );?></th>
 				<th>
@@ -299,7 +303,7 @@
 				'title' => array(),
 			),
 		);
-		echo '<p><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Capture additional member profile fields using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_pmprorh_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-memberslist&utm_campaign=add-ons&utm_content=pmpro-register-helper-add-checkout-and-profile-fields' ) . '</em></p>';
+		echo '<br /><p class="description">' . sprintf( wp_kses( __( 'Optional: Capture additional member profile fields using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_pmprorh_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-memberslist&utm_campaign=add-ons&utm_content=pmpro-register-helper-add-checkout-and-profile-fields' ) . '</p>';
 	} ?>
 
 <?php

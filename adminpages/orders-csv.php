@@ -595,7 +595,7 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 		else
 		{
 			// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
-			readfile($fh);
+			readfile($filename);
 		}
 
 		// remove the temp file

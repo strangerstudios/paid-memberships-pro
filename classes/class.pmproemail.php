@@ -44,7 +44,7 @@
 						
 			$this->headers = array("Content-Type: text/html");
 			
-			$this->attachments = NULL;
+			$this->attachments = array();
 			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");

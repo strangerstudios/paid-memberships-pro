@@ -53,6 +53,7 @@ function pmpro_add_pages() {
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
+	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color:#7FFF00">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
 	
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
@@ -194,6 +195,18 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	// Add menu item for License.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-license',
+				'parent' => 'paid-memberships-pro',
+				'title' => __( 'License', 'paid-memberships-pro' ),
+				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-license' )
+			)
+		);
+	}
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
@@ -252,6 +265,10 @@ function pmpro_addons() {
 
 function pmpro_orders() {
 	require_once( PMPRO_DIR . '/adminpages/orders.php' );
+}
+
+function pmpro_license_settings_page() {
+	require_once( PMPRO_DIR . '/adminpages/license.php' );
 }
 
 function pmpro_updates() {

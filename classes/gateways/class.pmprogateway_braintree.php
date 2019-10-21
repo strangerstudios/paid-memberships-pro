@@ -303,7 +303,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
         ?>
 		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Braintree Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h3><?php _e('Braintree Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
