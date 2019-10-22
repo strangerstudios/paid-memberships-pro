@@ -127,6 +127,17 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		$columns = apply_filters( 'pmpro_memberslist_extra_cols', $columns );
 
+		// Re-implementing old hook, will be deprecated.
+		ob_start();
+		do_action( 'pmpro_memberslist_extra_cols_header' );
+		$extra_cols = ob_get_clean();
+		preg_match_all( '/<th>(.*?)<\/th>/s', $extra_cols, $matches );
+		$custom_field_num = 0;
+		foreach ( $matches[1] as $match ) {
+			$columns[ 'custom_field_' . $custom_field_num ] = $match;
+			$custom_field_num++;
+		}
+
 		return $columns;
 	}
 
@@ -409,18 +420,26 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$date = $item[ $column_name ];
 				return date( 'Y-m-d', $date );
 			case 'enddate':
-				$user_object = apply_filters( 'pmpro_members_list_user', get_userdata( $item['ID'] ) );
+				$user_object = get_userdata( $item['ID'] );
 				if ( 0 == $item['enddate'] ) {
 					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'pmpro');
 				} else {
 					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
 				}
 			default:
-				$user_object = apply_filters( 'pmpro_members_list_user', get_userdata( $item['ID'] ) );
+				$user_object = get_userdata( $item['ID'] );
 				if ( isset( $user_object->$column_name ) ) {
 					return $user_object->$column_name;
-				} else {
-					return print_r( $item, true );
+				} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
+					// Re-implementing old hook, will be deprecated.
+					ob_start();
+					do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
+					$extra_cols = ob_get_clean();
+					preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
+					$custom_field_num = explode( 'custom_field_', $column_name )[1];
+					if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
+						return $matches[1][ intval( $custom_field_num ) ];
+					}
 				}
 		}
 	}
