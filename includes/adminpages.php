@@ -53,8 +53,16 @@ function pmpro_add_pages() {
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
-	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color:#7FFF00">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
-	
+
+	// Check License Key for Correct Link Color
+	$key = get_option( 'pmpro_license_key', '' );
+	if ( pmpro_license_isValid( $key, NULL, true ) ) {
+		$span_color = '#33FF00';
+	} else {
+		$span_color = '#FF3333';
+	}
+	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
+
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
@@ -198,11 +206,18 @@ function pmpro_admin_bar_menu() {
 
 	// Add menu item for License.
 	if ( current_user_can( 'manage_options' ) ) {
+		// Check License Key for Correct Link Color
+		$key = get_option( 'pmpro_license_key', '' );
+		if ( pmpro_license_isValid( $key, NULL, true ) ) {
+			$span_color = '#33FF00';
+		} else {
+			$span_color = '#FF3333';
+		}
 		$wp_admin_bar->add_menu(
 			array(
 				'id' => 'pmpro-license',
 				'parent' => 'paid-memberships-pro',
-				'title' => __( 'License', 'paid-memberships-pro' ),
+				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
 				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-license' )
 			)
 		);
