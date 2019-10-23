@@ -52,8 +52,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
-			if($level->billing_limit > 0)
-			{
+			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
 				return false;
 			}
 		}
