@@ -294,8 +294,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$public_key_prefix = substr( $values['stripe_publishablekey'], 0, 3 );
 				if ( ! empty( $values['stripe_publishablekey'] ) && $public_key_prefix != 'pk_' ) {
 					?>
-                    <br/><small
-                            class="pmpro_message pmpro_error"><?php _e( 'Your Publishable Key appears incorrect.', 'paid-memberships-pro' ); ?></small>
+                    <p class="pmpro_red"><strong><?php _e( 'Your Publishable Key appears incorrect.', 'paid-memberships-pro' ); ?></strong></p>
 					<?php
 				}
 				?>
@@ -322,7 +321,7 @@ class PMProGateway_stripe extends PMProGateway {
                     <option value="1"
 					        <?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
                 </select>
-                <small><?php _e( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ); ?></small>
+				<p class="description"><?php _e( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ); ?></p>
             </td>
         </tr>
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -348,7 +347,11 @@ class PMProGateway_stripe extends PMProGateway {
 						'title' => array(),
 					),
 				);
-				echo '<tr><th>&nbsp;</th><td><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</em></td></tr>';
+				echo '<tr class="gateway gateway_stripe"';
+				if ( $gateway != "stripe" ) { 
+					echo ' style="display: none;"';
+				}
+				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
 		} ?>
 		<?php
 	}
@@ -1702,6 +1705,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//build order object
 		$update_order = new MemberOrder();
 		$update_order->setGateway( 'stripe' );
+		$update_order->code             = $update_order->getRandomCode();
 		$update_order->user_id          = $user_id;
 		$update_order->membership_id    = $user_level->id;
 		$update_order->membership_name  = $user_level->name;
@@ -1710,6 +1714,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$update_order->ProfileStartDate = date_i18n( "Y-m-d", $end_timestamp );
 		$update_order->BillingPeriod    = $update['cycle_period'];
 		$update_order->BillingFrequency = $update['cycle_number'];
+		$update_order->getMembershipLevel();
 
 		//need filter to reset ProfileStartDate
 		$profile_start_date = $update_order->ProfileStartDate;
@@ -1718,7 +1723,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}, 10, 2 );
 
 		//update subscription
-		$update_order->Gateway->subscribe( $update_order, false );
+		$update_order->Gateway->set_customer( $update_order, true );
+		$update_order->Gateway->process_subscriptions( $update_order );
 
 		//update membership
 		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users

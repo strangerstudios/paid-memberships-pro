@@ -126,6 +126,7 @@
 		<p><?php _e('To modify the subject line and body content of system generated emails, <a title="Paid Memberships Pro - Email Templates Plugin" target="_blank" href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=pmpro-email-templates-addon'), 'install-plugin_pmpro-email-templates-addon') . '">Install and Activate the PMPro Email Templates add on</a>.', 'paid-memberships-pro' ); ?></p>					
 		*/ ?>
 		
+		<hr />
 		<h3><?php _e('Send the site admin emails', 'paid-memberships-pro' );?>:</h3>
 		
 		<table class="form-table">
@@ -169,6 +170,7 @@
 		</tbody>
 		</table>
 		
+		<hr />
 		<h3><?php _e('Send members emails', 'paid-memberships-pro' );?>:</h3>
 		
 		<table class="form-table">
@@ -179,7 +181,8 @@
 				</th>
 				<td>
 					<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
-					<label for="email_member_notification"><?php _e('Default WP notification email. (Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.)', 'paid-memberships-pro' );?></label>
+					<label for="email_member_notification"><?php _e('Default WP notification email.', 'paid-memberships-pro' );?></label>
+					<p class="description"><?php _e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 		</tbody>

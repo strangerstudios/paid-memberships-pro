@@ -115,8 +115,8 @@
 					<label for="nonmembertext"><?php _e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: !!levels!!, !!referrer!!</small>
+					<textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea>
+					<p class="description"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: !!levels!!, !!referrer!!</p>
 				</td>
 			</tr>
 			<tr>
@@ -124,8 +124,8 @@
 					<label for="notloggedintext"><?php _e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?></small>
+					<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea>
+					<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
 			<tr>
@@ -133,11 +133,16 @@
 					<label for="rsstext"><?php _e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea><br />
-					<small class="litegray"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?></small>
+					<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea>
+					<p class="description"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
-
+		</tbody>
+		</table>
+		<hr />
+		<h3><?php _e('Content Settings', 'paid-memberships-pro' );?></h3>
+		<table class="form-table">
+		<tbody>
 			<tr>
 				<th scope="row" valign="top">
 					<label for="filterqueries"><?php _e("Filter searches and archives?", 'paid-memberships-pro' );?></label>
@@ -160,7 +165,58 @@
                 </select>
             </td>
             </tr>
-            <tr>
+		</tbody>
+		</table>
+		<hr />
+		<h3><?php _e('reCAPTCHA Settings', 'paid-memberships-pro' ); ?></h3>
+		<table class="form-table">
+		<tbody>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
+				</th>
+				<td>
+					<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
+						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'paid-memberships-pro' );?></option>
+						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
+					</select>
+					<p class="description"><?php _e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<table class="form-table" id="recaptcha_settings" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
+		<tbody>
+			<tr>
+				<th scope="row" valign="top"><label for="recaptcha_version"><?php _e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
+				<td>					
+					<select id="recaptcha_version" name="recaptcha_version">
+						<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php _e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
+						<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php _e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
+					</select>
+					<p class="description"><?php _e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
+				<td>
+					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="recaptcha_privatekey"><?php _e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
+				<td>
+					<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<hr />
+		<h3><?php _e('Other Settings', 'paid-memberships-pro' ); ?></h3>
+		<table class="form-table">
+		<tbody>
+			<tr>
 				<th scope="row" valign="top">
 					<label for="hideads"><?php _e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
 				</th>
@@ -175,14 +231,12 @@
 			<tr id="hideads_explanation" <?php if($hideads < 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">&nbsp;</th>
 				<td>
-					<p class="top0em"><?php _e('Ads from the following plugins will be automatically turned off', 'paid-memberships-pro' );?>: <em>Easy Adsense</em>, ...</p>
+					<p><?php _e('Ads from the following plugins will be automatically turned off', 'paid-memberships-pro' );?>: <em>Easy Adsense</em>, ...</p>
 					<p><?php _e('To hide ads in your template code, use code like the following', 'paid-memberships-pro' );?>:</p>
 				<pre lang="PHP">
-if(pmpro_displayAds())
-{
-//insert ad code here
-}
-				</pre>
+if ( pmpro_displayAds() ) {
+	//insert ad code here
+}</pre>
 				</td>
 			</tr>
 			<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
@@ -233,36 +287,6 @@ if(pmpro_displayAds())
 			<?php } ?>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
-						<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
-						<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'paid-memberships-pro' );?></option>
-						<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
-					</select><br />
-					<small><?php _e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</small>
-				</td>
-			</tr>
-			<tr id="recaptcha_tr" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
-				<th scope="row" valign="top">&nbsp;</th>
-				<td>
-					<label for="recaptcha_version"><?php _e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label>
-					<select id="recaptcha_version" name="recaptcha_version">
-						<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php _e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
-						<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php _e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
-					</select>
-					<small><?php _e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></small>
-					<br /><br />
-					<label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label>
-					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
-					<br /><br />
-					<label for="recaptcha_privatekey"><?php _e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label>
-					<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top">
 					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
@@ -270,7 +294,7 @@ if(pmpro_displayAds())
 						wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
 					?>
 					<br />
-					<small><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></small>
+					<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
 
@@ -328,8 +352,7 @@ if(pmpro_displayAds())
 	                    }
 	                    if (!empty($field['description'])) {
 	                        ?>
-	                        <br>
-	                        <small><?php echo esc_textarea( $field['description'] ); ?></small>
+	                        <p class="description"><?php echo esc_textarea( $field['description'] ); ?></p>
 	                    <?php
 	                    }
 	                    ?>
@@ -370,11 +393,11 @@ if(pmpro_displayAds())
 				var recaptcha = jQuery('#recaptcha').val();
 				if(recaptcha > 0)
 				{
-					jQuery('#recaptcha_tr').show();
+					jQuery('#recaptcha_settings').show();
 				}
 				else
 				{
-					jQuery('#recaptcha_tr').hide();
+					jQuery('#recaptcha_settings').hide();
 				}
 			}
 			pmpro_updateRecaptchaTRs();

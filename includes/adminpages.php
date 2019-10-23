@@ -267,6 +267,10 @@ function pmpro_orders() {
 	require_once( PMPRO_DIR . '/adminpages/orders.php' );
 }
 
+function pmpro_license_settings_page() {
+	require_once( PMPRO_DIR . '/adminpages/license.php' );
+}
+
 function pmpro_updates() {
 	require_once( PMPRO_DIR . '/adminpages/updates.php' );
 }

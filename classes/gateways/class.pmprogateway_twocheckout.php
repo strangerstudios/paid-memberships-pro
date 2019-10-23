@@ -111,7 +111,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('2Checkout Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h3><?php _e('2Checkout Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -120,7 +121,7 @@
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" />
-				<br /><small><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.');?></small>
+				<p class="description"><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -129,7 +130,7 @@
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
-				<br /><small><?php _e('Password for the API user created.');?></small>
+				<p class="description"><?php _e('Password for the API user created.');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -138,7 +139,7 @@
 			</th>
 			<td>
 				<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $values['twocheckout_accountnumber']?>" />
-				<br /><small><?php _e('Click on the profile icon in 2Checkout to find your Account Number.');?></small>
+				<p class="description"><?php _e('Click on the profile icon in 2Checkout to find your Account Number.');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -147,7 +148,7 @@
 			</th>
 			<td>
 				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
-				<br /><small><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.');?></small>
+				<p class="description"><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>

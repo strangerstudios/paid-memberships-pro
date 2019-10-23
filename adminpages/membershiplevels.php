@@ -408,7 +408,8 @@
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
 						?>
-						<small><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></small></td>
+						<p class="description"><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></p>
+					</td>
 				</tr>
 
 				<tr>
@@ -428,7 +429,7 @@
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
 						?>
-						<small><?php _e('per', 'paid-memberships-pro' );?></small>
+						<?php _e('per', 'paid-memberships-pro' );?>
 						<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?php echo esc_attr($level->cycle_number);?>" />
 						<select id="cycle_period" name="cycle_period">
 						  <?php
@@ -440,12 +441,12 @@
 							}
 						  ?>
 						</select>
-						<br /><small>
+						<p class="description">
 							<?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?>
 							<?php if($gateway == "braintree") { ?>
-								<br /><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'paid-memberships-pro' );?>
+								<strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'paid-memberships-pro' );?></strong>
 							<?php } ?>
-						</small>
+						</p>
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
 							<p class="pmpro_message"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' );?></p>
 						<?php } elseif($gateway == "braintree") {
@@ -461,7 +462,7 @@
 					<th scope="row" valign="top"><label for="billing_limit"><?php _e('Billing Cycle Limit', 'paid-memberships-pro' );?>:</label></th>
 					<td>
 						<input name="billing_limit" type="text" size="20" value="<?php echo $level->billing_limit?>" />
-						<br /><small>
+						<p class="description">
 							<?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?>
 							<?php if ( ( $gateway == "stripe" ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) { ?>
 								<br /><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support billing limits. You can still set an expiration date below.', 'paid-memberships-pro' );?></strong>
@@ -476,7 +477,7 @@
 										echo '<br />' . sprintf( wp_kses( __( 'Optional: Allow billing limits with Stripe using the <a href="%s" title="Paid Memberships Pro - Stripe Billing Limits Add On" target="_blank">Stripe Billing Limits Add On</a>.', 'paid-memberships-pro' ), $allowed_sbl_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-stripe-billing-limits/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=stripe-billing-limits' ) . '</em></td></tr>';
 								} ?>
 							<?php } ?>
-						</small>
+						</p>
 					</td>
 				</tr>
 
@@ -486,7 +487,7 @@
 						<input id="custom_trial" name="custom_trial" type="checkbox" value="yes" <?php if ( pmpro_isLevelTrial($level) ) { echo "checked='checked'"; } ?> onclick="jQuery('.trial_info').toggle();" /> <label for="custom_trial"><?php _e('Check to add a custom trial period.', 'paid-memberships-pro' );?></label>
 
 						<?php if($gateway == "twocheckout") { ?>
-							<br /><small><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'paid-memberships-pro' );?></strong></small>
+							<p class="description"><strong <?php if(!empty($pmpro_twocheckout_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount.', 'paid-memberships-pro' );?></strong></p>
 						<?php } ?>
 					</td>
 				</tr>
@@ -499,7 +500,7 @@
 								'title' => array(),
 							),
 						);
-						echo '<tr><th>&nbsp;</th><td><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Allow more customizable trial periods and renewal dates using the <a href="%s" title="Paid Memberships Pro - Subscription Delays Add On" target="_blank">Subscription Delays Add On</a>.', 'paid-memberships-pro' ), $allowed_sd_html ), 'https://www.paidmembershipspro.com/add-ons/subscription-delays/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=subscription-delays' ) . '</em></td></tr>';
+						echo '<tr><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Allow more customizable trial periods and renewal dates using the <a href="%s" title="Paid Memberships Pro - Subscription Delays Add On" target="_blank">Subscription Delays Add On</a>.', 'paid-memberships-pro' ), $allowed_sd_html ), 'https://www.paidmembershipspro.com/add-ons/subscription-delays/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=subscription-delays' ) . '</p></td></tr>';
 				} ?>
 
 				<tr class="trial_info recurring_info" <?php if (!pmpro_isLevelTrial($level)) echo "style='display:none;'";?>>
@@ -514,21 +515,15 @@
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
 						?>
-						<small><?php _e('for the first', 'paid-memberships-pro' );?></small>
+						<?php _e('for the first', 'paid-memberships-pro' );?>
 						<input name="trial_limit" type="text" size="10" value="<?php echo esc_attr($level->trial_limit);?>" />
-						<small><?php _e('subscription payments', 'paid-memberships-pro' );?>.</small>
+						<?php _e('subscription payments', 'paid-memberships-pro' );?>.
 						<?php if($gateway == "stripe") { ?>
-							<br /><small>
-							<strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong>
-							</small>
+							<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
 						<?php } elseif($gateway == "braintree") { ?>
-							<br /><small>
-							<strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong>
-							</small>
+							<p class="description"><strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
 						<?php } elseif($gateway == "payflowpro") { ?>
-							<br /><small>
-							<strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Payflow integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong>
-							</small>
+							<p class="description"><strong <?php if(!empty($pmpro_payflow_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Payflow integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
 						<?php } ?>
 					</td>
 				</tr>
@@ -557,7 +552,7 @@
 								'title' => array(),
 							),
 						);
-						echo '<tr><th>&nbsp;</th><td><em class="pmpro_lite">' . sprintf( wp_kses( __( 'Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank">Set Expiration Date Add On</a>.', 'paid-memberships-pro' ), $allowed_sed_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date' ) . '</em></td></tr>';
+						echo '<tr><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank">Set Expiration Date Add On</a>.', 'paid-memberships-pro' ), $allowed_sed_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date' ) . '</p></td></tr>';
 				} ?>
 
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>					
@@ -574,7 +569,7 @@
 							}
 						  ?>
 						</select>
-						<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
+						<p class="description"><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
 						
 						<div id="pmpro_expiration_warning" style="display: none;" class="notice error inline">
 							<p><?php printf( __( 'WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ); ?></p>

@@ -560,7 +560,7 @@
 			else
 			{
 				// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
-				readfile($fh);
+				readfile($filename);
 			}
 
 			// remove the temp file

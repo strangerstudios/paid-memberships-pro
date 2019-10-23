@@ -1,5 +1,16 @@
 == Changelog ==
 
+= 2.1.3 - 2019-10-14 =
+* BUG FIX: Updating Stripe subscriptions from the edit user page will no longer cause an extra charge.
+* BUG FIX: Correctly localizing the expiration date on the frontend account page.
+* BUG FIX: Moved the row actions on the orders page into the correct column. (Thanks, Tim Sparks)
+* BUG FIX: Fixed issue with CSV exports if the fpassthru function is unavailable.
+* BUG FIX: Fixed warning that occurred when the Email Log plugin was active. (Thanks, Matty Cohen)
+* BUG FIX: Fixed warning that occurred with sessions sometimes. (Thanks, Matty Cohen)
+* ENHANCEMENT: Made labels and styling more consistant across settings pages.
+* ENHANCEMENT: The Consent Log will go into a scrollable box if more than 10 items are in the list.
+* ENHANCEMENT: Updated the copy on the license page.
+
 = 2.1.2 - 2019-09-26 =
 * BUG FIX: Fixed bug where Stripe subscriptions weren't updated to use the new payment method when users updated their billing method on the Update Billing page. You may have users with an updated "default payment method" but their subscriptions still need to be updated manually in Stripe to use that new method. Otherwise, payments will fail. This is fixed going forward.
 * BUG FIX: Fixed bug where PMPro Blocks were sometimes not loading on the edit post page.

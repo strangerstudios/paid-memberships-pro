@@ -153,8 +153,15 @@
 		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_meta">
 			<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
-			<a target="_blank" class="button button-documentation" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation")?>"><?php _e('Documentation', 'paid-memberships-pro' );?></a>
-			<a target="_blank" class="button-primary button-support" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php _e('Get Support', 'paid-memberships-pro' );?></a>
+			<a target="_blank" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation")?>"><?php _e('Documentation', 'paid-memberships-pro' );?></a>
+			<a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php _e('Get Support', 'paid-memberships-pro' );?></a>
+
+			<?php if ( pmpro_license_isValid() ) { ?>
+				<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?>				
+			<?php } elseif ( ! defined( 'PMPRO_LICENSE_NAG' ) || PMPRO_LICENSE_NAG == true ) { ?>
+				<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-invalid" href="%s">No License</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?>
+			<?php } ?>
+
 		</div>
 	</div>
 	<div id="pmpro_notifications">
