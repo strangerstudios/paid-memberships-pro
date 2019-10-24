@@ -2496,13 +2496,19 @@ msgstr "Après votre paiement initial, vos premiers %d paiements coûtera %s."
 
 #: includes/functions.php:297
 #, php-format
-msgid "Customers in %s will be charged %s%% tax."
-msgstr "Les clients de %s seront taxés à %s%%."
+msgid "Customers in %1$s will be charged %2$s%% tax."
+msgstr "Les clients de %1$s seront taxés à %2$s%%."
 
 #: includes/functions.php:311
 #, php-format
-msgid "Membership expires after %d %s."
-msgstr "L'adhésion expire après %d %s."
+msgid "Membership expires after %1$d %2$s."
+msgstr "L'adhésion expire après %1$d %2$s."
+
+#: includes/functions.php:543 includes/functions.php:524
+#: includes/functions.php:543
+#, php-format
+msgid "%1$s membership expires after %2$d %3$s"
+msgstr "L'adhésion %1$s expire après %2$d %3$s."
 
 #: includes/functions.php:576
 msgid "User ID not found."

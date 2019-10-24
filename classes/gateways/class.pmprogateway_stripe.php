@@ -1120,7 +1120,6 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->code = $order->getRandomCode();
 		}
 
-
 		//what amount to charge?
 		$amount = $order->InitialPayment;
 
@@ -1129,7 +1128,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$tax             = $order->getTax( true );
 		$amount          = pmpro_round_price( (float) $order->subtotal + (float) $tax );
 
-
 		//create a customer
 		$result = $this->getCustomer( $order );
 
@@ -1137,7 +1135,6 @@ class PMProGateway_stripe extends PMProGateway {
 			//failed to create customer
 			return false;
 		}
-
 
 		//charge
 		try {
@@ -1148,7 +1145,14 @@ class PMProGateway_stripe extends PMProGateway {
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
 				)
 			);
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			//$order->status = "error";
+			$order->errorcode  = true;
+			$order->error      = "Error: " . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		} catch ( \Exception $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;
 			$order->error      = "Error: " . $e->getMessage();
@@ -1247,8 +1251,12 @@ class PMProGateway_stripe extends PMProGateway {
 						//charge, look it up
 						try {
 							$charge = Stripe_Charge::retrieve( $payment_transaction_id );
-						} catch ( \Exception $exception ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+						} catch ( \Throwable $e ) {
+							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+							return false;
+						} catch ( \Exception $e ) {
+							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 							return false;
 						}
@@ -1260,8 +1268,12 @@ class PMProGateway_stripe extends PMProGateway {
 						//invoice look it up
 						try {
 							$invoice = Stripe_Invoice::retrieve( $payment_transaction_id );
-						} catch ( \Exception $exception ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $exception->getMessage() );
+						} catch ( \Throwable $e ) {
+							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+							return false;
+						} catch ( \Exception $e ) {
+							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 							return false;
 						}
@@ -1340,8 +1352,9 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 
 				return $this->customer;
-
-			} catch ( Exception $e ) {
+			} catch ( \Throwable $e ) {
+				//assume no customer found
+			} catch ( \Exception $e ) {
 				//assume no customer found
 			}
 		}
@@ -1354,6 +1367,16 @@ class PMProGateway_stripe extends PMProGateway {
 					"email"       => $order->Email,
 				) );
 			} catch ( \Stripe\Error $e ) {
+				$order->error      = __( "Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
+				$order->shorterror = $order->error;
+
+				return false;
+			} catch ( \Throwable $e ) {
+				$order->error      = __( "Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
+				$order->shorterror = $order->error;
+
+				return false;
+			} catch ( \Exception $e ) {
 				$order->error      = __( "Error creating customer record with Stripe:", 'paid-memberships-pro' ) . " " . $e->getMessage();
 				$order->shorterror = $order->error;
 
@@ -1412,7 +1435,12 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
 			try {
 				$sub = $this->customer->subscriptions->retrieve( $order->subscription_transaction_id );
-			} catch ( Exception $e ) {
+			} catch ( \Throwable $e ) {
+				$order->error      = __( "Error getting subscription with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
+				$order->shorterror = $order->error;
+
+				return false;
+			} catch ( \Exception $e ) {
 				$order->error      = __( "Error getting subscription with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 				$order->shorterror = $order->error;
 
@@ -1563,7 +1591,12 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 
 			$plan = Stripe_Plan::create( apply_filters( 'pmpro_stripe_create_plan_array', $plan ) );
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			$order->error      = __( "Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		} catch ( \Exception $e ) {
 			$order->error      = __( "Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 			$order->shorterror = $order->error;
 
@@ -1585,7 +1618,21 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$subscription = array( "plan" => $order->code );
 			$result       = $this->customer->subscriptions->create( apply_filters( 'pmpro_stripe_create_subscription_array', $subscription ) );
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			//try to delete the plan
+			$plan->delete();
+
+			//give the user any old updates back
+			if ( ! empty( $user_id ) ) {
+				update_user_meta( $user_id, "pmpro_stripe_updates", $old_user_updates );
+			}
+
+			//return error
+			$order->error      = __( "Error subscribing customer to plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		} catch ( \Exception $e ) {
 			//try to delete the plan
 			$plan->delete();
 
@@ -1915,7 +1962,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$r = $subscription->cancel();
 
 			return true;
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			return false;
+		} catch ( \Exception $e ) {
 			return false;
 		}
 	}
@@ -1997,7 +2046,9 @@ class PMProGateway_stripe extends PMProGateway {
 		//get the charge
 		try {
 			$charge = Stripe_Charge::retrieve( $transaction_id );
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			$charge = false;
+		} catch ( \Exception $e ) {
 			$charge = false;
 		}
 
@@ -2014,8 +2065,13 @@ class PMProGateway_stripe extends PMProGateway {
 		//attempt refund
 		try {
 			$refund = $charge->refund();
-		} catch ( Exception $e ) {
-			//$order->status = "error";
+		} catch ( \Throwable $e ) {
+			$order->errorcode  = true;
+			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		} catch ( \Exception $e ) {
 			$order->errorcode  = true;
 			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
 			$order->shorterror = $order->error;
@@ -2062,10 +2118,10 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch ( Stripe\Error\Base $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Throwable $e ) {
+			} catch ( \Throwable $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Exception $e ) {
+			} catch ( \Exception $e ) {
 				$order->error = $e->getMessage();
 				return false;
 			}
@@ -2099,10 +2155,10 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Throwable $e ) {
+		} catch ( \Throwable $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 			return false;
 		}
@@ -2153,10 +2209,10 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch ( Stripe\Error\Base $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Throwable $e ) {
+			} catch ( \Throwable $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Exception $e ) {
+			} catch ( \Exception $e ) {
 				$order->error = $e->getMessage();
 				return false;
 			}
@@ -2205,10 +2261,10 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Throwable $e ) {
+		} catch ( \Throwable $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 			return false;
 		}
@@ -2346,7 +2402,11 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->error = $e->getMessage();
 
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2374,10 +2434,10 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Throwable $e ) {
+		} catch ( \Throwable $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 			return false;
 		}
@@ -2393,7 +2453,11 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->error = $e->getMessage();
 
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 
 			return false;
@@ -2410,10 +2474,10 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch ( Stripe\Error\Base $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Throwable $e ) {
+			} catch ( \Throwable $e ) {
 				$order->error = $e->getMessage();
 				return false;
-			} catch ( Exception $e ) {
+			} catch ( \Exception $e ) {
 				$order->error = $e->getMessage();
 				return false;
 			}
@@ -2472,10 +2536,10 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Throwable $e ) {
+		} catch ( \Throwable $e ) {
 			$order->error = $e->getMessage();
 			return false;
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 			return false;
 		}
