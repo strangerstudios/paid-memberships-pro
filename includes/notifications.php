@@ -34,12 +34,17 @@ function pmpro_notifications() {
 					$display = false;
 				}
 
+				// Hide if today's date is before notification start date.
+				if ( date( 'Y-m-d' ) < $notification->starts ) {
+					$display = false;
+				}
+
+				// Hide if today's date is after end date.
 				if ( date( 'Y-m-d' ) > $notification->ends ) {
 					$display = false;
 				}
 
 				if ( ! $display ) {
-
 					continue;
 				}
 
