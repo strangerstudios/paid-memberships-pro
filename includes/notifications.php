@@ -23,13 +23,13 @@ function pmpro_notifications() {
 		}
 
 		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL' ) { 
-
+			global $current_user;
 			// Get array of hidden messages and remove from array.
-			$archived_notifications = get_option( 'pmpro_archived_notifications' );
+			$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
 
 			foreach ( $pmpro_notification as $notification ) { 
 				// Skip this iteration if the notification ID is inside the archived setting.
-				if ( array_key_exists( $notification->id, $archived_notifications ) ) {
+				if ( is_array( $archived_notifications ) && array_key_exists( $notification->id, $archived_notifications ) ) {
 					continue;
 				}?>
 				<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
@@ -65,9 +65,10 @@ function pmpro_footer_link() {
 add_action( 'wp_footer', 'pmpro_footer_link' );
 
 function pmpro_hide_notice() {
+	global $current_user;
 	$notification_id = sanitize_text_field( $_POST['notification_id'] );
 
-	$archived_notifications = get_option( 'pmpro_archived_notifications' );
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
 
 	if ( ! is_array( $archived_notifications ) ) {
 		$archived_notifications = array();
@@ -75,6 +76,7 @@ function pmpro_hide_notice() {
 
 	$archived_notifications[$notification_id] = date_i18n( 'Y-m-d' );
 
-	update_option( 'pmpro_archived_notifications', $archived_notifications );
+	update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
+	exit;
 }
 add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
