@@ -39,6 +39,7 @@ function pmpro_notifications() {
 				}
 
 				if ( ! $display ) {
+
 					continue;
 				}
 
