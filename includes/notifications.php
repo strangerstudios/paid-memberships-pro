@@ -1,86 +1,142 @@
 <?php
 /**
- * This code calls the server at www.paidmembershipspro.com to see if there are any notifications to display to the user. Notifications are shown on the PMPro settings pages in the dashboard.
- *
+ * This code calls the server at notifications.paidmembershipspro.com
+ * to see if there are any notifications to display to the user.
+ * Notifications are shown on the PMPro settings pages in the dashboard.
+ * Runs on the wp_ajax_pmpro_notifications hook.
  */
 function pmpro_notifications() {
 	if ( current_user_can( 'manage_options' ) ) {
-		$pmpro_notification = get_transient( 'pmpro_notification_' . PMPRO_VERSION );
-		if ( empty( $pmpro_notification ) ) {
-			// Set to NULL in case the below times out or fails, this way we only check once a day.
-			set_transient( 'pmpro_notification_' . PMPRO_VERSION, 'NULL', 86400 );
-			$pmpro_notification_url = apply_filters( 'pmpro_notifications_url', esc_url( 'https://notifications.strangerstudios.com/v2/notifications.json' ) );
-			// Figure out which server to get from.
-			$remote_notification = wp_remote_get( $pmpro_notification_url );
-
-			// Get notification.
-			$pmpro_notification = json_decode( wp_remote_retrieve_body( $remote_notification ) );
-			
-			// Update transient if we got something.
-			if ( ! empty( $pmpro_notification ) ) {
-				set_transient( 'pmpro_notification_' . PMPRO_VERSION, $pmpro_notification, 86400 );
-			}
-		}
-
-		if ( ! empty( $pmpro_notification ) && $pmpro_notification != 'NULL' ) { 
-			global $current_user;
-			// Get array of hidden messages and remove from array.
-			$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
-
-			foreach ( $pmpro_notification as $notification ) { 
-				$display = true;
-				// Skip this iteration if the notification ID is inside the archived setting.
-				if ( ( is_array( $archived_notifications ) && array_key_exists( $notification->id, $archived_notifications ) ) ) {
-					$display = false;
-				}
-
-				// Hide if today's date is before notification start date.
-				if ( date( 'Y-m-d' ) < $notification->starts ) {
-					$display = false;
-				}
-
-				// Hide if today's date is after end date.
-				if ( date( 'Y-m-d' ) > $notification->ends ) {
-					$display = false;
-				}
-
-				if ( ! $display ) {
-					continue;
-				}
-
-				?>
-				<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
-				<?php if ( $notification->dismiss ) { ?>
-					<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
-				<?php } ?>
-					<div class="pmpro_notification-<?php echo $notification->type; ?>">
-						<h3><span class="dashicons dashicons-<?php echo $notification->dashicon; ?>"></span> <?php echo $notification->title; ?></h3>
-						<?php echo $notification->content; ?></div>
-				</div>
-		<?php }
-		}
+		$notification = pmpro_get_next_notification();
+		
+		// TODO: Make sure we haven't shown a notification too recently.
+		
+		if ( ! empty( $notification ) ) {
+		?>
+		<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
+		<?php if ( $notification->dismiss ) { ?>
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+		<?php } ?>
+			<div class="pmpro_notification-<?php echo $notification->type; ?>">
+				<h3><span class="dashicons dashicons-<?php echo $notification->dashicon; ?>"></span> <?php echo $notification->title; ?></h3>
+				<?php echo $notification->content; ?>
+			</div>
+		</div>
+		<?php
+		}		
 	}
 
-	// Exit so we just show this content.
+	// Exit cause we're loading this via AJAX.
 	exit;
 }
 add_action( 'wp_ajax_pmpro_notifications', 'pmpro_notifications' );
 
 /**
- * Show Powered by Paid Memberships Pro comment (only visible in source) in the footer.
- *
-*/
-function pmpro_link() { ?>
-Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.
-<?php }
+ * Get the highest priority applicable notification from the list.
+ */
+function pmpro_get_next_notification() {
+	global $current_user;	
+	if ( empty( $current_user->ID ) ) {
+		return false;
+	}
+	
+	// Get all notifications.
+	$pmpro_notifications = pmpro_get_all_notifications();
+	if ( empty( $pmpro_notifications ) ) {
+		return false;
+	}
+	
+	// Filter out archived notifications.
+	$pmpro_filtered_notifications = array();
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	foreach ( $pmpro_notifications as $notification ) {		
+		if ( ( is_array( $archived_notifications ) && array_key_exists( $notification->id, $archived_notifications ) ) ) {
+			continue;
+		}
 
-function pmpro_footer_link() {
-	if ( ! pmpro_getOption( 'hide_footer_link' ) ) { ?>
-		<!-- <?php echo pmpro_link()?> -->
-	<?php }
+		$pmpro_filtered_notifications[] = $notification;		
+	}	
+	
+	// Return the first one.
+	if ( ! empty( $pmpro_filtered_notifications ) ) {
+		$next_notification = $pmpro_filtered_notifications[0];
+	} else {
+		$next_notification = false;
+	}
+	
+	return $next_notification;
 }
-add_action( 'wp_footer', 'pmpro_footer_link' );
 
+/**
+ * Get notifications from the notification server.
+ */
+function pmpro_get_all_notifications() {
+	$pmpro_notifications = get_transient( 'pmpro_notifications_' . PMPRO_VERSION );
+
+	if ( empty( $pmpro_notifications ) ) {
+		// Set to NULL in case the below times out or fails, this way we only check once a day.
+		set_transient( 'pmpro_notifications_' . PMPRO_VERSION, 'NULL', 86400 );
+		
+		// We use the filter to hit our testing servers.
+		$pmpro_notification_url = apply_filters( 'pmpro_notifications_url', esc_url( 'https://notifications.strangerstudios.com/v2/notifications.json' ) );
+
+		// Get notifications.
+		$remote_notifications = wp_remote_get( $pmpro_notification_url );
+		$pmpro_notifications = json_decode( wp_remote_retrieve_body( $remote_notifications ) );
+		
+		// Update transient if we got something.
+		if ( ! empty( $pmpro_notifications ) ) {
+			set_transient( 'pmpro_notifications_' . PMPRO_VERSION, $pmpro_notifications, 86400 );
+		}
+	}
+	
+	// We expect an array.
+	if( $pmpro_notifications === 'NULL' ) {
+		$pmpro_notifications = array();
+	}
+	
+	// Filter notifications by start/end date.
+	$pmpro_active_notifications = array();
+	foreach( $pmpro_notifications as $notification ) {
+		// Hide if today's date is before notification start date.
+		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
+			continue;
+		}
+
+		// Hide if today's date is after end date.
+		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) > $notification->ends ) {
+			continue;
+		}
+		
+		$pmpro_active_notifications[] = $notification;
+	}
+	
+	// Filter out notifications based on show/hide rules.
+	$pmpro_applicable_notifications = array();
+	foreach( $pmpro_active_notifications as $notification ) {
+		if ( pmpro_is_notification_applicable( $notification ) ) {
+			$pmpro_applicable_notifications[] = $notification;			
+		}
+	}
+	
+	// Sort by priority.	
+	$pmpro_applicable_notifications = wp_list_sort( $pmpro_applicable_notifications, 'priority' );
+	
+	return $pmpro_applicable_notifications;
+}
+
+/**
+ * Check rules for a notification.
+ */
+function pmpro_is_notification_applicable( $notification ) {
+	// TODO: Check show_if and hide_if rules.
+	
+	return true;
+}
+
+/**
+ * Move the top notice to the archives if dismissed.
+ */
 function pmpro_hide_notice() {
 	global $current_user;
 	$notification_id = sanitize_text_field( $_POST['notification_id'] );
@@ -97,3 +153,16 @@ function pmpro_hide_notice() {
 	exit;
 }
 add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
+
+/**
+ * Show Powered by Paid Memberships Pro comment (only visible in source) in the footer.
+ */
+function pmpro_link() { ?>
+Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.
+<?php }
+function pmpro_footer_link() {
+	if ( ! pmpro_getOption( 'hide_footer_link' ) ) { ?>
+		<!-- <?php echo pmpro_link()?> -->
+	<?php }
+}
+add_action( 'wp_footer', 'pmpro_footer_link' );
