@@ -17,7 +17,8 @@ abstract class WebhookSignature
      * @param string $secret secret used to generate the signature.
      * @param int $tolerance maximum difference allowed between the header's
      *  timestamp and the current time
-     * @throws SignatureVerification if the verification fails.
+     * @throws \Stripe\Error\SignatureVerification if the verification fails.
+     * @return bool
      */
     public static function verifyHeader($payload, $header, $secret, $tolerance = null)
     {
@@ -59,7 +60,7 @@ abstract class WebhookSignature
         }
 
         // Check if timestamp is within tolerance
-        if (($tolerance > 0) && ((time() - $timestamp) > $tolerance)) {
+        if (($tolerance > 0) && (abs(time() - $timestamp) > $tolerance)) {
             throw new Error\SignatureVerification(
                 "Timestamp outside the tolerance zone",
                 $header,
@@ -103,7 +104,7 @@ abstract class WebhookSignature
      */
     private static function getSignatures($header, $scheme)
     {
-        $signatures = array();
+        $signatures = [];
         $items = explode(",", $header);
 
         foreach ($items as $item) {

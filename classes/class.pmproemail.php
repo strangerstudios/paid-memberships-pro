@@ -44,7 +44,7 @@
 						
 			$this->headers = array("Content-Type: text/html");
 			
-			$this->attachments = NULL;
+			$this->attachments = array();
 			
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
@@ -114,6 +114,7 @@
 			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
+			$this->add_from_to_headers();
 			$this->subject = apply_filters("pmpro_email_subject", $temail->subject, $this);
 			$this->template = apply_filters("pmpro_email_template", $temail->template, $this);
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
@@ -128,6 +129,33 @@
 			{
 				return false;
 			}		
+		}
+		
+		/**
+		 * Add the From Name and Email to the headers.
+		 * @since 2.1
+		 */
+		function add_from_to_headers() {
+			// Make sure we have a headers array
+			if ( empty( $this->headers ) ) {
+				$this->headers = array();
+			} elseif ( ! is_array( $this->headers ) ) {
+				$this->headers = array( $this->headers );
+			}
+			
+			// Remove any previous from header
+			foreach( $this->headers as $key => $header ) {
+				if( strtolower( substr( $header, 0, 5 ) ) == 'from:' ) {
+					unset( $this->headers[$key] );
+				}
+			}
+			
+			// Add From Email and Name or Just Email
+			if( !empty( $this->from ) && !empty( $this->fromname ) ) {
+				$this->headers[] = 'From:' . $this->fromname . ' <' . $this->from . '>'; 
+			} elseif( !empty( $this->from ) ) {
+				$this->headers[] = 'From:' . $this->from;
+			}
 		}
 		
 		function sendCancelEmail($user = NULL, $old_level_id = NULL)
@@ -953,6 +981,82 @@
 
 			return $this->sendEmail();
 		}
+
+		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+		{
+			global $wpdb, $current_user;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user || !$order)
+				return false;
+
+			// if an invoice URL wasn't passed in, grab it from the order
+			if(empty($invoice_url) && isset($order->invoice_url))
+				$invoice_url = $order->invoice_url;
+
+			// still no invoice URL? bail
+			if(empty($invoice_url))
+				return false;
+				
+			$this->email = $user->user_email;
+			$this->subject = sprintf(__("Payment action required for your %s membership", 'paid-memberships-pro' ), get_option("blogname"));	
+			
+			$this->template = "payment_action";
+
+			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
+
+			$this->data = array(
+								"subject" => $this->subject, 
+								"name" => $user->display_name, 
+								"display_name" => $user->display_name,
+								"user_login" => $user->user_login,
+								"sitename" => get_option("blogname"),
+								"siteemail" => pmpro_getOption("from_email"),
+								"invoice_url" => $invoice_url,
+							);
+						
+			return $this->sendEmail();
+		}
+
+		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+		{
+			global $wpdb, $current_user;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user || !$order)
+				return false;
+
+			// if an invoice URL wasn't passed in, grab it from the order
+			if(empty($invoice_url) && isset($order->invoice_url))
+				$invoice_url = $order->invoice_url;
+
+			// still no invoice URL? bail
+			if(empty($invoice_url))
+				return false;
+				
+			$this->email = get_bloginfo("admin_email");
+			$this->subject = sprintf(__("Payment action required: membership for %s at %s", 'paid-memberships-pro' ), $user->user_login, get_option("blogname"));	
+			
+			$this->template = "payment_action_admin";
+
+			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
+
+			$this->data = array(
+								"subject" => $this->subject, 
+								"name" => $user->display_name, 
+								"display_name" => $user->display_name,
+								"user_login" => $user->user_login,
+								"sitename" => get_option("blogname"),
+								"siteemail" => pmpro_getOption("from_email"),
+								"user_email" => $user->user_email,
+								"invoice_url" => $invoice_url,
+							);
+						
+			return $this->sendEmail();
+		}
+
 		
 		/**
 		 * Load the text for each default email template.

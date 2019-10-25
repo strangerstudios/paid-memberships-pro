@@ -296,10 +296,7 @@
 			$last_uid = $theusers[($users_found - 1)];
 
 		//increment starting position
-		if(0 < $iterations)
-		{
-			$i_start += $max_users_per_loop;
-		}
+		$i_start += $max_users_per_loop;
 		
 		//escape the % for LIKE comparison with $wpdb
 		if(!empty($search))
@@ -553,10 +550,18 @@
 				ini_set('zlib.output_compression', 'Off');
 			}
 
-			// open and send the file contents to the remote location
-			$fh = fopen( $filename, 'rb' );
-			fpassthru($fh);
-			fclose($fh);
+			if( function_exists('fpassthru') )
+			{
+				// open and send the file contents to the remote location
+				$fh = fopen( $filename, 'rb' );
+				fpassthru($fh);
+				fclose($fh);
+			}
+			else
+			{
+				// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
+				readfile($filename);
+			}
 
 			// remove the temp file
 			unlink($filename);

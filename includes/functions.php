@@ -309,10 +309,11 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Valid types: 'email', 'pages'
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
 	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		$templates = $user_templates;
+		$templates = array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
@@ -1430,7 +1431,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 	if ( $s || $l ) {
 		$user_ids_query = "SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
 		if ( $s ) {
-			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%$" . esc_sql( s ) . "%') ";
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%$" . esc_sql( $s ) . "%') ";
 		}
 		if ( $l ) {
 			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
@@ -2609,7 +2610,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 }
 
 /**
- * Cast to floast and pad zeroes after the decimal
+ * Cast to floats and pad zeroes after the decimal
  * when editing the price on the edit level page.
  * Only do this for currency with decimals = 2
  * Only do this if using . as the decimal separator.
@@ -2860,7 +2861,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 	}
 }
 
- /**
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -2915,4 +2916,167 @@ function pmpro_cleanup_memberships_users_table() {
 				ON t1.id = t2.id
 				SET status = 'inactive'";
 	$wpdb->query( $sqlQuery );
+}
+
+/**
+ * Are we on the PMPro checkout page?
+ * @since 2.1
+ * @return bool True if we are on the checkout page, false otherwise
+ */
+function pmpro_is_checkout() {
+	global $pmpro_pages;
+
+	// Try is_page first.
+	if ( ! empty( $pmpro_pages['checkout'] ) ) {
+		$is_checkout = is_page( $pmpro_pages['checkout'] );
+	} else {
+		$is_checkout = false;
+	}
+
+	// Page might not be setup yet or a custom page.
+	$queried_object = get_queried_object();
+
+	if ( ! $is_checkout &&
+		! empty( $queried_object ) &&
+		! empty( $queried_object->post_content ) &&
+		( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
+			( function_exists( 'has_block' ) &&
+				has_block( 'pmpro/checkout-page', $queried_object->post_content )
+			)
+		)
+	) {
+		$is_checkout = true;
+	}
+
+	/**
+	 * Filter for pmpro_is_checkout return value.
+	 * @since 2.1
+	 * @param bool $is_checkout true if we are on the checkout page, false otherwise
+	 */
+	$is_checkout = apply_filters( 'pmpro_is_checkout', $is_checkout );
+
+	return $is_checkout;
+}
+
+/**
+ * Are we showing discount codes at checkout?
+ */
+function pmpro_show_discount_code() {
+	global $wpdb;
+	static $show;
+	
+	// check DB if we haven't yet
+	if ( !isset( $show ) ) {
+		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+			$show = true;
+		} else {
+			$show = false;
+		}
+	}
+	
+	$show = apply_filters( "pmpro_show_discount_code", $show );
+	
+	return $show;
+}
+
+/**
+ * Check if the checkout form was submitted.
+ * Accounts for image buttons/etc.
+ * @since 2.1
+ * @return bool True if the form was submitted, else false.
+ */
+ function pmpro_was_checkout_form_submitted() {
+	 // Default to false.
+	 $submit = false;
+	 
+	 // Basic check for a field called submit-checkout.
+	 if ( isset( $_REQUEST['submit-checkout'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 // _x stuff in case they clicked on the image button with their mouse
+	 if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 return $submit;
+ }
+ 
+ /**
+  * Build the order object used at checkout.
+  * @since 2.1
+  * @return mixed $order Order object.
+  */
+ function pmpro_build_order_for_checkout() {    
+	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
+	
+	$morder                   = new MemberOrder();
+	$morder->membership_id    = $pmpro_level->id;
+	$morder->membership_name  = $pmpro_level->name;
+	$morder->discount_code    = $discount_code;
+	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
+	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
+	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->BillingPeriod    = $pmpro_level->cycle_period;
+	$morder->BillingFrequency = $pmpro_level->cycle_number;
+	if ( $pmpro_level->billing_limit ) {
+		$morder->TotalBillingCycles = $pmpro_level->billing_limit;
+	}
+	if ( pmpro_isLevelTrial( $pmpro_level ) ) {
+		$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
+		$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
+		$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
+		$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
+	}
+	
+	// Credit card values.
+	$morder->cardtype              = $CardType;
+	$morder->accountnumber         = $AccountNumber;
+	$morder->expirationmonth       = $ExpirationMonth;
+	$morder->expirationyear        = $ExpirationYear;
+	$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
+	$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
+	$morder->CVV2                  = $CVV;
+	
+	// Not saving email in order table, but the sites need it.
+	$morder->Email = $bemail;
+	
+	// Save the user ID if logged in.
+	if ( $current_user->ID ) {
+		$morder->user_id = $current_user->ID;
+	}
+	
+	// Sometimes we need these split up.
+	$morder->FirstName = $bfirstname;
+	$morder->LastName  = $blastname;
+	$morder->Address1  = $baddress1;
+	$morder->Address2  = $baddress2;
+	
+	// Set other values.
+	$morder->billing          = new stdClass();
+	$morder->billing->name    = $bfirstname . " " . $blastname;
+	$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
+	$morder->billing->city    = $bcity;
+	$morder->billing->state   = $bstate;
+	$morder->billing->country = $bcountry;
+	$morder->billing->zip     = $bzipcode;
+	$morder->billing->phone   = $bphone;	
+	$morder->gateway = $gateway;
+	$morder->setGateway();
+	
+	// Set up level var.
+	$morder->getMembershipLevelAtCheckout();
+	
+	// Set tax.
+	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
+	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
+	
+	// Set amounts.
+	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
+	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
+	
+	// Filter for order, since v1.8
+	$morder = apply_filters( 'pmpro_checkout_order', $morder );
+	
+	return $morder;
 }

@@ -60,7 +60,7 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards'
+				'accepted_credit_cards',
 			);
 
 			return $options;
@@ -92,7 +92,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Payflow Pro Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h3><?php _e('Payflow Pro Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -132,9 +133,17 @@
 				<label><?php _e('IPN Handler', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php
-					$addon_url = "http://www.paidmembershipspro.com/add-ons/plugins-on-github/payflow-recurring-orders-addon/";
-					printf(__('Payflow does not use IPN. To sync recurring subscriptions, please see <a target="_blank" href="%s">this addon</a>.', 'paid-memberships-pro' ), $addon_url);?>
+				<p>
+				<?php
+					$allowed_message_html = array (
+						'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+					echo sprintf( wp_kses( __( 'Payflow does not use IPN. To sync recurring subscriptions, please see the <a target="_blank" href="%s" title="the Payflow Recurring Orders Add On">Payflow Recurring Orders Add On</a>.', 'paid-memberships-pro' ), $allowed_message_html ), 'https://www.paidmembershipspro.com/add-ons/payflow-recurring-orders-addon/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=payflow-recurring-orders-addon' );
+				?>
 				</p>
 			</td>
 		</tr>

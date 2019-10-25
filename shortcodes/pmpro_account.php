@@ -79,7 +79,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							<td class="pmpro_account-membership-expiration">
 							<?php 
 								if($level->enddate)
-									$expiration_text = date(get_option('date_format'), $level->enddate);
+									$expiration_text = date_i18n( get_option( 'date_format' ), $level->enddate );
 								else
 									$expiration_text = "---";
 

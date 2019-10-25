@@ -52,8 +52,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
 			//check this level
-			if($level->billing_limit > 0)
-			{
+			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
 				return false;
 			}
 		}
@@ -241,4 +240,70 @@ function pmpro_getClassesForPaymentSettingsField($field, $force = false)
 
 	//return space separated string
 	return implode(" ", $rgateways);
+}
+
+
+/**
+ * Code to handle emailing billable invoices.
+ *
+ * @since 1.8.6
+ */
+
+/**
+ * Get the gateway-related classes for fields on the payment settings page.
+ *
+ * @param string $field The name of the field to check.
+ * @param bool $force If true, it will rebuild the cached results.
+ *
+ * @since  1.8
+ */
+function pmpro_add_email_order_modal() {
+
+	// emailing?
+	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
+		$email = new PMProEmail();
+		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
+		$order = new MemberOrder( $_REQUEST['order'] );
+		if ( $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
+			<div class="notice notice-success is-dismissible">
+				<p><?php _e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
+			</div>
+		<?php } else { ?>
+			<div class="notice notice-error is-dismissible">
+				<p><?php _e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
+			</div>
+		<?php }
+	}
+
+	?>
+	<script>
+		// Update fields in email modal.
+		jQuery(document).ready(function ($) {
+			var order, order_id;
+			$('.email_link').click(function () {
+				order_id = $(this).data('order');
+				$('input[name=order]').val(order_id);
+				// Get email address from order ID
+				data = {
+					action: 'pmpro_get_order_json',
+					order_id: order_id
+				};
+				$.post(ajaxurl, data, function (response) {
+					order = JSON.parse(response);
+					$('input[name=email]').val(order.Email);
+				});
+			});
+		});
+	</script>
+	<?php add_thickbox(); ?>
+	<div id="email_invoice" style="display:none;">
+		<h3><?php _e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
+		<form method="post" action="">
+			<input type="hidden" name="order" value=""/>
+			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
+			<input type="text" value="" name="email"/>
+			<button class="button button-primary alignright"><?php _e( 'Send Email', 'paid-memberships-pro' ); ?></button>
+		</form>
+	</div>
+	<?php
 }

@@ -353,7 +353,7 @@
 	}
 	
 	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
-		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/' ) . '</strong>';
+		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 		
 		if( $pmpro_msgt == 'success' ) {
 			$pmpro_msgt = 'warning';
@@ -440,7 +440,7 @@
                 <tbody>
                     <tr>
                         <th scope="row" valign="top"><label><?php _e('ID', 'paid-memberships-pro' );?>:</label></th>
-                        <td class="pmpro_lite"><?php if(!empty($code->id)) echo $code->id; else echo __("This will be generated when you save.", 'paid-memberships-pro' );?></td>
+                        <td><p class="description"><?php if(!empty($code->id)) echo $code->id; else echo __("This will be generated when you save.", 'paid-memberships-pro' );?></p></td>
                     </tr>
 
                     <tr>
@@ -521,7 +521,7 @@
                         <th scope="row" valign="top"><label for="uses"><?php _e('Uses', 'paid-memberships-pro' );?>:</label></th>
                         <td>
 							<input name="uses" type="text" size="10" value="<?php if(!empty($code->uses)) echo str_replace("\"", "&quot;", stripslashes($code->uses));?>" />
-							<small class="pmpro_lite"><?php _e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></small>
+							<p class="description"><?php _e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></p>
 						</td>
                     </tr>
 
@@ -579,7 +579,7 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The initial amount collected at registration.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -600,7 +600,7 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small>per</small>
+									<?php _e('per', 'paid-memberships-pro' ); ?>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
 									<select name="cycle_period[]" onchange="updateCyclePeriod();">
 									  <?php
@@ -612,7 +612,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -620,7 +620,7 @@
 								<th scope="row" valign="top"><label for="billing_limit"><?php _e('Billing Cycle Limit', 'paid-memberships-pro' );?>:</label></th>
 								<td>
 									<input name="billing_limit[]" type="text" size="20" value="<?php echo $level->billing_limit?>" />
-									<br /><small><?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 
@@ -641,9 +641,9 @@
 									if(pmpro_getCurrencyPosition() == "right")
 										echo $pmpro_currency_symbol;
 									?>
-									<small><?php _e('for the first', 'paid-memberships-pro' );?></small>
+									<?php _e('for the first', 'paid-memberships-pro' );?>
 									<input name="trial_limit[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->trial_limit))?>" />
-									<small><?php _e('subscription payments', 'paid-memberships-pro' );?>.</small>
+									<?php _e('subscription payments', 'paid-memberships-pro' );?>.
 								</td>
 							</tr>
 
@@ -666,7 +666,7 @@
 										}
 									  ?>
 									</select>
-									<br /><small><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></small>
+									<p class="description"><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
 								</td>
 							</tr>
 						</tbody>
@@ -717,7 +717,7 @@
 					<h2><?php echo esc_attr_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
 					<h4><?php _e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-discountcodes&edit=-1' ) ) ; ?>" class="button-primary"><?php esc_attr_e( 'Create a Discount Code', 'paid-memberships-pro' );?></a>
-					<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/' ); ?>" target="_blank" class="button"><?php echo esc_attr_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=discount-codes' ); ?>" target="_blank" class="button"><?php echo esc_attr_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
 				</div> <!-- end pmpro-new-install -->
 			<?php } else { ?>
 
@@ -750,17 +750,34 @@
 						<th><?php _e('Uses', 'paid-memberships-pro' );?></th>
 						<th><?php _e('Levels', 'paid-memberships-pro' );?></th>
 						<?php do_action("pmpro_discountcodes_extra_cols_header", $codes);?>
-						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php
 						$count = 0;
-						foreach($codes as $code) { ?>
+						foreach($codes as $code) {
+							$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
+							?>
 						<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 							<td><?php echo $code->id?></td>
-							<td>
-								<a href="?page=pmpro-discountcodes&edit=<?php echo $code->id?>"><?php echo $code->code?></a>
+							<td class="has-row-actions">
+								<a title="<?php echo sprintf( 'Edit Code: %s', $code->code ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>"><?php echo $code->code?></a>
+								<div class="row-actions">
+									<span class="edit">
+										<a title="<?php _e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Edit', 'paid-memberships-pro' ); ?></a>
+									</span> |
+									<span class="copy">
+										<a title="<?php _e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => -1, 'copy' => $code->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Copy', 'paid-memberships-pro' ); ?></a>
+									</span> |
+									<span class="delete">
+										<a title="<?php _e( 'Delete', 'paid-memberships-pro' ); ?>" href="javascript:pmpro_askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);"><?php _e('Delete', 'paid-memberships-pro' ); ?></a>
+									</span>
+									<?php if ( (int)$uses > 0 ) { ?>
+										| <span class="orders">
+											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount_code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
+										</span>
+									<?php } ?>
+								</div>
 							</td>
 							<td>
 								<?php echo date_i18n(get_option('date_format'), $code->starts)?>
@@ -770,7 +787,6 @@
 							</td>
 							<td>
 								<?php
-									$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
 									if($code->uses > 0)
 										echo "<strong>" . (int)$uses . "</strong>/" . $code->uses;
 									else
@@ -790,25 +806,17 @@
 									$levels = $wpdb->get_results($sqlQuery);
 
 									$level_names = array();
-									foreach($levels as $level)
-										$level_names[] = "<a target=\"_blank\" href=\"" . pmpro_url("checkout", "?level=" . $level->id . "&discount_code=" . $code->code) . "\">" . $level->name . "</a>";
-									if($level_names)
-										echo implode(", ", $level_names);
-									else
-										echo "None";
+									foreach( $levels as $level ) {
+										$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+									}
+									if( $level_names ) {
+										echo implode( ', ', $level_names );
+									} else {
+										echo 'None';
+									}
 								?>
 							</td>
 							<?php do_action("pmpro_discountcodes_extra_cols_body", $code);?>
-							<td>
-								<a title="<?php _e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-primary"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
-								<a title="<?php _e('copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => -1, 'copy' => $code->id ), admin_url('admin.php' ) ); ?>" class="button-secondary"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
-								<a title="<?php _e('delete', 'paid-memberships-pro' ); ?>" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);" class="button-secondary"><?php _e('delete', 'paid-memberships-pro' ); ?></a>
-								<?php if ( (int)$uses > 0 ) { ?>
-									<a title="<?php _e('view orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount_code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>" class="button-secondary"><?php _e( 'orders', 'paid-memberships-pro' ); ?></a>
-								<?php } else { ?>
-									<a title="<?php _e('no orders', 'paid-memberships-pro' ); ?>" href="#" class="button-secondary button-disabled"><?php _e( 'orders', 'paid-memberships-pro' ); ?></a>
-								<?php } ?>
-							</td>
 						</tr>
 					<?php
 					}

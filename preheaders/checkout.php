@@ -1,6 +1,9 @@
 <?php
 global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
 
+// we are on the checkout page
+add_filter( 'pmpro_is_checkout', '__return_true' );
+
 //make sure we know current user's membership level
 if ( $current_user->ID ) {
 	$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
@@ -49,8 +52,9 @@ $pmpro_level = pmpro_getLevelAtCheckout();
  * Action to run extra preheader code after setting checkout level.
  *
  * @since 2.0.5
+ * //TODO update docblock
  */
-do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout' );
+do_action( 'pmpro_checkout_preheader_after_get_level_at_checkout', $pmpro_level );
 
 if ( empty( $pmpro_level->id ) ) {
 	wp_redirect( pmpro_url( "levels" ) );
@@ -75,6 +79,10 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	$besecure             = false;
 }
 
+// Allow for filters.
+// TODO: docblock.
+$pmpro_requirebilling = apply_filters( 'pmpro_require_billing', $pmpro_requirebilling, $pmpro_level );
+
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 	$besecure = true;
@@ -87,13 +95,8 @@ do_action( 'pmpro_checkout_preheader' );
 global $pmpro_levels;
 $pmpro_levels = pmpro_getAllLevels();
 
-//should we show the discount code field?
-if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
-	$pmpro_show_discount_code = true;
-} else {
-	$pmpro_show_discount_code = false;
-}
-$pmpro_show_discount_code = apply_filters( "pmpro_show_discount_code", $pmpro_show_discount_code );
+// We set a global var for add-ons that are expecting it.
+$pmpro_show_discount_code = pmpro_show_discount_code();
 
 //by default we show the account fields if the user isn't logged in
 if ( $current_user->ID ) {
@@ -252,18 +255,13 @@ if ( isset( $_REQUEST['tos'] ) ) {
 	$tos = "";
 }
 
-//_x stuff in case they clicked on the image button with their mouse
-if ( isset( $_REQUEST['submit-checkout'] ) ) {
-	$submit = true;
-}
-if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
-	$submit = true;
-}
-if ( isset( $submit ) && $submit === "0" ) {
-	$submit = true;
-} elseif ( ! isset( $submit ) ) {
-	$submit = false;
-}
+$submit = pmpro_was_checkout_form_submitted();
+
+/**
+ * Hook to run actions after the parameters are set on the checkout page.
+ * @since 2.1
+ */
+do_action( 'pmpro_checkout_after_parameters_set' );
 
 //require fields
 $pmpro_required_billing_fields = array(
@@ -394,8 +392,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		//only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
-			global $recaptcha;
+			global $recaptcha, $recaptcha_validated;
 			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+
 				global $recaptcha_privatekey;
 
 				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
@@ -424,6 +423,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					if ( $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msg = "All good!";
 					}
+					pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 				}
 			} else {
 				if ( $pmpro_msgt != "pmpro_error" ) {
@@ -437,73 +437,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 				//process checkout if required
 				if ( $pmpro_requirebilling ) {
-					$morder                   = new MemberOrder();
-					$morder->membership_id    = $pmpro_level->id;
-					$morder->membership_name  = $pmpro_level->name;
-					$morder->discount_code    = $discount_code;
-					$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
-					$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-					$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
-					$morder->BillingPeriod    = $pmpro_level->cycle_period;
-					$morder->BillingFrequency = $pmpro_level->cycle_number;
-
-					if ( $pmpro_level->billing_limit ) {
-						$morder->TotalBillingCycles = $pmpro_level->billing_limit;
-					}
-
-					if ( pmpro_isLevelTrial( $pmpro_level ) ) {
-						$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
-						$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
-						$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
-						$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
-					}
-
-					//credit card values
-					$morder->cardtype              = $CardType;
-					$morder->accountnumber         = $AccountNumber;
-					$morder->expirationmonth       = $ExpirationMonth;
-					$morder->expirationyear        = $ExpirationYear;
-					$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
-					$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
-					$morder->CVV2                  = $CVV;
-
-					//not saving email in order table, but the sites need it
-					$morder->Email = $bemail;
-
-					//save the user ID if logged in
-					if ( $current_user->ID ) {
-						$morder->user_id = $current_user->ID;
-					}
-					
-					//sometimes we need these split up
-					$morder->FirstName = $bfirstname;
-					$morder->LastName  = $blastname;
-					$morder->Address1  = $baddress1;
-					$morder->Address2  = $baddress2;
-
-					//other values
-					$morder->billing          = new stdClass();
-					$morder->billing->name    = $bfirstname . " " . $blastname;
-					$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
-					$morder->billing->city    = $bcity;
-					$morder->billing->state   = $bstate;
-					$morder->billing->country = $bcountry;
-					$morder->billing->zip     = $bzipcode;
-					$morder->billing->phone   = $bphone;
-
-					//$gateway = pmpro_getOption("gateway");
-					$morder->gateway = $gateway;
-					$morder->setGateway();
-
-					//setup level var
-					$morder->getMembershipLevelAtCheckout();
-
-					//tax
-					$morder->subtotal = $morder->InitialPayment;
-					$morder->getTax();
-
-					//filter for order, since v1.8
-					$morder = apply_filters( "pmpro_checkout_order", $morder );
+					$morder = pmpro_build_order_for_checkout();
 
 					$pmpro_processed = $morder->process();
 
@@ -516,7 +450,12 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
 						}
-						$pmpro_msgt = "pmpro_error";
+						
+						if ( ! empty( $morder->error_type ) ) {
+							$pmpro_msgt = $morder->error_type;
+						} else {
+							$pmpro_msgt = "pmpro_error";
+						}						
 					}
 
 				} else // !$pmpro_requirebilling
@@ -870,3 +809,9 @@ if ( empty( $submit ) ) {
 if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
 	$AccountNumber = "";
 }
+
+/**
+ * Hook to run actions after the checkout preheader is loaded.
+ * @since 2.1
+ */
+do_action( 'pmpro_after_checkout_preheader', $morder );
