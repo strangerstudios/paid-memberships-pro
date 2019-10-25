@@ -413,7 +413,22 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			case 'user_login':
 				$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
 				$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
-				return $userlink;
+				$output = $userlink . '<br />';
+
+				// Set up the hover actions for this user
+				$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
+				$action_count = count( $actions );
+				$i            = 0;
+				if ( $action_count ) {
+					$output .= '<div class="row-actions">';
+					foreach ( $actions as $action => $link ) {
+						++$i;
+						( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+						$output .= "<span class='$action'>$link$sep</span>";
+					}
+					$output .= '</div>';
+				}
+				return $output;
 			case 'billing_amount':
 				return pmpro_formatPrice( $item[ $column_name ] );
 			case 'startdate':
