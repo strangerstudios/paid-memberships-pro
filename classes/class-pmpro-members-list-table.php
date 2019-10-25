@@ -282,7 +282,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		if ( is_numeric( $a[ $orderby ] ) && is_numeric( $b[ $orderby ] ) ) {
-			$result = $a[ $orderby ] > $b[ $orderby ] ? 1 : -1;
+			$result = intval( $a[ $orderby ] ) > intval( $b[ $orderby ] ) ? 1 : -1;
 		} else {
 			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
 		}
@@ -400,6 +400,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return mixed
 	 */
 	public function column_default( $item, $column_name ) {
+		$item = (array) apply_filters( 'pmpro_members_list_user', (object) $item );
 		switch ( $column_name ) {
 			case 'ID':
 			case 'display_name':
@@ -422,16 +423,16 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			case 'enddate':
 				$user_object = get_userdata( $item['ID'] );
 				if ( 0 == $item['enddate'] ) {
-					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'pmpro');
+					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
 				} else {
 					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
 				}
 			default:
-				$user_object = get_userdata( $item['ID'] );
-				if ( isset( $user_object->$column_name ) ) {
-					return $user_object->$column_name;
+				if ( isset( $item->$column_name ) ) {
+					return $item->$column_name;
 				} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
 					// Re-implementing old hook, will be deprecated.
+					$user_object = get_userdata( $item['ID'] );
 					ob_start();
 					do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
 					$extra_cols = ob_get_clean();
