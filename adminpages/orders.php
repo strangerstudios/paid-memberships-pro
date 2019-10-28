@@ -1320,6 +1320,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				$order            = new MemberOrder();
 				$order->nogateway = true;
 				$order->getMemberOrderByID( $order_id );
+				$order->getUser();
 				?>
 				<tr 
 				<?php
