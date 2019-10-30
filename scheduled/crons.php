@@ -141,7 +141,9 @@ function pmpro_cron_credit_card_expiring_warnings()
 						LEFT JOIN $wpdb->usermeta um3 ON mu.user_id = um3.user_id
 							AND um3.meta_key = 'pmpro_credit_card_expiring_warning'
 					WHERE mu.status =  'active'
-						AND mu.cycle_number >0
+						AND mu.cycle_number > 0
+						AND um1.meta_value IS NOT NULL AND um2.meta_value IS NOT NULL
+						AND um1.meta_value <> '' AND um2.meta_value <> ''
 						AND CONCAT(um2.meta_value, '-', um1.meta_value, '-01') < '" . $next_month_date . "'
 						AND (um3.meta_value IS NULL OR CONCAT(um2.meta_value, '-', um1.meta_value, '-01') <> um3.meta_value)
 				";
