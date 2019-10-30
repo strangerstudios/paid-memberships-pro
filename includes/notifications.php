@@ -97,17 +97,7 @@ function pmpro_get_all_notifications() {
 	
 	// Filter notifications by start/end date.
 	$pmpro_active_notifications = array();
-	foreach( $pmpro_notifications as $notification ) {
-		// Hide if today's date is before notification start date.
-		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
-			continue;
-		}
-
-		// Hide if today's date is after end date.
-		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) > $notification->ends ) {
-			continue;
-		}
-		
+	foreach( $pmpro_notifications as $notification ) {		
 		$pmpro_active_notifications[] = $notification;
 	}
 	
@@ -130,6 +120,25 @@ function pmpro_get_all_notifications() {
  */
 function pmpro_is_notification_applicable( $notification ) {
 	// TODO: Check show_if and hide_if rules.
+
+	// Hide if today's date is before notification start date.
+	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
+		return false;
+	}
+
+	// Hide if today's date is after end date.
+	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) > $notification->ends ) {
+		return false;
+	}
+
+	// Check if only security notices should show.
+	$only_security = pmpro_getOption( 'onlysecuritynotice' );
+
+	if ( $only_security ) {
+		if ( $notification->name != 'security' ) {
+			return false;
+		}
+	}
 
 	// Hide notification by default.
 	$show_notification = false;
