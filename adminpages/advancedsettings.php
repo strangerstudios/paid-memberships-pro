@@ -33,6 +33,7 @@
 		pmpro_setOption("hideads");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
+		pmpro_setOption("onlysecuritynotice");
 
 		//captcha
 		pmpro_setOption("recaptcha");
@@ -68,6 +69,7 @@
     $filterqueries = pmpro_getOption('filterqueries');
 	$showexcerpts = pmpro_getOption("showexcerpts");
 	$hideadslevels = pmpro_getOption("hideadslevels");
+	$onlysecuritynotice = pmpro_getOption("onlysecuritynotice");
 
 	if(is_multisite())
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
@@ -237,6 +239,13 @@
 if ( pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
+				</td>
+			</tr>
+			<tr>
+			<th><?php _e( 'Only show security notifications?', 'paid-memberships-pro' ); ?></th>
+				<td><input type="checkbox" name="onlysecuritynotice" value="1" <?php checked( $onlysecuritynotice, 1 ); ?>/>
+				<br />
+					<p class="description"><?php _e('If selected, only security notifications will be displayed in the dashboard area.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
 			<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>

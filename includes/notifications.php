@@ -97,17 +97,7 @@ function pmpro_get_all_notifications() {
 	
 	// Filter notifications by start/end date.
 	$pmpro_active_notifications = array();
-	foreach( $pmpro_notifications as $notification ) {
-		// Hide if today's date is before notification start date.
-		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
-			continue;
-		}
-
-		// Hide if today's date is after end date.
-		if ( date( 'Y-m-d', current_time( 'timestamp' ) ) > $notification->ends ) {
-			continue;
-		}
-		
+	foreach( $pmpro_notifications as $notification ) {		
 		$pmpro_active_notifications[] = $notification;
 	}
 	
@@ -130,8 +120,69 @@ function pmpro_get_all_notifications() {
  */
 function pmpro_is_notification_applicable( $notification ) {
 	// TODO: Check show_if and hide_if rules.
-	
-	return true;
+
+	// Hide if today's date is before notification start date.
+	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
+		return false;
+	}
+
+	// Hide if today's date is after end date.
+	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) > $notification->ends ) {
+		return false;
+	}
+
+	// Check if only security notices should show.
+	$only_security = pmpro_getOption( 'onlysecuritynotice' );
+
+	if ( $only_security ) {
+		if ( $notification->name != 'security' ) {
+			return false;
+		}
+	}
+
+	// Hide notification by default.
+	$show_notification = false;
+
+	$hide_if_plugin = !empty( $notification->hide_if->plugins_active ) ? $notification->hide_if->plugins_active : '';
+
+	// set the show notification to true.
+	if ( $hide_if_plugin ) {	
+		$plugin_slug_and_file = $hide_if_plugin[0] . '/' . $hide_if_plugin[1] . ".php";
+
+		// If this plugin is installed just bail.
+		if ( is_plugin_active( $plugin_slug_and_file ) ) {
+			return false;
+		} else {
+			$show_notification = true;
+		}
+	} else {
+		$show_notification = true;
+	}
+
+	// Check if we need to hide the notification first, if it needs to be hidden just bail.
+	$show_if = !empty( $notification->show_if ) ? $notification->show_if : '';
+
+	if ( $show_if && $show_notification ) {
+		
+		$plugins = $show_if->plugins_version;
+
+		$plugin_slug_and_file = $plugins[0] . '/' . $plugins[0] . ".php";
+		
+		if ( is_plugin_active( $plugin_slug_and_file ) ) {
+			$plugin_current_version = get_file_data(  WP_PLUGIN_DIR . '/' . $plugin_slug_and_file, array( 'Version' => 'Version' ) );
+
+			// plugins 2 is version to check, plugins 1 is operator, against current version.
+			if ( $plugins[2] . " " . $plugins[1] . " " . $plugin_current_version['Version'] ) {
+				$show_notification = true;
+			} else {
+				$show_notification = false;
+			}
+			
+		} else {
+			$show_notification = false;
+		}
+	}
+	return $show_notification;
 }
 
 /**
