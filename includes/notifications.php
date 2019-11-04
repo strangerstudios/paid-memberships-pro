@@ -132,14 +132,10 @@ function pmpro_is_notification_applicable( $notification ) {
 	}
 
 	// Check if only security notices should show.
-	$only_security = pmpro_getOption( 'onlysecuritynotice' );
-
-	if ( $only_security ) {
-		if ( $notification->name != 'security' ) {
-			return false;
-		}
+	if ( $notification->priority > pmpro_get_max_notification_priority() ) {
+		return false;
 	}
-
+	
 	// Hide notification by default.
 	$show_notification = false;
 
@@ -183,6 +179,34 @@ function pmpro_is_notification_applicable( $notification ) {
 		}
 	}
 	return $show_notification;
+}
+
+/**
+ * Get the max notification priority allowed on this site.
+ * Priority is a value from 1 to 5, or 0.
+ * 0: No notifications at all.
+ * 1: Security notifications.
+ * 2: Core PMPro updates.
+ * 3: Updates to plugins already installed.
+ * 4: Suggestions based on existing plugins and settings.
+ * 5: Informative.
+ */
+function pmpro_get_max_notification_priority() {
+	static $max_priority = null;
+
+	if ( ! isset( $max_priority ) ) {
+		$max_priority = pmpro_getOption( 'maxnotificationpriority' );
+		
+		// default to 5
+		if ( empty( $max_priority ) ) {
+			$max_priority = 5;
+		}
+		
+		// filter allows for max priority 0 to turn them off entirely
+		$max_priority = apply_filters( 'pmpro_max_notification_priority', $max_priority );
+	}
+	
+	return $max_priority;
 }
 
 /**
