@@ -107,25 +107,27 @@ jQuery(document).ready(function(){
     }
 	
 	// Validate credit card number and determine card type.
-	jQuery('#AccountNumber').validateCreditCard(function(result) {
-		var cardtypenames = {
-			"amex"                      : "American Express",
-			"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-			"diners_club_international" : "Diners Club International",
-			"discover"                  : "Discover",
-			"jcb"                       : "JCB",
-			"laser"                     : "Laser",
-			"maestro"                   : "Maestro",
-			"mastercard"                : "Mastercard",
-			"visa"                      : "Visa",
-			"visa_electron"             : "Visa Electron"
-		};
+	if ( typeof jQuery('#AccountNumber').validateCreditCard == 'function' ) {
+        jQuery('#AccountNumber').validateCreditCard(function(result) {
+    		var cardtypenames = {
+    			"amex"                      : "American Express",
+    			"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+    			"diners_club_international" : "Diners Club International",
+    			"discover"                  : "Discover",
+    			"jcb"                       : "JCB",
+    			"laser"                     : "Laser",
+    			"maestro"                   : "Maestro",
+    			"mastercard"                : "Mastercard",
+    			"visa"                      : "Visa",
+    			"visa_electron"             : "Visa Electron"
+    		};
 
-		if(result.card_type)
-			jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-		else
-			jQuery('#CardType').val('Unknown Card Type');
-	});
+    		if(result.card_type)
+    			jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+    		else
+    			jQuery('#CardType').val('Unknown Card Type');
+    	});
+    }
 	
 	// Find ALL <form> tags on your page
 	jQuery('form').submit(function(){

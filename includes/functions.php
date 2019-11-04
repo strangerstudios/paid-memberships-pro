@@ -1754,28 +1754,29 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 		global $wpdb;
 		$all_membership_levels[ $user_id ] = $wpdb->get_row(
 			"SELECT
-															l.id AS ID,
-															l.id as id,
-															mu.id as subscription_id,
-															l.name AS name,
-															l.description,
-															l.expiration_number,
-															l.expiration_period,
-															l.allow_signups,
-															mu.initial_payment,
-															mu.billing_amount,
-															mu.cycle_number,
-															mu.cycle_period,
-															mu.billing_limit,
-															mu.trial_amount,
-															mu.trial_limit,
-															mu.code_id as code_id,
-															UNIX_TIMESTAMP(startdate) as startdate,
-															UNIX_TIMESTAMP(enddate) as enddate
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = $user_id AND mu.status = 'active'
-														LIMIT 1"
+				l.id AS ID,
+				l.id as id,
+				mu.id as subscription_id,
+				l.name AS name,
+				l.description,
+				l.confirmation,
+				l.expiration_number,
+				l.expiration_period,
+				l.allow_signups,
+				mu.initial_payment,
+				mu.billing_amount,
+				mu.cycle_number,
+				mu.cycle_period,
+				mu.billing_limit,
+				mu.trial_amount,
+				mu.trial_limit,
+				mu.code_id as code_id,
+				UNIX_TIMESTAMP(startdate) as startdate,
+				UNIX_TIMESTAMP(enddate) as enddate
+			FROM {$wpdb->pmpro_membership_levels} AS l
+			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+			WHERE mu.user_id = $user_id AND mu.status = 'active'
+			LIMIT 1"
 		);
 
 		// if null, change to false to avoid user meta conflicts
@@ -1855,6 +1856,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.id as subscription_id,
 				l.name,
 				l.description,
+				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
 				mu.initial_payment,
