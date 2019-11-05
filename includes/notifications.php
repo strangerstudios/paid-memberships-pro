@@ -136,6 +136,9 @@ function pmpro_is_notification_applicable( $notification ) {
 		return false;
 	}
 	
+	// Need to finish the below, but just show for now.
+	return true;
+	
 	// Hide notification by default.
 	$show_notification = false;
 
