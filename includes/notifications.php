@@ -14,7 +14,7 @@ function pmpro_notifications() {
 		if ( ! empty( $notification ) ) {
 		?>
 		<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
-		<?php if ( $notification->dismiss ) { ?>
+		<?php if ( $notification->dismissable ) { ?>
 			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 		<?php } ?>
 			<div class="pmpro_notification-<?php echo $notification->type; ?>">
