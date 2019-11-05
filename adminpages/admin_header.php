@@ -166,9 +166,17 @@
 	</div>
 	<div id="pmpro_notifications">
 	</div>
+	<?php
+		// To debug a specific notification.
+		if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
+			$specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+		} else {	
+			$specific_notification = '';
+		}
+	?>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications"); ?>', function(data) {
+			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
 				if(data && data != 'NULL')
 					jQuery('#pmpro_notifications').html(data);
 			});

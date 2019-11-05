@@ -40,6 +40,24 @@ function pmpro_get_next_notification() {
 		return false;
 	}
 	
+	// If debugging, clear the transient and get a specific notification.
+	if ( ! empty( $_REQUEST['pmpro_notification'] ) ) {
+		delete_transient( 'pmpro_notifications_' . PMPRO_VERSION );
+		$pmpro_notifications = pmpro_get_all_notifications();
+		
+		if ( !empty( $pmpro_notifications ) ) {
+			foreach( $pmpro_notifications as $notification ) {
+				if ( $notification->id == $_REQUEST['pmpro_notification'] ) {
+					return $notification;
+				}
+			}
+			
+			return false;
+		} else {
+			return false;
+		}
+	}
+	
 	// Get all notifications.
 	$pmpro_notifications = pmpro_get_all_notifications();
 	if ( empty( $pmpro_notifications ) ) {
