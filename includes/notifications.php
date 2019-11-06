@@ -154,8 +154,9 @@ function pmpro_is_notification_applicable( $notification ) {
 		return false;
 	}
 	
+
 	// Need to finish the below, but just show for now.
-	return true;
+	// return true;
 	
 	// Hide notification by default.
 	$show_notification = false;
@@ -198,6 +199,20 @@ function pmpro_is_notification_applicable( $notification ) {
 		} else {
 			$show_notification = false;
 		}
+
+		// If we're already showing it, just show it.
+		if ( $show_notification ) {
+			return $show_notification;
+		}
+
+		$plugin_slug_and_file = $show_if->plugins_active[0] . '/' . $show_if->plugins_active[0] . ".php";
+
+		if ( is_plugin_active( $plugin_slug_and_file ) ) {
+			$show_notification = true;
+		}
+
+
+
 	}
 	return $show_notification;
 }
