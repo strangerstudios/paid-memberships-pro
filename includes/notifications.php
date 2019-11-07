@@ -279,26 +279,30 @@ add_action( 'wp_footer', 'pmpro_footer_link' );
 
 /**
  * Check if a plugin is active with a specific version.
- * @param array $checks Plugin data to run a check. Includes: [ 0 => plugin-slug, 1 => comparison operator, 2 => version_to_check]
+ * @param array $checks Plugin data to run a check. Includes: [ 0 => plugin path and filename, 1 => comparison operator, 2 => version_to_check]
  */
-function pmpro_check_plugin_version( $checks = NULL ) {
-	// Assume pass is failing right now.
-	$pass = false;
-
-	// run check if plugin data is not emptpy.
-	if ( $checks ) {
-		$plugin_file = $checks[0] . '/' . $checks[0] . '.php';
-		$plugin_data = get_plugin_data(  WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
-
-		$conditional_check =  $checks[2] . " " . $checks[1] . " " . $plugin_data['Version'];
-
-		if ( $conditional_check ) {
-			$pass = true;
-		} else {
-			$pass = false;
-		}
+function pmpro_check_plugin_version( $checks ) {
+	// Make sure data to check is in a good format
+	if ( ! is_array( $checks ) || empty( $checks[0] ) || empty( $checks[1] ) || empty( $checks[2] ) ) {
+		return false;
 	}
-	return $pass;
+		
+	// Get plugin data
+	$plugin_file = $checks[0];
+	$plugin_data = get_plugin_data(  WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
+
+	// Return false if there is no plugin data
+	if ( empty( $plugin_data ) ) {
+		return false;
+	}
+
+	// Check version
+	$conditional_check =  $checks[2] . " " . $checks[1] . " " . $plugin_data['Version'];
+	if ( version_compare( $conditional_check ) ) {
+		return true;
+	} else {
+		return false;
+	}	
 }
 
 /**
