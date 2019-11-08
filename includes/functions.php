@@ -3082,3 +3082,30 @@ function pmpro_show_discount_code() {
 	
 	return $morder;
 }
+
+/**
+ * Check if a plugin is active with a specific version.
+ * @param array $checks Plugin data to run a check. Includes: [ 0 => plugin path and filename, 1 => comparison operator, 2 => version_to_check]
+ */
+function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
+	// Make sure data to check is in a good format
+	if ( empty( $plugin_file ) || empty( $comparison ) || ! isset( $version ) ) {
+		return false;
+	}
+		
+	// Get plugin data	
+	$plugin_data = get_plugin_data(  WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
+
+	// Return false if there is no plugin data
+	if ( empty( $plugin_data ) ) {
+		return false;
+	}
+
+	// Check version
+	$conditional_check =  $version . " " . $comparison . " " . $plugin_data['Version'];
+	if ( version_compare( $conditional_check ) ) {
+		return true;
+	} else {
+		return false;
+	}	
+}

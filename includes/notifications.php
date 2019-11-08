@@ -135,6 +135,8 @@ function pmpro_get_all_notifications() {
 
 /**
  * Check rules for a notification.
+ * @param object $notification The notification object.
+ * @returns bool true if notification should be shown, false if not.
  */
 function pmpro_is_notification_applicable( $notification ) {
 	// TODO: Check show_if and hide_if rules.
@@ -150,70 +152,111 @@ function pmpro_is_notification_applicable( $notification ) {
 		return false;
 	}
 
-	// Check if only security notices should show.
+	// Check priority, e.g. if only security notifications should be shown.
 	if ( $notification->priority > pmpro_get_max_notification_priority() ) {
 		return false;
 	}
 	
-	// Need to finish the below, but just show for now.
-	/// return true;
+	// Check show rules.
+	if ( ! pmpro_should_show_notification( $notification ) ) {
+		return false;
+	}
 	
-	// Hide notification by default.
-	$show_notification = false;
-
-	/**
-	 * ==== Rules to hide notifications start here ====
-	 */
-	$hide_if_plugin = !empty( $notification->hide_if->plugins_active ) ? pmpro_check_active_plugins( $notification->hide_if->plugins_active ) : '';
-	// set the show notification to true.
-	if ( $hide_if_plugin ) {	
-		$show_notification = false;
-	} else {
-		$show_notification = true;
+	// Check hide rules.
+	if ( pmpro_should_hide_notification( $notification ) ) {
+		return false;
 	}
+	
+	// If we get here, show it.
+	return true;
+}
 
-	// If we shouldn't show the notification, bail here.
-	if ( ! $show_notification ) {
-		return $show_notification;
-	}
-
-	/**
-	 * ==== Rules to show notifications start here ====
-	 */
-	// Cycle through the rules to show the notification system now, only reach this point if no 'hide_if' rules were met.
-	$show_if = !empty( $notification->show_if ) ? $notification->show_if : '';
-	if ( $show_if && $show_notification ) {
-
-		// Check if any of the plugins are active, if so show it.
-		$is_plugin_active = ! empty( $show_if->plugins_active ) ? pmpro_check_active_plugins( $show_if->plugins_active ) : '';
-		// Rule - Show if plugin is active.
-		if ( empty( $is_plugin_active ) || $is_plugin_active ) {
-			$show_notification = true;
-		} else {
-			$show_notification = false;
-		}
-
-		// Bail if notification is set to false. Run this between each check.
-		if ( ! $show_notification ) {
-			return $show_notification;
-		}
-
-		// Rule - Show if plugin version comparison passes check.
-		$plugin_version = ! empty( $show_if->plugins_version ) ? $show_if->plugins_version : '';
-		$plugin_version_check = ! empty( $plugin_version ) ? pmpro_check_plugin_version( $plugin_version ) : true; // default to true since there's no rule if plugins_version rule is empty?
-
-		if ( $plugin_version_check ) {
-			$show_notification = true;
-		} else {
-			$show_notification = false;
-		}
-
-		// Bail if notification is set to false. Run this between each check.
-		if ( ! $show_notification ) {
-			return $show_notification;
+/**
+ * Check a notification to see if we should hide it
+ * based on the rules set.
+ * Hides if ANY rule is true. (OR)
+ * @param object $notification The notification object.
+ */
+function pmpro_should_hide_notification( $notification ) {		
+	// default to NOT hiding
+	$hide = false;
+	
+	if ( !empty( $notification->hide_if ) ) {		
+		foreach( $notification->hide_if as $test => $data ) {
+			$test_function = 'pmpro_notification_test_' . $test;
+			if ( function_exists( $test_function ) ) {
+				$hide = call_user_func( $test_function , $data );
+				if ( $hide ) {					
+					// one test passes, let's hide
+					break;
+				}
+			}
 		}
 	}
-	return $show_notification;
+	
+	return $hide;
+}
+
+/**
+ * Check a notification to see if we should show it
+ * based on the rules set.
+ * Shows if ALL rules are true. (AND)
+ * @param object $notification The notification object.
+ */
+function pmpro_should_show_notification( $notification ) {
+	// default to showing
+	$show = true;
+	
+	if ( !empty( $notification->show_if ) ) {
+		foreach( $notification->show_if as $test => $data ) {
+			$test_function = 'pmpro_notification_test_' . $test;
+			if ( function_exists( $test_function ) ) {
+				$show = call_user_func( $test_function , $data );
+				if ( ! $show ) {
+					// one test failed, let's not show
+					break;
+				}
+			}
+		}
+	}
+	
+	return $show;
+}
+
+/**
+ * Plugins active test.
+ * @param array $plugins An array of plugin paths and filenames to check.
+ * @returns bool true if ALL of the plugins are active (AND), false otherwise.
+ */
+function pmpro_notification_test_plugins_active( $plugins ) {
+	if ( ! is_array( $plugins ) ) {
+		$plugins = array( $plugins );
+	}
+
+	foreach( $plugins as $plugin ) {
+		if ( ! pmpro_is_plugin_active( $plugin ) ) {			
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+/**
+ * Plugin version test.
+ * @param array $data Array from notification with plugin_file, comparison, and version to check.
+ * @returns bool true if plugin is active and version comparison is true, false otherwise.
+ */
+function pmpro_notification_test_plugin_version( $data ) {
+	if ( ! is_array( $data ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $data[0] ) || !isset( $data[1] ) || !isset( $data[2] ) ) {
+		return false;
+	}
+	
+	return pmpro_check_plugin_version( $data[0], $data[1], $data[2] );
 }
 
 /**
@@ -277,45 +320,3 @@ function pmpro_footer_link() {
 }
 add_action( 'wp_footer', 'pmpro_footer_link' );
 
-/**
- * Check if a plugin is active with a specific version.
- * @param array $checks Plugin data to run a check. Includes: [ 0 => plugin path and filename, 1 => comparison operator, 2 => version_to_check]
- */
-function pmpro_check_plugin_version( $checks ) {
-	// Make sure data to check is in a good format
-	if ( ! is_array( $checks ) || empty( $checks[0] ) || empty( $checks[1] ) || empty( $checks[2] ) ) {
-		return false;
-	}
-		
-	// Get plugin data
-	$plugin_file = $checks[0];
-	$plugin_data = get_plugin_data(  WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
-
-	// Return false if there is no plugin data
-	if ( empty( $plugin_data ) ) {
-		return false;
-	}
-
-	// Check version
-	$conditional_check =  $checks[2] . " " . $checks[1] . " " . $plugin_data['Version'];
-	if ( version_compare( $conditional_check ) ) {
-		return true;
-	} else {
-		return false;
-	}	
-}
-
-/**
- * Check if any of the plugins are active and show it.
- * @param array $plugins. An array for plugin slugs.
- */
-function pmpro_check_active_plugins( $plugins ) {
-
-	if ( is_array( $plugins ) ) {
-		foreach( $plugins as $plugin ) {
-			if ( pmpro_is_plugin_active( $plugin . '/' . $plugin . '.php' ) ) {
-				return true;
-			}
-		}
-	}
-}
