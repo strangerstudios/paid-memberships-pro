@@ -4,14 +4,21 @@
  * to see if there are any notifications to display to the user.
  * Notifications are shown on the PMPro settings pages in the dashboard.
  * Runs on the wp_ajax_pmpro_notifications hook.
+ * Note we exit instead of returning because this is loaded via AJAX.
  */
 function pmpro_notifications() {
-	if ( current_user_can( 'manage_options' ) ) {
-		$notification = pmpro_get_next_notification();
+	if ( current_user_can( 'manage_options' ) ) {		
+		$notification = pmpro_get_next_notification();		
+		if ( empty( $notification ) ) {
+			exit;
+		}
 		
-		// TODO: Make sure we haven't shown a notification too recently.
+		$paused = pmpro_notifications_pause();		
+		if ( $paused && empty( $_REQUEST['pmpro_notification'] ) && $notification->priority !== 1 ) {
+			exit;
+		}
 		
-		if ( ! empty( $notification ) ) {
+		// Okay show the notification.
 		?>
 		<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
 		<?php if ( $notification->dismissable ) { ?>
@@ -22,11 +29,9 @@ function pmpro_notifications() {
 				<?php echo $notification->content; ?>
 			</div>
 		</div>
-		<?php
-		}		
+		<?php		
 	}
-
-	// Exit cause we're loading this via AJAX.
+	
 	exit;
 }
 add_action( 'wp_ajax_pmpro_notifications', 'pmpro_notifications' );
@@ -44,7 +49,7 @@ function pmpro_get_next_notification() {
 	if ( ! empty( $_REQUEST['pmpro_notification'] ) ) {
 		delete_transient( 'pmpro_notifications_' . PMPRO_VERSION );
 		$pmpro_notifications = pmpro_get_all_notifications();
-		
+				
 		if ( !empty( $pmpro_notifications ) ) {
 			foreach( $pmpro_notifications as $notification ) {
 				if ( $notification->id == $_REQUEST['pmpro_notification'] ) {
@@ -63,7 +68,7 @@ function pmpro_get_next_notification() {
 	if ( empty( $pmpro_notifications ) ) {
 		return false;
 	}
-	
+		
 	// Filter out archived notifications.
 	$pmpro_filtered_notifications = array();
 	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
@@ -74,7 +79,7 @@ function pmpro_get_next_notification() {
 
 		$pmpro_filtered_notifications[] = $notification;		
 	}	
-	
+		
 	// Return the first one.
 	if ( ! empty( $pmpro_filtered_notifications ) ) {
 		$next_notification = $pmpro_filtered_notifications[0];
@@ -90,7 +95,7 @@ function pmpro_get_next_notification() {
  */
 function pmpro_get_all_notifications() {
 	$pmpro_notifications = get_transient( 'pmpro_notifications_' . PMPRO_VERSION );
-
+		
 	if ( empty( $pmpro_notifications ) ) {
 		// Set to NULL in case the below times out or fails, this way we only check once a day.
 		set_transient( 'pmpro_notifications_' . PMPRO_VERSION, 'NULL', 86400 );
@@ -99,7 +104,7 @@ function pmpro_get_all_notifications() {
 		$pmpro_notification_url = apply_filters( 'pmpro_notifications_url', esc_url( 'https://notifications.strangerstudios.com/v2/notifications.json' ) );
 
 		// Get notifications.
-		$remote_notifications = wp_remote_get( $pmpro_notification_url );
+		$remote_notifications = wp_remote_get( $pmpro_notification_url );		
 		$pmpro_notifications = json_decode( wp_remote_retrieve_body( $remote_notifications ) );
 		
 		// Update transient if we got something.
@@ -109,7 +114,7 @@ function pmpro_get_all_notifications() {
 	}
 	
 	// We expect an array.
-	if( $pmpro_notifications === 'NULL' ) {
+	if( ! is_array( $pmpro_notifications ) ) {
 		$pmpro_notifications = array();
 	}
 	
@@ -118,7 +123,7 @@ function pmpro_get_all_notifications() {
 	foreach( $pmpro_notifications as $notification ) {		
 		$pmpro_active_notifications[] = $notification;
 	}
-	
+		
 	// Filter out notifications based on show/hide rules.
 	$pmpro_applicable_notifications = array();
 	foreach( $pmpro_active_notifications as $notification ) {
@@ -126,7 +131,7 @@ function pmpro_get_all_notifications() {
 			$pmpro_applicable_notifications[] = $notification;			
 		}
 	}
-	
+		
 	// Sort by priority.	
 	$pmpro_applicable_notifications = wp_list_sort( $pmpro_applicable_notifications, 'priority' );
 	
@@ -139,6 +144,11 @@ function pmpro_get_all_notifications() {
  * @returns bool true if notification should be shown, false if not.
  */
 function pmpro_is_notification_applicable( $notification ) {
+	// If one is specified by URL parameter, it's allowed.
+	if ( !empty( $_REQUEST['pmpro_notification'] ) && $notification->id == intval( $_REQUEST['pmpro_notification'] ) ) {
+		return true;
+	}
+	
 	// Hide if today's date is before notification start date.
 	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
 		return false;
@@ -366,6 +376,50 @@ function pmpro_get_max_notification_priority() {
 }
 
 /**
+ * Have we shown too many notifications recently.
+ * By default we limit to 1 notification per 12 hour period
+ * and 3 notifications per week.
+ */
+function pmpro_notifications_pause() {
+	global $current_user;
+	
+	// No user? Pause.
+	if ( empty( $current_user ) ) {
+		return true;
+	}
+	
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );			
+	$archived_notifications = array_values( $archived_notifications );
+	$num = count($archived_notifications);
+	$now = current_time( 'timestamp' );
+	
+	// No archived (dismissed) notifications? Don't pause.
+	if ( empty( $archived_notifications ) ) {
+		return false;
+	}
+	
+	// Last notification was dismissed < 12 hours ago. Pause.	
+	$last_notification_date = $archived_notifications[$num - 1];	
+	if ( strtotime( $last_notification_date, $now ) > ( $now - 3600*12 ) ) {		
+		return true;
+	}
+	
+	// If we have < 3 archived notifications. Don't pause.
+	if ( $num < 3 ) {
+		return false;
+	}
+	
+	// If we've shown 3 this week already. Pause.
+	$third_last_notification_date = $archived_notifications[$num - 3];
+	if ( strtotime( $last_notification_date, $now ) > ( $now - 3600*24*7 ) ) {		
+		return true;
+	}
+	
+	// If we've gotten here, don't pause.
+	return false;
+}
+
+/**
  * Move the top notice to the archives if dismissed.
  */
 function pmpro_hide_notice() {
@@ -378,8 +432,8 @@ function pmpro_hide_notice() {
 		$archived_notifications = array();
 	}
 
-	$archived_notifications[$notification_id] = date_i18n( 'Y-m-d' );
-
+	$archived_notifications[$notification_id] = date_i18n( 'c' );
+	
 	update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
 	exit;
 }
