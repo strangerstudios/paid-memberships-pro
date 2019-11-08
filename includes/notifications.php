@@ -139,9 +139,6 @@ function pmpro_get_all_notifications() {
  * @returns bool true if notification should be shown, false if not.
  */
 function pmpro_is_notification_applicable( $notification ) {
-	// TODO: Check show_if and hide_if rules.
-	// Check hide if rules first, then show if.
-
 	// Hide if today's date is before notification start date.
 	if ( date( 'Y-m-d', current_time( 'timestamp' ) ) < $notification->starts ) {
 		return false;
