@@ -169,32 +169,6 @@ function pmpro_is_notification_applicable( $notification ) {
 }
 
 /**
- * Check a notification to see if we should hide it
- * based on the rules set.
- * Hides if ANY rule is true. (OR)
- * @param object $notification The notification object.
- */
-function pmpro_should_hide_notification( $notification ) {		
-	// default to NOT hiding
-	$hide = false;
-	
-	if ( !empty( $notification->hide_if ) ) {		
-		foreach( $notification->hide_if as $test => $data ) {
-			$test_function = 'pmpro_notification_test_' . $test;
-			if ( function_exists( $test_function ) ) {
-				$hide = call_user_func( $test_function , $data );
-				if ( $hide ) {					
-					// one test passes, let's hide
-					break;
-				}
-			}
-		}
-	}
-	
-	return $hide;
-}
-
-/**
  * Check a notification to see if we should show it
  * based on the rules set.
  * Shows if ALL rules are true. (AND)
@@ -218,6 +192,32 @@ function pmpro_should_show_notification( $notification ) {
 	}
 	
 	return $show;
+}
+
+/**
+ * Check a notification to see if we should hide it
+ * based on the rules set.
+ * Hides if ANY rule is true. (OR)
+ * @param object $notification The notification object.
+ */
+function pmpro_should_hide_notification( $notification ) {		
+	// default to NOT hiding
+	$hide = false;
+	
+	if ( !empty( $notification->hide_if ) ) {		
+		foreach( $notification->hide_if as $test => $data ) {
+			$test_function = 'pmpro_notification_test_' . $test;
+			if ( function_exists( $test_function ) ) {
+				$hide = call_user_func( $test_function , $data );
+				if ( $hide ) {					
+					// one test passes, let's hide
+					break;
+				}
+			}
+		}
+	}
+	
+	return $hide;
 }
 
 /**
@@ -254,6 +254,87 @@ function pmpro_notification_test_plugin_version( $data ) {
 	}
 	
 	return pmpro_check_plugin_version( $data[0], $data[1], $data[2] );
+}
+
+/**
+ * PMPro license type test.
+ * @param string $license PMPro license type to check for.
+ * @returns bool true if the PMPro license type matches.
+ */
+function pmpro_notification_test_pmpro_license( $license ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro number of members test.
+ * @param array $data Array from the notification with [0] comparison operator and [1] number of members.
+ * @returns bool true if there are as many members as specified.
+ */
+function pmpro_notification_test_pmpro_num_members( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro number of levels test.
+ * @param array $data Array from the notification with [0] comparison operator and [1] number of levels.
+ * @returns bool true if there are as many levels as specified.
+ */
+function pmpro_notification_test_pmpro_num_levels( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro number of discount codes test.
+ * @param array $data Array from the notification with [0] comparison operator and [1] number of discount codes.
+ * @returns bool true if there are as many discount codes as specified.
+ */
+function pmpro_notification_test_pmpro_num_discount_codes( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro number of orders test.
+ * @param array $data Array from the notification with [0] comparison operator and [1] number of orders.
+ * @returns bool true if there are as many orders as specified.
+ */
+function pmpro_notification_test_pmpro_num_orders( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro revenue test.
+ * @param array $data Array from the notification with [0] comparison operator and [1] revenue.
+ * Optionally $data can contain a third parameter to also check the currency code.
+ * @returns bool true if there is as much revenue as specified.
+ */
+function pmpro_notification_test_pmpro_revenue( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro setting test.
+ * @param array $data Array from the notification with [0] setting name to check [1] value to check for.
+ * @returns bool true if an option if found with the specified name and value.
+ */
+function pmpro_notification_test_pmpro_setting( $data ) {
+	/// TODO
+	return false;
+}
+
+/**
+ * PMPro site URL test.
+ * @param string $string String to look for in the site URL
+ * @returns bool true if the string shows up in the site URL
+ */
+function pmpro_notification_test_site_url_match( $string ) {
+	/// TODO
+	return false;
 }
 
 /**
@@ -316,4 +397,3 @@ function pmpro_footer_link() {
 	<?php }
 }
 add_action( 'wp_footer', 'pmpro_footer_link' );
-
