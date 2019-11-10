@@ -343,7 +343,11 @@ function pmpro_notification_test_pmpro_setting( $data ) {
  * @returns bool true if the string shows up in the site URL
  */
 function pmpro_notification_test_site_url_match( $string ) {
-	/// TODO
+	if ( ! empty( $string ) ) {
+		if ( strpos( get_bloginfo( 'url' ), $string ) !== false ) {
+			return true;
+		}
+	}
 	return false;
 }
 
