@@ -301,28 +301,7 @@ function pmpro_notification_test_pmpro_num_members( $data ) {
 		$num_members = $wpdb->get_var( $sqlQuery );
 	}
 
-	switch ( $data[0] ) {
-		case '>':
-			$r = (int)$num_members > (int)$data[1];
-			break;
-		case '<':
-			$r = (int)$num_members < (int)$data[1];
-			break;
-		case '>=':
-			$r = (int)$num_members >= (int)$data[1];
-			break;
-		case '<=':
-			$r = (int)$num_members <= (int)$data[1];
-			break;
-		case '=':
-		case '==':		
-			$r = (int)$num_members == (int)$data[1];
-			break;
-		default:
-			$r = false;
-	}
-	
-	return $r;
+	return pmpro_int_compare( $num_members, $data[1], $data[0] );
 }
 
 /**

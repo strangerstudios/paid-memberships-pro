@@ -3109,3 +3109,37 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}	
 }
+
+/**
+ * Compare two integers using parameters similar to the version_compare function.
+ * This allows us to pass in a comparison character via the notification rules
+ * and get a true/false result.
+ * @param int $a First integer to compare.
+ * @param int $b Second integer to compare.
+ * @param string $operator Operator to use, e.g. >, <, >=, <=, =.
+ * @return bool true or false based on the operator passed in. Returns null for invalid operators.
+ */
+function pmpro_int_compare( $a, $b, $operator ) {	
+	switch ( $operator ) {
+		case '>':
+			$r = (int)$a > (int)$b;
+			break;
+		case '<':
+			$r = (int)$a < (int)$b;
+			break;
+		case '>=':
+			$r = (int)$a >= (int)$b;
+			break;
+		case '<=':
+			$r = (int)$a <= (int)$b;
+			break;
+		case '=':
+		case '==':		
+			$r = (int)$a == (int)$b;
+			break;
+		default:
+			$r = null;
+	}
+	
+	return $r;
+}
