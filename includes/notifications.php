@@ -63,7 +63,7 @@ function pmpro_get_next_notification() {
 		}
 	}
 	
-	// Get all notifications.
+	// Get all applicable notifications.
 	$pmpro_notifications = pmpro_get_all_notifications();
 	if ( empty( $pmpro_notifications ) ) {
 		return false;
