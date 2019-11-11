@@ -117,6 +117,7 @@
 					$morder = new MemberOrder();
 					$morder->user_id = $old_order->user_id;
 					$morder->membership_id = $old_order->membership_id;
+					$morder->timestamp = $invoice->created;
 					
 					global $pmpro_currency;
 					global $pmpro_currencies;
