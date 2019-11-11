@@ -310,8 +310,19 @@ function pmpro_notification_test_pmpro_num_members( $data ) {
  * @returns bool true if there are as many levels as specified.
  */
 function pmpro_notification_test_pmpro_num_levels( $data ) {
-	/// TODO
-	return false;
+	global $wpdb;
+	static $num_levels;
+	
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $num_levels ) ) {
+		$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_levels";
+		$num_levels = $wpdb->get_var( $sqlQuery );
+	}
+
+	return pmpro_int_compare( $num_levels, $data[1], $data[0] );
 }
 
 /**
