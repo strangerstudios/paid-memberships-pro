@@ -374,8 +374,19 @@ function pmpro_notification_test_pmpro_num_orders( $data ) {
  * @returns bool true if there is as much revenue as specified.
  */
 function pmpro_notification_test_pmpro_revenue( $data ) {
-	/// TODO
-	return false;
+	global $wpdb;
+	static $revenue;
+	
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $revenue ) ) {
+		$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE gateway_environment = 'live' AND status NOT IN('refunded', 'review', 'token', 'error')";
+		$revenue = $wpdb->get_var( $sqlQuery );
+	}
+
+	return pmpro_int_compare( $revenue, $data[1], $data[0] );
 }
 
 /**
