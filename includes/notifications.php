@@ -289,8 +289,40 @@ function pmpro_notification_test_pmpro_license( $license_type ) {
  * @returns bool true if there are as many members as specified.
  */
 function pmpro_notification_test_pmpro_num_members( $data ) {
-	/// TODO
-	return false;
+	global $wpdb;
+	static $num_members;
+	
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $num_members ) ) {
+		$sqlQuery = "SELECT COUNT(*) FROM ( SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' GROUP BY user_id ) t1";
+		$num_members = $wpdb->get_var( $sqlQuery );
+	}
+
+	switch ( $data[0] ) {
+		case '>':
+			$r = (int)$num_members > (int)$data[1];
+			break;
+		case '<':
+			$r = (int)$num_members < (int)$data[1];
+			break;
+		case '>=':
+			$r = (int)$num_members >= (int)$data[1];
+			break;
+		case '<=':
+			$r = (int)$num_members <= (int)$data[1];
+			break;
+		case '=':
+		case '==':		
+			$r = (int)$num_members == (int)$data[1];
+			break;
+		default:
+			$r = false;
+	}
+	
+	return $r;
 }
 
 /**
