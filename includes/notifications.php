@@ -331,8 +331,19 @@ function pmpro_notification_test_pmpro_num_levels( $data ) {
  * @returns bool true if there are as many discount codes as specified.
  */
 function pmpro_notification_test_pmpro_num_discount_codes( $data ) {
-	/// TODO
-	return false;
+	global $wpdb;
+	static $num_codes;
+	
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $num_codes ) ) {
+		$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes";
+		$num_codes = $wpdb->get_var( $sqlQuery );
+	}
+
+	return pmpro_int_compare( $num_codes, $data[1], $data[0] );
 }
 
 /**
@@ -341,8 +352,19 @@ function pmpro_notification_test_pmpro_num_discount_codes( $data ) {
  * @returns bool true if there are as many orders as specified.
  */
 function pmpro_notification_test_pmpro_num_orders( $data ) {
-	/// TODO
-	return false;
+	global $wpdb;
+	static $num_orders;
+	
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	if ( ! isset( $num_orders ) ) {
+		$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE gateway_environment = 'live' AND status NOT IN('refunded', 'review', 'token', 'error')";
+		$num_orders = $wpdb->get_var( $sqlQuery );
+	}
+
+	return pmpro_int_compare( $num_orders, $data[1], $data[0] );
 }
 
 /**
