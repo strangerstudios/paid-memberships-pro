@@ -271,9 +271,16 @@ function pmpro_notification_test_plugin_version( $data ) {
  * @param string $license PMPro license type to check for.
  * @returns bool true if the PMPro license type matches.
  */
-function pmpro_notification_test_pmpro_license( $license ) {
-	/// TODO
-	return false;
+function pmpro_notification_test_pmpro_license( $license_type ) {
+	if ( empty( $license_type ) ) {
+		// If no license type, check they DON'T have a valid license key
+		$valid = ! pmpro_license_isValid();
+	} else {
+		// Check if they have a valid key of the type specified
+		$valid = pmpro_license_isValid( NULL, $license_type );
+	}
+	
+	return $valid;
 }
 
 /**
