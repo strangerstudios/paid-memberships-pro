@@ -395,8 +395,21 @@ function pmpro_notification_test_pmpro_revenue( $data ) {
  * @returns bool true if an option if found with the specified name and value.
  */
 function pmpro_notification_test_pmpro_setting( $data ) {
-	/// TODO
-	return false;
+	if ( ! is_array( $data ) || !isset( $data[0] ) || !isset( $data[1] ) ) {
+		return false;
+	}
+	
+	// remove the pmpro_ prefix if given
+	if ( strpos( $data[0], 'pmpro_' ) === 0 ) {
+		$data[0] = substr( $data[0], 6, strlen( $data[0] ) - 6 );
+	}
+		
+	$option_value = pmpro_getOption( $data[0] );	
+	if ( isset( $option_value ) && $option_value == $data[1] ) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /**
