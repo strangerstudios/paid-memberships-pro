@@ -25,8 +25,28 @@ function pmpro_notifications() {
 			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 		<?php } ?>
 			<div class="pmpro_notification-<?php echo $notification->type; ?>">
-				<h3><span class="dashicons dashicons-<?php echo $notification->dashicon; ?>"></span> <?php echo $notification->title; ?></h3>
-				<?php echo $notification->content; ?>
+				<h3><span class="dashicons dashicons-<?php esc_attr_e( $notification->dashicon ); ?>"></span> <?php esc_html_e( $notification->title ); ?></h3>
+				<?php 
+					$allowed_html = array (
+						'a' => array (
+							'class' => array(),
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+						'p' => array(
+							'class' => array(),
+						),
+						'b' => array(
+							'class' => array(),
+						),
+						'em' => array(
+							'class' => array(),
+						),
+						'br' => array(),
+					);
+					echo wp_kses( $notification->content, $allowed_html );
+				?>
 			</div>
 		</div>
 		<?php		
