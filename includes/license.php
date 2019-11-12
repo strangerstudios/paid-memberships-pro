@@ -155,45 +155,42 @@ add_action('admin_init', 'pmpro_license_pause');
 */
 //nag function embedded into headers of plugins
 function pmpro_license_nag() {
-	global $pmpro_nagged;
+	static $pmpro_nagged;
 	
 	//nagged already?
-	if(!empty($pmpro_nagged))
+	if(!empty($pmpro_nagged)) {
 		return;
+	}
 		
 	//remember that we've nagged already
 	$pmpro_nagged = true;
 	
 	//blocked by constant?
-	if(defined('PMPRO_LICENSE_NAG') && !PMPRO_LICENSE_NAG)
+	if(defined('PMPRO_LICENSE_NAG') && !PMPRO_LICENSE_NAG) {
 		return;
+	}
 	
 	//don't load on the license page
-	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-license')
+	if(!empty($_REQUEST['page']) && $_REQUEST['page'] == 'pmpro-license') {
 		return;
+	}
 	
 	//valid license?
-	if(pmpro_license_isValid())
+	if(pmpro_license_isValid()) {
 		return;
+	}
 	
-	//always show on updates page
-	/*
-	$screen = get_current_screen();	
-	if($screen->id == 'update-core')
-		$pmpro_nag_paused = false;	
-	else
-	*/
-		$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);		
-		
-	if(current_time('timestamp') < $pmpro_nag_paused && $pmpro_nag_paused < current_time('timestamp')*3600*24*8)
+	$pmpro_nag_paused = get_option('pmpro_nag_paused', 0);
+	if(current_time('timestamp') < $pmpro_nag_paused && $pmpro_nag_paused < current_time('timestamp')*3600*24*35) {
 		return;
+	}
 
 	//get key for later
 	$key = get_option('pmpro_license_key');
 
 	//okay, show nag
 	?>
-	<div class="<?php if(!empty($key)) { ?>error<?php } else { ?>notice notice-warning<?php } ?> fade">
+	<div class="<?php if(!empty($key)) { ?>error<?php } else { ?>notice notice-warning<?php } ?> fade">		
 		<p>
 			<?php
 				//only show the invalid part if they've entered a key
