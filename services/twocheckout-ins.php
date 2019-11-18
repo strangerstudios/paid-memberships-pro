@@ -426,6 +426,7 @@
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
 			$morder->InitialPayment = $_POST['item_list_amount_1'];	//not the initial payment, but the class is expecting that
 			$morder->PaymentAmount = $_POST['item_list_amount_1'];
+			$morder->datetime = $_POST['timestamp'];
 
 			$morder->FirstName = $_POST['customer_first_name'];
 			$morder->LastName = $_POST['customer_last_name'];
