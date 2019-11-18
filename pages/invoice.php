@@ -1,4 +1,5 @@
-<?php
+<div class="pmpro_invoice_wrap">
+	<?php
 	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
 
 	if($pmpro_msg)
@@ -17,10 +18,7 @@
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
 		?>
-
-		<h3>
-			<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>
-		</h3>
+		<h3><?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?></h3>
 		<a class="pmpro_a-print" href="javascript:window.print()"><?php _e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
@@ -84,7 +82,7 @@
 					<small class="pmpro_grey"><?php echo pmpro_formatPrice(0);?></small>
 				<?php } ?></p>
 			</div> <!-- end pmpro_invoice-total -->
-		</div> <!-- end pmpro_invoice -->
+		</div> <!-- end pmpro_invoice_details -->
 		<hr />
 		<?php
 	}
@@ -95,7 +93,7 @@
 		if($invoices)
 		{
 			?>
-			<table id="pmpro_invoices_table" class="pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table id="pmpro_invoices_table" class="pmpro_table pmpro_invoice" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
 					<th><?php _e('Date', 'paid-memberships-pro' ); ?></th>
@@ -140,3 +138,4 @@
 		</div>
 	<?php } ?>
 </nav>
+</div> <!-- end pmpro_invoice_wrap -->
