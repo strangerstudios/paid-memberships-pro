@@ -15,7 +15,7 @@ require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 			<form id="member-list-form" method="get">
 				<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
 				<?php
-					$user_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'pbrx-user-find' );
+					$user_list_table->search_box( __( 'Find Member', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 					$user_list_table->display();
 				?>
 		</form>
