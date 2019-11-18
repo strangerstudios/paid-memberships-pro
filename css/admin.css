@@ -411,3 +411,28 @@ button.pmpro_report_th_closed:before {
         width: 0;
     }
 }
+
+/* Members List */
+#ID, .ID.column-ID {
+	/*text-align: center;*/
+	width: 5%;
+}
+#display_name, .display_name.column-display_name {
+	width: 10rem;
+}
+#user_email .user_email.column-user_email{
+	width: 20%;
+}
+#membership,
+.membership.column-membership {
+	text-align: center;
+	width: 10%;
+}
+#membership_id,
+.membership_id.column-membership_id {
+	text-align: center;
+	width: 8%;
+}
+p.search-box {
+	/*float: left;*/
+} 
