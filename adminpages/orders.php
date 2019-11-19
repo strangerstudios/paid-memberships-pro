@@ -833,7 +833,7 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 					<?php
 					if ( $i == $month ) {
 ?>
-selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' . $year, current_time( 'timestamp' ) ) ); ?></option>
+selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' . $year, current_time( 'timestamp' ) ) ); ?></option>
 								<?php
 							}
 							?>
