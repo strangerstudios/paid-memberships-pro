@@ -727,7 +727,7 @@ class PMProGateway_stripe extends PMProGateway {
 										?>
                                         <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/1/" . $current_year ) ); ?>
+											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
 										</option>
 										<?php
 									}
