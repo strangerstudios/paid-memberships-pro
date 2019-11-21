@@ -462,14 +462,6 @@ li.pmpro_more {
 }
 
 /*---------------------------------------
-	Theme Compatibility
----------------------------------------*/
-body.theme-twentytwenty #pmpro_payment_information_fields.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
-	display: block;
-	margin-bottom: 1em;
-}
-
-/*---------------------------------------
 	Responsive Styles
 ---------------------------------------*/
 @media (max-width:768px) {
