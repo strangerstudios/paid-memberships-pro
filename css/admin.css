@@ -118,6 +118,14 @@
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {margin-left: 25px;}
 
+/* members list */
+.wp-list-table.members .column-ID {
+    width: 5%;
+}
+.wp-list-table.members .column-username {
+    width: 15%;
+}
+
 /* settings */
 tr.pmpro_settings_divider td {
     padding: 0;
@@ -411,28 +419,3 @@ button.pmpro_report_th_closed:before {
         width: 0;
     }
 }
-
-/* Members List */
-#ID, .ID.column-ID {
-	/*text-align: center;*/
-	width: 5%;
-}
-#display_name, .display_name.column-display_name {
-	width: 10rem;
-}
-#user_email .user_email.column-user_email{
-	width: 20%;
-}
-#membership,
-.membership.column-membership {
-	text-align: center;
-	width: 10%;
-}
-#membership_id,
-.membership_id.column-membership_id {
-	text-align: center;
-	width: 8%;
-}
-p.search-box {
-	/*float: left;*/
-} 

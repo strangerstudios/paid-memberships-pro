@@ -8,7 +8,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * The text domain of this plugin.
 	 *
-	 * @since    2.0.0
+	 * @since 2.2.0
+	 *
 	 * @access   private
 	 * @var      string    $plugin_text_domain    The text domain of this plugin.
 	 */
@@ -19,7 +20,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 *
 	 * @param string $plugin_text_domain    Text domain of the plugin.
 	 *
-	 * @since 2.0.0
+	 * @since 2.2.0
 	 */
 	public function __construct() {
 
@@ -42,16 +43,17 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
 	 *
-	 * @since   2.0.0
+	 * @since 2.2.0
 	 */
 	public function prepare_items() {
 		// check if a search was performed.
 		$user_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
 
-		$columns               = $this->get_columns();
-		$hidden                = $this->get_hidden_columns();
-		$sortable              = $this->get_sortable_columns();
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		//$columns               = $this->get_columns();
+		//$hidden                = $this->get_hidden_columns();
+		//$sortable              = $this->get_sortable_columns();
+		//$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = $this->get_column_info();
 		// $query = $query . ' where cat_id=' . mysql_real_escape_string( $_GET['cat-filter'] );
 		// $this->get_column_info() = $this->_column_headers;
 		// check and process any actions such as bulk actions.
@@ -90,25 +92,26 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 *
 	 * The format is: 'internal-name' => 'Title'
 	 *
-	 * @since 2.0.0
+	 * @since 2.2.0
+	 *
 	 * @return array
 	 */
 	public function get_columns() {
 		$columns = array(
 			// 'cb'            => '<input type="checkbox" />',
-			'ID'             => 'ID',
-			'user_login'     => 'Username',
-			'first_name'     => 'First Name',
-			'last_name'      => 'Last Name',
-			'display_name'   => 'Display Name',
-			'user_email'     => 'Email',
-			'address'        => 'Address',
-			'membership'     => 'Membership',
-			'membership_id'  => 'Level ID',
-			'billing_amount' => 'Fee',
-			'startdate'      => 'Subscribe Date',
-			'joindate'       => 'Joined',
-			'enddate'        => 'Expires',
+			'ID'				=> 'ID',
+			'username'			=> 'Username',
+			'first_name'		=> 'First Name',
+			'last_name'			=> 'Last Name',
+			'display_name'		=> 'Display Name',
+			'user_email'		=> 'Email',
+			'address'			=> 'Billing Address',
+			'membership'		=> 'Level',
+			'membership_id'		=> 'Level ID',
+			'billing_amount'	=> 'Fee',
+			'joindate'			=> 'Registered',
+			'startdate'			=> 'Start Date',
+			'enddate'			=> 'End Date',
 		);
 
 		if ( isset( $_REQUEST['l'] ) ) {
@@ -122,7 +125,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} elseif ( 'expired' === $l ) {
 			$columns['enddate'] = 'Expired';
 		} elseif ( 'cancelled' === $l ) {
-			$columns['enddate'] = 'Canceled';
+			$columns['enddate'] = 'Cancelled';
 		}
 
 		$columns = apply_filters( 'pmpro_memberslist_extra_cols', $columns );
@@ -148,11 +151,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function get_hidden_columns() {
 		$hidden = array(
-			// 'first_name',
-			// 'last_name',
-			'membership_id',
 			'display_name',
-			'startdate',
+			'membership_id',
+			'joindate',
 		);
 		return $hidden;
 	}
@@ -165,7 +166,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 *
 	 * The second format will make the initial sorting order be descending
 	 *
-	 * @since 1.1.0
+	 * @since 2.2.0
 	 *
 	 * @return array
 	 */
@@ -182,11 +183,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				'ID',
 				false,
 			),
-			'user_login'     => array(
+			'username'     => array(
 				'user_login',
 				false,
-			),
-			/*
+			),/*
 			'first_name'     => array(
 				'first_name',
 				false,
@@ -194,8 +194,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'last_name'      => array(
 				'last_name',
 				false,
-			),
-			*/
+			),*/
 			'billing_amount' => array(
 				'billing_amount',
 				false,
@@ -216,6 +215,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				'membership_id',
 				false,
 			),
+			'joindate'       => array(
+				'joindate',
+				false,
+			),
 			'startdate'      => array(
 				'startdate',
 				false,
@@ -224,19 +227,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				'enddate',
 				false,
 			),
-			'joindate'       => array(
-				'joindate',
-				false,
-			),
 		);
 	}
 
 	/**
 	 * Return number of visible columns
 	 *
-	 * @since 3.1.0
-	 * @access public
+	 * @since 2.2.0
 	 *
+	 * @access public
 	 * @return int
 	 */
 	public function get_column_count() {
@@ -244,22 +243,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$hidden                    = array_intersect( array_keys( $columns ), array_filter( $hidden ) );
 		return count( $columns ) - count( $hidden );
 	}
-
-	/**
-	 * Return number of visible columns
-	 *
-	 * @since 3.1.0
-	 * @access public
-	 *
-	 * @return int
-	 */
-	// public function get_column_info() {
-	// $columns     = $this->get_columns();
-	// $hidden      = $this->get_hidden_columns();
-	// $sortable    = $this->get_sortable_columns();
-	// $column_info = array( $columns, $hidden, $sortable );
-	// return $column_info;
-	// }
 
 	/**
 	 * Allows you to sort the data by the variables set in the $_GET
@@ -297,7 +280,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Text displayed when no user data is available
 	 *
-	 * @since   2.0.0
+	 * @since 2.2.0
 	 *
 	 * @return void
 	 */
@@ -323,7 +306,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		$mysqli_query =
 			"
-			SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email,
+			SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.display_name,
 			UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
 			UNIX_TIMESTAMP(mu.startdate) as startdate,
 			UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership
@@ -369,11 +352,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Filter the table data based on the user search key
 	 *
-	 * @since 2.0.0
+	 * @since 2.2.0
 	 *
 	 * @param array  $table_data
 	 * @param string $search_key
-	 * @returns array
+	 * @return array
 	 */
 	public function filter_table_data( $table_data, $search_key ) {
 		$filtered_table_data = array_values(
@@ -410,10 +393,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			case 'cycle_period':
 			case 'cycle_number':
 				return $item[ $column_name ];
-			case 'user_login':
+			case 'username':
+				$avatar = get_avatar( $item['ID'], 32 );
 				$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
 				$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
-				$output = $userlink . '<br />';
+				$output = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
 				// Set up the hover actions for this user
 				$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
@@ -430,11 +414,28 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				}
 				return $output;
 			case 'billing_amount':
-				return pmpro_formatPrice( $item[ $column_name ] );
-			case 'startdate':
+                $membership_values = pmpro_getMembershipLevelForUser( $item['ID'] );
+				//we tweak the initial payment here so the text here effectively shows the recurring amount
+				if( ! empty( $membership_values ) ) {
+					$membership_values->original_initial_payment = $membership_values->initial_payment;
+					$membership_values->initial_payment = $membership_values->billing_amount;
+				}
+				if ( empty( $membership_values ) || pmpro_isLevelFree( $membership_values ) ) {
+					if ( ! empty( $membership_values->original_initial_payment ) && $membership_values->original_initial_payment > 0 ) {
+						$billing_amount = pmpro_formatPrice( $membership_values->original_initial_payment );
+					} else {
+						esc_html_e( '&#8212;', 'paid-memberships-pro' );
+					}
+				} else {
+                    $billing_amount = pmpro_getLevelCost( $membership_values, true, true );
+                }
+				return $billing_amount;
 			case 'joindate':
-				$date = $item[ $column_name ];
-				return date( 'Y-m-d', $date );
+				$joindate = $item[ $column_name ];
+				return date_i18n( get_option('date_format'), $joindate );
+			case 'startdate':
+				$startdate = $item[ $column_name ];
+				return date_i18n( get_option('date_format'), $startdate );
 			case 'enddate':
 				$user_object = get_userdata( $item['ID'] );
 				if ( 0 == $item['enddate'] ) {
@@ -485,7 +486,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_first_name( $item ) {
 		$user_object = get_userdata( $item['ID'] );
-		return ( $user_object->first_name ?: '---' );
+		return ( $user_object->first_name ?: '&#8212;' );
 	}
 
 	/**
@@ -498,7 +499,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_last_name( $item ) {
 		$user_object = get_userdata( $item['ID'] );
-		return ( $user_object->last_name ?: '---' );
+		return ( $user_object->last_name ?: '&#8212;' );
 	}
 
 	/**
@@ -605,7 +606,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Process actions triggered by the user
 	 *
-	 * @since    2.0.0
+	 * @since 2.2.0
 	 */
 	public function handle_table_actions() {
 		/**
@@ -649,7 +650,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Stop execution and exit
 	 *
-	 * @since    2.0.0
+	 * @since 2.2.0
 	 *
 	 * @return void
 	 */
@@ -660,7 +661,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Die when the nonce check fails.
 	 *
-	 * @since    2.0.0
+	 * @since 2.2.0
 	 *
 	 * @return void
 	 */
