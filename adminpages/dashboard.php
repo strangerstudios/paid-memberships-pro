@@ -317,7 +317,12 @@ function pmpro_dashboard_report_recent_orders_callback() {
                                 <br /><?php echo $order->billing->name; ?>
                             <?php } ?>
         				</td>
-                        <td><?php echo $order->membership_id; ?></td>
+                        <td>
+                            <?php
+                                $level = pmpro_getLevel( $order->membership_id );
+                                echo $level->name;
+                            ?>
+                        </td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>
                             <?php echo $order->gateway; ?>

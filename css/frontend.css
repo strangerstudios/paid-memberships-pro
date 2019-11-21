@@ -384,6 +384,9 @@ select.pmpro_error {
 #pmpro_account #pmpro_account-invoices { }
 #pmpro_account #pmpro_account-links { }
 
+#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1) {
+	min-width: 200px;
+}
 #pmpro_account #pmpro_account-profile .pmpro_actionlinks {
 	margin-top: .5em;
 }

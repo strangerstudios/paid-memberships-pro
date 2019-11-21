@@ -106,7 +106,8 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
 		
-		<h2><?php _e('Advanced Settings', 'paid-memberships-pro' );?></h2>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+		<hr class="wp-header-end">
 
 		<table class="form-table">
 		<tbody>
@@ -115,7 +116,7 @@
 					<label for="nonmembertext"><?php _e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="nonmembertext" rows="3" cols="80"><?php echo stripslashes($nonmembertext)?></textarea>
+					<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo stripslashes($nonmembertext)?></textarea>
 					<p class="description"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: !!levels!!, !!referrer!!</p>
 				</td>
 			</tr>
@@ -124,7 +125,7 @@
 					<label for="notloggedintext"><?php _e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="notloggedintext" rows="3" cols="80"><?php echo stripslashes($notloggedintext)?></textarea>
+					<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
 					<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
@@ -133,14 +134,14 @@
 					<label for="rsstext"><?php _e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea name="rsstext" rows="3" cols="80"><?php echo stripslashes($rsstext)?></textarea>
+					<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo stripslashes($rsstext)?></textarea>
 					<p class="description"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
 		</tbody>
 		</table>
 		<hr />
-		<h3><?php _e('Content Settings', 'paid-memberships-pro' );?></h3>
+		<h2 class="title"><?php esc_html_e( 'Content Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
 			<tr>
@@ -168,7 +169,7 @@
 		</tbody>
 		</table>
 		<hr />
-		<h3><?php _e('reCAPTCHA Settings', 'paid-memberships-pro' ); ?></h3>
+		<h2 class="title"><?php esc_html_e( 'reCAPTCHA Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
 			<tr>
@@ -201,19 +202,19 @@
 			<tr>
 				<th scope="row"><label for="recaptcha_publickey"><?php _e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
 				<td>
-					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" size="60" value="<?php echo esc_attr($recaptcha_publickey);?>" />
+					<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
 				</td>
 			</tr>
 			<tr>
 				<th scope="row"><label for="recaptcha_privatekey"><?php _e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
 				<td>
-					<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" size="60" value="<?php echo esc_attr($recaptcha_privatekey);?>" />
+					<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
 				</td>
 			</tr>
 		</tbody>
 		</table>
 		<hr />
-		<h3><?php _e('Other Settings', 'paid-memberships-pro' ); ?></h3>
+		<h2 clas="title"><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
 			<tr>
@@ -336,13 +337,15 @@ if ( pmpro_displayAds() ) {
 	                            <input id="<?php echo esc_attr( $field['field_name'] ); ?>"
 	                                   name="<?php echo esc_attr( $field['field_name'] ); ?>"
 	                                   type="<?php echo esc_attr( $field['field_type'] ); ?>"
-	                                   value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> ">
+	                                   value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> "
+	                                   class="regular-text">
 	                            <?php
 	                            break;
 	                        case 'textarea':
 	                            ?>
 	                            <textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
-	                                      name="<?php echo esc_attr( $field['field_name'] ); ?>">
+	                                      name="<?php echo esc_attr( $field['field_name'] ); ?>"
+	                                      class="large-text">
 	                                <?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
 	                            </textarea>
 	                            <?php

@@ -107,7 +107,7 @@
 				<label for="instructions"><?php _e('Instructions', 'paid-memberships-pro' );?></label>					
 			</th>
 			<td>
-				<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
+				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
 				<p class="description"><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>	

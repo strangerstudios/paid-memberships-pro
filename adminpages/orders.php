@@ -365,15 +365,14 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 <?php if ( ! empty( $order ) ) { ?>
 
-	<h2>
-		<?php if ( ! empty( $order->id ) ) { ?>
-			<?php _e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?>
-			<a title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>" class="add-new-h2" target="_blank" ><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
-			<a title="<?php _e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link add-new-h2" data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
-		<?php } else { ?>
-			<?php _e( 'New Order', 'paid-memberships-pro' ); ?>
-		<?php } ?>
-	</h2>
+	<?php if ( ! empty( $order->id ) ) { ?>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?></h1>
+		<a title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>" class="page-title-action" target="_blank" ><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php _e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action" data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+	<?php } else { ?>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
+	<?php } ?>
+	<hr class="wp-header-end">
 
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
 		<div id="message" class="
@@ -409,47 +408,44 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				<th scope="row" valign="top"><label for="code"><?php _e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'code', $read_only_fields ) ) {
-						echo $order->code;
-					} else {
-										?>
-											<input id="code" name="code" type="text" size="50"
-												   value="<?php echo esc_attr( $order->code ); ?>"/>
-					<?php } ?>
+						if ( in_array( 'code', $read_only_fields ) ) {
+							echo $order->code;
+						} else { ?>
+							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 					<?php if ( $order_id < 0 ) { ?>
-						<p class="description"><?php _e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p><?php } ?>
+						<p class="description"><?php _e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p>
+					<?php } ?>
 				</td>
 			</tr>
-
 			<tr>
 				<th scope="row" valign="top"><label for="user_id"><?php _e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
-						echo $order->user_id;
-					} else {
-										?>
-											<input id="user_id" name="user_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->user_id ); ?>"/>
-					<?php } ?>
+						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
+							echo $order->user_id;
+						} else { ?>
+							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 				</td>
 			</tr>
-
 			<tr>
-				<th scope="row" valign="top"><label for="membership_id"><?php _e( 'Membership Level ID', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="membership_id"><?php _e( 'Membership Level ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
+						if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->membership_id;
-					} else {
-										?>
-											<input id="membership_id" name="membership_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->membership_id ); ?>"/>
-					<?php } ?>
+						} else { ?>
+							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 				</td>
 			</tr>
-
 			<tr>
 				<th scope="row" valign="top"><label for="billing_name"><?php _e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
 				</th>
@@ -940,33 +936,32 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 <?php } else { ?>
 
 	<form id="posts-filter" method="get" action="">
-		<h2>
-			<?php _e( 'Orders', 'paid-memberships-pro' ); ?>
-			<a href="admin.php?page=pmpro-orders&order=-1"
-			   class="add-new-h2">+ <?php _e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
-			<?php
-			// build the export URL
-			$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
-			$url_params = array(
-				'filter'          => $filter,
-				's'               => $s,
-				'l'               => $l,
-				'start-month'     => $start_month,
-				'start-day'       => $start_day,
-				'start-year'      => $start_year,
-				'end-month'       => $end_month,
-				'end-day'         => $end_day,
-				'end-year'        => $end_year,
-				'predefined-date' => $predefined_date,
-				'discount-code'	  => $discount_code,
-				'status'          => $status,
-			);
-			$export_url = add_query_arg( $url_params, $export_url );
-			?>
-			<a target="_blank" href="<?php echo $export_url; ?>"
-			   class="add-new-h2"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
-		</h2>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
+		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+
+		<?php
+		// build the export URL
+		$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
+		$url_params = array(
+			'filter'          => $filter,
+			's'               => $s,
+			'l'               => $l,
+			'start-month'     => $start_month,
+			'start-day'       => $start_day,
+			'start-year'      => $start_year,
+			'end-month'       => $end_month,
+			'end-day'         => $end_day,
+			'end-year'        => $end_year,
+			'predefined-date' => $predefined_date,
+			'discount-code'	  => $discount_code,
+			'status'          => $status,
+		);
+		$export_url = add_query_arg( $url_params, $export_url );
+		?>
+		<a target="_blank" href="<?php echo $export_url; ?>" class="page-title-action"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		
+		<hr class="wp-header-end">
 
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
@@ -1081,8 +1076,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					<?php } ?>
 				</select>
 
-
-				<input id="submit" type="submit" value="<?php _e( 'Filter', 'paid-memberships-pro' ); ?>"/>
+				<input id="submit" class="button" type="submit" value="<?php _e( 'Filter', 'paid-memberships-pro' ); ?>"/>
 			</li>
 		</ul>
 

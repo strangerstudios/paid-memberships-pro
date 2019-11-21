@@ -24,7 +24,7 @@
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 			<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 			<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
-			<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong> <?php echo ! empty( $pmpro_invoice->status ) ? $pmpro_invoice->status : __( 'success', 'paid-memberships-pro' ); ?></li>
+			<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong> <?php echo ! empty( $pmpro_invoice->status ) ? ucwords( $pmpro_invoice->status ) : __( 'Success', 'paid-memberships-pro' ); ?></li>
 			<?php if($pmpro_invoice->membership_level->enddate) { ?>
 				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $pmpro_invoice->membership_level->enddate)?></li>
 			<?php } ?>
@@ -58,7 +58,7 @@
 			<?php if($pmpro_invoice->accountnumber) { ?>
 				<div class="pmpro_invoice-payment-method">
 					<strong><?php _e('Payment Method', 'paid-memberships-pro' );?></strong>
-					<p><?php echo $pmpro_invoice->cardtype?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?></p>
+					<p><?php echo ucwords( $pmpro_invoice->cardtype ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?></p>
 					<p><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></p>
 				</div> <!-- end pmpro_invoice-payment-method -->
 			<?php } elseif($pmpro_invoice->payment_type) { ?>

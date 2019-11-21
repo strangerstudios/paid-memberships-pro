@@ -38,7 +38,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			<div id="pmpro_account-membership" class="pmpro_box">
 				
 				<h3><?php _e("My Memberships", 'paid-memberships-pro' );?></h3>
-				<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<table class="pmpro_table" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
 							<th><?php _e("Level", 'paid-memberships-pro' );?></th>
@@ -121,7 +121,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>		
 		<div id="pmpro_account-invoices" class="pmpro_box">
 			<h3><?php _e("Past Invoices", 'paid-memberships-pro' );?></h3>
-			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table class="pmpro_table" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
 						<th><?php _e("Date", 'paid-memberships-pro' ); ?></th>
