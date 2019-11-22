@@ -3,6 +3,17 @@
 = 2.2 - 2019-11-22 =
 * FEATURE: The Members List is now shown in an official "WP List Table". Most columns are sortable. The screen options in the upper right can be used to add/remove columns. (Thanks, Thomas Sjolshagen, Paul Barthmeier, and David Parker)
 * FEATURE: Showing useful notifications in the PMPro dashboard area. Notifications are shown no more than once ever 12 hours, and no more than 3 times every week. The PMPro Advanced Settings page has an option to only show security-related notifications.
+* SECURITY: Better sanitizing of values in the 2Checkout INS handler.
+* BUG FIX: Fixed issue since WP 5.3 where expiration dates and other dates could be off by a month after saving.
+* BUG FIX: Fixed issue where Stripe orders processed through the webhook would use the current date instead of the date of the order. This was an issue if you had to rerun a webhook later.
+* BUG FIX: Fixed issue level confirmation text was sometimes not shown in emails when it was supposed to.
+* BUG FIX: Russian Rubles are now configured to have 2 decimals again. In practice, decimals aren't often used for rubles and we are looking into ways to store the decimals (because gateways like Stripe need them) while showing values without decimals.
+* BUG FIX: Fixed bug where the "logged in as" message would sometimes show twice on the update billing page.
+* BUG FIX/ENHANCEMENT: Updated dashboard to adopt WordPress 5.3 formatting updates.
+* BUG FIX/ENHANCEMENT: Updated frontend pages to improve cross-browser and cross-theme compatibility.
+* BUG FIX/ENHANCEMENT: New free orders will always have the "success" status after checkout.
+* BUG FIX/ENHANCEMENT: Better handling of tax values in the PayPal IPN handler.
+* ENHANCEMENT: Added "Edit User" and "Edit Order" links to the admin email when a gateway subscription fails to cancel.
 
 = 2.1.4 - 2019-10-31
 * BUG FIX: Better exception handling in the Stripe gateway class for PHP 7+.
