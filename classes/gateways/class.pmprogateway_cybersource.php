@@ -81,7 +81,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php _e('CyberSource Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2 class="title"><?php esc_html_e( 'CyberSource Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
@@ -94,7 +94,7 @@
 				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" size="60" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" />
+				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
@@ -102,7 +102,7 @@
 				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="80"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
+				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="50" class="large-text code"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
 			</td>
 		</tr>
 		<?php

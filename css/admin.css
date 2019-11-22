@@ -118,6 +118,21 @@
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {margin-left: 25px;}
 
+/* payment settings */
+.admin_page_pmpro-paymentsettings .form-table select {
+    max-width: none;
+}
+
+/* advanced settings */
+.admin_page_pmpro-advancedsettings .form-table select:not(.admin_page_pmpro-advancedsettings .form-table select#tospage) {
+    max-width: none;
+}
+
+/* orders */
+.memberships_page_pmpro-orders .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
+
 /* members list */
 .wp-list-table.members .column-ID {
     width: 5%;
@@ -170,9 +185,17 @@ tr.pmpro_error {background-image: none;}
 tr.pmpro_alert {background-image: none;}
 
 /* discount levels */
-.pmpro_discount_levels {border: 1px solid #CCC;}
-.pmpro_discount_levels div {padding: 5px; border: 1px solid #CCC;}
-.pmpro_discount_levels div div {margin-top: 5px; background: #F5F5F5;}
+.pmpro_discount_levels .pmpro_discount_level {
+    border: 1px solid #CCC;
+    margin: 15px 0;
+    padding: 10px;
+}
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_levels_pricing {
+    background: #FFFFFF;
+    border: 1px solid #CCC;
+    margin: 10px 0 0 0;
+    padding: 0px 20px;
+}
 
 /* pagination */
 div.pmpro_pagination {padding: 3px; margin: 5px 0px 5px 0px; font-size: 10px; float: right; }
@@ -184,6 +207,9 @@ div.pmpro_pagination span.disabled {padding: 2px 5px 2px 5px; margin: 2px; borde
 p.pmpro_meta_notice {font-size: .8em; padding-top: 5px; border-top: 1px solid #CCC;}
 
 /* add ons */
+.memberships_page_pmpro-addons .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
 .pmpro_admin .widgets-holder-wrap {clear: both; margin-top: 20px; padding: 0 8px; }
 .pmpro_admin .widgets-holder-wrap .widget {float: left; width: 32%; margin: 0 1% 1% 0; position: relative; }
 .pmpro_admin .widgets-holder-wrap p.description {padding: 0; }
@@ -228,6 +254,9 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 h2.nav-tab-wrapper {margin-bottom: 1em; }
 
 /* reports */
+.memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
 .pmpro_reports-holder { }
 .pmpro_reports-holder .postbox h2 {border-bottom: 1px solid #eee; font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }
 .pmpro_clickable {cursor: pointer;}
@@ -353,7 +382,6 @@ button.pmpro_report_th_closed:before {
     .pmpro_admin .nav-tab-wrapper:after {
         clear: both;
         display: block;
-        margin-bottom: 10px;
     }
     .pmpro_admin .nav-tab-wrapper a {
         margin-top: 5px;

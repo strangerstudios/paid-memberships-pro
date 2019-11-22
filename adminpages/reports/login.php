@@ -176,9 +176,9 @@ function pmpro_report_login_page()
 		<thead>
 			<tr class="thead">
 				<th><?php _e('ID', 'paid-memberships-pro')?></th>
-				<th><?php _e('User', 'paid-memberships-pro')?></th>	
+				<th><?php _e('Username', 'paid-memberships-pro')?></th>	
 				<th><?php _e('Name', 'paid-memberships-pro')?></th>
-				<th><?php _e('Membership', 'paid-memberships-pro')?></th>	
+				<th><?php _e('Level', 'paid-memberships-pro')?></th>	
 				<th><?php _e('Joined', 'paid-memberships-pro')?></th>
 				<th><?php _e('Expires', 'paid-memberships-pro')?></th>
 				<th><?php _e('Last Visit', 'paid-memberships-pro')?></th>

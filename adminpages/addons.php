@@ -78,8 +78,9 @@
 	}
 
 	?>
-	<h2><?php _e('Add Ons', 'paid-memberships-pro' ); ?></h2>
-
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
+	<hr class="wp-header-end">
+	
 	<?php
 		pmpro_showMessage();
 	?>
@@ -96,8 +97,6 @@
 		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($update_available_addons);?>)</span></a> |</li>
 		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($not_installed_addons);?>)</span></a></li>
 	</ul>
-
-	<br /><br />
 
 	<table class="wp-list-table widefat plugins">
 	<thead>

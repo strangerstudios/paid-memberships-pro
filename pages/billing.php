@@ -1,3 +1,4 @@
+<div class="pmpro_billing_wrap">
 <?php
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
@@ -414,4 +415,6 @@
 	} else { ?>
 		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
 	<?php }
-}
+} ?>
+</div> <!-- end pmpro_billing_wrap -->
+
