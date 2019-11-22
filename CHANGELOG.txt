@@ -1,7 +1,7 @@
 == Changelog ==
 
 = 2.2 - 2019-11-22 =
-* FEATURE: The Members List is now shown in an official "WP List Table". Most columns are sortable. The screen options in the upper right can be used to add/remove columns. (Thanks, Thomas Sjolshagen, Paul Barthmeier, and David Parker)
+* FEATURE: The Members List is now shown in an official "WP List Table". Most columns are sortable. The screen options in the upper right can be used to add/remove columns. (Thanks, Thomas Sjolshagen, Paul Barthmaier, and David Parker)
 * FEATURE: Showing useful notifications in the PMPro dashboard area. Notifications are shown no more than once ever 12 hours, and no more than 3 times every week. The PMPro Advanced Settings page has an option to only show security-related notifications.
 * SECURITY: Better sanitizing of values in the 2Checkout INS handler.
 * BUG FIX: Fixed issue since WP 5.3 where expiration dates and other dates could be off by a month after saving.
