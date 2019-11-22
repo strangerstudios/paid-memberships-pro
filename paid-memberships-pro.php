@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.0.7
+ * Version: 2.1.4
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.0.7' );
+define( 'PMPRO_VERSION', '2.1.4' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -49,6 +49,7 @@ require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, 
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
 require_once( PMPRO_DIR . '/includes/admin.php' );					// admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
+require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
 
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/blocks/blocks.php' );             	// Gutenberg blocks
@@ -60,6 +61,8 @@ require_once( PMPRO_DIR . '/includes/profile.php' );                // edit user
 require_once( PMPRO_DIR . '/includes/https.php' );                  // code related to HTTPS/SSL
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
+require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
+
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
@@ -154,6 +157,10 @@ function pmpro_gateways() {
 		'twocheckout'       => __( '2Checkout', 'paid-memberships-pro' ),
 		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
+
+	if ( pmpro_onlyFreeLevels() ) {
+		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
 }

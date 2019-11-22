@@ -132,7 +132,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
@@ -177,7 +177,12 @@ function pmpro_membership_level_profile_fields($user)
 				<td id="tos_consent_history">
 					<?php
 						if( !empty( $consent_log ) ) {
-							echo '<ul>';
+							if( count( $consent_log ) > 10 ) {
+								$scrollable = 'pmpro_scrollable';
+							} else {
+								$scrollable = '';
+							}
+							echo '<ul class="pmpro_consent_log ' . $scrollable . '">';
 							foreach( $consent_log as $entry ) {
 								echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
 							}

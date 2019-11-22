@@ -1,3 +1,4 @@
+<div class="pmpro_billing_wrap">
 <?php
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
@@ -13,15 +14,23 @@
 
 	$gateway = pmpro_getOption("gateway");
 
+	// Set the wrapping class for the checkout div based on the default gateway;
+	if ( empty( $gateway ) ) {
+		$pmpro_billing_gateway_class = 'pmpro_billing_gateway-none';
+	} else {
+		$pmpro_billing_gateway_class = 'pmpro_billing_gateway-' . $gateway;
+	}
+
 	$level = $current_user->membership_level;
-
-
+	
 	//Make sure the $level object is a valid level definition
-	if(isset($level->id) && !empty($level->id))
+	if(!empty($level) && !empty($level->id))
 	{
+		$checkout_url = pmpro_url( 'checkout', '?level=' . $level->id );
+		$logout_url = wp_logout_url( $checkout_url );
 	?>
-		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo wp_logout_url(get_bloginfo("url") . "/membership-checkout/?level=" . $level->id);?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
-		<?php
+		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( $logout_url ); ?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+	<?php
 		 /**
 		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
 		 *
@@ -77,7 +86,7 @@
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
 
 	<?php } else { ?>
-
+		<div id="pmpro_level-<?php echo $level->id; ?>" class="<?php echo $pmpro_billing_gateway_class; ?>">
 		<form id="pmpro_form" class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />
@@ -373,7 +382,39 @@
 			});
 			-->
 		</script>
+		</div> <!-- end pmpro_level-ID -->
 	<?php } ?>
-<?php } else { ?>
-	<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
-<?php } ?>
+
+<?php } else { // End for recurring level check.
+	?>
+	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( wp_logout_url() );?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
+	<?php
+	// Check to see if the user has a cancelled order
+	$order = new MemberOrder();
+	$order->getLastMemberOrder( $current_user->ID, array( 'cancelled', 'expired', 'admin_cancelled' ) );
+
+	if ( isset( $order->membership_id ) && ! empty( $order->membership_id ) && empty( $level->id ) ) {
+		$level = pmpro_getLevel( $order->membership_id );
+
+		// If no level check for a default level.
+		if ( ! isset( $level ) && empty( $level->id ) || ! $level->allow_signups ) {
+			$default_level_id = apply_filters( 'pmpro_default_level', 0 );
+		}
+		
+		// If still no level, redirect to the levels page.
+		if ( empty( $level ) ) {
+			$url = pmpro_url( 'levels' );
+			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
+		} elseif ( !empty( $default_level_id ) ) {
+			$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
+			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
+		} else {
+			$url = pmpro_url( 'checkout', '?level=' . $level->id );
+			printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+		}
+	} else { ?>
+		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
+	<?php }
+} ?>
+</div> <!-- end pmpro_billing_wrap -->
+

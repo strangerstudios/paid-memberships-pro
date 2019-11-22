@@ -58,7 +58,7 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards'
+				'accepted_credit_cards',
 			);
 
 			return $options;
@@ -90,7 +90,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Authorize.net Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h2 class="title"><?php esc_html_e('Authorize.net Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -98,7 +99,7 @@
 				<label for="loginname"><?php _e('Login Name', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="loginname" name="loginname" size="60" value="<?php echo esc_attr($values['loginname'])?>" />
+				<input type="text" id="loginname" name="loginname" value="<?php echo esc_attr($values['loginname'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -106,7 +107,7 @@
 				<label for="transactionkey"><?php _e('Transaction Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="transactionkey" name="transactionkey" size="60" value="<?php echo esc_attr($values['transactionkey'])?>" />
+				<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
@@ -114,7 +115,8 @@
 				<label><?php _e('Silent Post URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></pre></p>
+				<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
+				<p><code><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></code></p>
 			</td>
 		</tr>
 		<?php

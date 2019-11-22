@@ -1,3 +1,4 @@
+<div class="pmpro_confirmation_wrap">
 <?php 
 	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 	
@@ -41,8 +42,6 @@
 		
 		echo $confirmation_message;
 	?>
-	
-	
 	<h3>
 		<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>		
 	</h3>
@@ -135,3 +134,4 @@
 		<?php } ?>
 	</div>
 </nav>
+</div> <!-- end pmpro_confirmation_wrap -->

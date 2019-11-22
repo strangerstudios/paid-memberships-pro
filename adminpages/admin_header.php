@@ -25,7 +25,7 @@
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels&edit=-1') . "\">" . __("Add a membership level to get started.", 'paid-memberships-pro' ) . "</a>";
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
 			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", 'paid-memberships-pro' ) . "</a>.";
-		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings")
+		elseif($pmpro_level_ready && $pmpro_pages_ready && !$pmpro_gateway_ready && $view != "pmpro-paymentsettings" && ! pmpro_onlyFreeLevels())
 			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-paymentsettings') . "\">" . __("Set up your SSL certificate and payment gateway", 'paid-memberships-pro' ) . "</a>.";
 
 		if(empty($msgt))
@@ -150,18 +150,33 @@
 
 <div class="wrap pmpro_admin">
 	<div class="pmpro_banner">
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=banner&utm_campaign=admin_header")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_meta">
 			<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
-			<a target="_blank" class="button button-documentation" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/documentation?utm_source=plugin&utm_medium=banner&utm_campaign=admin_header")?>"><?php _e('Documentation', 'paid-memberships-pro' );?></a>
-			<a target="_blank" class="button-primary button-support" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=admin_header"><?php _e('Get Support', 'paid-memberships-pro' );?></a>
+			<a target="_blank" href="<?php echo pmpro_https_filter("https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation")?>"><?php _e('Documentation', 'paid-memberships-pro' );?></a>
+			<a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php _e('Get Support', 'paid-memberships-pro' );?></a>
+
+			<?php if ( pmpro_license_isValid() ) { ?>
+				<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?>				
+			<?php } elseif ( ! defined( 'PMPRO_LICENSE_NAG' ) || PMPRO_LICENSE_NAG == true ) { ?>
+				<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-invalid" href="%s">No License</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?>
+			<?php } ?>
+
 		</div>
 	</div>
 	<div id="pmpro_notifications">
 	</div>
+	<?php
+		// To debug a specific notification.
+		if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
+			$specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+		} else {	
+			$specific_notification = '';
+		}
+	?>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications"); ?>', function(data) {
+			jQuery.get('<?php echo get_admin_url(NULL, "/admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
 				if(data && data != 'NULL')
 					jQuery('#pmpro_notifications').html(data);
 			});
@@ -180,7 +195,8 @@
 			'pmpro-paymentsettings',
 			'pmpro-emailsettings',
 			'pmpro-advancedsettings',
-			'pmpro-addons'
+			'pmpro-addons',
+			'pmpro-license'
 		);
 		if( in_array( $view, $settings_tabs ) ) { ?>
 	<nav class="nav-tab-wrapper">
@@ -206,6 +222,10 @@
 
 		<?php if(current_user_can('pmpro_addons')) { ?>
 			<a href="<?php echo admin_url('admin.php?page=pmpro-addons');?>" class="nav-tab<?php if($view == 'pmpro-addons') { ?> nav-tab-active<?php } ?>"><?php _e('Add Ons', 'paid-memberships-pro' );?></a>
+		<?php } ?>
+
+		<?php if(current_user_can('manage_options')) { ?>
+			<a href="<?php echo admin_url('admin.php?page=pmpro-license');?>" class="nav-tab<?php if($view == 'pmpro-license') { ?> nav-tab-active<?php } ?>"><?php _e('License', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 	</nav>
 

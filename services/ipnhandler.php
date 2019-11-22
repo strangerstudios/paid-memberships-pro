@@ -449,7 +449,7 @@ function pmpro_ipnValidate() {
 			$r = true;
 		} else {
 			//log for manual investigation
-			ipnlog( "INAVLID" );
+			ipnlog( "INVALID" );
 			$r = false;
 		}
 	}

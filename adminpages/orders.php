@@ -149,24 +149,6 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$condition = "o.total = 0";
 }
 
-// emailing?
-if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
-	$email = new PMProEmail();
-	$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-	$order = new MemberOrder( $_REQUEST['order'] );
-	if ( $email->sendBillableInvoiceEmail( $user, $order ) ) {
-		$pmpro_msg  = __( 'Invoice emailed successfully.', 'paid-memberships-pro' );
-		$pmpro_msgt = 'success';
-	} else {
-		$pmpro_msg  = __( 'Error emailing invoice.', 'paid-memberships-pro' );
-		$pmpro_msgt = 'error';
-	}
-
-	// clean up so we stay on the orders list view
-	unset( $_REQUEST['order'] );
-	$order = null;
-}
-
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
@@ -373,17 +355,24 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 }
 
 require_once( dirname( __FILE__ ) . '/admin_header.php' );
+
+if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
+	// Load the email order modal.
+	pmpro_add_email_order_modal();
+}
+
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
 
-	<h2>
-		<?php if ( ! empty( $order->id ) ) { ?>
-			<?php _e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?>
-		<?php } else { ?>
-			<?php _e( 'New Order', 'paid-memberships-pro' ); ?>
-		<?php } ?>
-	</h2>
+	<?php if ( ! empty( $order->id ) ) { ?>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo $order->id; ?>: <?php echo $order->code; ?></h1>
+		<a title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>" class="page-title-action" target="_blank" ><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php _e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action" data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+	<?php } else { ?>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
+	<?php } ?>
+	<hr class="wp-header-end">
 
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
 		<div id="message" class="
@@ -409,7 +398,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 				if ( ! empty( $order->id ) ) {
 						echo $order->id;
 				} else {
-					echo __( 'This will be generated when you save.', 'paid-memberships-pro' );
+					echo '<p class="description">' . __( 'This will be generated when you save.', 'paid-memberships-pro' ) . '</p>';
 				}
 					?>
 					</td>
@@ -419,48 +408,44 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 				<th scope="row" valign="top"><label for="code"><?php _e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'code', $read_only_fields ) ) {
-						echo $order->code;
-					} else {
-										?>
-											<input id="code" name="code" type="text" size="50"
-												   value="<?php echo esc_attr( $order->code ); ?>"/>
-					<?php } ?>
+						if ( in_array( 'code', $read_only_fields ) ) {
+							echo $order->code;
+						} else { ?>
+							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 					<?php if ( $order_id < 0 ) { ?>
-						<small
-							class="pmpro_lite"><?php _e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></small><?php } ?>
+						<p class="description"><?php _e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p>
+					<?php } ?>
 				</td>
 			</tr>
-
 			<tr>
 				<th scope="row" valign="top"><label for="user_id"><?php _e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
-						echo $order->user_id;
-					} else {
-										?>
-											<input id="user_id" name="user_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->user_id ); ?>"/>
-					<?php } ?>
+						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
+							echo $order->user_id;
+						} else { ?>
+							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 				</td>
 			</tr>
-
 			<tr>
-				<th scope="row" valign="top"><label for="membership_id"><?php _e( 'Membership Level ID', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="membership_id"><?php _e( 'Membership Level ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
+						if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->membership_id;
-					} else {
-										?>
-											<input id="membership_id" name="membership_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->membership_id ); ?>"/>
-					<?php } ?>
+						} else { ?>
+							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" class="regular-text" />
+						<?php 
+						}
+					?>
 				</td>
 			</tr>
-
 			<tr>
 				<th scope="row" valign="top"><label for="billing_name"><?php _e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
 				</th>
@@ -644,8 +629,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											<input id="total" name="total" type="text" size="10"
 												   value="<?php echo esc_attr( $order->total ); ?>"/>
 					<?php } ?>
-					<small
-						class="pmpro_lite"><?php _e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 
@@ -661,8 +645,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											<input id="payment_type" name="payment_type" type="text" size="50"
 												   value="<?php echo esc_attr( $order->payment_type ); ?>"/>
 					<?php } ?>
-					<small
-						class="pmpro_lite"><?php _e( 'e.g. PayPal Express, PayPal Standard, Credit Card.', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'e.g. PayPal Express, PayPal Standard, Credit Card.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 			<tr>
@@ -676,7 +659,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											<input id="cardtype" name="cardtype" type="text" size="50"
 												   value="<?php echo esc_attr( $order->cardtype ); ?>"/>
 					<?php } ?>
-					<small class="pmpro_lite"><?php _e( 'e.g. Visa, MasterCard, AMEX, etc', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'e.g. Visa, MasterCard, AMEX, etc', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 			<tr>
@@ -691,7 +674,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											<input id="accountnumber" name="accountnumber" type="text" size="50"
 												   value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
 					<?php } ?>
-					<small class="pmpro_lite"><?php _e( 'Obscure all but last 4 digits.', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'Obscure all but last 4 digits.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 			<?php
@@ -705,7 +688,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<td>
 						<input id="expirationmonth" name="expirationmonth" type="text" size="10"
 				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/>
-						<small class="pmpro_lite">MM</small>
+						<span class="description">MM</span>
 					</td>
 				</tr>
 				<tr>
@@ -714,7 +697,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<td>
 						<input id="expirationyear" name="expirationyear" type="text" size="10"
 				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
-						<small class="pmpro_lite">YYYY</small>
+						<span class="description">YYYY</span>
 					</td>
 				</tr>
 			<?php } ?>
@@ -799,8 +782,7 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50"
 												   value="<?php echo esc_attr( $order->payment_transaction_id ); ?>"/>
 					<?php } ?>
-					<small
-						class="pmpro_lite"><?php _e( 'Generated by the gateway. Useful to cross reference orders.', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'Generated by the gateway. Useful to cross reference orders.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 			<tr>
@@ -816,8 +798,7 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50"
 												   value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
 					<?php } ?>
-					<small
-						class="pmpro_lite"><?php _e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></small>
+					<p class="description"><?php _e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 
@@ -848,7 +829,7 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 					<?php
 					if ( $i == $month ) {
 ?>
-selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' . $year, current_time( 'timestamp' ) ) ); ?></option>
+selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' . $year, current_time( 'timestamp' ) ) ); ?></option>
 								<?php
 							}
 							?>
@@ -953,70 +934,34 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 	</form>
 
 <?php } else { ?>
-	<?php
-	/**
-	 * Code to handle emailing billable invoices.
-	 *
-	 * @since 1.8.6
-	 */
-	?>
-	<script>
-		// Update fields in email modal.
-		jQuery(document).ready(function ($) {
-			var order, order_id;
-			$('.email_link').click(function () {
-				order_id = $(this).data('order');
-				$('input[name=order]').val(order_id);
-				// Get email address from order ID
-				data = {
-					action: 'pmpro_get_order_json',
-					order_id: order_id
-				};
-				$.post(ajaxurl, data, function (response) {
-					order = JSON.parse(response);
-					$('input[name=email]').val(order.Email);
-				});
-			});
-		});
-	</script>
-	<?php add_thickbox(); ?>
-	<div id="email_invoice" style="display:none;">
-		<h3><?php _e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
-		<form method="post" action="">
-			<input type="hidden" name="order" value=""/>
-			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
-			<input type="text" value="" name="email"/>
-			<button class="button button-primary alignright"><?php _e( 'Send Email', 'paid-memberships-pro' ); ?></button>
-		</form>
-	</div>
-	<form id="posts-filter" method="get" action="">
-		<h2>
-			<?php _e( 'Orders', 'paid-memberships-pro' ); ?>
-			<a href="admin.php?page=pmpro-orders&order=-1"
-			   class="add-new-h2">+ <?php _e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
-			<?php
-			// build the export URL
-			$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
-			$url_params = array(
-				'filter'          => $filter,
-				's'               => $s,
-				'l'               => $l,
-				'start-month'     => $start_month,
-				'start-day'       => $start_day,
-				'start-year'      => $start_year,
-				'end-month'       => $end_month,
-				'end-day'         => $end_day,
-				'end-year'        => $end_year,
-				'predefined-date' => $predefined_date,
-				'discount-code'	  => $discount_code,
-				'status'          => $status,
-			);
-			$export_url = add_query_arg( $url_params, $export_url );
-			?>
-			<a target="_blank" href="<?php echo $export_url; ?>"
-			   class="add-new-h2"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
-		</h2>
+	<form id="posts-filter" method="get" action="">
+
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
+		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+
+		<?php
+		// build the export URL
+		$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
+		$url_params = array(
+			'filter'          => $filter,
+			's'               => $s,
+			'l'               => $l,
+			'start-month'     => $start_month,
+			'start-day'       => $start_day,
+			'start-year'      => $start_year,
+			'end-month'       => $end_month,
+			'end-day'         => $end_day,
+			'end-year'        => $end_year,
+			'predefined-date' => $predefined_date,
+			'discount-code'	  => $discount_code,
+			'status'          => $status,
+		);
+		$export_url = add_query_arg( $url_params, $export_url );
+		?>
+		<a target="_blank" href="<?php echo $export_url; ?>" class="page-title-action"><?php _e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		
+		<hr class="wp-header-end">
 
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
@@ -1131,8 +1076,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 					<?php } ?>
 				</select>
 
-
-				<input id="submit" type="submit" value="<?php _e( 'Filter', 'paid-memberships-pro' ); ?>"/>
+				<input id="submit" class="button" type="submit" value="<?php _e( 'Filter', 'paid-memberships-pro' ); ?>"/>
 			</li>
 		</ul>
 
@@ -1351,9 +1295,9 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 			<tr class="thead">
 				<th><?php _e( 'ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
-				<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Username', 'paid-memberships-pro' ); ?></th>
 				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
-				<th><?php _e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
+				<th><?php _e( 'Level', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Payment', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Gateway', 'paid-memberships-pro' ); ?></th>
@@ -1361,11 +1305,6 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e( 'Discount Code', 'paid-memberships-pro' );?></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
 			</tr>
 			</thead>
 			<tbody id="orders" class="list:order orders-list">
@@ -1375,6 +1314,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/1/' .
 				$order            = new MemberOrder();
 				$order->nogateway = true;
 				$order->getMemberOrderByID( $order_id );
+				$order->getUser();
 				?>
 				<tr 
 				<?php
@@ -1384,8 +1324,42 @@ class="alternate"<?php } ?>>
 					<td>
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->id; ?></a>
 					</td>
-					<td>
+					<td class="order_code column-order_code has-row-actions">
 						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
+						<br />
+						<div class="row-actions">
+							<span class="edit">
+								<a title="<?php _e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $order->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Edit', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="copy">
+								<a title="<?php _e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => '-1', 'copy' => $order->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Copy', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="delete">
+								<a href="javascript:pmpro_askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'Delete', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="print">
+								<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ); ?>"><?php _e( 'Print', 'paid-memberships-pro' ); ?></a>
+							</span> |
+							<span class="email">
+								<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link"
+								   data-order="<?php echo $order->id; ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+							</span>
+							<?php
+							// Set up the hover actions for this user
+							$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
+							$action_count = count( $actions );
+							$i            = 0;
+							if ( $action_count ) {
+								$out = ' | ';
+								foreach ( $actions as $action => $link ) {
+									++ $i;
+									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+									$out .= "<span class='$action'>$link$sep</span>";
+								}
+								echo $out;
+							}
+							?>
+						</div>
 					</td>
 					<td class="username column-username">
 						<?php $order->getUser(); ?>
@@ -1395,27 +1369,15 @@ class="alternate"<?php } ?>>
 							[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
 							[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
-						<?php } ?>
-						<br/>
-						<?php
-						// Set up the hover actions for this user
-						$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
-						$action_count = count( $actions );
-						$i            = 0;
-						if ( $action_count ) {
-							$out = '<div class="row-actions">';
-							foreach ( $actions as $action => $link ) {
-								++ $i;
-								( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-								$out .= "<span class='$action'>$link$sep</span>";
-							}
-							$out .= '</div>';
-							echo $out;
-						}
-						?>
+						<?php } ?>	
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
-					<td><?php echo $order->membership_id; ?></td>
+					<td>
+						<?php
+							$level = pmpro_getLevel( $order->membership_id );
+							echo $level->name;
+						?>
+					</td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 					<td>
 						<?php
@@ -1484,23 +1446,6 @@ class="alternate"<?php } ?>>
 								<?php echo $order->discount_code->code; ?>
 							</a>
 						<?php } ?>							
-					</td>
-					<td align="center">
-						<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php _e( 'edit', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="admin.php?page=pmpro-orders&order=-1&copy=<?php echo $order->id; ?>"><?php _e( 'copy', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="javascript:askfirst('<?php echo str_replace( "'", "\'", sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php _e( 'delete', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="admin-ajax.php?action=pmpro_orders_print_view&order=<?php echo $order->id; ?>"
-						   target="_blank"><?php _e( 'print', 'paid-memberships-pro' ); ?></a>
-					</td>
-					<td align="center">
-						<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link"
-						   data-order="<?php echo $order->id; ?>"><?php _e( 'email', 'paid-memberships-pro' ); ?></a>
 					</td>
 				</tr>
 				<?php

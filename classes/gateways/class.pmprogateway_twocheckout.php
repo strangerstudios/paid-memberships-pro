@@ -111,7 +111,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('2Checkout Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h2 class="title"><?php esc_html_e( '2Checkout Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -119,8 +120,8 @@
 				<label for="twocheckout_apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" size="60" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" />
-				<br /><small><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.');?></small>
+				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" class="regular-text code" />
+				<p class="description"><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -128,8 +129,8 @@
 				<label for="twocheckout_apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" size="60" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" />
-				<br /><small><?php _e('Password for the API user created.');?></small>
+				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" class="regular-text code" />
+				<p class="description"><?php esc_html_e( 'Password for the API user created.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -137,8 +138,8 @@
 				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" name="twocheckout_accountnumber" size="60" value="<?php echo $values['twocheckout_accountnumber']?>" />
-				<br /><small><?php _e('Click on the profile icon in 2Checkout to find your Account Number.');?></small>
+				<input type="text" name="twocheckout_accountnumber" value="<?php echo $values['twocheckout_accountnumber']?>" class="regular-text code" />
+				<p class="description"><?php esc_html_e( 'Click on the profile icon in 2Checkout to find your Account Number.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -147,7 +148,7 @@
 			</th>
 			<td>
 				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
-				<br /><small><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.');?></small>
+				<p class="description"><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
@@ -155,7 +156,8 @@
 				<label><?php _e('TwoCheckout INS URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?> <pre><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></pre></p>
+				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?></p>
+				<p><code><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></code></p>
 
 			</td>
 		</tr>

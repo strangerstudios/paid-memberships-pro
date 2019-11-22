@@ -160,6 +160,11 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 			$url = str_replace( 'http:', 'https:', $url );
 		}
 	}
+	
+	/**
+	 * Filter the URL before returning.
+	 */
+	$url = apply_filters( 'pmpro_url', $url, $page, $querystring, $scheme );
 
 	return $url;
 }
@@ -182,6 +187,19 @@ function pmpro_areLevelsFree( $levelarr ) {
 		}
 	}
 	return true;
+}
+
+/**
+ * Check to see if only free levels are available.
+ * @return boolean This will return true if only free levels are available for signup.
+ * @internal Creates a filter 'pmpro_only_free_levels'.
+ * @since 2.1
+ */
+function pmpro_onlyFreeLevels() {
+	// Get levels that are available for checkout only.
+	$levels = pmpro_getAllLevels( false, true );
+	
+	return apply_filters( 'pmpro_only_free_levels', pmpro_areLevelsFree( $levels ) );
 }
 
 function pmpro_isLevelRecurring( &$level ) {
@@ -291,10 +309,11 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Valid types: 'email', 'pages'
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
 	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
 
 	// user specified a custom template path, so it has priority.
 	if ( ! empty( $user_templates ) ) {
-		$templates = $user_templates;
+		$templates = array_merge($allowed_default_templates, $user_templates);
 	}
 
 	// last element included in the array is the most first one we try to load
@@ -1412,7 +1431,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 	if ( $s || $l ) {
 		$user_ids_query = "SELECT u.ID FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um  ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id WHERE mu.status = 'active' ";
 		if ( $s ) {
-			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%$" . esc_sql( s ) . "%') ";
+			$user_ids_query .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%$" . esc_sql( $s ) . "%') ";
 		}
 		if ( $l ) {
 			$user_ids_query .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
@@ -1468,54 +1487,74 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 	return $total;
 }
 
+/**
+ * Generate a Username from the provided first name, last name or email address.
+ *
+ * @param string $firstname User-submitted First Name.
+ * @param string $lastname User-submitted Last Name.
+ * @param string $email User-submitted Email Address.
+ *
+ * @return string $username.
+ */
 function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) {
-	global $wpdb;
+	// Strip all non-alpha characters from first and last name.
+	if ( ! empty( $firstname) ) {
+		$firstname = preg_replace( '/[^A-Za-z]/', '', $firstname );
+	}
+	if ( ! empty( $lastname ) ) {
+		$lastname = preg_replace( '/[^A-Za-z]/', '', $lastname );
+	}
 
-	// try first initial + last name, firstname, lastname
-	$firstname = preg_replace( '/[^A-Za-z]/', '', $firstname );
-	$lastname = preg_replace( '/[^A-Za-z]/', '', $lastname );
-	if ( $firstname && $lastname ) {
+	// Try to create username using first and last name.
+	if ( ! empty( $firstname ) && ! empty( $lastname ) ) {
+		// Create username using first initial + last name.
 		$username = substr( $firstname, 0, 1 ) . $lastname;
-	} elseif ( $firstname ) {
+	} elseif ( ! empty( $firstname ) ) {
+		// Create username using only first name.
 		$username = $firstname;
-	} elseif ( $lastname ) {
+	} elseif ( ! empty( $lastname ) ) {
+		// Create username using only last name.
 		$username = $lastname;
 	}
 
-	// is it taken?
-	$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
-
-	if ( ! $taken ) {
-		return $username;
+	// If no username yet or one based on name exisdts,
+	// try to create username using email address.
+	if ( ( empty( $username ) || username_exists( $username ) )
+		&& ! empty( $email ) && is_email( $email ) ) {
+		// Break email into two parts, before and after the @ symbol.
+		$emailparts = explode( '@', $email );
+		if ( ! empty( $emailparts ) ) {
+			// Set username to the string before the email's @ symbol.
+			$email = preg_replace( '/[^A-Za-z0-9]/', '', $emailparts[0] );
+			$username = $email;
+		}
 	}
 
-	// try the beginning of the email address
-	$emailparts = explode( '@', $email );
-	if ( is_array( $emailparts ) ) {
-		$email = preg_replace( '/[^A-Za-z]/', '', $emailparts[0] );
+	// No Username yet. Generate a random one.
+	if ( empty( $username ) ) {
+		$username = wp_generate_password( 10, false );
 	}
 
-	if ( ! empty( $email ) ) {
-		$username = $email;
-	}
-
-	// is this taken? if not, add numbers until it works
+	// Check if username is taken and continue to append an incremented number until it is unique.
 	$taken = true;
 	$count = 0;
 	while ( $taken ) {
-		// add a # to the end
+		// Append a number to the end of the username.
 		if ( $count ) {
 			$username = preg_replace( '/[0-9]/', '', $username ) . $count;
 		}
 
-		// taken?
-		$taken = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $username ) . "' LIMIT 1" );
+		// Check if the username is taken.
+		$taken = username_exists( $username );
 
-		// increment the number
+		// Increment the number.
 		$count++;
 	}
 
-	// must have a good username now
+	// Sanitize the username.
+	$username = sanitize_user( $username );
+
+	// We must have a good username now.
 	return $username;
 }
 
@@ -1715,28 +1754,29 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 		global $wpdb;
 		$all_membership_levels[ $user_id ] = $wpdb->get_row(
 			"SELECT
-															l.id AS ID,
-															l.id as id,
-															mu.id as subscription_id,
-															l.name AS name,
-															l.description,
-															l.expiration_number,
-															l.expiration_period,
-															l.allow_signups,
-															mu.initial_payment,
-															mu.billing_amount,
-															mu.cycle_number,
-															mu.cycle_period,
-															mu.billing_limit,
-															mu.trial_amount,
-															mu.trial_limit,
-															mu.code_id as code_id,
-															UNIX_TIMESTAMP(startdate) as startdate,
-															UNIX_TIMESTAMP(enddate) as enddate
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = $user_id AND mu.status = 'active'
-														LIMIT 1"
+				l.id AS ID,
+				l.id as id,
+				mu.id as subscription_id,
+				l.name AS name,
+				l.description,
+				l.confirmation,
+				l.expiration_number,
+				l.expiration_period,
+				l.allow_signups,
+				mu.initial_payment,
+				mu.billing_amount,
+				mu.cycle_number,
+				mu.cycle_period,
+				mu.billing_limit,
+				mu.trial_amount,
+				mu.trial_limit,
+				mu.code_id as code_id,
+				UNIX_TIMESTAMP(startdate) as startdate,
+				UNIX_TIMESTAMP(enddate) as enddate
+			FROM {$wpdb->pmpro_membership_levels} AS l
+			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
+			WHERE mu.user_id = $user_id AND mu.status = 'active'
+			LIMIT 1"
 		);
 
 		// if null, change to false to avoid user meta conflicts
@@ -1816,6 +1856,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.id as subscription_id,
 				l.name,
 				l.description,
+				l.confirmation,
 				l.expiration_number,
 				l.expiration_period,
 				mu.initial_payment,
@@ -2438,31 +2479,92 @@ function pmpro_formatPrice( $price ) {
 	// start with the rounded price
 	$formatted = pmpro_round_price( $price );
 
+	$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : pmpro_get_decimal_place();
+	$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
+	$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
+	$symbol_position = isset( $pmpro_currencies[ $pmpro_currency ]['position'] ) ? $pmpro_currencies[ $pmpro_currency ]['position'] : 'left';
+
 	// settings stored in array?
 	if ( ! empty( $pmpro_currencies[ $pmpro_currency ] ) && is_array( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		// format number do decimals, with decimal_separator and thousands_separator
 		$formatted = number_format(
 			$formatted,
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2 ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.' ),
-			( isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',' )
+			$decimals,
+			$decimal_separator,
+			$thousands_separator
 		);
 
 		// which side is the symbol on?
-		if ( ! empty( $pmpro_currencies[ $pmpro_currency ]['position'] ) && $pmpro_currencies[ $pmpro_currency ]['position'] == 'left' ) {
+		if ( ! empty( $symbol_position ) && $symbol_position == 'left' ) {
 			$formatted = $pmpro_currency_symbol . $formatted;
 		} else {
 			$formatted = $formatted . $pmpro_currency_symbol;
 		}
 	} else {
 		// default to symbol on the left, 2 decimals using . and ,
-		$formatted = $pmpro_currency_symbol . number_format( $formatted, 2 );
+		$formatted = $pmpro_currency_symbol . number_format( $formatted, pmpro_get_decimal_place() );
 	}
+
+	// Trim the trailing zero values.
+	$formatted = pmpro_trim_trailing_zeroes( $formatted, $decimals, $decimal_separator, $pmpro_currency_symbol, $symbol_position );
 
 	// filter
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
 }
 
+
+/**
+ * Function to trim trailing zeros from an amount.
+ * @since 2.1
+ * @return float $amount The trimmed amount (removed trailing zeroes).
+ */
+function pmpro_trim_trailing_zeroes( $amount, $decimals, $decimal_separator, $symbol, $symbol_position = "left" ) {
+
+	if ( $decimals <= 2 ) {
+		return $amount;
+	}
+	//Check to see if decimal places are only 0. if so, then don't trim it.
+	$decimal_value = explode( $decimal_separator, $amount );
+
+	if ( empty( $decimal_value[1] ) ) {
+		return $amount;
+	}
+
+	$is_zero = round( intval( $decimal_value[1] ) );
+	// Store this in a variable for another time.
+	$original_amount = $amount;
+
+	if ( $is_zero > 0 ) {
+		if ( $symbol_position == 'right' ) {
+			$amount = rtrim( $amount, $symbol ); // remove currency symbol.
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+
+			// put the symbol back.
+			$amount .= $symbol;
+		} else {
+			$amount = rtrim( $amount, 0 ); // remove trailing 0's.
+		}
+	}
+
+	$amount = apply_filters( 'pmpro_trim_cost_amount', $amount, $original_amount, $decimal_separator, $symbol, $symbol_position );
+
+	return $amount;
+}
+
+/**
+ * Allow users to adjust the allowed decimal places.
+ * @since 2.1
+ */
+function pmpro_get_decimal_place() {
+	// filter this to support different decimal places.
+	$decimal_place = apply_filters( 'pmpro_decimal_places', 2 );
+
+	if ( intval( $decimal_place ) > 8 ) {
+		$decimal_place = 8;
+	}
+
+	return $decimal_place;
+}
 /**
  * Which side does the currency symbol go on?
  *
@@ -2487,7 +2589,7 @@ function pmpro_getCurrencyPosition() {
  */
 function pmpro_round_price( $price, $currency = '' ) {
 	global $pmpro_currency, $pmpro_currencies;
-	$decimals = 2;
+	$decimals = pmpro_get_decimal_place();
 
 	if ( '' === $currency && ! empty( $pmpro_currencies[ $pmpro_currency ] ) ) {
 		$currency = $pmpro_currency;
@@ -2510,7 +2612,7 @@ function pmpro_round_price( $price, $currency = '' ) {
 }
 
 /**
- * Cast to floast and pad zeroes after the decimal
+ * Cast to floats and pad zeroes after the decimal
  * when editing the price on the edit level page.
  * Only do this for currency with decimals = 2
  * Only do this if using . as the decimal separator.
@@ -2761,7 +2863,7 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 	}
 }
 
- /**
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -2816,4 +2918,228 @@ function pmpro_cleanup_memberships_users_table() {
 				ON t1.id = t2.id
 				SET status = 'inactive'";
 	$wpdb->query( $sqlQuery );
+}
+
+/**
+ * Are we on the PMPro checkout page?
+ * @since 2.1
+ * @return bool True if we are on the checkout page, false otherwise
+ */
+function pmpro_is_checkout() {
+	global $pmpro_pages;
+
+	// Try is_page first.
+	if ( ! empty( $pmpro_pages['checkout'] ) ) {
+		$is_checkout = is_page( $pmpro_pages['checkout'] );
+	} else {
+		$is_checkout = false;
+	}
+
+	// Page might not be setup yet or a custom page.
+	$queried_object = get_queried_object();
+
+	if ( ! $is_checkout &&
+		! empty( $queried_object ) &&
+		! empty( $queried_object->post_content ) &&
+		( has_shortcode( $queried_object->post_content, 'pmpro_checkout' ) ||
+			( function_exists( 'has_block' ) &&
+				has_block( 'pmpro/checkout-page', $queried_object->post_content )
+			)
+		)
+	) {
+		$is_checkout = true;
+	}
+
+	/**
+	 * Filter for pmpro_is_checkout return value.
+	 * @since 2.1
+	 * @param bool $is_checkout true if we are on the checkout page, false otherwise
+	 */
+	$is_checkout = apply_filters( 'pmpro_is_checkout', $is_checkout );
+
+	return $is_checkout;
+}
+
+/**
+ * Are we showing discount codes at checkout?
+ */
+function pmpro_show_discount_code() {
+	global $wpdb;
+	static $show;
+	
+	// check DB if we haven't yet
+	if ( !isset( $show ) ) {
+		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+			$show = true;
+		} else {
+			$show = false;
+		}
+	}
+	
+	$show = apply_filters( "pmpro_show_discount_code", $show );
+	
+	return $show;
+}
+
+/**
+ * Check if the checkout form was submitted.
+ * Accounts for image buttons/etc.
+ * @since 2.1
+ * @return bool True if the form was submitted, else false.
+ */
+ function pmpro_was_checkout_form_submitted() {
+	 // Default to false.
+	 $submit = false;
+	 
+	 // Basic check for a field called submit-checkout.
+	 if ( isset( $_REQUEST['submit-checkout'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 // _x stuff in case they clicked on the image button with their mouse
+	 if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
+	 	$submit = true;
+	 }
+	 
+	 return $submit;
+ }
+ 
+ /**
+  * Build the order object used at checkout.
+  * @since 2.1
+  * @return mixed $order Order object.
+  */
+ function pmpro_build_order_for_checkout() {    
+	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
+	
+	$morder                   = new MemberOrder();
+	$morder->membership_id    = $pmpro_level->id;
+	$morder->membership_name  = $pmpro_level->name;
+	$morder->discount_code    = $discount_code;
+	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
+	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
+	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->BillingPeriod    = $pmpro_level->cycle_period;
+	$morder->BillingFrequency = $pmpro_level->cycle_number;
+	if ( $pmpro_level->billing_limit ) {
+		$morder->TotalBillingCycles = $pmpro_level->billing_limit;
+	}
+	if ( pmpro_isLevelTrial( $pmpro_level ) ) {
+		$morder->TrialBillingPeriod    = $pmpro_level->cycle_period;
+		$morder->TrialBillingFrequency = $pmpro_level->cycle_number;
+		$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
+		$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
+	}
+	
+	// Credit card values.
+	$morder->cardtype              = $CardType;
+	$morder->accountnumber         = $AccountNumber;
+	$morder->expirationmonth       = $ExpirationMonth;
+	$morder->expirationyear        = $ExpirationYear;
+	$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
+	$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
+	$morder->CVV2                  = $CVV;
+	
+	// Not saving email in order table, but the sites need it.
+	$morder->Email = $bemail;
+	
+	// Save the user ID if logged in.
+	if ( $current_user->ID ) {
+		$morder->user_id = $current_user->ID;
+	}
+	
+	// Sometimes we need these split up.
+	$morder->FirstName = $bfirstname;
+	$morder->LastName  = $blastname;
+	$morder->Address1  = $baddress1;
+	$morder->Address2  = $baddress2;
+	
+	// Set other values.
+	$morder->billing          = new stdClass();
+	$morder->billing->name    = $bfirstname . " " . $blastname;
+	$morder->billing->street  = trim( $baddress1 . " " . $baddress2 );
+	$morder->billing->city    = $bcity;
+	$morder->billing->state   = $bstate;
+	$morder->billing->country = $bcountry;
+	$morder->billing->zip     = $bzipcode;
+	$morder->billing->phone   = $bphone;	
+	$morder->gateway = $gateway;
+	$morder->setGateway();
+	
+	// Set up level var.
+	$morder->getMembershipLevelAtCheckout();
+	
+	// Set tax.
+	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
+	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
+	
+	// Set amounts.
+	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
+	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
+	
+	// Filter for order, since v1.8
+	$morder = apply_filters( 'pmpro_checkout_order', $morder );
+	
+	return $morder;
+}
+
+/**
+ * Check if a plugin is active with a specific version.
+ * @param array $checks Plugin data to run a check. Includes: [ 0 => plugin path and filename, 1 => comparison operator, 2 => version_to_check]
+ */
+function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
+	// Make sure data to check is in a good format
+	if ( empty( $plugin_file ) || empty( $comparison ) || ! isset( $version ) ) {
+		return false;
+	}
+		
+	// Get plugin data	
+	$plugin_data = get_plugin_data(  WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
+
+	// Return false if there is no plugin data
+	if ( empty( $plugin_data ) ) {
+		return false;
+	}
+
+	// Check version
+	$conditional_check =  $version . " " . $comparison . " " . $plugin_data['Version'];
+	if ( version_compare( $conditional_check ) ) {
+		return true;
+	} else {
+		return false;
+	}	
+}
+
+/**
+ * Compare two integers using parameters similar to the version_compare function.
+ * This allows us to pass in a comparison character via the notification rules
+ * and get a true/false result.
+ * @param int $a First integer to compare.
+ * @param int $b Second integer to compare.
+ * @param string $operator Operator to use, e.g. >, <, >=, <=, =.
+ * @return bool true or false based on the operator passed in. Returns null for invalid operators.
+ */
+function pmpro_int_compare( $a, $b, $operator ) {	
+	switch ( $operator ) {
+		case '>':
+			$r = (int)$a > (int)$b;
+			break;
+		case '<':
+			$r = (int)$a < (int)$b;
+			break;
+		case '>=':
+			$r = (int)$a >= (int)$b;
+			break;
+		case '<=':
+			$r = (int)$a <= (int)$b;
+			break;
+		case '=':
+		case '==':		
+			$r = (int)$a == (int)$b;
+			break;
+		default:
+			$r = null;
+	}
+	
+	return $r;
 }

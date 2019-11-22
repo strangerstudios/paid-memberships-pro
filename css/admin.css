@@ -13,7 +13,6 @@
     background-size: 290px 40px;
     padding: 1em 0 70px 0;
 }
-
 .pmpro_admin .pmpro_banner {
     display: grid;
     grid-template-areas: "logo meta";
@@ -25,12 +24,46 @@
 .pmpro_admin .pmpro_banner .pmpro_meta {
     align-self: center;
     grid-area: meta;
+    font-size: 16px;
+    line-height: 1.5;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version,
-.pmpro_admin .pmpro_banner .pmpro_meta .button-documentation,
-.pmpro_admin .pmpro_banner .pmpro_meta .button-support {
-    margin-left: 5px;
+.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version {
+    color: #77a02e;
+    display: inline-block;
+    font-weight: bold;
+    padding: 5px 10px 5px 2px;
 }
+.pmpro_admin .pmpro_banner .pmpro_meta a {
+    border-left: 1px solid #CCC;
+    padding: 5px 10px;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag {
+    font-weight: bold;
+    padding: 5px 10px 5px 5px;
+    text-decoration: none;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag:before {
+    bottom: 7px;
+    display: inline-block;
+    font: 400 20px/1 dashicons;
+    left: 0;
+    position: relative;
+    text-decoration: none;
+    vertical-align: bottom;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid {
+    color: rgb( 70, 180, 80 );
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid:before {
+    content: "\f147";
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid {
+    color: #AAA;
+}
+.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
+    content: "\f335";
+}
+
 .pmpro_admin .pmpro_wp-notice-fix {
     height: 1px;
     line-height: 1px;
@@ -39,16 +72,31 @@
 .pmpro_admin .topborder {border-top: 1px solid #CCC; margin-top: 1em; padding-top: 1em; }
 .pmpro_admin #editorcontainer #description {width: 100%; height: 180px; }
 
+.pmpro_admin .pmpro_icon {
+    max-width: 200px;
+    height: auto;
+}
+
 /* checkboxes */
 .checkbox_box {width: 300px; background: #FFFFFF; border: 1px solid #CCC;}
 .checkbox_box div {border-bottom: 1px solid #CCC; padding: 3px;}
 .checkbox_box .clickable {cursor: pointer;}
 .checkbox_box .clickable:hover {background: #FFC;}
 
+/* consent log */
+.pmpro_consent_log.pmpro_scrollable {
+	padding: .5em;
+	background: #FFF;
+	border: 1px solid #CCC;
+	height: 200px;
+	max-width: 800px;
+	overflow: auto;
+}
+
 /* levels */
 .memberships_page_pmpro-membershiplevels .pmpro_admin #posts-filter p.search-box { margin: 2em 0 1em 0; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.pmpro_gray td {color: #AAA;}
-.memberships_page_pmpro-membershiplevels .pmpro_admin tr td.level_name a {font-size: 115%; font-weight: bold; }
+.memberships_page_pmpro-membershiplevels .pmpro_admin tr td.level_name span.level-name a {font-size: 115%; font-weight: bold; }
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr {background: #fff;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.alternate {background: #f1f1f1;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin .membership-levels tr.ui-sortable-handle {
@@ -70,10 +118,34 @@
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.testclass {border: 3px solid #2997C8; background: #2997C8;}
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {margin-left: 25px;}
 
+/* payment settings */
+.admin_page_pmpro-paymentsettings .form-table select {
+    max-width: none;
+}
+
+/* advanced settings */
+.admin_page_pmpro-advancedsettings .form-table select:not(.admin_page_pmpro-advancedsettings .form-table select#tospage) {
+    max-width: none;
+}
+
+/* orders */
+.memberships_page_pmpro-orders .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
+
+/* members list */
+.wp-list-table.members .column-ID {
+    width: 5%;
+}
+.wp-list-table.members .column-username {
+    width: 15%;
+}
+
 /* settings */
-tr.pmpro_settings_divider td {padding: 5px; margin: 0; color: #555; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC;}
-tr.pmpro_settings_divider td:before {content: "- ";}
-tr.pmpro_settings_divider td:after {content: " -";}
+tr.pmpro_settings_divider td {
+    padding: 0;
+    margin: 0;
+}
 
 /* messages */
 .pmpro_admin .pmpro_message {
@@ -86,7 +158,8 @@ tr.pmpro_settings_divider td:after {content: " -";}
     background-color: rgba( 70, 180, 80, 0.1 );
     border-left-color: rgb( 70, 180, 80 );
 }
-.pmpro_admin .pmpro_error {
+.pmpro_admin .pmpro_error,
+.pmpro_admin tr.pmpro_error td {
     background-color: rgba( 220, 50, 50, 0.1 );
     border-left-color: rgb( 220, 50, 50 );
 }
@@ -97,11 +170,48 @@ tr.pmpro_settings_divider td:after {content: " -";}
 .pmpro_admin .pmpro_success a {
     color: #208A1B;
 }
-.pmpro_admin .pmpro_error a {
-    color: #E36154;
+.pmpro_admin .pmpro_error a,
+.pmpro_admin tr.pmpro_error td {
+    color: #CC0000;
 }
 .pmpro_admin .pmpro_alert a {
     color: #CF8516;
+}
+
+/* notifications */
+#pmpro_notifications .pmpro_notification {
+    position: relative;
+}
+#pmpro_notifications .pmpro_notification .pmpro_notification-general {
+    background: #FFF;
+    border-left: 4px solid #77A02E;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    margin: 1em 0;
+    padding: 15px;
+}
+#pmpro_notifications .pmpro_notification .pmpro_notification-error {
+    background: #FFF;
+    border-left: 4px solid #DC3232;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    margin: 1em 0;
+    padding: 15px;
+}
+#pmpro_notifications .pmpro_notification h3 {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 0;
+}
+#pmpro_notifications .pmpro_notification p {
+    margin: 1em 0 0 0;
+}
+#pmpro_notifications .pmpro_notification .button {
+    margin-right: 5px;
+}
+#pmpro_notifications .pmpro_notification .pmpro_notification-general h3 {
+    color: #77A02E;
+}
+#pmpro_notifications .pmpro_notification .pmpro_notification-error h3 {
+    color: #DC3232;
 }
 
 /* highlighted trs */
@@ -111,9 +221,17 @@ tr.pmpro_error {background-image: none;}
 tr.pmpro_alert {background-image: none;}
 
 /* discount levels */
-.pmpro_discount_levels {border: 1px solid #CCC;}
-.pmpro_discount_levels div {padding: 5px; border: 1px solid #CCC;}
-.pmpro_discount_levels div div {margin-top: 5px; background: #F5F5F5;}
+.pmpro_discount_levels .pmpro_discount_level {
+    border: 1px solid #CCC;
+    margin: 15px 0;
+    padding: 10px;
+}
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_levels_pricing {
+    background: #FFFFFF;
+    border: 1px solid #CCC;
+    margin: 10px 0 0 0;
+    padding: 0px 20px;
+}
 
 /* pagination */
 div.pmpro_pagination {padding: 3px; margin: 5px 0px 5px 0px; font-size: 10px; float: right; }
@@ -125,6 +243,9 @@ div.pmpro_pagination span.disabled {padding: 2px 5px 2px 5px; margin: 2px; borde
 p.pmpro_meta_notice {font-size: .8em; padding-top: 5px; border-top: 1px solid #CCC;}
 
 /* add ons */
+.memberships_page_pmpro-addons .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
 .pmpro_admin .widgets-holder-wrap {clear: both; margin-top: 20px; padding: 0 8px; }
 .pmpro_admin .widgets-holder-wrap .widget {float: left; width: 32%; margin: 0 1% 1% 0; position: relative; }
 .pmpro_admin .widgets-holder-wrap p.description {padding: 0; }
@@ -151,8 +272,16 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 	.auto-fold .pmpro_admin .widgets-holder-wrap .widget-inside, .auto-fold .pmpro_admin .widgets-holder-wrap .widget-inside p {height: auto; }
 }
 
+/* license */
+.memberships_page_pmpro-license h2 {
+    text-align: left;
+}
+.memberships_page_pmpro-license .pmpro_icon {
+    margin-top: 20px;
+}
+
 /* misc */
-.pmpro_lite {color: #AAA;}
+.pmpro_lite {color: #777;}
 .pmpro_pad20 {padding: 20px !important;}
 .pmpro_red {color: #CC0000;}
 .pmpro_green {color: #00AA00;}
@@ -161,6 +290,9 @@ height: 10px; overflow: hidden; border-radius: 10px; -moz-border-radius: 10px; -
 h2.nav-tab-wrapper {margin-bottom: 1em; }
 
 /* reports */
+.memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
+    margin-bottom: 10px;
+}
 .pmpro_reports-holder { }
 .pmpro_reports-holder .postbox h2 {border-bottom: 1px solid #eee; font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }
 .pmpro_clickable {cursor: pointer;}
@@ -286,7 +418,6 @@ button.pmpro_report_th_closed:before {
     .pmpro_admin .nav-tab-wrapper:after {
         clear: both;
         display: block;
-        margin-bottom: 10px;
     }
     .pmpro_admin .nav-tab-wrapper a {
         margin-top: 5px;

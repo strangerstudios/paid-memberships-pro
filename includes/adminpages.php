@@ -48,18 +48,29 @@ function pmpro_add_pages() {
 	
 	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
-	add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
+	$list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
-	
+
+	// Check License Key for Correct Link Color
+	$key = get_option( 'pmpro_license_key', '' );
+	if ( pmpro_license_isValid( $key, NULL, true ) ) {
+		$span_color = '#33FF00';
+	} else {
+		$span_color = '#FF3333';
+	}
+	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
+
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
+
+	add_action( 'load-' . $list_table_hook, 'pmpro_list_table_screen_options' );
 
 	//updates page only if needed
 	if ( pmpro_isUpdateRequired() ) {
@@ -194,6 +205,25 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	// Add menu item for License.
+	if ( current_user_can( 'manage_options' ) ) {
+		// Check License Key for Correct Link Color
+		$key = get_option( 'pmpro_license_key', '' );
+		if ( pmpro_license_isValid( $key, NULL, true ) ) {
+			$span_color = '#33FF00';
+		} else {
+			$span_color = '#FF3333';
+		}
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-license',
+				'parent' => 'paid-memberships-pro',
+				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
+				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-license' )
+			)
+		);
+	}
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
@@ -252,6 +282,10 @@ function pmpro_addons() {
 
 function pmpro_orders() {
 	require_once( PMPRO_DIR . '/adminpages/orders.php' );
+}
+
+function pmpro_license_settings_page() {
+	require_once( PMPRO_DIR . '/adminpages/license.php' );
 }
 
 function pmpro_updates() {
@@ -316,6 +350,26 @@ function pmpro_display_post_states( $post_states, $post ) {
 	return $post_states;
 }
 add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
+
+/**
+ * Screen options for the List Table
+ *
+ * Callback for the load-($page_hook_suffix)
+ * Called when the plugin page is loaded
+ *
+ * @since    2.0.0
+ */
+function pmpro_list_table_screen_options() {
+	global $user_list_table;
+	$arguments = array(
+		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
+		'default' => 13,
+		'option'  => 'users_per_page',
+	);
+	add_screen_option( 'per_page', $arguments );
+	// instantiate the User List Table
+	$user_list_table = new PMPro_Members_List_Table();
+}
 
 /**
  * Add links to the plugin action links

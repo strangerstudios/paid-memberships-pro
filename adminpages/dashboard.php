@@ -154,7 +154,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<hr />
     		<p class="text-center">
     			<?php echo esc_html( __( 'For guidance as your begin these steps,', 'paid-memberships-pro' ) ); ?>
-    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=banner&utm_campaign=welcome" target="_blank"><?php echo esc_attr_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
+    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank"><?php echo esc_attr_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
     		</p>
     	</div> <!-- end pmpro-dashboard-welcome-column -->
     	<div class="pmpro-dashboard-welcome-column">
@@ -167,19 +167,19 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<?php if ( ! pmpro_license_isValid() && empty( $key ) ) { ?>
     			<p class="pmpro_message pmpro_error">
     				<strong><?php echo esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
-    				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'options-general.php?page=pmpro_license_settings' ) );?>
+    				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
     			</p>
     		<?php } elseif ( ! pmpro_license_isValid() ) { ?>
     			<p class="pmpro_message pmpro_alert">
     				<strong><?php echo esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
-    				<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=/membership-account/?utm_source=plugin&utm_medium=banner&utm_campaign=welcome' );?>
+    				<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' );?>
     		<?php } else { ?>
     			<p class="pmpro_message pmpro_success"><?php printf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></p>
     		<?php } ?>
 
     		<?php if ( ! pmpro_license_isValid() ) { ?>
-    			<p><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?><br /><a href="http://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=banner&utm_campaign=welcome" target="_blank"><?php esc_html_e( 'View Pricing &raquo;' , 'paid-memberships-pro' ); ?></a></p>
-    			<p><a href="https://www.paidmembershipspro.com/membership-checkout/?level=20&utm_source=plugin&utm_medium=banner&utm_campaign=welcome" target="_blank" class="button button-action button-hero"><?php esc_attr_e( 'Upgrade', 'paid-memberships-pro' ); ?></a>
+    			<p><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?><br /><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=pricing&utm_content=upgrade" target="_blank"><?php esc_html_e( 'View Pricing &raquo;' , 'paid-memberships-pro' ); ?></a></p>
+    			<p><a href="https://www.paidmembershipspro.com/membership-checkout/?level=20&utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=plus-checkout&utm_content=upgrade" target="_blank" class="button button-action button-hero"><?php esc_attr_e( 'Upgrade', 'paid-memberships-pro' ); ?></a>
     		<?php } ?>
     		<hr />
     		<p><?php echo wp_kses_post( sprintf( __( 'Paid Memberships Pro and our add ons are distributed under the <a target="_blank" href="%s">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), 'http://www.gnu.org/licenses/gpl-2.0.html' ) ); ?></p>
@@ -213,7 +213,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     		<thead>
     			<tr>
     				<th><?php _e( 'Username', 'paid-memberships-pro' );?></th>
-    				<th><?php _e( 'Membership', 'paid-memberships-pro' );?></th>
+    				<th><?php _e( 'Level', 'paid-memberships-pro' );?></th>
     				<th><?php _e( 'Joined', 'paid-memberships-pro' );?></th>
     				<th><?php _e( 'Expires', 'paid-memberships-pro' ); ?></th>
     			</tr>
@@ -317,7 +317,12 @@ function pmpro_dashboard_report_recent_orders_callback() {
                                 <br /><?php echo $order->billing->name; ?>
                             <?php } ?>
         				</td>
-                        <td><?php echo $order->membership_id; ?></td>
+                        <td>
+                            <?php
+                                $level = pmpro_getLevel( $order->membership_id );
+                                echo $level->name;
+                            ?>
+                        </td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>
                             <?php echo $order->gateway; ?>
@@ -383,7 +388,7 @@ function pmpro_dashboard_news_updates_callback() {
 	        <?php endforeach; ?>
 	    <?php endif; ?>
 	</ul>
-	<p class="text-center"><a class="button button-primary" href="<?php echo esc_url( 'https://www.paidmembershipspro.com/blog/' ); ?>"><?php esc_attr_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
+	<p class="text-center"><a class="button button-primary" href="<?php echo esc_url( 'https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox' ); ?>"><?php esc_attr_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }
 

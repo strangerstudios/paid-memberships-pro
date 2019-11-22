@@ -78,8 +78,9 @@
 	}
 
 	?>
-	<h2><?php _e('Add Ons', 'paid-memberships-pro' ); ?></h2>
-
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
+	<hr class="wp-header-end">
+	
 	<?php
 		pmpro_showMessage();
 	?>
@@ -96,8 +97,6 @@
 		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($update_available_addons);?>)</span></a> |</li>
 		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($not_installed_addons);?>)</span></a></li>
 	</ul>
-
-	<br /><br />
 
 	<table class="wp-list-table widefat plugins">
 	<thead>
@@ -205,7 +204,7 @@
 								elseif(empty($pmpro_license_key))
 								{
 									//no key
-									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('admin.php?page=pmpro-license') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
 									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
 								elseif(pmpro_license_isValid($pmpro_license_key, $plugin_data['License']))
@@ -217,7 +216,7 @@
 								else
 								{
 									//invalid key
-									$actions['settings'] = '<span class="settings"><a href="' . admin_url('options-general.php?page=pmpro_license_settings') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
+									$actions['settings'] = '<span class="settings"><a href="' . admin_url('admin.php?page=pmpro-license') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
 									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
 							}
@@ -272,8 +271,8 @@
 									__( 'View details' )
 								);
 							} elseif ( ! empty( $plugin_data['PluginURI'] ) ) {
-								$plugin_meta[] = sprintf( '<a href="%s">%s</a>',
-									esc_url( $plugin_data['PluginURI'] ),
+								$plugin_meta[] = sprintf( '<a target="_blank" href="%s">%s</a>',
+									esc_url( $plugin_data['PluginURI'] ) . '?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=add-ons',
 									__( 'Visit plugin site' )
 								);
 							}
