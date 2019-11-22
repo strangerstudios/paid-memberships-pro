@@ -386,9 +386,6 @@
 	<?php } ?>
 
 <?php } else { // End for recurring level check.
-	?>
-	<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( wp_logout_url() );?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
-	<?php
 	// Check to see if the user has a cancelled order
 	$order = new MemberOrder();
 	$order->getLastMemberOrder( $current_user->ID, array( 'cancelled', 'expired', 'admin_cancelled' ) );
