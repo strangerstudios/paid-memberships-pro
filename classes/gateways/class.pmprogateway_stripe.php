@@ -280,7 +280,8 @@ class PMProGateway_stripe extends PMProGateway {
         <tr class="pmpro_settings_divider gateway gateway_stripe"
 		    <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <td colspan="2">
-				<?php _e( 'Stripe Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h2><?php _e( 'Stripe Settings', 'paid-memberships-pro' ); ?></h2>
             </td>
         </tr>
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -288,8 +289,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label for="stripe_publishablekey"><?php _e( 'Publishable Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-                <input type="text" id="stripe_publishablekey" name="stripe_publishablekey" size="60"
-                       value="<?php echo esc_attr( $values['stripe_publishablekey'] ) ?>"/>
+                <input type="text" id="stripe_publishablekey" name="stripe_publishablekey" value="<?php echo esc_attr( $values['stripe_publishablekey'] ) ?>" class="regular-text code" />
 				<?php
 				$public_key_prefix = substr( $values['stripe_publishablekey'], 0, 3 );
 				if ( ! empty( $values['stripe_publishablekey'] ) && $public_key_prefix != 'pk_' ) {
@@ -305,8 +305,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label for="stripe_secretkey"><?php _e( 'Secret Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-                <input type="text" id="stripe_secretkey" name="stripe_secretkey" size="60"
-                       value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>"/>
+                <input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" class="regular-text code" />
             </td>
         </tr>
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -329,15 +328,14 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php _e( 'Web Hook URL', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-                <p><?php _e( 'To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' ); ?>
-                <pre><?php echo admin_url( "admin-ajax.php" ) . "?action=stripe_webhook"; ?></pre>
-                </p>
+                <p><?php _e( 'To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' ); ?></p>
+                <p><code><?php echo admin_url( "admin-ajax.php" ) . "?action=stripe_webhook"; ?></code></p>
             </td>
         </tr>
 
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
-            <td><?php echo PMPRO_STRIPE_API_VERSION; ?></td>
+            <td><code><?php echo PMPRO_STRIPE_API_VERSION; ?></code></td>
         </tr>
         <?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
 				$allowed_appe_html = array (
@@ -727,7 +725,7 @@ class PMProGateway_stripe extends PMProGateway {
 										?>
                                         <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/1/" . $current_year ) ); ?>
+											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
 										</option>
 										<?php
 									}

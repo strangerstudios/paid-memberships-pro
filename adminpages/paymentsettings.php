@@ -107,7 +107,8 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
 
-		<h2><?php _e('Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php _e('SSL Settings', 'paid-memberships-pro' );?></h2>
+        <h1 class="wp-heading-inline"><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?></h1>
+        <hr class="wp-header-end">
 
 		<p><?php _e('Learn more about <a title="Paid Memberships Pro - SSL Settings" target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">SSL</a> or <a title="Paid Memberships Pro - Payment Gateway Settings" target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-3-payment-gateway-security/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=step-3-payment-gateway-security">Payment Gateway Settings</a>.', 'paid-memberships-pro' ); ?></p>
 
@@ -225,9 +226,9 @@
 				</th>
 				<td>
 					<?php _e('Tax State', 'paid-memberships-pro' );?>:
-					<input type="text" id="tax_state" name="tax_state" size="4" value="<?php echo esc_attr($tax_state)?>" /> (<?php _e('abbreviation, e.g. "PA"', 'paid-memberships-pro' );?>)
+					<input type="text" id="tax_state" name="tax_state" value="<?php echo esc_attr($tax_state)?>" class="small-text" /> (<?php _e('abbreviation, e.g. "PA"', 'paid-memberships-pro' );?>)
 					&nbsp; <?php _e('Tax Rate', 'paid-memberships-pro' ); ?>:
-					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" /> (<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)
+					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" class="small-text" /> (<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)
 					<p class="description"><?php _e('US only. If values are given, tax will be applied for any members ordering from the selected state.<br />For non-US or more complex tax rules, use the <a target="_blank" href="https://www.paidmembershipspro.com/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=non-us-taxes-paid-memberships-pro">pmpro_tax filter</a>.', 'paid-memberships-pro' );?></p>
 				</td>
 			</tr>
@@ -268,7 +269,7 @@
 					<label for="sslseal"><?php _e('SSL Seal Code', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<textarea id="sslseal" name="sslseal" rows="3" cols="80"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
+					<textarea id="sslseal" name="sslseal" rows="3" cols="50" class="large-text"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
 					<p class="description"><?php _e('Your <strong><a target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link2">SSL Certificate</a></strong> must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
@@ -284,7 +285,7 @@
 		</tbody>
 		</table>
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
 

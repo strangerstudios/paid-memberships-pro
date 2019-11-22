@@ -304,7 +304,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		<tr class="pmpro_settings_divider gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php _e('Braintree Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2 class="title"><?php esc_html_e( 'Braintree Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -312,7 +312,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="braintree_merchantid" name="braintree_merchantid" size="60" value="<?php echo esc_attr($values['braintree_merchantid'])?>" />
+				<input type="text" id="braintree_merchantid" name="braintree_merchantid" value="<?php echo esc_attr($values['braintree_merchantid'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -320,7 +320,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_publickey"><?php _e('Public Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="braintree_publickey" name="braintree_publickey" size="60" value="<?php echo esc_attr($values['braintree_publickey'])?>" />
+				<input type="text" id="braintree_publickey" name="braintree_publickey" value="<?php echo esc_attr($values['braintree_publickey'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -328,7 +328,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_privatekey"><?php _e('Private Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="braintree_privatekey" name="braintree_privatekey" size="60" value="<?php echo esc_attr($values['braintree_privatekey'])?>" />
+				<input type="text" id="braintree_privatekey" name="braintree_privatekey" value="<?php echo esc_attr($values['braintree_privatekey'])?>" class="regular-text code" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -336,7 +336,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="80"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
+				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="50" class="large-text code"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -344,13 +344,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label><?php _e('Web Hook URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p>
-					<?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?>
-					<pre><?php
+				<p><?php _e('To fully integrate with Braintree, be sure to set your Web Hook URL to', 'paid-memberships-pro' );?></p>
+				<p><code><?php
 						//echo admin_url("admin-ajax.php") . "?action=braintree_webhook";
 						echo add_query_arg( 'action', 'braintree_webhook', admin_url( 'admin-ajax.php' ) );
-					?></pre>
-				</p>
+				?></code></p>
 			</td>
 		</tr>
 		<?php

@@ -14,7 +14,7 @@
 		$old_level_ids = false;
 	}
 ?>
-<div id="pmpro_cancel">
+<div id="pmpro_cancel" class="pmpro_cancel_wrap">
 	<?php
 		if($pmpro_msg)
 		{
@@ -54,7 +54,7 @@
 				{
 					?>
 					<h2><?php _e("My Memberships", 'paid-memberships-pro' );?></h2>
-					<table width="100%" cellpadding="0" cellspacing="0" border="0">
+					<table class="pmpro_table" width="100%" cellpadding="0" cellspacing="0" border="0">
 						<thead>
 							<tr>
 								<th><?php _e("Level", 'paid-memberships-pro' );?></th>
@@ -102,4 +102,4 @@
 			<?php
 		}
 	?>
-</div> <!-- end pmpro_cancel -->
+</div> <!-- end pmpro_cancel, pmpro_cancel_wrap -->

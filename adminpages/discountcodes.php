@@ -365,14 +365,14 @@
 
 	<?php if($edit) { ?>
 
-		<h2>
+		<h1>
 			<?php
 				if($edit > 0)
 					echo __("Edit Discount Code", 'paid-memberships-pro' );
 				else
 					echo __("Add New Discount Code", 'paid-memberships-pro' );
 			?>
-		</h2>
+		</h1>
 
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
@@ -489,7 +489,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_starts_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>
@@ -507,7 +507,7 @@
 									for($i = 1; $i < 13; $i++)
 									{
 									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/1/" . $current_year, current_time("timestamp")))?></option>
+									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
 									<?php
 									}
 								?>
@@ -560,7 +560,7 @@
 					else
 						$level_checked = false;
 				?>
-				<div>
+				<div class="pmpro_discount_level">
 					<input type="hidden" name="all_levels[]" value="<?php echo $level->id?>" />
 					<input type="checkbox" id="levels_<?php echo $level->id;?>" name="levels[]" value="<?php echo $level->id?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).next().next().show();	else jQuery(this).next().next().hide();" />
 					<label for="levels_<?php echo $level->id;?>"><?php echo $level->name?></label>
@@ -686,17 +686,16 @@
 
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button button-primary" value="Save Code" />
-				<input name="cancel" type="button" class="button button-secondary" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
 
 	<?php } else { ?>
 
-		<h2>
-			<?php _e('Memberships Discount Codes', 'paid-memberships-pro' );?>
-			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="add-new-h2"><?php _e('Add New Discount Code', 'paid-memberships-pro' );?></a>
-		</h2>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
+		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
+		<hr class="wp-header-end">
 
 		<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";

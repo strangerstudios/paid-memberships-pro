@@ -93,7 +93,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php _e('Payflow Pro Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2 class="title"><?php esc_html_e( 'Payflow Pro Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -101,7 +101,7 @@
 				<label for="payflow_partner"><?php _e('Partner', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="payflow_partner" name="payflow_partner" size="60" value="<?php echo esc_attr($values['payflow_partner'])?>" />
+				<input type="text" id="payflow_partner" name="payflow_partner" value="<?php echo esc_attr($values['payflow_partner'])?>" class="regular-text code" />
 			</td>
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -109,7 +109,7 @@
 				<label for="payflow_vendor"><?php _e('Vendor', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="payflow_vendor" name="payflow_vendor" size="60" value="<?php echo esc_attr($values['payflow_vendor'])?>" />
+				<input type="text" id="payflow_vendor" name="payflow_vendor" value="<?php echo esc_attr($values['payflow_vendor'])?>" class="regular-text code" />
 			</td>
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -117,7 +117,7 @@
 				<label for="payflow_user"><?php _e('User', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="payflow_user" name="payflow_user" size="60" value="<?php echo esc_attr($values['payflow_user'])?>" />
+				<input type="text" id="payflow_user" name="payflow_user" value="<?php echo esc_attr($values['payflow_user'])?>" class="regular-text code" />
 			</td>
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -125,7 +125,7 @@
 				<label for="payflow_pwd"><?php _e('Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="password" id="payflow_pwd" name="payflow_pwd" size="60" value="<?php echo esc_attr($values['payflow_pwd'])?>" />
+				<input type="password" id="payflow_pwd" name="payflow_pwd" value="<?php echo esc_attr($values['payflow_pwd'])?>" class="regular-text code" />
 			</td>
 	    </tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
@@ -133,7 +133,7 @@
 				<label><?php _e('IPN Handler', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p>
+				<p class="description">
 				<?php
 					$allowed_message_html = array (
 						'a' => array (
