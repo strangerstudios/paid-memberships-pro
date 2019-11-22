@@ -414,21 +414,30 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				}
 				return $output;
 			case 'billing_amount':
-                $membership_values = pmpro_getMembershipLevelForUser( $item['ID'] );
-				//we tweak the initial payment here so the text here effectively shows the recurring amount
-				if( ! empty( $membership_values ) ) {
-					$membership_values->original_initial_payment = $membership_values->initial_payment;
-					$membership_values->initial_payment = $membership_values->billing_amount;
-				}
-				if ( empty( $membership_values ) || pmpro_isLevelFree( $membership_values ) ) {
-					if ( ! empty( $membership_values->original_initial_payment ) && $membership_values->original_initial_payment > 0 ) {
-						$billing_amount = pmpro_formatPrice( $membership_values->original_initial_payment );
-					} else {
-						esc_html_e( '&#8212;', 'paid-memberships-pro' );
-					}
+				$billing_amount = '';
+				// If there is no payment for the level, show a dash.
+				if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
+					$billing_amount .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
 				} else {
-                    $billing_amount = pmpro_getLevelCost( $membership_values, true, true );
-                }
+					// Display the member's initial payment.
+					if ( (float)$item['initial_payment'] > 0 ) {
+						$billing_amount .= pmpro_formatPrice( $item['initial_payment'] );
+					}
+					// If there is a recurring payment, show a plus sign.
+					if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
+						$billing_amount .= esc_html( ' + ', 'paid-memberships-pro' );
+					}
+					// If there is a recurring payment, show the recurring payment amount and cycle.
+					if ( (float)$item['billing_amount'] > 0 ) {
+						$billing_amount .= pmpro_formatPrice( $item['billing_amount'] );
+						$billing_amount .= esc_html( ' per ', 'paid-memberships-pro' );
+						if ( $item['cycle_number'] > 1 ) {
+							$billing_amount .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
+						} else {
+							$billing_amount .= $item['cycle_period'];
+						}
+					}
+				}
 				return $billing_amount;
 			case 'joindate':
 				$joindate = $item[ $column_name ];
