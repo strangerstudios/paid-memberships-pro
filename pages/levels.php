@@ -29,7 +29,7 @@ if($pmpro_msg)
 <?php
 }
 ?>
-<table id="pmpro_levels_table" class="pmpro_checkout">
+<table id="pmpro_levels_table" class="pmpro_table pmpro_checkout">
 <thead>
   <tr>
 	<th><?php _e('Level', 'paid-memberships-pro' );?></th>

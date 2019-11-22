@@ -213,7 +213,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     		<thead>
     			<tr>
     				<th><?php _e( 'Username', 'paid-memberships-pro' );?></th>
-    				<th><?php _e( 'Membership', 'paid-memberships-pro' );?></th>
+    				<th><?php _e( 'Level', 'paid-memberships-pro' );?></th>
     				<th><?php _e( 'Joined', 'paid-memberships-pro' );?></th>
     				<th><?php _e( 'Expires', 'paid-memberships-pro' ); ?></th>
     			</tr>
@@ -317,7 +317,12 @@ function pmpro_dashboard_report_recent_orders_callback() {
                                 <br /><?php echo $order->billing->name; ?>
                             <?php } ?>
         				</td>
-                        <td><?php echo $order->membership_id; ?></td>
+                        <td>
+                            <?php
+                                $level = pmpro_getLevel( $order->membership_id );
+                                echo $level->name;
+                            ?>
+                        </td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>
                             <?php echo $order->gateway; ?>

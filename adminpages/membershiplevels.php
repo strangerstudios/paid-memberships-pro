@@ -260,15 +260,16 @@
 	if($edit) {
 	?>
 
-	<h2>
+	<h1 class="wp-heading-inline">
 		<?php
 			if($edit > 0)
 				echo __("Edit Membership Level", 'paid-memberships-pro' );
 			else
 				echo __("Add New Membership Level", 'paid-memberships-pro' );
 		?>
-	</h2>
-
+	</h1>
+	<hr class="wp-header-end">
+	
 	<div>
 		<?php
 			// get the level...
@@ -351,7 +352,7 @@
 
 				<tr>
 					<th scope="row" valign="top"><label for="name"><?php _e('Name', 'paid-memberships-pro' );?>:</label></th>
-					<td><input name="name" type="text" size="50" value="<?php echo esc_attr($level->name);?>" /></td>
+					<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" /></td>
 				</tr>
 
 				<tr>
@@ -364,7 +365,7 @@
 							else
 							{
 							?>
-							<textarea rows="10" cols="80" name="description" id="description"><?php echo esc_textarea($level->description);?></textarea>
+							<textarea rows="10" name="description" id="description" class="large-text"><?php echo esc_textarea($level->description);?></textarea>
 							<?php
 							}
 						?>
@@ -382,7 +383,7 @@
 							else
 							{
 							?>
-							<textarea rows="10" cols="80" name="confirmation" id="confirmation"><?php echo esc_textarea($level->confirmation);?></textarea>
+							<textarea rows="10" name="confirmation" id="confirmation" class="large-text"><?php echo esc_textarea($level->confirmation);?></textarea>
 							<?php
 							}
 						?>
@@ -392,8 +393,8 @@
 				</tr>
 			</tbody>
 		</table>
-
-		<h3 class="topborder"><?php _e('Billing Details', 'paid-memberships-pro' );?></h3>
+		<hr />
+		<h2 class="title"><?php _e('Billing Details', 'paid-memberships-pro' );?></h2>
 		<table class="form-table">
 			<tbody>
 				<tr>
@@ -403,7 +404,7 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="initial_payment" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->initial_payment ) );?>" />
+						<input name="initial_payment" type="text" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->initial_payment ) );?>" class="regular-text" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
@@ -424,13 +425,13 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="billing_amount" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->billing_amount ) );?>" />
+						<input name="billing_amount" type="text" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->billing_amount ) );?>"  class="regular-text" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
 						?>
 						<?php _e('per', 'paid-memberships-pro' );?>
-						<input id="cycle_number" name="cycle_number" type="text" size="10" value="<?php echo esc_attr($level->cycle_number);?>" />
+						<input id="cycle_number" name="cycle_number" type="text" value="<?php echo esc_attr($level->cycle_number);?>" class="small-text" />
 						<select id="cycle_period" name="cycle_period">
 						  <?php
 							$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
@@ -461,7 +462,7 @@
 				<tr class="recurring_info" <?php if(!pmpro_isLevelRecurring($level)) {?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top"><label for="billing_limit"><?php _e('Billing Cycle Limit', 'paid-memberships-pro' );?>:</label></th>
 					<td>
-						<input name="billing_limit" type="text" size="20" value="<?php echo $level->billing_limit?>" />
+						<input name="billing_limit" type="text" value="<?php echo $level->billing_limit?>" class="small-text" />
 						<p class="description">
 							<?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?>
 							<?php if ( ( $gateway == "stripe" ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) { ?>
@@ -510,13 +511,13 @@
 						if(pmpro_getCurrencyPosition() == "left")
 							echo $pmpro_currency_symbol;
 						?>
-						<input name="trial_amount" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) );?>" />
+						<input name="trial_amount" type="text" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) );?>" class="regular-text" />
 						<?php
 						if(pmpro_getCurrencyPosition() == "right")
 							echo $pmpro_currency_symbol;
 						?>
 						<?php _e('for the first', 'paid-memberships-pro' );?>
-						<input name="trial_limit" type="text" size="10" value="<?php echo esc_attr($level->trial_limit);?>" />
+						<input name="trial_limit" type="text" value="<?php echo esc_attr($level->trial_limit);?>" class="small-text" />
 						<?php _e('subscription payments', 'paid-memberships-pro' );?>.
 						<?php if($gateway == "stripe") { ?>
 							<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
@@ -530,8 +531,8 @@
 
 			</tbody>
 		</table>
-
-		<h3 class="topborder"><?php _e('Other Settings', 'paid-memberships-pro' );?></h3>
+		<hr />
+		<h2 class="title"><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 			<tbody>
 				<tr>
@@ -558,7 +559,7 @@
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>					
 					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Expires In', 'paid-memberships-pro' );?>:</label></th>
 					<td>
-						<input id="expiration_number" name="expiration_number" type="text" size="10" value="<?php echo esc_attr($level->expiration_number);?>" />
+						<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number);?>" class="small-text" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
 							$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
@@ -596,7 +597,9 @@
 
 		<?php do_action("pmpro_membership_level_after_other_settings"); ?>
 
-		<h3 class="topborder"><?php _e('Content Settings', 'paid-memberships-pro' );?></h3>
+		<hr />
+
+		<h2 class="title"><?php esc_html_e( 'Content Settings', 'paid-memberships-pro' ); ?></h2>
 		<?php
 			// Get the Advanced Settings for filtering queries and showing excerpts.
 			$filterqueries = pmpro_getOption('filterqueries');
@@ -634,8 +637,8 @@
 			</tbody>
 		</table>
 		<p class="submit topborder">
-			<input name="save" type="submit" class="button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
-			<input name="cancel" type="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
+			<input name="save" type="submit" class="button button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
+			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
 		</p>
 	</form>
 	</div>
@@ -752,7 +755,9 @@
 				<input class="button" type="submit" value="<?php _e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
 			</p>
 		</form>
-		<h2><?php _e('Membership Levels', 'paid-memberships-pro' );?> <a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="add-new-h2"><?php _e('Add New Level', 'paid-memberships-pro' );?></a></h2>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
+		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
+		<hr class="wp-header-end">
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 		    <p><?php _e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
