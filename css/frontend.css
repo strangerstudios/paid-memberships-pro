@@ -145,6 +145,10 @@ form.pmpro_form select {
 	display: inline-block;
 	max-width: 90%;
 }
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
+	max-width: 30%;
+}
 form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
 form.pmpro_form #other_discount_code.input {
