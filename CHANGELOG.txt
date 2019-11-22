@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.2 - 2019-11-22 =
+* FEATURE: The Members List is now shown in an official "WP List Table". Most columns are sortable. The screen options in the upper right can be used to add/remove columns. (Thanks, Thomas Sjolshagen, Paul Barthmeier, and David Parker)
+* FEATURE: Showing useful notifications in the PMPro dashboard area. Notifications are shown no more than once ever 12 hours, and no more than 3 times every week. The PMPro Advanced Settings page has an option to only show security-related notifications.
+
 = 2.1.4 - 2019-10-31
 * BUG FIX: Better exception handling in the Stripe gateway class for PHP 7+.
 * BUG FIX: Fixing some JS issues at checkout, e.g. related to the "validateCreditCard method is not available" error.
