@@ -534,7 +534,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
 	}
 
-	$sql_query .= ' GROUP BY total ORDER BY num DESC ';
+	$sql_query .= ' GROUP BY ROUND(total,8) ORDER BY num DESC ';
 
 	$prices           = $wpdb->get_results( $sql_query );
 
