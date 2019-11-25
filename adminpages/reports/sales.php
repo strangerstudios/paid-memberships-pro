@@ -527,7 +527,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT total, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sql_query = "SELECT ROUND(total,8) as total, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
 	if ( ! empty( $levels ) ) {
@@ -541,11 +541,11 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	if( !empty( $count) ) {
 		$prices = array_slice( $prices, 0, $count, true );
 	}
-
+	
 	$prices_formatted = array();
 	foreach ( $prices as $price ) {
 		if ( isset( $price->total ) ) {
-			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total = '" . esc_sql( $price->total ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE ROUND(total, 8) = '" . esc_sql( $price->total ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$sales                             = $wpdb->get_var( $sql_query );
 			$prices_formatted[ $price->total ] = $sales;
 		}
@@ -560,7 +560,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 		$cache = array( $period . $count => $prices_formatted );
 	}
 
-	set_transient( 'pmpro_report_sales', $cache, 3600 * 24 );
+	set_transient( 'pmpro_report_prices_paid', $cache, 3600 * 24 );
 
 	return $prices_formatted;
 }
