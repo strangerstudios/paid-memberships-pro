@@ -739,7 +739,7 @@
 			}
 		?>
 
-		<?php if( count( $reordered_levels ) === 0 ) { ?>
+		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
 			<div class="pmpro-new-install">
 				<h2><?php echo esc_attr_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
@@ -779,6 +779,13 @@
 			</tr>
 		</thead>
 		<tbody>
+			<?php if ( !empty( $s ) && empty( $reordered_levels ) ) { ?>
+			<tr class="alternate">
+				<td colspan="5">
+					<?php echo esc_attr_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?>
+				</td>
+			</tr> 
+			<?php } ?>
 			<?php
 				$count = 0;
 				foreach($reordered_levels as $level)

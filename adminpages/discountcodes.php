@@ -711,7 +711,7 @@
 
 			$totalrows = $wpdb->get_var( "SELECT FOUND_ROWS() as found_rows" );
 
-			if( empty( $codes ) ) { ?>
+			if( empty( $s ) && empty( $codes ) ) { ?>
 				<div class="pmpro-new-install">
 					<h2><?php echo esc_attr_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
 					<h4><?php _e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
@@ -752,6 +752,13 @@
 					</tr>
 				</thead>
 				<tbody>
+					<?php if ( !empty( $s ) && empty( $codes ) ) { ?>
+					<tr class="alternate">
+						<td colspan="6">
+							<?php echo esc_attr_e( 'Code not found.', 'paid-memberships-pro' ); ?>
+						</td>
+					</tr> 
+					<?php } ?>
 					<?php
 						$count = 0;
 						foreach($codes as $code) {
