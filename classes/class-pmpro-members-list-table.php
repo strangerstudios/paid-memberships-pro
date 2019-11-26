@@ -83,7 +83,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'address'			=> 'Billing Address',
 			'membership'		=> 'Level',
 			'membership_id'		=> 'Level ID',
-			'billing_amount'	=> 'Fee',
+			'fee'				=> 'Fee',
 			'joindate'			=> 'Registered',
 			'startdate'			=> 'Start Date',
 			'enddate'			=> 'End Date',
@@ -161,17 +161,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'username'     => array(
 				'user_login',
 				false,
-			),/*
-			'first_name'     => array(
-				'first_name',
-				false,
 			),
-			'last_name'      => array(
-				'last_name',
-				false,
-			),*/
-			'billing_amount' => array(
-				'billing_amount',
+			'fee' => array(
+				'fee',
 				false,
 			),
 			'display_name'   => array(
@@ -271,18 +263,36 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	private function sql_table_data( $count = false ) {
 		global $wpdb;
 
-		//some vars for the search
+		// some vars for the search
 		if ( isset( $_REQUEST['l'] ) ) {
 			$l = sanitize_text_field( $_REQUEST['l'] );
 		} else {
 			$l = false;
 		}
-		
 		if(isset($_REQUEST['s']))
 			$s = sanitize_text_field(trim($_REQUEST['s']));
 		else
 			$s = "";
-			
+		
+		// some vars for ordering
+		if(isset($_REQUEST['orderby'])) {
+			$orderby = $this->sanitize_orderby( $_REQUEST['orderby'] );
+			if( $_REQUEST['order'] == 'asc' ) {
+				$order = 'ASC';
+			} else {
+				$order = 'DESC';
+			}
+		} else {
+			if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+				$orderby = 'enddate';
+				$order = 'DESC';
+			} else {
+				$orderby = 'u.user_registered';
+				$order = 'DESC';
+			}
+		}
+		
+		// some vars for pagination	
 		if(isset($_REQUEST['paged']))
 			$pn = intval($_REQUEST['paged']);
 		else
@@ -299,7 +309,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
 				UNIX_TIMESTAMP(mu.startdate) as startdate,
 				UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership
 				";
@@ -341,15 +351,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 		
 		if ( ! $count ) {
-			$sqlQuery .= 'GROUP BY u.ID ';
+			$sqlQuery .= ' GROUP BY u.ID ';
 			
-			if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-				$sqlQuery .= 'ORDER BY enddate DESC ';
-			} else {
-				$sqlQuery .= 'ORDER BY u.user_registered DESC ';
-			}
+			$sqlQuery .= " ORDER BY $orderby $order ";
 			
-			$sqlQuery .= " LIMIT $start, $limit";
+			$sqlQuery .= " LIMIT $start, $limit ";
 		}
 
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
@@ -361,6 +367,39 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 		
 		return $sql_table_data;
+	}
+	
+	/**
+	 * Sanitize the orderby value.
+	 * Only allow fields we want to order by.
+	 * Make sure we append the correct table prefix.
+	 * Make sure there is no other SQL in the value.
+	 * @param string $orderby The column to order by.
+	 * @return string The sanitized value.
+	 */
+	function sanitize_orderby( $orderby ) {
+		$allowed_orderbys = array(
+			'ID' 				=> 'u.ID',
+			'user_login' 		=> 'u.user_login',
+			'display_name' 		=> 'u.display_name',
+			'user_email' 		=> 'u.user_email',
+			'membership' 		=> 'mu.membership_id',
+			'membership_id' 	=> 'mu.membership_id',
+			'fee' 				=> 'fee',
+			'joindate' 			=> 'u.user_registered',
+			'startdate' 		=> 'mu.startdate',
+			'enddate' 			=> 'mu.enddate',
+		);
+		
+		$allowed_orderbys = apply_filters('pmpro_memberslist_allowed_orderbys', $allowed_orderbys );
+		
+	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
+			$orderby = $allowed_orderbys[$orderby];
+		} else {
+			$orderby = false;
+		}
+		
+		return $orderby;
 	}
 
 	/**
@@ -427,32 +466,32 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					$output .= '</div>';
 				}
 				return $output;
-			case 'billing_amount':
-				$billing_amount = '';
+			case 'fee':
+				$fee = '';
 				// If there is no payment for the level, show a dash.
 				if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
-					$billing_amount .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
+					$fee .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
 				} else {
 					// Display the member's initial payment.
 					if ( (float)$item['initial_payment'] > 0 ) {
-						$billing_amount .= pmpro_formatPrice( $item['initial_payment'] );
+						$fee .= pmpro_formatPrice( $item['initial_payment'] );
 					}
 					// If there is a recurring payment, show a plus sign.
 					if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
-						$billing_amount .= esc_html( ' + ', 'paid-memberships-pro' );
+						$fee .= esc_html( ' + ', 'paid-memberships-pro' );
 					}
 					// If there is a recurring payment, show the recurring payment amount and cycle.
 					if ( (float)$item['billing_amount'] > 0 ) {
-						$billing_amount .= pmpro_formatPrice( $item['billing_amount'] );
-						$billing_amount .= esc_html( ' per ', 'paid-memberships-pro' );
+						$fee .= pmpro_formatPrice( $item['billing_amount'] );
+						$fee .= esc_html( ' per ', 'paid-memberships-pro' );
 						if ( $item['cycle_number'] > 1 ) {
-							$billing_amount .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
+							$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
 						} else {
-							$billing_amount .= $item['cycle_period'];
+							$fee .= $item['cycle_period'];
 						}
 					}
 				}
-				return $billing_amount;
+				return $fee;
 			case 'joindate':
 				$joindate = $item[ $column_name ];
 				return date_i18n( get_option('date_format'), $joindate );
