@@ -506,8 +506,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
 				}
 			default:
-				if ( isset( $item->$column_name ) ) {
-					return $item->$column_name;
+				if ( isset( $item[$column_name] ) ) {
+					return $item[$column_name];
 				} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
 					// Re-implementing old hook, will be deprecated.
 					$user_object = get_userdata( $item['ID'] );
