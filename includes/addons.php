@@ -199,6 +199,7 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 		return $api;
 	}
 
+	// add info
 	$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
 	$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
 	$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
@@ -209,9 +210,22 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 	$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 	$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 	$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-	$api->sections['changelog'] = isset( $addon['Changelog'] ) ? $addon['Changelog'] : '';
 	$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
 	$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+
+	// add sections
+	if ( !empty( $addon['Description'] ) ) {
+		$api->sections['description'] = $addon['Description'];
+	}
+	if ( !empty( $addon['Installation'] ) ) {
+		$api->sections['installation'] = $addon['Installation'];
+	}
+	if ( !empty( $addon['FAQ'] ) ) {
+		$api->sections['faq'] = $addon['FAQ'];
+	}
+	if ( !empty( $addon['Changelog'] ) ) {
+		$api->sections['changelog'] = $addon['Changelog'];
+	}
 
 	// get license key if one is available
 	$key = get_option( 'pmpro_license_key', '' );
