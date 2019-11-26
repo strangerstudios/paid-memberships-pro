@@ -527,27 +527,27 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT ROUND(total,8) as total, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
 	if ( ! empty( $levels ) ) {
 		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
 	}
 
-	$sql_query .= ' GROUP BY ROUND(total,8) ORDER BY num DESC ';
+	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
 	$prices           = $wpdb->get_results( $sql_query );
-
+	
 	if( !empty( $count) ) {
 		$prices = array_slice( $prices, 0, $count, true );
 	}
 	
 	$prices_formatted = array();
 	foreach ( $prices as $price ) {
-		if ( isset( $price->total ) ) {
-			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE ROUND(total, 8) = '" . esc_sql( $price->total ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+		if ( isset( $price->rtotal ) ) {
+			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE ROUND(total, 8) = '" . esc_sql( $price->rtotal ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$sales                             = $wpdb->get_var( $sql_query );
-			$prices_formatted[ $price->total ] = $sales;
+			$prices_formatted[ $price->rtotal ] = $sales;
 		}
 	}
 
