@@ -46,43 +46,18 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @since 2.2.0
 	 */
 	public function prepare_items() {
-		// check if a search was performed.
-		$user_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
-
-		//$columns               = $this->get_columns();
-		//$hidden                = $this->get_hidden_columns();
-		//$sortable              = $this->get_sortable_columns();
-		//$this->_column_headers = array( $columns, $hidden, $sortable );
 		$this->_column_headers = $this->get_column_info();
-		// $query = $query . ' where cat_id=' . mysql_real_escape_string( $_GET['cat-filter'] );
-		// $this->get_column_info() = $this->_column_headers;
-		// check and process any actions such as bulk actions.
 		$this->handle_table_actions();
-
-		// fetch table data
-		$table_data = $this->sql_table_data();
-		usort( $table_data, array( $this, 'sort_data' ) );
-
-		// filter the data in case of a search.
-		if ( $user_search_key ) {
-			$table_data = $this->filter_table_data( $table_data, $user_search_key );
-		}
-
-		// required for pagination
-		$users_per_page = $this->get_items_per_page( 'users_per_page' );
-		$table_page     = $this->get_pagenum();
-
-		// provide the ordered data to the List Table.
-		// we need to manually slice the data based on the current pagination.
-		$this->items = array_slice( $table_data, ( ( $table_page - 1 ) * $users_per_page ), $users_per_page );
+		$this->items = $this->sql_table_data();
 
 		// set the pagination arguments
-		$total_users = count( $table_data );
+		$items_per_page = $this->get_items_per_page( 'users_per_page' );
+		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
-				'total_items' => $total_users,
-				'per_page'    => $users_per_page,
-				'total_pages' => ceil( $total_users / $users_per_page ),
+				'total_items' => $total_items,
+				'per_page'    => $items_per_page,
+				'total_pages' => ceil( $total_items / $items_per_page ),
 			)
 		);
 	}
@@ -291,61 +266,100 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Get the table data
 	 *
-	 * @return Array
+	 * @return Array or integer if $count parameter = true
 	 */
-	private function sql_table_data() {
+	private function sql_table_data( $count = false ) {
 		global $wpdb;
 
+		//some vars for the search
 		if ( isset( $_REQUEST['l'] ) ) {
 			$l = sanitize_text_field( $_REQUEST['l'] );
 		} else {
 			$l = false;
 		}
+		
+		if(isset($_REQUEST['s']))
+			$s = sanitize_text_field(trim($_REQUEST['s']));
+		else
+			$s = "";
+			
+		if(isset($_REQUEST['paged']))
+			$pn = intval($_REQUEST['paged']);
+		else
+			$pn = 1;
+		
+		$limit = $this->get_items_per_page( 'users_per_page' );
 
-		$sql_table_data = array();
+		$end = $pn * $limit;
+		$start = $end - $limit;
 
-		$mysqli_query =
-			"
-			SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, u.display_name,
-			UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
-			UNIX_TIMESTAMP(mu.startdate) as startdate,
-			UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership
-			-- um.first_name as first_name, um.last_name as last_name
+		if ( $count ) {
+			$sqlQuery = "SELECT COUNT(*) ";
+		} else {
+			$sqlQuery =
+				"
+				SELECT u.ID, u.user_login, u.user_email, u.display_name,
+				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(mu.startdate) as startdate,
+				UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership
+				";
+		}
+			
+		$sqlQuery .= 
+			"	
 			FROM $wpdb->users u 
-			LEFT JOIN $wpdb->usermeta um
-			ON u.ID = um.user_id
 			LEFT JOIN $wpdb->pmpro_memberships_users mu
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
 			";
+			
+		if ( !empty( $s ) ) {
+			$sqlQuery .= ' LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ';
+		}
 
 		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-				$mysqli_query .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
+				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 		}
-		$mysqli_query .= ' WHERE mu.membership_id > 0';
+		
+		$sqlQuery .= ' WHERE mu.membership_id > 0 ';
+		
+		if ( ! empty( $s ) ) {
+			$sqlQuery .= " AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%') ";
+		}
 
 		if ( 'oldmembers' === $l ) {
-			$mysqli_query .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status <> 'active' AND mu2.status IS NULL ";
 		} elseif ( 'expired' === $l ) {
-			$mysqli_query .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status = 'expired' AND mu2.status IS NULL ";
 		} elseif ( 'cancelled' === $l ) {
-			$mysqli_query .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
+			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 		} elseif ( $l ) {
-			$mysqli_query .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql( $l ) . "' ";
+			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		} else {
-			$mysqli_query .= " AND mu.status = 'active' ";
+			$sqlQuery .= " AND mu.status = 'active' ";
 		}
-		$mysqli_query .= 'GROUP BY u.ID ';
+		
+		if ( ! $count ) {
+			$sqlQuery .= 'GROUP BY u.ID ';
+			
+			if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
+				$sqlQuery .= 'ORDER BY enddate DESC ';
+			} else {
+				$sqlQuery .= 'ORDER BY u.user_registered DESC ';
+			}
+			
+			$sqlQuery .= " LIMIT $start, $limit";
+		}
 
-		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
-			$mysqli_query .= 'ORDER BY enddate DESC ';
+		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
+		
+		if( $count ) {
+			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
-			$mysqli_query .= 'ORDER BY u.user_registered DESC ';
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
 		}
-
-		$mysqli_query = apply_filters("pmpro_members_list_sql", $mysqli_query);
-		$sql_table_data = $wpdb->get_results( $mysqli_query, ARRAY_A );
+		
 		return $sql_table_data;
 	}
 

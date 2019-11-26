@@ -7,7 +7,7 @@
 		$view = "";
 
 	global $pmpro_ready, $msg, $msgt;
-	$pmpro_ready = pmpro_is_ready();
+	///$pmpro_ready = pmpro_is_ready();
 	if(!$pmpro_ready)
 	{
 		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
