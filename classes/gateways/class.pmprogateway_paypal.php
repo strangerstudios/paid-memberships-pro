@@ -212,7 +212,7 @@
 			global $gateway, $gateway_environment, $pmpro_level;
 			$default_gateway = pmpro_getOption("gateway");
 
-			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
+			if ( $gateway == 'paypal' || $default_gateway == 'paypal' ) {
 				$dependencies = array( 'jquery' );
 				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
 				$data = array();	
