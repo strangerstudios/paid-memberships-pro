@@ -461,7 +461,7 @@ function pmpro_report_sales_page()
 function pmpro_getSales($period, $levels = NULL)
 {
 	//check for a transient
-	$cache = get_transient("pmpro_report_sales");
+	$cache = get_transient( 'pmpro_report_sales' );
 	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
 		return $cache[$period][$levels];
 
@@ -495,7 +495,7 @@ function pmpro_getSales($period, $levels = NULL)
 	else
 		$cache = array($period => array($levels => $sales));
 
-	set_transient("pmpro_report_sales", $cache, 3600*24);
+	set_transient( 'pmpro_report_sales', $cache, 3600*24 );
 
 	return $sales;
 }
@@ -611,8 +611,9 @@ function pmpro_getRevenue($period, $levels = NULL)
 //delete transients when an order goes through
 function pmpro_report_sales_delete_transients()
 {
-	delete_transient("pmpro_report_sales");
-	delete_transient("pmpro_report_revenue");
+	delete_transient( 'pmpro_report_sales' );
+	delete_transient( 'pmpro_report_revenue' );
+	delete_transient( 'pmpro_report_prices_paid' );
 }
 add_action("pmpro_after_checkout", "pmpro_report_sales_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_sales_delete_transients");
