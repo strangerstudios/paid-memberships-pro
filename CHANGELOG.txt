@@ -4,6 +4,7 @@
 * BUG FIX: Fixed sorting issues with the new members list.
 * BUG FIX: Fixed issues with the sales report widget and breakdown by price.
 * BUG FIX: Now showing an appropriate message if you search for members, levels or discount codes in the dashboard and there are no results.
+* BUG FIX: Fixed bug where option to pay with PayPal wouldn't show if paid discount code was applied to free level.
 
 = 2.2 - 2019-11-22 =
 * FEATURE: The Members List is now shown in an official "WP List Table". Most columns are sortable. The screen options in the upper right can be used to add/remove columns. (Thanks, Thomas Sjolshagen, Paul Barthmaier, and David Parker)
