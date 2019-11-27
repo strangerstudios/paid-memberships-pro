@@ -252,7 +252,22 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		_e( 'No users avaliable.', $this->plugin_text_domain );
+		?>
+		<p>
+			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
+			<?php if ( $l ) { ?>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 's' => $s ) ) ); ?>"><?php _e( 'Search all levels', 'paid-memberships-pro' );?></a>
+			<?php } ?>
+		</p>
+		<hr />
+		<p><?php _e( 'You can also try searching:', 'paid-memberships-pro' ); ?>
+		<ul class="ul-disc">
+			<li><a href="<?php echo esc_url( add_query_arg( array( 's' => $s ), admin_url( 'users.php' ) ) ); ?>"><?php _e( 'All Users', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'cancelled', 's' => $s ) ) ); ?>"><?php _e( 'Cancelled Members', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'expired', 's' => $s ) ) ); ?>"><?php _e( 'Expired Members', 'paid-memberships-pro' ); ?></a></li>
+			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'oldmembers', 's' => $s ) ) ); ?>"><?php _e( 'Old Members', 'paid-memberships-pro' ); ?></a></li>
+		</ul>
+		<?php
 	}
 
 	/**
