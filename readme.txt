@@ -130,6 +130,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 2.2.2 - 2019-11-27 =
 * BUG FIX: Fixed issue with member search.
+* BUG FIX: Fixed issue with custom columns in the members list. (Thanks, Tim Sparks)
 
 = 2.2.1 - 2019-11-27 =
 * BUG FIX: Fixed performance issues with the new WP List Table implementation of the members list.
