@@ -1,5 +1,5 @@
 == Changelog ==
-= 2.2.2 - 2019-11-27 =
+= 2.2.2 - 2019-11-29 =
 * BUG FIX: Fixed issue with member search.
 * BUG FIX: Fixed issue with custom columns in the members list. (Thanks, Tim Sparks)
 

@@ -128,7 +128,7 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 2.2.2 - 2019-11-27 =
+= 2.2.2 - 2019-11-29 =
 * BUG FIX: Fixed issue with member search.
 * BUG FIX: Fixed issue with custom columns in the members list. (Thanks, Tim Sparks)
 
