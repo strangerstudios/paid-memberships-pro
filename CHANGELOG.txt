@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.2.2 - 2019-11-27 =
+* BUG FIX: Fixed issue with member search.
+
 = 2.2.1 - 2019-11-27 =
 * BUG FIX: Fixed performance issues with the new WP List Table implementation of the members list.
 * BUG FIX: Fixed sorting issues with the new members list.
