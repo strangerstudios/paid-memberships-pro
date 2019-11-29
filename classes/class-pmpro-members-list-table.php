@@ -340,7 +340,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			";
 			
 		if ( !empty( $s ) ) {
-			$sqlQuery .= ' LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ';
+			$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
 		}
 
 		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
