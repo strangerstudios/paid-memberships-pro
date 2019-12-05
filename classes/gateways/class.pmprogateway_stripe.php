@@ -365,7 +365,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
-		if ( ( $gateway == "stripe" || $default_gateway == "stripe" ) && ! pmpro_isLevelFree( $pmpro_level ) ) {
+		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
