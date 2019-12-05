@@ -56,7 +56,7 @@ function pmpro_add_pages() {
 
 	// Check License Key for Correct Link Color
 	$key = get_option( 'pmpro_license_key', '' );
-	if ( pmpro_license_isValid( $key, NULL, true ) ) {
+	if ( pmpro_license_isValid( $key, NULL ) ) {
 		$span_color = '#33FF00';
 	} else {
 		$span_color = '#FF3333';
@@ -210,7 +210,7 @@ function pmpro_admin_bar_menu() {
 	if ( current_user_can( 'manage_options' ) ) {
 		// Check License Key for Correct Link Color
 		$key = get_option( 'pmpro_license_key', '' );
-		if ( pmpro_license_isValid( $key, NULL, true ) ) {
+		if ( pmpro_license_isValid( $key, NULL ) ) {
 			$span_color = '#33FF00';
 		} else {
 			$span_color = '#FF3333';
