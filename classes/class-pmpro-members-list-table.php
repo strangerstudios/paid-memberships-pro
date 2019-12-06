@@ -238,6 +238,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
+		if ( isset( $_REQUEST['l'] ) ) {
+			$l = sanitize_text_field( $_REQUEST['l'] );
+		} else {
+			$l = false;
+		}
+		if(isset($_REQUEST['s']))
+			$s = sanitize_text_field(trim($_REQUEST['s']));
+		else
+			$s = "";
 		?>
 		<p>
 			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
@@ -580,6 +589,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	public function get_some_actions() {
+		if ( isset( $_REQUEST['l'] ) ) {
+			$l = sanitize_text_field( $_REQUEST['l'] );
+		} else {
+			$l = false;
+		}
 		?>
 		<ul class="subsubsub">
 		<li>
