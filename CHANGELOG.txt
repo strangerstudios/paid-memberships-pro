@@ -1,4 +1,10 @@
 == Changelog ==
+= 2.2.3 - 2019-12-09 =
+* BUG FIX: Fixed issue where Stripe checkout failed for free levels that had their price adjusted through the donations or variable pricing add ons.
+* BUG FIX: Fixed undeclared variables warnings in the members list.
+* BUG FIX: Fixed the edit user links in the email sent to admins when cancelations have errors.
+* REFACTOR: Removed some unused code from the members list class.
+
 = 2.2.2 - 2019-11-29 =
 * BUG FIX: Fixed issue with member search.
 * BUG FIX: Fixed issue with custom columns in the members list. (Thanks, Tim Sparks)
