@@ -198,20 +198,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Return number of visible columns
-	 *
-	 * @since 2.2.0
-	 *
-	 * @access public
-	 * @return int
-	 */
-	public function get_column_count() {
-		list ( $columns, $hidden ) = $this->get_column_info();
-		$hidden                    = array_intersect( array_keys( $columns ), array_filter( $hidden ) );
-		return count( $columns ) - count( $hidden );
-	}
-
-	/**
 	 * Allows you to sort the data by the variables set in the $_GET
 	 *
 	 * @return Mixed
@@ -252,6 +238,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
+		if ( isset( $_REQUEST['l'] ) ) {
+			$l = sanitize_text_field( $_REQUEST['l'] );
+		} else {
+			$l = false;
+		}
+		if(isset($_REQUEST['s']))
+			$s = sanitize_text_field(trim($_REQUEST['s']));
+		else
+			$s = "";
 		?>
 		<p>
 			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
@@ -594,6 +589,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	public function get_some_actions() {
+		if ( isset( $_REQUEST['l'] ) ) {
+			$l = sanitize_text_field( $_REQUEST['l'] );
+		} else {
+			$l = false;
+		}
 		?>
 		<ul class="subsubsub">
 		<li>
