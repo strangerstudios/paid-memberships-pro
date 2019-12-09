@@ -861,7 +861,7 @@
 					$pmproemail->data["body"] .= '<p>' . __('Gateway', 'paid-memberships-pro') . ': ' . $this->gateway . '</p>';
 					$pmproemail->data["body"] .= '<p>' . __('Subscription Transaction ID', 'paid-memberships-pro') . ': ' . $this->subscription_transaction_id . '</p>';
 					$pmproemail->data["body"] .= '<hr />';
-					$pmproemail->data["body"] .= '<p>' . __('Edit User', 'paid-memberships-pro') . ': ' . get_edit_user_link( $this->user_id ) . '</p>';
+					$pmproemail->data["body"] .= '<p>' . __('Edit User', 'paid-memberships-pro') . ': ' . add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) . '</p>';
 					$pmproemail->data["body"] .= '<p>' . __('Edit Order', 'paid-memberships-pro') . ': ' . add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url('admin.php' ) ) . '</p>';
 					$pmproemail->sendEmail(get_bloginfo("admin_email"));
 				} else {
