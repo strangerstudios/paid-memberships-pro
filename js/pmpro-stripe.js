@@ -1,3 +1,5 @@
+var pmpro_require_billing;
+
 // Wire up the form for Stripe.
 jQuery( document ).ready( function( $ ) {
 
@@ -39,6 +41,11 @@ jQuery( document ).ready( function( $ ) {
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
 				.then( stripeResponseHandler );
 		}
+	}
+
+	// Set require billing var if not set yet.
+	if ( typeof pmpro_require_billing === 'undefined' ) {
+		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 
 	$( '.pmpro_form' ).submit( function( event ) {

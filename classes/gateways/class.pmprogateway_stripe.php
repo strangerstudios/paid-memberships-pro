@@ -160,7 +160,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$default_gateway = pmpro_getOption( 'gateway' );
 		$current_gateway = pmpro_getGateway();
 
-		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) )    //$_REQUEST['review'] means the PayPal Express review page
+		// $_REQUEST['review'] here means the PayPal Express review pag
+		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) )
 		{
 			add_action( 'pmpro_after_checkout_preheader', array(
 				'PMProGateway_stripe',
@@ -361,7 +362,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
 
-		global $gateway, $pmpro_level, $current_user;
+		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling;
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
@@ -377,6 +378,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
+					'pmpro_require_billing' => $pmpro_requirebilling,
 				);
 
 				if ( ! empty( $order ) ) {
