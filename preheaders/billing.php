@@ -1,7 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
-global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling;
 
 if (! is_user_logged_in()) {	
 	wp_redirect(pmpro_url('levels'));
@@ -30,6 +29,9 @@ if (empty($user_order->gateway)) {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");
 }
+
+// this variable is checked sometimes to know if the page should show billing fields
+$pmpro_requirebilling = true;
 
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
 $gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
