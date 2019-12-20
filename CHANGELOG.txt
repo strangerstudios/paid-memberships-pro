@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.2.4 - 2019-12-20 =
+* BUG FIX: Fixed issue with the update billing page when using the Stripe gateway.
+
 = 2.2.3 - 2019-12-09 =
 * BUG FIX: Fixed issue where Stripe checkout failed for free levels that had their price adjusted through the donations or variable pricing add ons.
 * BUG FIX: Fixed undeclared variables warnings in the members list.
