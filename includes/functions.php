@@ -171,10 +171,13 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 
 function pmpro_isLevelFree( &$level ) {
 	if ( ! empty( $level ) && $level->initial_payment <= 0 && $level->billing_amount <= 0 && $level->trial_amount <= 0 ) {
-		return true;
+		$r = true;
 	} else {
-		return false;
+		$r = false;
 	}
+	
+	$r = apply_filters( 'pmpro_is_level_free', $r, $level );
+	return $r;
 }
 
 // Given an array of levels, will return true if all of them are free.
@@ -204,26 +207,35 @@ function pmpro_onlyFreeLevels() {
 
 function pmpro_isLevelRecurring( &$level ) {
 	if ( ! empty( $level ) && ( $level->billing_amount > 0 || $level->trial_amount > 0 ) ) {
-		return true;
+		$r = true;
 	} else {
-		return false;
+		$r = false;
 	}
+	
+	$r = apply_filters( 'pmpro_is_level_recurring', $r, $level );
+	return $r;
 }
 
 function pmpro_isLevelTrial( &$level ) {
 	if ( ! empty( $level ) && ! empty( $level->trial_limit ) && $level->trial_limit > 0 ) {
-		return true;
+		$r = true;
 	} else {
-		return false;
+		$r = false;
 	}
+	
+	$r = apply_filters( 'pmpro_is_level_trial', $r, $level );
+	return $r;
 }
 
 function pmpro_isLevelExpiring( &$level ) {
 	if ( ! empty( $level ) && ( ! empty( $level->expiration_number ) && $level->expiration_number > 0 ) || ! empty( $level->enddate ) ) {
-		return true;
+		$r = true;
 	} else {
-		return false;
+		$r = false;
 	}
+	
+	$r = apply_filters( 'pmpro_is_level_expiring', $r, $level );
+	return $r;
 }
 
 /**
