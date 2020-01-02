@@ -229,6 +229,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
 			    add_action('pmpro_checkout_preheader', array('PMProGateway_braintree', 'pmpro_checkout_preheader'));
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_braintree', 'pmpro_checkout_preheader' ) );
 				add_action( 'pmpro_save_membership_level', array( 'PMProGateway_braintree', 'pmpro_save_level_action') );
 				add_action('pmpro_checkout_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
 				add_action('pmpro_billing_before_submit_button', array('PMProGateway_braintree', 'pmpro_checkout_before_submit_button'));
