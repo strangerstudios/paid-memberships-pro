@@ -302,7 +302,7 @@
 				"x_exp_date"		=> $order->ExpirationDate,
 
 				"x_amount"			=> $amount,
-				"x_description"		=> $order->membership_level->name . " " . __("Membership", 'paid-memberships-pro' ),
+				"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
 
 				"x_first_name"		=> $order->FirstName,
 				"x_last_name"		=> $order->LastName,
@@ -490,7 +490,7 @@
 
 				"x_amount"			=> $amount,
 				"x_tax"				=> $tax,
-				"x_description"		=> $order->membership_level->name . " Membership",
+				"x_description"		=> apply_filters( 'pmpro_authorizenet_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")),
 
 				"x_first_name"		=> $order->FirstName,
 				"x_last_name"		=> $order->LastName,
