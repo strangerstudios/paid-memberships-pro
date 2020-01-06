@@ -365,7 +365,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			$default_gateway = pmpro_getOption("gateway");
 
-			if(($gateway == "braintree" || $default_gateway == "braintree") && !pmpro_isLevelFree($pmpro_level)) {
+			if(($gateway == "braintree" || $default_gateway == "braintree")) {
 				wp_enqueue_script("stripe", "https://js.braintreegateway.com/v1/braintree.js", array(), NULL);
 				wp_register_script( 'pmpro_braintree',
                             plugins_url( 'js/pmpro-braintree.js', PMPRO_BASE_FILE ),
