@@ -469,6 +469,10 @@ li.pmpro_more {
 	Responsive Styles
 ---------------------------------------*/
 @media (max-width:768px) {
+	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
+	#pmpro_levels_table td:nth-child(1) {
+		min-width: unset;
+	}
 	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
 		display: block;
 	}
