@@ -167,6 +167,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'PMProGateway_stripe',
 				'pmpro_checkout_after_preheader'
 			) );
+			
 			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 			add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
@@ -362,14 +363,43 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
 
-		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling;
+		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages;
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
 		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
+
+			//Conditional loading for Stripe.js on billing page.
+			if ( is_page( $pmpro_pages['billing'] ) ) {
+				// Make sure this only loads for recurring membership.
+				if ( ! defined( 'pmprommpu_is_loaded' ) && ! empty( $current_user->membership_level->id ) ) {
+					if ( ! pmpro_isLevelRecurring( $current_user->membership_level ) ){
+						return;
+					}
+				}
+
+				if ( is_array( $current_user->membership_levels ) && ! empty( $current_user->membership_levels ) ) {
+					// support MMPU as well.
+					$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+
+					//loop through each one.
+					$any_level_recurring = false;
+					foreach( $levels as $level ) {
+						if ( pmpro_isLevelRecurring( $level ) ) {
+							$any_level_recurring = true;
+						}
+					}
+
+					// If all MMPU levels assigned to user aren't recurring, don't load.
+					if ( ! $any_level_recurring ) {
+						return;
+					}
+				}
+				
+			}
+
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
-
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 
