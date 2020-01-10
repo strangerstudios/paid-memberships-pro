@@ -1,4 +1,8 @@
-<?php 
+<?php
+
+// Include custom settings to restrict Elementor widgets.
+require_once( 'elementor/class-elementor.php' );
+
 /**
  * Elementor Compatibility
  */
@@ -14,4 +18,22 @@ function pmpro_elementor_compatibility() {
 	add_filter('the_content', 'pmpro_membership_content_filter', 15);
 }
 add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
+
+/**
+ * Get all available levels for elementor widget setting.
+ * @return array Associative array of level ID and name.
+ * @since 2.2.6
+ */
+function pmpro_elementor_get_all_levels() {
+	$all_levels = pmpro_getAllLevels( true, false );
+
+	$levels_array = array();
+
+	$levels_array[0] = __( 'Non-members', 'paid-memberships-pro' );
+	foreach( $all_levels as $level ) {
+		$levels_array[ $level->id ] = $level->name;
+	}
+
+	return $levels_array;
+}
 
