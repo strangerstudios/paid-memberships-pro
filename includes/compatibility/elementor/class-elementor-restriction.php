@@ -10,19 +10,18 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		$this->register_controls();
 
 		// Filter elementor render_content hook
-		add_action( 'elementor/widget/render_content', array( $this, 'pmpro_elementor_filter_content' ), 20, 2 );
+		add_action( 'elementor/widget/render_content', array( $this, 'pmpro_elementor_filter_content' ), 10, 2 );
 	}
 
 	// Register controls to sections and widgets
 	protected function register_controls() {
-		foreach( $this->locations as $where )
-			add_action('elementor/element/'.$where['element'].'/'.$this->section_name.'/before_section_end', array( $this, 'add_controls' ), 10, 2 );
+		foreach( $this->locations as $where ) {
+				add_action('elementor/element/'.$where['element'].'/'.$this->section_name.'/before_section_end', array( $this, 'add_controls' ), 10, 2 );
+		}
 	}
 
 	// Define controls
 	public function add_controls( $element, $args ) {
-		$element_type = $element->get_type();
-
 		$element->add_control(
 			'pmpro_require_membership_heading', array(
 				'label'     => __( 'Require Membership Level', 'paid-memberships-pro' ),
@@ -53,7 +52,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         $widget_settings = $widget->get_active_settings();
 
         $restricted_levels = $widget_settings['pmpro_require_membership'];
-        
+
         // Just return content if no setting is set for the current widget.
         if ( ! $restricted_levels ) {
             return $content;

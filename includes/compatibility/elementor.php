@@ -34,6 +34,8 @@ function pmpro_elementor_get_all_levels() {
 		$levels_array[ $level->id ] = $level->name;
 	}
 
+	$levels_array = apply_filters( 'pmpro_elementor_levels_array', $levels_array );
+
 	return $levels_array;
 }
 
