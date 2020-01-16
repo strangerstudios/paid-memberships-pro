@@ -131,8 +131,10 @@ function pmpro_membership_level_profile_fields($user)
 						<?php
 							for($i = 1; $i < 13; $i++)
 							{
+								$first_of_month = date_create($i . "/1/" . $current_year, wp_timezone());
+                                				$option_month = wp_date( "M",  $first_of_month->getTimestamp());
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo $option_month; ?></option>
 							<?php
 							}
 						?>
