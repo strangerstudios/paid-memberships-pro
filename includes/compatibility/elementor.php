@@ -1,7 +1,9 @@
 <?php
 
-// Include custom settings to restrict Elementor widgets.
-require_once( 'elementor/class-elementor.php' );
+if ( defined( 'ELEMENTOR_VERSION' ) ) {
+	// Include custom settings to restrict Elementor widgets.
+	require_once( 'elementor/class-elementor.php' );
+}
 
 /**
  * Elementor Compatibility
