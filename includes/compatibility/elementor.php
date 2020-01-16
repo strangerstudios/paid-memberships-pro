@@ -1,14 +1,8 @@
 <?php
 
-// Only run code if Elementor enabled.
-if ( defined( 'ELEMENTOR_VERSION' ) ) {
-	// Include custom settings to restrict Elementor widgets.
-	require_once( 'elementor/class-elementor.php' );
+// Include custom settings to restrict Elementor widgets.
+require_once( 'elementor/class-elementor.php' );
 
-	add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' );
-	add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
-
-}
 
 /**
  * Elementor Compatibility
@@ -51,8 +45,11 @@ function pmpro_elementor_get_all_levels() {
 
 	return $levels_array;
 }
+add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
+
 
 
 function pmpro_elementor_clear_level_cache( $level_id ) {
 	delete_transient( 'pmpro_elementor_levels_cache' );
 }
+add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' );
