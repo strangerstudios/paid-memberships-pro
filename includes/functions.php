@@ -230,7 +230,7 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 	}
 
 	if ( ! $force ) {
-		$r = get_transient( 'pmpro_are_levels_recurring_' . implode( $level_arr ) );
+		$r = get_transient( 'pmpro_are_levels_recurring_' . implode( "_", $level_arr ) );
 	} else {
 		$r = false;
 	}
@@ -257,7 +257,7 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 
 		}
 
-		$r = set_transient( 'pmpro_are_levels_recurring_' . implode( $level_arr ), $r, 1 * HOUR_IN_SECONDS );
+		$r = set_transient( 'pmpro_are_levels_recurring_' . implode( "_", $level_arr ), $r, 1 * HOUR_IN_SECONDS );
 	}
 	
 
