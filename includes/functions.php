@@ -237,8 +237,6 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 	
 	if ( ! $r ) {
 
-		$r = false;
-
 		foreach( $level_arr as $level ) {
 			$level = pmpro_getLevel( $level ); // get level from ID
 			$is_recurring = pmpro_isLevelRecurring( $level );
