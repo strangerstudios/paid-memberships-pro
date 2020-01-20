@@ -373,30 +373,24 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( is_page( $pmpro_pages['billing'] ) ) {
 				// Make sure this only loads for recurring membership.
 				if ( ! defined( 'pmprommpu_is_loaded' ) && ! empty( $current_user->membership_level->id ) ) {
-					if ( ! pmpro_isLevelRecurring( $current_user->membership_level ) ){
-						return;
-					}
-				}
-
-				if ( is_array( $current_user->membership_levels ) && ! empty( $current_user->membership_levels ) ) {
-					// support MMPU as well.
+					// get all levels
 					$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 
-					//loop through each one.
-					$any_level_recurring = false;
-					foreach( $levels as $level ) {
-						if ( pmpro_isLevelRecurring( $level ) ) {
-							$any_level_recurring = true;
-						}
-					}
+					$all_levels_recurring = pmpro_are_levels_recurring( $levels, true );
 
-					// If all MMPU levels assigned to user aren't recurring, don't load.
-					if ( ! $any_level_recurring ) {
+					// if user's levels not recurring then bail.
+					if ( ! $all_levels_recurring ) {
 						return;
 					}
 				}
-				
+
+				$recurring_level = pmpro_are_levels_recurring( array( $current_user->membership_level->id ) );
+
+				if ( ! $recurring_level ) {
+					return;
+				}	
 			}
+
 
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
