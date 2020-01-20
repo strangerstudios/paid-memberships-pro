@@ -216,6 +216,56 @@ function pmpro_isLevelRecurring( &$level ) {
 	return $r;
 }
 
+/**
+ * Check if a user has recurring levels, support Multiple Memberships Per User.
+ * @param $level_arr an array of levels.
+ * @param $all bool check if all levels are recurring or if any is recurring.
+ * @param $force bool force to check or use cached data.
+ * @since 2.2.6
+ */
+function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) {
+
+	if ( ! is_array( $level_arr ) ) {
+		return false;
+	}
+
+	if ( ! $force ) {
+		$r = get_transient( 'pmpro_are_levels_recurring_' . implode( $level_arr ) );
+	} else {
+		$r = false;
+	}
+	
+	if ( ! $r ) {
+
+		$r = false;
+
+		foreach( $level_arr as $level ) {
+			$level = pmpro_getLevel( $level ); // get level from ID
+			$is_recurring = pmpro_isLevelRecurring( $level );
+
+			// check for any recurring levels, break after first one.
+			if ( $is_recurring ) {
+				$r = true;
+				break;
+			}
+
+
+			// check if ALL levels are recurring.
+			if ( $all && $is_recurring ) {
+				$r = true;
+			} elseif ( $all & ! $is_recurring ) {
+				$r = false;
+				break;
+			}
+		}
+
+		$r = set_transient( 'pmpro_are_levels_recurring_' . implode( $level_arr ), $r, 1 * HOUR_IN_SECONDS );
+	}
+	
+
+	return $r;
+}
+
 function pmpro_isLevelTrial( &$level ) {
 	if ( ! empty( $level ) && ! empty( $level->trial_limit ) && $level->trial_limit > 0 ) {
 		$r = true;
