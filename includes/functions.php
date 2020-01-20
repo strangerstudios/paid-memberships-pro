@@ -230,7 +230,9 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 	}
 
 	if ( ! $force ) {
-		$r = get_transient( 'pmpro_are_levels_recurring_' . implode( "_", $level_arr ) );
+		// Build unique string for level array for transient searches.
+		$level_trans = isset( $level_arr[0]->id ) ? $level_arr[0]->id : implode( '_', $level_arr );
+		$r = get_transient( 'pmpro_are_levels_recurring_' . $level_trans );
 	} else {
 		$r = false;
 	}
@@ -238,7 +240,12 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 	if ( ! $r ) {
 
 		foreach( $level_arr as $level ) {
-			$level = pmpro_getLevel( $level ); // get level from ID
+
+			// If array is not an object, try to get object from level ID array.
+			if ( ! isset( $level->id ) && empty( $level->id ) ) {
+				$level = pmpro_getLevel( $level );
+			}
+
 			$is_recurring = pmpro_isLevelRecurring( $level );
 
 			// check if ALL levels are recurring.
@@ -257,9 +264,11 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 
 		}
 
-		$r = set_transient( 'pmpro_are_levels_recurring_' . implode( "_", $level_arr ), $r, 1 * HOUR_IN_SECONDS );
+		// Only store transient if not forcing the results.
+		if ( ! $force ) {
+			$r = set_transient( 'pmpro_are_levels_recurring_' . $level_trans, $r, 1 * HOUR_IN_SECONDS );
+		}
 	}
-	
 
 	return $r;
 }
