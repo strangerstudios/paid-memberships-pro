@@ -241,13 +241,6 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 			$level = pmpro_getLevel( $level ); // get level from ID
 			$is_recurring = pmpro_isLevelRecurring( $level );
 
-			// check for any recurring levels, break after first one.
-			if ( $is_recurring ) {
-				$r = true;
-				break;
-			}
-
-
 			// check if ALL levels are recurring.
 			if ( $all && $is_recurring ) {
 				$r = true;
@@ -255,6 +248,13 @@ function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) 
 				$r = false;
 				break;
 			}
+
+			// check for any recurring levels, break after first one.
+			if ( $is_recurring ) {
+				$r = true;
+				break;
+			}
+
 		}
 
 		$r = set_transient( 'pmpro_are_levels_recurring_' . implode( $level_arr ), $r, 1 * HOUR_IN_SECONDS );
