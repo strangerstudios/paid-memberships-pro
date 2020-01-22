@@ -167,6 +167,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'PMProGateway_stripe',
 				'pmpro_checkout_after_preheader'
 			) );
+			
 			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 			add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
@@ -362,14 +363,37 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
 
-		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling;
+		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages;
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
 		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
+
+			//Conditional loading for Stripe.js on billing page.
+			if ( is_page( $pmpro_pages['billing'] ) ) {
+				// Make sure this only loads for recurring membership.
+				if ( ! defined( 'pmprommpu_is_loaded' ) && ! empty( $current_user->membership_level->id ) ) {
+					// get all levels
+					$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+
+					$all_levels_recurring = pmpro_are_levels_recurring( $levels, true );
+
+					// if user's levels not recurring then bail.
+					if ( ! $all_levels_recurring ) {
+						return;
+					}
+				}
+
+				$recurring_level = pmpro_are_levels_recurring( array( $current_user->membership_level->id ) );
+
+				if ( ! $recurring_level ) {
+					return;
+				}	
+			}
+
+
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
-
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 
