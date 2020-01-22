@@ -35,9 +35,10 @@
 		</ul>
 
 		<?php
-			//check instructions
-			if($pmpro_invoice->gateway == "check" && !pmpro_isLevelFree($pmpro_invoice->membership_level))
-				echo wpautop(pmpro_getOption("instructions"));
+			// Check instructions
+			if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+				echo '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
+			}
 		?>
 
 		<hr />
