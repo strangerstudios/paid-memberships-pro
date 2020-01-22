@@ -55,14 +55,16 @@
 				</div> <!-- end pmpro_invoice-billing-address -->
 			<?php } ?>
 
-			<?php if($pmpro_invoice->accountnumber) { ?>
+			<?php if ( ! empty( $pmpro_invoice->accountnumber ) || ! empty( $pmpro_invoice->payment_type ) ) { ?>
 				<div class="pmpro_invoice-payment-method">
 					<strong><?php _e('Payment Method', 'paid-memberships-pro' );?></strong>
-					<p><?php echo ucwords( $pmpro_invoice->cardtype ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?></p>
-					<p><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></p>
+					<?php if($pmpro_invoice->accountnumber) { ?>
+						<p><?php echo ucwords( $pmpro_invoice->cardtype ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo last4($pmpro_invoice->accountnumber)?></p>
+						<p><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $pmpro_invoice->expirationmonth?>/<?php echo $pmpro_invoice->expirationyear?></p>
+					<?php } else { ?>
+						<p><?php echo $pmpro_invoice->payment_type; ?></p>
+					<?php } ?>
 				</div> <!-- end pmpro_invoice-payment-method -->
-			<?php } elseif($pmpro_invoice->payment_type) { ?>
-				<?php echo $pmpro_invoice->payment_type?>
 			<?php } ?>
 
 			<div class="pmpro_invoice-total">
