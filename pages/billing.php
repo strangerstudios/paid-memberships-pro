@@ -22,6 +22,7 @@
 	}
 
 	$levels = $current_user->membership_levels;
+	$has_recurring_levels = pmpro_has_recurring_level();
 	
 	//Make sure the $level object is a valid level definition
 	if(!empty($levels) ) {
@@ -49,7 +50,7 @@
 			do_action('pmpro_billing_bullets_top', $level);?>
 			
 			<?php foreach( $levels as $level ) {
-				if ( !pmpro_isLevelRecurring( $level ) ) {
+				if ( $has_recurring_levels != pmpro_isLevelRecurring( $level ) ) {
 					continue;
 				}
 				?>
@@ -87,7 +88,7 @@
 	}
 ?>
 
-<?php if( pmpro_has_recurring_level() ) { ?>
+<?php if( $has_recurring_levels ) { ?>
 	<?php if($show_paypal_link) { ?>
 
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
