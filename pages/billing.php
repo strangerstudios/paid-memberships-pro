@@ -21,16 +21,16 @@
 		$pmpro_billing_gateway_class = 'pmpro_billing_gateway-' . $gateway;
 	}
 
-	$level = $current_user->membership_level;
+	$levels = $current_user->membership_levels;
 	
 	//Make sure the $level object is a valid level definition
-	if(!empty($level) && !empty($level->id))
-	{
+	if(!empty($levels) ) {
+		$level = $levels[0];
 		$checkout_url = pmpro_url( 'checkout', '?level=' . $level->id );
 		$logout_url = wp_logout_url( $checkout_url );
-	?>
+		?>
 		<p><?php printf(__("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login);?> <small><a href="<?php echo esc_url( $logout_url ); ?>"><?php _e("logout", 'paid-memberships-pro' );?></a></small></p>
-	<?php
+		<?php
 		 /**
 		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
 		 *
@@ -47,40 +47,47 @@
 			 * @param {objects} {$level} {Passes the $level object}
 			 */
 			do_action('pmpro_billing_bullets_top', $level);?>
-			<li><strong><?php _e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo $level->name?></li>
-		<?php if($level->billing_amount > 0) { ?>
-			<li><strong><?php _e("Membership Fee", 'paid-memberships-pro' );?>:</strong>
-				<?php
-					$level = $current_user->membership_level;
-					if($current_user->membership_level->cycle_number > 1) {
-						printf(__('%s every %d %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
-					} elseif($current_user->membership_level->cycle_number == 1) {
-						printf(__('%s per %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
-					} else {
-						echo pmpro_formatPrice($current_user->membership_level->billing_amount);
-					}
+			
+			<?php foreach( $levels as $level ) {
+				if ( !pmpro_isLevelRecurring( $level ) ) {
+					continue;
+				}
 				?>
+				<li><strong><?php _e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo $level->name?></li>
+				<?php if($level->billing_amount > 0) { ?>
+					<li><strong><?php _e("Membership Fee", 'paid-memberships-pro' );?>:</strong>
+						<?php
+							$level = $current_user->membership_level;
+							if($current_user->membership_level->cycle_number > 1) {
+								printf(__('%s every %d %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+							} elseif($current_user->membership_level->cycle_number == 1) {
+								printf(__('%s per %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
+							} else {
+								echo pmpro_formatPrice($current_user->membership_level->billing_amount);
+							}
+						?>
 
-			</li>
-		<?php } ?>
+					</li>
+				<?php } ?>
+			<?php } ?>
 
-		<?php if($level->billing_limit) { ?>
-			<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
-		<?php } ?>
-		<?php
-		 /**
-		 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
-		 *
-		 * @since 1.9.2
-		 * @param {objects} {$level} {Passes the $level object}
-		 */
-		do_action('pmpro_billing_bullets_bottom', $level);?>
+			<?php if($level->billing_limit) { ?>
+				<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
+			<?php } ?>
+			<?php
+			 /**
+			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
+			 *
+			 * @since 1.9.2
+			 * @param {objects} {$level} {Passes the $level object}
+			 */
+			do_action('pmpro_billing_bullets_bottom', $level);?>
 		</ul>
 	<?php
 	}
 ?>
 
-<?php if(pmpro_isLevelRecurring($level)) { ?>
+<?php if( pmpro_has_recurring_level() ) { ?>
 	<?php if($show_paypal_link) { ?>
 
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>

@@ -217,60 +217,35 @@ function pmpro_isLevelRecurring( &$level ) {
 }
 
 /**
- * Check if a user has recurring levels, support Multiple Memberships Per User.
- * @param $level_arr an array of levels.
- * @param $all bool check if all levels are recurring or if any is recurring.
- * @param $force bool force to check or use cached data.
+ * Check if a user has any recurring levels.
+ * Supports Multiple Memberships Per User scenarios.
+ * @param $user_id int	User to check for. Defaults to current user.
  * @since 2.2.6
  */
-function pmpro_are_levels_recurring( $level_arr, $all = false, $force = false ) {
-
-	if ( ! is_array( $level_arr ) ) {
+function pmpro_has_recurring_level( $user_id = null ) {
+	global $current_user;
+	
+	if ( empty( $user_id ) ) {
+		$user_id = $current_user->ID;
+	}
+	
+	if ( empty( $user_id ) ) {
 		return false;
 	}
 
-	if ( ! $force ) {
-		// Build unique string for level array for transient searches.
-		$level_trans = isset( $level_arr[0]->id ) ? $level_arr[0]->id : implode( '_', $level_arr );
-		$r = get_transient( 'pmpro_are_levels_recurring_' . $level_trans );
-	} else {
-		$r = false;
+	$levels = pmpro_getMembershipLevelsForUser( $user_id );	
+	
+	if ( empty( $levels ) ) {
+		return false;
 	}
 	
-	if ( ! $r ) {
-
-		foreach( $level_arr as $level ) {
-
-			// If array is not an object, try to get object from level ID array.
-			if ( ! isset( $level->id ) && empty( $level->id ) ) {
-				$level = pmpro_getLevel( $level );
-			}
-
-			$is_recurring = pmpro_isLevelRecurring( $level );
-
-			// check if ALL levels are recurring.
-			if ( $all && $is_recurring ) {
-				$r = true;
-			} elseif ( $all & ! $is_recurring ) {
-				$r = false;
-				break;
-			}
-
-			// check for any recurring levels, break after first one.
-			if ( $is_recurring ) {
-				$r = true;
-				break;
-			}
-
+	foreach( $levels as $level ) {		
+		if ( pmpro_isLevelRecurring( $level ) ) {
+			return true;
 		}
+	}	
 
-		// Only store transient if not forcing the results.
-		if ( ! $force ) {
-			$r = set_transient( 'pmpro_are_levels_recurring_' . $level_trans, $r, 1 * HOUR_IN_SECONDS );
-		}
-	}
-
-	return $r;
+	return false;
 }
 
 function pmpro_isLevelTrial( &$level ) {

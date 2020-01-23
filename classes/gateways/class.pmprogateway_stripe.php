@@ -368,30 +368,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$default_gateway = pmpro_getOption( "gateway" );
 
 		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
-
-			//Conditional loading for Stripe.js on billing page.
-			if ( is_page( $pmpro_pages['billing'] ) ) {
-				// Make sure this only loads for recurring membership.
-				if ( ! defined( 'pmprommpu_is_loaded' ) && ! empty( $current_user->membership_level->id ) ) {
-					// get all levels
-					$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
-
-					$all_levels_recurring = pmpro_are_levels_recurring( $levels, true );
-
-					// if user's levels not recurring then bail.
-					if ( ! $all_levels_recurring ) {
-						return;
-					}
-				}
-
-				$recurring_level = pmpro_are_levels_recurring( array( $current_user->membership_level->id ) );
-
-				if ( ! $recurring_level ) {
-					return;
-				}	
-			}
-
-
 			//stripe js library
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
