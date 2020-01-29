@@ -3118,7 +3118,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 	}
 
 	// Check version.
-	if ( version_compare( $plugin_data['Version'], $comparison, $version ) ) {
+	if ( version_compare( $plugin_data['Version'], $version, $comparison ) ) {
 		return true;
 	} else {
 		return false;
