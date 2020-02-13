@@ -303,11 +303,11 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
 				<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label for="pmpro-stripe-connect"> <?php esc_attr_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
+                <label> <?php esc_attr_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
             </th>
 						<td>
-							<?php // TODO: Update this link to actually generate buton and use PMPro's client_id. Give links to their server?>
-							<a href="https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=ca_GgaPP4KN4ik8YjEaGaxQTqutCp2Mmjmg&scope=read_write" id="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+							<?php // TODO: Update this link to use PMPro's client_id. Give links to their server?>
+							<a href="https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=ca_GgaPP4KN4ik8YjEaGaxQTqutCp2Mmjmg&scope=read_write" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 						</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
