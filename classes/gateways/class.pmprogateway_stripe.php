@@ -2668,25 +2668,27 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Disconnects user from the Stripe Connected App.
 	 */
 	static function stripe_connect_deauthorize() {
-
-		$get_vars = give_clean( $_GET );
+		// TODO: Test.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
 		// Be sure only to deauthorize when param present.
-		if ( ! isset( $get_vars['stripe_disconnected'] ) ) {
+		if ( ! isset( $_REQUEST['stripe_disconnected'] ) ) {
 			return false;
 		}
 
 		// Show message if NOT disconnected.
 		if (
-			'false' === $get_vars['stripe_disconnected']
-			&& isset( $get_vars['error_code'] )
+			'false' === $_REQUEST['stripe_disconnected']
+			&& isset( $_REQUEST['error_code'] )
 		) {
 
 			$class   = 'notice notice-warning pmpro-stripe-disconnect-message';
 			$message = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s', 'paid-memberships-pro' ),
-				esc_html( $get_vars['error_message'] )
+				esc_html( $_REQUEST['error_message'] )
 			);
 
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
@@ -2704,7 +2706,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return void
 	 */
 	static function stripe_connect_delete_options() {
-
 		// Disconnection successful.
 		// Remove the connect options within the db.
 		delete_option( 'pmpro_stripe_connect_user_id' );
