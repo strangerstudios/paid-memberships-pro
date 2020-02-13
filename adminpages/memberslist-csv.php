@@ -318,7 +318,7 @@
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_period,
-				UNIX_TIMESTAMP(mu.enddate) as enddate,
+				UNIX_TIMESTAMP(max(mu.enddate)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
@@ -326,7 +326,7 @@
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 			{$former_member_join}
 			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter} {$search}
-			-- GROUP BY u.ID
+			GROUP BY u.ID
 			ORDER BY u.ID",
 				$first_uid,
 				$last_uid
