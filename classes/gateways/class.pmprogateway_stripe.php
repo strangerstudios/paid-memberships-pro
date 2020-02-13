@@ -2643,21 +2643,21 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// If we don't have values here, bounce.
 		if (
-			! isset( $_REQUEST['stripe_publishable_key'] )
-			|| ! isset( $_REQUEST['stripe_user_id'] )
-			|| ! isset( $_REQUEST['stripe_access_token'] )
-			|| ! isset( $_REQUEST['stripe_access_token_test'] )
-			|| ! isset( $_REQUEST['stripe_publishable_key_test'] )
+			! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
+			|| ! isset( $_REQUEST['pmpro_stripe_user_id'] )
+			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
+			|| ! isset( $_REQUEST['pmpro_stripe_access_token_test'] )
+			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key_test'] )
 		) {
 			return;
 		}
 
 		// Update keys.
-		pmpro_setOption( 'stripe_connect_user_id', $get_vars['stripe_user_id'] );
-		pmpro_setOption( 'live_stripe_connect_secretkey', $get_vars['stripe_access_token'] );
-		pmpro_setOption( 'test_stripe_connect_secretkey', $get_vars['stripe_access_token_test'] );
-		pmpro_setOption( 'live_stripe_connect_publishablekey', $get_vars['stripe_publishable_key'] );
-		pmpro_setOption( 'test_stripe_connect_publishablekey', $get_vars['stripe_publishable_key_test'] );
+		pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+		pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+		pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
+		pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+		pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
 
 		// Delete option for user API key.
 		delete_option( 'pmpro_stripe_secretkey' );
