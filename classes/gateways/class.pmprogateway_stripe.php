@@ -259,7 +259,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'gateway_environment',
 			'stripe_secretkey',
 			'stripe_publishablekey',
-			'stripe_connect_user_id'
+			'stripe_connect_user_id',
 			'live_stripe_connect_secretkey',
 			'live_stripe_connect_publishablekey',
 			'test_stripe_connect_secretkey',
