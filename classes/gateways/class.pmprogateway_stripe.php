@@ -201,6 +201,10 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
+
+		// Stripe Connect functions.
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 	}
 
 	/**
@@ -255,6 +259,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'gateway_environment',
 			'stripe_secretkey',
 			'stripe_publishablekey',
+			'stripe_connect_user_id'
 			'live_stripe_connect_secretkey',
 			'live_stripe_connect_publishablekey',
 			'test_stripe_connect_secretkey',
@@ -2622,5 +2627,90 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function get_application_fee_amount( $amount ) {
 		return pmpro_license_isValid() ? 0 : $amount * 0.02;
+	}
+
+	/**
+	 * This function is used to save the parameters returned after successfull connection of Stripe account.
+	 *
+	 * @return void
+	 */
+	static function stripe_connect_save_options() {
+		// TODO: Test.
+		// Is user have permission to edit give setting.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// If we don't have values here, bounce.
+		if (
+			! isset( $_REQUEST['stripe_publishable_key'] )
+			|| ! isset( $_REQUEST['stripe_user_id'] )
+			|| ! isset( $_REQUEST['stripe_access_token'] )
+			|| ! isset( $_REQUEST['stripe_access_token_test'] )
+			|| ! isset( $_REQUEST['stripe_publishable_key_test'] )
+		) {
+			return;
+		}
+
+		// Update keys.
+		pmpro_setOption( 'stripe_connect_user_id', $get_vars['stripe_user_id'] );
+		pmpro_setOption( 'live_stripe_connect_secretkey', $get_vars['stripe_access_token'] );
+		pmpro_setOption( 'test_stripe_connect_secretkey', $get_vars['stripe_access_token_test'] );
+		pmpro_setOption( 'live_stripe_connect_publishablekey', $get_vars['stripe_publishable_key'] );
+		pmpro_setOption( 'test_stripe_connect_publishablekey', $get_vars['stripe_publishable_key_test'] );
+
+		// Delete option for user API key.
+		delete_option( 'pmpro_stripe_secretkey' );
+		delete_option( 'pmpro_stripe_publishablekey' );
+	}
+
+	/**
+	 * Disconnects user from the Stripe Connected App.
+	 */
+	static function stripe_connect_deauthorize() {
+
+		$get_vars = give_clean( $_GET );
+
+		// Be sure only to deauthorize when param present.
+		if ( ! isset( $get_vars['stripe_disconnected'] ) ) {
+			return false;
+		}
+
+		// Show message if NOT disconnected.
+		if (
+			'false' === $get_vars['stripe_disconnected']
+			&& isset( $get_vars['error_code'] )
+		) {
+
+			$class   = 'notice notice-warning pmpro-stripe-disconnect-message';
+			$message = sprintf(
+				/* translators: %s Error Message */
+				__( '<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s', 'paid-memberships-pro' ),
+				esc_html( $get_vars['error_message'] )
+			);
+
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+
+		}
+
+		// If user disconnects, remove the options regardless.
+		// They can always click reconnect even if connected.
+		self::stripe_connect_delete_options();
+	}
+
+	/**
+	 * Delete all the PMPro settings options for Stripe Connect.
+	 *
+	 * @return void
+	 */
+	static function stripe_connect_delete_options() {
+
+		// Disconnection successful.
+		// Remove the connect options within the db.
+		delete_option( 'pmpro_stripe_connect_user_id' );
+		delete_option( 'pmpro_live_stripe_connect_secretkey' );
+		delete_option( 'pmpro_test_stripe_connect_secretkey' );
+		delete_option( 'pmpro_live_stripe_connect_publishablekey' );
+		delete_option( 'pmpro_test_stripe_connect_publishablekey' );
 	}
 }
