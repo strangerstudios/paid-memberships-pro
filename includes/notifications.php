@@ -274,7 +274,7 @@ function pmpro_notification_test_plugins_active( $plugins ) {
  * @param array $data Array from notification with plugin_file, comparison, and version to check.
  * @returns bool true if plugin is active and version comparison is true, false otherwise.
  */
-function pmpro_notification_test_plugin_version( $data ) {
+function pmpro_notification_test_check_plugin_version( $data ) {
 	if ( ! is_array( $data ) ) {
 		return false;
 	}

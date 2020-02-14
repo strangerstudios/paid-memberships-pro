@@ -26,8 +26,24 @@
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_authorizenet', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_authorizenet', 'pmpro_payment_option_fields'), 10, 2);
+
+			add_filter('pmpro_checkout_order', array('PMProGateway_authorizenet', 'pmpro_checkout_order'));
+			add_filter('pmpro_billing_order', array('PMProGateway_authorizenet', 'pmpro_checkout_order'));
+
 		}
 
+		static function pmpro_checkout_order( $morder ) {
+
+			if ( isset( $_REQUEST['CVV'] ) ) {
+				$authorizenet_cvv = sanitize_text_field( $_REQUEST['CVV'] );
+			} else {
+				$authorizenet_cvv = '';
+			}
+
+			$morder->CVV2 = $authorizenet_cvv;
+			return $morder;
+		}
+		
 		/**
 		 * Make sure this gateway is in the gateways list
 		 *
@@ -507,8 +523,10 @@
 				// guide at: http://developer.authorize.net
 			);
 
-			if(!empty($order->CVV2))
+
+			if(!empty($order->CVV2) ) {
 				$post_values["x_card_code"] = $order->CVV2;
+			}
 
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
