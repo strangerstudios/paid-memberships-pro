@@ -314,14 +314,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$start = $end - $limit;
 
 		if ( $count ) {
-			$sqlQuery = "SELECT COUNT(*) ";
+			$sqlQuery = "SELECT COUNT( DISTINCT u.ID ) ";
 		} else {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
 				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
 				UNIX_TIMESTAMP(mu.startdate) as startdate,
-				UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership
+				UNIX_TIMESTAMP(max(mu.enddate)) as enddate, m.name as membership
 				";
 		}
 			
