@@ -443,7 +443,7 @@
 		<div id="pmpro_tos_fields" class="pmpro_checkout">
 			<hr />
 			<h3>
-				<span class="pmpro_checkout-h3-name"><?php echo $tospage->post_title?></span>
+				<span class="pmpro_checkout-h3-name"><?php echo esc_html( $tospage->post_title );?></span>
 			</h3>
 			<div class="pmpro_checkout-fields">
 				<div id="pmpro_license" class="pmpro_checkout-field">
