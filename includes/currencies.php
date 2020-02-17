@@ -41,7 +41,7 @@
 			'position' => 'left',
 			),
 		'GHS' => array(
-			'name' => __('Ghanian Cedi (&#8373;)', 'paid-memberships-pro' ),
+			'name' => __('Ghanaian Cedi (&#8373;)', 'paid-memberships-pro' ),
 			'symbol' => '&#8373;',
 			'position' => 'left',
 			),
