@@ -1,40 +1,32 @@
 <?php
-//redirect control
-function pmpro_login_redirect($redirect_to, $request = NULL, $user = NULL)
-{
+/**
+ * Redirect to Membership Account page for user login.
+ *
+ * @since 2.3
+ *
+ */
+function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 	global $wpdb;
 
-	//is a user logging in?
-	if(!empty($user) && !empty($user->ID))
-	{
-		//logging in, let's figure out where to send them
-		if(pmpro_isAdmin($user->ID))
-		{
-			//admins go to dashboard
-			$redirect_to = get_bloginfo("url") . "/wp-admin/";			
-		}
-		elseif(strpos($redirect_to, "checkout") !== false)
-		{
-			//if the redirect url includes the word checkout, leave it alone
-		}
-		elseif($wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1"))
-		{
-			//if logged in and a member, send to wherever they were going			
-		}
-		else
-		{
-			//not a member, send to subscription page
-			$redirect_to = pmpro_url("levels");
+	// Is a user logging in?
+	if ( ! empty( $user ) && ! empty( $user->ID ) ) {
+		// Logging in, let's figure out where to send them.
+		if ( strpos( $redirect_to, "checkout" ) !== false ) {
+			// If the redirect url includes the word checkout, leave it alone.
+		} elseif ( $wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1" ) ) {
+			// If logged in and a member, send to wherever they were going.
+		} else {
+			// Not a member, send to subscription page.
+			$redirect_to = pmpro_url( 'levels' );
 		}
 	}
-	else
-	{
-		//not logging in (login form) so return what was given		
+	else {
+		// Not logging in (login form) so return what was given.
 	}
-	
-	return apply_filters("pmpro_login_redirect_url", $redirect_to, $request, $user);
+
+	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
 }
-add_filter('login_redirect','pmpro_login_redirect', 10, 3);
+add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
 
 //Where is the sign page? Levels page or default multisite page.
 function pmpro_wp_signup_location($location)
@@ -167,3 +159,91 @@ function pmpro_redirect_to_logged_in()
 }
 add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
+
+/**
+ * Redirect to the Membership Account page for member login.
+ *
+ * @since 2.3
+ */
+function pmpro_login_url( $login_url='', $redirect='' ) {
+	$account_page_id = pmpro_getOption( 'account_page_id' );
+    if ( ! empty ( $account_page_id ) ) {
+        $login_url = get_permalink( $account_page_id );
+
+        if ( ! empty( $redirect ) )
+            $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+    }
+    return $login_url;
+}
+add_filter( 'login_url', 'pmpro_login_url', 10, 2 );
+
+/**
+ * Show a member login form or logged in member widget.
+ *
+ * @since 2.3
+ *
+ */
+function pmpro_login_form( ) {
+
+	// Set the message return string.
+	$message = '';
+	if ( ! empty( $_GET['action'] ) ) {
+        if ( 'failed' == $_GET['action'] ) {
+            $message = 'There was a problem with your username or password.';
+        } elseif ( 'loggedout' == $_GET['action'] ) {
+            $message = 'You are now logged out.';
+        } elseif ( 'recovered' == $_GET['action'] ) {
+            $message = 'Check your e-mail for the confirmation link.';
+        }
+    }
+
+    if ( $message ) {
+		echo '<div class="pmpro_message pmpro_alert">'. $message .'</div>';
+    }
+
+    // Show the login form.
+    if ( ! is_user_logged_in( ) ) {
+		wp_login_form( );
+		echo '<p><a href="'. wp_lostpassword_url( add_query_arg('action', 'recovered', get_permalink()) ) .'" title="Recover Lost Password">Lost Password?</a>';
+	}
+}
+
+/**
+ * Authenticate the frontend user login.
+ *
+ * @since 2.3
+ *
+ */
+function pmpro_authenticate_username_password( $user, $username, $password ) {
+	if ( is_a( $user, 'WP_User' ) ) {
+		return $user;
+	}
+
+	if ( empty( $username ) || empty( $password ) ) {
+		$error = new WP_Error();
+		$user  = new WP_Error( 'authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.' ) );
+
+		return $error;
+	}
+}
+add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
+
+/**
+ * Redirect failed login to referrer for frontend user login.
+ *
+ * @since 2.3
+ *
+ */
+function pmpro_login_failed( $username ) {
+	$referrer = wp_get_referer();
+
+	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
+		if ( empty( $_GET['loggedout'] ) ) {
+			wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
+		} else {
+			wp_redirect( add_query_arg('action', 'loggedout', pmpro_login_url()) );
+		}
+		exit;
+	}
+}
+add_action( 'wp_login_failed', 'pmpro_login_failed', 10, 2 );
