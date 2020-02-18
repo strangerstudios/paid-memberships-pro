@@ -175,7 +175,7 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
     }
     return $login_url;
 }
-add_filter( 'login_url', 'pmpro_login_url', 10, 2 );
+add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
 /**
  * Show a member login form or logged in member widget.
@@ -195,19 +195,254 @@ function pmpro_login_form( ) {
         } elseif ( 'recovered' == $_GET['action'] ) {
             $message = 'Check your e-mail for the confirmation link.';
         }
-    }
+	}
+	
+	// Get Errors from password reset.
+	if ( ! empty( $_GET['errors'] ) ) {
+
+		switch ( $_GET['errors'] ) {
+			case 'invalidcombo':
+				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
+				break;
+			case 'empty_username':
+				$message = __( 'Please enter a valid username.', 'paid-memberships-pro' );
+				break;
+			case 'invalid_email':
+				$message = __( "You've entered an invalid email address.", 'paid-memberships-pro' );
+				break;
+		}
+	}
+
+	// Password reset email confirmation.
+	if ( ! empty( $_GET['checkemail'] ) ) {
+		if ( 'confirm' == $_GET['checkemail']) {
+			$message = 'Check your email for a link to reset your password.';
+		}
+	}
+	
+	// Password errors
+	if ( ! empty( $_GET['login'] ) ) {
+		switch ($_GET['login']) {
+			case 'invalidkey':
+				$message = 'Invalid key';
+				break;
+			case 'expiredkey':
+				$message = 'Expired Key';
+				break;
+		}
+	}
+
+	if ( ! empty( $_GET['password'] ) ) {
+		if ( $_GET['password'] == 'changed' ) {
+			$message = 'Your password has successfully been updated.';
+		}
+	}
+
 
     if ( $message ) {
 		echo '<div class="pmpro_message pmpro_alert">'. $message .'</div>';
     }
 
     // Show the login form.
-    if ( ! is_user_logged_in( ) ) {
-		wp_login_form( );
-		echo '<p><a href="'. wp_lostpassword_url( add_query_arg('action', 'recovered', get_permalink()) ) .'" title="Recover Lost Password">Lost Password?</a>';
+    if ( ! is_user_logged_in( ) && $_GET['action'] !== 'reset_pass' ) {
+		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
+			wp_login_form( );
+			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">Lost Password?</a>';
+		} 
 	}
+
+	if ( ! is_user_logged_in() && $_GET['action'] === 'reset_pass' ) {
+		pmpro_lost_password_form();
+	}
+
+	if ( is_user_logged_in() &&  isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
+		_e( 'You are already signed in.', 'paid-memberships-pro' );
+	}
+
+	if ( ! is_user_logged_in() && isset( $_REQUEST['action'] ) == 'rp' ) {
+		pmpro_reset_password_form();
+	}
+
 }
 
+/**
+ * Generate a lost password form for front-end login.
+ * @since 2.3
+ */
+function pmpro_lost_password_form() {
+	?>
+	<h2><?php _e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
+	 <p>
+        <?php
+            _e( "Enter your email address/username and we'll send you a link you can use to pick a new password.",        	'paid-memberships-pro' );
+        ?>
+    </p>
+	 <form id="lostpasswordform" action="<?php echo wp_lostpassword_url(); ?>" method="post">
+        <p class="form-row">
+            <label for="user_login"><?php _e( 'Your email address or username', 'personalize-login' ); ?>
+            <input type="text" name="user_login" id="user_login">
+        </p>
+ 
+        <p class="lostpassword-submit">
+            <input type="submit" name="submit" class="lostpassword-button"
+                   value="<?php _e( 'Reset Password', 'personalize-login' ); ?>"/>
+        </p>
+    </form>
+	<?php
+}
+
+/**
+ * Handle the password reset functionality. Redirect back to login form and show message.
+ * @since 2.3
+ */
+function pmpro_lost_password_redirect() {
+	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+		$account_page = pmpro_getOption( 'account_page_id' );
+		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+
+		$errors = retrieve_password();
+		if ( is_wp_error( $errors ) ) {	
+            $redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => 'reset_pass' ), $redirect_url );
+		} else {
+			$redirect_url = add_query_arg( array( 'checkemail' => 'confirm' ), $redirect_url );
+		}
+
+		wp_redirect( $redirect_url );
+		exit;
+	}
+}
+add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
+
+/**
+ * Handle the reset password too.
+ * @since 2.3
+ */
+function pmpro_reset_password_redirect() {
+	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
+		$account_page = pmpro_getOption( 'account_page_id' );
+		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
+        if ( ! $user || is_wp_error( $user ) ) {
+            if ( $user && $user->get_error_code() === 'expired_key' ) {
+				wp_redirect( add_query_arg( 'login', 'expiredkey', $redirect_url ) );
+            } else {
+                wp_redirect( add_query_arg( 'login', 'invalidkey', $redirect_url ));
+            }
+            exit;
+        }
+ 
+        $redirect_url = add_query_arg( array( 'login' => esc_attr( $_REQUEST['login'] ), 'action' => 'rp' ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'key' => esc_attr( $_REQUEST['key'] ), 'action' => 'rp' ), $redirect_url );
+ 
+        wp_redirect( $redirect_url );
+        exit;
+	}
+}
+add_action( 'login_form_rp', 'pmpro_reset_password_redirect' );
+add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
+
+function pmpro_reset_password_form() {
+	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
+
+		// Error messages
+		$errors = array();
+		if ( isset( $_REQUEST['error'] ) ) {
+			$error_codes = explode( ',', $_REQUEST['error'] );
+		}
+		
+		?>
+		<form name="resetpassform" id="resetpassform" action="<?php echo site_url( 'wp-login.php?action=resetpass' ); ?>" method="post" autocomplete="off">
+       	 	<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( $_REQUEST['login'] ); ?>" autocomplete="off" />
+        	<input type="hidden" name="rp_key" value="<?php echo esc_attr( $_REQUEST['key'] ); ?>" />
+ 
+        <p>
+            <label for="pass1"><?php _e( 'New password', 'personalize-login' ) ?></label>
+            <input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
+        </p>
+        <p>
+            <label for="pass2"><?php _e( 'Repeat new password', 'personalize-login' ) ?></label>
+            <input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
+        </p>
+         
+        <p class="description"><?php echo wp_get_password_hint(); ?></p>
+         
+        <p class="resetpass-submit">
+            <input type="submit" name="submit" id="resetpass-button"
+                   class="button" value="<?php _e( 'Reset Password', 'personalize-login' ); ?>" />
+        </p>
+    </form>
+	<?php
+	}	
+}
+
+/**
+ * 
+ */
+function pmpro_do_password_reset() {
+    if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+        $rp_key = $_REQUEST['rp_key'];
+		$rp_login = $_REQUEST['rp_login'];
+		
+		$account_page = pmpro_getOption( 'account_page_id' );
+		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+		$user = check_password_reset_key( $rp_key, $rp_login );
+ 
+        if ( ! $user || is_wp_error( $user ) ) {
+            if ( $user && $user->get_error_code() === 'expired_key' ) {
+				wp_redirect( add_query_arg( array( 'login' => 'expiredkey', 'action' => 'rp' ), $redirect_url ) );
+            } else {
+                wp_redirect( add_query_arg( array( 'login' => 'invalidkey', 'action' => 'rp' ), $redirect_url ) );
+            }
+            exit;
+        }
+ 
+        if ( isset( $_POST['pass1'] ) ) {
+            if ( $_POST['pass1'] != $_POST['pass2'] ) {
+                // Passwords don't match
+                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
+                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
+                $redirect_url = add_query_arg( 'error', 'password_reset_mismatch', $redirect_url );
+ 
+                wp_redirect( $redirect_url );
+                exit;
+            }
+ 
+            if ( empty( $_POST['pass1'] ) ) {
+                // Password is empty 
+                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
+                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
+                $redirect_url = add_query_arg( 'error', 'password_reset_empty', $redirect_url );
+ 
+                wp_redirect( $redirect_url );
+                exit;
+            }
+ 
+            // Parameter checks OK, reset password
+            reset_password( $user, $_POST['pass1'] );
+            wp_redirect( add_query_arg( 'password', 'changed', $redirect_url ) );
+        } else {
+            _e( 'Invalid Request', 'paid-memberships-pro' );
+        }
+ 
+        exit;
+    }
+}
+add_action( 'login_form_rp', 'pmpro_do_password_reset' );
+add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
+
+
+function replace_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+    // Create new message
+    $msg  = __( 'Hello!', 'personalize-login' ) . "\r\n\r\n";
+    $msg .= sprintf( __( 'You asked us to reset your password for your account using the email address %s.', 'personalize-login' ), $user_login ) . "\r\n\r\n";
+    $msg .= __( "If this was a mistake, or you didn't ask for a password reset, just ignore this email and nothing will happen.", 'personalize-login' ) . "\r\n\r\n";
+    $msg .= __( 'To reset your password, visit the following address:', 'personalize-login' ) . "\r\n\r\n";
+    $msg .= site_url( "membership-account?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n\r\n";
+    $msg .= __( 'Thanks!', 'personalize-login' ) . "\r\n";
+ 
+    return $msg;
+}
+// add_filter( 'retrieve_password_message', 'replace_retrieve_password_message', 10, 4 );
 /**
  * Authenticate the frontend user login.
  *
