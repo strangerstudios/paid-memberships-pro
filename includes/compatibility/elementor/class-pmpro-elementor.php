@@ -23,7 +23,7 @@ class PMPro_Elementor {
 	 */
 	public function __construct() {
         
-        require_once( __DIR__ . '/class-elementor-restriction.php' );
+        require_once( __DIR__ . '/class-pmpro-elementor-content-restriction.php' );
         // Register new section to display restriction controls
         $this->register_sections();
 
