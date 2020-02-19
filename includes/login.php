@@ -241,9 +241,7 @@ function pmpro_login_form( ) {
 				$msgt = 'pmpro_error';
 				break;
 			case 'check':
-				$message = 'Hint: The password should be at least twelve characters long. To make it stronger, use upper and lower case letters, numbers, and symbols like ! " ? $ % ^ & )';
-				$msgt = 'pmpro_alert';
-				break;
+
 			default:
 				$message = __( 'There was an unexpected error, please try again.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
@@ -416,7 +414,7 @@ function pmpro_reset_password_form() {
             <input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
         </p>
          
-        <!-- <p class="description"><?php //echo wp_get_password_hint(); ?></p> -->
+        <p class="description"><?php echo wp_get_password_hint(); ?></p>
          
         <p class="resetpass-submit">
             <input type="submit" name="submit" id="resetpass-button"
