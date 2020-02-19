@@ -175,7 +175,7 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
     }
     return $login_url;
 }
-add_filter( 'login_url', 'pmpro_login_url', 10, 2 );
+add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
 /**
  * Show a member login form or logged in member widget.
