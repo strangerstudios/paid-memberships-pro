@@ -187,67 +187,118 @@ function pmpro_login_form( ) {
 
 	// Set the message return string.
 	$message = '';
+	$msgt = 'pmpro_alert';
 	if ( ! empty( $_GET['action'] ) ) {
-        if ( 'failed' == $_GET['action'] ) {
-            $message = 'There was a problem with your username or password.';
-        } elseif ( 'loggedout' == $_GET['action'] ) {
-            $message = 'You are now logged out.';
-        } elseif ( 'recovered' == $_GET['action'] ) {
-            $message = 'Check your e-mail for the confirmation link.';
-        }
+		switch ( sanitize_text_field( $_GET['action'] ) ) {
+			case 'failed':
+				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'recovered':
+				$message = __( 'Check your e-mail for the confirmation link.', 'paid-memberships-pro' );
+				break;
+		}
 	}
-	
-	// Get Errors from password reset.
-	if ( ! empty( $_GET['errors'] ) ) {
 
-		switch ( $_GET['errors'] ) {
-			case 'invalidcombo':
-				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
+	// Logged Out Errors.
+	if ( ! empty( $_GET['loggedout'] ) ) {
+		switch ( sanitize_text_field( $_GET['loggedout'] ) ) {
+			case 'true':
+				$message = __( 'You are now logged out.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_success';
 				break;
-			case 'empty_username':
-				$message = __( 'Please enter a valid username.', 'paid-memberships-pro' );
-				break;
-			case 'invalid_email':
-				$message = __( "You've entered an invalid email address.", 'paid-memberships-pro' );
+			default:
+				$message = __( 'There was a problem logging you out.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
 				break;
 		}
 	}
 
 	// Password reset email confirmation.
 	if ( ! empty( $_GET['checkemail'] ) ) {
-		if ( 'confirm' == $_GET['checkemail']) {
-			$message = 'Check your email for a link to reset your password.';
+
+		switch ( sanitize_text_field( $_GET['checkemail'] ) ) {
+			case 'confirm':
+				$message = __( 'Check your email for a link to reset your password.', 'paid-memberships-pro' );
+				break;
+			default:
+				$message = __( 'There was an unexpected error regarding your email. Please try again', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
 		}
+
 	}
-	
+
 	// Password errors
 	if ( ! empty( $_GET['login'] ) ) {
-		switch ($_GET['login']) {
+		switch ( sanitize_text_field( $_GET['login'] ) ) {
 			case 'invalidkey':
-				$message = 'Invalid key';
+				$message = __( 'Your reset password key is invalid.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
 				break;
 			case 'expiredkey':
-				$message = 'Expired Key';
+				$message = __( 'Your reset password key is expired, please request a new key from the password reset page.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
 				break;
+			case 'check':
+				$message = 'Hint: The password should be at least twelve characters long. To make it stronger, use upper and lower case letters, numbers, and symbols like ! " ? $ % ^ & )';
+				$msgt = 'pmpro_alert';
+				break;
+			default:
+				$message = __( 'There was an unexpected error, please try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
 		}
 	}
 
 	if ( ! empty( $_GET['password'] ) ) {
-		if ( $_GET['password'] == 'changed' ) {
-			$message = 'Your password has successfully been updated.';
+		switch( sanitize_text_field( $_GET['password'] ) ) {
+			case 'changed':
+				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_success';
+				break;
+			default:
+				$message = __( 'There was a problem updating your password', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
 		}
 	}
 
+	// Get Errors from password reset.
+	if ( ! empty( $_REQUEST['errors'] ) ) {
+		switch ( sanitize_text_field( $_REQUEST['errors'] ) ) {
+			case 'invalidcombo':
+				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'empty_username':
+				$message = __( 'Please enter a valid username.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'invalid_email':
+				$message = __( "You've entered an invalid email address.", 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+		}
+	}
+	
+	if ( ! empty( $_REQUEST['error'] ) ) {
+		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
+			case 'password_reset_mismatch':
+				$message = __( 'Password doesnt match, try again', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+		}
+	}
 
     if ( $message ) {
-		echo '<div class="pmpro_message pmpro_alert">'. $message .'</div>';
+		echo '<div class="pmpro_message ' . esc_attr( $msgt ) . '">'. esc_html( $message ) .'</div>';
     }
 
     // Show the login form.
     if ( ! is_user_logged_in( ) && $_GET['action'] !== 'reset_pass' ) {
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
+			?> <h2><?php _e( 'Login', 'paid-memberships-pro' ); ?></h2> <?php
 			wp_login_form( );
-			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">Lost Password?</a>';
+			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">' . __( 'Lost Password?', 'paid-memberships-pro' ) . '</a>';
 		} 
 	}
 
@@ -259,7 +310,7 @@ function pmpro_login_form( ) {
 		_e( 'You are already signed in.', 'paid-memberships-pro' );
 	}
 
-	if ( ! is_user_logged_in() && isset( $_REQUEST['action'] ) == 'rp' ) {
+	if ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) {
 		pmpro_reset_password_form();
 	}
 
@@ -274,18 +325,18 @@ function pmpro_lost_password_form() {
 	<h2><?php _e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
 	 <p>
         <?php
-            _e( "Enter your email address/username and we'll send you a link you can use to pick a new password.",        	'paid-memberships-pro' );
+            _e( "Enter your email address/username and we'll send you a link you can use to pick a new password.", 'paid-memberships-pro' );
         ?>
     </p>
 	 <form id="lostpasswordform" action="<?php echo wp_lostpassword_url(); ?>" method="post">
         <p class="form-row">
-            <label for="user_login"><?php _e( 'Your email address or username', 'personalize-login' ); ?>
+            <label for="user_login"><?php _e( 'Your email address or username', 'paid-memberships-pro' ); ?>
             <input type="text" name="user_login" id="user_login">
         </p>
  
         <p class="lostpassword-submit">
             <input type="submit" name="submit" class="lostpassword-button"
-                   value="<?php _e( 'Reset Password', 'personalize-login' ); ?>"/>
+                   value="<?php _e( 'Reset Password', 'paid-memberships-pro' ); ?>"/>
         </p>
     </form>
 	<?php
@@ -351,24 +402,25 @@ function pmpro_reset_password_form() {
 		}
 		
 		?>
+		<h2><?php _e( 'Reset Password', 'paid-memberships-pro' ); ?></h2>
 		<form name="resetpassform" id="resetpassform" action="<?php echo site_url( 'wp-login.php?action=resetpass' ); ?>" method="post" autocomplete="off">
        	 	<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( $_REQUEST['login'] ); ?>" autocomplete="off" />
         	<input type="hidden" name="rp_key" value="<?php echo esc_attr( $_REQUEST['key'] ); ?>" />
  
         <p>
-            <label for="pass1"><?php _e( 'New password', 'personalize-login' ) ?></label>
+            <label for="pass1"><?php _e( 'New password', 'paid-memberships-pro' ) ?></label>
             <input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
         </p>
         <p>
-            <label for="pass2"><?php _e( 'Repeat new password', 'personalize-login' ) ?></label>
+            <label for="pass2"><?php _e( 'Repeat new password', 'paid-memberships-pro' ) ?></label>
             <input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
         </p>
          
-        <p class="description"><?php echo wp_get_password_hint(); ?></p>
+        <!-- <p class="description"><?php //echo wp_get_password_hint(); ?></p> -->
          
         <p class="resetpass-submit">
             <input type="submit" name="submit" id="resetpass-button"
-                   class="button" value="<?php _e( 'Reset Password', 'personalize-login' ); ?>" />
+                   class="button" value="<?php _e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
         </p>
     </form>
 	<?php
@@ -430,19 +482,19 @@ function pmpro_do_password_reset() {
 add_action( 'login_form_rp', 'pmpro_do_password_reset' );
 add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
 
-
-function replace_retrieve_password_message( $message, $key, $user_login, $user_data ) {
-    // Create new message
-    $msg  = __( 'Hello!', 'personalize-login' ) . "\r\n\r\n";
-    $msg .= sprintf( __( 'You asked us to reset your password for your account using the email address %s.', 'personalize-login' ), $user_login ) . "\r\n\r\n";
-    $msg .= __( "If this was a mistake, or you didn't ask for a password reset, just ignore this email and nothing will happen.", 'personalize-login' ) . "\r\n\r\n";
-    $msg .= __( 'To reset your password, visit the following address:', 'personalize-login' ) . "\r\n\r\n";
-    $msg .= site_url( "membership-account?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n\r\n";
-    $msg .= __( 'Thanks!', 'personalize-login' ) . "\r\n";
+// function replace_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+//     // Create new message
+//     $msg  = __( 'Hello!', 'paid-memberships-pro' ) . "\r\n\r\n";
+//     $msg .= sprintf( __( 'You asked us to reset your password for your account using the email address %s.', 'paid-memberships-pro' ), $user_login ) . "\r\n\r\n";
+//     $msg .= __( "If this was a mistake, or you didn't ask for a password reset, just ignore this email and nothing will happen.", 'paid-memberships-pro' ) . "\r\n\r\n";
+//     $msg .= __( 'To reset your password, visit the following address:', 'paid-memberships-pro' ) . "\r\n\r\n";
+//     $msg .= site_url( "membership-account?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n\r\n";
+//     $msg .= __( 'Thanks!', 'paid-memberships-pro' ) . "\r\n";
  
-    return $msg;
-}
+//     return $msg;
+// }
 // add_filter( 'retrieve_password_message', 'replace_retrieve_password_message', 10, 4 );
+
 /**
  * Authenticate the frontend user login.
  *
@@ -476,7 +528,7 @@ function pmpro_login_failed( $username ) {
 		if ( empty( $_GET['loggedout'] ) ) {
 			wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
 		} else {
-			wp_redirect( add_query_arg('action', 'loggedout', pmpro_login_url()) );
+			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
 		}
 		exit;
 	}
