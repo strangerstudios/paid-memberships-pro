@@ -448,20 +448,26 @@ function pmpro_do_password_reset() {
  
         if ( isset( $_POST['pass1'] ) ) {
             if ( $_POST['pass1'] != $_POST['pass2'] ) {
-                // Passwords don't match
-                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
-                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
-                $redirect_url = add_query_arg( 'error', 'password_reset_mismatch', $redirect_url );
- 
+				// Passwords don't match
+				$redirect_url = add_query_arg( array(
+					'key' => $rp_key,
+					'login' => $rp_login,
+					'error' => 'password_reset_mismatch',
+					'action' => 'rp'
+				), $redirect_url );
+                
                 wp_redirect( $redirect_url );
                 exit;
             }
  
             if ( empty( $_POST['pass1'] ) ) {
-                // Password is empty 
-                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
-                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
-                $redirect_url = add_query_arg( 'error', 'password_reset_empty', $redirect_url );
+				// Password is empty
+				$redirect_url = add_query_arg( array(
+					'key' => $rp_key,
+					'login' => $rp_login,
+					'error' => 'password_reset_empty',
+					'action' => 'rp'
+				), $redirect_url );
  
                 wp_redirect( $redirect_url );
                 exit;
