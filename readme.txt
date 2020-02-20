@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.3.2
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -128,7 +128,7 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 2.2.6 - 2020-02-19
+= 2.2.6 - 2020-02-20
 * SECURITY: Escaping the post title shown in the Terms of Service section of the checkout page.
 * BUG FIX: Fixed issue where the CVV/Security Code was not being passed to Authorize.net when using that gateway.
 * BUG FIX: Fixed issues with the update billing page when using Stripe.
