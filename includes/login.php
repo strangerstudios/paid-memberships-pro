@@ -226,7 +226,6 @@ function pmpro_login_form( ) {
 				$msgt = 'pmpro_error';
 				break;
 		}
-
 	}
 
 	// Password errors
@@ -240,11 +239,9 @@ function pmpro_login_form( ) {
 				$message = __( 'Your reset password key is expired, please request a new key from the password reset page.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
-			case 'check':
-
 			default:
-				$message = __( 'There was an unexpected error, please try again.', 'paid-memberships-pro' );
-				$msgt = 'pmpro_error';
+			break;
+				
 		}
 	}
 
@@ -281,7 +278,11 @@ function pmpro_login_form( ) {
 	if ( ! empty( $_REQUEST['error'] ) ) {
 		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
 			case 'password_reset_mismatch':
-				$message = __( 'Password doesnt match, try again', 'paid-memberships-pro' );
+				$message = __( 'Password doesnt match, please try again', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'password_reset_empty':
+				$message = __( 'Password field was empty, please try again.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 		}
@@ -296,7 +297,7 @@ function pmpro_login_form( ) {
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 			?> <h2><?php _e( 'Login', 'paid-memberships-pro' ); ?></h2> <?php
 			wp_login_form( );
-			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">' . __( 'Lost Password?', 'paid-memberships-pro' ) . '</a>';
+			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">' . esc_html__( 'Lost Password?', 'paid-memberships-pro' ) . '</a>';
 		} 
 	}
 
@@ -305,7 +306,7 @@ function pmpro_login_form( ) {
 	}
 
 	if ( is_user_logged_in() &&  isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
-		_e( 'You are already signed in.', 'paid-memberships-pro' );
+		esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
 	}
 
 	if ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) {
@@ -320,21 +321,21 @@ function pmpro_login_form( ) {
  */
 function pmpro_lost_password_form() {
 	?>
-	<h2><?php _e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
+	<h2><?php esc_html_e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
 	 <p>
         <?php
-            _e( "Enter your email address/username and we'll send you a link you can use to pick a new password.", 'paid-memberships-pro' );
+            esc_html_e( "Enter your email address/username and we'll send you a link you can use to pick a new password.", 'paid-memberships-pro' );
         ?>
     </p>
 	 <form id="lostpasswordform" action="<?php echo wp_lostpassword_url(); ?>" method="post">
         <p class="form-row">
-            <label for="user_login"><?php _e( 'Your email address or username', 'paid-memberships-pro' ); ?>
+            <label for="user_login"><?php esc_html_e( 'Your email address or username', 'paid-memberships-pro' ); ?>
             <input type="text" name="user_login" id="user_login">
         </p>
  
         <p class="lostpassword-submit">
             <input type="submit" name="submit" class="lostpassword-button"
-                   value="<?php _e( 'Reset Password', 'paid-memberships-pro' ); ?>"/>
+                   value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>"/>
         </p>
     </form>
 	<?php
@@ -351,9 +352,9 @@ function pmpro_lost_password_redirect() {
 
 		$errors = retrieve_password();
 		if ( is_wp_error( $errors ) ) {	
-            $redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => 'reset_pass' ), $redirect_url );
+            $redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
 		} else {
-			$redirect_url = add_query_arg( array( 'checkemail' => 'confirm' ), $redirect_url );
+			$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
 		}
 
 		wp_redirect( $redirect_url );
@@ -363,7 +364,7 @@ function pmpro_lost_password_redirect() {
 add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 
 /**
- * Handle the reset password too.
+ * Redirect Password reset to our own page.
  * @since 2.3
  */
 function pmpro_reset_password_redirect() {
@@ -373,15 +374,15 @@ function pmpro_reset_password_redirect() {
 		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
         if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
-				wp_redirect( add_query_arg( 'login', 'expiredkey', $redirect_url ) );
+				wp_redirect( add_query_arg( 'login', urlencode( 'expiredkey' ), $redirect_url ) );
             } else {
-                wp_redirect( add_query_arg( 'login', 'invalidkey', $redirect_url ));
+                wp_redirect( add_query_arg( 'login', urlencode( 'invalidkey' ), $redirect_url ));
             }
             exit;
         }
  
-        $redirect_url = add_query_arg( array( 'login' => esc_attr( $_REQUEST['login'] ), 'action' => 'rp' ), $redirect_url );
-        $redirect_url = add_query_arg( array( 'key' => esc_attr( $_REQUEST['key'] ), 'action' => 'rp' ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'login' => esc_attr( $_REQUEST['login'] ), 'action' => urlencode( 'rp' ) ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'key' => esc_attr( $_REQUEST['key'] ), 'action' => urlencode( 'rp' ) ), $redirect_url );
  
         wp_redirect( $redirect_url );
         exit;
@@ -390,27 +391,31 @@ function pmpro_reset_password_redirect() {
 add_action( 'login_form_rp', 'pmpro_reset_password_redirect' );
 add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
 
+/**
+ * Show the password reset form after user redirects from email link.
+ * @since 2.3
+ */
 function pmpro_reset_password_form() {
 	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 
 		// Error messages
 		$errors = array();
 		if ( isset( $_REQUEST['error'] ) ) {
-			$error_codes = explode( ',', $_REQUEST['error'] );
+			$error_codes = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
 		}
 		
 		?>
 		<h2><?php _e( 'Reset Password', 'paid-memberships-pro' ); ?></h2>
-		<form name="resetpassform" id="resetpassform" action="<?php echo site_url( 'wp-login.php?action=resetpass' ); ?>" method="post" autocomplete="off">
+		<form name="resetpassform" id="resetpassform" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
        	 	<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( $_REQUEST['login'] ); ?>" autocomplete="off" />
         	<input type="hidden" name="rp_key" value="<?php echo esc_attr( $_REQUEST['key'] ); ?>" />
  
         <p>
-            <label for="pass1"><?php _e( 'New password', 'paid-memberships-pro' ) ?></label>
+            <label for="pass1"><?php esc_html_e( 'New password', 'paid-memberships-pro' ) ?></label>
             <input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
         </p>
         <p>
-            <label for="pass2"><?php _e( 'Repeat new password', 'paid-memberships-pro' ) ?></label>
+            <label for="pass2"><?php esc_html_e( 'Repeat new password', 'paid-memberships-pro' ) ?></label>
             <input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
         </p>
          
@@ -418,7 +423,7 @@ function pmpro_reset_password_form() {
          
         <p class="resetpass-submit">
             <input type="submit" name="submit" id="resetpass-button"
-                   class="button" value="<?php _e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
+                   class="button" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
         </p>
     </form>
 	<?php
@@ -426,12 +431,13 @@ function pmpro_reset_password_form() {
 }
 
 /**
- * 
+ * Function to handle the actualy password reset and update password.
+ * @since 2.3
  */
 function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-        $rp_key = $_REQUEST['rp_key'];
-		$rp_login = $_REQUEST['rp_login'];
+        $rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
+		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
 		
 		$account_page = pmpro_getOption( 'account_page_id' );
 		$redirect_url = $account_page ? get_permalink( $account_page ): '';
@@ -439,9 +445,9 @@ function pmpro_do_password_reset() {
  
         if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
-				wp_redirect( add_query_arg( array( 'login' => 'expiredkey', 'action' => 'rp' ), $redirect_url ) );
+				wp_redirect( add_query_arg( array( 'login' => urlencode( 'expiredkey' ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
             } else {
-                wp_redirect( add_query_arg( array( 'login' => 'invalidkey', 'action' => 'rp' ), $redirect_url ) );
+                wp_redirect( add_query_arg( array( 'login' => urlencode( 'invalidkey' ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
             }
             exit;
         }
@@ -450,10 +456,10 @@ function pmpro_do_password_reset() {
             if ( $_POST['pass1'] != $_POST['pass2'] ) {
 				// Passwords don't match
 				$redirect_url = add_query_arg( array(
-					'key' => $rp_key,
-					'login' => $rp_login,
-					'error' => 'password_reset_mismatch',
-					'action' => 'rp'
+					'key' => urlencode( $rp_key ),
+					'login' => urlencode( $rp_login ),
+					'error' => urlencode( 'password_reset_mismatch' ),
+					'action' => urlencode( 'rp' )
 				), $redirect_url );
                 
                 wp_redirect( $redirect_url );
@@ -463,10 +469,10 @@ function pmpro_do_password_reset() {
             if ( empty( $_POST['pass1'] ) ) {
 				// Password is empty
 				$redirect_url = add_query_arg( array(
-					'key' => $rp_key,
-					'login' => $rp_login,
-					'error' => 'password_reset_empty',
-					'action' => 'rp'
+					'key' => urlencode( $rp_key ),
+					'login' => urlencode( $rp_login ),
+					'error' => urlencode( 'password_reset_empty' ),
+					'action' => urlencode( 'rp' )
 				), $redirect_url );
  
                 wp_redirect( $redirect_url );
@@ -475,9 +481,9 @@ function pmpro_do_password_reset() {
  
             // Parameter checks OK, reset password
             reset_password( $user, $_POST['pass1'] );
-            wp_redirect( add_query_arg( 'password', 'changed', $redirect_url ) );
+            wp_redirect( add_query_arg( urlencode( 'password' ), urlencode( 'changed' ), $redirect_url ) );
         } else {
-            _e( 'Invalid Request', 'paid-memberships-pro' );
+           esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
         }
  
         exit;
@@ -486,18 +492,21 @@ function pmpro_do_password_reset() {
 add_action( 'login_form_rp', 'pmpro_do_password_reset' );
 add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
 
-// function replace_retrieve_password_message( $message, $key, $user_login, $user_data ) {
-//     // Create new message
-//     $msg  = __( 'Hello!', 'paid-memberships-pro' ) . "\r\n\r\n";
-//     $msg .= sprintf( __( 'You asked us to reset your password for your account using the email address %s.', 'paid-memberships-pro' ), $user_login ) . "\r\n\r\n";
-//     $msg .= __( "If this was a mistake, or you didn't ask for a password reset, just ignore this email and nothing will happen.", 'paid-memberships-pro' ) . "\r\n\r\n";
-//     $msg .= __( 'To reset your password, visit the following address:', 'paid-memberships-pro' ) . "\r\n\r\n";
-//     $msg .= site_url( "membership-account?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n\r\n";
-//     $msg .= __( 'Thanks!', 'paid-memberships-pro' ) . "\r\n";
- 
-//     return $msg;
-// }
-// add_filter( 'retrieve_password_message', 'replace_retrieve_password_message', 10, 4 );
+/**
+ * Replace the default URL inside the email with the membership account page login URL instead.
+ * @since 2.3
+ */
+function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
+
+	$account_page_id = pmpro_getOption( 'account_page_id' );
+    if ( ! empty ( $account_page_id ) ) {
+        $login_url = get_permalink( $account_page_id );
+		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
+	}
+
+	return $message;
+}
+add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10, 4 );
 
 /**
  * Authenticate the frontend user login.
