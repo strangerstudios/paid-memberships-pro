@@ -241,8 +241,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 
 							<?php
 							$key = get_option( 'pmpro_license_key', '' );
-							//if ( ! pmpro_license_isValid( $key, NULL ) ) {
-							if ( true ) {
+							if ( ! pmpro_license_isValid( $key, NULL ) ) {
 								?>
 							<hr style="background-color: #EFEFEF;border: 0;height: 4px;margin: 30px 0px 30px 0px;" />
 							<!--Show section below only if there is no license key. -->
