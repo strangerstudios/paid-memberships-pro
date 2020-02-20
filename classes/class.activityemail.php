@@ -142,7 +142,6 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
 							<div style="border: 8px dashed #EFEFEF;padding:30px;margin: 0px 0px 30px 0px;text-align:center;">
 								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
-								<!--Show if any checkouts using codes in past term. Show code and count of checkouts. Limit to top 5 used codes. -->
 								<?php
 								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . $report_start_date . " 00:00:00' AND timestamp <= '" . $report_end_date . " 00:00:00'" );
 								if ( $num_orders_with_discount_code > 0 ) {
@@ -214,17 +213,44 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">Membership Site Administration</h3>
+							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Membership Site Administration', 'paid-memberships-pro' ); ?></h3>
 							<ul>
-								<li>2 Administrators: <a href="#">jasoncoleman</a>, <a href="#">isaaccoleman</a></li><!-- {links to profile}} -->
-								<li>1 Membership Manager: <a href="#">kim</a></li>
+								<?php
+								$roles_to_list = array(
+									'administrator' => __( 'Administrators', 'paid-memberships-pro' ),
+									'pmpro_membership_manager' => __( 'Membership Managers', 'paid-memberships-pro' ),
+								);
+								foreach ( $roles_to_list as $role => $role_name ) {
+									$users_with_role = get_users(
+										array(
+											'role' => $role,
+										)
+									);
+									if ( 0 < count( $users_with_role ) ) {
+										echo( '<li>' . count( $users_with_role ) . ' ' . $role_name . ': ' );
+										$users_with_role_formatted = array();
+										foreach ( $users_with_role as $user_with_role ) {
+											$users_with_role_formatted[] = '<a target="_blank" href="' . admin_url( 'user-edit.php?user_id=' . $user_with_role->ID ) . '">' . $user_with_role->data->user_login . '</a>';
+										}
+										echo( implode( ', ', $users_with_role_formatted ) );
+									}
+								}
+								?>
 							</ul>
-							<p style="margin:0px;padding:0px;">Note: It is important to review users with access to your membership site data since they control settings and can modify member accounts.</p>
+							<p style="margin:0px;padding:0px;"><?php _e( 'Note: It is important to review users with access to your membership site data since they control settings and can modify member accounts.', 'paid-memberships-pro' ); ?></p>
 
+							<?php
+							$key = get_option( 'pmpro_license_key', '' );
+							//if ( ! pmpro_license_isValid( $key, NULL ) ) {
+							if ( true ) {
+								?>
 							<hr style="background-color: #EFEFEF;border: 0;height: 4px;margin: 30px 0px 30px 0px;" />
 							<!--Show section below only if there is no license key. -->
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">License Status: None</h3> 
-							<p style="margin:0px;padding:0px;">...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a style="color:#2997c8;" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=pricing&utm_content=license-section" target="_blank">Check out our paid plans to learn more</a>.</p>
+							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'License Status: None', 'paid-memberships-pro' ); ?></h3> 
+							<p style="margin:0px;padding:0px;"><?php printf( __( '...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>.', 'paid-memberships-pro' ), ' style="color:#2997c8;" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=pricing&utm_content=license-section" target="_blank"' ); ?></p>
+								<?php
+							}
+							?>
 						</td>
 					</tr>
 					<tr>
