@@ -621,7 +621,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url(pmpro_url("billing"))
+								"login_link" => wp_login_url( get_edit_user_link( $user->ID ) )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
