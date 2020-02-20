@@ -82,7 +82,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$revenue = pmpro_formatPrice( pmpro_get_revenue_between_dates( $report_start_date, $report_end_date ) );
 							?>
-							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%s</strong> in revenue %s.', 'paid-memberships-pro' ), $revenue, $term ); ?></p>
+							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), $revenue, $term ); ?></p>
 							<table align="center" border="0" cellpadding="0" cellspacing="5" width="100%" style="border:0;background-color:#FFFFFF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
 								<tr>
 									<?php
@@ -90,9 +90,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$num_expired   = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('expired') AND enddate >= '" . $report_start_date . " 00:00:00' AND enddate <= '" . $report_end_date . " 00:00:00'" );
 									$num_cancelled = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('inactive', 'cancelled', 'admin_cancelled') AND enddate >= '" . $report_start_date . " 00:00:00' AND enddate <= '" . $report_end_date . " 00:00:00'" );
 
-									$num_joined_link    = admin_url() . 'admin.php?page=pmpro-memberslist';
-									$num_expired_link   = admin_url() . 'admin.php?page=pmpro-memberslist&l=expired';
-									$num_cancelled_link = admin_url() . 'admin.php?page=pmpro-memberslist&l=cancelled';
+									$num_joined_link    = admin_url( 'admin.php?page=pmpro-memberslist' );
+									$num_expired_link   = admin_url( 'admin.php?page=pmpro-memberslist&l=expired' );
+									$num_cancelled_link = admin_url( 'admin.php?page=pmpro-memberslist&l=cancelled' );
 									?>
 									<td width="33%" style="border: 8px solid #dff0d8;color:#3c763d;padding:10px;"><a style="color:#3c763d;display:block;text-decoration: none;" href="<?php echo( $num_joined_link ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $num_joined ); ?></div>Joined</a></td>
 									<td width="33%" style="border: 8px solid #fcf8e3;color:#8a6d3b;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration: none;" href="<?php echo( $num_expired_link ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $num_expired ); ?></div>Expired</a></td>
@@ -108,40 +108,34 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							?>
 							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><span style="background: #2997c8;color:#FFFFFF;padding:10px;"><?php echo( $total_members ); ?></span><?php _e( ' Total Members&mdash;great work!', 'paid-memberships-pro' ); ?></h3>
 							<?php
-							/**
-							 * $num_members_to_levels_map is an array with structure
-							 * num_members_in_level => array( level_1, level_2, ... )
-							 */
-							$num_members_to_levels_map = array();
-							foreach ( $pmpro_levels as $level ) {
-								$level_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active') AND membership_id = " . $level->id );
-								if ( empty( $num_members_to_levels_map[ $level_members ] ) ) {
-									$num_members_to_levels_map[ $level_members ] = array();
-								}
-								$num_members_to_levels_map[ $level_members ][] = $level;
-							}
-							// Sort $num_members_to_levels_map by key descending.
-							krsort( $num_members_to_levels_map );
+							$members_per_level_query = "
+								SELECT ml.name, COUNT(mu.id) as num_members
+								FROM $wpdb->pmpro_membership_levels ml
+								LEFT JOIN $wpdb->pmpro_memberships_users mu
+								ON ml.id = mu.membership_id
+								WHERE mu.status = 'active'
+								GROUP BY ml.name
+								ORDER BY num_members DESC
+							";
+							$members_per_level       = $wpdb->get_results( $members_per_level_query );
 
 							$num_levels_to_show = 5;
-							if ( count( $pmpro_levels ) > $num_levels_to_show ) {
+							if ( count( $members_per_level ) > $num_levels_to_show ) {
 								echo( '<p>' . sprintf( __( 'Here is a summary of your top %s most popular levels:</p>', 'paid-memberships-pro' ), $num_levels_to_show ) . '</p>' );
 							}
 							?>
 							<ul>
-								<?php
-								$levels_outputted = 0;
-								foreach ( $num_members_to_levels_map as $num_members => $level_arr ) {
-									foreach ( $level_arr as $level ) {
-										echo( '<li>' . $level->name . ': {' . $num_members . '}</li>' );
-										if ( ++$levels_outputted >= $num_levels_to_show ) {
-											break( 2 );
-										}
-									}
+							<?php
+							$levels_outputted = 0;
+							foreach ( $members_per_level as $members_per_level_element ) {
+								echo( '<li>' . $members_per_level_element->name . ': {' . $members_per_level_element->num_members . '}</li>' );
+								if ( ++$levels_outputted >= $num_levels_to_show ) {
+									break;
 								}
-								?>
+							}
+							?>
 							</ul>
-							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="<?php echo( admin_url() . 'admin.php?page=pmpro-reports&report=memberships' ); ?>" target="_blank"><?php _e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
+							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="<?php echo( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ); ?>" target="_blank"><?php _e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
 						</td>
 					</tr>
 					<tr>
@@ -150,25 +144,72 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<!--Show if any checkouts using codes in past term. Show code and count of checkouts. Limit to top 5 used codes. -->
 								<?php
-								$num_orders_with_discount_code = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_code_uses} WHERE timestamp >= '" . $report_start_date . " 00:00:00' AND timestamp <= '" . $report_end_date . " 00:00:00'" );
+								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . $report_start_date . " 00:00:00' AND timestamp <= '" . $report_end_date . " 00:00:00'" );
+								if ( $num_orders_with_discount_code > 0 ) {
+									$orders_per_discount_code_query = "
+										SELECT dc.code, COUNT(dcu.id) as uses
+										FROM $wpdb->pmpro_discount_codes dc
+										LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu
+										ON dc.id = dcu.code_id
+										WHERE dcu.timestamp >= '" . $report_start_date . " 00:00:00'
+										AND dcu.timestamp <= '" . $report_end_date . " 00:00:00'
+										GROUP BY dc.code
+										ORDER BY uses DESC
+									";
+									$orders_per_discount_code       = $wpdb->get_results( $orders_per_discount_code_query );
+									?>
+									<p style="margin:0px 0px 15px 0px;padding:0;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), $num_orders_with_discount_code, 'style="color:#2997c8;" target="_blank" href="' . admin_url( 'admin.php?page=pmpro-discountcodes' ) . '"' ); ?></p>
+										<?php
+										$codes_left_to_show = 5;
+										foreach ( $orders_per_discount_code as $orders_per_discount_code_element ) {
+											if ( $codes_left_to_show <= 0 || $orders_per_discount_code_element->uses <= 0 ) {
+												break;
+											}
+											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">' . $orders_per_discount_code_element->code . '</span> ' . $orders_per_discount_code_element->uses . ' ' . __('Orders', 'paid-memberships-pro') . '</p>' );
+											$codes_left_to_show--;
+										}
+								} else {
+									?>
+									<p style="margin:0px 0px 15px 0px;padding:0;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . admin_url( 'admin.php?page=pmpro-discountcodes' ) . '"', $term ); ?></p>
+									<?php
+								}
 								?>
-								<p style="margin:0px 0px 15px 0px;padding:0;"><strong>15 orders</strong> used a <a style="color:#2997c8;" href="#">Discount Code</a> at checkout. Here is a breakdown of your most used codes:</p>
-								<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">FREEMEMBERSHIP</span> 6 Orders</p>
-								<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">HALFPRICE</span> 4 Orders</p>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">Active Add Ons</h3>
+							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Active Add Ons', 'paid-memberships-pro' ) ?></h3>
 							<table align="center" border="0" cellpadding="0" cellspacing="15" width="100%" style="border:0;background-color:#EFEFEF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
 								<tr>
-									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;">10</div>Free Add Ons</td>
-									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;">5</div>Plus Add Ons</td>
-									<td width="33%" style="background:#f2dede;padding:10px;"><a style="color:#a94442;display:block;text-decoration: none;" href="#" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;">4</div>Required Updates</a></td>
+									<?php
+									// Get addon statistics
+									$free_addons   = 0;
+									$plus_addons   = 0;
+									$update_addons = 0;
+									$addons = pmpro_getAddons();
+									$plugin_info = get_site_transient( 'update_plugins' );
+									foreach ( $addons as $addon ) {
+										$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
+										$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+										if ( is_plugin_active( $plugin_file ) ) {
+											if ( 'plus' === $addon['License'] ) {
+												$plus_addons++;
+											} else {
+												$free_addons++;
+											}
+										}
+										if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
+											$update_addons++;
+										}
+									}
+									?>
+									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $free_addons ); ?></div><?php _e( 'Free Add Ons', 'paid-memberships-pro' ) ?></td>
+									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $plus_addons ); ?></div><?php _e( 'Plus Add Ons', 'paid-memberships-pro' ) ?></td>
+									<td width="33%" style="background:#f2dede;padding:10px;"><a style="color:#a94442;display:block;text-decoration: none;" href="<?php echo( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $update_addons ); ?></div><?php _e( 'Required Updates', 'paid-memberships-pro' ) ?></a></td>
 								</tr>
 							</table>
-							<p style="margin:0px;padding:0px;">It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="#" target="_blank">via the WordPress Dashboard</a>.</p>
+							<p style="margin:0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), admin_url( 'update-core.php' ) ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -250,4 +291,4 @@ function my_pmpro_send_test_email() {
 		wp_die();
 	}
 }
-add_action('init', 'my_pmpro_send_test_email', 15);
+add_action('admin_init', 'my_pmpro_send_test_email', 15);
