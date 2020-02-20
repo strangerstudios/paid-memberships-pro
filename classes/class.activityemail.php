@@ -20,10 +20,19 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 	 * Send admin an email summarizing membership site activity.
 	 *
 	 */
-	public function sendAdminActivity( ) {
+	public function sendAdminActivity( $frequency = '' ) {
+		global $wpdb, $pmpro_levels;
+
+		if ( ! in_array( $frequency, array( 'day', 'week', 'month', 'never' ) ) ) {
+			$frequency = pmpro_getOption( 'activity_email_frequency' );
+		}
+
+		if ( 'never' === $frequency ) {
+			return;
+		}
 
 		ob_start();
-		
+
 		?>
 		<div style="margin:0;padding:30px;width:100%;background-color:#333333;">
 		<center>
@@ -31,48 +40,118 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 				<tbody>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
-							<h2 style="color:#2997c8;font-size: 30px;margin:0px 0px 20px 0px;padding:0px;">Site Title Here</h2>
-							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;">Here's a summary of what happened in your Paid Memberships Pro site {yesterday, last week}:</p>
+							<h2 style="color:#2997c8;font-size: 30px;margin:0px 0px 20px 0px;padding:0px;"><?php get_bloginfo( 'name' ); ?></h2>
+							<?php
+							$term_list = array(
+								'day'   => __( 'yesterday', 'paid-memberships-pro' ),
+								'week'  => __( 'last week', 'paid-memberships-pro' ),
+								'month' => __( 'last month', 'paid-memberships-pro' ),
+							);
+							$term      = $term_list[ $frequency ];
+							?>
+							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s:", 'paid-memberships-pro' ), $term ); ?></p>
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size: 20px;line-height: 30px;color:#444444;padding: 15px;text-align:center;">
-							<p style="margin:0px;padding:0px;"><strong>2/9/2020 to 2/15/2020</strong></p> <!--Show date range this covers here in their site's date format-->
+							<?php
+							// Get dates that the report covers
+							// Start and end dates in YYYY-MM-DD formats.
+							if ( 'day' === $frequency ) {
+								$report_start_date = date( 'Y-m-d', strtotime( 'yesterday' ) );
+								$report_end_date   = $report_start_date;
+							} elseif ( 'week' === $frequency ) {
+								$report_start_date = date( 'Y-m-d', strtotime( '-7 day' ) );
+								$report_end_date   = date( 'Y-m-d', strtotime( '-1 day' ) );
+							} elseif ( 'month' === $frequency ) {
+								$report_start_date = date( 'Y-m-d', strtotime( 'first day of last month' ) );
+								$report_end_date   = date( 'Y-m-d', strtotime( 'last day of last month' ) );
+							}
+							$date_range = date_i18n( get_option( 'date_format' ), strtotime( $report_start_date ) );
+							if ( $report_start_date !== $report_end_date ) {
+								$date_range .= ' - ' . date_i18n( get_option( 'date_format' ), strtotime( $report_end_date ) );
+							}
+
+							?>
+							<p style="margin:0px;padding:0px;"><strong><?php echo( $date_range ) ?></strong></p> <!--Show date range this covers here in their site's date format-->
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">Sales and Revenue</h3>
-							<p style="margin:0px 0px 15px 0px;padding:0px;">Your membership site made <strong>$5,600</strong> in revenue last week.</p>
+							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
+							<?php
+							$revenue = pmpro_formatPrice( pmpro_get_revenue_between_dates( $report_start_date, $report_end_date ) );
+							?>
+							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%s</strong> in revenue %s.', 'paid-memberships-pro' ), $revenue, $term ); ?></p>
 							<table align="center" border="0" cellpadding="0" cellspacing="5" width="100%" style="border:0;background-color:#FFFFFF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
 								<tr>
-									<td width="33%" style="border: 8px solid #dff0d8;color:#3c763d;padding:10px;"><a style="color:#3c763d;display:block;text-decoration: none;" href="#" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;">10</div>Joined</a></td>
-									<td width="33%" style="border: 8px solid #fcf8e3;color:#8a6d3b;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration: none;" href="#" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;">4</div>Expired</a></td>
-									<td width="33%" style="border: 8px solid #f2dede;color:#a94442;padding:10px;"><a style="color:#a94442;display:block;text-decoration: none;" href="#" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;">6</div>Cancelled</a></td>
+									<?php
+									$num_joined    = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE startdate >= '" . $report_start_date . " 00:00:00' AND startdate <= '" . $report_end_date . " 00:00:00'" );
+									$num_expired   = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('expired') AND enddate >= '" . $report_start_date . " 00:00:00' AND enddate <= '" . $report_end_date . " 00:00:00'" );
+									$num_cancelled = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('inactive', 'cancelled', 'admin_cancelled') AND enddate >= '" . $report_start_date . " 00:00:00' AND enddate <= '" . $report_end_date . " 00:00:00'" );
+
+									$num_joined_link    = admin_url() . 'admin.php?page=pmpro-memberslist';
+									$num_expired_link   = admin_url() . 'admin.php?page=pmpro-memberslist&l=expired';
+									$num_cancelled_link = admin_url() . 'admin.php?page=pmpro-memberslist&l=cancelled';
+									?>
+									<td width="33%" style="border: 8px solid #dff0d8;color:#3c763d;padding:10px;"><a style="color:#3c763d;display:block;text-decoration: none;" href="<?php echo( $num_joined_link ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $num_joined ); ?></div>Joined</a></td>
+									<td width="33%" style="border: 8px solid #fcf8e3;color:#8a6d3b;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration: none;" href="<?php echo( $num_expired_link ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $num_expired ); ?></div>Expired</a></td>
+									<td width="33%" style="border: 8px solid #f2dede;color:#a94442;padding:10px;"><a style="color:#a94442;display:block;text-decoration: none;" href="<?php echo( $num_cancelled_link ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( $num_cancelled ); ?></div>Cancelled</a></td>
 								</tr>
 							</table>
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><span style="background: #2997c8;color:#FFFFFF;padding:10px;">180</span> Total Members&mdash;great work!</h3>
-							<p>Here is a summary of your top 5 most popular levels:</p>
-							<!-- Note: Only show this text above if they have > 5 levels. -->
+							<?php
+							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
+							?>
+							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><span style="background: #2997c8;color:#FFFFFF;padding:10px;"><?php echo( $total_members ); ?></span><?php _e( ' Total Members&mdash;great work!', 'paid-memberships-pro' ); ?></h3>
+							<?php
+							/**
+							 * $num_members_to_levels_map is an array with structure
+							 * num_members_in_level => array( level_1, level_2, ... )
+							 */
+							$num_members_to_levels_map = array();
+							foreach ( $pmpro_levels as $level ) {
+								$level_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active') AND membership_id = " . $level->id );
+								if ( empty( $num_members_to_levels_map[ $level_members ] ) ) {
+									$num_members_to_levels_map[ $level_members ] = array();
+								}
+								$num_members_to_levels_map[ $level_members ][] = $level;
+							}
+							// Sort $num_members_to_levels_map by key descending.
+							krsort( $num_members_to_levels_map );
+
+							$num_levels_to_show = 5;
+							if ( count( $pmpro_levels ) > $num_levels_to_show ) {
+								echo( '<p>' . sprintf( __( 'Here is a summary of your top %s most popular levels:</p>', 'paid-memberships-pro' ), $num_levels_to_show ) . '</p>' );
+							}
+							?>
 							<ul>
-								<li>Free Members: {100}</li>
-								<li>Plus Members: {50}</li>
-								<li>Unlimited Members: {7}</li>
-								<li>VIP Members: {20}</li>
-								<li>MEGA VIP Members: {3}</li>
+								<?php
+								$levels_outputted = 0;
+								foreach ( $num_members_to_levels_map as $num_members => $level_arr ) {
+									foreach ( $level_arr as $level ) {
+										echo( '<li>' . $level->name . ': {' . $num_members . '}</li>' );
+										if ( ++$levels_outputted >= $num_levels_to_show ) {
+											break( 2 );
+										}
+									}
+								}
+								?>
 							</ul>
-							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="#" target="_blank">View Signups and Cancellations Report &raquo;</a></p>
+							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="<?php echo( admin_url() . 'admin.php?page=pmpro-reports&report=memberships' ); ?>" target="_blank"><?php _e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
 							<div style="border: 8px dashed #EFEFEF;padding:30px;margin: 0px 0px 30px 0px;text-align:center;">
-								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">Discount Code Usage</h3>
+								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<!--Show if any checkouts using codes in past term. Show code and count of checkouts. Limit to top 5 used codes. -->
+								<?php
+								$num_orders_with_discount_code = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_code_uses} WHERE timestamp >= '" . $report_start_date . " 00:00:00' AND timestamp <= '" . $report_end_date . " 00:00:00'" );
+								?>
 								<p style="margin:0px 0px 15px 0px;padding:0;"><strong>15 orders</strong> used a <a style="color:#2997c8;" href="#">Discount Code</a> at checkout. Here is a breakdown of your most used codes:</p>
 								<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">FREEMEMBERSHIP</span> 6 Orders</p>
 								<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">HALFPRICE</span> 4 Orders</p>
@@ -149,12 +228,12 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		ob_end_clean();
 
 		$this->email = get_bloginfo( 'admin_email' );
-		$this->subject = sprintf( __( '[%s] Paid Memberships Pro Activity for {term} - {date format}', 'paid-memberships-pro' ), get_bloginfo( 'name' ) );
+		$this->subject = sprintf( __( '[%s] Paid Memberships Pro Activity for %s - %s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body = $admin_activity_email_body;
 		$this->from     = pmpro_getOption( 'from' );
 		$this->fromname = pmpro_getOption( 'from_name' );
-
+		echo $admin_activity_email_body;
 		return $this->sendEmail();
 	}
 
@@ -167,9 +246,8 @@ PMPro_Admin_Activity_Email::get_instance();
 function my_pmpro_send_test_email() {
 	if ( is_admin() && ! empty($_REQUEST[ 'send_test_email' ] ) ) {
 		$pmproemail = new PMPro_Admin_Activity_Email();
-		$pmproemail->sendAdminActivity( );
-		echo 'Test email sent.';
+		$pmproemail->sendAdminActivity();
 		wp_die();
 	}
 }
-add_action('init', 'my_pmpro_send_test_email');
+add_action('init', 'my_pmpro_send_test_email', 15);

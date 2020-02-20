@@ -608,6 +608,26 @@ function pmpro_getRevenue($period, $levels = NULL)
 	return $revenue;
 }
 
+/**
+ * Get revenue between dates.
+ *
+ * @param  string $start_date to track revenue from.
+ * @param  string $end_date to track revenue until. Defaults to current date. YYYY-MM-DD format.
+ * @param  array  $level_ids to include in report. Defaults to all.
+ * @return float  revenue.
+ */
+function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_ids = null ) {
+	global $wpdb;
+	$sql_query = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $start_date ) . "'";
+	if ( ! empty( $end_date ) ) {
+		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . "'";
+	}
+	if ( ! empty( $level_ids ) ) {
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+	}
+	return $wpdb->get_var($sql_query);
+}
+
 //delete transients when an order goes through
 function pmpro_report_sales_delete_transients()
 {

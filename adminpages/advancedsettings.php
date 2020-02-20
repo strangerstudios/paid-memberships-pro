@@ -34,6 +34,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("maxnotificationpriority");
+		pmpro_setOption("activity_email_frequency");
 
 		//captcha
 		pmpro_setOption("recaptcha");
@@ -70,6 +71,7 @@
 	$showexcerpts = pmpro_getOption("showexcerpts");
 	$hideadslevels = pmpro_getOption("hideadslevels");
 	$maxnotificationpriority = pmpro_getOption("maxnotificationpriority");
+	$activity_email_frequency = pmpro_getOption("activity_email_frequency");
 
 	if(is_multisite())
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
@@ -313,6 +315,27 @@ if ( pmpro_displayAds() ) {
 					?>
 					<br />
 					<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="activity_email_frequency"><?php _e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<select name="activity_email_frequency">
+						<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
+							<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
+							<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
+							<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
+							<?php _e( 'Never', 'paid-memberships-pro' ); ?>
+						</option>
+					</select>
 				</td>
 			</tr>
 
