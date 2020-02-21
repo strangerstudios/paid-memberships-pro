@@ -500,8 +500,12 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 
 	$account_page_id = pmpro_getOption( 'account_page_id' );
     if ( ! empty ( $account_page_id ) ) {
-        $login_url = get_permalink( $account_page_id );
-		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
+		$login_url = get_permalink( $account_page_id );
+		
+		// Only replace the URL if there's no redirect_to parameter.
+		if ( strpos( $message, 'redirect_to' ) === false ) {
+			$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
+		}
 	}
 
 	return $message;
