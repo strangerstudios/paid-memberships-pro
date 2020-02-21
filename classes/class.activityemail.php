@@ -259,18 +259,37 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									<td width="60%" style="background-color:#EFEFEF;padding:15px;">
 										<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">Recent Articles</h3>
 										<!-- look to this for example: https://github.com/strangerstudios/paid-memberships-pro/blob/dev/adminpages/dashboard.php#L351-L354; show max 1 time per week? if daily, exclude it? show one? needs discussion -->
-										<p style="margin:0px 0px 15px 0px;padding:0;"><a style="color:#2997c8;" href="#/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=blog&utm_content=recent-articles-section">Join us for a Live Chat and Premiere of our "How to Set Up Register Helper" Video Stream</a> February 13, 2020</p>
-										<p style="margin:0px 0px 15px 0px;padding:0;"><a style="color:#2997c8;" href="#/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=blog&utm_content=recent-articles-section">Troubleshooting Issues with WP-Cron and Other Scheduled Services</a> February 13, 2020</p>
-										<p style="margin:0px 0px 15px 0px;padding:0;"><a style="color:#2997c8;" href="#/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=blog&utm_content=recent-articles-section">Remove Trial Periods for Existing Members</a> February 11, 2020</p>
+										<!-- Sample links had href="#/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=blog&utm_content=recent-articles-section", are these params important? -->
 										<!--Pull in via RSS Feed from specific category on our blog. Last 3? How do we make sure there isn’t the same thing sent twice? Could this be dynamic and we choose to occasionally send something different? -->
+									<?php
+									// Get RSS Feed(s).
+									include_once ABSPATH . WPINC . '/feed.php';
+
+									// Get a SimplePie feed object from the specified feed source.
+									$rss       = fetch_feed( 'https://www.paidmembershipspro.com/feed/' );
+									$max_items = 0;
+									if ( ! is_wp_error( $rss ) ) { // Checks that the object is created correctly
+											// Figure out how many total items there are, but limit it to 3.
+											$max_items = $rss->get_item_quantity( 3 );
+											// Build an array of all the items, starting with element 0 (first element).
+											$rss_items = $rss->get_items( 0, $max_items );
+									}
+									if ( $max_items <= 0 ) {
+										echo( '<p style="margin:0px 0px 15px 0px;padding:0;">' . __( 'No news found.', 'paid-memberships-pro' ) . '</p>' );
+									} else {
+										foreach ( $rss_items as $item ) {
+											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><a style="color:#2997c8;" href=" ' . esc_url( $item->get_permalink() ) . ' " target="_blank">' . esc_html( $item->get_title() ) . '</a> ' . esc_html( $item->get_date( get_option( 'date_format' ) ) ) . '</p>' );
+										}
+									}
+									?>
 									</td>
 									<td width="40%" style="background-color:#EFEFEF;padding:15px;"> 
-										<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;">PMPro Stats</h3>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><strong>80,000</strong> Sites Use PMPro.</p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><strong>8+</strong> Years in Development.</p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://twitter.com/pmproplugin" target="_blank">Follow @pmproplugin on Twitter</a></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank">Like Us on Facebook</p></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv" target="_blank">Subscribe to Our YouTube Channel</a></p>
+										<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'PMPro Stats', 'paid-memberships-pro' ); ?></h3>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '%s Sites Use PMPro', 'paid-memberships-pro' ), '<strong>80,000</strong>' ); ?></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '%s Years in Development', 'paid-memberships-pro' ), '<strong>8+</strong>' ); ?></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://twitter.com/pmproplugin" target="_blank"><?php _e( 'Follow @pmproplugin on Twitter', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php _e( 'Like Us on Facebook', 'paid-memberships-pro' ); ?></p></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv" target="_blank"><?php _e( 'Subscribe to Our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
 										<!-- Show Plus signups count? Rating? -->
 									</td>
 								</tr>
@@ -279,8 +298,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background: #333333;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:30px;color:#FFFFFF;padding: 30px;text-align:center;">
-							<p style="margin:0px 0px 15px 0px;padding:0px;">This email is automatically generated by your WordPress site and sent to your Administration Email Address set under Settings > General in your WordPress dashboard.</p>
-							<p style="margin:0px;padding:0px;">To adjust the frequency of this message or disable these emails completely, you can <a style="color:#FFFFFF;" href="#" target="_blank">update the "Admin Activity Email" setting here</a>.</p> <!-- {link to advanced settings page} -->
+							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'This email is automatically generated by your WordPress site and sent to your Administration Email Address set under Settings > General in your WordPress dashboard.', 'paid-memberships-pro' ); ?></p>
+							<p style="margin:0px;padding:0px;"><?php printf( __( 'To adjust the frequency of this message or disable these emails completely, you can <a %s>update the "Activity Email Frequency" setting here</a>.', 'paid-memberships-pro' ), ' style="color:#FFFFFF;" href="' . admin_url( 'admin.php?page=pmpro-advancedsettings' ) . '" target="_blank"' ); ?></p>
 						</td>
 					</tr>
 				</tbody>
