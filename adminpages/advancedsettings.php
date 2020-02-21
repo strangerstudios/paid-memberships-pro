@@ -104,6 +104,10 @@
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
+	if ( empty( $activity_email_frequency ) ) {
+		$activity_email_frequency = 'week';
+	}
+
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
