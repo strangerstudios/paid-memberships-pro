@@ -261,6 +261,9 @@ function pmpro_cron_trial_ending_warnings()
 add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
 function pmpro_cron_admin_activity_email() {
 	$frequency = pmpro_getOption( 'activity_email_frequency' );
+	if ( empty( $frequency ) ) {
+		$frequency = 'week';
+	}
 	// Send every day, Monday each week, or first Monday of every month.
 	if (
 		'day' === $frequency ||
