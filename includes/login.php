@@ -6,21 +6,19 @@
  *
  */
 function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
-	global $wpdb;
 
 	// Is a user logging in?
 	if ( ! empty( $user ) && ! empty( $user->ID ) ) {
 		// Logging in, let's figure out where to send them.
 		if ( strpos( $redirect_to, "checkout" ) !== false ) {
 			// If the redirect url includes the word checkout, leave it alone.
-		} elseif ( $wpdb->get_var("SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1" ) ) {
+		} elseif ( pmpro_hasMembershipLevel() ) {
 			// If logged in and a member, send to wherever they were going.
 		} else {
 			// Not a member, send to subscription page.
 			$redirect_to = pmpro_url( 'levels' );
 		}
-	}
-	else {
+	} else {
 		// Not logging in (login form) so return what was given.
 	}
 
@@ -29,14 +27,12 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
 
 //Where is the sign page? Levels page or default multisite page.
-function pmpro_wp_signup_location($location)
-{
-	if(is_multisite() && pmpro_getOption("redirecttosubscription"))
-	{
-		return pmpro_url("levels");
-	}
-	else
-		return $location;
+function pmpro_wp_signup_location( $location ) {
+	if ( is_multisite() && pmpro_getOption("redirecttosubscription") ) {
+		$location = pmpro_url("levels");
+	} 
+
+	return apply_filters( 'pmpro_wp_signup_location', $location );
 }
 add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
@@ -173,7 +169,7 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
         if ( ! empty( $redirect ) )
             $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
     }
-    return $login_url;
+    return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
