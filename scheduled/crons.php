@@ -257,3 +257,17 @@ function pmpro_cron_trial_ending_warnings()
 		update_user_meta($e->user_id, "pmpro_trial_ending_notice", $today);
 	}
 }
+
+add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
+function pmpro_cron_admin_activity_email() {
+	$frequency = pmpro_getOption( 'activity_email_frequency' );
+	// Send every day, Monday each week, or first Monday of every month.
+	if (
+		'day' === $frequency ||
+		( 'week' === $frequency && 'Mon' === date( 'D' ) ) ||
+		( 'month' === $frequency && 'Mon' === date( 'D' ) && 7 >= date( j ) )
+	) {
+		$pmproemail = new PMPro_Admin_Activity_Email();
+		$pmproemail->sendAdminActivity();
+	}
+}

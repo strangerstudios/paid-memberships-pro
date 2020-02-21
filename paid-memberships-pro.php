@@ -193,6 +193,8 @@ function pmpro_activation() {
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'daily', 'pmpro_cron_expire_memberships' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'daily', 'pmpro_cron_expiration_warnings' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
+	// TODO: Fix timezone error on line below.
+	pmpro_maybe_schedule_event( strtotime( '10:30:00' ), 'daily', 'pmpro_cron_admin_activity_email' );
 
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 
