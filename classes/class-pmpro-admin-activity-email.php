@@ -82,11 +82,15 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
 							<?php
-							$revenue = pmpro_formatPrice( pmpro_get_revenue_between_dates( $report_start_date, $report_end_date ) );
-							?>
-							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), esc_html( $revenue ), esc_html( $term ) ); ?></p>
+							$revenue = pmpro_get_revenue_between_dates( $report_start_date, $report_end_date );
+							if ( $revenue > 0 ) {
+								?>
+								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
+								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), esc_html( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); ?></p>
+							<?php } else { ?>
+								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
+							<?php } ?>
 							<table align="center" border="0" cellpadding="0" cellspacing="5" width="100%" style="border:0;background-color:#FFFFFF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
 								<tr>
 									<?php
@@ -192,11 +196,13 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$free_addons   = 0;
 									$plus_addons   = 0;
 									$update_addons = 0;
+									require_once( PMPRO_DIR . '/includes/addons.php' );
 									$addons        = pmpro_getAddons();
 									$plugin_info   = get_site_transient( 'update_plugins' );
 									foreach ( $addons as $addon ) {
 										$plugin_file     = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 										$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+										include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); // To load is_plugin_active().
 										if ( is_plugin_active( $plugin_file ) ) {
 											if ( 'plus' === $addon['License'] ) {
 												$plus_addons++;
@@ -330,15 +336,3 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 
 }
 PMPro_Admin_Activity_Email::get_instance();
-
-/**
- * Sends test PMPro email when "send_test_email" param is passed in URL.
- */
-function my_pmpro_send_test_email() {
-	if ( is_admin() && ! empty( $_REQUEST['send_test_email'] ) ) {
-		$pmproemail = new PMPro_Admin_Activity_Email();
-		$pmproemail->sendAdminActivity();
-		wp_die();
-	}
-}
-add_action( 'admin_init', 'my_pmpro_send_test_email', 15 );
