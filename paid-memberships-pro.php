@@ -59,6 +59,7 @@ require_once( PMPRO_DIR . '/includes/services.php' );               // services 
 require_once( PMPRO_DIR . '/includes/metaboxes.php' );              // metaboxes for dashboard
 require_once( PMPRO_DIR . '/includes/profile.php' );                // edit user/profile fields
 require_once( PMPRO_DIR . '/includes/https.php' );                  // code related to HTTPS/SSL
+require_once( PMPRO_DIR . '/includes/menus.php' );          		// custom menu functions for PMPro
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
@@ -75,10 +76,12 @@ require_once( PMPRO_DIR . '/includes/pointers.php' );
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
+require_once( PMPRO_DIR . '/includes/widgets.php' );          		// widgets for PMPro
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content
 require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_account] shortcode to show account information
+require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );      // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 
 // load gateway

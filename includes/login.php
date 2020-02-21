@@ -179,7 +179,7 @@ add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
  * @since 2.3
  *
  */
-function pmpro_login_form( ) {
+function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true  ) {
 
 	// Set the message return string.
 	$message = '';
@@ -301,8 +301,12 @@ function pmpro_login_form( ) {
 		pmpro_lost_password_form();
 	}
 
-	if ( is_user_logged_in() &&  isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
-		esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
+	if ( is_user_logged_in() ) {
+		if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
+			esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
+		} elseif ( ! empty( $display_if_logged_in ) ) {
+			pmpro_logged_in_welcome( $show_menu, $show_logout_link );
+		}
 	}
 
 	if ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) {
@@ -543,3 +547,58 @@ function pmpro_login_failed( $username ) {
 	}
 }
 add_action( 'wp_login_failed', 'pmpro_login_failed', 10, 2 );
+
+/**
+ * Show welcome content for a "Logged In" member with Display Name, Log Out link and a "PMPro Member" menu area.
+ *
+ * @since 2.3
+ *
+ */
+function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) {
+	if ( is_user_logged_in( ) ) {
+		// Set the location the user's display_name will link to based on level status.
+		global $current_user, $pmpro_pages;
+		if ( ! empty( $pmpro_pages ) && pmpro_hasMembershipLevel() ) {
+			$account_page      = get_post( $pmpro_pages['account'] );
+			$user_account_link = '<a href="' . esc_url( pmpro_url( 'account' ) ) . '">' . esc_html( preg_replace( '/\@.*/', '', $current_user->display_name ) ) . '</a>';
+		} else {
+			$user_account_link = '<a href="' . esc_url( admin_url( 'profile.php' ) ) . '">' . esc_html( preg_replace( '/\@.*/', '', $current_user->display_name ) ) . '</a>';
+		}
+		?>
+		<h3 class="pmpro_member_display_name">
+			<?php
+				/* translators: a generated link to the user's account or profile page */
+				printf( esc_html__( 'Welcome, %s', 'paid-memberships-pro' ), $user_account_link );
+			?>
+		</h3>
+
+		<?php
+		/**
+		 * Show the "Member Form" menu to users with an active membership level.
+		 * The menu can be customized per-level using the Nav Menus Add On for Paid Memberships Pro.
+		 *
+		 */
+		if ( ! empty ( $show_menu ) && pmpro_hasMembershipLevel() ) {
+			$pmpro_member_menu_defaults = array(
+				'theme_location'  => 'pmpro-member',
+				'container'       => 'nav',
+				'container_id'    => 'pmpro-member-navigation',
+				'container_class' => 'pmpro-member-navigation',
+				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+			);
+			wp_nav_menu( $member_menu_defaults );
+		}
+		?>
+
+		<?php
+		/**
+		 * Optionally show a Log Out link.
+		 * User will be redirected to the Membership Account page if no other redirect intercepts the process.
+		 *
+		 */
+		if ( ! empty ( $show_logout_link ) ) { ?>
+			<div class="pmpro_member_log_out"><a href="<?php echo wp_logout_url(); ?>"><?php echo esc_html__( 'Log Out', 'paid-memberships-pro' ); ?></a></div>
+		<?php
+		}
+	}
+}
