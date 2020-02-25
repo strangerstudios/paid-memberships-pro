@@ -39,6 +39,7 @@ if (!empty($_REQUEST['savesettings'])) {
     pmpro_setOption("confirmation_page_id", NULL, 'intval');
     pmpro_setOption("invoice_page_id", NULL, 'intval');
     pmpro_setOption("levels_page_id", NULL, 'intval');
+    pmpro_setOption("member_profile_edit_page_id", NULL, 'intval');
 
     //update the pages array
     $pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -48,6 +49,7 @@ if (!empty($_REQUEST['savesettings'])) {
     $pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
     $pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
     $pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+    $pmpro_pages['member_profile_edit'] = pmpro_getOption( 'member_profile_edit_page_id' );
 
     //save additional pages
     if (!empty($extra_pages)) {
@@ -83,6 +85,7 @@ if (!empty($_REQUEST['createpages'])) {
         $pages['confirmation'] = __('Membership Confirmation', 'paid-memberships-pro' );
         $pages['invoice'] = __('Membership Invoice', 'paid-memberships-pro' );
         $pages['levels'] = __('Membership Levels', 'paid-memberships-pro' );
+		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
 
     } else {
         //generate extra pages one at a time
@@ -116,7 +119,8 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			$pmpro_pages['checkout'] ||
 			$pmpro_pages['confirmation'] ||
 			$pmpro_pages['invoice'] ||
-			$pmpro_pages['levels'] ) {
+			$pmpro_pages['levels'] ||
+			$pmpro_pages['member_profile_edit'] ) {
 			$pmpro_some_pages_ready = true;
 		} else {
 			$pmpro_some_pages_ready = false;
@@ -275,6 +279,42 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 					} ?>
                 </td>
             </tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="member_profile_edit_page_id"><?php esc_attr_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+					<?php 
+						wp_dropdown_pages(
+							array(
+								'name' => 'member_profile_edit_page_id',
+								'show_option_none' => '-- ' . __('Choose One', 'paid-memberships-pro') . ' --',
+								'selected' => $pmpro_pages['member_profile_edit'], 'post_types' => $post_types
+							)
+						);
+					?>
+			        
+					<?php if ( ! empty( $pmpro_pages['member_profile_edit'] ) ) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['member_profile_edit'] ?>&action=edit"
+			               class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
+			            &nbsp;
+			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['member_profile_edit']); ?>"
+			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
+			        <?php } ?>
+					<p class="description"><?php _e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_member_profile_edit].</p>
+
+					<?php if ( ! class_exists( 'PMProRH_Field' ) ) {
+						$allowed_member_profile_edit_html = array (
+							'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+					echo '<br /><p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-register-helper' ) . '</p>';
+					} ?>
+			    </td>
+			</tr>
             </tbody>
         </table>
 
