@@ -164,10 +164,13 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 function pmpro_login_url( $login_url='', $redirect='' ) {
 	$account_page_id = pmpro_getOption( 'account_page_id' );
     if ( ! empty ( $account_page_id ) ) {
-        $login_url = get_permalink( $account_page_id );
+        $pmpro_login_url = get_permalink( $account_page_id );
 
-        if ( ! empty( $redirect ) )
+        if ( ! empty( $redirect ) ) {
             $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+		} else {
+			$login_url = $pmpro_login_url;
+		}
     }
     return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
