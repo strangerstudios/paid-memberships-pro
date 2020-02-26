@@ -306,14 +306,24 @@ class PMProGateway_stripe extends PMProGateway {
 				<h2><?php _e( 'Stripe Settings', 'paid-memberships-pro' ); ?></h2>
             </td>
         </tr>
-				<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label> <?php esc_attr_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
             </th>
-						<td>
-							<?php // TODO: Update this link to use PMPro's client_id. Give links to their server?>
-							<a href="https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=ca_GgaPP4KN4ik8YjEaGaxQTqutCp2Mmjmg&scope=read_write" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
-						</td>
+			<td>
+				<?php
+					$connect_url_base = 'https://dashboard.stripe.com/oauth/authorize';
+					$connect_client_id = apply_filters( 'pmpro_stripe_connect_client_id', 'ca_GiqGRrbKQgyPtBFPfjcTQ2RLEdE4u6F6' );
+					$connect_response_type = 'code';
+					$connect_scope = 'read_write';
+					$connect_url = add_query_arg( array(
+						'response_type' => $connect_response_type,
+						'client_id' => $connect_client_id,
+						'scope' => $connect_scope,
+					), $connect_url_base );
+				?>
+				<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+			</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
