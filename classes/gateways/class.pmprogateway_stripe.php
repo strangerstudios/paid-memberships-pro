@@ -11,6 +11,7 @@ use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
 
 define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
+define( "PMPRO_STRIPE_CONNECT_ID", "ca_GiqGRrbKQgyPtBFPfjcTQ2RLEdE4u6F6" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );
@@ -313,7 +314,7 @@ class PMProGateway_stripe extends PMProGateway {
 			<td>
 				<?php
 					$connect_url_base = 'https://dashboard.stripe.com/oauth/authorize';
-					$connect_client_id = apply_filters( 'pmpro_stripe_connect_client_id', 'ca_GiqGRrbKQgyPtBFPfjcTQ2RLEdE4u6F6' );
+					$connect_client_id = apply_filters( 'pmpro_stripe_connect_client_id', PMPRO_STRIPE_CONNECT_ID );
 					$connect_response_type = 'code';
 					$connect_scope = 'read_write';
 					$connect_url = add_query_arg( array(
