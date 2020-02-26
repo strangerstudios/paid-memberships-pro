@@ -1755,7 +1755,16 @@ function pmpro_implodeToEnglish( $array, $conjunction = 'and' ) {
 		$conjunction = __( 'and', 'paid-memberships-pro' );
 	}
 
-	return implode( ', ', $array ) . ' ' . $conjunction . ' ' . $last;
+	// List the elements in a comma-separated list.
+	$start = implode( ', ', $array );
+
+	// Add the Oxford comma if needed.
+	if ( count( $array ) > 1 ) {
+		$start .= ',';
+	}
+
+	// Output the elements.
+	return $start . ' ' . $conjunction . ' ' . $last;
 }
 
 // from yoast wordpress seo

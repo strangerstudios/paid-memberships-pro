@@ -40,6 +40,11 @@
 			'symbol' => 'DKK&nbsp;',
 			'position' => 'left',
 			),
+		'GHS' => array(
+			'name' => __('Ghanaian Cedi (&#8373;)', 'paid-memberships-pro' ),
+			'symbol' => '&#8373;',
+			'position' => 'left',
+			),
 		'HKD' => __('Hong Kong Dollar (&#36;)', 'paid-memberships-pro' ),
 		'HUF' => __('Hungarian Forint', 'paid-memberships-pro' ),
 		'INR' => __('Indian Rupee', 'paid-memberships-pro' ),
@@ -48,7 +53,7 @@
 		'JPY' => array(
 			'name' => __('Japanese Yen (&yen;)', 'paid-memberships-pro' ),
 			'symbol' => '&yen;',
-			'position' => 'right',
+			'position' => 'left',
 			'decimals' => 0,
 			),
 		'KES' => __('Kenyan Shilling', 'paid-memberships-pro' ),

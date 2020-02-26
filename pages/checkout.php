@@ -111,7 +111,7 @@
 		<hr />
 		<h3>
 			<span class="pmpro_checkout-h3-name"><?php _e('Account Information', 'paid-memberships-pro' );?></span>
-			<span class="pmpro_checkout-h3-msg"><?php _e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo wp_login_url( pmpro_url("checkout", "?level=" . $pmpro_level->id . $discount_code_link) ); ?>"><?php _e('Log in here', 'paid-memberships-pro' );?></a></span>
+			<span class="pmpro_checkout-h3-msg"><?php _e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?level=" . $pmpro_level->id . $discount_code_link) ) ); ?>"><?php _e('Log in here', 'paid-memberships-pro' );?></a></span>
 		</h3>
 		<div class="pmpro_checkout-fields">
 			<div class="pmpro_checkout-field pmpro_checkout-field-username">
@@ -443,7 +443,7 @@
 		<div id="pmpro_tos_fields" class="pmpro_checkout">
 			<hr />
 			<h3>
-				<span class="pmpro_checkout-h3-name"><?php echo $tospage->post_title?></span>
+				<span class="pmpro_checkout-h3-name"><?php echo esc_html( $tospage->post_title );?></span>
 			</h3>
 			<div class="pmpro_checkout-fields">
 				<div id="pmpro_license" class="pmpro_checkout-field">
