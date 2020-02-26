@@ -12,7 +12,7 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 		// Logging in, let's figure out where to send them.
 		if ( strpos( $redirect_to, "checkout" ) !== false ) {
 			// If the redirect url includes the word checkout, leave it alone.
-		} elseif ( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1"  ) {
+		} elseif ( $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1" ) ) {
 			// If logged in and a member, send to wherever they were going.
 		} else {
 			// Not a member, send to subscription page.
