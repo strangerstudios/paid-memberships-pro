@@ -161,7 +161,7 @@ form.pmpro_form .pmpro_captcha div {
 	clear: none;
 	margin: 0;
 }
-form.pmpro_form .pmpro_submit{
+form.pmpro_form .pmpro_submit {
 	margin-top: 1em;
 	text-align: right;
 }
@@ -171,6 +171,11 @@ form.pmpro_form #pmpro_processing_message {
 	font-style: italic;
 	margin: 1em 0 0 0;
 	text-align: right;
+}
+
+/* Member Profile Edit Frontend Form */
+form.pmpro_form .pmpro_member_profile_edit-fields div {
+	margin: 0 0 1em 0;
 }
 
 /*--------------------------------------------------

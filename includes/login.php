@@ -6,13 +6,13 @@
  *
  */
 function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
-
+	global $wpdb;
 	// Is a user logging in?
 	if ( ! empty( $user ) && ! empty( $user->ID ) ) {
 		// Logging in, let's figure out where to send them.
 		if ( strpos( $redirect_to, "checkout" ) !== false ) {
 			// If the redirect url includes the word checkout, leave it alone.
-		} elseif ( pmpro_hasMembershipLevel() ) {
+		} elseif ( $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user->ID . "' LIMIT 1" ) ) {
 			// If logged in and a member, send to wherever they were going.
 		} else {
 			// Not a member, send to subscription page.
@@ -164,10 +164,13 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 function pmpro_login_url( $login_url='', $redirect='' ) {
 	$account_page_id = pmpro_getOption( 'account_page_id' );
     if ( ! empty ( $account_page_id ) ) {
-        $login_url = get_permalink( $account_page_id );
+        $pmpro_login_url = get_permalink( $account_page_id );
 
-        if ( ! empty( $redirect ) )
+        if ( ! empty( $redirect ) ) {
             $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+		} else {
+			$login_url = $pmpro_login_url;
+		}
     }
     return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }

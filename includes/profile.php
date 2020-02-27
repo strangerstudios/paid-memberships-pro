@@ -394,3 +394,202 @@ add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'personal_options_update', 'pmpro_membership_level_profile_fields_update' );
 add_action( 'edit_user_profile_update', 'pmpro_membership_level_profile_fields_update' );
+
+/**
+ * Sanitizes the passed value.
+ *
+ * @param array|int|null|string|stdClass $value The value to sanitize
+ *
+ * @return array|int|string|object     Sanitized value
+ */
+function pmpro_sanitize( $value ) {
+
+	if ( is_array( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value[ $key ] = pmprorh_sanitize( $val );
+		}
+	}
+
+	if ( is_object( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value->{$key} = pmprorh_sanitize( $val );
+		}
+	}
+
+	if ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
+	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
+	) {
+
+		$value = sanitize_text_field( $value );
+	}
+
+	return $value;
+}
+
+/**
+ * Display a frontend Member Profile Edit form and allow user to edit specific fields.
+ *
+ * @since 2.3
+ */
+function pmpro_member_profile_edit_form() { 
+	global $current_user;
+
+	do_action( 'pmpro_personal_options_update', $current_user->ID );
+
+	// Saving profile updates.
+	if ( $_REQUEST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
+		$update           = true;
+		$user     		  = new stdClass;
+		$user->ID         = $_POST[ 'user_id' ];
+	} else {
+		$update = false;
+	}
+
+	if ( $update ) {
+
+		$errors = array();
+
+		// Get all values from the $_POST, sanitize them, and build the $user object.
+		if ( isset( $_POST['email'] ) ) {
+			$user->user_email = sanitize_text_field( wp_unslash( $_POST['email'] ) );
+		}
+		if ( isset( $_POST['first_name'] ) ) {
+			$user->first_name = sanitize_text_field( $_POST['first_name'] );
+		}
+		if ( isset( $_POST['last_name'] ) ) {
+			$user->last_name = sanitize_text_field( $_POST['last_name'] );
+		}
+		if ( isset( $_POST['nickname'] ) ) {
+			$user->nickname = sanitize_text_field( $_POST['nickname'] );
+		}
+		if ( isset( $_POST['display_name'] ) ) {
+			$user->display_name = sanitize_text_field( $_POST['display_name'] );
+		}
+
+		// Validate nickname.
+		if ( empty( $user->nickname ) ) {
+			$errors[] = __( '<strong>Error</strong>: Please enter a nickname.', 'paid-memberships-pro' );
+		}
+
+		// Validate email address.
+		if ( empty( $user->user_email ) ) {
+			$errors[] = __( '<strong>Error</strong>: Please enter an email address.', 'paid-memberships-pro' );
+		} elseif ( ! is_email( $user->user_email ) ) {
+			$errors[] = __( '<strong>Error</strong>: The email address isn&#8217;t correct.', 'paid-memberships-pro' );
+		} else {
+			$owner_id = email_exists( $user->user_email );
+			if ( $owner_id && ( ! $update || ( $owner_id != $user->ID ) ) ) {
+				$errors[] = __( '<strong>Error</strong>: This email is already registered, please choose another one.', 'paid-memberships-pro' );
+			}
+		}
+
+		// Show error messages.
+		if ( ! empty( $errors ) ) { ?>
+			<div class="pmpro_message pmpro_error">
+				<?php
+					foreach ( $errors as $key => $value ) {
+						echo '<p>' . $value . '</p>';
+					}
+				?>
+			</div>
+		<?php } else {
+			// Save updated profile fields.
+			wp_update_user( $user );
+			?>
+			<div class="pmpro_message pmpro_success">
+				<?php _e( '<strong>Success</strong>: Your profile has been updated.', 'paid-memberships-pro' ); ?>
+			</div>
+		<?php }
+	}
+	?>
+	<div class="pmpro_member_profile_edit_wrap">
+		<form id="member-profile-edit" class="pmpro_form" action="" method="post">
+
+			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
+
+			<div class="pmpro_member_profile_edit-fields">
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-username">
+					<label for="user_login"><?php _e( 'Username', 'paid-memberships-pro' ); ?></label></th>
+					<input type="text" name="user_login" id="user_login" value="<?php echo esc_attr( $current_user->user_login ); ?>" disabled="disabled" class="input <?php echo pmpro_getClassForField( 'username' );?>" />
+					<p><small class="lite"><?php _e( 'Usernames cannot be changed.', 'paid-memberships-pro' ); ?></small></p>
+				</div> <!-- end pmpro_member_profile_edit-field-username -->
+
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name">
+					<label for="first_name"><?php _e( 'First Name', 'paid-memberships-pro' ); ?></label>
+					<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $current_user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
+				</div> <!-- end pmpro_member_profile_edit-field-first_name -->
+
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-last_name">
+					<label for="last_name"><?php _e( 'Last Name', 'paid-memberships-pro' ); ?></label>
+					<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $current_user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
+				</div> <!-- end pmpro_member_profile_edit-field-last_name -->
+
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-nickname">
+					<label for="nickname"><?php _e( 'Nickname', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
+					<input type="text" name="nickname" id="nickname" value="<?php echo esc_attr( $current_user->nickname ); ?>" class="input <?php echo pmpro_getClassForField( 'nickname' );?>" />
+				</div> <!-- end pmpro_member_profile_edit-field-nickname -->
+
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name">
+					<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?></label>
+					<select name="display_name" id="display_name" class="<?php echo pmpro_getClassForField( 'display_name' );?>">
+					<?php
+						$public_display                     = array();
+						$public_display['display_nickname'] = $current_user->nickname;
+						$public_display['display_username'] = $current_user->user_login;
+
+						if ( ! empty( $current_user->first_name ) ) {
+							$public_display['display_firstname'] = $current_user->first_name;
+						}
+
+						if ( ! empty( $current_user->last_name ) ) {
+							$public_display['display_lastname'] = $current_user->last_name;
+						}
+
+						if ( ! empty( $current_user->first_name ) && ! empty( $current_user->last_name ) ) {
+							$public_display['display_firstlast'] = $current_user->first_name . ' ' . $current_user->last_name;
+							$public_display['display_lastfirst'] = $current_user->last_name . ' ' . $current_user->first_name;
+						}
+
+						if ( ! in_array( $current_user->display_name, $public_display ) ) { // Only add this if it isn't duplicated elsewhere.
+							$public_display = array( 'display_displayname' => $current_user->display_name ) + $public_display;
+						}
+
+						$public_display = array_map( 'trim', $public_display );
+						$public_display = array_unique( $public_display );
+
+						foreach ( $public_display as $id => $item ) { ?>
+							<option <?php selected( $current_user->display_name, $item ); ?>><?php echo $item; ?></option>
+						<?php
+						}
+					?>
+					</select>	
+				</div> <!-- end pmpro_member_profile_edit-field-display_name -->
+
+				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
+					<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
+					<input type="email" name="email" id="email" aria-describedby="email-description" value="<?php echo esc_attr( $current_user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
+				</div>
+			</div> <!-- end pmpro_member_profile_edit-fields -->
+
+			<?php
+				/**
+				 * Fires after the default Your Member Profile fields.
+				 *
+				 * @since 2.3
+				 *
+				 * @param WP_User $current_user The current WP_User object.
+				 */
+				do_action( 'pmpro_show_user_profile', $current_user );
+			?>
+			<input type="hidden" name="action" value="update-profile" />
+			<div class="pmpro_submit">
+				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update Profile', 'paid-memberships-pro' );?>" />
+			</div>
+		</form>
+	</div> <!-- end pmpro_member_profile_edit_wrap -->
+	<?php
+}
