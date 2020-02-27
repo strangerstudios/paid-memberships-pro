@@ -119,6 +119,22 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
+			case 'invalid_username':
+				$message = __( 'Unknown username. Check again or try your email address.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'empty_username':
+				$message = __( 'Empty username. Please enter your username and try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'empty_password':
+				$message = __( 'Empty password. Please enter your password and try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'incorrect_password':
+				$message = __( 'The password you entered for the user is incorrect. Please try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
 			case 'recovered':
 				$message = __( 'Check your e-mail for the confirmation link.', 'paid-memberships-pro' );
 				break;
@@ -448,27 +464,18 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 		return $user;
 	}
 
-	if ( empty( $username ) || empty( $password ) ) {
+	// check what page the login attempt is coming from
+	$referrer = wp_get_referer();
 
-		// check what page the login attempt is coming from
-		$referrer = $_SERVER['HTTP_REFERER'];
+	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
 
-
-		$error  = new WP_Error( 'authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.' ) );
-
-
-		if ( !empty( $referrer ) && !strstr( $referrer,'wp-login' ) && $error ) {
-
-			// make sure we don't already have a failed login attempt
-			if ( ! strstr( $referrer, '?login=failed') ) {
-				wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
+		$error = $user->get_error_code();
+	
+		if ( $error ) {
+				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
 			} else {
 				wp_redirect( pmpro_login_url() );
 			}
-
-			exit;
-		}
-		
 	}
 
 	return $user;
