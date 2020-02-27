@@ -450,10 +450,28 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 
 	if ( empty( $username ) || empty( $password ) ) {
 		$error = new WP_Error();
-		$user  = new WP_Error( 'authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.' ) );
 
-		return $error;
+		// check what page the login attempt is coming from
+		$referrer = $_SERVER['HTTP_REFERER'];
+
+
+		$error  = new WP_Error( 'authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.' ) );
+
+
+		if ( !empty( $referrer ) && !strstr( $referrer,'wp-login' ) && $error ) {
+
+			// make sure we don't already have a failed login attempt
+			if ( ! strstr( $referrer, '?login=failed') ) {
+				wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
+				wp_redirect( pmpro_login_url() );
+			}
+
+			exit;
+		}
+		
 	}
+
+	return $user;
 }
 add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
 
@@ -464,10 +482,11 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  *
  */
 function pmpro_login_failed( $username ) {
+
 	$referrer = wp_get_referer();
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
-		if ( empty( $_GET['loggedout'] ) ) {
+		if ( ! strstr( $referrer, '?login=failed') ) {
 			wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
