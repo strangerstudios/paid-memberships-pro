@@ -449,7 +449,6 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 	}
 
 	if ( empty( $username ) || empty( $password ) ) {
-		$error = new WP_Error();
 
 		// check what page the login attempt is coming from
 		$referrer = $_SERVER['HTTP_REFERER'];
@@ -463,6 +462,7 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 			// make sure we don't already have a failed login attempt
 			if ( ! strstr( $referrer, '?login=failed') ) {
 				wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
+			} else {
 				wp_redirect( pmpro_login_url() );
 			}
 
