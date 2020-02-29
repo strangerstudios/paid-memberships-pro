@@ -6,19 +6,14 @@
  *
  */
 function pmpro_shortcode_member_profile_edit( $atts, $content=null, $code='' ) {
-	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
 	// $code    ::= the shortcode found, when == callback name
 	// examples: [pmpro_member_profile_edit]
 
-	extract( shortcode_atts( array(
-		'attr' => false,
-	), $atts ) );
-
 	ob_start();
 
 	// Display the Member Profile Edit form.
-	pmpro_member_profile_edit_form( );
+	pmpro_member_profile_edit_form();
 
 	$content = ob_get_contents();
 	ob_end_clean();
