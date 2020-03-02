@@ -143,14 +143,23 @@ class PMPro_Discount_Code{
     function save() {
         global $wpdb;
         
-        $okay = false;
+        $sql_okay = false;
 
-        if ( empty( $this->code ) ) {
+        // See if code exists;
+        if ( $this->code ) {
+            // see if row exists.
+            $results = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
+
+            if ( $results ) {
+                $this->id = $results;
+            }
+        } else {
             $this->code = pmpro_getDiscountCode();
         }
 
-        // id, code, start, expires, uses
-        if ( empty( $this->id ) ) {
+  
+        // If the code doesn't exist, create it otherwise update it.
+        if ( ! $this->id ) {
 
             $before_action = 'pmpro_add_discount_code';
             $after_action = 'pmpro_added_discount_code';
@@ -161,6 +170,18 @@ class PMPro_Discount_Code{
                                        '" . $this->expires ."',
                                        " . intval( $this->uses ) ."
                                )";                      
+        } else {
+            
+            $before_action = 'pmpro_update_discount_code';
+            $after_action = 'pmpro_updated_discount_code';
+
+            $this->sqlQuery = "UPDATE $wpdb->pmpro_discount_codes
+                                SET  `code` = '" . $this->code ."',
+                                    `starts` = '" . $this->starts . "',
+                                    `expires` = '" . $this->expires . "',
+                                    `uses` = " . intval( $this->uses ) . "
+                                WHERE code = '" . $this->code . "'
+                                LIMIT 1";
         }
 
         // Make sure query ran okay.
@@ -168,58 +189,78 @@ class PMPro_Discount_Code{
         if ( $wpdb->query( $this->sqlQuery ) !== false ) {
             if ( empty ( $this->id ) ) {
                 $this->id = $wpdb->insert_id;
-            }
-
-            $code_id = $this->id;
-
-            if ( is_array( $this->levels ) ) {
-            
-                foreach( $this->levels as $key => $data ) {
-                    $level_id = intval($key);
-                    $initial_payment = $data['initial_payment'];
-                    $billing_amount = $data['billing_amount'];
-                    $cycle_number = $data['cycle_number'];
-                    $cycle_period = $data['cycle_period'];
-                    $billing_limit = $data['billing_limit'];
-                    $trial_amount = $data['trial_amount'];
-                    $trial_limit = $data['trial_limit'];
-                    $expiration_number = $data['expiration_number'];
-                    $expiration_period = $data['expiration_period'];
-
-                    $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels 
-                                ( `code_id`, `level_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `expiration_number`, `expiration_period`) 
-                                VALUES ( " . intval( $code_id ) . ",
-                                        " . intval( $level_id ) . ",
-                                        " . floatval( $initial_payment ) . ",
-                                        " . floatval( $billing_amount ) . ",
-                                        " . intval( $cycle_number ) . ",
-                                        '" . $cycle_period . "',
-                                        " . intval($billing_limit) . ",
-                                        " . floatval( $trial_amount ) . ",
-                                        " . intval( $trial_limit ) . ",
-                                        " . intval( $expiration_number ) . ",
-                                        '" . $expiration_period . "'
-                                )";
-                    
-                    // Run the query here.
-                    if ( $wpdb->query( $this->sqlQuery ) !== false ) {
-                        $okay = true;
-                    }
-                }
-
-                do_action( $after_action, $this );  
-
-                if ( $okay == true ) {
-                    return $this->get_discount_code_by_id( $this->id );
-                } else {
-                    return false;
-                }
-
-               
-            }
-
+            } 
         }
-     
-    }
+
+        if ( isset( $this->levels ) && is_array( $this->levels ) ) {
+        
+            foreach ( $this->levels as $key => $data ) {
+                $level_id = intval( $key );
+                $initial_payment = $data['initial_payment'];
+                $billing_amount = $data['billing_amount'];
+                $cycle_number = $data['cycle_number'];
+                $cycle_period = $data['cycle_period'];
+                $billing_limit = $data['billing_limit'];
+                $trial_amount = $data['trial_amount'];
+                $trial_limit = $data['trial_limit'];
+                $expiration_number = $data['expiration_number'];
+                $expiration_period = $data['expiration_period'];
+
+                // if ( ! $exists ) {
+                    $this->sqlQuery = "REPLACE INTO $wpdb->pmpro_discount_codes_levels 
+                    ( `code_id`, `level_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `expiration_number`, `expiration_period`) 
+                    VALUES ( " . intval( $this->id ) . ",
+                            " . intval( $level_id ) . ",
+                            " . floatval( $initial_payment ) . ",
+                            " . floatval( $billing_amount ) . ",
+                            " . intval( $cycle_number ) . ",
+                            '" . $cycle_period . "',
+                            " . intval($billing_limit) . ",
+                            " . floatval( $trial_amount ) . ",
+                            " . intval( $trial_limit ) . ",
+                            " . intval( $expiration_number ) . ",
+                            '" . $expiration_period . "'
+                    )";
+                // } else {
+                    
+                //     if ( empty( $this->id ) ) {
+                //         $this->id = $wpdb->get_var( "SELECT id from $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "'" );
+                //     } 
+                
+                //     $this->sqlQuery = "UPDATE $wpdb->pmpro_discount_codes_levels
+                //                         SET `code_id` = " . intval( $this->id ) . ",
+                //                             `level_id` = " . intval( $level_id ) . ",
+                //                             `initial_payment` = " . floatval( $initial_payment ) . ",
+                //                             `billing_amount` = " . floatval( $billing_amount ) . ",
+                //                             `cycle_number` = " . intval( $cycle_number ) . ",
+                //                             `cycle_period` = '" . $cycle_period . "',
+                //                             `billing_limit` = " . intval( $billing_limit ) . ",
+                //                             `trial_amount` = " . floatval( $trial_amount ) . "',
+                //                             `trial_limit` = " . intval( $trial_limit ) . ",
+                //                             `expiration_number` = " . intval( $expiration_number ) . ",
+                //                             `expiration_period` = '" . $expiration_period . "'
+                //                         WHERE code_id = " . intval( $this->id ) . "
+                //                         LIMIT 1";
+
+                // }
+                
+                
+                // Run the query here.
+                if ( $wpdb->query( $this->sqlQuery ) !== false ) {
+                    $sql_okay = true;
+                }
+            }
+
+            do_action( $after_action, $this );  
+
+            }  
+            
+            // Return values once updated/inserted.
+            if ( $sql_okay == true ) {
+                return $this->get_discount_code_by_id( $this->id );
+            } else {
+                return false;
+            }
+        }
 
 } // end of class.
