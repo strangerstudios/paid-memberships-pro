@@ -207,8 +207,9 @@ class PMPro_Discount_Code{
             } 
         }
 
+        // Insert discount code level/billing data if it's set in the discount code object.
         if ( isset( $this->levels ) && is_array( $this->levels ) ) {
-            
+
            // Nuke the levels table and rebuild it.
            $wpdb->delete( $wpdb->pmpro_discount_codes_levels, array( 'code_id' => $this->id ), array( '%d' ) );
 
@@ -244,17 +245,17 @@ class PMPro_Discount_Code{
                     $sql_okay = true;
                 }
             }
-
-            do_action( $after_action, $this );  
-
-            }  
+        }  
+        
+        do_action( $after_action, $this ); 
             
-            // Return values once updated/inserted.
-            if ( $sql_okay == true ) {
-                return $this->get_discount_code_by_id( $this->id );
-            } else {
-                return false;
-            }
+        // Return values once updated/inserted.
+        if ( $sql_okay == true ) {
+            return $this->get_discount_code_by_id( $this->id );
+        } else {
+            return false;
         }
+
+    }
 
 } // end of class.
