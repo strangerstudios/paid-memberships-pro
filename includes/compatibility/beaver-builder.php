@@ -1,5 +1,5 @@
 <?php 
-/**
+/** 
  * Beaver Builder Compatibility
  */
 function pmpro_beaver_builder_compatibility() {
