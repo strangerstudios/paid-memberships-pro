@@ -11,8 +11,9 @@ class PMPro_Discount_Code{
             } else {
                 return $this->get_discount_code_by_code( $code );
             }
+
         } else {
-            return $this->get_discount_code_object_template();
+            return $this->get_empty_discount_code();
         }
     }
 
@@ -20,29 +21,28 @@ class PMPro_Discount_Code{
      * Get an empty (but complete) discount code object.
      * @since 2.3
      */
-    function get_discount_code_object_template( $code = NULL ) {
+    function get_empty_discount_code() {
 
         $discount_code = new stdClass();
         $discount_code->id = '';
-        $discount_code->code = empty( $code ) ? pmpro_getDiscountCode() : sanitize_text_field( $code );
-        $discount_code->starts = '';
-        $discount_code->expires = '';
+        $discount_code->code = pmpro_getDiscountCode();
+        $discount_code->starts = date( 'Y-m-d' );
+        $discount_code->expires = date( 'Y-m-d', time() + 86400 );
         $discount_code->uses = '';
         $discount_code->levels = array(
-                    // 1 => array(
-                        // 'initial_payment' => '',
-                        // 'billing_amount' => '',
-                        // 'cycle_number' => '',
-                        // 'cycle_period' => 'Month',
-                        // 'billing_limit' => '',
-                        // 'custom_trial' => 0,
-                        // 'trial_amount' => '',
-                        // 'trial_limit' => '',
-                        // 'expiration_number' => '',
-                        // 'expiration_period' => ''
-                    // )
+        // 1 => array(
+            // 'initial_payment' => '',
+            // 'billing_amount' => '',
+            // 'cycle_number' => '',
+            // 'cycle_period' => 'Month',
+            // 'billing_limit' => '',
+            // 'custom_trial' => 0,
+            // 'trial_amount' => '',
+            // 'trial_limit' => '',
+            // 'expiration_number' => '',
+            // 'expiration_period' => ''
+        // )
         );
-
         return $discount_code;
     }
 
@@ -161,7 +161,18 @@ class PMPro_Discount_Code{
             $this->code = pmpro_getDiscountCode();
         }
 
-  
+        if ( ! isset( $this->starts ) ) {
+            $this->starts = date( 'Y-m-d' );
+        }
+
+        if ( ! isset( $this->expires ) ) {
+            $this->expires = date( 'Y-m-d', time() + 86400 );
+        }
+
+        if ( ! isset( $this->uses ) ) {
+            $this->uses = 0;
+        }
+
         // If the code doesn't exist, create it otherwise update it.
         if ( ! $this->id ) {
 
