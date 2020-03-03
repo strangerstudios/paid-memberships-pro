@@ -148,30 +148,47 @@ class PMPro_Discount_Code{
         global $wpdb;
         
         $sql_okay = false;
-
         // See if code exists;
-        if ( $this->code ) {
+        if ( isset( $this->code ) ) {
             // see if row exists.
-            $results = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
+            $results = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
 
             if ( $results ) {
-                $this->id = $results;
+
+                if ( ! isset( $this->id ) ) {
+                    $this->id = $results->id;
+                }
+
+                if ( ! isset( $this->starts ) ) {
+                    $this->starts = $results->starts;
+                }
+        
+                if ( ! isset( $this->expires ) ) {
+                    $this->expires = $results->expires;
+                }
+        
+                if ( ! isset( $this->uses ) ) {
+                    $this->uses = $results->uses;
+                }                
+                
             }
+
         } else {
+
             $this->code = pmpro_getDiscountCode();
-        }
 
-        if ( ! isset( $this->starts ) ) {
-            $this->starts = date( 'Y-m-d' );
-        }
+            if ( ! isset( $this->starts ) ) {
+                $this->starts = date( 'Y-m-d' );
+            }
 
-        if ( ! isset( $this->expires ) ) {
-            $this->expires = date( 'Y-m-d', time() + 86400 );
-        }
+            if ( ! isset( $this->expires ) ) {
+                $this->expires = date( 'Y-m-d', time() + 86400 );
+            }
 
-        if ( ! isset( $this->uses ) ) {
-            $this->uses = 0;
-        }
+            if ( ! isset( $this->uses ) ) {
+                $this->uses = 0;
+            }
+        }      
 
         // If the code doesn't exist, create it otherwise update it.
         if ( ! $this->id ) {
