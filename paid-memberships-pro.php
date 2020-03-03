@@ -44,7 +44,7 @@ require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
-require_once( PMPRO_DIR . '/classes/class.activityemail.php' );        // setup the admin activity email
+require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
@@ -193,6 +193,7 @@ function pmpro_activation() {
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'daily', 'pmpro_cron_expire_memberships' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'daily', 'pmpro_cron_expiration_warnings' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
+	pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 

@@ -301,8 +301,8 @@ function pmpro_report_memberships_page()
 		else
 			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','admin_cancelled') ";
 
-		$sqlQuery .= "AND mu1.startdate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.startdate < '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
+		AND mu1.enddate < '" . esc_sql( $enddate ) . "' ";
 
 		//restrict by level
 		if ( ! empty( $l ) ) {
