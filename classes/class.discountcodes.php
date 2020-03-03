@@ -5,7 +5,12 @@ class PMPro_Discount_Code{
     function __construct( $code = NULL ) {
 
         if ( $code ) {
-            /// Get the discount code object here ...
+            
+            if ( is_numeric( $code ) ) {
+                return $this->get_discount_code_by_id( $code );
+            } else {
+                return $this->get_discount_code_by_code( $code );
+            }
         } else {
             return $this->get_discount_code_object_template();
         }
@@ -24,18 +29,18 @@ class PMPro_Discount_Code{
         $discount_code->expires = '';
         $discount_code->uses = '';
         $discount_code->levels = array(
-            1 => array(
-                'initial_payment' => '',
-                'billing_amount' => '',
-				'cycle_number' => '',
-				'cycle_period' => 'Month',
-				'billing_limit' => '',
-				'custom_trial' => 0,
-				'trial_amount' => '',
-                'trial_limit' => '',
-                'expiration_number' => '',
-                'expiration_period' => ''
-            )
+                    // 1 => array(
+                        // 'initial_payment' => '',
+                        // 'billing_amount' => '',
+                        // 'cycle_number' => '',
+                        // 'cycle_period' => 'Month',
+                        // 'billing_limit' => '',
+                        // 'custom_trial' => 0,
+                        // 'trial_amount' => '',
+                        // 'trial_limit' => '',
+                        // 'expiration_number' => '',
+                        // 'expiration_period' => ''
+                    // )
         );
 
         return $discount_code;
@@ -94,35 +99,34 @@ class PMPro_Discount_Code{
 
         // Get discount code object and levels linked to the code object..
         $dcobj = $this->get_discount_code_object( $code );
-        $levels = $this->get_discount_code_billing( $code );
+        $levels = $this->get_discount_code_billing( $code );        
 
-        // Get the object template and map data to the object.
-        $discount_code = $this->get_discount_code_object_template( $code );
+        if ( ! empty( $dcobj ) ) {
+            // Setup the discount code object.
+            $this->id = $dcobj->id;
+            $this->starts = $dcobj->starts;
+            $this->expires = $dcobj->expires;
+            $this->uses = $dcobj->uses;
+            
+            foreach( $levels as $level ) {
+                $this->levels[$level->level_id] = array(
+                    'initial_payment' => $level->initial_payment,
+                    'billing_amount' => $level->billing_amount,
+                    'cycle_number' => $level->cycle_number,
+                    'cycle_period' => $level->cycle_period,
+                    'billing_limit' => $level->billing_limit,
+                    'custom_trial' => ! isset( $level->custom_trial ) ? 0 : $level->custom_trial,
+                    'trial_amount' => $level->trial_amount,
+                    'trial_limit' => $level->trial_limit,
+                    'expiration_number' => $level->expiration_number,
+                    'expiration_period' => $level->expiration_period
+                );
+            }
 
-        // Setup the discount code object.
-        $discount_code->id = $dcobj->id;
-        $discount_code->starts = $dcobj->starts;
-        $discount_code->expires = $dcobj->expires;
-        $discount_code->uses = $dcobj->uses;
-        
-        unset( $discount_code->levels[1]); //remove the default levels from template.
-
-        foreach( $levels as $level ) {
-            $discount_code->levels[$level->level_id] = array(
-                'initial_payment' => $level->initial_payment,
-                'billing_amount' => $level->billing_amount,
-				'cycle_number' => $level->cycle_number,
-				'cycle_period' => $level->cycle_period,
-				'billing_limit' => $level->billing_limit,
-				'custom_trial' => ! isset( $level->custom_trial ) ? 0 : $level->custom_trial,
-				'trial_amount' => $level->trial_amount,
-                'trial_limit' => $level->trial_limit,
-                'expiration_number' => $level->expiration_number,
-                'expiration_period' => $level->expiration_period
-            );
+            return $this;
+        } else {
+            return false;
         }
-
-        return $discount_code;
     }
 
     /**
@@ -193,7 +197,10 @@ class PMPro_Discount_Code{
         }
 
         if ( isset( $this->levels ) && is_array( $this->levels ) ) {
-        
+            
+           // Nuke the levels table and rebuild it.
+           $wpdb->delete( $wpdb->pmpro_discount_codes_levels, array( 'code_id' => $this->id ), array( '%d' ) );
+
             foreach ( $this->levels as $key => $data ) {
                 $level_id = intval( $key );
                 $initial_payment = $data['initial_payment'];
@@ -206,44 +213,20 @@ class PMPro_Discount_Code{
                 $expiration_number = $data['expiration_number'];
                 $expiration_period = $data['expiration_period'];
 
-                // if ( ! $exists ) {
-                    $this->sqlQuery = "REPLACE INTO $wpdb->pmpro_discount_codes_levels 
-                    ( `code_id`, `level_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `expiration_number`, `expiration_period`) 
-                    VALUES ( " . intval( $this->id ) . ",
-                            " . intval( $level_id ) . ",
-                            " . floatval( $initial_payment ) . ",
-                            " . floatval( $billing_amount ) . ",
-                            " . intval( $cycle_number ) . ",
-                            '" . $cycle_period . "',
-                            " . intval($billing_limit) . ",
-                            " . floatval( $trial_amount ) . ",
-                            " . intval( $trial_limit ) . ",
-                            " . intval( $expiration_number ) . ",
-                            '" . $expiration_period . "'
-                    )";
-                // } else {
-                    
-                //     if ( empty( $this->id ) ) {
-                //         $this->id = $wpdb->get_var( "SELECT id from $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "'" );
-                //     } 
-                
-                //     $this->sqlQuery = "UPDATE $wpdb->pmpro_discount_codes_levels
-                //                         SET `code_id` = " . intval( $this->id ) . ",
-                //                             `level_id` = " . intval( $level_id ) . ",
-                //                             `initial_payment` = " . floatval( $initial_payment ) . ",
-                //                             `billing_amount` = " . floatval( $billing_amount ) . ",
-                //                             `cycle_number` = " . intval( $cycle_number ) . ",
-                //                             `cycle_period` = '" . $cycle_period . "',
-                //                             `billing_limit` = " . intval( $billing_limit ) . ",
-                //                             `trial_amount` = " . floatval( $trial_amount ) . "',
-                //                             `trial_limit` = " . intval( $trial_limit ) . ",
-                //                             `expiration_number` = " . intval( $expiration_number ) . ",
-                //                             `expiration_period` = '" . $expiration_period . "'
-                //                         WHERE code_id = " . intval( $this->id ) . "
-                //                         LIMIT 1";
-
-                // }
-                
+                $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes_levels 
+                ( `code_id`, `level_id`, `initial_payment`, `billing_amount`, `cycle_number`, `cycle_period`, `billing_limit`, `trial_amount`, `trial_limit`, `expiration_number`, `expiration_period`) 
+                VALUES ( " . intval( $this->id ) . ",
+                        " . intval( $level_id ) . ",
+                        " . floatval( $initial_payment ) . ",
+                        " . floatval( $billing_amount ) . ",
+                        " . intval( $cycle_number ) . ",
+                        '" . $cycle_period . "',
+                        " . intval( $billing_limit ) . ",
+                        " . floatval( $trial_amount ) . ",
+                        " . intval( $trial_limit ) . ",
+                        " . intval( $expiration_number ) . ",
+                        '" . $expiration_period . "'
+                )";                
                 
                 // Run the query here.
                 if ( $wpdb->query( $this->sqlQuery ) !== false ) {
