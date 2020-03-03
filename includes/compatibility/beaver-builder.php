@@ -1,11 +1,11 @@
-<?php
+<?php 
 /**
  * Beaver Builder Compatibility
  */
 function pmpro_beaver_builder_compatibility() {
 	// Filter members-only content later so that the builder's filters run before PMPro.
-	remove_filter( 'the_content', 'pmpro_membership_content_filter', 5 );
-	add_filter( 'the_content', 'pmpro_membership_content_filter', 15 );
+	remove_filter('the_content', 'pmpro_membership_content_filter', 5);
+	add_filter('the_content', 'pmpro_membership_content_filter', 15);
 }
 add_action( 'init', 'pmpro_beaver_builder_compatibility' );
 
@@ -30,17 +30,17 @@ function pmpro_beaver_builder_settings_form( $form, $id ) {
 		$levels[ $level->id ] = $level->name;
 	}
 	$row_settings_pmpro = array(
-		'title'    => __( 'PMPro', 'uabb' ),
+		'title'    => __( 'PMPro', 'paid-memberships-pro' ),
 		'sections' => array(
-			'pmpro' => array(
-				'title'  => __( 'General', 'uabb' ),
+			'paid-memberships-pro' => array(
+				'title'  => __( 'General', 'paid-memberships-pro' ),
 				'fields' => array(
 					'pmpro_enable'      => array(
 						'type'    => 'select',
-						'label'   => __( 'Enable Paid Memberships Pro module visibility?', 'pmpro' ),
+						'label'   => __( 'Enable Paid Memberships Pro module visibility?', 'paid-memberships-pro' ),
 						'options' => array(
-							'yes' => __( 'Yes', 'pmpro' ),
-							'no'  => __( 'No', 'pmpro' ),
+							'yes' => __( 'Yes', 'paid-memberships-pro' ),
+							'no'  => __( 'No', 'paid-memberships-pro' ),
 						),
 						'default' => 'no',
 						'toggle'  => array(
@@ -52,7 +52,7 @@ function pmpro_beaver_builder_settings_form( $form, $id ) {
 						),
 					),
 					'pmpro_memberships' => array(
-						'label'        => __( 'Select a level for module access', 'pmpro' ),
+						'label'        => __( 'Select a level for module access', 'paid-memberships-pro' ),
 						'type'         => 'select',
 						'options'      => $levels,
 						'multi-select' => true,
@@ -124,17 +124,17 @@ function pmpro_beaver_builder_add_custom_tab_all_modules( $form, $slug ) {
 			$levels[ $level->id ] = $level->name;
 		}
 		$form['pmpro-bb'] = array(
-			'title'    => __( 'PMPro', 'pmpro' ),
+			'title'    => __( 'PMPro', 'paid-memberships-pro' ),
 			'sections' => array(
 				'memberships' => array(
-					'title'  => __( 'Membership Levels', 'pmpro' ),
+					'title'  => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'fields' => array(
 						'pmpro_enable'      => array(
 							'type'    => 'select',
-							'label'   => __( 'Enable Paid Memberships Pro module visibility?', 'pmpro' ),
+							'label'   => __( 'Enable Paid Memberships Pro module visibility?', 'paid-memberships-pro' ),
 							'options' => array(
-								'yes' => __( 'Yes', 'pmpro' ),
-								'no'  => __( 'No', 'pmpro' ),
+								'yes' => __( 'Yes', 'paid-memberships-pro' ),
+								'no'  => __( 'No', 'paid-memberships-pro' ),
 							),
 							'default' => 'no',
 							'toggle'  => array(
@@ -146,7 +146,7 @@ function pmpro_beaver_builder_add_custom_tab_all_modules( $form, $slug ) {
 							),
 						),
 						'pmpro_memberships' => array(
-							'label'        => __( 'Select a level for module access', 'pmpro' ),
+							'label'        => __( 'Select a level for module access', 'paid-memberships-pro' ),
 							'type'         => 'select',
 							'options'      => $levels,
 							'multi-select' => true,
