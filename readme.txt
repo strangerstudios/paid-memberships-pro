@@ -128,7 +128,7 @@ Not sure? You can find out by doing a bit a research.
 [View All Screenshots](http://www.paidmembershipspro.com/features/screenshots/)
 
 == Changelog ==
-= 2.2.6 - 2020-02-20
+= 2.2.6 - 2020-02-20 =
 * SECURITY: Escaping the post title shown in the Terms of Service section of the checkout page.
 * BUG FIX: Fixed issue where the CVV/Security Code was not being passed to Authorize.net when using that gateway.
 * BUG FIX: Fixed issues with the update billing page when using Stripe.
