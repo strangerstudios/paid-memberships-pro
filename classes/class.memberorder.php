@@ -518,17 +518,21 @@
 		}
 
 		/**
-		 * Change the timestamp of an order by passing in year, month, day, time
+		 * Change the timestamp of an order by passing in year, month, day, time.
+		 *
+		 * $time should be adjusted for local timezone.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
 			if(empty($this->id))
 				return false;		//need a saved order
 
-			if(empty($time))
-				$time = "00:00:00";
-
-			$date = $year . "-" . $month . "-" . $day . " " . $time;
+			if ( empty( $time ) ) {
+				// Just save the order date.
+				$date = $year . '-' . $month . '-' . $day . ' 00:00:00';
+			} else {
+				$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $time, 'Y-m-d H:i:s' );
+			}
 
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
