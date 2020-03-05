@@ -77,8 +77,7 @@
 			if(!$id)
 				return false;
 
-			$gmt_offset = get_option('gmt_offset');
-			$dbobj = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) + " . ($gmt_offset * 3600) . "  as timestamp FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
 
 			if($dbobj)
 			{
@@ -141,6 +140,10 @@
 
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
+
+				// Fix the timestamp for local time
+				$gmt_offset = get_option( 'gmt_offset' );
+				$this->timestamp = strtotime( $this->timestamp ) + ( (int)$gmt_offset * HOUR_IN_SECONDS );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -369,8 +372,15 @@
 			if(!empty($this->user))
 				return $this->user;
 
+			
+			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			
+			// Fix the timestamp for local time 
 			$gmt_offset = get_option('gmt_offset');
-			$this->user = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(user_registered) + " . ($gmt_offset * 3600) . "  as user_registered FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
+				$this->user->user_registered = strtotime( $this->user->user_registered ) + ( (int)$gmt_offset * HOUR_IN_SECONDS );
+			}
+
 			return $this->user;
 		}
 
@@ -617,7 +627,7 @@
 				$this->gateway = pmpro_getOption("gateway");
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
-
+			
 			if(empty($this->datetime) && empty($this->timestamp))
 				$this->datetime = date("Y-m-d H:i:s", time());
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
