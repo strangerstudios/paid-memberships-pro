@@ -27,7 +27,7 @@ class PMPro_Membership_Level{
         $this->allow_signups = '';
         $this->expiration_number = '';
         $this->expiration_period = '';
-        $this->categories = array();
+        $this->categories = array(); // example array(1,2,4,6);
 
         return $this;
 
@@ -66,6 +66,11 @@ class PMPro_Membership_Level{
         return $this;
     }
 
+    /**
+     * Get a list of category ID's that belong to a membership level.
+     * @since 2.3
+     * @return array An array of category ID's.
+     */
     function get_membership_level_categories( $id ) {
         global $wpdb;
 
@@ -80,6 +85,11 @@ class PMPro_Membership_Level{
         return $category_array;
     }
 
+    /**
+     * Get the object of a membership level from the database.
+     * @since 2.3
+     * @return object The level object.
+     */
     function get_membership_level_object( $id ) {
         global $wpdb;
 
@@ -97,6 +107,10 @@ class PMPro_Membership_Level{
         return $dcobj;
     }
 
+    /**
+     * Save or update an existing level if the level exists.
+     * @since 2.3
+     */
     function save() {
         global $wpdb;
 
@@ -152,7 +166,8 @@ class PMPro_Membership_Level{
 
         // Drop all categories if there are categories set from $this.
         if ( isset( $this->categories ) && is_array( $this->categories ) ) {
-            // Delete categories for membership ID.
+            
+            // Delete categories for membership ID so we can add them back again.
             $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') );
 
             foreach( $this->categories as $key => $category ) {
