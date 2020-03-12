@@ -207,6 +207,7 @@ function pmpro_deactivation() {
 	wp_clear_scheduled_hook( 'pmpro_cron_trial_ending_warnings' );
 	wp_clear_scheduled_hook( 'pmpro_cron_expire_memberships' );
 	wp_clear_scheduled_hook( 'pmpro_cron_credit_card_expiring_warnings' );
+	wp_clear_scheduled_hook( 'pmpro_cron_admin_activity_email' );
 
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );
