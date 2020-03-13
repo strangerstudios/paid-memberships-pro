@@ -10,6 +10,14 @@ class PMPro_Membership_Level{
         }
     }
 
+    function __get( $key ) {
+        if ( ! isset( $key ) ) {
+            return get_pmpro_membership_level_meta( $this->ID, $key );
+        }
+
+        return $key;
+    }
+
     function get_empty_membership_level() {
         
         $this->ID = ''; // for backwards compatibility.
