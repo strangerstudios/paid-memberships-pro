@@ -187,5 +187,74 @@ class PMPro_Membership_Level{
         
         do_action( $after_action, $this );
     }
+    /**
+     * Delete a membership level and categories.
+     * @since 2.3
+     */
+    function delete() {
+
+        if ( empty( $this->id ) ) {
+            return false;
+        }
+
+        global $wpdb;
+        $r1 = false; // Remove level.
+        $r2 = false; // Remove categories from level.
+        $r3 = true; // Remove users from level.
+
+        if ( $wpdb->delete( $wpdb->pmpro_membership_levels, array('id' => $this->id), array('%d') ) ) {
+            $r1 = true;
+        }
+
+        if ( $wpdb->delete( $wpdb->pmpro_memberships_categories, array('membership_id' => $this->id), array('%d') ) ) {
+            $r2 = true;
+        }
+
+        // Try to remove users from the level too
+        $user_ids = $wpdb->get_col( $wpdb->prepare( "
+				SELECT user_id FROM $wpdb->pmpro_memberships_users
+				WHERE membership_id = %d
+				AND status = 'active'",
+			 	$this->id
+            ) );
+            
+
+			foreach($user_ids as $user_id) {
+				//change there membership level to none. that will handle the cancel
+				if(pmpro_changeMembershipLevel(0, $user_id)) {
+					//okay
+				} else {
+					//couldn't delete the subscription
+					//we should probably notify the admin
+					$pmproemail = new PMProEmail();
+					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), $user_id) . "</p>");
+					$last_order = $wpdb->get_row( $wpdb->prepare( "
+						SELECT * FROM $wpdb->pmpro_membership_orders
+						WHERE user_id = %d
+						ORDER BY timestamp DESC LIMIT 1",
+						$user_id
+					) );
+					if($last_order)
+						$pmproemail->data["body"] .= "<p>" . __("Last Invoice", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($last_order, true)) . "</p>";
+                    $pmproemail->sendEmail(get_bloginfo("admin_email"));
+                    
+                    $r3 = false; // Set it to false if it couldn't delete the subscription.
+				}
+            }
+        
+            
+        if ( $r1 == true && $r2 == true && $r3 == true ) {
+            return true;
+        } elseif ( $r1 == true && $r2 == false && $r3 == false ) {
+            return 'Only the level was deleted. Users may still be assigned to this level';
+        } elseif ( $r1 == false && $r2 == true && $r3 == false ) {
+            return 'Only categories were deleted. Users may still be assigned to this level.';
+        } elseif( $r1 == false && $r2 == false && $r3 == true ) {
+            return 'Only users were removed from this level.';
+        } else {
+            return false;
+        }
+
+    }
 
 } // end of class
