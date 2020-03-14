@@ -10,7 +10,7 @@
 	 */
     require_once(dirname(__FILE__) . "/../../includes/lib/PayPalCheckoutSdk/vendor/autoload.php");
     use PayPalCheckoutSdk\Core\PayPalHttpClient;
-    use PayPalCheckoutSdk\Core\PayPalEnvironment;
+    use PayPalCheckoutSdk\Core\ProductionEnvironment;
     use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
     use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 
@@ -355,7 +355,7 @@
 
 		function process(&$order)
 		{
-            $this->client = new PayPalHttpClient(new PayPalEnvironment(pmpro_getOption('paypal_client_id'), pmpro_getOption('paypal_client_secret')));
+            $this->client = new PayPalHttpClient(new ProductionEnvironment(pmpro_getOption('paypal_client_id'), pmpro_getOption('paypal_client_secret')));
             return $order->intent === 'CREATE' ? $this->create($order) : $this->charge($order);
             /*
 			//check for initial payment
