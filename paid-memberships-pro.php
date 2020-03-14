@@ -97,6 +97,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypal.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
+require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalsmart.php' );
 
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_stripe.php' );
@@ -152,6 +153,7 @@ function pmpro_gateways() {
 		'paypal'            => __( 'PayPal Website Payments Pro', 'paid-memberships-pro' ),
 		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
+		'paypalsmart'       => __( 'PayPal Smart', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
 		'twocheckout'       => __( '2Checkout', 'paid-memberships-pro' ),
