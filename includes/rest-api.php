@@ -35,7 +35,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 		));
 
-		register_rest_route( 'pmpro/v1', '/user/(?P<user_id>\d+)/pmpro_change_membership_level/(?P<level_id>\d+)',
+		register_rest_route( 'pmpro/v1', '/user/(?P<user_id>\d+)/change_membership_level/(?P<level_id>\d+)',
 		array(
 			array(
 				'methods'	=> 'POST,PUT,PATCH',
