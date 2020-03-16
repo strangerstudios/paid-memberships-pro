@@ -35,28 +35,38 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 		));
 
-			register_rest_route( 'pmpro/v1', '/membership_level' , 
+		register_rest_route( 'pmpro/v1', '/user/(?P<user_id>\d+)/pmpro_change_membership_level/(?P<level_id>\d+)',
+		array(
 			array(
-				array(
-					'methods'         => 'GET,POST,PUT,PATCH',
-					'callback'        => array( $this, 'pmpro_rest_api_set_membership_level' ),
-					'args' => array(
-						'id' => array(),
-						'name' => array(),
-						'description' => array(),
-						'confirmation' => array(),
-						'initial_payment' => array(),
-						'billing_amount' => array(),
-						'cycle_number' => array(),
-						'billing_limit' => array(),
-						'trial_amount' => array(),
-						'trial_limit' => array(),
-						'allow_signups' => array(),
-						'expiration_number' => array(),
-						'expiration_period' => array(),
-						'categories' => array()
-					),
-					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				'methods'	=> 'POST,PUT,PATCH',
+				'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+			)			
+		)
+
+		);
+		register_rest_route( 'pmpro/v1', '/membership_level' , 
+		array(
+			array(
+				'methods'         => 'GET,POST,PUT,PATCH',
+				'callback'        => array( $this, 'pmpro_rest_api_set_membership_level' ),
+				'args' => array(
+					'id' => array(),
+					'name' => array(),
+					'description' => array(),
+					'confirmation' => array(),
+					'initial_payment' => array(),
+					'billing_amount' => array(),
+					'cycle_number' => array(),
+					'billing_limit' => array(),
+					'trial_amount' => array(),
+					'trial_limit' => array(),
+					'allow_signups' => array(),
+					'expiration_number' => array(),
+					'expiration_period' => array(),
+					'categories' => array()
+				),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),
 			array(
 				'methods' 		=> 'DELETE',
@@ -92,6 +102,19 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$has_access = pmpro_has_membership_access($post_id, $user_id);
 			return $has_access;
 		}
+
+		//Ex: http://example.com/wp-json/pmpro/v1/user/2/pmpro_change_membership_level/1
+		function pmpro_rest_api_change_membership_level( $request ) {
+			$params = $request->get_params();
+			$user_id = $params['user_id'];
+			$level_id = $params['level_id'];
+
+			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
+				return false;
+			}
+
+			return pmpro_changeMembershipLevel( $level_id, $user_id );
+		}
 		
 		function pmpro_rest_api_get_permissions_check($request)	{
 
@@ -104,6 +127,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
 
+			///$permissions = '';
 			return $permissions;
 		}
 
@@ -124,7 +148,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Method to create/update a level.
-		 * Example: http://example.com/wp-json/wp/v2/pmpro/membership_level/ (pass query parameters)
+		 * Example: http://example.com/wp-json/pmpro/v1/membership_level/ (pass query parameters)
 		 */
 		function pmpro_rest_api_set_membership_level( $request ) {
 
