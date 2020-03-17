@@ -4,6 +4,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 	class PMPro_REST_API_Routes extends WP_REST_Controller {
 		
 		public function pmpro_rest_api_register_routes() {
+
+			// ================ DEPRECATED ================ //
 			$namespace = 'wp/v2';
 			register_rest_route( $namespace, '/users/(?P<id>\d+)'.'/pmpro_membership_level' , 
 			array(
@@ -20,8 +22,26 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'        => array( $this, 'pmpro_rest_api_get_has_membership_access' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
+			// ================================================  //
 
-			register_rest_route( 'pmpro/v1', '/membership_level/(?P<id>\d+)' , 
+			$pmpro_namespace = 'pmpro/v1';
+			register_rest_route( $pmpro_namespace, '/posts/(?P<post_id>\d+)'.'/user_id/(?P<user_id>\d+)/pmpro_has_membership_access' , 
+			array(
+				array(
+					'methods'         => WP_REST_Server::READABLE,
+					'callback'        => array( $this, 'pmpro_rest_api_get_has_membership_access' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+			),));
+
+			register_rest_route( $pmpro_namespace, '/users/(?P<id>\d+)'.'/pmpro_membership_level' , 
+			array(
+				array(
+					'methods'         => WP_REST_Server::READABLE,
+					'callback'        => array( $this, 'pmpro_rest_api_get_user_level' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+			),));
+
+			register_rest_route( $pmpro_namespace, '/membership_level/(?P<id>\d+)' , 
 			array(
 				array(
 					'methods'         => WP_REST_Server::READABLE,
@@ -35,17 +55,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 		));
 
-		register_rest_route( 'pmpro/v1', '/user/(?P<user_id>\d+)/change_membership_level/(?P<level_id>\d+)',
-		array(
+		register_rest_route( $pmpro_namespace, '/change_membership_level',
 			array(
-				'methods'	=> 'POST,PUT,PATCH',
-				'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
-				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
-			)			
-		)
-
+				array(
+					'methods'	=> 'POST,PUT,PATCH',
+					'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
+					'args'	=> array(
+						'user_id' => array(),
+						'level_id' => array()
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)			
+			)
 		);
-		register_rest_route( 'pmpro/v1', '/membership_level' , 
+
+		register_rest_route( $pmpro_namespace, '/cancel_membership_level',
+			array(
+				array(
+					'methods'	=> 'POST,PUT,PATCH',
+					'callback'	=> array( $this, 'pmpro_rest_api_cancel_membership_level' ),
+					'args'	=> array(
+						'user_id' => array(),
+						'level_id' => array()
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)			
+			)
+		);
+
+
+		register_rest_route( $pmpro_namespace, '/membership_level' , 
 		array(
 			array(
 				'methods'         => 'GET,POST,PUT,PATCH',
@@ -80,7 +119,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		}
 		
-		//Ex:http://example.com/wp-json/wp/v2/users/2/pmpro_membership_level
+		/**
+		 * Get user's membership level.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/wp/v2/users/2/pmpro_membership_level
+		 */
 		function pmpro_rest_api_get_user_level($request) {
 			$params = $request->get_params();
 			
@@ -93,7 +136,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			return new WP_REST_Response($level, 200 );
 		}
 		
-		//Ex: http://example.com/wp-json/wp/v2/posts/58/user_id/2/pmpro_has_membership_access
+		/**
+		 * Get user's access status for a specific post.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/wp/v2/posts/58/user_id/2/pmpro_has_membership_access
+		 */
 		function pmpro_rest_api_get_has_membership_access($request) {
 			$params = $request->get_params();
 			$post_id = $params['post_id'];
@@ -103,7 +150,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			return $has_access;
 		}
 
-		//Ex: http://example.com/wp-json/pmpro/v1/user/2/pmpro_change_membership_level/1
+		/**
+		 * Change a user's membership level.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/change_membership_level
+		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
 			$user_id = $params['user_id'];
@@ -115,14 +166,35 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			return pmpro_changeMembershipLevel( $level_id, $user_id );
 		}
+
+		/**
+		 * Cancel a user's membership level.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/cancel_membership_level
+		 */
+		function pmpro_rest_api_cancel_membership_level( $request ) {
+			$params = $request->get_params();
+			$user_id = $params['user_id'];
+			$level_id = $params['level_id'];
+
+			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
+				return false;
+			}
+
+			return pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' );
+		}
 		
+		/**
+		 * Default permissions check for endpoints/routes. Defaults to 'subscriber' for all GET requests and 'administrator' for any other type of request.
+		 * @since 2.3
+		 */
 		function pmpro_rest_api_get_permissions_check($request)	{
 
 			// default permissions to 'read' (subscriber)
 			$permissions = current_user_can('read');
 			$method = $request->get_method();
 			if ( $method != 'GET' ) {
-				$permissions = current_user_can('edit_users');
+				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
 			}
 
 			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
@@ -133,7 +205,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Endpoint to get membership level data
-		 * Example: http://example.com/wp-json/wp/v2/pmpro/membership_level/1
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/wp/v2/pmpro/membership_level/1
 		 **/
 		function pmpro_rest_api_get_membership_level( $request ) {
 
@@ -147,8 +220,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
-		 * Method to create/update a level.
-		 * Example: http://example.com/wp-json/pmpro/v1/membership_level/ (pass query parameters)
+		 * Create/Update a Membership Level
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_level/
 		 */
 		function pmpro_rest_api_set_membership_level( $request ) {
 
@@ -215,6 +289,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Delete membership level and remove users from level. (And cancel their subscription.)
 		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_level/
 		 */
 		function pmpro_rest_api_delete_membership_level( $request ) {
 
@@ -233,7 +308,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 	} // End of class
 
-
+	/**
+	 * Register the routes for Paid Memberships Pro.
+	 * @since 2.3
+	 */
 	function pmpro_rest_api_register_custom_routes() {
 		$pmpro_rest_api_routes = new PMPro_REST_API_Routes;
 		$pmpro_rest_api_routes->pmpro_rest_api_register_routes();
