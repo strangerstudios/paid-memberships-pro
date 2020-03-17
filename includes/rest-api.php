@@ -199,7 +199,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
 
-			///$permissions = '';
 			return $permissions;
 		}
 
@@ -248,36 +247,75 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$allow_signups = isset( $params['allow_signups'] ) ? intval( $params['allow_signups'] ) : '';
 			$expiration_number = isset( $params['expiration_number'] ) ? intval( $params['expiration_number'] ) : '';
 			$expiration_period = isset( $params['expiration_period'] ) ? intval( $params['expiration_period'] ) : '';
+			$categories = isset( $params['categories'] ) ? sanitize_text_field( $params['categories'] ) : '';
 
 			// Just return level object if method is GET, otherwise assume POST,PUT or PATCH.
 			if ( $method === 'GET' ) {
 				return new PMPro_Membership_Level( $id );
 			} else {
-				$level = new PMPro_Membership_Level();
-
 				// Pass through an ID only for PUT/PATCH methods. POST treats it as a brand new level.
 				if ( ! empty( $id ) && ( $method === 'PUT' || $method === 'PATCH' ) ) {
-					$level->id = $id;
+					$level = new PMPro_Membership_Level( $id );
 				} elseif ( empty( $id ) && ( $method === 'PUT' || $method === 'PATCH' ) ) {
 					return false; // Error trying to update /// Improve this.
 				}
 
-				$level->name = $name;
-				$level->description = $description;
-				$level->confirmation = $confirmation;
-				$level->initial_payment = $initial_payment;
-				$level->billing_amount = $billing_amount;
-				$level->cycle_number = $cycle_number;
-				$level->cycle_period = $cycle_period;
-				$level->billing_limit = $billing_limit;
-				$level->trial_amount = $trial_amount;
-				$level->trial_limit = $trial_limit;
-				$level->allow_signups = $allow_signups;
-				$level->expiration_number = $expiration_number;
-				$level->expiration_period = $expiration_period;
+				if ( $name ) {
+					$level->name = $name;
+				}
+				
+				if ( $description ) {
+					$level->description = $description;
+				}
 
-				/// Handle categories
-				// $level->categories = array();
+				if ( $confirmation ) {
+					$level->confirmation = $confirmation;
+				}
+
+				if ( $initial_payment ) {
+					$level->initial_payment = $initial_payment;
+				}
+
+				if ( $billing_amount ) {
+					$level->billing_amount = $billing_amount;
+				}
+
+				if ( $cycle_number ) {
+					$level->cycle_number = $cycle_number;
+				}
+
+				if ( $cycle_period ) {
+					$level->cycle_period = $cycle_period;
+				}
+
+				if ( $billing_limit ) {
+					$level->billing_limit = $billing_limit;
+				}
+
+				if ( $trial_amount ) {
+					$level->trial_amount = $trial_amount;
+				}
+
+				if ( $trial_limit ) {
+					$level->trial_limit = $trial_limit;
+				}
+
+				if ( $allow_signups ) {
+					$level->allow_signups = $allow_signups;
+				}
+
+				if ( $expiration_number ) {
+					$level->expiration_number = $expiration_number;
+				}
+
+				if ( $expiration_period ) {
+					$level->expiration_period = $expiration_period;
+				}
+
+				if ( $categories ) {
+					$categories = explode( ',', $categories );
+					$level->categories = $categories;
+				}
 
 				$level->save();
 
