@@ -24,6 +24,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),));
 			// ================================================  //
 
+			/**
+			 * Get user access for a specific post.
+			 * @since 2.3
+			 * Example: https://example.com/wp-json/pmpro/v1/posts/58/user_id/1/pmpro_has_membership_access
+			 */
 			$pmpro_namespace = 'pmpro/v1';
 			register_rest_route( $pmpro_namespace, '/posts/(?P<post_id>\d+)'.'/user_id/(?P<user_id>\d+)/pmpro_has_membership_access' , 
 			array(
@@ -32,7 +37,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'        => array( $this, 'pmpro_rest_api_get_has_membership_access' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
-
+			
+			/**
+			 * Get a membership level for a user.
+			 * @since 2.3
+			 * Example: https://example.com/wp-json/pmpro/v1/users/1/pmpro_membership_level 
+			 */
 			register_rest_route( $pmpro_namespace, '/users/(?P<id>\d+)'.'/pmpro_membership_level' , 
 			array(
 				array(
@@ -41,6 +51,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
 
+			/**
+			 * Get/Delete a membership level (shorthand)
+			 * @since 2.3
+			 * Example: https://example.com/wp-json/pmpro/v1/membership_level/1
+			 */
 			register_rest_route( $pmpro_namespace, '/membership_level/(?P<id>\d+)' , 
 			array(
 				array(
@@ -55,6 +70,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 		));
 
+		/**
+		 * Change a user's membership level. This also supports to cancel a membership if you pass through 0.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/change_membership_level
+		 */
 		register_rest_route( $pmpro_namespace, '/change_membership_level',
 			array(
 				array(
@@ -69,6 +89,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			)
 		);
 
+		/**
+		 * Cancel a membership level.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/cancel_membership_level
+		 */
 		register_rest_route( $pmpro_namespace, '/cancel_membership_level',
 			array(
 				array(
@@ -83,7 +108,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			)
 		);
 
-
+		/**
+		 * Delete/Retrieve/Update/Create a Membership Level.
+		 * @since 2.3
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_level
+		 */
 		register_rest_route( $pmpro_namespace, '/membership_level' , 
 		array(
 			array(
@@ -185,28 +214,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 		
 		/**
-		 * Default permissions check for endpoints/routes. Defaults to 'subscriber' for all GET requests and 'administrator' for any other type of request.
-		 * @since 2.3
-		 */
-		function pmpro_rest_api_get_permissions_check($request)	{
-
-			// default permissions to 'read' (subscriber)
-			$permissions = current_user_can('read');
-			$method = $request->get_method();
-			if ( $method != 'GET' ) {
-				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
-			}
-
-			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
-
-			return $permissions;
-		}
-
-		/**
 		 * Endpoint to get membership level data
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/wp/v2/pmpro/membership_level/1
-		 **/
+		 */
 		function pmpro_rest_api_get_membership_level( $request ) {
 
 			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
@@ -342,6 +353,24 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			return $level->delete();
 		}
 
+		/**
+		 * Default permissions check for endpoints/routes. Defaults to 'subscriber' for all GET requests and 'administrator' for any other type of request.
+		 * @since 2.3
+		 */
+		 function pmpro_rest_api_get_permissions_check($request)	{
+
+			// default permissions to 'read' (subscriber)
+			$permissions = current_user_can('read');
+			$method = $request->get_method();
+			if ( $method != 'GET' ) {
+				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
+			}
+
+			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
+
+			$permissions = '';
+			return $permissions;
+		}
 
 
 	} // End of class
