@@ -25,3 +25,5 @@ node_modules
 log/*.log
 log/*.txt
 tests/_build
+js/blocks.build.asset.php
+js/blocks.build.js.map

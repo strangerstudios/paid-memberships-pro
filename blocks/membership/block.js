@@ -3,11 +3,6 @@
  *
  *
  */
- /**
-  * Block dependencies
-  */
- import './editor.css';
- import classnames from 'classnames';
 
  /**
   * Internal block libraries
@@ -15,24 +10,20 @@
  const { __ } = wp.i18n;
  const {
     registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
 } = wp.blocks;
 const {
     PanelBody,
-    PanelRow,
-    TextControl,
     SelectControl,
 } = wp.components;
 
 const {
-    RichText,
     InspectorControls,
     InnerBlocks,
 } = wp.editor;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
+const member_levels = pmpro.all_level_values_and_labels;
+
+const all_levels = [{ value: 0, label: "Non-Members" }].concat( {member_levels} );
 
  /**
   * Register block
@@ -60,7 +51,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
              },
          },
          edit: props => {
-             const { attributes: {levels, uid}, className, setAttributes, isSelected } = props;
+             const { attributes: {levels, uid}, setAttributes, isSelected } = props;
              if( uid=='' ) {
                var rand = Math.random()+"";
                setAttributes( { uid:rand } );
@@ -70,19 +61,19 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                     <PanelBody>
                         <SelectControl
                             multiple
-                            label={ __( 'Select levels to show content to:' ) }
+                            label={ __( 'Select levels to show content to:', 'paid-memberships-pro' ) }
                             value={ levels }
                             onChange={ levels => { setAttributes( { levels } ) } }
                             options={ all_levels }
                         />
                     </PanelBody>
                 </InspectorControls>,
-                isSelected && <div className={ className } >
-                  <span class="pmpro-membership-title">Require Membership</span>
+                isSelected && <div className="pmpro-block-element" >
+                  <span class="pmpro-membership-title">{ __( 'Require Membership', 'paid-memberships-pro' ) }</span>
                   <PanelBody>
                       <SelectControl
                           multiple
-                          label={ __( 'Select levels to show content to:' ) }
+                          label={ __( 'Select levels to show content to:', 'paid-memberships-pro' ) }
                           value={ levels }
                           onChange={ levels => { setAttributes( { levels } ) } }
                           options={ all_levels }
@@ -90,14 +81,14 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                   </PanelBody>
                   <InnerBlocks templateLock={ false } />
                 </div>,
-                ! isSelected && <div className={ className } >
-                  <span class="pmpro-membership-title">Require Membership: { levels }</span>
+                ! isSelected && <div className="pmpro-block-element" >
+                  <span class="pmpro-membership-title">{ __( 'Require Membership:', 'paid-memberships-pro' ) } { levels }</span>
                   <InnerBlocks templateLock={ false } />
                 </div>,
             ];
          },
          save: props => {
-           const { attributes: {levels, uid}, className, isSelected } = props;
+           const {  className } = props;
         		return (
         			<div className={ className }>
         				<InnerBlocks.Content />
