@@ -292,7 +292,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		}
 
 		// handle timestamp
-		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ) ) !== false ) {
+		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ), intval( $_POST['ts_hour'] ) . ':' . intval( $_POST['ts_minute'] ) . ':00' ) !== false ) {
 			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'success';
 		} else {
@@ -817,9 +817,12 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											} else {
 												$timestamp = current_time( 'timestamp' );
 											}
-											$year  = date_i18n( 'Y', $timestamp );
-											$month = date_i18n( 'n', $timestamp );
-											$day   = date_i18n( 'j', $timestamp );
+											$year   = date_i18n( 'Y', $timestamp );
+											$month  = date_i18n( 'n', $timestamp );
+											$day    = date_i18n( 'j', $timestamp );
+											$hour   = date_i18n( 'H', $timestamp );
+											$minute = date_i18n( 'i', $timestamp );
+											$second = date_i18n( 's', $timestamp );
 											?>
 											<select id="ts_month" name="ts_month">
 							<?php
@@ -836,6 +839,9 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' 
 						</select>
 						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
 						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
+						<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
+						<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
+						<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
