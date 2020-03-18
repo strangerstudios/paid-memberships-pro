@@ -831,13 +831,11 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											<select id="ts_month" name="ts_month">
 							<?php
 							for ( $i = 1; $i < 13; $i ++ ) {
-								?>
-								<option value="<?php echo $i; ?>"
-					<?php
-					if ( $i == $month ) {
-?>
-selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
-								<?php
+							?>
+								<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
+								<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
+								</option>
+							<?php
 							}
 							?>
 						</select>
@@ -1013,7 +1011,7 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 				<select id="start-month" name="start-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo esc_attr( $i ); ?>" <?php selected( $start_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1028,7 +1026,7 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 				<select id="end-month" name="end-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo esc_attr( $i ); ?>" <?php selected( $end_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
 					<?php } ?>
 				</select>
 
