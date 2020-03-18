@@ -6,6 +6,9 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 
 // vars
 global $wpdb;
+
+$now = current_time( 'timestamp' );
+
 if ( isset( $_REQUEST['s'] ) ) {
 	$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
 } else {
@@ -39,25 +42,25 @@ if ( isset( $_REQUEST['start-day'] ) ) {
 if ( isset( $_REQUEST['start-year'] ) ) {
 	$start_year = intval( $_REQUEST['start-year'] );
 } else {
-	$start_year = date_i18n( 'Y' );
+	$start_year = date( 'Y', $now );
 }
 
 if ( isset( $_REQUEST['end-month'] ) ) {
 	$end_month = intval( $_REQUEST['end-month'] );
 } else {
-	$end_month = date_i18n( 'n' );
+	$end_month = date( 'n', $now );
 }
 
 if ( isset( $_REQUEST['end-day'] ) ) {
 	$end_day = intval( $_REQUEST['end-day'] );
 } else {
-	$end_day = date_i18n( 'j' );
+	$end_day = date( 'j', $now );
 }
 
 if ( isset( $_REQUEST['end-year'] ) ) {
 	$end_year = intval( $_REQUEST['end-year'] );
 } else {
-	$end_year = date_i18n( 'Y' );
+	$end_year = date( 'Y', $now );
 }
 
 if ( isset( $_REQUEST['predefined-date'] ) ) {
@@ -117,19 +120,19 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'predefined-date-range' ) {
 	if ( $predefined_date == 'Last Month' ) {
-		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of last month', current_time( 'timestamp' ) ) );
-		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of last month', current_time( 'timestamp' ) ) );
+		$start_date = date( 'Y-m-d', strtotime( 'first day of last month', $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( 'last day of last month', $now ) );
 	} elseif ( $predefined_date == 'This Month' ) {
-		$start_date = date_i18n( 'Y-m-d', strtotime( 'first day of this month', current_time( 'timestamp' ) ) );
-		$end_date   = date_i18n( 'Y-m-d', strtotime( 'last day of this month', current_time( 'timestamp' ) ) );
+		$start_date = date( 'Y-m-d', strtotime( 'first day of this month', $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( 'last day of this month', $now ) );
 	} elseif ( $predefined_date == 'This Year' ) {
-		$year       = date_i18n( 'Y' );
-		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
-		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
+		$year       = date( 'Y', $now );
+		$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
 	} elseif ( $predefined_date == 'Last Year' ) {
-		$year       = date_i18n( 'Y' ) - 1;
-		$start_date = date_i18n( 'Y-m-d', strtotime( "first day of January $year", current_time( 'timestamp' ) ) );
-		$end_date   = date_i18n( 'Y-m-d', strtotime( "last day of December $year", current_time( 'timestamp' ) ) );
+		$year       = date( 'Y', $now ) - 1;
+		$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+		$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
 	}
 
 	// add times to dates
@@ -161,7 +164,7 @@ if ( ! empty( $_REQUEST['delete'] ) ) {
 	}
 }
 
-$thisyear = date_i18n( 'Y' );
+$thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
 $read_only_fields = apply_filters(
@@ -817,12 +820,13 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											} else {
 												$timestamp = current_time( 'timestamp' );
 											}
-											$year   = date_i18n( 'Y', $timestamp );
-											$month  = date_i18n( 'n', $timestamp );
-											$day    = date_i18n( 'j', $timestamp );
-											$hour   = date_i18n( 'H', $timestamp );
-											$minute = date_i18n( 'i', $timestamp );
-											$second = date_i18n( 's', $timestamp );
+											
+											$year   = date( 'Y', $timestamp );
+											$month  = date( 'n', $timestamp );
+											$day    = date( 'j', $timestamp );
+											$hour   = date( 'H', $timestamp );
+											$minute = date( 'i', $timestamp );
+											$second = date( 's', $timestamp );
 											?>
 											<select id="ts_month" name="ts_month">
 							<?php
@@ -832,7 +836,7 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 					<?php
 					if ( $i == $month ) {
 ?>
-selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' . $year, current_time( 'timestamp' ) ) ); ?></option>
+selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 								<?php
 							}
 							?>
@@ -1009,7 +1013,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' 
 				<select id="start-month" name="start-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1024,7 +1028,7 @@ selected="selected"<?php } ?>><?php echo date_i18n( 'M', strtotime( $i . '/15/' 
 				<select id="end-month" name="end-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
 					<?php } ?>
 				</select>
 

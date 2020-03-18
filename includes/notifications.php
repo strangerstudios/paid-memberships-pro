@@ -487,7 +487,10 @@ function pmpro_notifications_pause() {
 		return true;
 	}
 	
-	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );			
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	if ( ! is_array( $archived_notifications ) ) {
+		return false;
+	}			
 	$archived_notifications = array_values( $archived_notifications );
 	$num = count($archived_notifications);
 	$now = current_time( 'timestamp' );
