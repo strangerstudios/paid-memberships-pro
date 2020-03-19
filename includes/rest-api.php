@@ -345,6 +345,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$code = $params['code'];
 			$uses = $params['uses'];
 			$starts = $params['starts'];
+			$expires = $params['expires'];
 			$levels = $params['levels'];
 
 			// If it's a GET request, return the discount code object.
@@ -392,7 +393,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$discount_code->code = isset( $code ) ? sanitize_text_field( $code ) : '';
 			$discount_code->starts = isset( $starts ) ? sanitize_text_field( $starts ) : '';
-			$discount_code->ends = isset( $ends ) ? sanitize_text_field( $ends ) : '';
+			$discount_code->ends = isset( $expires ) ? sanitize_text_field( $expires ) : '';
 			$discount_code->uses = isset( $uses ) ? intval( $uses ) : '';
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
