@@ -122,7 +122,7 @@ class PMPro_Discount_Code{
                     'expiration_period' => $level->expiration_period
                 );
             }
-
+            
             return $this;
         } else {
             return false;
@@ -149,7 +149,7 @@ class PMPro_Discount_Code{
         
         $sql_okay = false;
         // See if code exists;
-        if ( isset( $this->code ) ) {
+        if ( isset( $this->code ) && ! empty( $this->code ) ) {
             // see if row exists.
             $results = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
 
@@ -177,15 +177,15 @@ class PMPro_Discount_Code{
 
             $this->code = pmpro_getDiscountCode();
 
-            if ( ! isset( $this->starts ) ) {
+            if ( ! isset( $this->starts ) || empty( $this->starts ) ) {
                 $this->starts = date( 'Y-m-d' );
             }
 
-            if ( ! isset( $this->expires ) ) {
+            if ( ! isset( $this->expires ) || empty( $this->expires ) ) {
                 $this->expires = date( 'Y-m-d', time() + 86400 );
             }
 
-            if ( ! isset( $this->uses ) ) {
+            if ( ! isset( $this->uses ) || empty( $this->uses) ) {
                 $this->uses = 0;
             }
         }      
@@ -222,6 +222,11 @@ class PMPro_Discount_Code{
             if ( empty ( $this->id ) ) {
                 $this->id = $wpdb->insert_id;
             } 
+        }
+
+        // Delete levels if 0 or false is passed through.
+        if ( isset( $this->levels ) && ( $this->levels == 0 || $this->levels == false ) ) {
+            $wpdb->delete( $wpdb->pmpro_discount_codes_levels, array( 'code_id' => $this->id ), array( '%d' ) );
         }
 
         // Insert discount code level/billing data if it's set in the discount code object.
@@ -265,7 +270,9 @@ class PMPro_Discount_Code{
         }  
         
         do_action( $after_action, $this ); 
-            
+        
+        unset( $this->sqlQuery ); //remove SQL query.
+
         // Return values once updated/inserted.
         if ( $sql_okay == true ) {
             return $this->get_discount_code_by_id( $this->id );
