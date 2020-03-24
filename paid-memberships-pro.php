@@ -91,6 +91,8 @@ if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_braintree.php' );
 }
 
+require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
+
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_cybersource.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
