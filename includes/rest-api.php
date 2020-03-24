@@ -37,6 +37,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'        => array( $this, 'pmpro_rest_api_get_has_membership_access' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),));
+
+			register_rest_route( $pmpro_namespace, '/has_membership_access',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_has_membership_access'),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)));
 			
 			/**
 			 * Get a membership level for a user.
@@ -183,6 +191,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 			$post_id = $params['post_id'];
 			$user_id = $params['user_id'];
+
+			if ( empty( $user_id ) ) {
+				// see if they sent an email
+				if ( ! empty( $params['email'] ) ) {
+					$user = get_user_by_email( $params['email'] );
+					$user_id = $user->ID;
+				} else {
+					return 'No user information passed through.';
+				}
+			}
 			
 			$has_access = pmpro_has_membership_access($post_id, $user_id);
 			return $has_access;
@@ -197,6 +215,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 			$user_id = $params['user_id'];
 			$level_id = $params['level_id'];
+
+			if ( empty( $user_id ) ) {
+				// see if they sent an email
+				if ( ! empty( $params['email'] ) ) {
+					$user = get_user_by_email( $params['email'] );
+					$user_id = $user->ID;
+				} else {
+					return 'No user information passed through.';
+				}
+			}
 
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
 				return false;
@@ -214,6 +242,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 			$user_id = $params['user_id'];
 			$level_id = $params['level_id'];
+
+			if ( empty( $user_id ) ) {
+				// see if they sent an email
+				if ( ! empty( $params['email'] ) ) {
+					$user = get_user_by_email( $params['email'] );
+					$user_id = $user->ID;
+				} else {
+					return 'No user information passed through.';
+				}
+			}
+			
+			if ( empty( $level_id ) ) {
+				return 'No membership level ID data.';
+			}
 
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
 				return false;
