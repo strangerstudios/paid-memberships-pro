@@ -11,11 +11,13 @@ class PMPro_Membership_Level{
     }
 
     function __get( $key ) {
-        if ( ! isset( $key ) ) {
-            return get_pmpro_membership_level_meta( $this->ID, $key );
+        if ( isset( $this->$key ) ) {
+            $value = $this->$key;
+        } else {
+            $value = get_pmpro_membership_level_meta( $this->ID, $key, true );
         }
-
-        return $key;
+        
+        return $value;
     }
 
     function get_empty_membership_level() {
