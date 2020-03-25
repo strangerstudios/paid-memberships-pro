@@ -135,21 +135,7 @@ jQuery(document).ready(function(){
 		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 		jQuery('input[type=image]', this).attr('disabled', 'disabled');
 		jQuery('#pmpro_processing_message').css('visibility', 'visible');
-	});
-
-	//iOS Safari fix (see: http://stackoverflow.com/questions/20210093/stop-safari-on-ios7-prompting-to-save-card-data)
-	var userAgent = window.navigator.userAgent;
-	if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
-		jQuery('input[type=submit]').click(function() {
-			try{
-				jQuery("input[type=password]").attr("type", "hidden");
-			} catch(ex){
-				try {
-					jQuery("input[type=password]").prop("type", "hidden");
-				} catch(ex) {}
-			}
-		});
-	}
+	});	
 
 	//add required to required fields
 	if ( ! jQuery( '.pmpro_required' ).next().hasClass( "pmpro_asterisk" ) ) {

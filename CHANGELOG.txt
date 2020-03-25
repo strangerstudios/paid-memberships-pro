@@ -1,5 +1,26 @@
 == Changelog ==
-= 2.2.5 - 2019-01-05 =
+= 2.2.6 - 2020-02-20 =
+* SECURITY: Escaping the post title shown in the Terms of Service section of the checkout page.
+* BUG FIX: Fixed issue where the CVV/Security Code was not being passed to Authorize.net when using that gateway.
+* BUG FIX: Fixed issues with the update billing page when using Stripe.
+* BUG FIX: Fixed issues with the update billing page when using the MMPU Add On.
+* BUG FIX: Fixed issue where password fields would disappear when the checkout form was submitted. This behavior was required to address bugs in older versions of iOS that shouldn't be in use any more.
+* BUG FIX: No longer sending an extra cancel request to the PayPal API when processing a cancel for a PayPal Express subscription through the IPN handler.
+* BUG FIX: The currency option is no longer hidden when using the check gateway.
+* BUG FIX: Fixed the comparisons in the pmpro_check_plugin_version function and related notification checks.
+* BUG FIX: Avoiding warnings in the sendAdminChangeEmail method if the user doesn't have a level.
+* BUG FIX: Fixed some cases where the Members List CSV export wouldn't match the members shown in the table/search.
+* BUG FIX: Fixed issue where the Members List may show the wrong count or enddate.
+* BUG FIX/ENHANCEMENT: Added support for Elementor. Filtering content later so the builder's filters can run first. Also added the ability to choose which membership levels an element should be visible for.
+* BUG FIX/ENHANCEMENT: Fixed the confirmation page formatting when paying by check. Added a div with class "pmpro_payment_instructions" around the payment instructions shown on the confirmation and invoice pages.
+* BUG FIX/ENHANCEMENT: Added an Oxford Comma to the the pmpro_implodeToEnglish() function.
+* BUG FIX/ENHANCEMENT: Moved the Japanese Yen symbol to the left of the total instead of the right.
+* BUG FIX/ENHANCEMENT: Added the pmpro_checkout_login_redirect filter, which filters the url_redirect parameter of the login link on the checkout page. This is used by some Add Ons to make sure you are returned to the checkout page properly after logging in through that link.
+* ENHANCEMENT: Added the Ghanian Cedi currency.
+* ENHANCEMENT: Added the pmpro_are_levels_recurring() function to help with MMPU.
+* ENHANCEMENT: Improved the look and source of the CVV popup.
+
+= 2.2.5 - 2020-01-05 =
 * BUG FIX: Once again loading JavaScript on the update billing page when using Braintree.
 * BUG FIX: Loading Braintree JavaScript at checkout for free levels to support the variable pricing and donation add ons.
 * BUG FIX: Fixed issues with PayPal orders when using the pmpro_paypal_level_description filter.
@@ -68,7 +89,7 @@
 * BUG FIX: Fixed bug where custom templates would sometimes not load.
 * BUG FIX: Fixed issue where a warning was thrown sometimes when loading SESSION vars.
 * ENHANCEMENT: Moved the License page under Memberships.
-* EHNANCEMENT: Updated our UTM tracking links in various places we link to the Paid Memberships Pro website.
+* ENHANCEMENT: Updated our UTM tracking links in various places we link to the Paid Memberships Pro website.
 * ENHANCEMENT: Added some help text and links to popular add ons in a few places in the PMPro settings.
 
 = 2.1.1 - 2019-09-16 =
@@ -98,7 +119,7 @@
 * BUG FIX/ENHANCEMENT: Updated our pmpro_generateUsername() function to be a bit smarter.
 * BUG FIX/ENHANCEMENT: Now using wp_generate_password() when choosing a random password for a user (e.g. when using the Sign Up Shortcode add on or the $skip_account_fields global).
 * BUG FIX/ENHANCEMENT: Setting autocomplete to false on the "fullname" honeypot field. This will prevent user's with certain autocomplete tools from accidentally filling it out.
-* BUG FIX/EHNANCEMENT: Now sending name and email fields to PayPay (using Website Payments Pro) even if no address was captured.
+* BUG FIX/ENHANCEMENT: Now sending name and email fields to PayPay (using Website Payments Pro) even if no address was captured.
 * BUG FIX/ENHANCEMENT: More specific CSS selectors for checkout form elements to make sure errors are highlighted/etc with different themes.
 * BUG FIX: Fixed issue where the first 2000 or so orders might be skipped when exporting orders on large sites.
 * BUG FIX: Fixed issue with setting custom trials on discount codes.
