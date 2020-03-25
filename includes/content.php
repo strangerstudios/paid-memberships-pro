@@ -498,6 +498,21 @@ function pmpro_hide_pages_redirect()
 add_action('wp', 'pmpro_hide_pages_redirect');
 
 /**
+ * Filter the entire content of the Membership Account page if no user.
+ *
+ */
+function pmpro_membership_account_filter( $content ) {
+	global $pmpro_pages;
+
+	// If no user, swap entire Membership Account page content.
+	if ( is_page( $pmpro_pages[ 'account' ] ) && ! is_user_logged_in() ) {
+		$content = pmpro_login_form( );
+	}
+	return $content;
+}
+add_filter( 'the_content', 'pmpro_membership_account_filter', 10 );
+
+/**
  * Adds custom classes to the array of post classes.
  *
  * pmpro-level-required = this post requires at least one level

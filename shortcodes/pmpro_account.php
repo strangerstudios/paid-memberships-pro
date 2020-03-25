@@ -112,7 +112,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
 				<div class="pmpro_actionlinks">
-					<a id="pmpro_actionlink-profile" href="<?php echo admin_url('profile.php')?>" id="pmpro_account-edit-profile"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
+					<?php 
+						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
+							$edit_profile_url = pmpro_url( 'member_profile_edit' );
+						} else {
+							$edit_profile_url = admin_url( 'profile.php' );
+						}
+					?>
+					<a id="pmpro_actionlink-profile" href="<?php echo $edit_profile_url; ?>" id="pmpro_account-edit-profile"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
 					<a id="pmpro_actionlink-password" href="<?php echo admin_url('profile.php')?>" id="pmpro_account-change-password"><?php _e('Change Password', 'paid-memberships-pro' );?></a>
 				</div>
 			</div> <!-- end pmpro_account-profile -->

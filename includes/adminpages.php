@@ -344,7 +344,11 @@ function pmpro_display_post_states( $post_states, $post ) {
 	}
 
 	if ( intval( $pmpro_pages['levels'] ) === $post->ID ) {
-		$post_states['pmpro_levels_page'] = __( 'Membership Levels  Page', 'paid-memberships-pro' );
+		$post_states['pmpro_levels_page'] = __( 'Membership Levels Page', 'paid-memberships-pro' );
+	}
+
+	if ( intval( $pmpro_pages['member_profile_edit'] ) === $post->ID ) {
+		$post_states['pmpro_member_profile_edit_page'] = __( 'Member Profile Edit Page', 'paid-memberships-pro' );
 	}
 
 	return $post_states;
