@@ -117,7 +117,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),
 			array(
-				'methods'         => WP_REST_Server::WRITEABLE,
+				'methods'         => 'POST,PUT,PATCH',
 				'callback'        => array( $this, 'pmpro_rest_api_set_membership_level' ),
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 			),
@@ -478,8 +478,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
 
-			$permissions = '';
-
 			return $permissions;
 		}
 
@@ -487,7 +485,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *	Helper function to convert comma separated items to an array.
 		 * @since 2.3
 		 */
-		 function pmpro_rest_api_convert_to_array( $string ) {
+		function pmpro_rest_api_convert_to_array( $string ) {
 			return explode( ',', $string );
 		}
 
