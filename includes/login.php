@@ -236,7 +236,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
     }
 
     // Show the login form.
-    if ( ! is_user_logged_in( ) && isset( $_GET['action'] ) && $_GET['action'] !== 'reset_pass' ) {
+    if ( ! is_user_logged_in( ) && ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'reset_pass' ) ) {
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 			?> <h2><?php _e( 'Login', 'paid-memberships-pro' ); ?></h2> <?php
 			wp_login_form( );
@@ -465,7 +465,8 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
 	
 	// Make sure the fields were passed through.
 	if ( ! isset( $_REQUEST['log'] ) || ! isset( $_REQUEST['pwd'] ) ) {
-		return $user;
+		wp_redirect( pmpro_login_url() );
+		exit;
 	}
 	
 	if ( is_a( $user, 'WP_User' ) ) {
