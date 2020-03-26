@@ -152,12 +152,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get user's membership level.
 		 * @since 2.3
-		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_level_for_user
+		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_level_for_user?user_id=1
 		 */
 		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = $params['id'];
+			$user_id = $params['user_id'];
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
@@ -172,12 +172,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get user's membership levels. (MMPU)
 		 * @since 2.3
-		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_levels_for_user
+		 * Example: https://example.com/wp-json/pmpro/v1/get_membership_levels_for_user?user_id=1
 		 */
 		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = $params['id'];
+			$user_id = $params['user_id'];
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
@@ -193,7 +193,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * Get user's access status for a specific post.
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/wp/v2/posts/58/user_id/2/pmpro_has_membership_access
-		 * Example: https://example.com/wp-json/pmpro/v1/has_membership_access
+		 * Example: https://example.com/wp-json/pmpro/v1/has_membership_access?post_id=58&user_id=2
 		 */
 		function pmpro_rest_api_get_has_membership_access($request) {
 			$params = $request->get_params();
