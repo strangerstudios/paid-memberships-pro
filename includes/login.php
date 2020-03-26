@@ -7,6 +7,7 @@
  */
 function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 	global $wpdb;
+
 	// Is a user logging in?
 	if ( ! empty( $user ) && ! empty( $user->ID ) ) {
 		// Logging in, let's figure out where to send them.
@@ -90,6 +91,7 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
  * @since 2.3
  */
 function pmpro_login_url( $login_url='', $redirect='' ) {
+
 	$account_page_id = pmpro_getOption( 'account_page_id' );
     if ( ! empty ( $account_page_id ) ) {
         $login_url = get_permalink( $account_page_id );
@@ -97,7 +99,7 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
         if ( ! empty( $redirect ) )
             $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 	}
-	
+
     return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
@@ -113,7 +115,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
-	if ( ! empty( $_GET['action'] ) ) {
+	if ( isset( $_GET['action'] ) ) {
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
 				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
@@ -142,7 +144,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	}
 
 	// Logged Out Errors.
-	if ( ! empty( $_GET['loggedout'] ) ) {
+	if ( isset( $_GET['loggedout'] ) ) {
 		switch ( sanitize_text_field( $_GET['loggedout'] ) ) {
 			case 'true':
 				$message = __( 'You are now logged out.', 'paid-memberships-pro' );
@@ -156,7 +158,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	}
 
 	// Password reset email confirmation.
-	if ( ! empty( $_GET['checkemail'] ) ) {
+	if ( isset( $_GET['checkemail'] ) ) {
 
 		switch ( sanitize_text_field( $_GET['checkemail'] ) ) {
 			case 'confirm':
@@ -170,7 +172,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	}
 
 	// Password errors
-	if ( ! empty( $_GET['login'] ) ) {
+	if ( isset( $_GET['login'] ) ) {
 		switch ( sanitize_text_field( $_GET['login'] ) ) {
 			case 'invalidkey':
 				$message = __( 'Your reset password key is invalid.', 'paid-memberships-pro' );
@@ -186,7 +188,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		}
 	}
 
-	if ( ! empty( $_GET['password'] ) ) {
+	if ( isset( $_GET['password'] ) ) {
 		switch( sanitize_text_field( $_GET['password'] ) ) {
 			case 'changed':
 				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
@@ -199,7 +201,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	}
 
 	// Get Errors from password reset.
-	if ( ! empty( $_REQUEST['errors'] ) ) {
+	if ( isset( $_REQUEST['errors'] ) ) {
 		switch ( sanitize_text_field( $_REQUEST['errors'] ) ) {
 			case 'invalidcombo':
 				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
@@ -216,7 +218,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		}
 	}
 	
-	if ( ! empty( $_REQUEST['error'] ) ) {
+	if ( isset( $_REQUEST['error'] ) ) {
 		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
 			case 'password_reset_mismatch':
 				$message = __( 'Password doesnt match, please try again', 'paid-memberships-pro' );
@@ -234,7 +236,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
     }
 
     // Show the login form.
-    if ( ! is_user_logged_in( ) && $_GET['action'] !== 'reset_pass' ) {
+    if ( ! is_user_logged_in( ) && isset( $_GET['action'] ) && $_GET['action'] !== 'reset_pass' ) {
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 			?> <h2><?php _e( 'Login', 'paid-memberships-pro' ); ?></h2> <?php
 			wp_login_form( );
@@ -242,7 +244,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		} 
 	}
 
-	if ( ! is_user_logged_in() && $_GET['action'] === 'reset_pass' ) {
+	if ( ! is_user_logged_in() && isset( $_GET['action'] ) && $_GET['action'] === 'reset_pass' ) {
 		pmpro_lost_password_form();
 	}
 
@@ -459,7 +461,7 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
  * @since 2.3
  *
  */
-function pmpro_authenticate_username_password( $user, $username, $password ) {
+ function pmpro_authenticate_username_password( $user, $username, $password ) {
 	
 	// Make sure the fields were passed through.
 	if ( ! isset( $_REQUEST['log'] ) || ! isset( $_REQUEST['pwd'] ) ) {
@@ -487,6 +489,7 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 	return $user;
 }
 add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
+
 
 /**
  * Redirect failed login to referrer for frontend user login.
