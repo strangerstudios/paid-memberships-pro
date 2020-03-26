@@ -178,6 +178,11 @@ form.pmpro_form .pmpro_member_profile_edit-fields div {
 	margin: 0 0 1em 0;
 }
 
+/* Change Password Frontend Form */
+form.pmpro_form .pmpro_change_password-fields div {
+	margin: 0 0 1em 0;
+}
+
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
@@ -246,6 +251,9 @@ input.pmpro_error {
 }
 select.pmpro_error {
 	background-image: none;
+}
+.pmpro_message p:last-child {
+	margin-bottom: 0;
 }
 
 #pmpro_message_bottom {
@@ -416,6 +424,13 @@ li.pmpro_more {
 	margin-left: -20px;
 	padding-left: 0;
 	text-align: center;
+}
+/*---------------------------------------
+	Member Profile Edit Page
+---------------------------------------*/
+.pmpro_member_profile_edit_wrap,
+.pmpro_change_password_wrap {
+	margin-bottom: 1em;
 }
 /*---------------------------------------
 	Membership Levels

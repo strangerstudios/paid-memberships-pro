@@ -441,7 +441,7 @@ function pmpro_member_profile_edit_form() {
 	do_action( 'pmpro_personal_options_update', $current_user->ID );
 
 	// Saving profile updates.
-	if ( $_REQUEST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
+	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
 		$user->ID         = $_POST[ 'user_id' ];
@@ -472,18 +472,18 @@ function pmpro_member_profile_edit_form() {
 
 		// Validate nickname.
 		if ( empty( $user->nickname ) ) {
-			$errors[] = __( '<strong>Error</strong>: Please enter a nickname.', 'paid-memberships-pro' );
+			$errors[] = __( 'Please enter a nickname.', 'paid-memberships-pro' );
 		}
 
 		// Validate email address.
 		if ( empty( $user->user_email ) ) {
-			$errors[] = __( '<strong>Error</strong>: Please enter an email address.', 'paid-memberships-pro' );
+			$errors[] = __( 'Please enter an email address.', 'paid-memberships-pro' );
 		} elseif ( ! is_email( $user->user_email ) ) {
-			$errors[] = __( '<strong>Error</strong>: The email address isn&#8217;t correct.', 'paid-memberships-pro' );
+			$errors[] = __( 'The email address isn&#8217;t correct.', 'paid-memberships-pro' );
 		} else {
 			$owner_id = email_exists( $user->user_email );
 			if ( $owner_id && ( ! $update || ( $owner_id != $user->ID ) ) ) {
-				$errors[] = __( '<strong>Error</strong>: This email is already registered, please choose another one.', 'paid-memberships-pro' );
+				$errors[] = __( 'This email is already registered, please choose another one.', 'paid-memberships-pro' );
 			}
 		}
 
@@ -501,7 +501,7 @@ function pmpro_member_profile_edit_form() {
 			wp_update_user( $user );
 			?>
 			<div class="pmpro_message pmpro_success">
-				<?php _e( '<strong>Success</strong>: Your profile has been updated.', 'paid-memberships-pro' ); ?>
+				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
 			</div>
 		<?php }
 	}
@@ -586,10 +586,142 @@ function pmpro_member_profile_edit_form() {
 				do_action( 'pmpro_show_user_profile', $current_user );
 			?>
 			<input type="hidden" name="action" value="update-profile" />
+			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
 			<div class="pmpro_submit">
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update Profile', 'paid-memberships-pro' );?>" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->
+	<nav id="nav-below" class="navigation" role="navigation">
+		<div class="nav-next alignright">
+			<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
+		</div>
+	</nav>
+	<?php
+}
+
+/**
+ * Display a frontend Change Password form and allow user to edit their password when logged in.
+ *
+ * @since 2.3
+ */
+function pmpro_change_password_form() { 
+	global $current_user; ?>
+	
+	<h2><?php _e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
+
+	<?php
+	// Saving profile updates.
+	if ( isset( $_POST['action'] ) && $_POST['action'] == 'change-password' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
+		$change_password  = true;
+		$user     		  = new stdClass;
+		$user->ID         = $_POST[ 'user_id' ];
+	} else {
+		$change_password = false;
+	}
+
+	if ( $change_password ) {
+
+		$errors = array();
+
+		// Get all password values from the $_POST.
+		if ( ! empty( $_POST['password_current'] ) ) {
+			$password_current = $_POST['password_current'];
+		} else {
+			$password_current = '';
+		}
+		if ( ! empty( $_POST['password_new1'] ) ) {
+			$password_new1 = $_POST['password_new1'];
+		} else {
+			$password_new1 = '';
+		}
+		if ( ! empty( $_POST['password_new2'] ) ) {
+			$password_new2 = $_POST['password_new2'];
+		} else {
+			$password_new2 = '';
+		}
+
+		// Assume we are saving the updated password.
+		$save_pass = true;
+
+		// Check that all password information is correct.
+		if ( ! empty( $password_current ) && empty( $password_new1 ) && empty( $password_new2 ) ) {
+			$errors[] = __( 'Please complete all fields.', 'paid-memberships-pro' );
+			$save_pass = false;
+		} elseif ( ! empty( $password_new1 ) && empty( $password_current ) ) {
+			$errors[] = __( 'Please enter your current password.', 'paid-memberships-pro' );
+			$save_pass = false;
+		} elseif ( ! empty( $password_new1 ) && empty( $password_new2 ) ) {
+			$errors[] = __( 'Please complete all fields.', 'paid-memberships-pro' );
+			$save_pass = false;
+		} elseif ( ( ! empty( $password_new1 ) || ! empty( $password_new2 ) ) && $password_new1 !== $password_new2 ) {
+			$errors[] = __( 'New passwords do not match.', 'paid-memberships-pro' );
+			$save_pass = false;
+		} elseif ( ! empty( $password_new1 ) && ! wp_check_password( $password_current, $current_user->user_pass, $current_user->ID ) ) {
+			$errors[] = __( 'Your current password is incorrect.', 'paid-memberships-pro' );
+			$save_pass = false;
+		}
+
+		// Save the password update.
+		if ( ! empty( $password_new1 ) && ! empty( $save_pass ) ) {
+			$user->user_pass = $password_new1;
+			wp_update_user( $user ); ?>
+			<div class="pmpro_message pmpro_success">
+				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
+			</div>
+			<?php
+		}
+
+		// Show error messages.
+		if ( ! empty( $errors ) ) { ?>
+			<div class="pmpro_message pmpro_error">
+				<?php
+					foreach ( $errors as $key => $value ) {
+						echo '<p>' . $value . '</p>';
+					}
+				?>
+			</div>
+		<?php }
+
+		// TO DO: Keep the user logged in (https://wordpress.stackexchange.com/questions/186326/how-change-wordpress-password-without-logout-need-for-plugin)
+		// TO DO: Validate passwords are strong-ish / not weak.
+		// TO DO: Test with the strong passwords add on / setting.
+	}
+	?>
+	<div class="pmpro_change_password_wrap">
+		<form id="change-password" class="pmpro_form" action="" method="post">
+
+			<?php wp_nonce_field( 'change-password-user_' . $current_user->ID, 'change_password_user_nonce' ); ?>
+
+			<div class="pmpro_change_password-fields">
+				<div class="pmpro_change_password-field pmpro_change_password-field-password_current">
+					<label for="password_current"><?php _e( 'Current Password', 'paid-memberships-pro' ); ?></label></th>
+					<input type="password" name="password_current" id="password_current" value="" class="input <?php echo pmpro_getClassForField( 'password_current' );?>" />
+				</div> <!-- end pmpro_change_password-field-password_current -->
+				<div class="pmpro_change_password-field pmpro_change_password-field-password_new1">
+					<label for="password_new1"><?php _e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
+					<input type="password" name="password_new1" id="password_new1" value="" class="input <?php echo pmpro_getClassForField( 'password_new1' );?>" autocomplete="off" />
+				</div> <!-- end pmpro_change_password-field-password_new1 -->
+				<div class="pmpro_change_password-field pmpro_change_password-field-password_new2">
+					<label for="password_new2"><?php _e( 'Confirm New Password', 'paid-memberships-pro' ); ?></label></th>
+					<input type="password" name="password_new2" id="password_new2" value="" class="input <?php echo pmpro_getClassForField( 'password_new2' );?>" autocomplete="off" />
+				</div> <!-- end pmpro_change_password-field-password_new2 -->
+
+				
+			</div> <!-- end pmpro_change_password-fields -->
+
+			<input type="hidden" name="action" value="change-password" />
+			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
+			<div class="pmpro_submit">
+				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Change Password', 'paid-memberships-pro' );?>" />
+			</div>
+		</form>
+	</div> <!-- end pmpro_change_password_wrap -->
+
+	<nav id="nav-below" class="navigation" role="navigation">
+		<div class="nav-next alignright">
+			<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
+		</div>
+	</nav>
 	<?php
 }

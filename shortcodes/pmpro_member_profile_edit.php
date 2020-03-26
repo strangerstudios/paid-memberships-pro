@@ -12,8 +12,20 @@ function pmpro_shortcode_member_profile_edit( $atts, $content=null, $code='' ) {
 
 	ob_start();
 
-	// Display the Member Profile Edit form.
-	pmpro_member_profile_edit_form();
+	// Get the current action for the view.
+	if ( ! empty( $_REQUEST[ 'view' ] ) ) {
+		$view = sanitize_text_field( $_REQUEST[ 'view' ] );
+	} else {
+		$view = NULL;
+	}
+
+	if ( ! empty( $view ) && $view = 'change-pasword' ) {
+		// Display the Change Password form.
+		pmpro_change_password_form();
+	} else {
+		// Display the Member Profile Edit form.
+		pmpro_member_profile_edit_form();
+	}
 
 	$content = ob_get_contents();
 	ob_end_clean();
