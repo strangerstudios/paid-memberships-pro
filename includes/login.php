@@ -43,99 +43,27 @@ function pmpro_login_head()
 
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	
-	if((pmpro_is_login_page() || is_page("login") ||
-		class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && (Theme_My_Login::is_tml_page("register") || Theme_My_Login::is_tml_page("login")) ||
-		function_exists( 'tml_is_action' ) && ( tml_is_action( 'register' ) || tml_is_action( 'login' ) )
-		)
-		&& $login_redirect
-	)
-	{
+	 if ( pmpro_is_login_page() || is_page("login") && $login_redirect ) {
 		//redirect registration page to levels page
-		if( isset($_REQUEST['action']) && $_REQUEST['action'] == "register" || 
-			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled"	||
-			!is_admin() && class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("register") ||
-			function_exists( 'tml_is_action' ) && tml_is_action( 'register' )
-		)
-		{
-			//redirect to levels page unless filter is set.
-			$link = apply_filters("pmpro_register_redirect", pmpro_url("levels"));						
-			if(!empty($link))
-			{
-				wp_redirect($link);
-				exit;
-			}
-			else
-				return;	//don't redirect if pmpro_register_redirect filter returns false or a blank URL
-		}
+		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" || 
+			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) {
 
-		//if theme my login is installed, redirect all logins to the login page
-		if(pmpro_is_plugin_active("theme-my-login/theme-my-login.php"))
-		{
-			//check for the login page id and redirect there if we're not there already
-			global $post;
-						
-			if(!empty($GLOBALS['theme_my_login']) && is_array($GLOBALS['theme_my_login']->options))
-			{
-				//an older version of TML stores it this way
-				if($GLOBALS['theme_my_login']->options['page_id'] !== $post->ID)
-				{
-					//redirect to the real login page
-					$link = get_permalink($GLOBALS['theme_my_login']->options['page_id']);
-					if($_SERVER['QUERY_STRING'])
-						$link .= "?" . $_SERVER['QUERY_STRING'];
+				// don't redirect if in admin.
+				if ( is_admin() ) {
+					return;
+				}
+
+				//redirect to levels page unless filter is set.
+				$link = apply_filters("pmpro_register_redirect", pmpro_url( 'levels' ));			
+				if(!empty($link)) {
 					wp_redirect($link);
 					exit;
 				}
-			}
-			elseif(!empty($GLOBALS['theme_my_login']->options))
-			{
-				//another older version of TML stores it this way
-				if($GLOBALS['theme_my_login']->options->options['page_id'] !== $post->ID)
-				{
-					//redirect to the real login page
-					$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);
-					if($_SERVER['QUERY_STRING'])
-						$link .= "?" . $_SERVER['QUERY_STRING'];
-					wp_redirect($link);
-					exit;
-				}
-			}
-			elseif(class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'get_page_link') && method_exists('Theme_My_Login', 'is_tml_page'))
-			{
-				//TML > 6.3
-				$link = Theme_My_Login::get_page_link("login");
-				if(!empty($link))
-				{
-					//redirect if !is_page(), i.e. we're on wp-login.php
-					if(!Theme_My_Login::is_tml_page())
-					{
-						wp_redirect($link);
-						exit;
-					}
-				}				
-			}
-			elseif ( function_exists( 'tml_is_action' ) && function_exists( 'tml_get_action_url' ) && function_exists( 'tml_action_exists' ) )
-			{
-				$action = ! empty( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login';
-				if ( tml_action_exists( $action ) ) {
-					if ( 'wp-login.php' == $pagenow ) {
-						$link = tml_get_action_url( $action );
-						wp_redirect( $link );
-						exit;
-					}
-				}
-			}
 
-			//make sure users are only getting to the profile when logged in
-			global $current_user;
-			if(!empty($_REQUEST['action']) && $_REQUEST['action'] == "profile" && !$current_user->ID)
-			{
-				$link = get_permalink($GLOBALS['theme_my_login']->options->options['page_id']);								
-				wp_redirect($link);
-				exit;
+			} else {
+				return; //don't redirect if pmpro_register_redirect filter returns false or a blank URL
 			}
-		}
-	}
+	 	}
 }
 add_action('wp', 'pmpro_login_head');
 add_action('login_init', 'pmpro_login_head');
@@ -164,14 +92,12 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 function pmpro_login_url( $login_url='', $redirect='' ) {
 	$account_page_id = pmpro_getOption( 'account_page_id' );
     if ( ! empty ( $account_page_id ) ) {
-        $pmpro_login_url = get_permalink( $account_page_id );
+        $login_url = get_permalink( $account_page_id );
 
-        if ( ! empty( $redirect ) ) {
+        if ( ! empty( $redirect ) )
             $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
-		} else {
-			$login_url = $pmpro_login_url;
-		}
-    }
+	}
+	
     return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
@@ -191,6 +117,22 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
 				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'invalid_username':
+				$message = __( 'Unknown username. Check again or try your email address.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'empty_username':
+				$message = __( 'Empty username. Please enter your username and try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'empty_password':
+				$message = __( 'Empty password. Please enter your password and try again.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'incorrect_password':
+				$message = __( 'The password you entered for the user is incorrect. Please try again.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 			case 'recovered':
@@ -522,12 +464,21 @@ function pmpro_authenticate_username_password( $user, $username, $password ) {
 		return $user;
 	}
 
-	if ( empty( $username ) || empty( $password ) ) {
-		$error = new WP_Error();
-		$user  = new WP_Error( 'authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.' ) );
+	// check what page the login attempt is coming from
+	$referrer = wp_get_referer();
 
-		return $error;
+	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
+
+		$error = $user->get_error_code();
+	
+		if ( $error ) {
+				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
+			} else {
+				wp_redirect( pmpro_login_url() );
+			}
 	}
+
+	return $user;
 }
 add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
 
@@ -538,10 +489,11 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  *
  */
 function pmpro_login_failed( $username ) {
+
 	$referrer = wp_get_referer();
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
-		if ( empty( $_GET['loggedout'] ) ) {
+		if ( ! strstr( $referrer, '?login=failed') ) {
 			wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
