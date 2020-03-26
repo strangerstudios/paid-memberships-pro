@@ -460,6 +460,12 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
  *
  */
 function pmpro_authenticate_username_password( $user, $username, $password ) {
+	
+	// Make sure the fields were passed through.
+	if ( ! isset( $_REQUEST['log'] ) || ! isset( $_REQUEST['pwd'] ) ) {
+		return $user;
+	}
+	
 	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
 	}
