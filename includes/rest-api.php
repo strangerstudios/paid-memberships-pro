@@ -157,11 +157,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
-<<<<<<< HEAD
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-=======
-			$user_id = $params['user_id'];
->>>>>>> strangerstudios/v2.3
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
@@ -181,11 +177,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
-<<<<<<< HEAD
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-=======
-			$user_id = $params['user_id'];
->>>>>>> strangerstudios/v2.3
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
