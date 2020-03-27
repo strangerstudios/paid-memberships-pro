@@ -191,7 +191,7 @@ class PMPro_Discount_Code{
         }      
 
         // If the code doesn't exist, create it otherwise update it.
-        if ( ! $this->id ) {
+        if ( empty( $this->id ) ) {
 
             $before_action = 'pmpro_add_discount_code';
             $after_action = 'pmpro_added_discount_code';
