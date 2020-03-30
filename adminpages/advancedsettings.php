@@ -34,6 +34,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("maxnotificationpriority");
+		pmpro_setOption("activity_email_frequency");
 
 		//captcha
 		pmpro_setOption("recaptcha");
@@ -73,6 +74,7 @@
 	$showexcerpts = pmpro_getOption("showexcerpts");
 	$hideadslevels = pmpro_getOption("hideadslevels");
 	$maxnotificationpriority = pmpro_getOption("maxnotificationpriority");
+	$activity_email_frequency = pmpro_getOption("activity_email_frequency");
 
 	if(is_multisite())
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
@@ -106,6 +108,10 @@
 	}
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
+
+	if ( empty( $activity_email_frequency ) ) {
+		$activity_email_frequency = 'week';
+	}
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
@@ -326,6 +332,27 @@ if ( pmpro_displayAds() ) {
 				</th>
 				<td>
 					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from non-Administrator users.', 'paid-memberships-pro' );?></label>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<label for="activity_email_frequency"><?php _e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<select name="activity_email_frequency">
+						<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
+							<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
+							<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
+							<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
+							<?php _e( 'Never', 'paid-memberships-pro' ); ?>
+						</option>
+					</select>
 				</td>
 			</tr>
 
