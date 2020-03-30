@@ -407,15 +407,15 @@
 		}
 		
 		// Show the correct checkout link.
-		if ( empty( $level ) || ( ! $level->allow_signups && empty( $default_level_id ) ) ) {
-			$url = pmpro_url( 'levels' );
-			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
-		} elseif ( !empty( $default_level_id ) ) {
-			$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
-			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
-		} elseif ( $level->allow_signups ) {
+		if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
 			$url = pmpro_url( 'checkout', '?level=' . $level->id );
 			printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+		} elseif ( ! empty( $default_level_id ) ) {
+			$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
+			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
+		} else {
+			$url = pmpro_url( 'levels' );
+			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
 		}
 	} else { ?>
 		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
