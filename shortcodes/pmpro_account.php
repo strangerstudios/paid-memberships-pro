@@ -25,14 +25,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	ob_start();
 	
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
-	if(pmpro_hasMembershipLevel())
-	{
-		$ssorder = new MemberOrder();
-		$ssorder->getLastMemberOrder();
-		$mylevels = pmpro_getMembershipLevelsForUser();
-		$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
-		$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
-		?>	
+	$ssorder = new MemberOrder();
+	$ssorder->getLastMemberOrder();
+	$mylevels = pmpro_getMembershipLevelsForUser();
+	$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
+	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
+	?>	
 	<div id="pmpro_account">		
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
 			<div id="pmpro_account-membership" class="pmpro_box">
@@ -47,6 +45,38 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						</tr>
 					</thead>
 					<tbody>
+						<?php if ( empty( $mylevels ) ) { ?>
+						<tr>
+							<td colspan="3">
+							<?php
+							// Check to see if the user has a cancelled order
+							$order = new MemberOrder();
+							$order->getLastMemberOrder( $current_user->ID, array( 'cancelled', 'expired', 'admin_cancelled' ) );
+						
+							if ( isset( $order->membership_id ) && ! empty( $order->membership_id ) && empty( $level->id ) ) {
+								$level = pmpro_getLevel( $order->membership_id );
+						
+								// If no level check for a default level.
+								if ( empty( $level ) || ! $level->allow_signups ) {
+									$default_level_id = apply_filters( 'pmpro_default_level', 0 );
+								}
+								
+								// Show the correct checkout link.
+								if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
+									$url = pmpro_url( 'checkout', '?level=' . $level->id );
+									printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+								} elseif ( ! empty( $default_level_id ) ) {
+									$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
+									printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
+								} else {
+									$url = pmpro_url( 'levels' );
+									printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
+								}
+							}
+							?>
+							</td>
+						</tr>
+						<?php } ?>
 						<?php
 							foreach($mylevels as $level) {
 						?>
@@ -201,7 +231,6 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 	</div> <!-- end pmpro_account -->		
 	<?php
-	}
 	
 	$content = ob_get_contents();
 	ob_end_clean();

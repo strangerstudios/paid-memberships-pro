@@ -18,10 +18,11 @@ if (isset($_REQUEST['msg'])) {
 
 /**
  * Check if the current logged in user has a membership level.
- * If not, redirect to levels page.
+ * If not, and the site is using the pmpro_account_preheader_redirect
+ * filter, redirect to that page.
  */
 if ( ! empty( $current_user->ID && empty( $current_user->membership_level->ID ) ) ) {
-	$redirect = apply_filters( 'pmpro_account_preheader_redirect', pmpro_url( 'levels' ) );
+	$redirect = apply_filters( 'pmpro_account_preheader_redirect', false );
 	if ( $redirect ) {
 		wp_redirect( $redirect );
 		exit;
