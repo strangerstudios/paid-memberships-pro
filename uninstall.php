@@ -17,6 +17,7 @@ $pmpro_pages = array(
 	'confirmation' => get_option( 'pmpro_confirmation_page_id' ),
 	'invoice' => get_option( 'pmpro_invoice_page_id' ),
 	'levels' => get_option( 'pmpro_levels_page_id' )
+    'member_profile_edit' => get_option( 'pmpro_member_profile_edit_page_id' )
 );
 
 foreach ( $pmpro_pages as $pmpro_page_id => $pmpro_page ) {

@@ -44,6 +44,9 @@
 		//tos
 		pmpro_setOption("tospage");
 
+		//toolbar
+		pmpro_setOption( 'hide_toolbar' );
+
 		//footer link
 		pmpro_setOption("hide_footer_link");
 
@@ -80,6 +83,8 @@
 	$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
 
 	$tospage = pmpro_getOption("tospage");
+
+	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
 
 	$hide_footer_link = pmpro_getOption("hide_footer_link");
 
@@ -313,6 +318,14 @@ if ( pmpro_displayAds() ) {
 					?>
 					<br />
 					<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="hide_toolbar"><?php _e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from non-Administrator users.', 'paid-memberships-pro' );?></label>
 				</td>
 			</tr>
 

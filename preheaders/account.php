@@ -16,22 +16,16 @@ if (isset($_REQUEST['msg'])) {
     $pmpro_msg = false;
 }
 
-//if no user, redirect to levels page
-if (empty($current_user->ID)) {
-    $redirect = apply_filters("pmpro_account_preheader_no_user_redirect", pmpro_url("levels"));
-    if ($redirect) {
-        wp_redirect($redirect);
-        exit;
-    }
-}
-
-//if no membership level, redirect to levels page
-if (empty($current_user->membership_level->ID)) {
-    $redirect = apply_filters("pmpro_account_preheader_redirect", pmpro_url("levels"));
-    if ($redirect) {
-        wp_redirect($redirect);
-        exit;
-    }
+/**
+ * Check if the current logged in user has a membership level.
+ * If not, redirect to levels page.
+ */
+if ( ! empty( $current_user->ID && empty( $current_user->membership_level->ID ) ) ) {
+	$redirect = apply_filters( 'pmpro_account_preheader_redirect', pmpro_url( 'levels' ) );
+	if ( $redirect ) {
+		wp_redirect( $redirect );
+		exit;
+	}
 }
 
 global $pmpro_levels;
