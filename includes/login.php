@@ -31,20 +31,19 @@ add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
 function pmpro_wp_signup_location( $location ) {
 	if ( is_multisite() && pmpro_getOption("redirecttosubscription") ) {
 		$location = pmpro_url("levels");
-	} 
+	}
 
 	return apply_filters( 'pmpro_wp_signup_location', $location );
 }
 add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
 //redirect from default login pages to PMPro
-function pmpro_login_head()
-{
+function pmpro_login_head() {
 	global $pagenow;
 
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 	
-	 if ( pmpro_is_login_page() || is_page("login") && $login_redirect ) {
+	if ( pmpro_is_login_page() || is_page("login") && $login_redirect ) {
 		//redirect registration page to levels page
 		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" || 
 			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) {
@@ -69,15 +68,13 @@ function pmpro_login_head()
 add_action('wp', 'pmpro_login_head');
 add_action('login_init', 'pmpro_login_head');
 
-/*
-	If a redirect_to value is passed into /login/ and you are logged in already, just redirect there
-	
-	@since 1.7.14
-*/
-function pmpro_redirect_to_logged_in()
-{	
-	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login') && empty($_REQUEST['reauth']))
-	{
+/**
+ * If a redirect_to value is passed into /login/ and you are logged in already, just redirect there
+ *
+ * @since 1.7.14
+ */
+function pmpro_redirect_to_logged_in() {
+	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login') && empty($_REQUEST['reauth'])) {
 		wp_safe_redirect($_REQUEST['redirect_to']);
 		exit;
 	}
@@ -91,16 +88,15 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
  * @since 2.3
  */
 function pmpro_login_url( $login_url='', $redirect='' ) {
-
 	$account_page_id = pmpro_getOption( 'account_page_id' );
-    if ( ! empty ( $account_page_id ) ) {
-        $login_url = get_permalink( $account_page_id );
+	if ( ! empty ( $account_page_id ) ) {
+		$login_url = get_permalink( $account_page_id );
 
-        if ( ! empty( $redirect ) )
-            $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+	if ( ! empty( $redirect ) )
+		$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 	}
 
-    return apply_filters( 'pmpro_login_url', $login_url, $redirect );
+	return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
@@ -111,7 +107,6 @@ add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
  *
  */
 function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true  ) {
-
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
@@ -221,26 +216,52 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 	if ( isset( $_REQUEST['error'] ) ) {
 		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
 			case 'password_reset_mismatch':
-				$message = __( 'Password doesnt match, please try again', 'paid-memberships-pro' );
+				$message = __( 'New passwords do not match.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 			case 'password_reset_empty':
-				$message = __( 'Password field was empty, please try again.', 'paid-memberships-pro' );
+				$message = __( 'Please complete all fields.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 		}
 	}
 
-    if ( $message ) {
+	if ( $message ) {
 		echo '<div class="pmpro_message ' . esc_attr( $msgt ) . '">'. esc_html( $message ) .'</div>';
-    }
+	}
 
-    // Show the login form.
-    if ( ! is_user_logged_in( ) && ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'reset_pass' ) ) {
-		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
-			?> <h2><?php _e( 'Login', 'paid-memberships-pro' ); ?></h2> <?php
-			wp_login_form( );
-			echo '<p><a href="' . add_query_arg( 'action', urlencode( 'reset_pass' ), $login_url )  . '"title="Recover Lost Password">' . esc_html__( 'Lost Password?', 'paid-memberships-pro' ) . '</a>';
+	// Show the login form.
+	if ( ! is_user_logged_in( ) && ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'reset_pass' ) ) {
+		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) { ?>
+			<div class="pmpro_login_wrap">
+				<h2><?php _e( 'Log In', 'paid-memberships-pro' ); ?></h2>
+				<?php wp_login_form(); ?>
+			</div> <!-- end pmpro_login_wrap -->
+			<p class="pmpro_form_nav">
+				<?php
+					/**
+					 * Filters the separator used between login form navigation links.
+					 *
+					 * @since 2.3
+					 *
+					 * @param string $pmpro_form_nav_separator The separator used between form navigation links.
+					 */
+					$pmpro_form_nav_separator = apply_filters( 'pmpro_form_nav_separator', ' | ' );
+
+					if ( get_option( 'users_can_register' ) ) {
+						$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), __( 'Register', 'paid-memberships-pro' ) );
+
+						echo apply_filters( 'pmpro_registration_url', $pmpro_registration_url );
+
+						echo esc_html( $pmpro_form_nav_separator );
+					}
+
+					$pmpro_lost_password_url = sprintf( '<a href="%s">%s</a>', add_query_arg( 'action', urlencode( 'reset_pass' ), pmpro_login_url() ), __( 'Lost Password?', 'paid-memberships-pro' ) );
+
+					echo apply_filters( 'pmpro_lost_password_url', $pmpro_lost_password_url );
+				?>
+			</p>
+			<?php
 		} 
 	}
 
@@ -266,25 +287,49 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
  * Generate a lost password form for front-end login.
  * @since 2.3
  */
-function pmpro_lost_password_form() {
-	?>
-	<h2><?php esc_html_e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
-	 <p>
-        <?php
-            esc_html_e( "Enter your email address/username and we'll send you a link you can use to pick a new password.", 'paid-memberships-pro' );
-        ?>
-    </p>
-	 <form id="lostpasswordform" action="<?php echo wp_lostpassword_url(); ?>" method="post">
-        <p class="form-row">
-            <label for="user_login"><?php esc_html_e( 'Your email address or username', 'paid-memberships-pro' ); ?>
-            <input type="text" name="user_login" id="user_login">
-        </p>
- 
-        <p class="lostpassword-submit">
-            <input type="submit" name="submit" class="lostpassword-button"
-                   value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>"/>
-        </p>
-    </form>
+function pmpro_lost_password_form() { ?>
+	<div class="pmpro_lost_password_wrap">
+		<h2><?php esc_html_e( 'Password Reset', 'paid-memberships-pro' ); ?></h2>
+		<p class="pmpro_lost_password-instructions">
+			<?php
+				esc_html_e( 'Please enter your username or email address. You will receive a link to create a new password via email.', 'paid-memberships-pro' );
+			?>
+		</p>
+		<form id="lostpasswordform" class="pmpro_form" action="<?php echo wp_lostpassword_url(); ?>" method="post">
+			<div class="pmpro_lost_password-fields">
+				<div class="pmpro_lost_password-field pmpro_lost_password-field-user_login">
+					<label for="user_login"><?php esc_html_e( 'Username or Email Address', 'paid-memberships-pro' ); ?></label>
+					<input type="text" name="user_login" id="user_login" size="20" />
+				</div>
+			</div> <!-- end pmpro_lost_password-fields -->
+			<div class="pmpro_submit">
+				<input type="submit" name="submit" class="lostpassword-button" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
+			</div>
+		</form>
+	</div> <!-- end pmpro_lost_password_wrap -->
+	<p class="pmpro_form_nav">
+		<?php
+			/**
+			 * Filters the separator used between login form navigation links.
+			 *
+			 * @since 2.3
+			 *
+			 * @param string $pmpro_form_nav_separator The separator used between form navigation links.
+			 */
+			$pmpro_form_nav_separator = apply_filters( 'pmpro_form_nav_separator', ' | ' );
+
+			echo sprintf( '<a href="%s">%s</a>', esc_url( pmpro_login_url() ), __( 'Log In', 'paid-memberships-pro' ) );
+
+			if ( get_option( 'users_can_register' ) ) {
+				echo esc_html( $pmpro_form_nav_separator );
+
+				$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), __( 'Register', 'paid-memberships-pro' ) );
+
+				echo apply_filters( 'pmpro_registration_url', $pmpro_registration_url );
+
+			}
+		?>
+	</p>
 	<?php
 }
 
@@ -299,7 +344,7 @@ function pmpro_lost_password_redirect() {
 
 		$errors = retrieve_password();
 		if ( is_wp_error( $errors ) ) {	
-            $redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
+		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
 		} else {
 			$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
 		}
@@ -349,32 +394,30 @@ function pmpro_reset_password_form() {
 		$errors = array();
 		if ( isset( $_REQUEST['error'] ) ) {
 			$error_codes = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
-		}
-		
-		?>
-		<h2><?php _e( 'Reset Password', 'paid-memberships-pro' ); ?></h2>
-		<form name="resetpassform" id="resetpassform" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
-       	 	<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( $_REQUEST['login'] ); ?>" autocomplete="off" />
-        	<input type="hidden" name="rp_key" value="<?php echo esc_attr( $_REQUEST['key'] ); ?>" />
- 
-        <p>
-            <label for="pass1"><?php esc_html_e( 'New password', 'paid-memberships-pro' ) ?></label>
-            <input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
-        </p>
-        <p>
-            <label for="pass2"><?php esc_html_e( 'Repeat new password', 'paid-memberships-pro' ) ?></label>
-            <input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
-        </p>
-         
-        <p class="description"><?php echo wp_get_password_hint(); ?></p>
-         
-        <p class="resetpass-submit">
-            <input type="submit" name="submit" id="resetpass-button"
-                   class="button" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
-        </p>
-    </form>
-	<?php
-	}	
+		} ?>
+		<div class="pmpro_reset_password_wrap">
+			<h2><?php _e( 'Reset Password', 'paid-memberships-pro' ); ?></h2>
+			<form name="resetpassform" id="resetpassform" class="pmpro_form" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
+				<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( $_REQUEST['login'] ); ?>" autocomplete="off" />
+				<input type="hidden" name="rp_key" value="<?php echo esc_attr( $_REQUEST['key'] ); ?>" />
+				<div class="pmpro_reset_password-fields">
+					<div class="pmpro_rest_password-field pmpro_rest_password-field-pass1">
+						<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
+						<input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
+						<p class="lite"><?php echo wp_get_password_hint(); ?></p>
+					</div>
+					<div class="pmpro_rest_password-field pmpro_rest_password-field-pass2">
+						<label for="pass2"><?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ) ?></label>
+						<input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
+					</div>
+				</div> <!-- end pmpro_reset_password-fields -->
+				<div class="pmpro_submit">
+					<input type="submit" name="submit" id="resetpass-button" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
+				</div>
+			</form>
+		</div> <!-- end pmpro_reset_password_wrap -->
+		<?php
+	}
 }
 
 /**
@@ -549,9 +592,10 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 				'container'       => 'nav',
 				'container_id'    => 'pmpro-member-navigation',
 				'container_class' => 'pmpro-member-navigation',
+				'fallback_cb'	  => false,
 				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
 			);
-			wp_nav_menu( $member_menu_defaults );
+			wp_nav_menu( $pmpro_member_menu_defaults );
 		}
 		?>
 

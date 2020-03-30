@@ -592,11 +592,11 @@ function pmpro_member_profile_edit_form() {
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->
-	<nav id="nav-below" class="navigation" role="navigation">
-		<div class="nav-next alignright">
-			<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
-		</div>
-	</nav>
+
+	<!-- TO DO: should we have this here? -->
+	<p class="pmpro_form_nav">
+		<a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
+	</p>
 	<?php
 }
 
@@ -701,12 +701,12 @@ function pmpro_change_password_form() {
 				<div class="pmpro_change_password-field pmpro_change_password-field-password_new1">
 					<label for="password_new1"><?php _e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
 					<input type="password" name="password_new1" id="password_new1" value="" class="input <?php echo pmpro_getClassForField( 'password_new1' );?>" autocomplete="off" />
+					<p class="lite"><?php echo wp_get_password_hint(); ?></p>
 				</div> <!-- end pmpro_change_password-field-password_new1 -->
 				<div class="pmpro_change_password-field pmpro_change_password-field-password_new2">
 					<label for="password_new2"><?php _e( 'Confirm New Password', 'paid-memberships-pro' ); ?></label></th>
 					<input type="password" name="password_new2" id="password_new2" value="" class="input <?php echo pmpro_getClassForField( 'password_new2' );?>" autocomplete="off" />
 				</div> <!-- end pmpro_change_password-field-password_new2 -->
-
 				
 			</div> <!-- end pmpro_change_password-fields -->
 
@@ -718,10 +718,9 @@ function pmpro_change_password_form() {
 		</form>
 	</div> <!-- end pmpro_change_password_wrap -->
 
-	<nav id="nav-below" class="navigation" role="navigation">
-		<div class="nav-next alignright">
-			<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
-		</div>
-	</nav>
+	<!-- TO DO: should we have this here? -->
+	<p class="pmpro_form_nav">
+		<a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
+	</p>
 	<?php
 }
