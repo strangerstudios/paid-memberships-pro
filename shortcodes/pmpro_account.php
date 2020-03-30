@@ -112,15 +112,23 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
 				<div class="pmpro_actionlinks">
-					<?php 
+					<?php
+						// Get the edit profile URL if 'Member Profile Edit Page' is set.
 						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
-							$edit_profile_url = pmpro_url( 'member_profile_edit' );
+							$edit_profile_url = apply_filters( 'pmpro_edit_profile_url', pmpro_url( 'member_profile_edit' ) );
 						} else {
 							$edit_profile_url = admin_url( 'profile.php' );
 						}
+
+						// Get the change password URL if 'Member Profile Edit Page' is set.
+						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
+							$change_password_url = apply_filters( 'pmpro_change_password_url', add_query_arg( 'view', 'change-password', pmpro_url( 'member_profile_edit' ) ) );
+						} else {
+							$change_password_url = admin_url( 'profile.php' );
+						}
 					?>
-					<a id="pmpro_actionlink-profile" href="<?php echo $edit_profile_url; ?>" id="pmpro_account-edit-profile"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
-					<a id="pmpro_actionlink-password" href="<?php echo admin_url('profile.php')?>" id="pmpro_account-change-password"><?php _e('Change Password', 'paid-memberships-pro' );?></a>
+					<a id="pmpro_actionlink-profile" href="<?php echo esc_url( $edit_profile_url ); ?>" id="pmpro_account-edit-profile"><?php _e("Edit Profile", 'paid-memberships-pro' );?></a>
+					<a id="pmpro_actionlink-password" href="<?php echo esc_url( $change_password_url ); ?>" id="pmpro_account-change-password"><?php _e('Change Password', 'paid-memberships-pro' );?></a>
 				</div>
 			</div> <!-- end pmpro_account-profile -->
 		<?php } ?>

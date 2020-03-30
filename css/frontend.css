@@ -104,10 +104,12 @@ input[type="button"]#other_discount_code_button:focus {
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
-form.pmpro_form .pmpro_checkout-fields div {
+form.pmpro_form .pmpro_checkout-fields div,
+#loginform p {
 	margin: 0 0 1em 0;
 }
-form.pmpro_form label {
+form.pmpro_form label,
+#loginform label {
 	font-weight: 700;
 	display: block;
 	margin: 0;
@@ -141,7 +143,9 @@ form.pmpro_form input[type=checkbox]#tos {
 }
 form.pmpro_form .input,
 form.pmpro_form textarea,
-form.pmpro_form select {
+form.pmpro_form select,
+#loginform input[type=text],
+#loginform input[type=password] {
 	display: inline-block;
 	max-width: 90%;
 }
@@ -163,6 +167,8 @@ form.pmpro_form .pmpro_captcha div {
 }
 form.pmpro_form .pmpro_submit {
 	margin-top: 1em;
+}
+body.pmpro-checkout form.pmpro_form .pmpro_submit {
 	text-align: right;
 }
 form.pmpro_form #pmpro_processing_message {
@@ -173,8 +179,18 @@ form.pmpro_form #pmpro_processing_message {
 	text-align: right;
 }
 
+/* Lot Password Frontend Form */
+form.pmpro_form .pmpro_lost_password-fields div {
+	margin: 0 0 1em 0;
+}
+
 /* Member Profile Edit Frontend Form */
 form.pmpro_form .pmpro_member_profile_edit-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Change Password Frontend Form */
+form.pmpro_form .pmpro_change_password-fields div {
 	margin: 0 0 1em 0;
 }
 
@@ -246,6 +262,9 @@ input.pmpro_error {
 }
 select.pmpro_error {
 	background-image: none;
+}
+.pmpro_message p:last-child {
+	margin-bottom: 0;
 }
 
 #pmpro_message_bottom {
@@ -416,6 +435,21 @@ li.pmpro_more {
 	margin-left: -20px;
 	padding-left: 0;
 	text-align: center;
+}
+/*---------------------------------------
+	Log In and Password Reset Pages
+---------------------------------------*/
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Member Profile Edit Page
+---------------------------------------*/
+.pmpro_member_profile_edit_wrap,
+.pmpro_change_password_wrap {
+	margin-bottom: 1em;
 }
 /*---------------------------------------
 	Membership Levels

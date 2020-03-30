@@ -49,11 +49,11 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 			// Get widget settings for this instance.
 			extract( $args );
 
-			$display_if_logged_in = isset( $instance['display_if_logged_in'] ) ? $instance['display_if_logged_in'] : true;
+			$display_if_logged_in = isset( $instance['display_if_logged_in'] ) ? $instance['display_if_logged_in'] : false;
 
-			$show_menu = isset( $instance['show_menu'] ) ? $instance['show_menu'] : true;
+			$show_menu = isset( $instance['show_menu'] ) ? $instance['show_menu'] : false;
 
-			$show_logout_link = isset( $instance['show_logout_link'] ) ? $instance['show_logout_link'] : true;
+			$show_logout_link = isset( $instance['show_logout_link'] ) ? $instance['show_logout_link'] : false;
 		?>
 
 		<?php
