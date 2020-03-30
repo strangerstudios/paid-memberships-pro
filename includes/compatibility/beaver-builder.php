@@ -92,7 +92,7 @@ function pmpro_beaver_builder_check_field_connections( $is_visible, $node ) {
 			}
 		}
 	}
-	if ( isset( $node->settings->pmpro_enable ) && 'yes' === $node->settings->pmpro_enable && is_user_logged_in() ) {
+	if ( isset( $node->settings->pmpro_enable ) && 'yes' === $node->settings->pmpro_enable ) {
 		if ( pmpro_hasMembershipLevel( $node->settings->pmpro_memberships ) || empty( $node->settings->pmpro_memberships ) ) {
 			return $is_visible;
 		} else {

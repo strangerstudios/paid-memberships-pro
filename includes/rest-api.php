@@ -157,7 +157,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = $params['user_id'];
+			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
@@ -177,7 +177,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = $params['user_id'];
+			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
@@ -197,8 +197,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_get_has_membership_access($request) {
 			$params = $request->get_params();
-			$post_id = $params['post_id'];
-			$user_id = $params['user_id'];
+			$post_id = isset( $params['post_id'] ) ? $params['post_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
@@ -221,8 +221,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = $params['user_id'];
-			$level_id = $params['level_id'];
+			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
@@ -248,8 +248,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_cancel_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = $params['user_id'];
-			$level_id = $params['level_id'];
+			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
@@ -284,7 +284,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$params = $request->get_params();
-			$id = intval( $params['id'] );
+			$id = isset( $params['id'] ) ? intval( $params['id'] ) : null;
 
 			if ( empty( $id ) ) {
 				return new WP_REST_Response( 'ID not passed through', 400 );
@@ -364,7 +364,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$params = $request->get_params();
-			$id = intval( $params['id'] );
+			$id = isset( $params['id'] ) ? intval( $params['id'] ) : '';
 
 			if ( empty( $id ) ) {
 				return new WP_REST_Response( 'ID not passed through.', 400 );
@@ -386,7 +386,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$params = $request->get_params();
-			$code = $params['code'];
+			$code = isset( $params['code'] ) ? $params['code'] : null;
 
 			if ( empty( $code ) ) {
 				return new WP_REST_Response( 'No discount code sent.', 400 );
@@ -409,11 +409,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$params = $request->get_params();
 			$method = $request->get_method();
-			$code = $params['code'];
-			$uses = $params['uses'];
-			$starts = $params['starts'];
-			$expires = $params['expires'];
-			$levels = $params['levels'];
+			$code = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : '';
+			$uses = isset( $params['uses'] ) ? intval( $params['uses'] ) : '';
+			$starts = isset( $params['starts'] ) ? sanitize_text_field( $params['starts'] ) : '';
+			$expires = isset( $params['expires'] ) ? sanitize_text_field( $params['expires'] ) : '';
+			$levels = isset( $params['levels'] ) ? $params['levels'] : null;
 
 			if ( ! empty( $levels ) ) {
 				$levels = json_decode( $levels, true );
@@ -422,16 +422,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$levels_array = array();
 					foreach( $levels as $level ){
 						$levels_array[$level['level']] = array(
-							'initial_payment' => $level['initial_payment'],
-							'billing_amount' => $level['billing_amount'],
-							'cycle_number' => $level['cycle_number'],
-							'cycle_period' => $level['cycle_period'],
-							'billing_limit' => $level['cycle_period'],
-							'custom_trial' => $level['custom_trial'],
-							'trial_amount' => $level['trial_amount'],
-							'trial_limit' => $level['trial_limit'],
-							'expiration_number' => $level['expiration_number'],
-							'expiration_period' => $level['expiration_period']
+							'initial_payment' => isset( $level['initial_payment'] ) ? $level['initial_payment'] : null,
+							'billing_amount' => isset( $level['billing_amount'] ) ? $level['billing_amount'] : null,
+							'cycle_number' => isset( $level['cycle_number'] ) ? $level['cycle_number'] : null,
+							'cycle_period' => isset( $level['cycle_period'] ) ? $level['cycle_period'] : null,
+							'billing_limit' => isset( $level['cycle_period'] ) ? $level['cycle_period'] : null,
+							'custom_trial' => isset( $level['custom_trial'] ) ? $level['custom_trial'] : null,
+							'trial_amount' => isset( $level['trial_amount'] ) ? $level['trial_amount'] : null,
+							'trial_limit' => isset( $level['trial_limit'] ) ? $level['trial_limit'] : null,
+							'expiration_number' => isset( $level['expiration_number'] ) ?  : null,
+							'expiration_period' => isset( $level['expiration_period'] ) ?  : null
 						);
 					}
 				}
@@ -453,10 +453,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				}
 			}
 
-			$discount_code->code = isset( $code ) ? sanitize_text_field( $code ) : '';
-			$discount_code->starts = isset( $starts ) ? sanitize_text_field( $starts ) : '';
-			$discount_code->ends = isset( $expires ) ? sanitize_text_field( $expires ) : '';
-			$discount_code->uses = isset( $uses ) ? intval( $uses ) : '';
+			$discount_code->code = $code;
+			$discount_code->starts = $starts;
+			$discount_code->ends = $expires;
+			$discount_code->uses = $uses;
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
 
