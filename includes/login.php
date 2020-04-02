@@ -133,7 +133,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				$msgt = 'pmpro_error';
 				break;
 			case 'recovered':
-				$message = __( 'Check your e-mail for the confirmation link.', 'paid-memberships-pro' );
+				$message = __( 'Check your email for the confirmation link.', 'paid-memberships-pro' );
 				break;
 		}
 	}

@@ -733,7 +733,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
 	
-			if($sendemails) { // Send the e-mails only if the flag is set to true
+			if($sendemails) { // Send the emails only if the flag is set to true
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {
