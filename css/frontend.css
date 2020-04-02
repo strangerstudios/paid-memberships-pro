@@ -464,6 +464,24 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
+.pmpro_actions_nav {
+	text-align: center;
+}
+.pmpro_actions_nav-left {
+	display: block;
+	float: left;
+	width: 48%;
+	text-align: left;
+}
+.pmpro_actions_nav-right {
+	display: block;
+	float: right;
+	width: 48%;
+	text-align: right;
+}
+.pmpro-levels .pmpro_actions_nav {
+	text-align: left;
+}
 .pmpro_a-right {
 	float: right;
 	font-size: 11px;
