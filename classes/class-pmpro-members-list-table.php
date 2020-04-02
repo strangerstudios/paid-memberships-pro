@@ -47,7 +47,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$this->_column_headers = $this->get_column_info();
-		$this->handle_table_actions();
 		$this->items = $this->sql_table_data();
 
 		// set the pagination arguments
@@ -195,39 +194,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				false,
 			),
 		);
-	}
-
-	/**
-	 * Allows you to sort the data by the variables set in the $_GET
-	 *
-	 * @return Mixed
-	 */
-	private function sort_data( $a, $b ) {
-		// Set defaults
-		$orderby = 'ID';
-		$order   = 'desc';
-
-		// If orderby is set, use this as the sort column
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = $_GET['orderby'];
-		}
-
-		// If order is set use this as the order
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = $_GET['order'];
-		}
-
-		if ( is_numeric( $a[ $orderby ] ) && is_numeric( $b[ $orderby ] ) ) {
-			$result = intval( $a[ $orderby ] ) > intval( $b[ $orderby ] ) ? 1 : -1;
-		} else {
-			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
-		}
-
-		if ( $order === 'asc' ) {
-			return $result;
-		}
-
-		return -$result;
 	}
 
 	/**
@@ -413,31 +379,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Filter the table data based on the user search key
-	 *
-	 * @since 2.2.0
-	 *
-	 * @param array  $table_data
-	 * @param string $search_key
-	 * @return array
-	 */
-	public function filter_table_data( $table_data, $search_key ) {
-		$filtered_table_data = array_values(
-			array_filter(
-				$table_data,
-				function( $row ) use ( $search_key ) {
-					foreach ( $row as $row_val ) {
-						if ( stripos( $row_val, $search_key ) !== false ) {
-							return true;
-						}
-					}
-				}
-			)
-		);
-		return $filtered_table_data;
-	}
-
-	/**
 	 * Render a column when no column specific method exists.
 	 *
 	 * @param array  $item
@@ -534,21 +475,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for checkbox column.
-	 *
-	 * The special 'cb' column
-	 *
-	 * @param object $item A row's data
-	 * @return string Text to be placed inside the column <td>.
-	 */
-	protected function column_cb( $item ) {
-		return sprintf(
-			'<label class="screen-reader-text" for="user_' . $item['ID'] . '">' . sprintf( __( 'Select %s' ), $item['user_login'] ) . '</label>'
-			. "<input type='checkbox' name='users[]' id='user_{$item['ID']}' value='{$item['ID']}' />"
-		);
-	}
-
-	/**
 	 * Get value for first name column.
 	 *
 	 * The special 'first_name' column
@@ -588,61 +514,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		// return ( $user_object->last_name ?: '---' );
 	}
 
-	public function get_some_actions() {
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
-		} else {
-			$l = false;
-		}
-		?>
-		<ul class="subsubsub">
-		<li>
-			<?php _e( 'Show', 'paid-memberships-pro' ); ?>
-			<select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" 
-				<?php
-				if ( ! $l ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'All Levels', 'paid-memberships-pro' ); ?></option>
-				<?php
-					$levels = $wpdb->get_results(
-						"
-						SELECT id, name 
-						FROM $wpdb->pmpro_membership_levels 
-						ORDER BY name
-						"
-					);
-				foreach ( $levels as $level ) {
-					?>
-					<option value="<?php echo $level->id; ?>" 
-					  <?php
-						if ( $l == $level->id ) {
-							?>
-						selected="selected"<?php } ?>><?php echo $level->name; ?></option>
-					<?php
-				}
-				?>
-				<option value="cancelled" 
-				<?php
-				if ( $l == 'cancelled' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Cancelled Members', 'paid-memberships-pro' ); ?></option>
-				<option value="expired" 
-				<?php
-				if ( $l == 'expired' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Expired Members', 'paid-memberships-pro' ); ?></option>
-				<option value="oldmembers" 
-				<?php
-				if ( $l == 'oldmembers' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Old Members', 'paid-memberships-pro' ); ?></option>
-			</select>
-		</li>
-	</ul>
-		<?php
-	}
-
 	/**
 	 * Add extra markup in the toolbars before or after the list
 	 *
@@ -678,78 +549,5 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( $which == 'bottom' ) {
 			// The code that goes after the table is there
 		}
-	}
-
-	/**
-	 * Process actions triggered by the user
-	 *
-	 * @since 2.2.0
-	 */
-	public function handle_table_actions() {
-		/**
-		 * Note: Table bulk_actions can be identified by checking $_REQUEST['action'] and $_REQUEST['action2']
-		 *
-		 * action - is set if checkbox from top-most select-all is set, otherwise returns -1
-		 * action2 - is set if checkbox the bottom-most select-all checkbox is set, otherwise returns -1
-		 */
-
-		// check for individual row actions
-		$the_table_action = $this->current_action();
-
-		if ( 'view_usermeta' === $the_table_action ) {
-			$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
-			// verify the nonce.
-			if ( ! wp_verify_nonce( $nonce, 'view_usermeta_nonce' ) ) {
-				$this->invalid_nonce_redirect();
-			} else {
-				$this->graceful_exit();
-			}
-		}
-
-		// check for table bulk actions
-		if ( ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'bulk-download' ) || ( isset( $_REQUEST['action2'] ) && $_REQUEST['action2'] === 'bulk-download' ) ) {
-
-			// verify the nonce.
-			$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
-			/**
-			 * Note: the nonce field is set by the parent class
-			 * wp_nonce_field( 'bulk-' . $this->_args['plural'] );
-			 */
-			if ( ! wp_verify_nonce( $nonce, 'bulk-users' ) ) {
-				$this->invalid_nonce_redirect();
-			} else {
-				$this->page_bulk_download( $_REQUEST['users'] );
-				$this->graceful_exit();
-			}
-		}
-	}
-
-	/**
-	 * Stop execution and exit
-	 *
-	 * @since 2.2.0
-	 *
-	 * @return void
-	 */
-	public function graceful_exit() {
-		exit;
-	}
-
-	/**
-	 * Die when the nonce check fails.
-	 *
-	 * @since 2.2.0
-	 *
-	 * @return void
-	 */
-	public function invalid_nonce_redirect() {
-		wp_die(
-			__( 'Invalid Nonce', $this->plugin_text_domain ),
-			__( 'Error', $this->plugin_text_domain ),
-			array(
-				'response'  => 403,
-				'back_link' => esc_url( add_query_arg( array( 'page' => wp_unslash( $_REQUEST['page'] ) ), admin_url( 'pmpro-membershiplevels' ) ) ),
-			)
-		);
 	}
 }
