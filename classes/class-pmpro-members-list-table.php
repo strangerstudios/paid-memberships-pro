@@ -388,98 +388,66 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 		$item = (array) apply_filters( 'pmpro_members_list_user', (object) $item );
-		switch ( $column_name ) {
-			case 'ID':
-			case 'display_name':
-			case 'user_email':
-			case 'membership':
-			case 'membership_id':
-			case 'cycle_period':
-			case 'cycle_number':
-				return $item[ $column_name ];
-			case 'username':
-				$avatar = get_avatar( $item['ID'], 32 );
-				$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
-				$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
-				$output = $avatar . ' <strong>' . $userlink . '</strong><br />';
-
-				// Set up the hover actions for this user
-				$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
-				$action_count = count( $actions );
-				$i            = 0;
-				if ( $action_count ) {
-					$output .= '<div class="row-actions">';
-					foreach ( $actions as $action => $link ) {
-						++$i;
-						( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-						$output .= "<span class='$action'>$link$sep</span>";
-					}
-					$output .= '</div>';
-				}
-				return $output;
-			case 'fee':
-				$fee = '';
-				// If there is no payment for the level, show a dash.
-				if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
-					$fee .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
-				} else {
-					// Display the member's initial payment.
-					if ( (float)$item['initial_payment'] > 0 ) {
-						$fee .= pmpro_formatPrice( $item['initial_payment'] );
-					}
-					// If there is a recurring payment, show a plus sign.
-					if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
-						$fee .= esc_html( ' + ', 'paid-memberships-pro' );
-					}
-					// If there is a recurring payment, show the recurring payment amount and cycle.
-					if ( (float)$item['billing_amount'] > 0 ) {
-						$fee .= pmpro_formatPrice( $item['billing_amount'] );
-						$fee .= esc_html( ' per ', 'paid-memberships-pro' );
-						if ( $item['cycle_number'] > 1 ) {
-							$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
-						} else {
-							$fee .= $item['cycle_period'];
-						}
-					}
-				}
-				return $fee;
-			case 'joindate':
-				$joindate = $item[ $column_name ];
-				return date_i18n( get_option('date_format'), $joindate );
-			case 'startdate':
-				$startdate = $item[ $column_name ];
-				return date_i18n( get_option('date_format'), $startdate );
-			case 'enddate':
-				$user_object = get_userdata( $item['ID'] );
-				if ( 0 == $item['enddate'] ) {
-					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
-				} else {
-					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
-				}
-			default:
-				if ( isset( $item[$column_name] ) ) {
-					return $item[$column_name];
-				} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
-					// Re-implementing old hook, will be deprecated.
-					$user_object = get_userdata( $item['ID'] );
-					ob_start();
-					do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
-					$extra_cols = ob_get_clean();
-					preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
-					$custom_field_num = explode( 'custom_field_', $column_name )[1];
-					if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
-						return $matches[1][ intval( $custom_field_num ) ];
-					}
-				}
+		if ( isset( $item[ $column_name ] ) ) {
+			echo( esc_html( $item[ $column_name ] ) );
+		} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
+			// Re-implementing old hook, will be deprecated.
+			$user_object = get_userdata( $item['ID'] );
+			ob_start();
+			do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
+			$extra_cols = ob_get_clean();
+			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
+			$custom_field_num = explode( 'custom_field_', $column_name )[1];
+			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
+				echo( $matches[1][ intval( $custom_field_num ) ] );
+			}
+		} else {
+			do_action( 'manage_memberships_page_pmpro-memberslist_custom_column', $column_name, $item['ID'] );
 		}
+	}
+
+	/**
+	 * Get value for ID column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_ID( $item ) {
+		return $item['ID'];
+	}
+
+	/**
+	 * Get value for username column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_username( $item ) {
+		$avatar   = get_avatar( $item['ID'], 32 );
+		$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
+		$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
+		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
+
+		// Set up the hover actions for this user.
+		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
+		$action_count = count( $actions );
+		$i            = 0;
+		if ( $action_count ) {
+			$output .= '<div class="row-actions">';
+			foreach ( $actions as $action => $link ) {
+				++$i;
+				( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+				$output .= "<span class='$action'>$link$sep</span>";
+			}
+			$output .= '</div>';
+		}
+		return $output;
 	}
 
 	/**
 	 * Get value for first name column.
 	 *
-	 * The special 'first_name' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_first_name( $item ) {
@@ -490,9 +458,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Get value for last name column.
 	 *
-	 * The special 'last_name' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_last_name( $item ) {
@@ -501,17 +467,125 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get value for display_name column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insdisplay_namee the column <td>.
+	 */
+	public function column_display_name( $item ) {
+		return $item['display_name'];
+	}
+
+	/**
+	 * Get value for user_email column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insuser_emaile the column <td>.
+	 */
+	public function column_user_email( $item ) {
+		return $item['user_email'];
+	}
+
+	/**
 	 * Get value for Address column.
 	 *
-	 * The special 'address' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_address( $item ) {
 		$user_object = get_userdata( $item['ID'] );
 		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
-		// return ( $user_object->last_name ?: '---' );
+	}
+
+	/**
+	 * Get value for membership column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insmembershipe the column <td>.
+	 */
+	public function column_membership( $item ) {
+		return $item['membership'];
+	}
+
+	/**
+	 * Get value for membership_id column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insmembership_ide the column <td>.
+	 */
+	public function column_membership_id( $item ) {
+		return $item['membership_id'];
+	}
+
+	/**
+	 * Get value for fee column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_fee( $item ) {
+		$fee = '';
+		// If there is no payment for the level, show a dash.
+		if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
+			$fee .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
+		} else {
+			// Display the member's initial payment.
+			if ( (float)$item['initial_payment'] > 0 ) {
+				$fee .= pmpro_formatPrice( $item['initial_payment'] );
+			}
+			// If there is a recurring payment, show a plus sign.
+			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
+				$fee .= esc_html( ' + ', 'paid-memberships-pro' );
+			}
+			// If there is a recurring payment, show the recurring payment amount and cycle.
+			if ( (float)$item['billing_amount'] > 0 ) {
+				$fee .= pmpro_formatPrice( $item['billing_amount'] );
+				$fee .= esc_html( ' per ', 'paid-memberships-pro' );
+				if ( $item['cycle_number'] > 1 ) {
+					$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
+				} else {
+					$fee .= $item['cycle_period'];
+				}
+			}
+		}
+		return $fee;
+	}
+
+	/**
+	 * Get value for joindate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_joindate( $item ) {
+		$joindate = $item[ 'joindate' ];
+		return date_i18n( get_option('date_format'), $joindate );
+	}
+
+	/**
+	 * Get value for startdate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_startdate( $item ) {
+		$startdate = $item[ 'startdate' ];
+		return date_i18n( get_option('date_format'), $startdate );
+	}
+
+	/**
+	 * Get value for enddate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_enddate( $item ) {
+		$user_object = get_userdata( $item['ID'] );
+		if ( 0 == $item['enddate'] ) {
+			return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
+		} else {
+			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
+		}
 	}
 
 	/**
