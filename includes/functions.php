@@ -2036,15 +2036,28 @@ function pmpro_getLevel( $level ) {
 }
 
 /*
-	Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest.
-	This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
+	Get all PMPro membership levels.
+	
+	@param	bool  $include_hidden  Include levels marked as hidden/inactive.
+	@param  bool  $force		   If false, use $pmpro_levels global. If true use other caches.
 */
 function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 	global $pmpro_levels, $wpdb;
 
-	// just use what's cached (doesn't take into account include_hidden setting)
-	if ( ! empty( $pmpro_levels ) && ! $force ) {
-		return $pmpro_levels;
+	static $pmpro_all_levels;			// every single level
+	static $pmpro_visible_levels;		// every single level that's not hidden
+
+	// just use the $pmpro_levels global
+	if ( ! empty( $pmpro_levels ) && ! $force ) {			
+		return $pmpro_levels;	
+	}
+
+	// For now, if force is true, still check if we have something in a static var.
+	if ( $include_hidden && isset( $pmpro_all_levels ) ) {
+		return $pmpro_all_levels;
+	}
+	if ( ! $include_hidden && isset( $pmpro_visible_levels ) ) {
+		return $pmpro_visible_levels;
 	}
 
 	// build query
@@ -2063,6 +2076,13 @@ function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 		$raw_level->billing_amount = pmpro_round_price( $raw_level->billing_amount );
 		$raw_level->trial_amount = pmpro_round_price( $raw_level->trial_amount );
 		$pmpro_levels[ $raw_level->id ] = $raw_level;
+	}
+	
+	// Store an extra cache specific to the include_hidden param.
+	if ( $include_hidden ) {
+		$pmpro_all_levels = $pmpro_levels;
+	} else {
+		$pmpro_visible_levels = $pmpro_levels;
 	}
 
 	return $pmpro_levels;
