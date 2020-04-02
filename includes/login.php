@@ -235,7 +235,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) { ?>
 			<div class="pmpro_login_wrap">
 				<h2><?php _e( 'Log In', 'paid-memberships-pro' ); ?></h2>
-				<?php wp_login_form(); ?>
+				<?php wp_login_form( array( 'value_username' => esc_html( $_GET['username'] ) ) ); ?>
 			</div> <!-- end pmpro_login_wrap -->
 			<p class="pmpro_form_nav">
 				<?php
@@ -547,7 +547,7 @@ function pmpro_login_failed( $username ) {
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
-			wp_redirect( add_query_arg( 'action', 'failed', pmpro_login_url() ) );
+			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ) ), pmpro_login_url() ) );
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
 		}
