@@ -248,7 +248,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 					 */
 					$pmpro_form_nav_separator = apply_filters( 'pmpro_form_nav_separator', ' | ' );
 
-					if ( get_option( 'users_can_register' ) ) {
+					if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
 						$levels_page_id = pmpro_getOption( 'levels_page_id' );
 						
 						if ( $levels_page_id && pmpro_are_visible_levels() ) {
