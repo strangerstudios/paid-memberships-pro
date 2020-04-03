@@ -2084,8 +2084,24 @@ function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 	} else {
 		$pmpro_visible_levels = $pmpro_levels;
 	}
-
 	return $pmpro_levels;
+}
+
+/**
+ * Check if any level(s) are available for signup.
+ * @return bool
+ * @since 2.3
+ */
+function pmpro_are_any_visible_levels() {
+	$levels = pmpro_getAllLevels( false, true );
+
+	if ( ! empty( $levels ) ) {
+		$r = true;
+	} else {
+		$r = false;
+	}
+
+	return $r;
 }
 
 /**

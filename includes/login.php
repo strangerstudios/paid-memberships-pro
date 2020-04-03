@@ -251,7 +251,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 					if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
 						$levels_page_id = pmpro_getOption( 'levels_page_id' );
 						
-						if ( $levels_page_id && pmpro_are_visible_levels() ) {
+						if ( $levels_page_id && pmpro_are_any_visible_levels() ) {
 							$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), __( 'Join Now', 'paid-memberships-pro' ) );
 						} else {
 							$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', wp_registration_url() , __( 'Register', 'paid-memberships-pro' ) );
@@ -625,23 +625,10 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 function pmpro_no_level_page_register_redirect( $url ) {
 	$level = pmpro_url( 'levels' );
 
-	if ( empty( pmpro_url( 'levels' ) ) && get_option( 'users_can_register' ) && ! pmpro_are_visible_levels() ) {
+	if ( empty( pmpro_url( 'levels' ) ) && get_option( 'users_can_register' ) && ! pmpro_are_any_visible_levels() ) {
 		return false;
 	}
 
 	return $url;
 }
 add_action( 'pmpro_register_redirect', 'pmpro_no_level_page_register_redirect' );
-
-
-function pmpro_are_visible_levels() {
-	$levels = pmpro_getAllLevels();
-
-	if ( ! empty( $levels ) ) {
-		$r = true;
-	} else {
-		$r = false;
-	}
-
-	return $r;
-}
