@@ -4360,14 +4360,14 @@ msgstr "Telefon"
 #: pages/checkout.php:207 pages/checkout.php:209 pages/checkout.php:216
 #: pages/checkout.php:436 pages/checkout.php:438 pages/checkout.php:440
 #: pages/checkout.php:449 pages/checkout.php:453 pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "Meiliaadress"
 
 #: pages/billing.php:210 pages/checkout.php:464 pages/billing.php:197
 #: pages/billing.php:201 pages/checkout.php:445 pages/checkout.php:447
 #: pages/checkout.php:449 pages/checkout.php:458 pages/checkout.php:462
 #: pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Kinnita E-mail"
 
 #: pages/billing.php:231 pages/billing.php:217 pages/billing.php:221
@@ -4487,7 +4487,7 @@ msgstr "Kinnitage parool"
 
 #: pages/checkout.php:227 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218 pages/checkout.php:225
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Kinnitage Emaili aadress"
 
 #: pages/checkout.php:246 pages/checkout.php:232 pages/checkout.php:235

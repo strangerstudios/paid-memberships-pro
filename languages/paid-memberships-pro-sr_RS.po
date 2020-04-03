@@ -600,11 +600,11 @@ msgid "Confirm Password"
 msgstr "Potvrdite Lozinku"
 
 #: pages/checkout.php:207 pages/checkout.php:464 pages/billing.php:193
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "E-mail Adresa"
 
 #: pages/checkout.php:216
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Potvrdite E-mail Adresu"
 
 #: pages/checkout.php:235
@@ -682,7 +682,7 @@ msgid "Phone"
 msgstr "Telefon"
 
 #: pages/checkout.php:473 pages/billing.php:197
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Potvrdite E-mail"
 
 #: pages/checkout.php:504

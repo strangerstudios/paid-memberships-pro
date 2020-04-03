@@ -5287,7 +5287,7 @@ msgstr "Telefono"
 #: pages/checkout.php:438 pages/checkout.php:440 pages/checkout.php:449
 #: pages/checkout.php:453 pages/checkout.php:455 pages/checkout.php:457
 #: pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "Indirizzo Email"
 
 #: pages/billing.php:219 pages/checkout.php:473 pages/billing.php:197
@@ -5295,7 +5295,7 @@ msgstr "Indirizzo Email"
 #: pages/billing.php:215 pages/checkout.php:445 pages/checkout.php:447
 #: pages/checkout.php:449 pages/checkout.php:458 pages/checkout.php:462
 #: pages/checkout.php:464 pages/checkout.php:466 pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Conferma Email"
 
 #: pages/billing.php:247 pages/billing.php:217 pages/billing.php:221
@@ -5429,7 +5429,7 @@ msgstr "Conferma Password"
 #: pages/checkout.php:236 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218 pages/checkout.php:225 pages/checkout.php:227
 #: pages/checkout.php:229
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Conferma Email"
 
 #: pages/checkout.php:255 pages/checkout.php:232 pages/checkout.php:235
