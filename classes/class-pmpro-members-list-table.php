@@ -102,6 +102,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$columns['enddate'] = 'Cancelled';
 		}
 
+		// Should be deprecated in favor of "pmpro_manage_memberslist_columns".
+		// Is applied to all members lists, regardless of screen.
 		$columns = apply_filters( 'pmpro_memberslist_extra_cols', $columns );
 
 		// Re-implementing old hook, will be deprecated.
@@ -113,6 +115,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		foreach ( $matches[1] as $match ) {
 			$columns[ 'custom_field_' . $custom_field_num ] = $match;
 			$custom_field_num++;
+		}
+
+		// Shortcut for editing columns in default memberslist location.
+		$current_screen = get_current_screen();
+		if ( ! empty( $current_screen ) && 'memberships_page_pmpro-memberslist' === $current_screen->id ) {
+			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
 		return $columns;
@@ -389,8 +397,10 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		$item = (array) apply_filters( 'pmpro_members_list_user', (object) $item );
 		if ( isset( $item[ $column_name ] ) ) {
+			// If the user is adding content via the "pmpro_members_list_user" filter.
 			echo( esc_html( $item[ $column_name ] ) );
 		} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
+			// If the user is adding content via the "pmpro_memberslist_extra_cols_body" hook.
 			// Re-implementing old hook, will be deprecated.
 			$user_object = get_userdata( $item['ID'] );
 			ob_start();
@@ -402,7 +412,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				echo( $matches[1][ intval( $custom_field_num ) ] );
 			}
 		} else {
-			do_action( 'manage_memberships_page_pmpro-memberslist_custom_column', $column_name, $item['ID'] );
+			// The preferred ways of doing things.
+			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'] );
 		}
 	}
 
