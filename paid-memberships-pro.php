@@ -178,8 +178,9 @@ function pmpro_gateways() {
 global $all_membership_levels;
 
 // we sometimes refer to this array of levels
+// DEPRECATED: Remove this in v3.0.
 global $membership_levels;
-$membership_levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
+$membership_levels = pmpro_getAllLevels( true, true );
 
 /*
 	Activation/Deactivation
