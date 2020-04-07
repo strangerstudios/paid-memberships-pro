@@ -101,6 +101,17 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
 /**
+ * Add a hidden field to our login form
+ * so we can identify it.
+ * Hooks into the WP core filter login_form_top.
+ */
+function pmpro_login_form_hidden_field( $html ) {
+	$html .= '<input type="hidden" name="pmpro_login_form_used" value="1" />';
+	
+	return $html;
+}
+
+/**
  * Show a member login form or logged in member widget.
  *
  * @since 2.3
@@ -235,7 +246,11 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) { ?>
 			<div class="pmpro_login_wrap">
 				<h2><?php _e( 'Log In', 'paid-memberships-pro' ); ?></h2>
-				<?php wp_login_form( array( 'value_username' => esc_html( $_GET['username'] ) ) ); ?>
+				<?php
+					add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+					wp_login_form( array( 'value_username' => esc_html( $_GET['username'] ) ) );
+					remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+				?>
 			</div> <!-- end pmpro_login_wrap -->
 			<p class="pmpro_form_nav">
 				<?php
@@ -512,14 +527,19 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
  */
  function pmpro_authenticate_username_password( $user, $username, $password ) {
 	
-	// Make sure the fields were passed through.
-	if ( ! isset( $_REQUEST['log'] ) || ! isset( $_REQUEST['pwd'] ) ) {
-		wp_redirect( pmpro_login_url() );
-		exit;
+	// Only work when the PMPro login form is used.
+	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
+		return $user;
 	}
-	
+
+	// Already logged in.
 	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
+	}
+	
+	// For some reason, WP core doesn't recognize this error.
+	if ( ! empty( $username ) && empty( $password ) ) {
+		$user = new WP_Error( 'invalid_username', __( 'There was a problem with your username or password.', 'paid-memberships-pro' ) );
 	}
 
 	// check what page the login attempt is coming from
@@ -528,7 +548,7 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
 	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
-	
+			
 		if ( $error ) {
 				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
 			} else {
