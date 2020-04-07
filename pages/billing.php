@@ -205,7 +205,7 @@
 					?>
 
 					<?php
-						$show_country = apply_filters("pmpro_international_addresses", false);
+						$show_country = apply_filters("pmpro_international_addresses", true);
 						if($show_country)
 						{
 					?>
