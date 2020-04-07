@@ -93,12 +93,12 @@
 	//default settings
 	if(!$nonmembertext)
 	{
-		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Register here</a>.', 'paid-memberships-pro' ), wp_login_url() . "?action=register" );
+		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Join Now</a>.', 'paid-memberships-pro' ), "!!levels_page_url!!" );
 		pmpro_setOption("nonmembertext", $nonmembertext);
 	}
 	if(!$notloggedintext)
 	{
-		$notloggedintext = sprintf( __( 'Please <a href="%s">login</a> to view this content. (<a href="%s">Register here</a>.)', 'paid-memberships-pro' ), wp_login_url( get_permalink() ), wp_login_url() . "?action=register" );
+		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Login</a> <a href="%s">Join Now</a>.)', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
 		pmpro_setOption("notloggedintext", $notloggedintext);
 	}
 	if(!$rsstext)
