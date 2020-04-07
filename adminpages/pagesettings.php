@@ -86,7 +86,18 @@ if (!empty($_REQUEST['createpages'])) {
         $pages['invoice'] = __('Membership Invoice', 'paid-memberships-pro' );
         $pages['levels'] = __('Membership Levels', 'paid-memberships-pro' );
 		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
-
+	} elseif ( $_REQUEST['page_name'] == 'member_profile_edit' ) {
+		if ( ! empty( pmpro_getOption( 'member_profile_edit_page_generated' ) ) ) {
+			// Don't generate again.
+			unset( $pages['member_profile_edit'] );
+		} else {
+			// Generate the new Your Profile page and save an option that it was created.
+			$pages['member_profile_edit'] = array(
+				'title' => __('Your Profile', 'paid-memberships-pro' ),
+				'content' => '[pmpro_member_profile_edit]',
+			);
+			pmpro_setOption( 'member_profile_edit_page_generated', '1' );
+		}
     } else {
         //generate extra pages one at a time
         $pmpro_page_name = sanitize_text_field($_REQUEST['page_name']);
@@ -300,7 +311,10 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			            &nbsp;
 			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['member_profile_edit']); ?>"
 			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
-			        <?php } ?>
+			        <?php } elseif ( empty( pmpro_getOption( 'member_profile_edit_page_generated' ) ) ) { ?>
+						&nbsp;
+						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
+                    <?php } ?>
 					<p class="description"><?php _e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_member_profile_edit].</p>
 
 					<?php if ( ! class_exists( 'PMProRH_Field' ) ) {
