@@ -246,11 +246,11 @@
 							$bconfirmemail = $current_user->user_email;
 					?>
 					<div class="pmpro_checkout-field pmpro_checkout-field-bemail">
-						<label for="bemail"><?php _e('E-mail Address', 'paid-memberships-pro' );?></label>
+						<label for="bemail"><?php _e('Email Address', 'paid-memberships-pro' );?></label>
 						<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bemail -->
 					<div class="pmpro_checkout-field pmpro_checkout-field-bconfirmemail">
-						<label for="bconfirmemail"><?php _e('Confirm E-mail', 'paid-memberships-pro' );?></label>
+						<label for="bconfirmemail"><?php _e('Confirm Email', 'paid-memberships-pro' );?></label>
 						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bconfirmemail -->
 					<?php } ?>
