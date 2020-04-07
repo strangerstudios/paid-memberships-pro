@@ -1,8 +1,8 @@
 <?php
-/*
-	These functions add the "membership level" field to the edit user/profile page
-*/
-//add the fields
+/**
+ * Add the "membership level" field to the edit user/profile page,
+ * along with other membership-related fields.
+ */
 function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
@@ -20,12 +20,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!current_user_can($membership_level_capability))
 		return false;
 
-	global $wpdb;
-	/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = " . $user->ID . "
-														LIMIT 1");*/
+	global $wpdb;	
 	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -100,21 +95,21 @@ function pmpro_membership_level_profile_fields($user)
             }
 
 			//some vars for the dates
-			$current_day = date_i18n("j", current_time('timestamp'));
+			$current_day = date("j", current_time('timestamp'));
 			if($end_date)
-				$selected_expires_day = date_i18n("j", $user->membership_level->enddate);
+				$selected_expires_day = date("j", $user->membership_level->enddate);
 			else
 				$selected_expires_day = $current_day;
 
-			$current_month = date_i18n("M", current_time('timestamp'));
+			$current_month = date("M", current_time('timestamp'));
 			if($end_date)
-				$selected_expires_month = date_i18n("m", $user->membership_level->enddate);
+				$selected_expires_month = date("m", $user->membership_level->enddate);
 			else
-				$selected_expires_month = date_i18n("m");
+				$selected_expires_month = date("m");
 
-			$current_year = date_i18n("Y", current_time('timestamp'));
+			$current_year = date("Y", current_time('timestamp'));
 			if($end_date)
-				$selected_expires_year = date_i18n("Y", $user->membership_level->enddate);
+				$selected_expires_year = date("Y", $user->membership_level->enddate);
 			else
 				$selected_expires_year = (int)$current_year + 1;
 		?>
@@ -132,7 +127,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date_i18n("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
@@ -598,92 +593,94 @@ function pmpro_member_profile_edit_form() {
 }
 
 /**
+ * Process password updates.
+ * Hooks into personal_options_update.
+ * Doesn't need to hook into edit_user_profile_update since
+ * our change password page is only for the current user.
+ *
+ * @since 2.3
+ */
+function pmpro_change_password_process() {		
+	global $current_user;
+	
+	// Make sure we're on the right page.
+	if ( empty( $_POST['action'] ) || $_POST['action'] != 'change-password' ) {
+		return;
+	}
+	
+	// Only let users change their own password.
+	if ( empty( $current_user ) || empty( $_POST['user_id'] ) || $current_user->ID != $_POST['user_id'] ) {
+		return;
+	}
+	
+	// Check the nonce.
+	if ( ! wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
+		return;
+	}		
+
+	// Get all password values from the $_POST.
+	if ( ! empty( $_POST['password_current'] ) ) {
+		$password_current = sanitize_text_field( $_POST['password_current'] );
+	} else {
+		$password_current = '';
+	}
+	if ( ! empty( $_POST['password_new1'] ) ) {
+		$password_new1 = sanitize_text_field( $_POST['password_new1'] );
+	} else {
+		$password_new1 = '';
+	}
+	if ( ! empty( $_POST['password_new2'] ) ) {
+		$password_new2 = sanitize_text_field( $_POST['password_new2'] );
+	} else {
+		$password_new2 = '';
+	}
+	
+	// Check that all password information is correct.
+	$error = false;
+	if ( isset( $password_current ) && ( empty( $password_new1 ) || empty( $password_new2 ) ) ) {
+		$error = __( 'Please complete all fields.', 'paid-memberships-pro' );
+	} elseif ( ! empty( $password_new1 ) && empty( $password_current ) ) {
+		$error = __( 'Please enter your current password.', 'paid-memberships-pro' );
+	} elseif ( ( ! empty( $password_new1 ) || ! empty( $password_new2 ) ) && $password_new1 !== $password_new2 ) {
+		$error = __( 'New passwords do not match.', 'paid-memberships-pro' );
+	} elseif ( ! empty( $password_new1 ) && ! wp_check_password( $password_current, $current_user->user_pass, $current_user->ID ) ) {
+		$error = __( 'Your current password is incorrect.', 'paid-memberships-pro' );
+	}
+		
+	// Change the password.
+	if ( ! empty( $password_new1 ) && empty( $error ) ) {
+		wp_set_password( $password_new1, $current_user->ID );
+		
+		//setting some cookies
+		wp_set_current_user( $current_user->ID, $current_user->user_login );
+		wp_set_auth_cookie( $current_user->ID, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+		
+		pmpro_setMessage( __( 'Your password has been updated.', 'paid-memberships-pro' ), 'pmpro_success' );
+	} else {
+		pmpro_setMessage( $error, 'pmpro_error' );
+	}
+}
+add_action( 'init', 'pmpro_change_password_process' );
+
+
+/**
  * Display a frontend Change Password form and allow user to edit their password when logged in.
  *
  * @since 2.3
  */
 function pmpro_change_password_form() { 
-	global $current_user; ?>
-	
+	global $current_user, $pmpro_msg, $pmpro_msgt;	
+	?>
 	<h2><?php _e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
-
+	<?php if ( ! empty( $pmpro_msg ) ) { ?>
+		<div class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>">
+			<?php echo esc_html( $pmpro_msg ); ?>
+		</div>
+	<?php } ?>
 	<?php
-	// Saving profile updates.
-	if ( isset( $_POST['action'] ) && $_POST['action'] == 'change-password' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
-		$change_password  = true;
-		$user     		  = new stdClass;
-		$user->ID         = $_POST[ 'user_id' ];
-	} else {
-		$change_password = false;
-	}
-
-	if ( $change_password ) {
-
-		$errors = array();
-
-		// Get all password values from the $_POST.
-		if ( ! empty( $_POST['password_current'] ) ) {
-			$password_current = $_POST['password_current'];
-		} else {
-			$password_current = '';
-		}
-		if ( ! empty( $_POST['password_new1'] ) ) {
-			$password_new1 = $_POST['password_new1'];
-		} else {
-			$password_new1 = '';
-		}
-		if ( ! empty( $_POST['password_new2'] ) ) {
-			$password_new2 = $_POST['password_new2'];
-		} else {
-			$password_new2 = '';
-		}
-
-		// Assume we are saving the updated password.
-		$save_pass = true;
-
-		// Check that all password information is correct.
-		if ( ! empty( $password_current ) && empty( $password_new1 ) && empty( $password_new2 ) ) {
-			$errors[] = __( 'Please complete all fields.', 'paid-memberships-pro' );
-			$save_pass = false;
-		} elseif ( ! empty( $password_new1 ) && empty( $password_current ) ) {
-			$errors[] = __( 'Please enter your current password.', 'paid-memberships-pro' );
-			$save_pass = false;
-		} elseif ( ! empty( $password_new1 ) && empty( $password_new2 ) ) {
-			$errors[] = __( 'Please complete all fields.', 'paid-memberships-pro' );
-			$save_pass = false;
-		} elseif ( ( ! empty( $password_new1 ) || ! empty( $password_new2 ) ) && $password_new1 !== $password_new2 ) {
-			$errors[] = __( 'New passwords do not match.', 'paid-memberships-pro' );
-			$save_pass = false;
-		} elseif ( ! empty( $password_new1 ) && ! wp_check_password( $password_current, $current_user->user_pass, $current_user->ID ) ) {
-			$errors[] = __( 'Your current password is incorrect.', 'paid-memberships-pro' );
-			$save_pass = false;
-		}
-
-		// Save the password update.
-		if ( ! empty( $password_new1 ) && ! empty( $save_pass ) ) {
-			$user->user_pass = $password_new1;
-			wp_update_user( $user ); ?>
-			<div class="pmpro_message pmpro_success">
-				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
-			</div>
-			<?php
-		}
-
-		// Show error messages.
-		if ( ! empty( $errors ) ) { ?>
-			<div class="pmpro_message pmpro_error">
-				<?php
-					foreach ( $errors as $key => $value ) {
-						echo '<p>' . $value . '</p>';
-					}
-				?>
-			</div>
-		<?php }
-
 		// TO DO: Keep the user logged in (https://wordpress.stackexchange.com/questions/186326/how-change-wordpress-password-without-logout-need-for-plugin)
 		// TO DO: Validate passwords are strong-ish / not weak.
 		// TO DO: Test with the strong passwords add on / setting.
-	}
 	?>
 	<div class="pmpro_change_password_wrap">
 		<form id="change-password" class="pmpro_form" action="" method="post">
@@ -708,10 +705,10 @@ function pmpro_change_password_form() {
 			</div> <!-- end pmpro_change_password-fields -->
 
 			<input type="hidden" name="action" value="change-password" />
-			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
+			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
 			<div class="pmpro_submit">
-				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Change Password', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_change_password_wrap -->
