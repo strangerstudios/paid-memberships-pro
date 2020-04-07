@@ -3741,13 +3741,13 @@ msgstr "Số điện thoại"
 #: pages/checkout.php:207 pages/checkout.php:209 pages/checkout.php:436
 #: pages/checkout.php:438 pages/checkout.php:440 pages/checkout.php:453
 #: pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "Địa chỉ Email"
 
 #: pages/billing.php:210 pages/checkout.php:458 pages/billing.php:197
 #: pages/billing.php:201 pages/checkout.php:445 pages/checkout.php:447
 #: pages/checkout.php:449 pages/checkout.php:462 pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Xác nhận E-mail"
 
 #: pages/billing.php:230 pages/billing.php:217 pages/billing.php:221
@@ -3864,7 +3864,7 @@ msgstr "Xác nhận mật khẩu"
 
 #: pages/checkout.php:225 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Xác nhận địa chỉ E-mail"
 
 #: pages/checkout.php:244 pages/checkout.php:232 pages/checkout.php:235

@@ -10513,7 +10513,7 @@ msgstr ""
 #: pages/checkout.php:449 pages/checkout.php:453 pages/checkout.php:455
 #: pages/checkout.php:457 pages/checkout.php:460 pages/checkout.php:464
 #: pages/checkout.php:467
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr ""
 
 #: pages/billing.php:253 pages/checkout.php:337 pages/billing.php:197
@@ -10526,7 +10526,7 @@ msgstr ""
 #: pages/checkout.php:458 pages/checkout.php:462 pages/checkout.php:464
 #: pages/checkout.php:466 pages/checkout.php:469 pages/checkout.php:473
 #: pages/checkout.php:476
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr ""
 
 #: pages/billing.php:276 pages/billing.php:217 pages/billing.php:221
@@ -10689,7 +10689,7 @@ msgstr ""
 #: pages/checkout.php:213 pages/checkout.php:216 pages/checkout.php:218
 #: pages/checkout.php:225 pages/checkout.php:227 pages/checkout.php:229
 #: pages/checkout.php:236 pages/checkout.php:239
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr ""
 
 #: pages/checkout.php:169 pages/checkout.php:169 pages/checkout.php:218

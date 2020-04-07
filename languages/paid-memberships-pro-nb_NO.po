@@ -3615,12 +3615,12 @@ msgstr "Telefon"
 
 # @ pmpro
 #: pages/billing.php:206 pages/checkout.php:220 pages/checkout.php:457
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "E-post-adresse"
 
 # @ pmpro
 #: pages/billing.php:210 pages/checkout.php:466
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Bekreft e-post-adresse"
 
 # @ pmpro
@@ -3744,7 +3744,7 @@ msgstr "Bekreft passord"
 
 # @ pmpro
 #: pages/checkout.php:229
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Bekreft e-post-adresse"
 
 # @ pmpro

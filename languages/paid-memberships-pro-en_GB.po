@@ -594,11 +594,11 @@ msgid "Confirm Password"
 msgstr ""
 
 #: pages/checkout.php:207 pages/checkout.php:464 pages/billing.php:193
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr ""
 
 #: pages/checkout.php:216
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr ""
 
 #: pages/checkout.php:235
@@ -674,7 +674,7 @@ msgid "Phone"
 msgstr ""
 
 #: pages/checkout.php:473 pages/billing.php:197
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr ""
 
 #: pages/checkout.php:504
