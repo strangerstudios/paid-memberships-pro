@@ -583,15 +583,12 @@ function pmpro_member_profile_edit_form() {
 			<input type="hidden" name="action" value="update-profile" />
 			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
 			<div class="pmpro_submit">
+				<hr />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update Profile', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->
-
-	<!-- TO DO: should we have this here? -->
-	<p class="pmpro_form_nav">
-		<a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
-	</p>
 	<?php
 }
 
@@ -711,13 +708,9 @@ function pmpro_change_password_form() {
 			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
 			<div class="pmpro_submit">
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_change_password_wrap -->
-
-	<!-- TO DO: should we have this here? -->
-	<p class="pmpro_form_nav">
-		<a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
-	</p>
 	<?php
 }
