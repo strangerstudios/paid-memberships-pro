@@ -12,9 +12,9 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 	if ( $is_logged_in && empty( $redirect_to ) ) {
 		// Can't use the pmpro_hasMembershipLevel function because it won't be defined yet.
 		$is_member = $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" );
-		if ( $is_member ) {			
+		if ( $is_member ) {
 			$redirect_to = pmpro_url( 'account' );
-		} else {			
+		} else {
 			$redirect_to = pmpro_url( 'levels' );
 		}
 	}
@@ -38,10 +38,10 @@ function pmpro_login_head() {
 	global $pagenow;
 
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
-	
+
 	if ( pmpro_is_login_page() || is_page("login") && $login_redirect ) {
 		//redirect registration page to levels page
-		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" || 
+		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" ||
 			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) {
 
 				// don't redirect if in admin.
@@ -50,7 +50,7 @@ function pmpro_login_head() {
 				}
 
 				//redirect to levels page unless filter is set.
-				$link = apply_filters("pmpro_register_redirect", pmpro_url( 'levels' ));			
+				$link = apply_filters("pmpro_register_redirect", pmpro_url( 'levels' ));
 				if(!empty($link)) {
 					wp_redirect($link);
 					exit;
@@ -103,7 +103,7 @@ add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
  */
 function pmpro_login_form_hidden_field( $html ) {
 	$html .= '<input type="hidden" name="pmpro_login_form_used" value="1" />';
-	
+
 	return $html;
 }
 
@@ -186,7 +186,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				break;
 			default:
 			break;
-				
+
 		}
 	}
 
@@ -219,7 +219,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				break;
 		}
 	}
-	
+
 	if ( isset( $_REQUEST['error'] ) ) {
 		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
 			case 'password_reset_mismatch':
@@ -245,7 +245,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				<?php
 					$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
 					$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL;
-															
+
 					add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
 					wp_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
 					remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
@@ -264,13 +264,13 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 
 					if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
 						$levels_page_id = pmpro_getOption( 'levels_page_id' );
-						
+
 						if ( $levels_page_id && pmpro_are_any_visible_levels() ) {
 							$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), __( 'Join Now', 'paid-memberships-pro' ) );
 						} else {
 							$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', wp_registration_url() , __( 'Register', 'paid-memberships-pro' ) );
 						}
-						
+
 						echo apply_filters( 'pmpro_registration_url', $pmpro_registration_url );
 
 						echo esc_html( $pmpro_form_nav_separator );
@@ -282,7 +282,7 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 				?>
 			</p>
 			<?php
-		} 
+		}
 	}
 
 	if ( ! is_user_logged_in() && isset( $_GET['action'] ) && $_GET['action'] === 'reset_pass' ) {
@@ -363,7 +363,7 @@ function pmpro_lost_password_redirect() {
 		$redirect_url = $account_page ? get_permalink( $account_page ): '';
 
 		$errors = retrieve_password();
-		if ( is_wp_error( $errors ) ) {	
+		if ( is_wp_error( $errors ) ) {
 		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
 		} else {
 			$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
@@ -392,10 +392,10 @@ function pmpro_reset_password_redirect() {
             }
             exit;
         }
- 
+
         $redirect_url = add_query_arg( array( 'login' => esc_attr( $_REQUEST['login'] ), 'action' => urlencode( 'rp' ) ), $redirect_url );
         $redirect_url = add_query_arg( array( 'key' => esc_attr( $_REQUEST['key'] ), 'action' => urlencode( 'rp' ) ), $redirect_url );
- 
+
         wp_redirect( $redirect_url );
         exit;
 	}
@@ -448,11 +448,11 @@ function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
         $rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
 		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
-		
+
 		$account_page = pmpro_getOption( 'account_page_id' );
 		$redirect_url = $account_page ? get_permalink( $account_page ): '';
 		$user = check_password_reset_key( $rp_key, $rp_login );
- 
+
         if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
 				wp_redirect( add_query_arg( array( 'login' => urlencode( 'expiredkey' ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
@@ -461,7 +461,7 @@ function pmpro_do_password_reset() {
             }
             exit;
         }
- 
+
         if ( isset( $_POST['pass1'] ) ) {
             if ( $_POST['pass1'] != $_POST['pass2'] ) {
 				// Passwords don't match
@@ -471,11 +471,11 @@ function pmpro_do_password_reset() {
 					'error' => urlencode( 'password_reset_mismatch' ),
 					'action' => urlencode( 'rp' )
 				), $redirect_url );
-                
+
                 wp_redirect( $redirect_url );
                 exit;
             }
- 
+
             if ( empty( $_POST['pass1'] ) ) {
 				// Password is empty
 				$redirect_url = add_query_arg( array(
@@ -484,18 +484,18 @@ function pmpro_do_password_reset() {
 					'error' => urlencode( 'password_reset_empty' ),
 					'action' => urlencode( 'rp' )
 				), $redirect_url );
- 
+
                 wp_redirect( $redirect_url );
                 exit;
             }
- 
+
             // Parameter checks OK, reset password
             reset_password( $user, $_POST['pass1'] );
             wp_redirect( add_query_arg( urlencode( 'password' ), urlencode( 'changed' ), $redirect_url ) );
         } else {
            esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
         }
- 
+
         exit;
     }
 }
@@ -525,7 +525,7 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
  *
  */
  function pmpro_authenticate_username_password( $user, $username, $password ) {
-	
+
 	// Only work when the PMPro login form is used.
 	if ( empty( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return $user;
@@ -535,7 +535,7 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
 	if ( is_a( $user, 'WP_User' ) ) {
 		return $user;
 	}
-	
+
 	// For some reason, WP core doesn't recognize this error.
 	if ( ! empty( $username ) && empty( $password ) ) {
 		$user = new WP_Error( 'invalid_username', __( 'There was a problem with your username or password.', 'paid-memberships-pro' ) );
@@ -547,7 +547,7 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
 	if ( !empty( $referrer ) && is_wp_error( $user ) ) {
 
 		$error = $user->get_error_code();
-			
+
 		if ( $error ) {
 				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
 			} else {
