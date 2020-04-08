@@ -247,8 +247,11 @@ function pmpro_login_form( $show_menu = true, $show_logout_link = true, $display
 			<div class="pmpro_login_wrap">
 				<h2><?php _e( 'Log In', 'paid-memberships-pro' ); ?></h2>
 				<?php
+					$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
+					$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL;
+															
 					add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
-					wp_login_form( array( 'value_username' => esc_html( $_GET['username'] ) ) );
+					wp_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
 					remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
 				?>
 			</div> <!-- end pmpro_login_wrap -->
