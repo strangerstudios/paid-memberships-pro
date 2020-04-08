@@ -1473,6 +1473,21 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Get subscription status from the Gateway.
+	 *
+	 * @since 2.3
+	 */
+	function getSubscriptionStatus( &$order ) {
+		$subscription = $this->getSubscription( $order );
+		
+		if ( ! empty( $subscription ) ) {
+			return $subscription->status;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Create a new subscription with Stripe
 	 *
 	 * @since 1.4
