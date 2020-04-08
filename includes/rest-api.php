@@ -464,16 +464,26 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
-		 * Default permissions check for endpoints/routes. Defaults to 'subscriber' for all GET requests and 'administrator' for any other type of request.
+		 * Default permissions check for endpoints/routes.
+		 * Defaults to 'subscriber' for all GET requests and 
+		 * 'administrator' for any other type of request.
+		 *
 		 * @since 2.3
 		 */
-		 function pmpro_rest_api_get_permissions_check($request)	{
+		 function pmpro_rest_api_get_permissions_check($request) {
 
-			// default permissions to 'read' (subscriber)
-			$permissions = current_user_can('read');
 			$method = $request->get_method();
+			$endpoint = $request->get_endpoint();
+			
+			// default permissions to 'read' (subscriber)
+			$permissions = current_user_can('read');			
 			if ( $method != 'GET' ) {
 				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
+			}
+
+			// Is the request method allowed?
+			if ( ! in_array( $method, pmpro_get_rest_api_methods( $endpoint ) ) ) {
+				$permissions = false;
 			}
 
 			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
@@ -502,4 +512,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 	}
 
 	add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
+}
+
+/**
+ * Get the allowed methods for PMPro REST API endpoints.
+ * To enable DELETE, hook into this filter.
+ * @since 2.3
+ */
+function pmpro_get_rest_api_methods( $endpoint = NULL ) {
+	$methods = array( 'GET', 'POST', 'PUT', 'PATCH' );
+	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $endpoint );
+	return $methods;
 }
