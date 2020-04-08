@@ -1,26 +1,22 @@
 <?php
 /**
- * Redirect to Membership Account page for user login.
- *
- * @since 2.3
- *
+ * If no redirect_to is set
+ * then redirect members to the account page
+ * and redirect non-members to the levels page.
  */
 function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 	global $wpdb;
-	
-	// Is a user logging in?
-	if ( ! empty( $user ) && ! empty( $user->ID ) ) {
-		// Logging in, let's figure out where to send them.
-		if ( strpos( $redirect_to, "checkout" ) !== false ) {
-			// If the redirect url includes the word checkout, leave it alone.
-		} elseif ( $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" ) ) {
-			// If logged in and a member, send to wherever they were going.
-		} else {
-			// Not a member, send to subscription page.
+
+	$is_logged_in = ! empty( $user ) && ! empty( $user->ID );
+
+	if ( $is_logged_in && empty( $redirect_to ) ) {
+		// Can't use the pmpro_hasMembershipLevel function because it won't be defined yet.
+		$is_member = $wpdb->get_var( "SELECT membership_id FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user->ID ) . "' LIMIT 1" );
+		if ( $is_member ) {			
+			$redirect_to = pmpro_url( 'account' );
+		} else {			
 			$redirect_to = pmpro_url( 'levels' );
 		}
-	} else {
-		// Not logging in (login form) so return what was given.
 	}
 
 	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
