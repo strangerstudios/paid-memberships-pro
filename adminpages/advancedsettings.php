@@ -93,12 +93,12 @@
 	//default settings
 	if(!$nonmembertext)
 	{
-		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Join Now</a>.', 'paid-memberships-pro' ), "!!levels_page_url!!" );
+		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
 		pmpro_setOption("nonmembertext", $nonmembertext);
 	}
 	if(!$notloggedintext)
 	{
-		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only. <a href="%s">Login</a> <a href="%s">Join Now</a>.)', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
+		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Login</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
 		pmpro_setOption("notloggedintext", $notloggedintext);
 	}
 	if(!$rsstext)
@@ -130,7 +130,7 @@
 				</th>
 				<td>
 					<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo stripslashes($nonmembertext)?></textarea>
-					<p class="description"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: !!levels!!, !!referrer!!</p>
+					<p class="description"><?php _e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
 				</td>
 			</tr>
 			<tr>
@@ -139,7 +139,7 @@
 				</th>
 				<td>
 					<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
-					<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?></p>
+					<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_page_url!!</code> <code>!!levels_page_url!!</code></p>
 				</td>
 			</tr>
 			<tr>
@@ -148,7 +148,7 @@
 				</th>
 				<td>
 					<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo stripslashes($rsstext)?></textarea>
-					<p class="description"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?></p>
+					<p class="description"><?php _e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
 				</td>
 			</tr>
 		</tbody>
