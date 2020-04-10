@@ -613,7 +613,7 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 		 */
 		if ( ! empty ( $show_menu ) && pmpro_hasMembershipLevel() ) {
 			$pmpro_member_menu_defaults = array(
-				'theme_location'  => 'pmpro-member',
+				'theme_location'  => 'pmpro-login-forms',
 				'container'       => 'nav',
 				'container_id'    => 'pmpro-member-navigation',
 				'container_class' => 'pmpro-member-navigation',
