@@ -507,7 +507,7 @@ function pmpro_membership_account_filter( $content ) {
 
 	// If no user, swap entire Membership Account page content.
 	if ( is_page( $pmpro_pages[ 'account' ] ) && ! is_user_logged_in() ) {
-		$content = pmpro_login_form( );
+		$content = pmpro_login_forms_handler( false, false, false, 'account' );
 	}
 	return $content;
 }

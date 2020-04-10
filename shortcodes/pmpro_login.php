@@ -14,13 +14,14 @@ function pmpro_shortcode_login( $atts, $content=null, $code='' ) {
 	extract( shortcode_atts( array(
 		'display_if_logged_in' => true,
 		'show_menu' => true,
-		'show_logout_link' => true
+		'show_logout_link' => true,
+		'location' => 'shortcode'
 	), $atts ) );
 
 	ob_start();
 
 	// Display the login form using shortcode attributes.
-	pmpro_login_form( $show_menu, $show_logout_link, $display_if_logged_in );
+	pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, $location );
 
 	$content = ob_get_contents();
 	ob_end_clean();
