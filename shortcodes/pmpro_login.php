@@ -18,14 +18,7 @@ function pmpro_shortcode_login( $atts, $content=null, $code='' ) {
 		'location' => 'shortcode'
 	), $atts ) );
 
-	ob_start();
-
 	// Display the login form using shortcode attributes.
-	pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, $location );
-
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
+	return pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, $location, false );	
 }
 add_shortcode( 'pmpro_login', 'pmpro_shortcode_login' );
