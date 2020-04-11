@@ -319,7 +319,7 @@ function pmpro_lost_password_form() { ?>
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="pmpro_submit">
-			<input type="submit" name="submit" class="lostpassword-button" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
+			<input type="submit" name="submit" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
 		</div>
 	</form>
 	<?php
