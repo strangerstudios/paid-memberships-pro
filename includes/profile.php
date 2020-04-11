@@ -707,6 +707,7 @@ function pmpro_change_password_form() {
 			<input type="hidden" name="action" value="change-password" />
 			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
 			<div class="pmpro_submit">
+				<hr />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
 				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
 			</div>

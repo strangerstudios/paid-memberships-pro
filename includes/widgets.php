@@ -59,7 +59,7 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 		<?php
 			// Display the widget 
 			echo $before_widget;
-			pmpro_login_form( $show_menu, $show_logout_link, $display_if_logged_in );
+			pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, 'widget' );
 			echo $after_widget;
 		?>
 			

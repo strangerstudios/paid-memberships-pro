@@ -241,8 +241,9 @@ textarea.pmpro_error {
 	border-color: #faebcc;
 	color: #8a6d3b;
 }
-.pmpro_content_message a {
-	margin: 5px 5px 0 0;
+.pmpro_content_message a,
+.pmpro_content_message a:link {
+	margin: 10px 10px 0 0;
 }
 .pmpro_message a {
 	color: #245269;
@@ -436,12 +437,20 @@ li.pmpro_more {
 	padding-left: 0;
 	text-align: center;
 }
+
+/*---------------------------------------
+	Membership Billing Page
+---------------------------------------*/
+.pmpro_billing_wrap {
+	margin-bottom: 1em;
+}
+
 /*---------------------------------------
 	Log In and Password Reset Pages
 ---------------------------------------*/
 .pmpro_login_wrap,
-.pmpro_lost_password_wrap {
-	margin-bottom: 1em;
+.pmpro_lost_password_wrap,
+.pmpro_reset_password_wrap {
 }
 
 /*---------------------------------------
