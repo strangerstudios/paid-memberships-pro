@@ -437,6 +437,14 @@ li.pmpro_more {
 	padding-left: 0;
 	text-align: center;
 }
+
+/*---------------------------------------
+	Membership Billing Page
+---------------------------------------*/
+.pmpro_billing_wrap {
+	margin-bottom: 1em;
+}
+
 /*---------------------------------------
 	Log In and Password Reset Pages
 ---------------------------------------*/
