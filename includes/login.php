@@ -39,7 +39,7 @@ function pmpro_login_head() {
 
 	$login_redirect = apply_filters("pmpro_login_redirect", true);
 
-	if ( pmpro_is_login_page() || is_page("login") && $login_redirect ) {
+	if ( ( pmpro_is_login_page() || is_page("login") ) && $login_redirect ) {
 		//redirect registration page to levels page
 		if ( isset ($_REQUEST['action'] ) && $_REQUEST['action'] == "register" ||
 			isset($_REQUEST['registration']) && $_REQUEST['registration'] == "disabled" ) {
