@@ -217,11 +217,6 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = __( "You've entered an invalid email address.", 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
-		}
-	}
-
-	if ( isset( $_REQUEST['error'] ) ) {
-		switch ( sanitize_text_field( $_REQUEST['error'] ) ) {
 			case 'password_reset_mismatch':
 				$message = __( 'New passwords do not match.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
