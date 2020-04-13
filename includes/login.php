@@ -113,7 +113,7 @@ function pmpro_login_form_hidden_field( $html ) {
  * @since 2.3
  *
  */
-function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true, $location = '' ) {
+function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true, $location = '', $echo = true ) {
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
@@ -233,6 +233,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		}
 	}
 
+	ob_start();
+
 	if ( $message ) {
 		echo '<div class="pmpro_message ' . esc_attr( $msgt ) . '">'. esc_html( $message ) .'</div>';
 	}
@@ -293,7 +295,13 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		</div> <!-- end pmpro_reset_password_wrap -->
 		<?php
 	}
-
+	
+	$content = ob_get_clean();
+	if ( $echo ) {
+		echo $content;
+	}
+	
+	return $content;
 }
 
 /**

@@ -1,16 +1,19 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
+global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels;
 
-if($current_user->ID)
-    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+// Make sure the membership level is set for the user.
+if( $current_user->ID ) {
+    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
+}
 
-if (isset($_REQUEST['msg'])) {
-    if ($_REQUEST['msg'] == 1) {
-        $pmpro_msg = __('Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
+// Process the msg param.
+if ( isset($_REQUEST['msg'] ) ) {
+    if ( $_REQUEST['msg'] == 1 ) {
+        $pmpro_msg = __( 'Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
     } else {
-        $pmpro_msg = __('Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
-        $pmpro_msgt = "pmpro_error";
+        $pmpro_msg = __( 'Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
+        $pmpro_msgt = 'pmpro_error';
     }
 } else {
     $pmpro_msg = false;
@@ -29,5 +32,7 @@ if ( ! empty( $current_user->ID && empty( $current_user->membership_level->ID ) 
 	}
 }
 
-global $pmpro_levels;
+/**
+ * Add-Ons might need this global to be set.
+ */
 $pmpro_levels = pmpro_getAllLevels();
