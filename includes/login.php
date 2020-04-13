@@ -243,8 +243,9 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		$after_title = '</h2>';
 	}
 
-	// Show the login form.
+	// Figure out which login view to show.
 	if ( ! is_user_logged_in( ) && ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'reset_pass' ) ) {
+		// Login form.
 		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 			$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
 			$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL; ?>
@@ -257,9 +258,9 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			</div> <!-- end pmpro_login_wrap -->
 			<?php
 		}
-	}
-
-	if ( ! is_user_logged_in() && isset( $_GET['action'] ) && $_GET['action'] === 'reset_pass' ) { ?>
+	} else if ( ! is_user_logged_in() && isset( $_GET['action'] ) && $_GET['action'] === 'reset_pass' ) {
+		// Reset password form.
+		?>
 		<div class="pmpro_lost_password_wrap">
 			<?php echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title; ?>
 			<p class="pmpro_lost_password-instructions">
@@ -273,17 +274,16 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			?>
 		</div> <!-- end pmpro_lost_password_wrap -->
 		<?php
-	}
-
-	if ( is_user_logged_in() ) {
+	} elseif ( is_user_logged_in() ) {
+		// Already signed in.
 		if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 			esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
 		} elseif ( ! empty( $display_if_logged_in ) ) {
 			pmpro_logged_in_welcome( $show_menu, $show_logout_link );
 		}
-	}
-
-	if ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) { ?>
+	} elseif ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) {
+		// Password reset processing key.
+		?>
 		<div class="pmpro_reset_password_wrap">
 			<?php echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title; ?>
 			<?php pmpro_reset_password_form(); ?>
