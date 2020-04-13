@@ -142,8 +142,7 @@
 				$this->checkout_id = $dbobj->checkout_id;
 
 				// Fix the timestamp for local time
-				$gmt_offset = get_option( 'gmt_offset' );
-				$this->timestamp = strtotime( $this->timestamp ) + ( (int)$gmt_offset * HOUR_IN_SECONDS );
+				$this->timestamp = strtotime( get_date_from_gmt( $this->timestamp, 'Y-m-d H:i:s' ) );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -376,9 +375,8 @@
 			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
 			
 			// Fix the timestamp for local time 
-			$gmt_offset = get_option('gmt_offset');
 			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
-				$this->user->user_registered = strtotime( $this->user->user_registered ) + ( (int)$gmt_offset * HOUR_IN_SECONDS );
+				$this->user->user_registered = strtotime( get_date_from_gmt( $this->user->user_registered, 'Y-m-d H:i:s' ) );
 			}
 
 			return $this->user;
