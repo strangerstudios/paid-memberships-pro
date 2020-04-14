@@ -297,7 +297,7 @@ select.pmpro_error {
 	display: grid;
 	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
-	grid-gap: 1em;
+	grid-column-gap: 1em;
 }
 #pmpro_license {
 	background: #FFF;
@@ -319,7 +319,7 @@ select.pmpro_error {
 		"AccountNumber AccountNumber"
 		"Expiry CVV"
 		"DiscountCode DiscountCode";
-	grid-gap: 1em;
+	grid-column-gap: 1em;
 	-ms-grid-columns: 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr;
 }
