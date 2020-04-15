@@ -23,7 +23,9 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 }
 add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
 
-//Where is the sign page? Levels page or default multisite page.
+/**
+ * Where is the sign up page? Levels page or default multisite page.
+ */
 function pmpro_wp_signup_location( $location ) {
 	if ( is_multisite() && pmpro_getOption("redirecttosubscription") ) {
 		$location = pmpro_url("levels");
@@ -33,7 +35,9 @@ function pmpro_wp_signup_location( $location ) {
 }
 add_filter('wp_signup_location', 'pmpro_wp_signup_location');
 
-//redirect from default login pages to PMPro
+/**
+ * Redirect from default login pages to PMPro.
+ */
 function pmpro_login_head() {
 	global $pagenow;
 
@@ -97,6 +101,21 @@ function pmpro_login_url( $login_url='', $redirect='' ) {
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
 /**
+ * Show the login form on the membership account page
+ * if the user is not logged in.
+ */
+function pmpro_membership_account_filter( $content ) {
+	global $pmpro_pages;
+
+	// If no user, swap entire Membership Account page content.
+	if ( is_page( $pmpro_pages[ 'account' ] ) && ! is_user_logged_in() ) {
+		$content = pmpro_login_forms_handler( false, false, false, 'account', false );
+	}
+	return $content;
+}
+add_filter( 'the_content', 'pmpro_membership_account_filter', 10 );
+
+/**
  * Add a hidden field to our login form
  * so we can identify it.
  * Hooks into the WP core filter login_form_top.
@@ -111,7 +130,6 @@ function pmpro_login_form_hidden_field( $html ) {
  * Show a member login form or logged in member widget.
  *
  * @since 2.3
- *
  */
 function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true, $location = '', $echo = true ) {
 	// Set the message return string.
