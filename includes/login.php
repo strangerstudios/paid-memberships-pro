@@ -83,33 +83,19 @@ add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
- * Are we doing a data request?
- */
-function pmpro_is_data_request() {
-	$data_requests = array( 'add_export_personal_data_request', 'add_remove_personal_data_request' );
-	if ( ! empty( $_REQUEST['action'] ) && in_array( $_REQUEST['action'], $data_requests ) ) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-/**
  * Redirect to the Membership Account page for member login.
  * Ignores URLs for data requests.
  * @since 2.3
  */
-function pmpro_login_url( $login_url='', $redirect='' ) {	
-	if ( ! pmpro_is_data_request() ) {	
-		$account_page_id = pmpro_getOption( 'account_page_id' );
-		if ( ! empty ( $account_page_id ) ) {
-			$login_url = get_permalink( $account_page_id );
+function pmpro_login_url( $login_url='', $redirect='' ) {
+	$account_page_id = pmpro_getOption( 'account_page_id' );
+	if ( ! empty ( $account_page_id ) ) {
+		$login_url = get_permalink( $account_page_id );
 
-		if ( ! empty( $redirect ) )
-			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
-		}
+	if ( ! empty( $redirect ) )
+		$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 	}
-		
+
 	return apply_filters( 'pmpro_login_url', $login_url, $redirect );
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
@@ -121,10 +107,17 @@ add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 function pmpro_membership_account_filter( $content ) {
 	global $pmpro_pages;
 
-	// If no user, swap entire Membership Account page content.
-	if ( is_page( $pmpro_pages[ 'account' ] ) && ! is_user_logged_in() ) {
+	if ( ! is_page( $pmpro_pages['account'] ) ) {
+		return $content;
+	}
+	
+	if ( did_action( 'user_request_action_confirmed' ) ) {
+		$message = _wp_privacy_account_request_confirmed_message( intval( $_REQUEST['request_id'] ) );
+		$content = $message;
+	} elseif ( ! is_user_logged_in() ) {
 		$content = pmpro_login_forms_handler( false, false, false, 'account', false );
 	}
+	
 	return $content;
 }
 add_filter( 'the_content', 'pmpro_membership_account_filter', 10 );
@@ -698,3 +691,34 @@ function pmpro_no_level_page_register_redirect( $url ) {
 	return $url;
 }
 add_action( 'pmpro_register_redirect', 'pmpro_no_level_page_register_redirect' );
+
+/**
+ * Process Data Request confirmaction URLs.
+ * Called from Account page preheader.
+ * Checks first for action=confirmaction param.
+ * Code pulled from wp-login.php.
+ */
+function pmpro_confirmaction_handler() {
+	if ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'confirmaction' ) {
+		return false;
+	}
+	
+	if ( ! isset( $_GET['request_id'] ) ) {
+		wp_die( __( 'Missing request ID.' ) );
+	}
+
+	if ( ! isset( $_GET['confirm_key'] ) ) {
+		wp_die( __( 'Missing confirm key.' ) );
+	}
+
+	$request_id = (int) $_GET['request_id'];
+	$key        = sanitize_text_field( wp_unslash( $_GET['confirm_key'] ) );
+	$result     = wp_validate_user_request_key( $request_id, $key );
+
+	if ( is_wp_error( $result ) ) {
+		wp_die( $result );
+	}
+
+	/** This action is documented in wp-login.php */
+	do_action( 'user_request_action_confirmed', $request_id );
+}

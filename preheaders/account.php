@@ -2,6 +2,16 @@
 
 global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels;
 
+// Check if we are processing a confirmaction for a Data Request.
+$request_id = pmpro_confirmaction_handler();
+if ( $request_id ) {
+	$pmpro_msg = _wp_privacy_account_request_confirmed_message( $request_id );
+	$pmpro_msgt = 'pmpro_success';
+} else {
+	$pmpro_msg = 'What?';
+	$pmpro_msgt = 'pmpro_error';
+}
+
 // Make sure the membership level is set for the user.
 if( $current_user->ID ) {
     $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
