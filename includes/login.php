@@ -609,10 +609,11 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
 function pmpro_login_failed( $username ) {
 
 	$referrer = wp_get_referer();
+	$redirect_to = esc_url( $_REQUEST['redirect_to'] );
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
-			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ) ), wp_login_url() ) );
+			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ), 'redirect_to' => $redirect_to ), wp_login_url() ) );
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', wp_login_url() ) );
 		}
