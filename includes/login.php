@@ -84,19 +84,19 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
  * Redirect to the Membership Account page for member login.
- * Ignores URLs for data requests.
  * @since 2.3
  */
 function pmpro_login_url( $login_url='', $redirect='' ) {
 	$account_page_id = pmpro_getOption( 'account_page_id' );
 	if ( ! empty ( $account_page_id ) ) {
 		$login_url = get_permalink( $account_page_id );
-
-	if ( ! empty( $redirect ) )
-		$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+		
+		if ( ! empty( $redirect ) ) {
+			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
+		}
 	}
 
-	return apply_filters( 'pmpro_login_url', $login_url, $redirect );
+	return $login_url;
 }
 add_filter( 'login_url', 'pmpro_login_url', 50, 2 );
 
