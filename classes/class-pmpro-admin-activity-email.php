@@ -35,6 +35,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			return;
 		}
 
+		if ( empty( $frequency ) ) {
+			$frequency = 'week';
+		}
+
 		ob_start();
 
 		?>
