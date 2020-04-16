@@ -329,7 +329,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		ob_end_clean();
 
 		$this->email    = get_bloginfo( 'admin_email' );
-		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s - %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
+		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body     = $admin_activity_email_body;
 		$this->from     = pmpro_getOption( 'from' );
