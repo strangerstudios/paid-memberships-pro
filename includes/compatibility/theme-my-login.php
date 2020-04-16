@@ -24,7 +24,7 @@ function pmpro_tml_login_redirect( $login_url, $redirect ) {
 	
 	return $login_url;
 }
-add_filter( 'pmpro_login_url', 'pmpro_tml_login_redirect', 55, 2 );
+add_filter( 'wp_login_url', 'pmpro_tml_login_redirect', 55, 2 );
 
 /**
  * Remove frontend hooks from Paid Memberships Pro includes/login.php when TML is activated. Give preference to TML.

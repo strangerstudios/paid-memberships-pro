@@ -10,7 +10,7 @@ if ( ! is_user_logged_in() ) {
 	} else {
 		$confirmation_url = pmpro_url( 'confirmation' );
 	}
-	wp_redirect( add_query_arg( 'redirect_to', urlencode( $confirmation_url ), pmpro_login_url() ) );
+	wp_redirect( add_query_arg( 'redirect_to', urlencode( $confirmation_url ), wp_login_url() ) );
 	exit;
 }
 

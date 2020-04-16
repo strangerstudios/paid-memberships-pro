@@ -360,7 +360,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
 		$pmpro_content_message_post = '</div>';
 
 		$sr_search = array("!!levels!!", "!!referrer!!", "!!login_url!!", "!!levels_page_url!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), urlencode(site_url($_SERVER['REQUEST_URI'])), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ) );
+		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), urlencode(site_url($_SERVER['REQUEST_URI'])), esc_url( wp_login_url() ), esc_url( pmpro_url( 'levels' ) ) );
 
 		
 		//get the correct message to show at the bottom
