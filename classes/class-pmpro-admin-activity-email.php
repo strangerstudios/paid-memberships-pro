@@ -57,7 +57,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							);
 							$term      = $term_list[ $frequency ];
 							?>
-							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s:", 'paid-memberships-pro' ), esc_html( $term ) ); ?></p>
+							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s.", 'paid-memberships-pro' ), esc_html( $term ) ); ?></p>
 						</td>
 					</tr>
 					<tr>
