@@ -72,7 +72,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;border:0;max-width:600px!important;background-color:#FFFFFF;">
 				<tbody>
 					<?php
-					$email_sections['pre-content'] = ob_get_contents();
+					$email_sections['pre_content'] = ob_get_contents();
 					ob_clean();
 					?>
 					<tr>
@@ -120,7 +120,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 						</td>
 					</tr>
 					<?php
-					$email_sections['sales-revenue'] = ob_get_contents();
+					$email_sections['sales_revenue'] = ob_get_contents();
 					ob_clean();
 					?>
 					<tr>
@@ -248,7 +248,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 						</td>
 					</tr>
 					<?php
-					$email_sections['add-ons'] = ob_get_contents();
+					$email_sections['add_ons'] = ob_get_contents();
 					ob_clean();
 					?>
 					<tr>
@@ -341,7 +341,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 						</td>
 					</tr>
 					<?php
-					$email_sections['articles-stats'] = ob_get_contents();
+					$email_sections['articles_stats'] = ob_get_contents();
 					ob_clean();
 					?>
 					<tr>
@@ -359,7 +359,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		</center>
 		</div>
 		<?php
-		$email_sections['post-content'] = ob_get_contents();
+		$email_sections['post_content'] = ob_get_contents();
 		ob_end_clean();
 
 		apply_filters( 'pmpro_admin_activity_email_sections', $email_sections, $frequency, $term, $report_start_date, $report_end_date, $date_range );
