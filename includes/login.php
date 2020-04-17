@@ -255,7 +255,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	ob_start();
 
-	if ( $message ) {
+	// Note we don't show messages on the widget form.
+	if ( $message && $location !== 'widget' ) {
 		echo '<div class="pmpro_message ' . esc_attr( $msgt ) . '">'. esc_html( $message ) .'</div>';
 	}
 
