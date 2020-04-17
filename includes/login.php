@@ -282,11 +282,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
 				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL;
         
-        // Redirect users back to their page that they logged-in from via the widget.  
+				// Redirect users back to their page that they logged-in from via the widget.  
 				if( empty( $redirect_to ) && $location === 'widget' && apply_filters( 'pmpro_login_widget_redirect_back', true ) ) {					
 				  $redirect_to = esc_url( site_url( $_SERVER['REQUEST_URI'] ) );
 				}
-        ?>
+				?>
 				<div class="pmpro_login_wrap">
 					<?php echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title; ?>
 					<?php
