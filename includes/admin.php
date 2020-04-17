@@ -44,33 +44,3 @@ function pmpro_block_dashboard() {
 	}
 }
 add_action( 'admin_init', 'pmpro_block_dashboard', 9 );
-
-/**
- * Runs only when the plugin is activated.
- *
- * @since 1.10
- */
-function pmpro_admin_notice_activation_hook() {
-	// Create transient data.
-	set_transient( 'pmpro-admin-notice', true, 5 );
-}
-//register_activation_hook( PMPRO_BASE_FILE, 'pmpro_admin_notice_activation_hook' );
-
-/**
- * Admin Notice on Activation.
- *
- * @since 1.10
- */
-function pmpro_admin_notice() {
-	// Check transient, if available display notice.
-	if ( get_transient( 'pmpro-admin-notice' ) ) { ?>
-		<div id="message" class="updated notice">
-			<p><?php _e( '<strong>Welcome to Paid Memberships Pro</strong> &mdash; We&lsquo;re here to help you #GetPaid.', 'paid-memberships-rpo' ); ?></p>
-			<p class="submit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-dashboard' ) ); ?>" class="button-primary"><?php _e( 'Get Started Using Paid Memberships Pro', 'paid-memberships-pro' ); ?></a></p>
-		</div>
-		<?php
-		// Delete transient, only display this notice once.
-		delete_transient( 'pmpro-admin-notice' );
-	}
-}
-//add_action( 'admin_notices', 'pmpro_admin_notice' );
