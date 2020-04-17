@@ -393,12 +393,13 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
  * Redirect Password reset to our own page.
  * @since 2.3
  */
-function pmpro_reset_password_redirect() {
+function pmpro_reset_password_redirect() {	
 	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
 		$account_page = pmpro_getOption( 'account_page_id' );
 		$redirect_url = $account_page ? get_permalink( $account_page ): '';
-		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
-        if ( ! $user || is_wp_error( $user ) ) {
+		$user = check_password_reset_key( $_REQUEST['rp_key'], $_REQUEST['rp_login'] );
+		
+		if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
 				wp_redirect( add_query_arg( 'login', urlencode( 'expiredkey' ), $redirect_url ) );
             } else {
@@ -407,8 +408,8 @@ function pmpro_reset_password_redirect() {
             exit;
         }
 
-        $redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['login'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
-        $redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_key( $_REQUEST['key'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['rp_login'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['rp_key'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
 
         wp_redirect( $redirect_url );
         exit;
@@ -431,7 +432,7 @@ function pmpro_reset_password_form() {
 		} ?>
 		<form name="resetpassform" id="resetpassform" class="pmpro_form" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
 			<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['login'] ) ); ?>" autocomplete="off" />
-			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_key( $_REQUEST['key'] ) ); ?>" />
+			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['key'] ) ); ?>" />
 			<div class="pmpro_reset_password-fields">
 				<div class="pmpro_rest_password-field pmpro_rest_password-field-pass1">
 					<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
@@ -501,7 +502,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-        $rp_key = sanitize_key( $_REQUEST['rp_key'] );
+        $rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
 		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
 
 		$account_page = pmpro_getOption( 'account_page_id' );
