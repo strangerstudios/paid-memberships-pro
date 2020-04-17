@@ -290,7 +290,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				</div> <!-- end pmpro_login_wrap -->
 				<?php
 			}
-		} else if ( $action === 'reset_pass' || ( $_REQUEST['login'] === 'invalidkey' && $action === 'rp' ) ) {
+		} elseif ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) {
 			// Reset password form.
 			?>
 			<div class="pmpro_lost_password_wrap">
@@ -306,7 +306,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				?>
 			</div> <!-- end pmpro_lost_password_wrap -->
 			<?php
-		} else if ( $action === 'rp' ) {
+		} elseif ( $action === 'rp' ) {
 			// Password reset processing key.
 			?>
 			<div class="pmpro_reset_password_wrap">
