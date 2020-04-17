@@ -645,6 +645,8 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 			?>
 		</h3>
 
+		<?php do_action( 'pmpro_logged_in_welcome_before_menu' ); ?>
+
 		<?php
 		/**
 		 * Show the "Member Form" menu to users with an active membership level.
@@ -663,6 +665,8 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 			wp_nav_menu( $pmpro_member_menu_defaults );
 		}
 		?>
+
+		<?php do_action( 'pmpro_logged_in_welcome_after_menu' ); ?>
 
 		<?php
 		/**
