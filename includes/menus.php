@@ -235,17 +235,21 @@ function pmpro_register_menus() {
 add_action( 'after_setup_theme', 'pmpro_register_menus' );
 
 /**
- * Hide the WordPress Toolbar from Non-Admins.
+ * Hide the WordPress Toolbar from Subscribers.
  *
  * @since 2.3
  */
-function pmpro_hide_toolbar_from_non_admins() {
-
-	// Get the Advanced Setting for toolbar display.
+function pmpro_hide_toolbar() {
+	global $current_user;
 	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
-
-	if ( ! current_user_can( 'administrator' ) && ! empty( $hide_toolbar ) ) {
+	if ( ! empty( $hide_toolbar ) && is_user_logged_in() && in_array( 'subscriber', (array) $current_user->roles ) ) {
+		$hide = true;
+	} else {
+		$hide = false;
+	}	
+	$hide = apply_filters( 'pmpro_hide_toolbar', $hide );
+	if ( $hide ) {
 		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }
-add_action( 'init', 'pmpro_hide_toolbar_from_non_admins', 9 );
+add_action( 'init', 'pmpro_hide_toolbar', 9 );

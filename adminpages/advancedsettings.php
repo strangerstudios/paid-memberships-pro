@@ -145,7 +145,7 @@
 					<label for="hide_toolbar"><?php _e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
 				</th>
 				<td>
-					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from non-Administrator users.', 'paid-memberships-pro' );?></label>
+					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from all users with the Subscriber role.', 'paid-memberships-pro' );?></label>
 				</td>
 			</tr>
 		</tbody>
