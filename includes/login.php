@@ -326,8 +326,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		// Already signed in.
 		if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 			esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
-		} elseif ( ! empty( $display_if_logged_in ) ) {
-			pmpro_logged_in_welcome( $show_menu, $show_logout_link );
+		} elseif ( ! empty( $display_if_logged_in ) ) { ?>
+			<div class="pmpro_logged_in_welcome_wrap">
+				<?php pmpro_logged_in_welcome( $show_menu, $show_logout_link ); ?>
+			</div> <!-- end pmpro_logged_in_welcome_wrap -->
+			<?php
 		}
 	}
 	
