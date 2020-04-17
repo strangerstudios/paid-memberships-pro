@@ -458,18 +458,15 @@ function pmpro_member_profile_edit_form() {
 		if ( isset( $_POST['last_name'] ) ) {
 			$user->last_name = sanitize_text_field( $_POST['last_name'] );
 		}
-		if ( isset( $_POST['nickname'] ) ) {
-			$user->nickname = sanitize_text_field( $_POST['nickname'] );
-		}
 		if ( isset( $_POST['display_name'] ) ) {
 			$user->display_name = sanitize_text_field( $_POST['display_name'] );
+			$user->nickname = $user->display_name;
 		}
 
-		// Validate nickname.
-		if ( empty( $user->nickname ) ) {
-			$errors[] = __( 'Please enter a nickname.', 'paid-memberships-pro' );
+		// Validate display name.
+		if ( empty( $user->display_name ) ) {
+			$errors[] = __( 'Please enter a display name.', 'paid-memberships-pro' );
 		}
-
 		// Validate email address.
 		if ( empty( $user->user_email ) ) {
 			$errors[] = __( 'Please enter an email address.', 'paid-memberships-pro' );
@@ -507,12 +504,6 @@ function pmpro_member_profile_edit_form() {
 			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
 
 			<div class="pmpro_member_profile_edit-fields">
-				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-username">
-					<label for="user_login"><?php _e( 'Username', 'paid-memberships-pro' ); ?></label></th>
-					<input type="text" name="user_login" id="user_login" value="<?php echo esc_attr( $current_user->user_login ); ?>" disabled="disabled" class="input <?php echo pmpro_getClassForField( 'username' );?>" />
-					<p><small class="lite"><?php _e( 'Usernames cannot be changed.', 'paid-memberships-pro' ); ?></small></p>
-				</div> <!-- end pmpro_member_profile_edit-field-username -->
-
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name">
 					<label for="first_name"><?php _e( 'First Name', 'paid-memberships-pro' ); ?></label>
 					<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $current_user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
@@ -523,50 +514,14 @@ function pmpro_member_profile_edit_form() {
 					<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $current_user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
 				</div> <!-- end pmpro_member_profile_edit-field-last_name -->
 
-				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-nickname">
-					<label for="nickname"><?php _e( 'Nickname', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
-					<input type="text" name="nickname" id="nickname" value="<?php echo esc_attr( $current_user->nickname ); ?>" class="input <?php echo pmpro_getClassForField( 'nickname' );?>" />
-				</div> <!-- end pmpro_member_profile_edit-field-nickname -->
-
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name">
-					<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?></label>
-					<select name="display_name" id="display_name" class="<?php echo pmpro_getClassForField( 'display_name' );?>">
-					<?php
-						$public_display                     = array();
-						$public_display['display_nickname'] = $current_user->nickname;
-						$public_display['display_username'] = $current_user->user_login;
-
-						if ( ! empty( $current_user->first_name ) ) {
-							$public_display['display_firstname'] = $current_user->first_name;
-						}
-
-						if ( ! empty( $current_user->last_name ) ) {
-							$public_display['display_lastname'] = $current_user->last_name;
-						}
-
-						if ( ! empty( $current_user->first_name ) && ! empty( $current_user->last_name ) ) {
-							$public_display['display_firstlast'] = $current_user->first_name . ' ' . $current_user->last_name;
-							$public_display['display_lastfirst'] = $current_user->last_name . ' ' . $current_user->first_name;
-						}
-
-						if ( ! in_array( $current_user->display_name, $public_display ) ) { // Only add this if it isn't duplicated elsewhere.
-							$public_display = array( 'display_displayname' => $current_user->display_name ) + $public_display;
-						}
-
-						$public_display = array_map( 'trim', $public_display );
-						$public_display = array_unique( $public_display );
-
-						foreach ( $public_display as $id => $item ) { ?>
-							<option <?php selected( $current_user->display_name, $item ); ?>><?php echo $item; ?></option>
-						<?php
-						}
-					?>
-					</select>	
+					<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
+					<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $current_user->display_name ); ?>" class="input <?php echo pmpro_getClassForField( 'display_name' );?>" />
 				</div> <!-- end pmpro_member_profile_edit-field-display_name -->
 
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
 					<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
-					<input type="email" name="email" id="email" aria-describedby="email-description" value="<?php echo esc_attr( $current_user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
+					<input type="email" name="email" id="email" value="<?php echo esc_attr( $current_user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
 				</div>
 			</div> <!-- end pmpro_member_profile_edit-fields -->
 
