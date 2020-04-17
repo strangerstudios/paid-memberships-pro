@@ -268,52 +268,60 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 		$after_title = '</h2>';
 	}
 
+	if ( isset( $_REQUEST['action'] ) ) {
+		$action = sanitize_text_field( $_REQUEST['action'] );
+	} else {
+		$action = false;
+	}
+
 	// Figure out which login view to show.
-	if ( ! is_user_logged_in( ) && ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'reset_pass' ) ) {
-		// Login form.
-		if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
-			$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
-			$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL; ?>
-			<div class="pmpro_login_wrap">
-				<?php echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title; ?>
+	if ( ! is_user_logged_in() ) {			
+		if ( ! in_array( $action, array( 'reset_pass', 'rp' ) ) ) {
+			// Login form.
+			if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
+				$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
+				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL; ?>
+				<div class="pmpro_login_wrap">
+					<?php echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title; ?>
+					<?php
+						pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
+						pmpro_login_forms_handler_nav( 'login' );
+					?>
+				</div> <!-- end pmpro_login_wrap -->
 				<?php
-					pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
-					pmpro_login_forms_handler_nav( 'login' );
+			}
+		} else if ( $action === 'reset_pass' || ( $_REQUEST['login'] === 'invalidkey' && $action === 'rp' ) ) {
+			// Reset password form.
+			?>
+			<div class="pmpro_lost_password_wrap">
+				<?php echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title; ?>
+				<p class="pmpro_lost_password-instructions">
+					<?php
+						esc_html_e( 'Please enter your username or email address. You will receive a link to create a new password via email.', 'paid-memberships-pro' );
+					?>
+				</p>
+				<?php
+					pmpro_lost_password_form();
+					pmpro_login_forms_handler_nav( 'lost_password' );
 				?>
-			</div> <!-- end pmpro_login_wrap -->
+			</div> <!-- end pmpro_lost_password_wrap -->
+			<?php
+		} else if ( $action === 'rp' ) {
+			// Password reset processing key.
+			?>
+			<div class="pmpro_reset_password_wrap">
+				<?php echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title; ?>
+				<?php pmpro_reset_password_form(); ?>
+			</div> <!-- end pmpro_reset_password_wrap -->
 			<?php
 		}
-	} else if ( ! is_user_logged_in() && isset( $_GET['action'] ) && $_GET['action'] === 'reset_pass' ) {
-		// Reset password form.
-		?>
-		<div class="pmpro_lost_password_wrap">
-			<?php echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title; ?>
-			<p class="pmpro_lost_password-instructions">
-				<?php
-					esc_html_e( 'Please enter your username or email address. You will receive a link to create a new password via email.', 'paid-memberships-pro' );
-				?>
-			</p>
-			<?php
-				pmpro_lost_password_form();
-				pmpro_login_forms_handler_nav( 'lost_password' );
-			?>
-		</div> <!-- end pmpro_lost_password_wrap -->
-		<?php
-	} elseif ( is_user_logged_in() ) {
+	} else {
 		// Already signed in.
 		if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 			esc_html_e( 'You are already signed in.', 'paid-memberships-pro' );
 		} elseif ( ! empty( $display_if_logged_in ) ) {
 			pmpro_logged_in_welcome( $show_menu, $show_logout_link );
 		}
-	} elseif ( ! is_user_logged_in() && isset( $_REQUEST['key'] ) ) {
-		// Password reset processing key.
-		?>
-		<div class="pmpro_reset_password_wrap">
-			<?php echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title; ?>
-			<?php pmpro_reset_password_form(); ?>
-		</div> <!-- end pmpro_reset_password_wrap -->
-		<?php
 	}
 	
 	$content = ob_get_clean();
