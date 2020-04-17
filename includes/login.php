@@ -284,7 +284,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
         
 				// Redirect users back to their page that they logged-in from via the widget.  
 				if( empty( $redirect_to ) && $location === 'widget' && apply_filters( 'pmpro_login_widget_redirect_back', true ) ) {		
-				  $redirect_to = esc_url( site_url( $_SERVER['REQUEST_URI'] ) );
+					$redirect_to = esc_url( site_url( $_SERVER['REQUEST_URI'] ) );
 				}
 				?>
 				<div class="pmpro_login_wrap">
