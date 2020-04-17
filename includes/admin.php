@@ -32,7 +32,7 @@ add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 function pmpro_block_dashboard() {
 	global $current_user;
 	$block_dashboard = pmpro_getOption( 'block_dashboard' );
-	if ( ! empty( $block_dashboard ) && in_array( 'subscriber', (array) $current_user->roles ) ) {
+	if ( ! wp_doing_ajax() && ! empty( $block_dashboard ) && in_array( 'subscriber', (array) $current_user->roles ) ) {
 		$block = true;
 	} else {
 		$block = false;
