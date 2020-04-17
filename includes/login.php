@@ -343,7 +343,7 @@ function pmpro_lost_password_form() { ?>
 		<div class="pmpro_lost_password-fields">
 			<div class="pmpro_lost_password-field pmpro_lost_password-field-user_login">
 				<label for="user_login"><?php esc_html_e( 'Username or Email Address', 'paid-memberships-pro' ); ?></label>
-				<input type="text" name="user_login" id="user_login" size="20" />
+				<input type="text" name="user_login" id="user_login" class="input" size="20" />
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="pmpro_submit">
