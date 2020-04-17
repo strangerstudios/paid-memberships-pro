@@ -25,6 +25,27 @@ function pmpro_admin_init_redirect_to_dashboard() {
 add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 
 /**
+ * Block Subscibers from accessing the WordPress Dashboard.
+ *
+ * @since 2.3
+ */
+function pmpro_block_dashboard() {
+	global $current_user;
+	$block_dashboard = pmpro_getOption( 'block_dashboard' );
+	if ( ! empty( $block_dashboard ) && in_array( 'subscriber', (array) $current_user->roles ) ) {
+		$block = true;
+	} else {
+		$block = false;
+	}	
+	$block = apply_filters( 'pmpro_block_dashboard', $block );
+	if ( $block ) {
+		wp_redirect( pmpro_url( 'account' ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'pmpro_block_dashboard', 9 );
+
+/**
  * Runs only when the plugin is activated.
  *
  * @since 1.10

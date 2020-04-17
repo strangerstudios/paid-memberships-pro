@@ -17,7 +17,12 @@
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
-		//handle the text settings for better security handling		
+		// Dashboard settings.
+		pmpro_setOption( 'hide_toolbar' );
+		pmpro_setOption( 'block_dashboard' );
+		
+		// Message settings.
+		// These use wp_kses for better security handling.
 		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
 		update_option('pmpro_nonmembertext', $nonmembertext);
 		
@@ -27,29 +32,25 @@
 		$rsstext = wp_kses(wp_unslash($_POST['rsstext']), $allowedposttags);
 		update_option('pmpro_rsstext', $rsstext);		
 		
-		//other settings
+		// Content settings.
 		pmpro_setOption("filterqueries");
-		pmpro_setOption("showexcerpts");
-		pmpro_setOption("hideads");
-		pmpro_setOption("hideadslevels");
-		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("maxnotificationpriority");
-		pmpro_setOption("activity_email_frequency");
+		pmpro_setOption("showexcerpts");		
 
-		//captcha
+		// Checkout settings.
+		pmpro_setOption("tospage");
 		pmpro_setOption("recaptcha");
 		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
-		pmpro_setOption("recaptcha_privatekey");
+		pmpro_setOption("recaptcha_privatekey");		
 
-		//tos
-		pmpro_setOption("tospage");
+		// Communication settings.
+		pmpro_setOption("maxnotificationpriority");
+		pmpro_setOption("activity_email_frequency");
 
-		//toolbar
-		pmpro_setOption( 'hide_toolbar' );
-
-		//footer link
-		pmpro_setOption("hide_footer_link");
+		// Other settings.
+		pmpro_setOption("hideads");
+		pmpro_setOption("hideadslevels");
+		pmpro_setOption("redirecttosubscription");
 
         /**
          * Filter to add custom settings to the advanced settings page.
@@ -61,36 +62,43 @@
         		pmpro_setOption($setting['field_name']);
         }
         
-		//assume success
+		// Assume success.
 		$msg = true;
 		$msgt = __("Your advanced settings have been updated.", 'paid-memberships-pro' );
 	}
 
+	// Dashboard settings.
+	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
+	$block_dashboard = pmpro_getOption( 'block_dashboard' );
+	
+	// Message settings.
 	$nonmembertext = pmpro_getOption("nonmembertext");
 	$notloggedintext = pmpro_getOption("notloggedintext");
 	$rsstext = pmpro_getOption("rsstext");
-	$hideads = pmpro_getOption("hideads");
-    $filterqueries = pmpro_getOption('filterqueries');
-	$showexcerpts = pmpro_getOption("showexcerpts");
-	$hideadslevels = pmpro_getOption("hideadslevels");
-	$maxnotificationpriority = pmpro_getOption("maxnotificationpriority");
-	$activity_email_frequency = pmpro_getOption("activity_email_frequency");
+    
+	// Content settings.
+	$filterqueries = pmpro_getOption('filterqueries');
+	$showexcerpts = pmpro_getOption("showexcerpts");	
 
-	if(is_multisite())
-		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
-
+	// Checkout settings.
+	$tospage = pmpro_getOption("tospage");
 	$recaptcha = pmpro_getOption("recaptcha");
 	$recaptcha_version = pmpro_getOption("recaptcha_version");
 	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
 	$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
 
-	$tospage = pmpro_getOption("tospage");
+	// Communication settings.
+	$maxnotificationpriority = pmpro_getOption("maxnotificationpriority");
+	$activity_email_frequency = pmpro_getOption("activity_email_frequency");
 
-	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
+	// Other settings.
+	$hideads = pmpro_getOption("hideads");
+	$hideadslevels = pmpro_getOption("hideadslevels");
+	if( is_multisite() ) {
+		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
+	}
 
-	$hide_footer_link = pmpro_getOption("hide_footer_link");
-
-	//default settings
+	// Default settings.
 	if(!$nonmembertext)
 	{
 		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
@@ -121,9 +129,17 @@
 		
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
-		<h2 class="title"><?php esc_html_e( 'Dashboard Settings', 'paid-memberships-pro' ); ?></h2>
+		<h2 class="title"><?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="block_dashboard"><?php _e('WordPress Dashboard', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<input id="block_dashboard" name="block_dashboard" type="checkbox" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> /> <label for="block_dashboard"><?php _e('Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' );?></label>
+				</td>
+			</tr>
 			<tr>
 				<th scope="row" valign="top">
 					<label for="hide_toolbar"><?php _e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
