@@ -17,6 +17,6 @@
   "author": "Stranger Studios",
   "license": "GPL-2.0",
   "devDependencies": {
-    "@wordpress/scripts": "^5.0.0"
+    "@wordpress/scripts": "^7.2.0"
   }
 }

@@ -20,7 +20,7 @@ if ( ! is_user_logged_in() ) {
 	} else {
 		$invoice_url = pmpro_url( 'invoice' );
 	}
-	wp_redirect( add_query_arg( 'redirect_to', urlencode( $invoice_url ), pmpro_login_url() ) );
+	wp_redirect( add_query_arg( 'redirect_to', urlencode( $invoice_url ), wp_login_url() ) );
 	exit;
 }
 
