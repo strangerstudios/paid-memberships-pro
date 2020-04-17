@@ -168,15 +168,12 @@ form.pmpro_form .pmpro_captcha div {
 form.pmpro_form .pmpro_submit {
 	margin-top: 1em;
 }
-body.pmpro-checkout form.pmpro_form .pmpro_submit {
-	text-align: right;
-}
 form.pmpro_form #pmpro_processing_message {
 	color: #999;
 	display: block;
 	font-style: italic;
 	margin: 1em 0 0 0;
-	text-align: right;
+	text-align: left;
 }
 
 /* Lot Password Frontend Form */
@@ -546,7 +543,10 @@ li.pmpro_more {
 		display: block;
 		margin-bottom: 1em;
 	}
-	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
+	form.pmpro_form input[type=text].input,
+	form.pmpro_form input[type=password].input,
+	.pmpro_login_wrap form#loginform input[type=text].input,
+	.pmpro_login_wrap form#loginform input[type=password].input {
 		width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
@@ -555,7 +555,8 @@ li.pmpro_more {
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
 	}
-	form.pmpro_form .pmpro_btn {
+	form.pmpro_form .pmpro_btn,
+	.pmpro_login_wrap #loginform input[type=submit] {
 		display: block;
 		width: 100%;
 	}
