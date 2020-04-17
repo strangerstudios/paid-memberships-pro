@@ -121,7 +121,21 @@
 		
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
-
+		<h2 class="title"><?php esc_html_e( 'Dashboard Settings', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+		<tbody>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="hide_toolbar"><?php _e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from non-Administrator users.', 'paid-memberships-pro' );?></label>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<hr />
+		<h2 class="title"><?php esc_html_e( 'Message Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
 			<tr>
@@ -182,9 +196,21 @@
 		</tbody>
 		</table>
 		<hr />
-		<h2 class="title"><?php esc_html_e( 'reCAPTCHA Settings', 'paid-memberships-pro' ); ?></h2>
+		<h2 class="title"><?php esc_html_e( 'Checkout Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<?php
+						wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
+					?>
+					<br />
+					<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+				</td>
+			</tr>
 			<tr>
 				<th scope="row" valign="top">
 					<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
@@ -227,6 +253,49 @@
 		</tbody>
 		</table>
 		<hr />
+		<h2 class="title"><?php esc_html_e( 'Communication Settings', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tr>
+				<th><?php _e( 'Notifications', 'paid-memberships-pro' ); ?></th>
+				<td>
+					<select name="maxnotificationpriority">
+						<option value="5" <?php selected( $maxnotificationpriority, 5 ); ?>>
+							<?php _e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="1" <?php selected( $maxnotificationpriority, 1 ); ?>>
+							<?php _e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
+						</option>
+					</select>
+					<br />
+					<p class="description"><?php _e('Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' );?></p>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<label for="activity_email_frequency"><?php _e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
+				</th>
+				<td>
+					<select name="activity_email_frequency">
+						<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
+							<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
+							<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
+							<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
+						</option>
+						<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
+							<?php _e( 'Never', 'paid-memberships-pro' ); ?>
+						</option>
+					</select>
+					<br />
+					<p class="description"><?php _e( 'Send periodic sales and revenue updates from this site to the administration email address.', 'paid-memberships-pro' );?></p>
+				</td>
+			</tr>
+		</tbody>
+		</table>	
+		<hr />
 		<h2 clas="title"><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 		<tbody>
@@ -252,22 +321,7 @@ if ( pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
 				</td>
-			</tr>
-			<tr>
-			<th><?php _e( 'Notifications', 'paid-memberships-pro' ); ?></th>
-				<td>
-					<select name="maxnotificationpriority">
-						<option value="5" <?php selected( $maxnotificationpriority, 5 ); ?>>
-							<?php _e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
-						</option>
-						<option value="1" <?php selected( $maxnotificationpriority, 1 ); ?>>
-							<?php _e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
-						</option>
-					</select>
-					<br />
-					<p class="description"><?php _e('Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' );?></p>
-				</td>
-			</tr>
+			</tr>			
 			<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
@@ -313,49 +367,7 @@ if ( pmpro_displayAds() ) {
 					</select>
 				</td>
 			</tr>
-			<?php } ?>
-			<tr>
-				<th scope="row" valign="top">
-					<label for="tospage"><?php _e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
-				</th>
-				<td>
-					<?php
-						wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
-					?>
-					<br />
-					<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top">
-					<label for="hide_toolbar"><?php _e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
-				</th>
-				<td>
-					<input id="hide_toolbar" name="hide_toolbar" type="checkbox" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> /> <label for="hide_toolbar"><?php _e('Hide the Toolbar from non-Administrator users.', 'paid-memberships-pro' );?></label>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="activity_email_frequency"><?php _e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
-				</th>
-				<td>
-					<select name="activity_email_frequency">
-						<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
-							<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
-						</option>
-						<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
-							<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
-						</option>
-						<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
-							<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
-						</option>
-						<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
-							<?php _e( 'Never', 'paid-memberships-pro' ); ?>
-						</option>
-					</select>
-				</td>
-			</tr>
-
+			<?php } ?>			
 			<?php
             // Filter to Add More Advanced Settings for Misc Plugin Options, etc.
             if (has_action('pmpro_custom_advanced_settings')) {
