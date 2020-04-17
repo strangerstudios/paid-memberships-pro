@@ -448,6 +448,7 @@ li.pmpro_more {
 .pmpro_login_wrap,
 .pmpro_lost_password_wrap,
 .pmpro_reset_password_wrap {
+	margin-bottom: 1em;
 }
 
 /*---------------------------------------
