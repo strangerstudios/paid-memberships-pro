@@ -351,7 +351,7 @@ function pmpro_lost_password_form() { ?>
 		<div class="pmpro_lost_password-fields">
 			<div class="pmpro_lost_password-field pmpro_lost_password-field-user_login">
 				<label for="user_login"><?php esc_html_e( 'Username or Email Address', 'paid-memberships-pro' ); ?></label>
-				<input type="text" name="user_login" id="user_login" size="20" />
+				<input type="text" name="user_login" id="user_login" class="input" size="20" />
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="pmpro_submit">
@@ -654,6 +654,8 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 			?>
 		</h3>
 
+		<?php do_action( 'pmpro_logged_in_welcome_before_menu' ); ?>
+
 		<?php
 		/**
 		 * Show the "Member Form" menu to users with an active membership level.
@@ -672,6 +674,8 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 			wp_nav_menu( $pmpro_member_menu_defaults );
 		}
 		?>
+
+		<?php do_action( 'pmpro_logged_in_welcome_after_menu' ); ?>
 
 		<?php
 		/**
