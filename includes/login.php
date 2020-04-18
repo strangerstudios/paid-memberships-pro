@@ -458,16 +458,16 @@ function pmpro_reset_password_form() {
 
 function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 	<hr />
-	<p class="pmpro_form_nav">
+	<p class="pmpro_actions_nav">
 		<?php
 			/**
-			 * Filters the separator used between login form navigation links.
+			 * Filters the separator used between action navigation links.
 			 *
 			 * @since 2.3
 			 *
-			 * @param string $pmpro_form_nav_separator The separator used between form navigation links.
+			 * @param string $pmpro_actions_nav_separator The separator used between action links.
 			 */
-			$pmpro_form_nav_separator = apply_filters( 'pmpro_form_nav_separator', ' | ' );
+			$pmpro_actions_nav_separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
 
 			// Build the links to return.
 			$links = array();
@@ -494,9 +494,9 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 				$links['lost_password'] = apply_filters( 'pmpro_lost_password_url', $pmpro_lost_password_url );
 			}
 
-			echo implode( $pmpro_form_nav_separator, $links );
+			echo implode( esc_html( $pmpro_actions_nav_separator ), $links );
 		?>
-	</p>
+	</p> <!-- end pmpro_actions_nav -->
 	<?php
 }
 
