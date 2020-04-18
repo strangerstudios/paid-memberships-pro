@@ -228,7 +228,7 @@ function pmpro_register_menus() {
 	// Register PMPro menu areas.
 	register_nav_menus(
 		array(
-			'pmpro-login-forms' => __( 'Member Form Widget - Paid Memberships Pro', 'paid-memberships-pro' ),
+			'pmpro-login-widget' => __( 'Log In Widget - PMPro', 'paid-memberships-pro' ),
 		)
 	);
 }

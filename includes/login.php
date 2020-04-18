@@ -642,7 +642,7 @@ function pmpro_login_failed( $username ) {
 add_action( 'wp_login_failed', 'pmpro_login_failed', 10, 2 );
 
 /**
- * Show welcome content for a "Logged In" member with Display Name, Log Out link and a "PMPro Member" menu area.
+ * Show welcome content for a "Logged In" member with Display Name, Log Out link and a "Log In Widget" menu area.
  *
  * @since 2.3
  *
@@ -651,7 +651,7 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 	if ( is_user_logged_in( ) ) {
 		// Set the location the user's display_name will link to based on level status.
 		global $current_user, $pmpro_pages;
-		if ( ! empty( $pmpro_pages ) && pmpro_hasMembershipLevel() ) {
+		if ( ! empty( $pmpro_pages ) && ! empty( $pmpro_pages['account'] ) ) {
 			$account_page      = get_post( $pmpro_pages['account'] );
 			$user_account_link = '<a href="' . esc_url( pmpro_url( 'account' ) ) . '">' . esc_html( preg_replace( '/\@.*/', '', $current_user->display_name ) ) . '</a>';
 		} else {
@@ -669,20 +669,20 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 
 		<?php
 		/**
-		 * Show the "Member Form" menu to users with an active membership level.
-		 * The menu can be customized per-level using the Nav Menus Add On for Paid Memberships Pro.
+		 * Show the "Log In Widget" menu to users.
+		 * The menu can be customized per level using the Nav Menus Add On for Paid Memberships Pro.
 		 *
 		 */
-		if ( ! empty ( $show_menu ) && pmpro_hasMembershipLevel() ) {
-			$pmpro_member_menu_defaults = array(
-				'theme_location'  => 'pmpro-login-forms',
+		if ( ! empty ( $show_menu ) ) {
+			$pmpro_login_widget_menu_defaults = array(
+				'theme_location'  => 'pmpro-login-widget',
 				'container'       => 'nav',
 				'container_id'    => 'pmpro-member-navigation',
 				'container_class' => 'pmpro-member-navigation',
 				'fallback_cb'	  => false,
 				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
 			);
-			wp_nav_menu( $pmpro_member_menu_defaults );
+			wp_nav_menu( $pmpro_login_widget_menu_defaults );
 		}
 		?>
 
