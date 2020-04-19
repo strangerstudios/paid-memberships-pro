@@ -35,51 +35,61 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			return;
 		}
 
-		ob_start();
+		if ( empty( $frequency ) ) {
+			$frequency = 'week';
+		}
 
+		$term_list = array(
+			'day'   => __( 'yesterday', 'paid-memberships-pro' ),
+			'week'  => __( 'last week', 'paid-memberships-pro' ),
+			'month' => __( 'last month', 'paid-memberships-pro' ),
+		);
+		$term      = $term_list[ $frequency ];
+
+		// Get dates that the report covers
+		// Start and end dates in YYYY-MM-DD formats.
+		if ( 'day' === $frequency ) {
+			$report_start_date = date( 'Y-m-d', strtotime( 'yesterday' ) );
+			$report_end_date   = $report_start_date;
+		} elseif ( 'week' === $frequency ) {
+			$report_start_date = date( 'Y-m-d', strtotime( '-7 day' ) );
+			$report_end_date   = date( 'Y-m-d', strtotime( '-1 day' ) );
+		} elseif ( 'month' === $frequency ) {
+			$report_start_date = date( 'Y-m-d', strtotime( 'first day of last month' ) );
+			$report_end_date   = date( 'Y-m-d', strtotime( 'last day of last month' ) );
+		}
+		$date_range = date_i18n( get_option( 'date_format' ), strtotime( $report_start_date ) );
+		if ( $report_start_date !== $report_end_date ) {
+			$date_range .= ' - ' . date_i18n( get_option( 'date_format' ), strtotime( $report_end_date ) );
+		}
+
+		$email_sections = array();
+
+		ob_start();
 		?>
 		<div style="margin:0;padding:30px;width:100%;background-color:#333333;">
 		<center>
 			<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;border:0;max-width:600px!important;background-color:#FFFFFF;">
 				<tbody>
+					<?php
+					$email_sections['pre_content'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
 							<h2 style="color:#2997c8;font-size: 30px;margin:0px 0px 20px 0px;padding:0px;"><?php get_bloginfo( 'name' ); ?></h2>
-							<?php
-							$term_list = array(
-								'day'   => __( 'yesterday', 'paid-memberships-pro' ),
-								'week'  => __( 'last week', 'paid-memberships-pro' ),
-								'month' => __( 'last month', 'paid-memberships-pro' ),
-							);
-							$term      = $term_list[ $frequency ];
-							?>
-							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s:", 'paid-memberships-pro' ), esc_html( $term ) ); ?></p>
+							<p style="font-size: 20px;line-height: 30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s.", 'paid-memberships-pro' ), esc_html( $term ) ); ?></p>
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size: 20px;line-height: 30px;color:#444444;padding: 15px;text-align:center;">
-							<?php
-							// Get dates that the report covers
-							// Start and end dates in YYYY-MM-DD formats.
-							if ( 'day' === $frequency ) {
-								$report_start_date = date( 'Y-m-d', strtotime( 'yesterday' ) );
-								$report_end_date   = $report_start_date;
-							} elseif ( 'week' === $frequency ) {
-								$report_start_date = date( 'Y-m-d', strtotime( '-7 day' ) );
-								$report_end_date   = date( 'Y-m-d', strtotime( '-1 day' ) );
-							} elseif ( 'month' === $frequency ) {
-								$report_start_date = date( 'Y-m-d', strtotime( 'first day of last month' ) );
-								$report_end_date   = date( 'Y-m-d', strtotime( 'last day of last month' ) );
-							}
-							$date_range = date_i18n( get_option( 'date_format' ), strtotime( $report_start_date ) );
-							if ( $report_start_date !== $report_end_date ) {
-								$date_range .= ' - ' . date_i18n( get_option( 'date_format' ), strtotime( $report_end_date ) );
-							}
-
-							?>
 							<p style="margin:0px;padding:0px;"><strong><?php echo( esc_html( $date_range ) ); ?></strong></p> <!--Show date range this covers here in their site's date format-->
 						</td>
 					</tr>
+					<?php
+					$email_sections['header'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
 							<?php
@@ -109,6 +119,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							</table>
 						</td>
 					</tr>
+					<?php
+					$email_sections['sales_revenue'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
 							<?php
@@ -147,6 +161,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ) ); ?>" target="_blank"><?php esc_html_e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
 						</td>
 					</tr>
+					<?php
+					$email_sections['total_members'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
 							<div style="border: 8px dashed #EFEFEF;padding:30px;margin:0px;text-align:center;">
@@ -186,6 +204,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							</div>
 						</td>
 					</tr>
+					<?php
+					$email_sections['discount_code_uses'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding:30px;text-align:center;">
 							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></h3>
@@ -214,15 +236,21 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											$update_addons++;
 										}
 									}
+									$addon_updates_box_color      = $update_addons ? '#f2dede' : '#FFFFFF';
+									$addon_updates_text_color = $update_addons ? '#a94442' : '#444444';
 									?>
 									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $free_addons ) ); ?></div><?php esc_html_e( 'Free Add Ons', 'paid-memberships-pro' ); ?></td>
 									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $plus_addons ) ); ?></div><?php esc_html_e( 'Plus Add Ons', 'paid-memberships-pro' ); ?></td>
-									<td width="33%" style="background:#f2dede;padding:10px;"><a style="color:#a94442;display:block;text-decoration: none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></td>
+									<td width="33%" style="background:<?php echo( $addon_updates_box_color ); ?>;padding:10px;"><a style="color:<?php echo( $addon_updates_text_color ); ?>;display:block;text-decoration: none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></td>
 								</tr>
 							</table>
 							<p style="margin:0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
 						</td>
 					</tr>
+					<?php
+					$email_sections['add_ons'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
 							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Membership Site Administration', 'paid-memberships-pro' ); ?></h3>
@@ -264,6 +292,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							?>
 						</td>
 					</tr>
+					<?php
+					$email_sections['admins'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background-color:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding:0;text-align:left;">
 							<table align="center" border="0" cellpadding="0" cellspacing="10" width="100%" style="border:0;background-color:#FFFFFF;text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
@@ -308,29 +340,40 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							</table>
 						</td>
 					</tr>
+					<?php
+					$email_sections['articles_stats'] = ob_get_contents();
+					ob_clean();
+					?>
 					<tr>
 						<td valign="top" style="background: #333333;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:30px;color:#FFFFFF;padding: 30px;text-align:center;">
 							<p style="margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'This email is automatically generated by your WordPress site and sent to your Administration Email Address set under Settings > General in your WordPress dashboard.', 'paid-memberships-pro' ); ?></p>
 							<p style="margin:0px;padding:0px;"><?php printf( __( 'To adjust the frequency of this message or disable these emails completely, you can <a %s>update the "Activity Email Frequency" setting here</a>.', 'paid-memberships-pro' ), ' style="color:#FFFFFF;" href="' . admin_url( 'admin.php?page=pmpro-advancedsettings' ) . '" target="_blank"' ); ?></p>
 						</td>
 					</tr>
+					<?php
+					$email_sections['footer'] = ob_get_contents();
+					ob_clean();
+					?>
 				</tbody>
 			</table>
 		</center>
 		</div>
 		<?php
-
-		$admin_activity_email_body = ob_get_contents();
-
+		$email_sections['post_content'] = ob_get_contents();
 		ob_end_clean();
 
+		apply_filters( 'pmpro_admin_activity_email_sections', $email_sections, $frequency, $term, $report_start_date, $report_end_date, $date_range );
+		$admin_activity_email_body = '';
+		foreach ( $email_sections as $section => $content ) {
+			$admin_activity_email_body .= $content;
+		}
+
 		$this->email    = get_bloginfo( 'admin_email' );
-		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s - %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
+		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body     = $admin_activity_email_body;
 		$this->from     = pmpro_getOption( 'from' );
 		$this->fromname = pmpro_getOption( 'from_name' );
-		echo $admin_activity_email_body;
 		return $this->sendEmail();
 	}
 
