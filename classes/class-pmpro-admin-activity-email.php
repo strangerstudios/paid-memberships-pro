@@ -149,8 +149,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background: #FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:left;">
-							<div style="border: 8px dashed #EFEFEF;padding:30px;margin: 0px 0px 30px 0px;text-align:center;">
-								<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
+							<div style="border: 8px dashed #EFEFEF;padding:30px;margin:0px;text-align:center;">
+								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<?php
 								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND timestamp <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
 								if ( $num_orders_with_discount_code > 0 ) {
@@ -167,7 +167,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										"
 									);
 									?>
-									<p style="margin:0px 0px 15px 0px;padding:0;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( $num_orders_with_discount_code ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' ); ?></p>
+									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( $num_orders_with_discount_code ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' ); ?></p>
 										<?php
 										$codes_left_to_show = 5;
 										foreach ( $orders_per_discount_code as $orders_per_discount_code_element ) {
@@ -179,7 +179,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										}
 								} else {
 									?>
-									<p style="margin:0px 0px 15px 0px;padding:0;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
+									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
 									<?php
 								}
 								?>
@@ -187,9 +187,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 						</td>
 					</tr>
 					<tr>
-						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding: 30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size: 20px;line-height: 30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></h3>
-							<table align="center" border="0" cellpadding="0" cellspacing="15" width="100%" style="border:0;background-color:#EFEFEF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height: 25px;color:#444444;">
+						<td valign="top" style="background: #EFEFEF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;padding:30px;text-align:center;">
+							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></h3>
+							<table align="center" border="0" cellpadding="0" cellspacing="15" width="100%" style="border:0;background-color:#EFEFEF;text-align: center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#444444;">
 								<tr>
 									<?php
 									// Get addon statistics.

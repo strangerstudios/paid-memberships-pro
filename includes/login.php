@@ -673,7 +673,7 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 		 * The menu can be customized per level using the Nav Menus Add On for Paid Memberships Pro.
 		 *
 		 */
-		if ( ! empty ( $show_menu ) ) {
+		if ( $show_menu != 'false' ) {
 			$pmpro_login_widget_menu_defaults = array(
 				'theme_location'  => 'pmpro-login-widget',
 				'container'       => 'nav',
