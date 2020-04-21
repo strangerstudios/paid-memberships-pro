@@ -16,7 +16,7 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 			'classname'   => 'widget_pmpro_member_login',
 			'description' => __( 'Display a login form and optional "Logged In" member content.', 'paid-memberships-pro' ),
 		);
-		parent::__construct( 'pmpro-member-login', esc_html__( 'Member Login/Log Out - Paid Memberships Pro', 'paid-memberships-pro' ), $widget_ops );
+		parent::__construct( 'pmpro-member-login', esc_html__( 'Log In - PMPro', 'paid-memberships-pro' ), $widget_ops );
 		$this->alt_option_name = 'widget_pmpro_member_login';
 
 		add_action( 'save_post', array( $this, 'flush_widget_cache' ) );
@@ -108,11 +108,17 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( $show_menu ); ?> id="<?php echo $this->get_field_id( 'show_menu' ); ?>" name="<?php echo $this->get_field_name( 'show_menu' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_menu' ); ?>"><?php esc_html_e( 'Display the "Member Form" menu.', 'paid-memberships-pro' ); ?></label>
-			<p class="description"><?php esc_html_e( 'Menu will be hidden to non-members. Assign the menu under Appearance > Menus.', 'paid-memberships-pro' ); ?></p>
+			<label for="<?php echo $this->get_field_id( 'show_menu' ); ?>"><?php esc_html_e( 'Display the "Log In Widget" menu.', 'paid-memberships-pro' ); ?></label>
 		</p>
-
-<?php
+		<?php
+			$allowed_nav_menus_link_html = array (
+				'a' => array (
+					'href' => array(),
+					'target' => array(),
+					'title' => array(),
+				),
+			);
+			echo '<p class="description">' . sprintf( wp_kses( __( 'Customize this menu per level using the <a href="%s" title="Paid Memberships Pro - Nav Menus Add On" target="_blank">Nav Menus Add On</a>. Assign the menu under Appearance > Menus.', 'paid-memberships-pro' ), $allowed_nav_menus_link_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-nav-menus/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=nav-menus' ) . '</p>';
 	}
 }
 /* End Member Login Widget */

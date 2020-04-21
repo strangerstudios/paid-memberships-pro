@@ -459,16 +459,16 @@ function pmpro_reset_password_form() {
 
 function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 	<hr />
-	<p class="pmpro_form_nav">
+	<p class="pmpro_actions_nav">
 		<?php
 			/**
-			 * Filters the separator used between login form navigation links.
+			 * Filters the separator used between action navigation links.
 			 *
 			 * @since 2.3
 			 *
-			 * @param string $pmpro_form_nav_separator The separator used between form navigation links.
+			 * @param string $pmpro_actions_nav_separator The separator used between action links.
 			 */
-			$pmpro_form_nav_separator = apply_filters( 'pmpro_form_nav_separator', ' | ' );
+			$pmpro_actions_nav_separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
 
 			// Build the links to return.
 			$links = array();
@@ -495,9 +495,9 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 				$links['lost_password'] = apply_filters( 'pmpro_lost_password_url', $pmpro_lost_password_url );
 			}
 
-			echo implode( $pmpro_form_nav_separator, $links );
+			echo implode( esc_html( $pmpro_actions_nav_separator ), $links );
 		?>
-	</p>
+	</p> <!-- end pmpro_actions_nav -->
 	<?php
 }
 
@@ -643,7 +643,7 @@ function pmpro_login_failed( $username ) {
 add_action( 'wp_login_failed', 'pmpro_login_failed', 10, 2 );
 
 /**
- * Show welcome content for a "Logged In" member with Display Name, Log Out link and a "PMPro Member" menu area.
+ * Show welcome content for a "Logged In" member with Display Name, Log Out link and a "Log In Widget" menu area.
  *
  * @since 2.3
  *
@@ -652,7 +652,7 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 	if ( is_user_logged_in( ) ) {
 		// Set the location the user's display_name will link to based on level status.
 		global $current_user, $pmpro_pages;
-		if ( ! empty( $pmpro_pages ) && pmpro_hasMembershipLevel() ) {
+		if ( ! empty( $pmpro_pages ) && ! empty( $pmpro_pages['account'] ) ) {
 			$account_page      = get_post( $pmpro_pages['account'] );
 			$user_account_link = '<a href="' . esc_url( pmpro_url( 'account' ) ) . '">' . esc_html( preg_replace( '/\@.*/', '', $current_user->display_name ) ) . '</a>';
 		} else {
@@ -670,20 +670,20 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 
 		<?php
 		/**
-		 * Show the "Member Form" menu to users with an active membership level.
-		 * The menu can be customized per-level using the Nav Menus Add On for Paid Memberships Pro.
+		 * Show the "Log In Widget" menu to users.
+		 * The menu can be customized per level using the Nav Menus Add On for Paid Memberships Pro.
 		 *
 		 */
-		if ( ! empty ( $show_menu ) && pmpro_hasMembershipLevel() ) {
-			$pmpro_member_menu_defaults = array(
-				'theme_location'  => 'pmpro-login-forms',
+		if ( $show_menu != 'false' ) {
+			$pmpro_login_widget_menu_defaults = array(
+				'theme_location'  => 'pmpro-login-widget',
 				'container'       => 'nav',
 				'container_id'    => 'pmpro-member-navigation',
 				'container_class' => 'pmpro-member-navigation',
 				'fallback_cb'	  => false,
 				'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
 			);
-			wp_nav_menu( $pmpro_member_menu_defaults );
+			wp_nav_menu( $pmpro_login_widget_menu_defaults );
 		}
 		?>
 
