@@ -3,6 +3,8 @@
  * Enqueue frontend JavaScript and CSS
  */
 function pmpro_enqueue_scripts() {
+    global $pmpro_pages;
+    
     // Frontend styles.
     $frontend_css_rtl = false;
     if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css")) {
@@ -49,6 +51,20 @@ function pmpro_enqueue_scripts() {
 			'discount_code_passed_in' => !empty( $_REQUEST['discount_code'] ),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
+    }
+    
+    // Change Password page JS   
+	if ( is_page( $pmpro_pages['member_profile_edit'] ) && ! empty( $_REQUEST['view'] ) && $_REQUEST['view'] === 'change-password' ) {
+        wp_register_script( 'pmpro_login',
+                            plugins_url( 'js/pmpro-login.js', dirname(__FILE__) ),
+                            array( 'jquery', 'password-strength-meter' ),
+                            PMPRO_VERSION );
+
+        wp_localize_script( 'pmpro_login', 'pmpro', array(
+            'pmpro_login_page' => 'changepassword',
+			'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
+        ));
+        wp_enqueue_script( 'pmpro_login' );	
     }
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );

@@ -452,6 +452,95 @@ li.pmpro_more {
 }
 
 /*---------------------------------------
+	This section based on similar rules
+	in wp-admin/css/forms.css
+---------------------------------------*/
+#pass-strength-result {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #23282d;
+	margin: -1px 1px 5px;
+	padding: 3px 5px;
+	text-align: center;
+	width: 25em;
+	box-sizing: border-box;
+	opacity: 0;
+}
+
+#pass-strength-result.short {
+	background-color: #f1adad;
+	border-color: #e35b5b;
+	opacity: 1;
+}
+
+#pass-strength-result.bad {
+	background-color: #fbc5a9;
+	border-color: #f78b53;
+	opacity: 1;
+}
+
+#pass-strength-result.good {
+	background-color: #ffe399;
+	border-color: #ffc733;
+	opacity: 1;
+}
+
+#pass-strength-result.strong {
+	background-color: #c1e1b9;
+	border-color: #83c373;
+	opacity: 1;
+}
+
+.pass1.short, .pass1-text.short {
+	border-color: #e35b5b;
+}
+
+.pass1.bad, .pass1-text.bad {
+	border-color: #f78b53;
+}
+
+.pass1.good, .pass1-text.good {
+	border-color: #ffc733;
+}
+
+.pass1.strong, .pass1-text.strong {
+	border-color: #83c373;
+}
+
+.pw-weak {
+	display: none;
+}
+
+.indicator-hint {
+	padding-top: 8px;
+}
+
+.wp-pwd [type="text"],
+.wp-pwd [type="password"] {
+	margin-bottom: 0;
+	/* Same height as the buttons */
+	min-height: 30px;
+}
+
+/* Hide the Edge "reveal password" native button */
+.wp-pwd input::-ms-reveal {
+	display: none;
+}
+
+.pass1-text,
+.show-password #pass1 {
+	display: none;
+}
+
+.pass1-text::-ms-clear {
+	display: none;
+}
+
+.show-password #pass1-text {
+	display: inline-block;
+}
+
+/*---------------------------------------
 	Member Profile Edit Page
 ---------------------------------------*/
 .pmpro_member_profile_edit_wrap,

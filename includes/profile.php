@@ -632,11 +632,6 @@ function pmpro_change_password_form() {
 			<?php echo esc_html( $pmpro_msg ); ?>
 		</div>
 	<?php } ?>
-	<?php
-		// TO DO: Keep the user logged in (https://wordpress.stackexchange.com/questions/186326/how-change-wordpress-password-without-logout-need-for-plugin)
-		// TO DO: Validate passwords are strong-ish / not weak.
-		// TO DO: Test with the strong passwords add on / setting.
-	?>
 	<div class="pmpro_change_password_wrap">
 		<form id="change-password" class="pmpro_form" action="" method="post">
 
@@ -649,7 +644,8 @@ function pmpro_change_password_form() {
 				</div> <!-- end pmpro_change_password-field-password_current -->
 				<div class="pmpro_change_password-field pmpro_change_password-field-password_new1">
 					<label for="password_new1"><?php _e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
-					<input type="password" name="password_new1" id="password_new1" value="" class="input <?php echo pmpro_getClassForField( 'password_new1' );?>" autocomplete="off" />
+					<input type="password" name="password_new1" id="password_new1" value="" class="input pass1 <?php echo pmpro_getClassForField( 'password_new1' );?>" autocomplete="off" />			
+					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 					<p class="lite"><?php echo wp_get_password_hint(); ?></p>
 				</div> <!-- end pmpro_change_password-field-password_new1 -->
 				<div class="pmpro_change_password-field pmpro_change_password-field-password_new2">
