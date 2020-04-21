@@ -53,8 +53,15 @@ function pmpro_enqueue_scripts() {
         wp_enqueue_script( 'pmpro_checkout' );
     }
     
-    // Change Password page JS   
-	if ( is_page( $pmpro_pages['member_profile_edit'] ) && ! empty( $_REQUEST['view'] ) && $_REQUEST['view'] === 'change-password' ) {
+    // Change Password page JS 
+	$is_change_pass_page = is_page( $pmpro_pages['member_profile_edit'] )
+							&& ! empty( $_REQUEST['view'] )
+							&& $_REQUEST['view'] === 'change-password';
+	$is_reset_pass_page = is_page( $pmpro_pages['account'] )
+							&& ! empty( $_REQUEST['action'] )
+							&& $_REQUEST['action'] === 'rp';
+		
+	if ( $is_change_pass_page || $is_reset_pass_page ) {
         wp_register_script( 'pmpro_login',
                             plugins_url( 'js/pmpro-login.js', dirname(__FILE__) ),
                             array( 'jquery', 'password-strength-meter' ),

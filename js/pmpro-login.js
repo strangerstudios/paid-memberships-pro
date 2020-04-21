@@ -2,6 +2,9 @@ jQuery(document).ready(function(){
 	// Focus
 	if ( jQuery( '#password_current' ) ) {
 		jQuery( '#password_current' ).focus();
+	}	
+	if ( jQuery( '#pass1' ) ) {
+		jQuery( '#pass1' ).focus();
 	}
 	
 	function pmpro_check_password_strength( pass_field ) {
@@ -42,6 +45,13 @@ jQuery(document).ready(function(){
 		pmpro_check_password_strength( jQuery( '#password_new' ) );
 		jQuery( '#password_new1' ).bind( 'keyup paste', function() {
 			pmpro_check_password_strength( jQuery( '#password_new1' ) );
+		});
+	}
+	
+	if ( jQuery( '#pass1' ) ) {
+		pmpro_check_password_strength( jQuery( '#pass1' ) );
+		jQuery( '#pass1' ).bind( 'keyup paste', function() {
+			pmpro_check_password_strength( jQuery( '#pass1' ) );
 		});
 	}
 });

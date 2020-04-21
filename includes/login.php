@@ -297,8 +297,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				</div> <!-- end pmpro_login_wrap -->
 				<?php
 			}
-		} elseif ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) {
-			// Reset password form.
+		} elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
+			// Reset password form.			
 			?>
 			<div class="pmpro_lost_password_wrap">
 				<?php echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title; ?>
@@ -313,8 +313,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				?>
 			</div> <!-- end pmpro_lost_password_wrap -->
 			<?php
-		} elseif ( $action === 'rp' ) {
-			// Password reset processing key.
+		} elseif ( $location !== 'widget' && $action === 'rp' ) {
+			// Password reset processing key.			
 			?>
 			<div class="pmpro_reset_password_wrap">
 				<?php echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title; ?>
@@ -440,7 +440,8 @@ function pmpro_reset_password_form() {
 			<div class="pmpro_reset_password-fields">
 				<div class="pmpro_rest_password-field pmpro_rest_password-field-pass1">
 					<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
-					<input type="password" name="pass1" id="pass1" class="input" size="20" value="" autocomplete="off" />
+					<input type="password" name="pass1" id="pass1" class="input pass1" size="20" value="" autocomplete="off" />
+					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 					<p class="lite"><?php echo wp_get_password_hint(); ?></p>
 				</div>
 				<div class="pmpro_rest_password-field pmpro_rest_password-field-pass2">
