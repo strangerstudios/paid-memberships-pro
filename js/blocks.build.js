@@ -1347,7 +1347,8 @@ var Inspector = /*#__PURE__*/function (_Component) {
           setAttributes = _this$props.setAttributes;
       var display_if_logged_in = attributes.display_if_logged_in,
           show_menu = attributes.show_menu,
-          show_logout_link = attributes.show_logout_link;
+          show_logout_link = attributes.show_logout_link,
+          location = attributes.location;
       var locations = [{
         value: "shortcode",
         label: __("Shortcode", "post-type-archive-mapping")

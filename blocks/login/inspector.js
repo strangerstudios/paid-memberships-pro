@@ -20,6 +20,7 @@ export default class Inspector extends Component {
 			display_if_logged_in,
 			show_menu,
 			show_logout_link,
+			location,
 		} = attributes;
 		const locations = [
 			{
