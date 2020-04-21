@@ -232,6 +232,11 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 2.1;
 		pmpro_setOption( 'db_version', '2.1' );
 	}
+	
+	if ( $pmpro_db_version < 2.3 ) {
+		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+		pmpro_setOption( 'db_version', '2.3' );
+	}
 }
 
 function pmpro_db_delta()
