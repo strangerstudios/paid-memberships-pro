@@ -496,6 +496,9 @@ function pmpro_member_profile_edit_form() {
 				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
 			</div>
 		<?php }
+	} else {
+		// Doing this so fields are set to new values after being submitted.
+		$user = $current_user;
 	}
 	?>
 	<div class="pmpro_member_profile_edit_wrap">
@@ -506,22 +509,22 @@ function pmpro_member_profile_edit_form() {
 			<div class="pmpro_member_profile_edit-fields">
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name">
 					<label for="first_name"><?php _e( 'First Name', 'paid-memberships-pro' ); ?></label>
-					<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $current_user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
+					<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
 				</div> <!-- end pmpro_member_profile_edit-field-first_name -->
 
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-last_name">
 					<label for="last_name"><?php _e( 'Last Name', 'paid-memberships-pro' ); ?></label>
-					<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $current_user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
+					<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
 				</div> <!-- end pmpro_member_profile_edit-field-last_name -->
 
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name">
 					<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
-					<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $current_user->display_name ); ?>" class="input <?php echo pmpro_getClassForField( 'display_name' );?>" />
+					<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $user->display_name ); ?>" class="input <?php echo pmpro_getClassForField( 'display_name' );?>" />
 				</div> <!-- end pmpro_member_profile_edit-field-display_name -->
 
 				<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
 					<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?> <span class="description"><?php _e( '(required)', 'paid-memberships-pro' ); ?></span></label>
-					<input type="email" name="email" id="email" value="<?php echo esc_attr( $current_user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
+					<input type="email" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
 				</div>
 			</div> <!-- end pmpro_member_profile_edit-fields -->
 
