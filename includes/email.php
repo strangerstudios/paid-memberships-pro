@@ -103,8 +103,8 @@ function pmpro_send_html( $phpmailer ) {
 	if(!empty($footer) && $footer == strip_tags($footer))
 		$footer = wpautop($footer);
 
-	$header = apply_filters( 'pmpro_email_header_content', $header, $phpmailer );
-	$footer = apply_filters( 'pmpro_email_footer_content', $footer, $phpmailer );
+	$header = apply_filters( 'pmpro_email_body_header', $header, $phpmailer );
+	$footer = apply_filters( 'pmpro_email_body_footer', $footer, $phpmailer );
 
 	// Add header/footer to the email
 	if(!empty($header))
