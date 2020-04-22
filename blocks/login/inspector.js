@@ -22,13 +22,6 @@ export default class Inspector extends Component {
 			show_logout_link,
 			location,
 		} = attributes;
-		const locations = [
-			{
-				value: "shortcode",
-				label: __("Shortcode", "post-type-archive-mapping"),
-			},
-			{ value: "widget", label: __("Widget", "post-type-archive-mapping") },
-		];
 		return (
 			<InspectorControls>
 				<PanelBody>
@@ -58,12 +51,6 @@ export default class Inspector extends Component {
 								show_logout_link: value,
 							});
 						}}
-					/>
-					<SelectControl
-						label={__("Location", "paid-memberships-pro")}
-						value={location}
-						onChange={(location) => setAttributes({ location })}
-						options={locations}
 					/>
 				</PanelBody>
 			</InspectorControls>

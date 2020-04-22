@@ -1257,20 +1257,20 @@ var Fragment = wp.element.Fragment;
  */
 
 /* harmony default export */ __webpack_exports__["default"] = (registerBlockType("pmpro/login-form", {
-  title: __("Login Form", "paid-memberships-pro"),
-  description: __("Displays a login form for Paid Memberships Pro.", "paid-memberships-pro"),
+  title: __("Log in Form", "paid-memberships-pro"),
+  description: __("Displays a Log In Form for Paid Memberships Pro.", "paid-memberships-pro"),
   category: "pmpro",
   icon: {
     background: "#2997c8",
     foreground: "#ffffff",
     src: "unlock"
   },
-  keywords: [__("pmpro", "paid-memberships-pro"), __("login", "paid-memberships-pro"), __("form", "paid-memberships-pro")],
+  keywords: [__("pmpro", "paid-memberships-pro"), __("login", "paid-memberships-pro"), __("form", "paid-memberships-pro"), __("log in", "paid-memberships-pro")],
   supports: {},
   edit: function edit(props) {
     return [Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(Fragment, null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_inspector__WEBPACK_IMPORTED_MODULE_1__["default"], props), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {
       className: "pmpro-block-element"
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Paid Memberships Pro", "paid-memberships-pro")), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Login Form", "paid-memberships-pro"))))];
+    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Paid Memberships Pro", "paid-memberships-pro")), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Log in Form", "paid-memberships-pro"))))];
   },
   save: function save() {
     return null;
@@ -1349,13 +1349,6 @@ var Inspector = /*#__PURE__*/function (_Component) {
           show_menu = attributes.show_menu,
           show_logout_link = attributes.show_logout_link,
           location = attributes.location;
-      var locations = [{
-        value: "shortcode",
-        label: __("Shortcode", "post-type-archive-mapping")
-      }, {
-        value: "widget",
-        label: __("Widget", "post-type-archive-mapping")
-      }];
       return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__["createElement"])(InspectorControls, null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__["createElement"])(PanelBody, null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__["createElement"])(ToggleControl, {
         label: __("Display If Logged In", "post-type-archive-mapping"),
         checked: display_if_logged_in,
@@ -1380,15 +1373,6 @@ var Inspector = /*#__PURE__*/function (_Component) {
             show_logout_link: value
           });
         }
-      }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__["createElement"])(SelectControl, {
-        label: __("Location", "paid-memberships-pro"),
-        value: location,
-        onChange: function onChange(location) {
-          return setAttributes({
-            location: location
-          });
-        },
-        options: locations
       })));
     }
   }]);

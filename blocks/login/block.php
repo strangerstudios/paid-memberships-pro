@@ -41,10 +41,6 @@ function register_dynamic_block() {
 					'type'    => 'boolean',
 					'default' => true,
 				),
-				'location'             => array(
-					'type'    => 'string',
-					'default' => 'shortcode',
-				),
 			),
 			'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 		)
@@ -61,7 +57,6 @@ function render_dynamic_block( $attributes ) {
 	$attributes['display_if_logged_in'] = filter_var( $attributes['display_if_logged_in'], FILTER_VALIDATE_BOOLEAN );
 	$attributes['show_menu']            = filter_var( $attributes['show_menu'], FILTER_VALIDATE_BOOLEAN );
 	$attributes['show_logout_link']     = filter_var( $attributes['show_logout_link'], FILTER_VALIDATE_BOOLEAN );
-	$attributes['location']             = sanitize_text_field( $attributes['show_logout_link'] );
 
-	return( pmpro_login_forms_handler( $attributes['display_if_logged_in'], $attributes['show_menu'], $attributes['show_logout_link'], $attributes['location'], false ) );
+	return( pmpro_login_forms_handler( $attributes['display_if_logged_in'], $attributes['show_menu'], $attributes['show_logout_link'], '', false ) );
 }
