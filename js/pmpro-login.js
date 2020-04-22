@@ -41,13 +41,6 @@ jQuery(document).ready(function(){
 	}
 	
 	// Set up Strong Password script.
-	if ( jQuery( '#password_new1' ) ) {
-		pmpro_check_password_strength( jQuery( '#password_new' ) );
-		jQuery( '#password_new1' ).bind( 'keyup paste', function() {
-			pmpro_check_password_strength( jQuery( '#password_new1' ) );
-		});
-	}
-	
 	if ( jQuery( '#pass1' ) ) {
 		pmpro_check_password_strength( jQuery( '#pass1' ) );
 		jQuery( '#pass1' ).bind( 'keyup paste', function() {
