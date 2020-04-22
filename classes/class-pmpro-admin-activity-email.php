@@ -83,7 +83,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background:#F1F1F1;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:30px;color:#222222;padding:15px;text-align:center;">
-							<p style="margin:0px;padding:0px;"><strong><?php echo( esc_html( $date_range ) ); ?></strong></p>
+							<p style="margin:0px;padding:0px;"><strong><?php esc_html_e( $date_range ); ?></strong></p>
 						</td>
 					</tr>
 					<?php
@@ -101,7 +101,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php } else { ?>
 								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
 							<?php } ?>
-							<table align="center" border="0" cellpadding="0" cellspacing="5" width="100%" style="border:0;background-color:#FFFFFF;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
+							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#FFFFFF;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
 									$num_joined    = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE startdate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND startdate <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
@@ -112,9 +112,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$num_expired_link   = admin_url( 'admin.php?page=pmpro-memberslist&l=expired' );
 									$num_cancelled_link = admin_url( 'admin.php?page=pmpro-memberslist&l=cancelled' );
 									?>
-									<td width="33%" style="border:8px solid #dff0d8;color:#3c763d;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $num_joined ) ); ?></div>Joined</a></td>
-									<td width="33%" style="border:8px solid #fcf8e3;color:#8a6d3b;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $num_expired ) ); ?></div>Expired</a></td>
-									<td width="33%" style="border:8px solid #f2dede;color:#a94442;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $num_cancelled ) ); ?></div>Cancelled</a></td>
+									<td width="33%"><div style="border:8px solid #dff0d8;color:#3c763d;margin:5px;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_joined ) ); ?></div>Joined</a></div></td>
+									<td width="33%"><div style="border:8px solid #fcf8e3;color:#8a6d3b;margin:5px;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_expired ) ); ?></div>Expired</a></div></td>
+									<td width="33%"><div style="border:8px solid #f2dede;color:#a94442;margin:5px;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_cancelled ) ); ?></div>Cancelled</a></div></td>
 								</tr>
 							</table>
 						</td>
@@ -128,7 +128,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
 							?>
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px;padding:0px;"><span style="background:#2997c8;color:#FFFFFF;padding:10px;"><?php echo( esc_html( $total_members ) ); ?></span><?php esc_html_e( ' Total Members&mdash;great work!', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#2997c8;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php esc_html_e( number_format_i18n( $total_members ) ); ?></span><?php esc_html_e( ' Total Members&mdash;great work!', 'paid-memberships-pro' ); ?></h3>
 							<?php
 							$members_per_level = $wpdb->get_results(
 								"
@@ -151,7 +151,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$levels_outputted = 0;
 							foreach ( $members_per_level as $members_per_level_element ) {
-								echo( '<li>' . esc_html( $members_per_level_element->name ) . ': {' . esc_html( $members_per_level_element->num_members ) . '}</li>' );
+								echo( '<li>' . esc_html( $members_per_level_element->name ) . ': ' . esc_html( number_format_i18n( $members_per_level_element->num_members ) ) . '</li>' );
 								if ( ++$levels_outputted >= $num_levels_to_show ) {
 									break;
 								}
@@ -185,19 +185,19 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										"
 									);
 									?>
-									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( $num_orders_with_discount_code ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' ); ?></p>
+									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' ); ?></p>
 										<?php
 										$codes_left_to_show = 5;
 										foreach ( $orders_per_discount_code as $orders_per_discount_code_element ) {
 											if ( $codes_left_to_show <= 0 || $orders_per_discount_code_element->uses <= 0 ) {
 												break;
 											}
-											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">' . esc_html( $orders_per_discount_code_element->code ) . '</span> ' . esc_html( $orders_per_discount_code_element->uses ) . ' ' . esc_html( __( 'Orders', 'paid-memberships-pro' ) ) . '</p>' );
+											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">' . esc_html( $orders_per_discount_code_element->code ) . '</span> ' . esc_html( number_format_i18n( $orders_per_discount_code_element->uses ) ) . ' ' . esc_html( __( 'Orders', 'paid-memberships-pro' ) ) . '</p>' );
 											$codes_left_to_show--;
 										}
 								} else {
 									?>
-									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
+									<p style="margin:0px;padding:0px;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
 									<?php
 								}
 								?>
@@ -211,7 +211,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					<tr>
 						<td valign="top" style="background:#F1F1F1;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:center;">
 							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></h3>
-							<table align="center" border="0" cellpadding="0" cellspacing="15" width="100%" style="border:0;background-color:#F1F1F1;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
+							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#F1F1F1;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
 									// Get addon statistics.
@@ -237,14 +237,14 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										}
 									}
 									$addon_updates_box_color      = $update_addons ? '#f2dede' : '#FFFFFF';
-									$addon_updates_text_color = $update_addons ? '#a94442' : '#:';
+									$addon_updates_text_color = $update_addons ? '#a94442' : '#222222';
 									?>
-									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $free_addons ) ); ?></div><?php esc_html_e( 'Free Add Ons', 'paid-memberships-pro' ); ?></td>
-									<td width="33%" style="background:#FFFFFF;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $plus_addons ) ); ?></div><?php esc_html_e( 'Plus Add Ons', 'paid-memberships-pro' ); ?></td>
-									<td width="33%" style="background:<?php echo( $addon_updates_box_color ); ?>;padding:10px;"><a style="color:<?php echo( $addon_updates_text_color ); ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo( esc_html( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></td>
+									<td width="33%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $free_addons ) ); ?></div><?php esc_html_e( 'Free Add Ons', 'paid-memberships-pro' ); ?></div></td>
+									<td width="33%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $plus_addons ) ); ?></div><?php esc_html_e( 'Plus Add Ons', 'paid-memberships-pro' ); ?></div></td>
+									<td width="33%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
 								</tr>
 							</table>
-							<p style="margin:0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#2997c8;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
+							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#2997c8;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
 						</td>
 					</tr>
 					<?php
@@ -252,7 +252,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					ob_clean();
 					?>
 					<tr>
-						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:left;">
+						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px 30px 15px 30px;text-align:left;">
 							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Membership Site Administration', 'paid-memberships-pro' ); ?></h3>
 							<ul>
 								<?php
@@ -300,7 +300,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<table align="center" border="0" cellpadding="0" cellspacing="10" width="100%" style="border:0;background-color:#FFFFFF;text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr valign="top">
 									<td width="60%" style="background-color:#F1F1F1;padding:15px;">
-										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;">Recent Articles</h3>
+										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php _e( 'PMPro News and Updates'); ?></h3>
 									<?php
 									// Get RSS Feed(s).
 									include_once ABSPATH . WPINC . '/feed.php';
@@ -315,19 +315,20 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											$rss_items = $rss->get_items( 0, $max_items );
 									}
 									if ( $max_items <= 0 ) {
-										echo( '<p style="margin:0px 0px 15px 0px;padding:0;">' . __( 'No news found.', 'paid-memberships-pro' ) . '</p>' );
+										echo( '<p style="margin:15px 0px 0px 0px;padding:0;">' . __( 'No news found.', 'paid-memberships-pro' ) . '</p>' );
 									} else {
 										foreach ( $rss_items as $item ) {
-											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><a style="color:#2997c8;" href=" ' . esc_url( $item->get_permalink() ) . ' " target="_blank">' . esc_html( $item->get_title() ) . '</a> ' . esc_html( $item->get_date( get_option( 'date_format' ) ) ) . '</p>' );
+											echo( '<p style="margin:15px 0px 0px 0px;padding:0;"><a style="color:#2997c8;" href=" ' . esc_url( $item->get_permalink() ) . ' " target="_blank">' . esc_html( $item->get_title() ) . '</a> ' . esc_html( $item->get_date( get_option( 'date_format' ) ) ) . '</p>' );
 										}
 									}
 									?>
 									</td>
-									<td width="40%" style="background-color:#F1F1F1;padding:15px;"> 
-										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php _e( 'PMPro Stats', 'paid-memberships-pro' ); ?></h3>
+									<td width="40%" style="background-color:#F1F1F1;padding:15px;">
+										<p style="margin:0px;padding:0px;text-align:center;"><a style="color:#2997c8;" href="https://www.paidmembershipspro.com" target="_blank"><img style="width:100px;height:100px;" src="<?php echo esc_url( plugins_url( 'images/Paid-Memberships-Pro_icon.png', PMPRO_BASE_FILE ) ); ?>" alt="<?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?>" /></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.paidmembershipspro.com/support/" target="_blank"><?php esc_html_e( 'Get Support', 'paid-memberships-pro' ); ?></a></p>
 										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://twitter.com/pmproplugin" target="_blank"><?php esc_html_e( 'Follow @pmproplugin on Twitter', 'paid-memberships-pro' ); ?></a></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php esc_html_e( 'Like Us on Facebook', 'paid-memberships-pro' ); ?></p></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv" target="_blank"><?php esc_html_e( 'Subscribe to Our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php esc_html_e( 'Like us on Facebook', 'paid-memberships-pro' ); ?></p></p>
+										<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv" target="_blank"><?php esc_html_e( 'Subscribe to our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
 									</td>
 								</tr>
 							</table>
@@ -362,7 +363,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		}
 
 		$this->email    = get_bloginfo( 'admin_email' );
-		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), $term, $date_range );
+		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), ucwords( $term ), $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body     = $admin_activity_email_body;
 		$this->from     = pmpro_getOption( 'from' );
