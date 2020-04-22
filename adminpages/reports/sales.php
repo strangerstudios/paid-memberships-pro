@@ -618,9 +618,9 @@ function pmpro_getRevenue($period, $levels = NULL)
  */
 function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_ids = null ) {
 	global $wpdb;
-	$sql_query = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $start_date ) . "'";
+	$sql_query = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $start_date ) . " 00:00:00'";
 	if ( ! empty( $end_date ) ) {
-		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . "'";
+		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
 		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
