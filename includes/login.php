@@ -140,6 +140,39 @@ function pmpro_login_url( $redirect = '', $force_reauth = false ) {
 }
 
 /**
+ * Get a link to the PMPro lostpassword page.
+ * Or fallback to the WP default.
+ * @since 2.3
+ *
+ * @param string $redirect     The path to redirect to on login, if supplied.
+ */
+function pmpro_lostpassword_url( $redirect = '' ) {
+    global $pmpro_pages;
+	
+	if ( empty( $pmpro_pages['login'] ) ) {
+		// skip everything, including filter below
+		return wp_lostpassword_url( $redirect );
+	}
+	
+	$args = array( 'action' => 'lostpassword' );
+    if ( ! empty( $redirect ) ) {
+        $args['redirect_to'] = urlencode( $redirect );		
+    }
+ 
+    $lostpassword_url = add_query_arg( $args, get_permalink( $pmpro_pages['login'] ) );
+ 
+    /**
+     * Filters the Lost Password URL.
+     *
+     * @since 2.3
+     *
+     * @param string $lostpassword_url The lost password page URL.
+     * @param string $redirect         The path to redirect to on login.
+     */
+    return apply_filters( 'pmpro_lostpassword_url', $lostpassword_url, $redirect );
+}
+
+/**
  * Add a hidden field to our login form
  * so we can identify it.
  * Hooks into the WP core filter login_form_top.
@@ -394,8 +427,8 @@ function pmpro_lost_password_form() { ?>
  */
 function pmpro_lost_password_redirect() {
 	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-		$account_page = pmpro_getOption( 'account_page_id' );
-		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+		$login_page = pmpro_getOption( 'login_page_id' );
+		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 
 		$errors = retrieve_password();
 		if ( is_wp_error( $errors ) ) {
@@ -416,8 +449,8 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
  */
 function pmpro_reset_password_redirect() {	
 	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
-		$account_page = pmpro_getOption( 'account_page_id' );
-		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+		$login_page = pmpro_getOption( 'login_page_id' );
+		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $_REQUEST['rp_key'], $_REQUEST['rp_login'] );
 		
 		if ( ! $user || is_wp_error( $user ) ) {
@@ -527,8 +560,8 @@ function pmpro_do_password_reset() {
         $rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
 		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
 
-		$account_page = pmpro_getOption( 'account_page_id' );
-		$redirect_url = $account_page ? get_permalink( $account_page ): '';
+		$login_page = pmpro_getOption( 'login_page_id' );
+		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $rp_key, $rp_login );
 
         if ( ! $user || is_wp_error( $user ) ) {
@@ -586,9 +619,9 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  */
 function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
 
-	$account_page_id = pmpro_getOption( 'account_page_id' );
-    if ( ! empty ( $account_page_id ) ) {
-        $login_url = get_permalink( $account_page_id );
+	$login_page_id = pmpro_getOption( 'login_page_id' );
+    if ( ! empty ( $login_page_id ) ) {
+        $login_url = get_permalink( $login_page_id );
 		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
 	}
 

@@ -57,7 +57,7 @@ function pmpro_enqueue_scripts() {
 	$is_change_pass_page = is_page( $pmpro_pages['member_profile_edit'] )
 							&& ! empty( $_REQUEST['view'] )
 							&& $_REQUEST['view'] === 'change-password';
-	$is_reset_pass_page = is_page( $pmpro_pages['account'] )
+	$is_reset_pass_page = is_page( $pmpro_pages['login'] )
 							&& ! empty( $_REQUEST['action'] )
 							&& $_REQUEST['action'] === 'rp';
 		
