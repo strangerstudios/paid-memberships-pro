@@ -2882,9 +2882,15 @@ function pmpro_generatePages( $pages ) {
 				'ping_status' => 'closed',
 			);
 
-			// make non-account pages a subpage of account
-			if ( $name != 'account' ) {
+			// make some pages a subpage of account
+			$top_level_pages = array( 'account', 'login' );
+			if ( ! in_array( $name, $top_level_pages ) ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
+			}
+			
+			// tweak the login slug
+			if ( $name == 'login' ) {
+				$insert['post_name'] = 'login';
 			}
 
 			// create the page
