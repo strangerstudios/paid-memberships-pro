@@ -189,6 +189,11 @@ function pmpro_login_form_hidden_field( $html ) {
  * @since 2.3
  */
 function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true, $display_if_logged_in = true, $location = '', $echo = true ) {
+	// Don't show widgets on the login page.
+	if ( $location === 'widget' && pmpro_is_login_page() ) {
+		return '';
+	}
+	
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
@@ -339,7 +344,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				}
 				?>
 				<div class="pmpro_login_wrap">
-					<?php echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title; ?>
+					<?php 
+						if ( ! is_page( $pmpro_pages['login'] ) ) {
+							echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title;
+						}
+					?>
 					<?php
 						pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
 						pmpro_login_forms_handler_nav( 'login' );
@@ -351,7 +360,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			// Reset password form.			
 			?>
 			<div class="pmpro_lost_password_wrap">
-				<?php echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title; ?>
+				<?php 
+					if ( ! is_page( $pmpro_pages['login'] ) ) {
+						echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
+					}
+				?>
 				<p class="pmpro_lost_password-instructions">
 					<?php
 						esc_html_e( 'Please enter your username or email address. You will receive a link to create a new password via email.', 'paid-memberships-pro' );
@@ -367,7 +380,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			// Password reset processing key.			
 			?>
 			<div class="pmpro_reset_password_wrap">
-				<?php echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title; ?>
+				<?php 
+					if ( ! is_page( $pmpro_pages['login'] ) ) {
+						echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
+					}
+				?>
 				<?php pmpro_reset_password_form(); ?>
 			</div> <!-- end pmpro_reset_password_wrap -->
 			<?php
