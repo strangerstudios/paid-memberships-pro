@@ -101,6 +101,45 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
 
 /**
+ * Get a link to the PMPro login page.
+ * Or fallback to WP default.
+ * @since 2.3
+ *
+ * @param string $login_url    The login URL. Not HTML-encoded.
+ * @param string $redirect     The path to redirect to on login, if supplied.
+ * @param bool   $force_reauth Whether to force reauthorization, even if a cookie is present.
+ */
+function pmpro_login_url( $redirect = '', $force_reauth = false ) {
+	global $pmpro_pages;
+	
+	if ( empty( $pmpro_pages['login'] ) ) {
+		// skip everything, including filter below
+		return wp_login_url( $redirect, $force_reauth );
+	}
+	
+	$login_url = get_permalink( $pmpro_pages['login'] );
+ 
+    if ( ! empty( $redirect ) ) {
+        $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url );
+    }
+ 
+    if ( $force_reauth ) {
+        $login_url = add_query_arg( 'reauth', '1', $login_url );
+    }
+ 
+    /**
+     * Filters the login URL.
+     *
+     * @since 2.3
+     *
+     * @param string $login_url    The login URL. Not HTML-encoded.
+     * @param string $redirect     The path to redirect to on login, if supplied.
+     * @param bool   $force_reauth Whether to force reauthorization, even if a cookie is present.
+     */
+    return apply_filters( 'pmpro_login_url', $login_url, $redirect, $force_reauth );
+}
+
+/**
  * Show the login form on the membership account page
  * if the user is not logged in.
  */
@@ -474,7 +513,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 			$links = array();
 
 			if ( $pmpro_form != 'login' ) {
-				$links['login'] = sprintf( '<a href="%s">%s</a>', esc_url( wp_login_url() ), __( 'Log In', 'paid-memberships-pro' ) );
+				$links['login'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_login_url() ), __( 'Log In', 'paid-memberships-pro' ) );
 			}
 
 			if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
@@ -490,7 +529,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 			}
 
 			if ( $pmpro_form != 'lost_password' ) {
-				$pmpro_lost_password_url = sprintf( '<a href="%s">%s</a>', add_query_arg( 'action', urlencode( 'reset_pass' ), wp_login_url() ), __( 'Lost Password?', 'paid-memberships-pro' ) );
+				$pmpro_lost_password_url = sprintf( '<a href="%s">%s</a>', add_query_arg( 'action', urlencode( 'reset_pass' ), pmpro_login_url() ), __( 'Lost Password?', 'paid-memberships-pro' ) );
 
 				$links['lost_password'] = apply_filters( 'pmpro_lost_password_url', $pmpro_lost_password_url );
 			}
@@ -610,9 +649,9 @@ add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10
 		$error = $user->get_error_code();
 
 		if ( $error ) {
-				wp_redirect( add_query_arg( 'action', urlencode( $error ), wp_login_url() ) );
+				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
 			} else {
-				wp_redirect( wp_login_url() );
+				wp_redirect( pmpro_login_url() );
 			}
 	}
 
@@ -633,9 +672,9 @@ function pmpro_login_failed( $username ) {
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
-			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ), 'redirect_to' => $redirect_to ), wp_login_url() ) );
+			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ), 'redirect_to' => $redirect_to ), pmpro_login_url() ) );
 		} else {
-			wp_redirect( add_query_arg( 'action', 'loggedout', wp_login_url() ) );
+			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
 		}
 		exit;
 	}

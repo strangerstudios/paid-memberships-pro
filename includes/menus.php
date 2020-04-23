@@ -192,7 +192,7 @@ function pmpro_swap_log_in_log_out_menu_link( $sorted_menu_items, $args ) {
 			if ( is_user_logged_in() ) {
 				unset( $sorted_menu_items[$key] );
 			} else {
-				$sorted_menu_items[$key]->url = wp_login_url();
+				$sorted_menu_items[$key]->url = pmpro_login_url();
 				//$remove_key = array_search( 'menu-item-pmpro-login', $item->classes );
 				$remove_key2 = array_search( 'menu-item-object-', $item->classes );
 				//unset($sorted_menu_items[$key]->classes[$remove_key]);

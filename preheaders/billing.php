@@ -5,7 +5,7 @@ global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
 	$billing_url = pmpro_url( 'billing' );
-    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), wp_login_url() ) );
+    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
     exit;
 } else {
     // Get the current user's membership level. 

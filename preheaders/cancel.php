@@ -22,7 +22,7 @@
 			$redirect = pmpro_url( 'cancel' );
 		}
 		// Redirect non-user to the login page; pass the Cancel page with specific ?levelstocancel as the redirect_to query arg.
-		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), wp_login_url() ) );
+		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) );
 		exit;
 	} else {
 		// Get the membership level for the current user.

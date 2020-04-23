@@ -4,14 +4,13 @@ function pmpro_upgrade_1()
 	/*
 		default options
 	*/
-	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Register</a>', 'paid-memberships-pro' ), wp_login_url() . "?action=register" );
+	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
 	pmpro_setOption("nonmembertext", $nonmembertext);
 
-	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Register</a>', 'paid-memberships-pro' ), wp_login_url(), wp_login_url() . "?action=register" );
-	'?action=register">Register</a>';
+	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Login</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
 	pmpro_setOption("notloggedintext", $notloggedintext);
 
-	$rsstext = __( "This content is for !!levels!! members only. Visit the site and log in/register to read.", 'paid-memberships-pro' );
+	$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
 	pmpro_setOption("rsstext", $rsstext);
 
 	$gateway_environment = "sandbox";
