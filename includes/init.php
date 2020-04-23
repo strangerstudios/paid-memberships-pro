@@ -17,6 +17,7 @@ function pmpro_init() {
 	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
 	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
 	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
