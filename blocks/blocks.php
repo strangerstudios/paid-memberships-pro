@@ -22,6 +22,7 @@ require_once( 'confirmation-page/block.php' );
 require_once( 'invoice-page/block.php' );
 require_once( 'levels-page/block.php' );
 require_once( 'membership/block.php' );
+require_once( 'login/block.php' );
 
 /**
  * Add PMPro block category

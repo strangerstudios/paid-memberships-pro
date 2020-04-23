@@ -19,3 +19,4 @@ import './confirmation-page/block.js';
 import './invoice-page/block.js';
 import './levels-page/block.js';
 import './membership/block.js';
+import './login/block.js';
