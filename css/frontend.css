@@ -191,6 +191,17 @@ form.pmpro_form .pmpro_change_password-fields div {
 	margin: 0 0 1em 0;
 }
 
+/* Password Strength Meter on Frontend Forms */
+.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+	display: inline-block;
+	max-width: 150px;
+}
+.pmpro_reset_password_wrap form.pmpro_form .lite,
+form.pmpro_form .pmpro_change_password-fields .lite {
+	margin-top: 10px;
+}
+
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
@@ -638,6 +649,11 @@ li.pmpro_more {
 	.pmpro_login_wrap form#loginform input[type=text].input,
 	.pmpro_login_wrap form#loginform input[type=password].input {
 		width: 90%;
+	}
+	/* Password Strength Meter on Frontend Forms */
+	.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+		max-width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
