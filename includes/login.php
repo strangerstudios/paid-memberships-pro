@@ -438,13 +438,13 @@ function pmpro_reset_password_form() {
 			<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['login'] ) ); ?>" autocomplete="off" />
 			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['key'] ) ); ?>" />
 			<div class="pmpro_reset_password-fields">
-				<div class="pmpro_rest_password-field pmpro_rest_password-field-pass1">
+				<div class="pmpro_reset_password-field pmpro_reset_password-field-pass1">
 					<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
 					<input type="password" name="pass1" id="pass1" class="input pass1" size="20" value="" autocomplete="off" />
 					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 					<p class="lite"><?php echo wp_get_password_hint(); ?></p>
 				</div>
-				<div class="pmpro_rest_password-field pmpro_rest_password-field-pass2">
+				<div class="pmpro_reset_password-field pmpro_reset_password-field-pass2">
 					<label for="pass2"><?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ) ?></label>
 					<input type="password" name="pass2" id="pass2" class="input" size="20" value="" autocomplete="off" />
 				</div>

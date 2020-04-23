@@ -23,6 +23,7 @@ require_once( 'invoice-page/block.php' );
 require_once( 'levels-page/block.php' );
 require_once( 'membership/block.php' );
 require_once( 'member-profile-edit/block.php' );
+require_once( 'login/block.php' );
 
 /**
  * Add PMPro block category
@@ -59,5 +60,10 @@ function pmpro_block_editor_scripts() {
 		array(),
 		PMPRO_VERSION
 	);
+
+	// Adding translation functionality to Gutenberg blocks/JS.
+	if ( function_exists( 'wp_set_script_translations' ) ) {
+		wp_set_script_translations( 'pmpro-blocks-editor-js', 'paid-memberships-pro' );
+	}
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_scripts' );

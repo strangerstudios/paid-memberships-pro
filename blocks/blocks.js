@@ -20,3 +20,4 @@ import './invoice-page/block.js';
 import './levels-page/block.js';
 import './membership/block.js';
 import './member-profile-edit/block.js';
+import './login/block.js';

@@ -104,9 +104,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#FFFFFF;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
-									$num_joined    = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE startdate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND startdate <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
-									$num_expired   = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('expired') AND enddate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND enddate <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
-									$num_cancelled = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('inactive', 'cancelled', 'admin_cancelled') AND enddate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND enddate <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
+									$num_joined    = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE startdate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND startdate <= '" . esc_sql( $report_end_date ) . " 23:59:59'" );
+									$num_expired   = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('expired') AND enddate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND enddate <= '" . esc_sql( $report_end_date ) . " 23:59:59'" );
+									$num_cancelled = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('inactive', 'cancelled', 'admin_cancelled') AND enddate >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND enddate <= '" . esc_sql( $report_end_date ) . " 23:59:59'" );
 
 									$num_joined_link    = admin_url( 'admin.php?page=pmpro-memberslist' );
 									$num_expired_link   = admin_url( 'admin.php?page=pmpro-memberslist&l=expired' );
@@ -170,7 +170,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<div style="border:8px dashed #F1F1F1;padding:30px;margin:0px;text-align:center;">
 								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<?php
-								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND timestamp <= '" . esc_sql( $report_end_date ) . " 00:00:00'" );
+								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'" );
 								if ( $num_orders_with_discount_code > 0 ) {
 									$orders_per_discount_code = $wpdb->get_results(
 										"
@@ -179,7 +179,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu
 											ON dc.id = dcu.code_id
 											WHERE dcu.timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00'
-											AND dcu.timestamp <= '" . esc_sql( $report_end_date ) . " 00:00:00'
+											AND dcu.timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'
 											GROUP BY dc.code
 											ORDER BY uses DESC
 										"
@@ -368,7 +368,12 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$this->body     = $admin_activity_email_body;
 		$this->from     = pmpro_getOption( 'from' );
 		$this->fromname = pmpro_getOption( 'from_name' );
-		return $this->sendEmail();
+		add_filter( 'pmpro_email_body_header', '__return_false', 99 );
+		add_filter( 'pmpro_email_body_footer', '__return_false', 99 );
+		$response = $this->sendEmail();
+		remove_filter( 'pmpro_email_body_header', '__return_false', 99 );
+		remove_filter( 'pmpro_email_body_footer', '__return_false', 99 );
+		return $response;
 	}
 
 }
