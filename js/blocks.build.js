@@ -573,7 +573,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _invoice_page_block_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./invoice-page/block.js */ "./blocks/invoice-page/block.js");
 /* harmony import */ var _levels_page_block_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./levels-page/block.js */ "./blocks/levels-page/block.js");
 /* harmony import */ var _membership_block_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./membership/block.js */ "./blocks/membership/block.js");
+/* harmony import */ var _member_profile_edit_block_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./member-profile-edit/block.js */ "./blocks/member-profile-edit/block.js");
 /* harmony import */ var _login_block_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./login/block.js */ "./blocks/login/block.js");
+
 /**
  * Import internationalization
  */
@@ -1220,10 +1222,16 @@ var registerBlockType = wp.blocks.registerBlockType;
 
 /***/ }),
 
+/***/ "./blocks/member-profile-edit/block.js":
+/*!*********************************************!*\
+  !*** ./blocks/member-profile-edit/block.js ***!
+  \*********************************************/
+
 /***/ "./blocks/login/block.js":
 /*!*******************************!*\
   !*** ./blocks/login/block.js ***!
   \*******************************/
+
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1231,6 +1239,12 @@ var registerBlockType = wp.blocks.registerBlockType;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+
+
+/**
+ * Block: PMPro Member Profile Edit
+ *
+=======
 /* harmony import */ var _inspector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inspector */ "./blocks/login/inspector.js");
 
 
@@ -1242,6 +1256,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /**
+ * Internal block libraries
+ */
+var __ = wp.i18n.__;
+var registerBlockType = wp.blocks.registerBlockType;
  * Block dependencies
  */
 
@@ -1256,6 +1274,9 @@ var Fragment = wp.element.Fragment;
  * Register block
  */
 
+/* harmony default export */ __webpack_exports__["default"] = (registerBlockType("pmpro/member-profile-edit", {
+  title: __("Member Profile Edit", "paid-memberships-pro"),
+  description: __("Allow member profile editing.", "paid-memberships-pro"),
 /* harmony default export */ __webpack_exports__["default"] = (registerBlockType("pmpro/login-form", {
   title: __("Log in Form", "paid-memberships-pro"),
   description: __("Displays a Log In Form for Paid Memberships Pro.", "paid-memberships-pro"),
@@ -1263,6 +1284,13 @@ var Fragment = wp.element.Fragment;
   icon: {
     background: "#2997c8",
     foreground: "#ffffff",
+    src: "admin-users"
+  },
+  keywords: [__("pmpro", "paid-memberships-pro"), __("member", "paid-memberships-pro"), __("profile", "paid-memberships-pro")],
+  edit: function edit(props) {
+    return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {
+      className: "pmpro-block-element"
+    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Paid Memberships Pro", "paid-memberships-pro")), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", null, __("Member Profile Edit", "paid-memberships-pro")));
     src: "unlock"
   },
   keywords: [__("pmpro", "paid-memberships-pro"), __("login", "paid-memberships-pro"), __("form", "paid-memberships-pro"), __("log in", "paid-memberships-pro")],
