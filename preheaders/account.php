@@ -1,6 +1,14 @@
 <?php
+global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $pmpro_pages;
 
-global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels;
+// Redirect to login.
+if ( ! is_user_logged_in() ) {
+	$redirect = apply_filters( 'pmpro_account_preheader_redirect', pmpro_login_url( get_permalink( $pmpro_pages['account'] ) ) );
+	if ( $redirect ) {
+		wp_redirect( $redirect );
+		exit;
+	}
+}
 
 // Check if we are processing a confirmaction for a Data Request.
 $request_id = pmpro_confirmaction_handler();

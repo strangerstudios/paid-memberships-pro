@@ -140,28 +140,6 @@ function pmpro_login_url( $redirect = '', $force_reauth = false ) {
 }
 
 /**
- * Show the login form on the membership account page
- * if the user is not logged in.
- */
-function pmpro_membership_account_filter( $content ) {
-	global $pmpro_pages;
-
-	if ( ! is_page( $pmpro_pages['account'] ) ) {
-		return $content;
-	}
-	
-	if ( did_action( 'user_request_action_confirmed' ) ) {
-		$message = _wp_privacy_account_request_confirmed_message( intval( $_REQUEST['request_id'] ) );
-		$content = $message;
-	} elseif ( ! is_user_logged_in() ) {
-		$content = pmpro_login_forms_handler( false, false, false, 'account', false );
-	}
-	
-	return $content;
-}
-add_filter( 'the_content', 'pmpro_membership_account_filter', 10 );
-
-/**
  * Add a hidden field to our login form
  * so we can identify it.
  * Hooks into the WP core filter login_form_top.

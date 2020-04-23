@@ -1,5 +1,4 @@
 <?php
-
 global $current_user, $pmpro_invoice;
 
 // Redirect non-user to the login page; pass the Confirmation page as the redirect_to query arg.
