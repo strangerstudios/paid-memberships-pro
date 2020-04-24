@@ -184,6 +184,63 @@ function pmpro_login_form_hidden_field( $html ) {
 }
 
 /**
+ * Filter the_title based on the form action of the Log In Page assigned to $pmpro_pages['login'].
+ *
+ * @since 2.3
+ */
+function pmpro_login_the_title( $title, $id ) {
+	global $pmpro_pages;
+
+	if ( ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) && in_the_loop() ) {
+		if ( isset( $_REQUEST['action'] ) ) {
+			$action = sanitize_text_field( $_REQUEST['action'] );
+		} else {
+			$action = false;
+		}
+
+		if ( ! empty( $action ) && $action === 'reset_pass' ) {
+			$title = esc_html( 'Lost Password', 'paid-memberships-pro' );
+		}
+
+		if ( ! empty( $action ) && $action === 'rp' ) {
+			$title = esc_html( 'Reset Password', 'paid-memberships-pro' );
+		}
+	}
+
+	return $title;
+}
+add_filter( 'the_title', 'pmpro_login_the_title', 10, 2 );
+
+/**
+ * Filter document_title_parts based on the form action of the Log In Page assigned to $pmpro_pages['login'].
+ *
+ * @since 2.3
+ */
+function pmpro_login_document_title_parts( $titleparts ) {
+	global $pmpro_pages;
+
+	if ( ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) ) {
+
+		if ( isset( $_REQUEST['action'] ) ) {
+			$action = sanitize_text_field( $_REQUEST['action'] );
+		} else {
+			$action = false;
+		}
+
+		if ( ! empty( $action ) && $action === 'reset_pass' ) {
+			$titleparts['title'] = __( 'Lost Password', 'paid-memberships-pro' );
+		}
+
+		if ( ! empty( $action ) && $action === 'rp' ) {
+			$titleparts['title'] = __( 'Reset Password', 'paid-memberships-pro' );
+		}
+	}
+
+	return $titleparts;
+}
+add_filter( 'document_title_parts', 'pmpro_login_document_title_parts' );
+
+/**
  * Show a member login form or logged in member widget.
  *
  * @since 2.3
