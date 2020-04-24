@@ -353,7 +353,13 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 						pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
 						pmpro_login_forms_handler_nav( 'login' );
 					?>
-				</div> <!-- end pmpro_login_wrap -->
+				</div> <!-- end pmpro_login_wrap -->				
+				<?php if ( is_page( $pmpro_pages['login'] ) ) { ?>
+				<script>
+					document.getElementById('user_login').focus();
+				</script>
+				<?php } ?>
+				
 				<?php
 			}
 		} elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
