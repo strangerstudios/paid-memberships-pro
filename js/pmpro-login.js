@@ -1,21 +1,28 @@
 jQuery(document).ready(function(){ 
 	// Focus
-	if ( jQuery( '#password_current' ) ) {
+	if ( jQuery( '#password_current' ).length ) {
 		jQuery( '#password_current' ).focus();
 	}	
-	if ( jQuery( '#pass1' ) ) {
+	if ( jQuery( '#pass1' ).length ) {
 		jQuery( '#pass1' ).focus();
 	}
 	
 	function pmpro_check_password_strength( pass_field ) {
 		var pass1 = jQuery( pass_field ).val();		
-		var indicator = jQuery( '#pass-strength-result' );
-		var submitbutton = jQuery( '#resetpass-button' );
-		var strength;
+		var indicator = jQuery( '#pass-strength-result' );		
+		
+		var strength;		
 		if ( pass1 != '' ) {
 			strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputBlacklist(), pass1 );
 		} else {
 			strength = -1;
+		}
+
+		var submitbutton;
+		if ( jQuery( '#resetpass-button' ).length ) {
+			submitbutton = jQuery( '#resetpass-button' );
+		} else {
+			submitbutton = jQuery( '#change-password input.pmpro_btn-submit' );
 		}
 
 		indicator.removeClass( 'empty bad good strong short' );
