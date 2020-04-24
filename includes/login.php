@@ -217,21 +217,15 @@ add_filter( 'the_title', 'pmpro_login_the_title', 10, 2 );
  * @since 2.3
  */
 function pmpro_login_document_title_parts( $titleparts ) {
-	global $pmpro_pages;
 
-	if ( ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) ) {
+	if ( pmpro_is_login_page() && isset( $_REQUEST['action'] ) ) {
+		$action = sanitize_text_field( $_REQUEST['action'] );
 
-		if ( isset( $_REQUEST['action'] ) ) {
-			$action = sanitize_text_field( $_REQUEST['action'] );
-		} else {
-			$action = false;
-		}
-
-		if ( ! empty( $action ) && $action === 'reset_pass' ) {
+		if ( $action === 'reset_pass' ) {
 			$titleparts['title'] = __( 'Lost Password', 'paid-memberships-pro' );
 		}
 
-		if ( ! empty( $action ) && $action === 'rp' ) {
+		if ( $action === 'rp' ) {
 			$titleparts['title'] = __( 'Reset Password', 'paid-memberships-pro' );
 		}
 	}
@@ -424,7 +418,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			?>
 			<div class="pmpro_lost_password_wrap">
 				<?php 
-					if ( ! is_page( $pmpro_pages['login'] ) ) {
+					if ( ! pmpro_is_login_page() ) {
 						echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
@@ -444,7 +438,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			?>
 			<div class="pmpro_reset_password_wrap">
 				<?php 
-					if ( ! is_page( $pmpro_pages['login'] ) ) {
+					if ( ! pmpro_is_login_page() ) {
 						echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
