@@ -345,7 +345,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				?>
 				<div class="pmpro_login_wrap">
 					<?php 
-						if ( ! is_page( $pmpro_pages['login'] ) ) {
+						if ( ! pmpro_is_login_page() ) {
 							echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title;
 						}
 					?>
@@ -354,7 +354,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 						pmpro_login_forms_handler_nav( 'login' );
 					?>
 				</div> <!-- end pmpro_login_wrap -->				
-				<?php if ( is_page( $pmpro_pages['login'] ) ) { ?>
+				<?php if ( pmpro_is_login_page() ) { ?>
 				<script>
 					document.getElementById('user_login').focus();
 				</script>
