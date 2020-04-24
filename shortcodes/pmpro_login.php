@@ -18,6 +18,25 @@ function pmpro_shortcode_login( $atts, $content=null, $code='' ) {
 		'location' => 'shortcode'
 	), $atts ) );
 
+	// Turn 0's into falses.
+	if ( $display_if_logged_in === '0' || $display_if_logged_in === 'false' || $display_if_logged_in === 'no' ) {
+		$display_if_logged_in = false;
+	} else {
+		$display_if_logged_in = true;
+	}
+
+	if ( $show_menu === '0' || $show_menu === 'false' || $show_menu === 'no' ){
+		$show_menu = false;
+	} else {
+		$show_menu = true;
+	}
+
+	if ( $show_logout_link === '0' || $show_logout_link === 'false' || $show_logout_link === 'no' ) {
+		$show_logout_link = false;
+	} else {
+		$show_logout_link = true;
+	}
+
 	// Display the login form using shortcode attributes.
 	return pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, $location, false );	
 }
