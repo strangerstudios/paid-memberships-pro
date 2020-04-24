@@ -467,6 +467,12 @@ function pmpro_member_profile_edit_form() {
 		if ( empty( $user->display_name ) ) {
 			$errors[] = __( 'Please enter a display name.', 'paid-memberships-pro' );
 		}
+		
+		// Don't allow admins to change their email address.
+		if ( current_user_can( 'manage_options' ) ) {
+			$user->user_email = $current_user->user_email;
+		}
+		
 		// Validate email address.
 		if ( empty( $user->user_email ) ) {
 			$errors[] = __( 'Please enter an email address.', 'paid-memberships-pro' );
@@ -526,9 +532,15 @@ function pmpro_member_profile_edit_form() {
 
 					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
 						<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?></label>
+						
+						<?php if ( current_user_can( 'manage_options' ) ) { ?>
+						<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
+						<p class="lite"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
+						<?php } else { ?>
 						<input type="email" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
 						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
-					</div>
+						<?php } ?>
+					</div>					
 				</div> <!-- end pmpro_member_profile_edit-fields -->
 			</div> <!-- end pmpro_checkout_box-user -->
 
