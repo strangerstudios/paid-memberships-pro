@@ -58,5 +58,5 @@ function render_dynamic_block( $attributes ) {
 	$attributes['show_menu']            = filter_var( $attributes['show_menu'], FILTER_VALIDATE_BOOLEAN );
 	$attributes['show_logout_link']     = filter_var( $attributes['show_logout_link'], FILTER_VALIDATE_BOOLEAN );
 
-	return( pmpro_login_forms_handler( $attributes['display_if_logged_in'], $attributes['show_menu'], $attributes['show_logout_link'], '', false ) );
+	return( pmpro_login_forms_handler( $attributes['show_menu'], $attributes['show_logout_link'], $attributes['display_if_logged_in'], '', false ) );
 }
