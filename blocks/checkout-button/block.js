@@ -71,7 +71,7 @@ export default registerBlockType(
                        onChange={ text => setAttributes( { text } ) }
                    />
                    <SelectControl
-                       label={ __( 'Level ID', 'paid-memberships-pro' ) }
+                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
                        options={ window.pmpro.all_level_values_and_labels }
