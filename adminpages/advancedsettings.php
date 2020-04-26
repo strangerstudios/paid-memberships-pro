@@ -106,7 +106,7 @@
 	}
 	if(!$notloggedintext)
 	{
-		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Login</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
+		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
 		pmpro_setOption("notloggedintext", $notloggedintext);
 	}
 	if(!$rsstext)
