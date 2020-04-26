@@ -34,7 +34,7 @@ if ( ! empty( $invoice_code ) ) {
 	}
 
 	// Make sure they have permission to view this.
-	if ( ! current_user_can( 'administrator' ) && $current_user->ID != $pmpro_invoice->user_id ) {
+	if ( ! current_user_can( 'pmpro_orders' ) && $current_user->ID != $pmpro_invoice->user_id ) {
 		wp_redirect( pmpro_url( 'account' ) ); //no permission
 		exit;
 	}
