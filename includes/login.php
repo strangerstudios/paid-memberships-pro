@@ -184,6 +184,57 @@ function pmpro_login_form_hidden_field( $html ) {
 }
 
 /**
+ * Filter the_title based on the form action of the Log In Page assigned to $pmpro_pages['login'].
+ *
+ * @since 2.3
+ */
+function pmpro_login_the_title( $title, $id ) {
+	global $pmpro_pages;
+
+	if ( ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) && in_the_loop() ) {
+		if ( isset( $_REQUEST['action'] ) ) {
+			$action = sanitize_text_field( $_REQUEST['action'] );
+		} else {
+			$action = false;
+		}
+
+		if ( ! empty( $action ) && $action === 'reset_pass' ) {
+			$title = esc_html( 'Lost Password', 'paid-memberships-pro' );
+		}
+
+		if ( ! empty( $action ) && $action === 'rp' ) {
+			$title = esc_html( 'Reset Password', 'paid-memberships-pro' );
+		}
+	}
+
+	return $title;
+}
+add_filter( 'the_title', 'pmpro_login_the_title', 10, 2 );
+
+/**
+ * Filter document_title_parts based on the form action of the Log In Page assigned to $pmpro_pages['login'].
+ *
+ * @since 2.3
+ */
+function pmpro_login_document_title_parts( $titleparts ) {
+
+	if ( pmpro_is_login_page() && isset( $_REQUEST['action'] ) ) {
+		$action = sanitize_text_field( $_REQUEST['action'] );
+
+		if ( $action === 'reset_pass' ) {
+			$titleparts['title'] = __( 'Lost Password', 'paid-memberships-pro' );
+		}
+
+		if ( $action === 'rp' ) {
+			$titleparts['title'] = __( 'Reset Password', 'paid-memberships-pro' );
+		}
+	}
+
+	return $titleparts;
+}
+add_filter( 'document_title_parts', 'pmpro_login_document_title_parts' );
+
+/**
  * Show a member login form or logged in member widget.
  *
  * @since 2.3
@@ -367,7 +418,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			?>
 			<div class="pmpro_lost_password_wrap">
 				<?php 
-					if ( ! is_page( $pmpro_pages['login'] ) ) {
+					if ( ! pmpro_is_login_page() ) {
 						echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
@@ -387,7 +438,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			?>
 			<div class="pmpro_reset_password_wrap">
 				<?php 
-					if ( ! is_page( $pmpro_pages['login'] ) ) {
+					if ( ! pmpro_is_login_page() ) {
 						echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
