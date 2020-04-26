@@ -7,12 +7,12 @@
     "test": "tests"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/strangerstudios/paid-memberships-pro.git"
+    "type": "git",
+    "url": "https://github.com/strangerstudios/paid-memberships-pro.git"
   },
   "scripts": {
     "start": "wp-scripts start",
-	"build": "wp-scripts build"
+    "build": "wp-scripts build"
   },
   "keywords": [
     "wordpress",

@@ -34,7 +34,7 @@
          },
          edit(){
              return [
-                 <div className="pmpro-blocks-element">
+                 <div className="pmpro-block-element">
                    <span>{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
                    <span>{ __( 'Membership Cancel Page', 'paid-memberships-pro' ) }</span>
                  </div>
