@@ -706,7 +706,7 @@ function pmpro_login_failed( $username ) {
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
-			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ), 'redirect_to' => $redirect_to ), pmpro_login_url() ) );
+			wp_redirect( add_query_arg( array( 'action'=>'failed', 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() ) );
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
 		}
