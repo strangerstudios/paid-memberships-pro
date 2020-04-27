@@ -1,6 +1,6 @@
 <div class="pmpro_billing_wrap">
 <?php
-	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
+	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -88,9 +88,11 @@
 	}
 ?>
 
-<?php if( $has_recurring_levels ) { ?>
-	<?php if($show_paypal_link) { ?>
-
+<?php if ( $has_recurring_levels ) {
+	if ( $show_check_payment_instructions ) {
+		$instructions = pmpro_getOption("instructions");
+		echo '<div class="pmpro_check_instructions">' . wpautop(wp_unslash( $instructions )) . '</div>';
+	} elseif ( $show_paypal_link ) { ?>
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
 
 	<?php } else { ?>
