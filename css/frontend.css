@@ -430,7 +430,6 @@ select.pmpro_error {
 
 .pmpro_actionlinks a {
 	display: inline-block;
-	margin-right: .5rem;
 	text-decoration: none;
 }
 .pmpro_actionlinks a:last-child {

@@ -191,11 +191,7 @@ function pmpro_login_form_hidden_field( $html ) {
 function pmpro_login_the_title( $title, $id ) {
 	global $pmpro_pages;
 
-	if ( empty( $_REQUEST['action'] ) ) {
-		return $title;
-	}
-
-	if ( ! in_the_loop() ) {
+	if ( ! is_main_query() || ! is_page( $id ) ) {
 		return $title;
 	}
 
@@ -203,9 +199,11 @@ function pmpro_login_the_title( $title, $id ) {
 		return $title;
 	}
 
-	if ( $_REQUEST['action'] === 'reset_pass' ) {
+	if ( is_user_logged_in() ) {
+		$title = __( 'Welcome', 'paid-memberships-pro' );
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) {
 		$title = __( 'Lost Password', 'paid-memberships-pro' );
-	} elseif ( $_REQUEST['action'] === 'rp' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) {
 		$title = __( 'Reset Password', 'paid-memberships-pro' );
 	}
 
@@ -221,17 +219,15 @@ add_filter( 'the_title', 'pmpro_login_the_title', 10, 2 );
 function pmpro_login_document_title_parts( $titleparts ) {
 	global $pmpro_pages;
 
-	if ( empty( $_REQUEST['action'] ) ) {
-		return $titleparts;
-	}
-
 	if ( empty( $pmpro_pages ) || ! is_page( $pmpro_pages['login'] ) ) {
 		return $titleparts;
 	}
 	
-	if ( $_REQUEST['action'] === 'reset_pass' ) {
+	if ( is_user_logged_in() ) {
+		$titleparts['title'] = __( 'Welcome', 'paid-memberships-pro' );
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) {
 		$titleparts['title'] = __( 'Lost Password', 'paid-memberships-pro' );
-	} elseif ( $_REQUEST['action'] === 'rp' ) {
+	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'rp' ) {
 		$titleparts['title'] = __( 'Reset Password', 'paid-memberships-pro' );
 	}
 
@@ -590,41 +586,39 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 	<hr />
 	<p class="pmpro_actions_nav">
 		<?php
-			/**
-			 * Filters the separator used between action navigation links.
-			 *
-			 * @since 2.3
-			 *
-			 * @param string $pmpro_actions_nav_separator The separator used between action links.
-			 */
-			$pmpro_actions_nav_separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
-
 			// Build the links to return.
 			$links = array();
 
 			if ( $pmpro_form != 'login' ) {
-				$links['login'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_login_url() ), __( 'Log In', 'paid-memberships-pro' ) );
+				$links['login'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_login_url() ), esc_html__( 'Log In', 'paid-memberships-pro' ) );
 			}
 
 			if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
 				$levels_page_id = pmpro_getOption( 'levels_page_id' );
 
 				if ( $levels_page_id && pmpro_are_any_visible_levels() ) {
-					$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), __( 'Join Now', 'paid-memberships-pro' ) );
+					$links['register'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), esc_html__( 'Join Now', 'paid-memberships-pro' ) );
 				} else {
-					$pmpro_registration_url = sprintf( '<a href="%s">%s</a>', wp_registration_url() , __( 'Register', 'paid-memberships-pro' ) );
+					$links['register'] = sprintf( '<a href="%s">%s</a>', esc_url( wp_registration_url() ), esc_html__( 'Register', 'paid-memberships-pro' ) );
 				}
-
-				$links['register'] = apply_filters( 'pmpro_registration_url', $pmpro_registration_url );
 			}
 
 			if ( $pmpro_form != 'lost_password' ) {
-				$pmpro_lost_password_url = sprintf( '<a href="%s">%s</a>', add_query_arg( 'action', urlencode( 'reset_pass' ), pmpro_login_url() ), __( 'Lost Password?', 'paid-memberships-pro' ) );
-
-				$links['lost_password'] = apply_filters( 'pmpro_lost_password_url', $pmpro_lost_password_url );
+				$links['lost_password'] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( 'action', urlencode( 'reset_pass' ), pmpro_login_url() ) ), esc_html__( 'Lost Password?', 'paid-memberships-pro' ) );
 			}
 
-			echo implode( esc_html( $pmpro_actions_nav_separator ), $links );
+			$links = apply_filters( 'pmpro_login_forms_handler_nav', $links, $pmpro_form );
+
+			$allowed_html = array(
+				'a' => array (
+					'class' => array(),
+					'href' => array(),
+					'id' => array(),
+					'target' => array(),
+					'title' => array(),
+				),
+			);
+			echo wp_kses( implode( pmpro_actions_nav_separator(), $links ), $allowed_html );
 		?>
 	</p> <!-- end pmpro_actions_nav -->
 	<?php
@@ -825,8 +819,8 @@ function pmpro_logged_in_welcome( $show_menu = true, $show_logout_link = true ) 
 		 *
 		 */
 		if ( ! empty ( $show_logout_link ) ) { ?>
-			<div class="pmpro_member_log_out"><a href="<?php echo wp_logout_url(); ?>"><?php echo esc_html__( 'Log Out', 'paid-memberships-pro' ); ?></a></div>
-		<?php
+			<div class="pmpro_member_log_out"><a href="<?php echo esc_url( wp_logout_url() ); ?>"><?php esc_html_e( 'Log Out', 'paid-memberships-pro' ); ?></a></div>
+			<?php
 		}
 	}
 }

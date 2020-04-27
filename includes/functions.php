@@ -1777,6 +1777,19 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
 	return $text;
 }
 
+/**
+ * Filters the separator used between action navigation links.
+ *
+ * @since 2.3
+ *
+ * @param string $separator The separator used between action links.
+ */
+function pmpro_actions_nav_separator() {
+	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
+
+	return $separator;
+} 
+
 /*
  pmpro_getMembershipLevelForUser() returns the first active membership level for a user
  *
