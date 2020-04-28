@@ -324,7 +324,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			            &nbsp;
 			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['login']); ?>"
 			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
-			        <?php } elseif ( empty( pmpro_getOption( 'member_profile_edit_page_generated' ) ) ) { ?>
+			        <?php } elseif ( empty( pmpro_getOption( 'member_login_page_generated' ) ) ) { ?>
 						&nbsp;
 						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
