@@ -312,7 +312,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 						wp_dropdown_pages(
 							array(
 								'name' => 'login_page_id',
-								'show_option_none' => '-- ' . __('Choose One', 'paid-memberships-pro') . ' --',
+								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
 								'selected' => $pmpro_pages['login'], 'post_types' => $post_types
 							)
 						);
