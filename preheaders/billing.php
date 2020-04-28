@@ -13,7 +13,7 @@ if ( ! is_user_logged_in() ) {
 }
 
 //need to be secure?
-global $besecure, $gateway, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
 $user_order = new MemberOrder();
 $user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
@@ -28,6 +28,8 @@ if (empty($user_order->gateway)) {
         //$besecure = false;
         $show_paypal_link = true;
     }
+} elseif( $user_order->gateway == 'check' ) {
+    $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");
