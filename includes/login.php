@@ -1,5 +1,13 @@
 <?php
 /**
+ * Are we on the login page?
+ * Checks for WP default, TML, and PMPro login page.
+ */
+function pmpro_is_login_page() {
+	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || is_page( pmpro_getOption( 'login_page_id' ) ) );
+}
+
+/**
  * If no redirect_to is set
  * then redirect members to the account page
  * and redirect non-members to the levels page.
@@ -83,7 +91,7 @@ add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
- * Redirect to the Membership Account page for member login.
+ * Redirect to the login page for member login.
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
@@ -219,7 +227,7 @@ add_filter( 'the_title', 'pmpro_login_the_title', 10, 2 );
 function pmpro_login_document_title_parts( $titleparts ) {
 	global $pmpro_pages;
 
-	if ( empty( $pmpro_pages ) || ! is_page( $pmpro_pages['login'] ) ) {
+	if ( empty( $pmpro_pages ) || empty ( $pmpro_pages['login'] ) || ! is_page( $pmpro_pages['login'] ) ) {
 		return $titleparts;
 	}
 	
@@ -503,6 +511,11 @@ function pmpro_lost_password_form() { ?>
 function pmpro_lost_password_redirect() {
 	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 		$login_page = pmpro_getOption( 'login_page_id' );
+		
+		if ( empty( $login_page ) ) {
+			return;
+		}
+		
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 
 		$errors = retrieve_password();
@@ -525,6 +538,11 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 function pmpro_reset_password_redirect() {	
 	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
 		$login_page = pmpro_getOption( 'login_page_id' );
+		
+		if ( empty( $login_page ) ) {
+			return;
+		}
+		
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $_REQUEST['rp_key'], $_REQUEST['rp_login'] );
 		
@@ -633,10 +651,15 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-        $rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
-		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
-
-		$login_page = pmpro_getOption( 'login_page_id' );
+        $login_page = pmpro_getOption( 'login_page_id' );
+		
+		if ( empty( $login_page ) ) {
+			return;
+		}
+		
+		$rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
+		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );	
+		
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $rp_key, $rp_login );
 
@@ -753,6 +776,11 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  *
  */
 function pmpro_login_failed( $username ) {
+
+	$login_page = pmpro_getOption( 'login_page_id' );	
+	if ( empty( $login_page ) ) {
+		return;
+	}
 
 	$referrer = wp_get_referer();
 	$redirect_to = esc_url( $_REQUEST['redirect_to'] );
