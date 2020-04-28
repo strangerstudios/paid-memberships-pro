@@ -2,7 +2,7 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: membership, memberships, member, members, ecommerce, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.3.2
+Tested up to: 5.4
 Stable tag: 2.2.6
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
