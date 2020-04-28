@@ -582,6 +582,9 @@ function pmpro_reset_password_form() {
 	}
 }
 
+/**
+ * Show the nav links below the login form.
+ */
 function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 	<hr />
 	<p class="pmpro_actions_nav">
