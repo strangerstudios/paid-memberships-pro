@@ -1383,7 +1383,9 @@ class="alternate"<?php } ?>>
 					<td>
 						<?php
 							$level = pmpro_getLevel( $order->membership_id );
-							echo $level->name;
+							if ( ! empty( $level ) ) {
+								echo $level->name;
+							}
 						?>
 					</td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
