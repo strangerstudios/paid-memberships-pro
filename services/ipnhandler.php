@@ -235,8 +235,8 @@ if ( $txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'su
 	pmpro_ipnExit();
 }
 
-//Recurring Payment Profile Cancelled (PayPal Express)
-if ( $txn_type == "recurring_payment_profile_cancel" ) {
+// Recurring Payment Profile Cancelled or Failed (PayPal Express)
+if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' ) {
 	//find last order
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id ) == false ) {
