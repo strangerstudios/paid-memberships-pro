@@ -2,8 +2,7 @@ jQuery(document).ready(function(){
 	// Focus
 	if ( jQuery( '#password_current' ).length ) {
 		jQuery( '#password_current' ).focus();
-	}	
-	if ( jQuery( '#pass1' ).length ) {
+	} else if ( jQuery( '#pass1' ).length ) {
 		jQuery( '#pass1' ).focus();
 	}
 	
