@@ -103,6 +103,19 @@ if (!empty($_REQUEST['createpages'])) {
 		if ( ! empty( pmpro_getOption( $page_name . '_page_generated' ) ) ) {
 			// Don't generate again.
 			unset( $pages[$page_name] );
+			
+			// Find the old page
+			$old_page = get_page_by_path( $page_name );
+			if ( ! empty( $old_page ) ) {
+				$pmpro_pages[$page_name] = $old_page->ID;
+				pmpro_setOption( $page_name . '_page_id', $old_page->ID );
+				pmpro_setOption( $page_name . '_page_generated', '1' );
+				$msg = true;
+				$msgt = sprintf( __( "Found an existing version of the %s page and used that one.", 'paid-memberships-pro' ), $page_name );
+			} else {
+				$msg = -1;
+				$msgt = sprintf( __( "Error generating the %s page. You will have to choose or create one manually.", 'paid-memberships-pro' ), $page_name );
+			}
 		} else {
 			// Generate the new Your Profile page and save an option that it was created.
 			$pages[$page_name] = array(
@@ -324,7 +337,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			            &nbsp;
 			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['login']); ?>"
 			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
-			        <?php } elseif ( empty( pmpro_getOption( 'member_login_page_generated' ) ) ) { ?>
+			        <?php } elseif ( empty( pmpro_getOption( 'login_page_generated' ) ) ) { ?>
 						&nbsp;
 						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
