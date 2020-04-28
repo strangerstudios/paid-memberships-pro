@@ -25,7 +25,12 @@ function pmpro_compatibility_checker () {
             'file' => 'theme-my-login.php',
             'check_type' => 'class',
             'check_value' => 'Theme_My_Login'
-        )
+        ),
+		array(
+			'file' => 'woocommerce.php',
+			'check_type' => 'constant',
+			'check_value' => 'WC_PLUGIN_FILE'
+		)
     );
 
     foreach ( $compat_checks as $key => $value ) {
