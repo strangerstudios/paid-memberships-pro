@@ -26,7 +26,7 @@ export default class Inspector extends Component {
 			<InspectorControls>
 				<PanelBody>
 					<ToggleControl
-						label={__("Display If Logged In", "post-type-archive-mapping")}
+						label={__("Display If Logged In", "paid-memberships-pro")}
 						checked={display_if_logged_in}
 						onChange={(value) => {
 							this.props.setAttributes({
@@ -35,7 +35,7 @@ export default class Inspector extends Component {
 						}}
 					/>
 					<ToggleControl
-						label={__("Show Menu", "post-type-archive-mapping")}
+						label={__("Show Menu", "paid-memberships-pro")}
 						checked={show_menu}
 						onChange={(value) => {
 							this.props.setAttributes({
@@ -44,7 +44,7 @@ export default class Inspector extends Component {
 						}}
 					/>
 					<ToggleControl
-						label={__("Show Logout Link", "post-type-archive-mapping")}
+						label={__("Show Logout Link", "paid-memberships-pro")}
 						checked={show_logout_link}
 						onChange={(value) => {
 							this.props.setAttributes({
