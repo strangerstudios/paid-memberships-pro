@@ -341,7 +341,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 						&nbsp;
 						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php _e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_login].</p>				
+					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>			
 			    </td>
 			</tr>
 			<tr>
@@ -369,7 +369,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 						&nbsp;
 						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php _e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_member_profile_edit].</p>
+					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ); ?></p>
 
 					<?php if ( ! class_exists( 'PMProRH_Field' ) ) {
 						$allowed_member_profile_edit_html = array (
