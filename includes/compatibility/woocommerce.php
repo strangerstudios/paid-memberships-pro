@@ -22,4 +22,4 @@ function pmpro_maybe_remove_wc_lostpassword_url_filter() {
 		remove_filter( 'lostpassword_url', 'wc_lostpassword_url', 10, 1 );		
 	}
 }	
-add_action( 'wp', pmpro_maybe_remove_wc_lostpassword_url_filter );
+add_action( 'wp', 'pmpro_maybe_remove_wc_lostpassword_url_filter' );
