@@ -1003,9 +1003,8 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php _e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
-					<?php foreach( $custom_filters as $custom_filter ) { ?>
-						<option 
-							value="<?php $custom_filter['name'] ?>" <?php selected( $filter, <?php $custom_filter['name'] ?> ); ?>><?php $custom_filter['title'] ?></option>
+					<?php foreach( $custom_filters as $value => $name ) { ?>
+						<option value="<?php esc_attr_e( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
 					<?php } ?>
 				</select>
 
