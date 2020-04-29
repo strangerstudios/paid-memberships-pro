@@ -192,7 +192,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
         if(!empty($levels)) {
             foreach($levels as $key => $level)
                 $level_names[] = $level->name;
-            $column_data = implode(',', $level_names);
+            $column_data = implode(', ', $level_names);
         }
         else
             $column_data = __('None', 'paid-memberships-pro' );
