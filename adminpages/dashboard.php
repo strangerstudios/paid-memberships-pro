@@ -318,12 +318,16 @@ function pmpro_dashboard_report_recent_orders_callback() {
                             <?php } ?>
         				</td>
                         <td>
-                            <?php
-                                $level = pmpro_getLevel( $order->membership_id );
-                                if ( ! empty( $level ) ) {
-                                    echo $level->name;
-                                }
-                            ?>
+							<?php
+								$level = pmpro_getLevel( $order->membership_id );
+								if ( ! empty( $level ) ) {
+									echo $level->name;
+								} elseif ( $order->membership_id > 0 ) { ?>
+									[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+								<?php } else { ?>
+									[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+								<?php }
+							?>
                         </td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>

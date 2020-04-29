@@ -1385,7 +1385,11 @@ class="alternate"<?php } ?>>
 							$level = pmpro_getLevel( $order->membership_id );
 							if ( ! empty( $level ) ) {
 								echo $level->name;
-							}
+							} elseif ( $order->membership_id > 0 ) { ?>
+								[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+							<?php } else { ?>
+								[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+							<?php }
 						?>
 					</td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
