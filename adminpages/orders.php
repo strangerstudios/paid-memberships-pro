@@ -152,6 +152,8 @@ if ( empty( $filter ) || $filter === 'all' ) {
 	$condition = "o.total = 0";
 }
 
+$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
+
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
@@ -999,6 +1001,12 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php _e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
 					<option 
 						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php _e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
+
+					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
+					<?php foreach( $custom_filters as $custom_filter ) { ?>
+						<option 
+							value="<?php $custom_filter['name'] ?>" <?php selected( $filter, <?php $custom_filter['name'] ?> ); ?>><?php $custom_filter['title'] ?></option>
+					<?php } ?>
 				</select>
 
 				<span id="from"><?php _e( 'From', 'paid-memberships-pro' ); ?></span>
