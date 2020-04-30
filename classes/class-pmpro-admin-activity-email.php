@@ -356,7 +356,19 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$email_sections['post_content'] = ob_get_contents();
 		ob_end_clean();
 
-		apply_filters( 'pmpro_admin_activity_email_sections', $email_sections, $frequency, $term, $report_start_date, $report_end_date, $date_range );
+		/**
+		 * Filter the Admin Activity Email sections.
+		 *
+		 * @since 2.3
+		 *
+		 * @param array $email_sections Current sections of the email to be sent.
+		 * @param string $frequency Time period that this email will cover.
+		 * @param string $term Wording being used to convey $frequency throughout email.
+		 * @param string $report_start_date First date of data that report looks at (YYYY-MM-DD).
+		 * @param string $report_end_date First date of data that report looks at (YYYY-MM-DD).
+		 * @param string $date_range Formatted date range based on site date format settings.
+		 */
+		$email_sections = apply_filters( 'pmpro_admin_activity_email_sections', $email_sections, $frequency, $term, $report_start_date, $report_end_date, $date_range );
 		$admin_activity_email_body = '';
 		foreach ( $email_sections as $section => $content ) {
 			$admin_activity_email_body .= $content;
