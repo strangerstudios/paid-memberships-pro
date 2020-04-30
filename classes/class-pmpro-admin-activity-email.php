@@ -365,7 +365,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		 * @param string $frequency Time period that this email will cover.
 		 * @param string $term Wording being used to convey $frequency throughout email.
 		 * @param string $report_start_date First date of data that report looks at (YYYY-MM-DD).
-		 * @param string $report_end_date First date of data that report looks at (YYYY-MM-DD).
+		 * @param string $report_end_date Last date of data that report looks at (YYYY-MM-DD).
 		 * @param string $date_range Formatted date range based on site date format settings.
 		 */
 		$email_sections = apply_filters( 'pmpro_admin_activity_email_sections', $email_sections, $frequency, $term, $report_start_date, $report_end_date, $date_range );
