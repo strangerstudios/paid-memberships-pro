@@ -48,8 +48,9 @@ const {
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className="pmpro-block-element">
-                  <span>Paid Memberships Pro</span>
-                  <span>Membership Checkout Form</span>
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle">{ __( 'Membership Checkout Form', 'paid-memberships-pro' ) }</span>
+                  <hr />
                   <SelectControl
                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       value={ pmpro_default_level }

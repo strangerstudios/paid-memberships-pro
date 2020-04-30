@@ -43,8 +43,8 @@ export default registerBlockType("pmpro/login-form", {
 			<Fragment>
 				<Inspector {...props} />
 				<div className="pmpro-block-element">
-					<span>{__("Paid Memberships Pro", "paid-memberships-pro")}</span>
-					<span>{__("Log in Form", "paid-memberships-pro")}</span>
+					<span className="pmpro-block-title">{__("Paid Memberships Pro", "paid-memberships-pro")}</span>
+					<span className="pmpro-block-subtitle">{__("Log in Form", "paid-memberships-pro")}</span>
 				</div>
 			</Fragment>,
 		];

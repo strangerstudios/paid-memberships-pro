@@ -35,9 +35,9 @@
          },
          edit() {
              return [
-                 <div className="pmpro-blocks-element">
-                   <span>{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-                   <span>{ __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
+                 <div className="pmpro-block-element">
+                   <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                   <span className="pmpro-block-subtitle">{ __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
                  </div>
             ];
          },

@@ -63,8 +63,7 @@ export default registerBlockType(
                 <div className={ className }>
                   <a class={css_class} >{text}</a>
                 </div>,
-                isSelected && <div>
-                  <br/>
+                isSelected && <div className="pmpro-block-element">
                    <TextControl
                        label={ __( 'Button Text', 'paid-memberships-pro' ) }
                        value={ text }

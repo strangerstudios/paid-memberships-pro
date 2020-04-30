@@ -1,35 +1,64 @@
 .pmpro-block-element {
-    background: #FAFAFA;
-    padding: 20px;
-    text-align: center;
+	background: rgba(237, 239, 240, 0.8);
+	padding: 20px;
 }
-.pmpro-block-element span {
-    color: #AAA;
-    display: block;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
-    font-weight: 700;
-    position: relative;
-    text-transform: uppercase;
+.pmpro-block-element span.pmpro-block-title {
+	color: #555d66;
+	display: block;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
+	font-size: 22px;
+	font-weight: 300;
+	letter-spacing: 1px;
+	position: relative;
+	text-transform: uppercase;
 }
-.pmpro-block-element span:first-child {
-    font-size: 125%;
-    font-weight: 300;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
+.pmpro-block-element span.pmpro-block-subtitle {
+	color: #555d66;
+	display: block;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	position: relative;
+	text-transform: uppercase;
+}
+.pmpro-block-element .components-base-control {
+	margin-bottom: 16px;
+}
+.pmpro-block-element .components-base-control .components-base-control__label {
+	display: block;
 }
 
-.pmpro-block-element span.pmpro-membership-title {
-    background: #FAFAFA;
-    color: #AAA;
+/* Require Membership Block */
+.pmpro-block-require-membership-element {
+	border-bottom: 5px solid #8d96a0;
+	border-top: 5px solid #8d96a0;
+}
+.pmpro-block-require-membership-element .pmpro-block-title {
+	background: rgba(237, 239, 240, 0.8);
+    color: #555d66;
     display: block;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
     font-weight: 600;
-    padding: 10px;
+    padding: 16px;
     position: relative;
     text-transform: uppercase;
 }
+.pmpro-block-require-membership-element .components-panel__body {
+	background: rgba(237, 239, 240, 0.8);
+	border-bottom: 0;
+	border-top: none;
+	padding-top: 0;
+}
+.pmpro-block-require-membership-element .block-editor-inner-blocks {
+	padding-left: 16px;
+	padding-right: 16px;
+}
 
-.pmpro_btn {
+/* Checkout Button Block */
+.wp-block-pmpro-checkout-button {
+	margin-bottom: 16px;
+}
+.wp-block-pmpro-checkout-button .pmpro_btn {
 	background-color: #EFEFEF;
 	background-image: none;
 	border: 1px solid #D6D6D6;
