@@ -14,6 +14,10 @@ class PMPro_Elementor {
         array(
             'element' => 'common',
             'action'  => '_section_style',
+        ),
+        array(
+            'element' => 'section',
+            'action'  => 'section_advanced',
         )
     );
     public $section_name = 'pmpro_elementor_section';

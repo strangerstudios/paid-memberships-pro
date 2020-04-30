@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.2.6-2.3RC1
+ * Version: 2.2.6-2.3RC2
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.2.6-2.3RC1' );
+define( 'PMPRO_VERSION', '2.2.6-2.3RC2' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -44,7 +44,7 @@ require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
-require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' ); 
+require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin

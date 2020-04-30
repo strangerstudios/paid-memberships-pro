@@ -139,6 +139,7 @@ Not sure? You can find out by doing a bit a research.
 * FEATURE: Added new Admin Activity Email. Weekly emails to the site admin with sales stats and other info. Change how often the email is sent or disable it from the advanced settings tab.
 * FEATURE: Added Beaver Builder module compatibility to restrict modules by membership level.
 * FEATURE: Created new REST API endpoints and extended existing endpoints.
+* FEATURE: Updated Elementor code to allow for restriction of "sections" as well.
 * BUG FIX: Updated all timestamp code to be compatible with WordPress v5.4+ which fixes issues where orders could lose one hour or one day when saved.
 * BUG FIX: Updated logic to filter body_class on pages with Membership Account shortcode or any "section" of the shortcode displayed.
 * BUG FIX: Improved `pmpro_getAllLevels` function to cache even when `force` is `true`. This saves multiple DB hits per page load.
@@ -157,7 +158,9 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Added !!levels_page_url!! and !!login_url!! as replacement variables in Advanced Settings > Message Settings. Using these by default on new installs.
 * ENHANCEMENT: Improved Block Editor code and webpack configuration.
 * ENHANCEMENT: Added support for `PMPRO_AUTHNET_SILENT_POST_DEBUG` to "log" data to /logs/ or send an email to an email address different from the site admin.
-* ENHANCEMENT: Added time fields to Memberships > Orders admin page when vieweing, updating or saving an order.  
+* ENHANCEMENT: Added time fields to Memberships > Orders admin page when vieweing, updating or saving an order.
+* ENHANCEMENT: Added pmpro_admin_orders_filters and pmpro_admin_orders_query_condition filters to add new filters to the orders page in the dashboard. (Thanks, Mirco Babini)
+* ENHANCEMENT: Added an SVG icon to the PMPro blocks category.
 * REFACTOR: Improved the Members List list table code to use a function for each column of data and support the code core WP methods for extending list tables with custom columns.
 * REFACTOR: Moved all Theme My Login compatiblity code to includes/compatibility/theme-my-login.php and only loading if plugin is active.
 
@@ -365,13 +368,13 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Brought back the Stripe Billing limit warnings. Here is a plugin to get billing limits working with Stripe https://github.com/strangerstudios/pmpro-stripe-billing-limits/blob/master/pmpro-stripe-billing-limits.php
 * FEATURE: Gutenberg / v5.0 Editor Blocks for Paid Memberships Pro pages, the Checkout Button and Membership "shortcode" functionality.
 * FEATURE: Added new "Dashboard" page and adjusted the entire menu structure for "Memberships".
-* FEATURE: Created new compatibility checks and included compatibility functions for Beaver Builder, Elementor, and SiteOrigin Page Builder. 
+* FEATURE: Created new compatibility checks and included compatibility functions for Beaver Builder, Elementor, and SiteOrigin Page Builder.
 * FEATURE: Added REST API routes for post membership access, and user membership level.
 * FEATURE: Added option to include the level's Confirmation Message in the Confirmation Email.
 * FEATURE: Added a filter by discount code to Memberships and Sales reports.
 * FEATURE: Added a filter by discount code to the Orders admin page.
 * FEATURE: Added a "Copy" option to discount codes.
-* FEATURE: Now allowing you to edit or add a discount code to a single Order edit.  
+* FEATURE: Now allowing you to edit or add a discount code to a single Order edit.
 * FEATURE: Added the ability to export orders by discount code used.
 * FEATURE: Added new file for deprecated functions or hooks.
 * ENHANCEMENT: Moved "Memberships" menu page up in sidebar below Comments.
