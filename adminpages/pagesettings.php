@@ -103,7 +103,7 @@ if (!empty($_REQUEST['createpages'])) {
 		if ( ! empty( pmpro_getOption( $page_name . '_page_generated' ) ) ) {
 			// Don't generate again.
 			unset( $pages[$page_name] );
-			
+
 			// Find the old page
 			$old_page = get_page_by_path( $page_name );
 			if ( ! empty( $old_page ) ) {
@@ -145,7 +145,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 
     <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
-        
+
         <h1 class="wp-heading-inline"><?php esc_html_e( 'Page Settings', 'paid-memberships-pro' ); ?></h1>
         <hr class="wp-header-end">
         <?php
@@ -321,7 +321,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 					<label for="login_page_id"><?php esc_attr_e( 'Log In Page', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php 
+					<?php
 						wp_dropdown_pages(
 							array(
 								'name' => 'login_page_id',
@@ -330,7 +330,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 							)
 						);
 					?>
-			        
+
 					<?php if ( ! empty( $pmpro_pages['login'] ) ) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['login'] ?>&action=edit"
 			               class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
@@ -341,7 +341,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 						&nbsp;
 						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>			
+					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>
 			    </td>
 			</tr>
 			<tr>
@@ -349,16 +349,16 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 					<label for="member_profile_edit_page_id"><?php esc_attr_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
-					<?php 
+					<?php
 						wp_dropdown_pages(
 							array(
 								'name' => 'member_profile_edit_page_id',
-								'show_option_none' => '-- ' . __('Choose One', 'paid-memberships-pro') . ' --',
+								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
 								'selected' => $pmpro_pages['member_profile_edit'], 'post_types' => $post_types
 							)
 						);
 					?>
-			        
+
 					<?php if ( ! empty( $pmpro_pages['member_profile_edit'] ) ) { ?>
 						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['member_profile_edit'] ?>&action=edit"
 			               class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
