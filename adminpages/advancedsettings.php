@@ -172,7 +172,7 @@
 					</th>
 					<td>
 						<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
-						<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_page_url!!</code> <code>!!levels_page_url!!</code></p>
+						<p class="description"><?php _e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
 					</td>
 				</tr>
 				<tr>
