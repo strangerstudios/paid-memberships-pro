@@ -408,7 +408,6 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$this->fromname = pmpro_getOption( 'from_name' );
 		add_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		add_filter( 'pmpro_email_body_footer', '__return_false', 99 );
-		
 		$response = $this->sendEmail();
 		remove_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		remove_filter( 'pmpro_email_body_footer', '__return_false', 99 );
