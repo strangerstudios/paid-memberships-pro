@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.1
-Stable tag: 2.2.6
+Stable tag: 2.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,7 +153,7 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.3 =
+= 2.3 - 2020-05-01 =
 * FEATURE: Added frontend login and password reset.
 * FEATURE: Added frontend user profile editing.
 * FEATURE: Added [pmpro_login] shortcode and Log In Form block.

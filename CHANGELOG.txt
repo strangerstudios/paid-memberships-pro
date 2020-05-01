@@ -1,5 +1,5 @@
 == Changelog ==
-= 2.3 =
+= 2.3 - 2020-05-01 =
 * FEATURE: Added frontend login and password reset.
 * FEATURE: Added frontend user profile editing.
 * FEATURE: Added [pmpro_login] shortcode and Log In Form block.
