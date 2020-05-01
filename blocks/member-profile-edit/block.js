@@ -30,8 +30,8 @@ export default registerBlockType("pmpro/member-profile-edit", {
 	edit: (props) => {
 		return (
 			<div className="pmpro-block-element">
-				<span>{__("Paid Memberships Pro", "paid-memberships-pro")}</span>
-				<span>
+				<span className="pmpro-block-title">{__("Paid Memberships Pro", "paid-memberships-pro")}</span>
+				<span className="pmpro-block-subtitle">
 					{__("Member Profile Edit", "paid-memberships-pro")}
 				</span>
 			</div>

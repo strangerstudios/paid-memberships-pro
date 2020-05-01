@@ -433,6 +433,11 @@ function pmpro_sanitize( $value ) {
 function pmpro_member_profile_edit_form() { 
 	global $current_user;
 
+	if ( ! is_user_logged_in() ) {
+		echo '<div class="pmpro_message pmpro_alert"><a href="' . esc_url( pmpro_login_url() ) . '">' . esc_html__( 'Log in to edit your profile.', 'paid-memberships-pro' ) . '</a></div>';
+		return;
+	}
+
 	do_action( 'pmpro_personal_options_update', $current_user->ID );
 
 	// Saving profile updates.

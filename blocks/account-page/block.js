@@ -55,8 +55,8 @@
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className="pmpro-block-element">
-                  <span>{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-                  <span>{ __( 'Membership Account Page', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle">{ __( 'Membership Account Page', 'paid-memberships-pro' ) }</span>
                 </div>
             ];
          },

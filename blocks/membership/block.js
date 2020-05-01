@@ -19,7 +19,7 @@ const {
 const {
     InspectorControls,
     InnerBlocks,
-} = wp.editor;
+} = wp.blockEditor;
 
 const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
 
@@ -66,8 +66,8 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                         />
                     </PanelBody>
                 </InspectorControls>,
-                isSelected && <div className="pmpro-block-element" >
-                  <span class="pmpro-membership-title">{ __( 'Require Membership', 'paid-memberships-pro' ) }</span>
+                isSelected && <div className="pmpro-block-require-membership-element" >
+                  <span className="pmpro-block-title">{ __( 'Require Membership', 'paid-memberships-pro' ) }</span>
                   <PanelBody>
                       <SelectControl
                           multiple
@@ -77,11 +77,21 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                           options={ all_levels }
                       />
                   </PanelBody>
-                  <InnerBlocks templateLock={ false } />
+                  <InnerBlocks
+                      renderAppender={ () => (
+                        <InnerBlocks.ButtonBlockAppender />
+                      ) }
+                      templateLock={ false }
+                  />
                 </div>,
-                ! isSelected && <div className="pmpro-block-element" >
-                  <span class="pmpro-membership-title">{ __( 'Require Membership:', 'paid-memberships-pro' ) } { levels }</span>
-                  <InnerBlocks templateLock={ false } />
+                ! isSelected && <div className="pmpro-block-require-membership-element" >
+                  <span className="pmpro-block-title">{ __( 'Require Membership', 'paid-memberships-pro' ) }</span>
+                  <InnerBlocks
+                      renderAppender={ () => (
+                        <InnerBlocks.ButtonBlockAppender />
+                      ) }
+                      templateLock={ false }
+                  />
                 </div>,
             ];
          },
