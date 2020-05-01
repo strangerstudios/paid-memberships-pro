@@ -187,8 +187,12 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											SELECT dc.code, COUNT(dcu.id) as uses
 											FROM $wpdb->pmpro_discount_codes dc
 											LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu
-											ON dc.id = dcu.code_id
+												ON dc.id = dcu.code_id
+											LEFT JOIN $wpdb->pmpro_membership_orders mo
+												ON dcu.order_id = mo.id
 											WHERE dcu.order_id IN(" . implode(",", $order_ids_with_discount_code ) . ")
+											  AND mo.status NOT IN('refunded', 'review', 'token', 'error')
+												AND mo.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
 											GROUP BY dc.code
 											ORDER BY uses DESC
 										"
@@ -404,10 +408,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$this->fromname = pmpro_getOption( 'from_name' );
 		add_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		add_filter( 'pmpro_email_body_footer', '__return_false', 99 );
-
-		echo $this->body;
-		exit;
-
+		
 		$response = $this->sendEmail();
 		remove_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		remove_filter( 'pmpro_email_body_footer', '__return_false', 99 );
