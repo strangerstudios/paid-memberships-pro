@@ -63,6 +63,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			$date_range .= ' - ' . date_i18n( get_option( 'date_format' ), strtotime( $report_end_date ) );
 		}
 
+		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+
 		$email_sections = array();
 
 		ob_start();
@@ -170,7 +172,15 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<div style="border:8px dashed #F1F1F1;padding:30px;margin:0px;text-align:center;">
 								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<?php
-								$num_orders_with_discount_code  = $wpdb->get_var( "SELECT COUNT( * ) FROM {$wpdb->pmpro_discount_codes_uses} WHERE timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00' AND timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'" );
+									$sqlQuery = "SELECT mo.id
+															 FROM $wpdb->pmpro_membership_orders mo, $wpdb->pmpro_discount_codes_uses dcu
+															WHERE mo.id = dcu.order_id
+															  AND mo.status NOT IN ('refunded', 'review', 'token', 'error')
+															  AND mo.gateway_environment = '" .  esc_sql( $gateway_environment ) . "'
+															  AND mo.timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00'
+															  AND mo.timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'";
+								$order_ids_with_discount_code  = $wpdb->get_col( $sqlQuery );
+								$num_orders_with_discount_code = count( $order_ids_with_discount_code );
 								if ( $num_orders_with_discount_code > 0 ) {
 									$orders_per_discount_code = $wpdb->get_results(
 										"
@@ -178,21 +188,33 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 											FROM $wpdb->pmpro_discount_codes dc
 											LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu
 											ON dc.id = dcu.code_id
-											WHERE dcu.timestamp >= '" . esc_sql( $report_start_date ) . " 00:00:00'
-											AND dcu.timestamp <= '" . esc_sql( $report_end_date ) . " 23:59:59'
+											WHERE dcu.order_id IN(" . implode(",", $order_ids_with_discount_code ) . ")
 											GROUP BY dc.code
 											ORDER BY uses DESC
 										"
 									);
 									?>
-									<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' ); ?></p>
-										<?php
+									<p style="margin:0px 0px 15px 0px;padding:0px;">
+									<?php
+										if ( $num_orders_with_discount_code == 1 ) {
+											printf( __( '<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+										} else {
+											printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+										}
+										?>
+									</p>
+									<?php
 										$codes_left_to_show = 5;
 										foreach ( $orders_per_discount_code as $orders_per_discount_code_element ) {
 											if ( $codes_left_to_show <= 0 || $orders_per_discount_code_element->uses <= 0 ) {
 												break;
 											}
-											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">' . esc_html( $orders_per_discount_code_element->code ) . '</span> ' . esc_html( number_format_i18n( $orders_per_discount_code_element->uses ) ) . ' ' . esc_html( __( 'Orders', 'paid-memberships-pro' ) ) . '</p>' );
+											if ( $orders_per_discount_code_element->uses == 1 ) {
+												$orders_string = esc_html( __( 'Order', 'paid-memberships-pro' ) );
+											} else {
+												$orders_string = esc_html( __( 'Orders', 'paid-memberships-pro' ) );
+											}
+											echo( '<p style="margin:0px 0px 15px 0px;padding:0;"><span style="background-color:#fcf8e3;font-weight:900;padding:5px;">' . esc_html( $orders_per_discount_code_element->code ) . '</span> ' . esc_html( number_format_i18n( $orders_per_discount_code_element->uses ) ) . ' ' . $orders_string . '</p>' );
 											$codes_left_to_show--;
 										}
 								} else {
@@ -284,7 +306,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							if ( ! pmpro_license_isValid( $key, null ) ) {
 								?>
 							<hr style="background-color:#F1F1F1;border:0;height:4px;margin:30px 0px 30px 0px;" />
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'License Status: None', 'paid-memberships-pro' ); ?></h3> 
+							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'License Status: None', 'paid-memberships-pro' ); ?></h3>
 							<p style="margin:0px;padding:0px;"><?php printf( __( '...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>.', 'paid-memberships-pro' ), ' style="color:#2997c8;" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=pricing&utm_content=license-section" target="_blank"' ); ?></p>
 								<?php
 							}
@@ -382,6 +404,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$this->fromname = pmpro_getOption( 'from_name' );
 		add_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		add_filter( 'pmpro_email_body_footer', '__return_false', 99 );
+
+		echo $this->body;
+		exit;
+
 		$response = $this->sendEmail();
 		remove_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		remove_filter( 'pmpro_email_body_footer', '__return_false', 99 );
