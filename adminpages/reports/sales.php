@@ -63,13 +63,13 @@ function pmpro_report_sales_widget() {
 			<tr class="pmpro_report_tr">
 				<th scope="row">
 					<?php if( ! empty( $prices ) ) { ?>
-						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button>
+						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
 					<?php } else { ?>
-						<?php echo $report_name; ?>
+						<?php echo esc_html($report_name); ?>
 					<?php } ?>
 				</th>
-				<td><?php echo number_format_i18n( pmpro_getSales( $report_type ) ); ?></td>
-				<td><?php echo pmpro_formatPrice( pmpro_getRevenue( $report_type ) ); ?></td>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type ) ) ); ?></td>
+				<td><?php echo esc_html(pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
 				//sale prices stats
@@ -82,9 +82,9 @@ function pmpro_report_sales_widget() {
 					}
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo pmpro_formatPrice( $price );?></th>
-					<td><?php echo number_format_i18n( $quantity ); ?></td>
-					<td><?php echo pmpro_formatPrice( $price * $quantity ); ?></td>
+					<th scope="row">- <?php echo esc_html( pmpro_formatPrice( $price ) );?></th>
+					<td><?php echo esc_html( number_format_i18n( $quantity ) ); ?></td>
+					<td><?php echo esc_html( pmpro_formatPrice( $price * $quantity ) ); ?></td>
 				</tr>
 			<?php
 			}
@@ -96,7 +96,7 @@ function pmpro_report_sales_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=sales' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
@@ -298,12 +298,12 @@ function pmpro_report_sales_page()
 		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
-				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date_i18n("F", mktime(0, 0, 0, $i, 2));?></option>
+				<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
 			<?php } ?>
 		</select>
 		<select id="year" name="year">
 			<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-				<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
+				<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
 			<?php } ?>
 		</select>
 		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
@@ -314,7 +314,7 @@ function pmpro_report_sales_page()
 				foreach($levels as $level)
 				{
 			?>
-				<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+				<option value="<?php echo esc_attr( $level->id ); ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
 			<?php
 				}
 			?>
@@ -327,7 +327,7 @@ function pmpro_report_sales_page()
 		<select id="discount_code" name="discount_code">
 			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
 			<?php foreach ( $codes as $code ) { ?>
-				<option value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+				<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 			<?php } ?>
 		</select>
 		<?php } ?>
@@ -377,17 +377,17 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					{ label: '<?php echo $date_function;?>' },
-					{ label: '<?php echo ucwords($type);?>' },
+					{ label: '<?php echo esc_html( $date_function );?>' },
+					{ label: '<?php echo esc_html( ucwords( $type ) );?>' },
 					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
 				],
 				<?php foreach($cols as $date => $value) { ?>
 					['<?php
 						if($period == "monthly") {
-							echo date_i18n("M", mktime(0,0,0,$date,2));
+							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
 						} else {
-						echo $date;
-					} ?>', <?php echo pmpro_round_price( $value );?>, <?php echo pmpro_round_price( $average );?>],
+						echo esc_html( $date );
+					} ?>', <?php echo esc_html( pmpro_round_price( $value ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>],
 				<?php } ?>
 			]);
 
@@ -401,7 +401,7 @@ function pmpro_report_sales_page()
 				?>'],
 				chartArea: {width: '90%'},
 				hAxis: {
-					title: '<?php echo $date_function;?>',
+					title: '<?php echo esc_html( $date_function );?>',
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
 					maxAlternation: 1
@@ -433,10 +433,10 @@ function pmpro_report_sales_page()
 					}
 					?>
 					var formatter = new google.visualization.NumberFormat({
-						<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol); ?>',
-						'decimalSymbol': '<?php echo html_entity_decode( $decimal_separator ); ?>',
+						<?php echo esc_html( $position );?>: '<?php echo esc_html( html_entity_decode($pmpro_currency_symbol) ); ?>',
+						'decimalSymbol': '<?php echo esc_html( html_entity_decode( $decimal_separator ) ); ?>',
 						'fractionDigits': <?php echo intval( $decimals ); ?>,
-						'groupingSymbol': '<?php echo html_entity_decode( $thousands_separator ); ?>',
+						'groupingSymbol': '<?php echo esc_html( html_entity_decode( $thousands_separator ) ); ?>',
 					});
 					formatter.format(data, 1);
 					formatter.format(data, 2);
@@ -606,6 +606,26 @@ function pmpro_getRevenue($period, $levels = NULL)
 	set_transient("pmpro_report_revenue", $cache, 3600*24);
 
 	return $revenue;
+}
+
+/**
+ * Get revenue between dates.
+ *
+ * @param  string $start_date to track revenue from.
+ * @param  string $end_date to track revenue until. Defaults to current date. YYYY-MM-DD format.
+ * @param  array  $level_ids to include in report. Defaults to all.
+ * @return float  revenue.
+ */
+function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_ids = null ) {
+	global $wpdb;
+	$sql_query = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $start_date ) . " 00:00:00'";
+	if ( ! empty( $end_date ) ) {
+		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
+	}
+	if ( ! empty( $level_ids ) ) {
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+	}
+	return $wpdb->get_var($sql_query);
 }
 
 //delete transients when an order goes through

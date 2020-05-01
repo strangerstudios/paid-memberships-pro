@@ -2163,11 +2163,11 @@ msgid "Phone"
 msgstr "Teléfono"
 
 #: pages/billing.php:193 pages/checkout.php:204 pages/checkout.php:453
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "Dirección de Email"
 
 #: pages/billing.php:197 pages/checkout.php:462
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Confirmar E-mail"
 
 #: pages/billing.php:217
@@ -2275,7 +2275,7 @@ msgid "Confirm Password"
 msgstr "Confirma tu contraseña"
 
 #: pages/checkout.php:213
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Confirma tu dirección de E-mail"
 
 #: pages/checkout.php:232

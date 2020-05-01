@@ -297,7 +297,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		}
 
 		// handle timestamp
-		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ) ) !== false ) {
+		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ), intval( $_POST['ts_hour'] ) . ':' . intval( $_POST['ts_minute'] ) . ':00' ) !== false ) {
 			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'success';
 		} else {
@@ -822,25 +822,30 @@ selected="selected"<?php } ?>><?php _e( 'Live/Production', 'paid-memberships-pro
 											} else {
 												$timestamp = current_time( 'timestamp' );
 											}
-											$year  = date( 'Y', $timestamp );
-											$month = date( 'n', $timestamp );
-											$day   = date( 'j', $timestamp );
+											
+											$year   = date( 'Y', $timestamp );
+											$month  = date( 'n', $timestamp );
+											$day    = date( 'j', $timestamp );
+											$hour   = date( 'H', $timestamp );
+											$minute = date( 'i', $timestamp );
+											$second = date( 's', $timestamp );
 											?>
 											<select id="ts_month" name="ts_month">
 							<?php
 							for ( $i = 1; $i < 13; $i ++ ) {
-								?>
-								<option value="<?php echo $i; ?>"
-					<?php
-					if ( $i == $month ) {
-?>
-selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
-								<?php
+							?>
+								<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
+								<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
+								</option>
+							<?php
 							}
 							?>
 						</select>
 						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
 						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
+						<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
+						<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
+						<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
 					<?php } ?>
 				</td>
 			</tr>
@@ -1013,7 +1018,7 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 				<select id="start-month" name="start-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $start_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo esc_attr( $i ); ?>" <?php selected( $start_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1028,7 +1033,7 @@ selected="selected"<?php } ?>><?php echo date( 'M', $now ); ?></option>
 				<select id="end-month" name="end-month">
 					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 						<option
-							value="<?php echo $i; ?>" <?php selected( $end_month, $i ); ?>><?php echo date( 'F', mktime( 0, 0, 0, $i, 2 ) ); ?></option>
+							value="<?php echo esc_attr( $i ); ?>" <?php selected( $end_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1385,7 +1390,13 @@ class="alternate"<?php } ?>>
 					<td>
 						<?php
 							$level = pmpro_getLevel( $order->membership_id );
-							echo $level->name;
+							if ( ! empty( $level ) ) {
+								echo $level->name;
+							} elseif ( $order->membership_id > 0 ) { ?>
+								[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+							<?php } else { ?>
+								[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+							<?php }
 						?>
 					</td>
 					<td><?php echo pmpro_formatPrice( $order->total ); ?></td>

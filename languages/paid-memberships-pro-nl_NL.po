@@ -2858,12 +2858,12 @@ msgstr "Telefoon"
 #: pages/billing.php:197 pages/checkout.php:207 pages/checkout.php:436
 #: pages/billing.php:193 pages/checkout.php:204 pages/checkout.php:453
 #: pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "E-mail adres"
 
 #: pages/billing.php:201 pages/checkout.php:445 pages/billing.php:197
 #: pages/checkout.php:462 pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Bevestig e-mail"
 
 #: pages/billing.php:221 pages/billing.php:217
@@ -2980,7 +2980,7 @@ msgid "Confirm Password"
 msgstr "Bevestig wachtwoord"
 
 #: pages/checkout.php:216 pages/checkout.php:213
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Bevestig e-mail adres"
 
 #: pages/checkout.php:235 pages/checkout.php:232

@@ -78,15 +78,15 @@ function pmpro_report_memberships_widget() {
 			<tr class="pmpro_report_tr">
 				<th scope="row">
 					<?php if ( empty( $signups ) && empty( $cancellations) ) { ?>
-						<?php echo $report_name; ?>
+						<?php echo esc_html($report_name); ?>
 					<?php } else { ?>
 						<button class="pmpro_report_th pmpro_report_th_closed">
-							<?php echo $report_name; ?>
+							<?php echo esc_html($report_name); ?>
 						</button>
 					<?php } ?>
 				</th>
-				<td><?php echo $signups; ?></td>
-				<td><?php echo $cancellations; ?></td>
+				<td><?php echo esc_html($signups); ?></td>
+				<td><?php echo esc_html($cancellations); ?></td>
 			</tr>
 			<?php
 				//level stats
@@ -97,9 +97,9 @@ function pmpro_report_memberships_widget() {
 					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo $level->name;?></th>
-					<td><?php echo number_format_i18n(pmpro_getSignups($report_type, $level->id)); ?></td>
-					<td><?php echo number_format_i18n(pmpro_getCancellations($report_type, $level->id)); ?></td>
+					<th scope="row">- <?php echo esc_html($level->name);?></th>
+					<td><?php echo esc_html(number_format_i18n(pmpro_getSignups($report_type, $level->id))); ?></td>
+					<td><?php echo esc_html(number_format_i18n(pmpro_getCancellations($report_type, $level->id))); ?></td>
 				</tr>
 			<?php
 				}
@@ -111,7 +111,7 @@ function pmpro_report_memberships_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_memberships_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=memberships' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url(admin_url( 'admin.php?page=pmpro-reports&report=memberships')); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
@@ -301,8 +301,8 @@ function pmpro_report_memberships_page()
 		else
 			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','admin_cancelled') ";
 
-		$sqlQuery .= "AND mu1.startdate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.startdate < '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
+		AND mu1.enddate < '" . esc_sql( $enddate ) . "' ";
 
 		//restrict by level
 		if ( ! empty( $l ) ) {
@@ -360,12 +360,12 @@ function pmpro_report_memberships_page()
 			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date_i18n("F", mktime(0, 0, 0, $i, 2));?></option>
+					<option value="<?php echo esc_attr($i);?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
 				<?php } ?>
 			</select>
 			<select id="year" name="year">
 				<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-					<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
+					<option value="<?php echo esc_attr($i);?>" <?php selected($year, $i);?>><?php echo esc_html($i);?></option>
 				<?php } ?>
 			</select>
 			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
@@ -378,7 +378,7 @@ function pmpro_report_memberships_page()
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr($level->id)?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html($level->name);?></option>
 				<?php
 					}
 
@@ -393,13 +393,13 @@ function pmpro_report_memberships_page()
 			<select id="discount_code" name="discount_code">
 				<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
 				<?php foreach ( $codes as $code ) { ?>
-					<option value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+					<option value="<?php echo esc_attr($code->id); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html($code->code); ?></option>
 				<?php } ?>
 			</select>
 			<?php } ?>
 			<input type="hidden" name="page" value="pmpro-reports" />
 			<input type="hidden" name="report" value="memberships" />
-			<input type="submit" class="button" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
+			<input type="submit" class="button" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 		</li>
 	</ul>
 
@@ -445,23 +445,23 @@ function pmpro_report_memberships_page()
 
 			var data = google.visualization.arrayToDataTable([
 			<?php if ( $type === "signup_v_all" ) : // Signups vs. all cancellations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'All Cancellations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'All Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
 			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'Cancellations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
 			<?php if ( $type === "signup_v_expiration" ) : // Signups vs. expirations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'Expirations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'Expirations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
@@ -476,7 +476,7 @@ function pmpro_report_memberships_page()
 				  textStyle: {color: '#555555', fontSize: '12', italic: false}
 			  },
 			  hAxis: {
-				  title: '<?php echo $date_function;?>',
+				  title: '<?php echo esc_html($date_function);?>',
 				  textStyle: {color: '#555555', fontSize: '12', italic: false},
 				  titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
 				  maxAlternation: 1

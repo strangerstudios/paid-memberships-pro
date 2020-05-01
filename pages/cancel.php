@@ -88,7 +88,7 @@
 							?>
 						</tbody>
 					</table>
-					<div class="pmpro_actionlinks">
+					<div class="pmpro_actions_nav">
 						<a href="<?php echo pmpro_url("cancel", "?levelstocancel=all"); ?>"><?php _e("Cancel All Memberships", 'paid-memberships-pro' );?></a>
 					</div>
 					<?php

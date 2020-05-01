@@ -17,6 +17,8 @@ function pmpro_init() {
 	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
 	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
+	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
 	$pmpro_core_pages = $pmpro_pages;
@@ -87,6 +89,9 @@ function pmpro_wp()
 			}
 			elseif(!empty($pmpro_page_id) && is_page($pmpro_page_id))
 			{
+				//add class to body
+				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
+				
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 			}
@@ -187,7 +192,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
         if(!empty($levels)) {
             foreach($levels as $key => $level)
                 $level_names[] = $level->name;
-            $column_data = implode(',', $level_names);
+            $column_data = implode(', ', $level_names);
         }
         else
             $column_data = __('None', 'paid-memberships-pro' );

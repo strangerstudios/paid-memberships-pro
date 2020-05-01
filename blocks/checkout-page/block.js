@@ -7,27 +7,17 @@
  /**
   * Block dependencies
   */
- import './editor.css';
- import classnames from 'classnames';
  import Inspector from './inspector';
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
 const {
-    PanelBody,
     SelectControl,
 } = wp.components;
-
-const {
-    InspectorControls,
-} = wp.editor;
 
  /**
   * Register block
@@ -57,9 +47,10 @@ const {
              const { attributes: { pmpro_default_level }, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div className={ className }>
-                  <span>Paid Memberships Pro</span>
-                  <span>Membership Checkout Form</span>
+                <div className="pmpro-block-element">
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle">{ __( 'Membership Checkout Form', 'paid-memberships-pro' ) }</span>
+                  <hr />
                   <SelectControl
                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       value={ pmpro_default_level }

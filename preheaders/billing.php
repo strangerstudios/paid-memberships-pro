@@ -2,15 +2,18 @@
 
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling;
 
-if (! is_user_logged_in()) {	
-	wp_redirect(pmpro_url('levels'));
-	exit();
+// Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
+if ( ! is_user_logged_in() ) {
+	$billing_url = pmpro_url( 'billing' );
+    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
+    exit;
 } else {
-	$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+    // Get the current user's membership level. 
+    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
 }
 
 //need to be secure?
-global $besecure, $gateway, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
 $user_order = new MemberOrder();
 $user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
@@ -25,6 +28,8 @@ if (empty($user_order->gateway)) {
         //$besecure = false;
         $show_paypal_link = true;
     }
+} elseif( $user_order->gateway == 'check' ) {
+    $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");

@@ -3545,13 +3545,13 @@ msgstr "Telefon"
 #: pages/billing.php:193 pages/checkout.php:204 pages/checkout.php:209
 #: pages/checkout.php:436 pages/checkout.php:438 pages/checkout.php:453
 #: pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "E-mailová adresa"
 
 #: pages/billing.php:201 pages/checkout.php:449 pages/billing.php:197
 #: pages/checkout.php:445 pages/checkout.php:447 pages/checkout.php:462
 #: pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Potvrdit e-mail"
 
 #: pages/billing.php:221 pages/billing.php:217
@@ -3653,7 +3653,7 @@ msgid "Confirm Password"
 msgstr "Potvrzení hesla"
 
 #: pages/checkout.php:216 pages/checkout.php:213 pages/checkout.php:218
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Potvrzení e-mailu"
 
 #: pages/checkout.php:235 pages/checkout.php:232 pages/checkout.php:237

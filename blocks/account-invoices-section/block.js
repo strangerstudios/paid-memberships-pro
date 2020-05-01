@@ -4,31 +4,14 @@
  * Displays the Membership Account > Invoices page section.
  *
  */
- /**
-  * Block dependencies
-  */
- import './editor.css';
- import classnames from 'classnames';
+
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
-const {
-    PanelBody,
-    PanelRow,
-    TextControl,
-} = wp.components;
-
-const {
-    RichText,
-    InspectorControls,
-} = wp.editor;
 
  /**
   * Register block
@@ -49,12 +32,11 @@ const {
          },
          attributes: {
          },
-         edit: props => {
-             const { className } = props;
+         edit() {
              return [
-                <div className={ className }>
-                  <span>Paid Memberships Pro</span>
-                  <span>Membership Account: Invoices</span>
+                <div className="pmpro-block-element">
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle"> { __( 'Membership Account: Invoices', 'paid-memberships-pro' ) }</span>
                 </div>
             ];
          },

@@ -47,7 +47,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$this->_column_headers = $this->get_column_info();
-		$this->handle_table_actions();
 		$this->items = $this->sql_table_data();
 
 		// set the pagination arguments
@@ -103,6 +102,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$columns['enddate'] = 'Cancelled';
 		}
 
+		// Should be deprecated in favor of "pmpro_manage_memberslist_columns".
+		// Is applied to all members lists, regardless of screen.
 		$columns = apply_filters( 'pmpro_memberslist_extra_cols', $columns );
 
 		// Re-implementing old hook, will be deprecated.
@@ -114,6 +115,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		foreach ( $matches[1] as $match ) {
 			$columns[ 'custom_field_' . $custom_field_num ] = $match;
 			$custom_field_num++;
+		}
+
+		// Shortcut for editing columns in default memberslist location.
+		$current_screen = get_current_screen();
+		if ( ! empty( $current_screen ) && 'memberships_page_pmpro-memberslist' === $current_screen->id ) {
+			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
 		return $columns;
@@ -195,39 +202,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				false,
 			),
 		);
-	}
-
-	/**
-	 * Allows you to sort the data by the variables set in the $_GET
-	 *
-	 * @return Mixed
-	 */
-	private function sort_data( $a, $b ) {
-		// Set defaults
-		$orderby = 'ID';
-		$order   = 'desc';
-
-		// If orderby is set, use this as the sort column
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = $_GET['orderby'];
-		}
-
-		// If order is set use this as the order
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = $_GET['order'];
-		}
-
-		if ( is_numeric( $a[ $orderby ] ) && is_numeric( $b[ $orderby ] ) ) {
-			$result = intval( $a[ $orderby ] ) > intval( $b[ $orderby ] ) ? 1 : -1;
-		} else {
-			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
-		}
-
-		if ( $order === 'asc' ) {
-			return $result;
-		}
-
-		return -$result;
 	}
 
 	/**
@@ -413,31 +387,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Filter the table data based on the user search key
-	 *
-	 * @since 2.2.0
-	 *
-	 * @param array  $table_data
-	 * @param string $search_key
-	 * @return array
-	 */
-	public function filter_table_data( $table_data, $search_key ) {
-		$filtered_table_data = array_values(
-			array_filter(
-				$table_data,
-				function( $row ) use ( $search_key ) {
-					foreach ( $row as $row_val ) {
-						if ( stripos( $row_val, $search_key ) !== false ) {
-							return true;
-						}
-					}
-				}
-			)
-		);
-		return $filtered_table_data;
-	}
-
-	/**
 	 * Render a column when no column specific method exists.
 	 *
 	 * @param array  $item
@@ -447,113 +396,69 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 		$item = (array) apply_filters( 'pmpro_members_list_user', (object) $item );
-		switch ( $column_name ) {
-			case 'ID':
-			case 'display_name':
-			case 'user_email':
-			case 'membership':
-			case 'membership_id':
-			case 'cycle_period':
-			case 'cycle_number':
-				return $item[ $column_name ];
-			case 'username':
-				$avatar = get_avatar( $item['ID'], 32 );
-				$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
-				$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
-				$output = $avatar . ' <strong>' . $userlink . '</strong><br />';
-
-				// Set up the hover actions for this user
-				$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
-				$action_count = count( $actions );
-				$i            = 0;
-				if ( $action_count ) {
-					$output .= '<div class="row-actions">';
-					foreach ( $actions as $action => $link ) {
-						++$i;
-						( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-						$output .= "<span class='$action'>$link$sep</span>";
-					}
-					$output .= '</div>';
-				}
-				return $output;
-			case 'fee':
-				$fee = '';
-				// If there is no payment for the level, show a dash.
-				if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
-					$fee .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
-				} else {
-					// Display the member's initial payment.
-					if ( (float)$item['initial_payment'] > 0 ) {
-						$fee .= pmpro_formatPrice( $item['initial_payment'] );
-					}
-					// If there is a recurring payment, show a plus sign.
-					if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
-						$fee .= esc_html( ' + ', 'paid-memberships-pro' );
-					}
-					// If there is a recurring payment, show the recurring payment amount and cycle.
-					if ( (float)$item['billing_amount'] > 0 ) {
-						$fee .= pmpro_formatPrice( $item['billing_amount'] );
-						$fee .= esc_html( ' per ', 'paid-memberships-pro' );
-						if ( $item['cycle_number'] > 1 ) {
-							$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
-						} else {
-							$fee .= $item['cycle_period'];
-						}
-					}
-				}
-				return $fee;
-			case 'joindate':
-				$joindate = $item[ $column_name ];
-				return date_i18n( get_option('date_format'), $joindate );
-			case 'startdate':
-				$startdate = $item[ $column_name ];
-				return date_i18n( get_option('date_format'), $startdate );
-			case 'enddate':
-				$user_object = get_userdata( $item['ID'] );
-				if ( 0 == $item['enddate'] ) {
-					return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
-				} else {
-					return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
-				}
-			default:
-				if ( isset( $item[$column_name] ) ) {
-					return $item[$column_name];
-				} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
-					// Re-implementing old hook, will be deprecated.
-					$user_object = get_userdata( $item['ID'] );
-					ob_start();
-					do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
-					$extra_cols = ob_get_clean();
-					preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
-					$custom_field_num = explode( 'custom_field_', $column_name )[1];
-					if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
-						return $matches[1][ intval( $custom_field_num ) ];
-					}
-				}
+		if ( isset( $item[ $column_name ] ) ) {
+			// If the user is adding content via the "pmpro_members_list_user" filter.
+			echo( esc_html( $item[ $column_name ] ) );
+		} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
+			// If the user is adding content via the "pmpro_memberslist_extra_cols_body" hook.
+			// Re-implementing old hook, will be deprecated.
+			$user_object = get_userdata( $item['ID'] );
+			ob_start();
+			do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
+			$extra_cols = ob_get_clean();
+			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
+			$custom_field_num = explode( 'custom_field_', $column_name )[1];
+			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
+				echo( $matches[1][ intval( $custom_field_num ) ] );
+			}
+		} else {
+			// The preferred ways of doing things.
+			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'] );
 		}
 	}
 
 	/**
-	 * Get value for checkbox column.
+	 * Get value for ID column.
 	 *
-	 * The special 'cb' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
-	protected function column_cb( $item ) {
-		return sprintf(
-			'<label class="screen-reader-text" for="user_' . $item['ID'] . '">' . sprintf( __( 'Select %s' ), $item['user_login'] ) . '</label>'
-			. "<input type='checkbox' name='users[]' id='user_{$item['ID']}' value='{$item['ID']}' />"
-		);
+	public function column_ID( $item ) {
+		return $item['ID'];
+	}
+
+	/**
+	 * Get value for username column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_username( $item ) {
+		$avatar   = get_avatar( $item['ID'], 32 );
+		$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
+		$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
+		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
+
+		// Set up the hover actions for this user.
+		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
+		$action_count = count( $actions );
+		$i            = 0;
+		if ( $action_count ) {
+			$output .= '<div class="row-actions">';
+			foreach ( $actions as $action => $link ) {
+				++$i;
+				( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+				$output .= "<span class='$action'>$link$sep</span>";
+			}
+			$output .= '</div>';
+		}
+		return $output;
 	}
 
 	/**
 	 * Get value for first name column.
 	 *
-	 * The special 'first_name' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_first_name( $item ) {
@@ -564,9 +469,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Get value for last name column.
 	 *
-	 * The special 'last_name' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_last_name( $item ) {
@@ -575,72 +478,125 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get value for display_name column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insdisplay_namee the column <td>.
+	 */
+	public function column_display_name( $item ) {
+		return $item['display_name'];
+	}
+
+	/**
+	 * Get value for user_email column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insuser_emaile the column <td>.
+	 */
+	public function column_user_email( $item ) {
+		return $item['user_email'];
+	}
+
+	/**
 	 * Get value for Address column.
 	 *
-	 * The special 'address' column
-	 *
-	 * @param object $item A row's data
+	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_address( $item ) {
 		$user_object = get_userdata( $item['ID'] );
 		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
-		// return ( $user_object->last_name ?: '---' );
 	}
 
-	public function get_some_actions() {
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
+	/**
+	 * Get value for membership column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insmembershipe the column <td>.
+	 */
+	public function column_membership( $item ) {
+		return $item['membership'];
+	}
+
+	/**
+	 * Get value for membership_id column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed insmembership_ide the column <td>.
+	 */
+	public function column_membership_id( $item ) {
+		return $item['membership_id'];
+	}
+
+	/**
+	 * Get value for fee column.
+	 *
+	 * @param object $item A row's data.
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_fee( $item ) {
+		$fee = '';
+		// If there is no payment for the level, show a dash.
+		if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
+			$fee .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
 		} else {
-			$l = false;
-		}
-		?>
-		<ul class="subsubsub">
-		<li>
-			<?php _e( 'Show', 'paid-memberships-pro' ); ?>
-			<select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" 
-				<?php
-				if ( ! $l ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'All Levels', 'paid-memberships-pro' ); ?></option>
-				<?php
-					$levels = $wpdb->get_results(
-						"
-						SELECT id, name 
-						FROM $wpdb->pmpro_membership_levels 
-						ORDER BY name
-						"
-					);
-				foreach ( $levels as $level ) {
-					?>
-					<option value="<?php echo $level->id; ?>" 
-					  <?php
-						if ( $l == $level->id ) {
-							?>
-						selected="selected"<?php } ?>><?php echo $level->name; ?></option>
-					<?php
+			// Display the member's initial payment.
+			if ( (float)$item['initial_payment'] > 0 ) {
+				$fee .= pmpro_formatPrice( $item['initial_payment'] );
+			}
+			// If there is a recurring payment, show a plus sign.
+			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
+				$fee .= esc_html( ' + ', 'paid-memberships-pro' );
+			}
+			// If there is a recurring payment, show the recurring payment amount and cycle.
+			if ( (float)$item['billing_amount'] > 0 ) {
+				$fee .= pmpro_formatPrice( $item['billing_amount'] );
+				$fee .= esc_html( ' per ', 'paid-memberships-pro' );
+				if ( $item['cycle_number'] > 1 ) {
+					$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
+				} else {
+					$fee .= $item['cycle_period'];
 				}
-				?>
-				<option value="cancelled" 
-				<?php
-				if ( $l == 'cancelled' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Cancelled Members', 'paid-memberships-pro' ); ?></option>
-				<option value="expired" 
-				<?php
-				if ( $l == 'expired' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Expired Members', 'paid-memberships-pro' ); ?></option>
-				<option value="oldmembers" 
-				<?php
-				if ( $l == 'oldmembers' ) {
-					?>
-					selected="selected"<?php } ?>><?php _e( 'Old Members', 'paid-memberships-pro' ); ?></option>
-			</select>
-		</li>
-	</ul>
-		<?php
+			}
+		}
+		return $fee;
+	}
+
+	/**
+	 * Get value for joindate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_joindate( $item ) {
+		$joindate = $item[ 'joindate' ];
+		return date_i18n( get_option('date_format'), $joindate );
+	}
+
+	/**
+	 * Get value for startdate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_startdate( $item ) {
+		$startdate = $item[ 'startdate' ];
+		return date_i18n( get_option('date_format'), $startdate );
+	}
+
+	/**
+	 * Get value for enddate column.
+	 *
+	 * @param object $item A row's data
+	 * @return string Text to be placed inside the column <td>.
+	 */
+	public function column_enddate( $item ) {
+		$user_object = get_userdata( $item['ID'] );
+		if ( 0 == $item['enddate'] ) {
+			return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
+		} else {
+			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
+		}
 	}
 
 	/**
@@ -678,78 +634,5 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( $which == 'bottom' ) {
 			// The code that goes after the table is there
 		}
-	}
-
-	/**
-	 * Process actions triggered by the user
-	 *
-	 * @since 2.2.0
-	 */
-	public function handle_table_actions() {
-		/**
-		 * Note: Table bulk_actions can be identified by checking $_REQUEST['action'] and $_REQUEST['action2']
-		 *
-		 * action - is set if checkbox from top-most select-all is set, otherwise returns -1
-		 * action2 - is set if checkbox the bottom-most select-all checkbox is set, otherwise returns -1
-		 */
-
-		// check for individual row actions
-		$the_table_action = $this->current_action();
-
-		if ( 'view_usermeta' === $the_table_action ) {
-			$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
-			// verify the nonce.
-			if ( ! wp_verify_nonce( $nonce, 'view_usermeta_nonce' ) ) {
-				$this->invalid_nonce_redirect();
-			} else {
-				$this->graceful_exit();
-			}
-		}
-
-		// check for table bulk actions
-		if ( ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'bulk-download' ) || ( isset( $_REQUEST['action2'] ) && $_REQUEST['action2'] === 'bulk-download' ) ) {
-
-			// verify the nonce.
-			$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
-			/**
-			 * Note: the nonce field is set by the parent class
-			 * wp_nonce_field( 'bulk-' . $this->_args['plural'] );
-			 */
-			if ( ! wp_verify_nonce( $nonce, 'bulk-users' ) ) {
-				$this->invalid_nonce_redirect();
-			} else {
-				$this->page_bulk_download( $_REQUEST['users'] );
-				$this->graceful_exit();
-			}
-		}
-	}
-
-	/**
-	 * Stop execution and exit
-	 *
-	 * @since 2.2.0
-	 *
-	 * @return void
-	 */
-	public function graceful_exit() {
-		exit;
-	}
-
-	/**
-	 * Die when the nonce check fails.
-	 *
-	 * @since 2.2.0
-	 *
-	 * @return void
-	 */
-	public function invalid_nonce_redirect() {
-		wp_die(
-			__( 'Invalid Nonce', $this->plugin_text_domain ),
-			__( 'Error', $this->plugin_text_domain ),
-			array(
-				'response'  => 403,
-				'back_link' => esc_url( add_query_arg( array( 'page' => wp_unslash( $_REQUEST['page'] ) ), admin_url( 'pmpro-membershiplevels' ) ) ),
-			)
-		);
 	}
 }

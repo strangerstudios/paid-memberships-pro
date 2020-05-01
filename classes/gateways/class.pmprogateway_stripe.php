@@ -1459,7 +1459,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//we really want to test against the order codes of all orders with the same subscription_transaction_id (customer id)
-		$codes = $wpdb->get_col( "SELECT code FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $order->user_id . "' AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' AND status NOT IN('refunded', 'review', 'token', 'error')" );
+		$codes = $wpdb->get_col( "SELECT code FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $order->user_id ) . "' AND subscription_transaction_id = '" . esc_sql( $order->subscription_transaction_id ) . "' AND status NOT IN('refunded', 'review', 'token', 'error')" );
 
 		//find the one for this order
 		foreach ( $subscriptions->data as $sub ) {
@@ -1470,6 +1470,21 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//didn't find anything yet
 		return false;
+	}
+
+	/**
+	 * Get subscription status from the Gateway.
+	 *
+	 * @since 2.3
+	 */
+	function getSubscriptionStatus( &$order ) {
+		$subscription = $this->getSubscription( $order );
+		
+		if ( ! empty( $subscription ) ) {
+			return $subscription->status;
+		} else {
+			return false;
+		}
 	}
 
 	/**

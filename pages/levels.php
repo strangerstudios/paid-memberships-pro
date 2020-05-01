@@ -92,12 +92,10 @@ if($pmpro_msg)
 	?>
 </tbody>
 </table>
-<nav id="nav-below" class="navigation" role="navigation">
-	<div class="nav-previous alignleft">
-		<?php if(!empty($current_user->membership_level->ID)) { ?>
-			<a href="<?php echo pmpro_url("account")?>" id="pmpro_levels-return-account"><?php _e('&larr; Return to Your Account', 'paid-memberships-pro' );?></a>
-		<?php } else { ?>
-			<a href="<?php echo home_url()?>" id="pmpro_levels-return-home"><?php _e('&larr; Return to Home', 'paid-memberships-pro' );?></a>
-		<?php } ?>
-	</div>
-</nav>
+<p class="pmpro_actions_nav">
+	<?php if(!empty($current_user->membership_level->ID)) { ?>
+		<a href="<?php echo pmpro_url("account")?>" id="pmpro_levels-return-account"><?php _e('&larr; Return to Your Account', 'paid-memberships-pro' );?></a>
+	<?php } else { ?>
+		<a href="<?php echo home_url()?>" id="pmpro_levels-return-home"><?php _e('&larr; Return to Home', 'paid-memberships-pro' );?></a>
+	<?php } ?>
+</p> <!-- end pmpro_actions_nav -->

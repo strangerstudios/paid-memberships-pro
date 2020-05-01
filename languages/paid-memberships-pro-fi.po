@@ -2663,11 +2663,11 @@ msgid "Phone"
 msgstr "Puhelinnumero"
 
 #: pages/billing.php:206 pages/checkout.php:216 pages/checkout.php:449
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "﻿Sähköposti"
 
 #: pages/billing.php:210 pages/checkout.php:458
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "﻿Vahvista Sähköposti"
 
 #: pages/billing.php:230
@@ -2765,7 +2765,7 @@ msgid "Confirm Password"
 msgstr "Vahvista salasana"
 
 #: pages/checkout.php:225
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Vahvista sähköpostiosoite"
 
 #: pages/checkout.php:244

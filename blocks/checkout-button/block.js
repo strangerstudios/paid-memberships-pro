@@ -8,8 +8,6 @@
 /**
  * Block dependencies
  */
-import './editor.css';
-import classnames from 'classnames';
 import Inspector from './inspector';
 
 /**
@@ -18,16 +16,11 @@ import Inspector from './inspector';
 const { __ } = wp.i18n;
 const {
     registerBlockType,
-    BlockControls,
 } = wp.blocks;
 const {
-    PanelBody,
     TextControl,
     SelectControl,
 } = wp.components;
-const {
-    InspectorControls,
-} = wp.editor;
 
 /**
  * Register block
@@ -67,20 +60,17 @@ export default registerBlockType(
              const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div
-                    className={ className }
-                >
+                <div className={ className }>
                   <a class={css_class} >{text}</a>
                 </div>,
-                isSelected && <div>
-                  <br/>
+                isSelected && <div className="pmpro-block-element">
                    <TextControl
                        label={ __( 'Button Text', 'paid-memberships-pro' ) }
                        value={ text }
                        onChange={ text => setAttributes( { text } ) }
                    />
                    <SelectControl
-                       label={ __( 'Level ID', 'paid-memberships-pro' ) }
+                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
                        options={ window.pmpro.all_level_values_and_labels }

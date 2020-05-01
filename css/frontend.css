@@ -104,10 +104,12 @@ input[type="button"]#other_discount_code_button:focus {
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
-form.pmpro_form .pmpro_checkout-fields div {
+form.pmpro_form .pmpro_checkout-fields div,
+#loginform p {
 	margin: 0 0 1em 0;
 }
-form.pmpro_form label {
+form.pmpro_form label,
+#loginform label {
 	font-weight: 700;
 	display: block;
 	margin: 0;
@@ -141,7 +143,9 @@ form.pmpro_form input[type=checkbox]#tos {
 }
 form.pmpro_form .input,
 form.pmpro_form textarea,
-form.pmpro_form select {
+form.pmpro_form select,
+#loginform input[type=text],
+#loginform input[type=password] {
 	display: inline-block;
 	max-width: 90%;
 }
@@ -161,16 +165,41 @@ form.pmpro_form .pmpro_captcha div {
 	clear: none;
 	margin: 0;
 }
-form.pmpro_form .pmpro_submit{
+form.pmpro_form .pmpro_submit {
 	margin-top: 1em;
-	text-align: right;
 }
 form.pmpro_form #pmpro_processing_message {
 	color: #999;
 	display: block;
 	font-style: italic;
 	margin: 1em 0 0 0;
-	text-align: right;
+	text-align: left;
+}
+
+/* Lot Password Frontend Form */
+form.pmpro_form .pmpro_lost_password-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Member Profile Edit Frontend Form */
+form.pmpro_form .pmpro_member_profile_edit-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Change Password Frontend Form */
+form.pmpro_form .pmpro_change_password-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Password Strength Meter on Frontend Forms */
+.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+	display: inline-block;
+	max-width: 150px;
+}
+.pmpro_reset_password_wrap form.pmpro_form .lite,
+form.pmpro_form .pmpro_change_password-fields .lite {
+	margin-top: 10px;
 }
 
 /*--------------------------------------------------
@@ -220,8 +249,9 @@ textarea.pmpro_error {
 	border-color: #faebcc;
 	color: #8a6d3b;
 }
-.pmpro_content_message a {
-	margin: 5px 5px 0 0;
+.pmpro_content_message a,
+.pmpro_content_message a:link {
+	margin: 10px 10px 0 0;
 }
 .pmpro_message a {
 	color: #245269;
@@ -241,6 +271,9 @@ input.pmpro_error {
 }
 select.pmpro_error {
 	background-image: none;
+}
+.pmpro_message p:last-child {
+	margin-bottom: 0;
 }
 
 #pmpro_message_bottom {
@@ -272,7 +305,7 @@ select.pmpro_error {
 	display: grid;
 	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
-	grid-gap: 1em;
+	grid-column-gap: 1em;
 }
 #pmpro_license {
 	background: #FFF;
@@ -294,7 +327,7 @@ select.pmpro_error {
 		"AccountNumber AccountNumber"
 		"Expiry CVV"
 		"DiscountCode DiscountCode";
-	grid-gap: 1em;
+	grid-column-gap: 1em;
 	-ms-grid-columns: 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr;
 }
@@ -397,7 +430,6 @@ select.pmpro_error {
 
 .pmpro_actionlinks a {
 	display: inline-block;
-	margin-right: .5rem;
 	text-decoration: none;
 }
 .pmpro_actionlinks a:last-child {
@@ -412,6 +444,119 @@ li.pmpro_more {
 	padding-left: 0;
 	text-align: center;
 }
+
+/*---------------------------------------
+	Membership Billing Page
+---------------------------------------*/
+.pmpro_billing_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Log In and Password Reset Pages
+---------------------------------------*/
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap,
+.pmpro_reset_password_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	This section based on similar rules
+	in wp-admin/css/forms.css
+---------------------------------------*/
+#pass-strength-result {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #23282d;
+	margin: -1px 1px 5px;
+	padding: 3px 5px;
+	text-align: center;
+	width: 25em;
+	box-sizing: border-box;
+	opacity: 0;
+}
+
+#pass-strength-result.short {
+	background-color: #f1adad;
+	border-color: #e35b5b;
+	opacity: 1;
+}
+
+#pass-strength-result.bad {
+	background-color: #fbc5a9;
+	border-color: #f78b53;
+	opacity: 1;
+}
+
+#pass-strength-result.good {
+	background-color: #ffe399;
+	border-color: #ffc733;
+	opacity: 1;
+}
+
+#pass-strength-result.strong {
+	background-color: #c1e1b9;
+	border-color: #83c373;
+	opacity: 1;
+}
+
+.pass1.short, .pass1-text.short {
+	border-color: #e35b5b;
+}
+
+.pass1.bad, .pass1-text.bad {
+	border-color: #f78b53;
+}
+
+.pass1.good, .pass1-text.good {
+	border-color: #ffc733;
+}
+
+.pass1.strong, .pass1-text.strong {
+	border-color: #83c373;
+}
+
+.pw-weak {
+	display: none;
+}
+
+.indicator-hint {
+	padding-top: 8px;
+}
+
+.wp-pwd [type="text"],
+.wp-pwd [type="password"] {
+	margin-bottom: 0;
+	/* Same height as the buttons */
+	min-height: 30px;
+}
+
+/* Hide the Edge "reveal password" native button */
+.wp-pwd input::-ms-reveal {
+	display: none;
+}
+
+.pass1-text,
+.show-password #pass1 {
+	display: none;
+}
+
+.pass1-text::-ms-clear {
+	display: none;
+}
+
+.show-password #pass1-text {
+	display: inline-block;
+}
+
+/*---------------------------------------
+	Member Profile Edit Page
+---------------------------------------*/
+.pmpro_member_profile_edit_wrap,
+.pmpro_change_password_wrap {
+	margin-bottom: 1em;
+}
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
@@ -425,6 +570,24 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
+.pmpro_actions_nav {
+	text-align: center;
+}
+.pmpro_actions_nav-left {
+	display: block;
+	float: left;
+	width: 48%;
+	text-align: left;
+}
+.pmpro_actions_nav-right {
+	display: block;
+	float: right;
+	width: 48%;
+	text-align: right;
+}
+.pmpro-levels .pmpro_actions_nav {
+	text-align: left;
+}
 .pmpro_a-right {
 	float: right;
 	font-size: 11px;
@@ -480,8 +643,16 @@ li.pmpro_more {
 		display: block;
 		margin-bottom: 1em;
 	}
-	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
+	form.pmpro_form input[type=text].input,
+	form.pmpro_form input[type=password].input,
+	.pmpro_login_wrap form#loginform input[type=text].input,
+	.pmpro_login_wrap form#loginform input[type=password].input {
 		width: 90%;
+	}
+	/* Password Strength Meter on Frontend Forms */
+	.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+		max-width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
@@ -489,7 +660,8 @@ li.pmpro_more {
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
 	}
-	form.pmpro_form .pmpro_btn {
+	form.pmpro_form .pmpro_btn,
+	.pmpro_login_wrap #loginform input[type=submit] {
 		display: block;
 		width: 100%;
 	}

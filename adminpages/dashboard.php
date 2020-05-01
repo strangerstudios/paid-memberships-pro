@@ -172,7 +172,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<?php } elseif ( ! pmpro_license_isValid() ) { ?>
     			<p class="pmpro_message pmpro_alert">
     				<strong><?php echo esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
-    				<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' );?>
+    				<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/membership-account/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' );?>
     		<?php } else { ?>
     			<p class="pmpro_message pmpro_success"><?php printf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></p>
     		<?php } ?>
@@ -318,10 +318,16 @@ function pmpro_dashboard_report_recent_orders_callback() {
                             <?php } ?>
         				</td>
                         <td>
-                            <?php
-                                $level = pmpro_getLevel( $order->membership_id );
-                                echo $level->name;
-                            ?>
+							<?php
+								$level = pmpro_getLevel( $order->membership_id );
+								if ( ! empty( $level ) ) {
+									echo $level->name;
+								} elseif ( $order->membership_id > 0 ) { ?>
+									[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+								<?php } else { ?>
+									[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+								<?php }
+							?>
                         </td>
         				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
         				<td>
