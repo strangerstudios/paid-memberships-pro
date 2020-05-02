@@ -199,6 +199,10 @@ function pmpro_login_form_hidden_field( $html ) {
 function pmpro_login_the_title( $title, $id = NULL ) {
 	global $pmpro_pages;
 
+	if ( is_admin() ) {
+		return $title;
+	}
+	
 	if ( ! is_main_query() || ! is_page( $id ) ) {
 		return $title;
 	}
