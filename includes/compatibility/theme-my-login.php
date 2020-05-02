@@ -56,7 +56,7 @@ function pmpro_tml_login_head() {
 	global $pmpro_pages;
 	$login_redirect = apply_filters( "pmpro_login_redirect", true );
 	
-	if ( ! is_user_logged_in() && pmpro_is_login_page() && is_page( $pmpro_pages['account'] ) ) {
+	if ( ! is_user_logged_in() && pmpro_is_login_page() && ! empty( $pmpro_pages['account'] ) && is_page( $pmpro_pages['account'] ) ) {
 		if ( function_exists( 'tml_get_action_url') ) {
 			$login_url = tml_get_action_url( 'login' ); // support 7.x
 		} else {

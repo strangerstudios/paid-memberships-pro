@@ -54,10 +54,12 @@ function pmpro_enqueue_scripts() {
     }
     
     // Change Password page JS 
-	$is_change_pass_page = is_page( $pmpro_pages['member_profile_edit'] )
+	$is_change_pass_page = ! empty( $pmpro_pages['member_profile_edit'] )
+							&& is_page( $pmpro_pages['member_profile_edit'] )
 							&& ! empty( $_REQUEST['view'] )
 							&& $_REQUEST['view'] === 'change-password';
-	$is_reset_pass_page = is_page( $pmpro_pages['login'] )
+	$is_reset_pass_page = ! empty( $pmpro_pages['login'] )
+							&& is_page( $pmpro_pages['login'] )
 							&& ! empty( $_REQUEST['action'] )
 							&& $_REQUEST['action'] === 'rp';
 		
