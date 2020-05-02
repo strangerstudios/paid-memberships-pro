@@ -361,22 +361,27 @@ function pmpro_ipnExit() {
 
 		echo $logstr;
 
-		//log in file or email?
-		if ( defined( 'PMPRO_IPN_DEBUG' ) && PMPRO_IPN_DEBUG === "log" ) {
-			//file
-			$loghandle = fopen( dirname( __FILE__ ) . "/../logs/ipn.txt", "a+" );
-			fwrite( $loghandle, $logstr );
-			fclose( $loghandle );
-		} elseif ( defined( 'PMPRO_IPN_DEBUG' ) ) {
-			//email
-			if ( strpos( PMPRO_IPN_DEBUG, "@" ) ) {
-				$log_email = PMPRO_IPN_DEBUG;
-			}    //constant defines a specific email address
-			else {
-				$log_email = get_option( "admin_email" );
+		//log or dont log? log in file or email?
+		//- dont log if constant is undefined or defined but false
+		//- log to file if constant is set to TRUE or 'log'
+		//- log to file if constant is defined to a valid email address
+		if ( defined( 'PMPRO_IPN_DEBUG' ) ) {
+			if( PMPRO_IPN_DEBUG === false ){
+				//dont log here. false mean no.
+				//should avoid counterintuitive interpretation of false.
+			} elseif ( PMPRO_IPN_DEBUG === "log" ) {
+				//file
+				$logfile = apply_filters( 'pmpro_ipn_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+				$loghandle = fopen( $logfile, "a+" );
+				fwrite( $loghandle, $logstr );
+				fclose( $loghandle );
+			} elseif ( is_email( PMPRO_IPN_DEBUG ) ) {
+				//email to specified address
+				wp_mail( PMPRO_IPN_DEBUG, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
+			} elseif ( !!PMPRO_IPN_DEBUG ){
+				//email to admin
+				wp_mail( get_option( "admin_email" ), get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
 			}
-			
-			wp_mail( $log_email, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );			
 		}
 	}
 
