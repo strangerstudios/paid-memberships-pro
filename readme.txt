@@ -153,6 +153,9 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.3.1 =
+* BUG FIX: Fixed issue with BuddyBoss and other themes/plugins that use the_title filter with only one parameter.
+
 = 2.3 - 2020-05-01 =
 * FEATURE: Added frontend login and password reset.
 * FEATURE: Added frontend user profile editing.
