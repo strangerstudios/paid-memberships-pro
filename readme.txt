@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.1
-Stable tag: 2.3
+Stable tag: 2.3.1
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,7 +153,7 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.3.1 =
+= 2.3.1 2020-05-01 =
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
 * BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
 * BUG FIX: Fixed issue with BuddyBoss and other themes/plugins that use the_title filter with only one parameter.
