@@ -155,6 +155,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 = 2.3.1 =
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
+* BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
 * BUG FIX: Fixed issue with BuddyBoss and other themes/plugins that use the_title filter with only one parameter.
 
 = 2.3 - 2020-05-01 =
