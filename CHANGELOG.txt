@@ -3,6 +3,7 @@
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
 * BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
 * BUG FIX: Fixed issue with BuddyBoss and other themes/plugins that use the_title filter with only one parameter.
+* BUG FIX: Fixed error when trying to check if is_main_query in the admin or with certain themes.
 
 = 2.3 - 2020-05-01 =
 * FEATURE: Added frontend login and password reset.
