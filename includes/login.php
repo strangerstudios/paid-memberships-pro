@@ -203,7 +203,7 @@ function pmpro_login_the_title( $title, $id = NULL ) {
 		return $title;
 	}
 
-	if ( empty( $pmpro_pages ) || ! is_page( $pmpro_pages['login'] ) ) {
+	if ( empty( $pmpro_pages ) || empty( $pmpro_pages['login'] ) || ! is_page( $pmpro_pages['login'] ) ) {
 		return $title;
 	}
 
