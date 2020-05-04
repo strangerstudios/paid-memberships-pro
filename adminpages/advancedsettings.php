@@ -341,12 +341,11 @@
 				<tr id="hideads_explanation" <?php if($hideads < 2) { ?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top">&nbsp;</th>
 					<td>
-						<p><?php _e('Ads from the following plugins will be automatically turned off', 'paid-memberships-pro' );?>: <em>Easy Adsense</em>, ...</p>
 						<p><?php _e('To hide ads in your template code, use code like the following', 'paid-memberships-pro' );?>:</p>
 					<pre lang="PHP">
-	if ( pmpro_displayAds() ) {
-		//insert ad code here
-	}</pre>
+if ( pmpro_displayAds() ) {
+	//insert ad code here
+}</pre>
 					</td>
 				</tr>			
 				<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
