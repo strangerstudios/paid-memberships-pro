@@ -24,7 +24,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 	 *
 	 * @param string $frequency to send emails at. Determines length of time reported.
 	 */
-	public function sendAdminActivity( $frequency = '' ) {
+	public function sendAdminActivity( $frequency = '', $recipient = null ) {
 		global $wpdb, $pmpro_levels;
 
 		if ( ! in_array( $frequency, array( 'day', 'week', 'month', 'never' ), true ) ) {
@@ -400,7 +400,11 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			$admin_activity_email_body .= $content;
 		}
 
-		$this->email    = get_bloginfo( 'admin_email' );
+		if ( empty( $recipient ) ) {
+			$recipient = get_bloginfo( 'admin_email' );
+		}
+		$this->email = $recipient;
+
 		$this->subject  = sprintf( __( '[%1$s] Paid Memberships Pro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), ucwords( $term ), $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body     = $admin_activity_email_body;
