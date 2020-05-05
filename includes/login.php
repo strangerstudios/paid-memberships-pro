@@ -197,17 +197,13 @@ function pmpro_login_form_hidden_field( $html ) {
  * @since 2.3
  */
 function pmpro_login_the_title( $title, $id = NULL ) {
-	global $pmpro_pages;
+	global $pmpro_pages, $wp_query;
 
 	if ( is_admin() ) {
 		return $title;
 	}
 
-	if ( ! is_page( $id ) ) {
-		return $title;
-	}
-
-	if ( in_the_loop() && ! is_main_query() ) {
+	if ( $wp_query !== null && ( ! is_main_query() || ! is_page( $id ) ) ) {
 		return $title;
 	}
 
