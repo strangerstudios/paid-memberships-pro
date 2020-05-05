@@ -202,8 +202,12 @@ function pmpro_login_the_title( $title, $id = NULL ) {
 	if ( is_admin() ) {
 		return $title;
 	}
-	
-	if ( ! is_main_query() || ! is_page( $id ) ) {
+
+	if ( ! is_page( $id ) ) {
+		return $title;
+	}
+
+	if ( in_the_loop() && ! is_main_query() ) {
 		return $title;
 	}
 
