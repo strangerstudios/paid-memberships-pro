@@ -203,7 +203,7 @@ function pmpro_login_the_title( $title, $id = NULL ) {
 		return $title;
 	}
 
-	if ( $wp_query !== null && ( ! is_main_query() || ! is_page( $id ) ) ) {
+	if ( isset( $wp_query ) && ( ! is_main_query() || ! is_page( $id ) ) ) {
 		return $title;
 	}
 
