@@ -1,4 +1,10 @@
 == Changelog ==
+= 2.3.2 2020-05-07 =
+* BUG FIX: Fixed errors calling is_main_query() that came up with certain themes.
+* BUG FIX: Fixed typo in the pmpro_account_profile_action_links filter.
+* BUG FIX/ENHANCEMENT: Added a new force parameter to the pmpro_getAllLevels() function. This is used by the Multisite Membership Add On to fix an issue where levels were missing or incorrect on the subsites.
+* ENHANCEMENT: Removed mention of the ezAdsense plugin, which has been discontinued.
+
 = 2.3.1 2020-05-01 =
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
 * BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
