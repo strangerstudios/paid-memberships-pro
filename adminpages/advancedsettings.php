@@ -343,7 +343,7 @@
 					<td>
 						<p><?php _e('To hide ads in your template code, use code like the following', 'paid-memberships-pro' );?>:</p>
 					<pre lang="PHP">
-if ( pmpro_displayAds() ) {
+if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
 					</td>
