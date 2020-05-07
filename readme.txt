@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.1
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,12 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.3.2 2020-05-07 =
+* BUG FIX: Fixed errors calling is_main_query() that came up with certain themes.
+* BUG FIX: Fixed typo in the pmpro_account_profile_action_links filter.
+* BUG FIX/ENHANCEMENT: Added a new force parameter to the pmpro_getAllLevels() function. This is used by the Multisite Membership Add On to fix an issue where levels were missing or incorrect on the subsites.
+* ENHANCEMENT: Removed mention of the ezAdsense plugin, which has been discontinued.
+
 = 2.3.1 2020-05-01 =
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
 * BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
