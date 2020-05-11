@@ -139,7 +139,7 @@ if ( ! defined( 'SITEURL'  ) ) {
 if ( ! defined( 'SECUREURL'  ) ) {
 	define( 'SECUREURL', str_replace( 'http://', 'https://', get_bloginfo( 'wpurl' ) ) );
 }
-define( 'PMPRO_URL', WP_PLUGIN_URL . '/paid-memberships-pro' );
+define( 'PMPRO_URL', plugins_url( '', PMPRO_BASE_FILE ) );
 define( 'PMPRO_DOMAIN', pmpro_getDomainFromURL( site_url() ) );
 define( 'PAYPAL_BN_CODE', 'PaidMembershipsPro_SP' );
 
