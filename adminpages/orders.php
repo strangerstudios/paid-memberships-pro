@@ -291,11 +291,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 
 	// save
 	if ( $order->saveOrder() !== false && $nonceokay ) {
-		// also update the discount code if needed
-		if( isset( $_REQUEST['discount_code_id'] ) ) {
-			$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
-		}
-
+		$order_id = $order->id;
+		
 		// handle timestamp
 		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ), intval( $_POST['ts_hour'] ) . ':' . intval( $_POST['ts_minute'] ) . ':00' ) !== false ) {
 			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
@@ -307,6 +304,11 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
+	}
+	
+	// also update the discount code if needed
+	if( isset( $_REQUEST['discount_code_id'] ) ) {
+		$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
 	}
 } else {
 	// order passed?
