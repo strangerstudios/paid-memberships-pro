@@ -378,7 +378,7 @@ function pmpro_ipnExit() {
 			} elseif ( is_email( PMPRO_IPN_DEBUG ) ) {
 				//email to specified address
 				wp_mail( PMPRO_IPN_DEBUG, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
-			} elseif ( !!PMPRO_IPN_DEBUG ){
+			} else {
 				//email to admin
 				wp_mail( get_option( "admin_email" ), get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
 			}
