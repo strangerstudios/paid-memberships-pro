@@ -69,10 +69,22 @@ function pmpro_enqueue_scripts() {
                             array( 'jquery', 'password-strength-meter' ),
                             PMPRO_VERSION );
 
+        /**
+         * Filter to allow weak passwords on the 
+         * change password and reset password forms.
+         * At this time, this only disables the JS check on the frontend.
+         * There is no backend check for weak passwords on those forms.
+         * 
+         * @since 2.3.3
+         *
+         * @param bool $allow_weak_passwords    Whether to allow weak passwords.
+         */
+        $allow_weak_passwords = apply_filters( 'pmpro_allow_weak_passwords', false );
+
         wp_localize_script( 'pmpro_login', 'pmpro', array(
             'pmpro_login_page' => 'changepassword',
 			'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
-        ));
+            'allow_weak_passwords' => $allow_weak_passwords ) );
         wp_enqueue_script( 'pmpro_login' );	
     }
 }

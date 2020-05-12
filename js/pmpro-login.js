@@ -29,11 +29,15 @@ jQuery(document).ready(function(){
 		switch ( strength ) {
 			case -1:
 				indicator.addClass( 'empty' ).html( '&nbsp;' );
-				submitbutton.prop( 'disabled', true );
+				if ( pmpro.allow_weak_passwords === '' ) {
+					submitbutton.prop( 'disabled', true );
+				}
 				break;
 			case 2:
 				indicator.addClass( 'bad' ).html( pwsL10n.bad );
-				submitbutton.prop( 'disabled', true );
+				if ( pmpro.allow_weak_passwords === '' ) {
+					submitbutton.prop( 'disabled', true );
+				}
 				break;
 			case 3:
 				indicator.addClass( 'good' ).html( pwsL10n.good );
@@ -49,7 +53,9 @@ jQuery(document).ready(function(){
 				break;
 			default:
 				indicator.addClass( 'short' ).html( pwsL10n['short'] );
-				submitbutton.prop( 'disabled', true );
+				if ( pmpro.allow_weak_passwords === '' ) {
+					submitbutton.prop( 'disabled', true );
+				}
 		}
 	}
 	

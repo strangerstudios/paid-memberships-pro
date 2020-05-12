@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.1
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,13 +153,24 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.3.2 2020-05-07 =
+= 2.3.3 - 2020-05-12 =
+* SECURITY: Fixed SQL injection vulnerability when logged in as an administrator and adding new orders in the dashboard. JVN#20248858 (Thanks, Kenichi Okuno of Mitsui Bussan Secure Directions, Inc)
+* SECURITY: Making sure to properly escape all values on the add/edit order form in the dashboard.
+* BUG FIX: Now properly setting the order status to "error" when an initial payment fails when using PayPal Express. Before the order status would be set as "cancelled", which would count the order toward reports and make it harder to find orders that had errors. (Thanks, Mirco Babini)
+* BUG FIX: Fixed issue with the PMPro logo and some other assets loading over the wrong schema (http vs https) in some cases.
+* BUG FIX: Fixed issue where the chosen discount code was not shown after submitting when adding a new order through the dashboard.
+* BUG FIX/ENHANCEMENT: Using "PMPro" in the admin activity email subject to keep the line shorter and avoid issues when replacing the word "member" via gettext.
+* ENHANCEMENT: Added a pmpro_allow_weak_passwords filter. You can set this to return true (like this https://gist.github.com/ideadude/5a12119b9ce1c2aad87b2d69cb8f9505) to allow weak passwords on the change password and reset password pages. Note that at this time, weak passwords are still allowed no matter the value of this filter. We expect to change that in the future. For now, you can use our PMPro Strong Passwords plugin to force strong passwords at checkout.
+* REFACTOR: Updated the logic around checking the PMPRO_IPN_DEBUG constant in the IPN handler. (Thanks, Mirco Babini)
+
+= 2.3.2 - 2020-05-07 =
 * BUG FIX: Fixed errors calling is_main_query() that came up with certain themes.
 * BUG FIX: Fixed typo in the pmpro_account_profile_action_links filter.
 * BUG FIX/ENHANCEMENT: Added a new force parameter to the pmpro_getAllLevels() function. This is used by the Multisite Membership Add On to fix an issue where levels were missing or incorrect on the subsites.
 * ENHANCEMENT: Removed mention of the ezAdsense plugin, which has been discontinued.
+* ENHANCEMENT: Added $recipient param in sendAdminActivity() function so you can send additional activity emails like this https://gist.github.com/dparker1005/6bf650370a12aef44adf8c8c26d3e906
 
-= 2.3.1 2020-05-01 =
+= 2.3.1 - 2020-05-01 =
 * BUG FIX: Fixed infinite redirect issue if no account page was set. Fixed a few other places where we do is_page() type checks just in case.
 * BUG FIX: Fixed issue where all pages were retitled to Welcome when logged in, if no login page was set.
 * BUG FIX: Fixed issue with BuddyBoss and other themes/plugins that use the_title filter with only one parameter.
