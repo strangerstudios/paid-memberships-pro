@@ -153,14 +153,14 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.3.3 - 2020-05-12 =
+= 2.3.3 - 2020-05-13 =
 * SECURITY: Fixed SQL injection vulnerability when logged in as an administrator and adding new orders in the dashboard. JVN#20248858 (Thanks, Kenichi Okuno of Mitsui Bussan Secure Directions, Inc)
 * SECURITY: Making sure to properly escape all values on the add/edit order form in the dashboard.
 * BUG FIX: Now properly setting the order status to "error" when an initial payment fails when using PayPal Express. Before the order status would be set as "cancelled", which would count the order toward reports and make it harder to find orders that had errors. (Thanks, Mirco Babini)
 * BUG FIX: Fixed issue with the PMPro logo and some other assets loading over the wrong schema (http vs https) in some cases.
 * BUG FIX: Fixed issue where the chosen discount code was not shown after submitting when adding a new order through the dashboard.
 * BUG FIX/ENHANCEMENT: Using "PMPro" in the admin activity email subject to keep the line shorter and avoid issues when replacing the word "member" via gettext.
-* ENHANCEMENT: Added a pmpro_allow_weak_passwords filter. You can set this to return true (like this https://gist.github.com/ideadude/5a12119b9ce1c2aad87b2d69cb8f9505) to allow weak passwords on the change password and reset password pages. Note that at this time, weak passwords are still allowed no matter the value of this filter. We expect to change that in the future. For now, you can use our PMPro Strong Passwords plugin to force strong passwords at checkout.
+* ENHANCEMENT: Added a pmpro_allow_weak_passwords filter. You can set this to return true (like this https://gist.github.com/ideadude/5a12119b9ce1c2aad87b2d69cb8f9505) to allow weak passwords on the change password and reset password pages. Note that at this time, weak passwords are still allowed on the checkout page no matter the value of this filter. We expect to change that in the future. For now, you can use our PMPro Strong Passwords plugin to force strong passwords at checkout.
 * REFACTOR: Updated the logic around checking the PMPRO_IPN_DEBUG constant in the IPN handler. (Thanks, Mirco Babini)
 
 = 2.3.2 - 2020-05-07 =
