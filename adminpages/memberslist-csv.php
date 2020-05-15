@@ -550,21 +550,18 @@
 				ini_set('zlib.output_compression', 'Off');
 			}
 
-			if( function_exists('fpassthru') )
-			{
-				// open and send the file contents to the remote location
-				$fh = fopen( $filename, 'rb' );
-				fpassthru($fh);
-				fclose($fh);
-			}
-			else
-			{
+			if( function_exists( 'fpassthru' ) ) {
+				// use fpassthru to output the csv
+				$csv_fh = fopen( $filename, 'rb' );
+				fpassthru( $csv_fh );
+				fclose( $csv_fh );
+			} else {
 				// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
-				readfile($filename);
+				readfile( $filename );
 			}
 
 			// remove the temp file
-			unlink($filename);
+			unlink( $filename );
 		}
 
 		//allow user to clean up after themselves

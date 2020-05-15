@@ -585,11 +585,11 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 			ini_set( 'zlib.output_compression', 'Off' );
 		}
 
-		if( function_exists('fpassthru') ) {
+		if( function_exists( 'fpassthru' ) ) {
 			// use fpassthru to output the csv
 			$csv_fh = fopen( $filename, 'rb' );
-			fpassthru($csv_fh);
-			fclose($csv_fh);
+			fpassthru( $csv_fh );
+			fclose( $csv_fh );
 		} else {
 			// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
 			readfile( $filename );
