@@ -570,6 +570,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_joindate( $item ) {
 		$joindate = $item[ 'joindate' ];
+		if ( empty( $joindate ) ) {
+			return;
+		}
 		return date_i18n( get_option('date_format'), $joindate );
 	}
 
@@ -581,6 +584,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_startdate( $item ) {
 		$startdate = $item[ 'startdate' ];
+		if ( empty( $startdate ) ) {
+			return;
+		}
 		return date_i18n( get_option('date_format'), $startdate );
 	}
 
