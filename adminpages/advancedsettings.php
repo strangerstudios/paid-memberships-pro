@@ -51,6 +51,7 @@
 		pmpro_setOption("hideads");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
+		pmpro_setOption("uninstall");
 
         /**
          * Filter to add custom settings to the advanced settings page.
@@ -97,6 +98,7 @@
 	if( is_multisite() ) {
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 	}
+	$uninstall = pmpro_getOption('uninstall');
 
 	// Default settings.
 	if(!$nonmembertext)
@@ -460,6 +462,17 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		            }
 		        } 
 		        ?>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="showexcerpts"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
+									</th>
+									<td>
+											<select id="uninstall" name="uninstall">
+													<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' );?></option>
+													<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
+											</select>
+									</td>
+									</tr>
 	        </tbody>
 			</table>
 			<script>
