@@ -19,7 +19,7 @@ function pmpro_shortcode_member_profile_edit( $atts, $content=null, $code='' ) {
 		$view = NULL;
 	}
 
-	if ( ! empty( $view ) && $view = 'change-pasword' ) {
+	if ( ! empty( $view ) && $view == 'change-password' ) {
 		// Display the Change Password form.
 		pmpro_change_password_form();
 	} else {
