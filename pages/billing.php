@@ -75,6 +75,21 @@
 			<?php if($level->billing_limit) { ?>
 				<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
 			<?php } ?>
+
+			<?php
+				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
+					, true);
+				if ( $pmpro_billing_show_payment_method ) { ?>
+					<li><strong><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
+						<?php echo ucwords( get_user_meta( $current_user->ID, 'pmpro_CardType', true ) ); ?> 
+						<?php _e('ending in', 'paid-memberships-pro' ); ?>
+						<?php echo last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ); ?>.
+						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo get_user_meta( $current_user->ID, 'pmpro_ExpirationMonth', true ); ?>/<?php echo get_user_meta( $current_user->ID, 'pmpro_ExpirationYear', true ); ?>
+					</li>
+					<?php
+				}
+			?>
+
 			<?php
 			 /**
 			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
