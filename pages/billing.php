@@ -79,12 +79,12 @@
 			<?php
 				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
 					, true);
-				if ( $pmpro_billing_show_payment_method ) { ?>
+				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
 					<li><strong><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
-						<?php echo ucwords( get_user_meta( $current_user->ID, 'pmpro_CardType', true ) ); ?> 
+						<?php echo ucwords( $CardType ); ?> 
 						<?php _e('ending in', 'paid-memberships-pro' ); ?>
 						<?php echo last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ); ?>.
-						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo get_user_meta( $current_user->ID, 'pmpro_ExpirationMonth', true ); ?>/<?php echo get_user_meta( $current_user->ID, 'pmpro_ExpirationYear', true ); ?>
+						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $ExpirationMonth; ?>/<?php echo $ExpirationYear; ?>
 					</li>
 					<?php
 				}
