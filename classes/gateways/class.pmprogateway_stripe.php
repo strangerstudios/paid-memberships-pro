@@ -2004,11 +2004,13 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( ! empty( $subscription ) ) {
 					$customer = $order->Gateway->getCustomer();
 					if ( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
-						return $subscription->current_period_end;
+						$offset = get_option( 'gmt_offset' );						
+						$timestamp = $subscription->current_period_end + ( $offset * 3600 );
 					} elseif ( $customer->delinquent && ! empty( $subscription->current_period_start ) ) {
-						return $subscription->current_period_start;
+						$offset = get_option( 'gmt_offset' );						
+						$timestamp = $subscription->current_period_start + ( $offset * 3600 );
 					} else {
-						return $false;  // shouldn't really get here
+						$timestamp = $false;  // shouldn't really get here
 					}
 				}
 			}
