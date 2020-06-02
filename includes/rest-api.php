@@ -470,10 +470,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * @since 2.3
 		 */
-		 function pmpro_rest_api_get_permissions_check($request) {
+		 function pmpro_rest_api_get_permissions_check( $request ) {
 
 			$method = $request->get_method();
-			$endpoint = $request->get_endpoint();
 			
 			// default permissions to 'read' (subscriber)
 			$permissions = current_user_can('read');			
@@ -482,7 +481,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			// Is the request method allowed?
-			if ( ! in_array( $method, pmpro_get_rest_api_methods( $endpoint ) ) ) {
+			if ( ! in_array( $method, pmpro_get_rest_api_methods( $method ) ) ) {
 				$permissions = false;
 			}
 
