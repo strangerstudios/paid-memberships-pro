@@ -120,7 +120,7 @@ function pmpro_report_memberships_widget() {
 		jQuery('.pmpro_report_th ').click(function(event) {
 			//prevent form submit onclick
 			event.preventDefault();
-			 
+
 			//toggle sub rows
 			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
 
@@ -207,8 +207,8 @@ function pmpro_report_memberships_page()
 
 	//get data
 	if (
-		$type === "signup_v_cancel" || 
-		$type === "signup_v_expiration" || 
+		$type === "signup_v_cancel" ||
+		$type === "signup_v_expiration" ||
 		$type === "signup_v_all"
 	) {
 		$sqlQuery = "SELECT $date_function(mu.startdate) as date, COUNT(DISTINCT mu.user_id) as signups
@@ -693,8 +693,9 @@ function pmpro_report_memberships_delete_transients()
 	delete_transient("pmpro_report_memberships_cancellations");
 	delete_transient("pmpro_report_memberships_signups");
 }
-add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_change_membership_level", "pmpro_report_memberships_delete_transients");
 
 
 /**
