@@ -1353,7 +1353,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								foreach ( $actions as $action => $link ) {
 									++ $i;
 									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-									$out .= "<span class='" . esc_attr( $action ) . "'>" . esc_html( $link ) . $sep . "</span>";
+									$out .= "<span class='" . esc_attr( $action ) . "'>" . $link . $sep . "</span>";
 								}
 								echo $out;
 							}
