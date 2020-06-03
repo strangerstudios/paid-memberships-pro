@@ -23,7 +23,7 @@
 
 	$levels = $current_user->membership_levels;
 	$has_recurring_levels = pmpro_has_recurring_level();
-	
+
 	//Make sure the $level object is a valid level definition
 	if(!empty($levels) ) {
 		$level = $levels[0];
@@ -48,7 +48,7 @@
 			 * @param {objects} {$level} {Passes the $level object}
 			 */
 			do_action('pmpro_billing_bullets_top', $level);?>
-			
+
 			<?php foreach( $levels as $level ) {
 				if ( $has_recurring_levels != pmpro_isLevelRecurring( $level ) ) {
 					continue;
@@ -81,10 +81,10 @@
 					, true);
 				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
 					<li><strong><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
-						<?php echo ucwords( $CardType ); ?> 
+						<?php echo esc_html( ucwords( $CardType ) ); ?>
 						<?php _e('ending in', 'paid-memberships-pro' ); ?>
-						<?php echo last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ); ?>.
-						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo $ExpirationMonth; ?>/<?php echo $ExpirationYear; ?>
+						<?php echo esc_html( last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ) ); ?>.
+						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $ExpirationMonth ); ?>/<?php echo esc_html( $ExpirationYear ); ?>
 					</li>
 					<?php
 				}
@@ -430,7 +430,7 @@
 		if ( empty( $level ) || ! $level->allow_signups ) {
 			$default_level_id = apply_filters( 'pmpro_default_level', 0 );
 		}
-		
+
 		// Show the correct checkout link.
 		if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
 			$url = pmpro_url( 'checkout', '?level=' . $level->id );
@@ -447,4 +447,3 @@
 	<?php }
 } ?>
 </div> <!-- end pmpro_billing_wrap -->
-
