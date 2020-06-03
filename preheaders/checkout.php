@@ -586,7 +586,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 		} else {
 			$enddate = "NULL";
 		}
@@ -733,7 +733,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
 	
-			if($sendemails) { // Send the e-mails only if the flag is set to true
+			if($sendemails) { // Send the emails only if the flag is set to true
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {

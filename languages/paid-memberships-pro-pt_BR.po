@@ -4559,14 +4559,14 @@ msgstr "Telefone"
 #: pages/checkout.php:218 pages/checkout.php:436 pages/checkout.php:438
 #: pages/checkout.php:440 pages/checkout.php:449 pages/checkout.php:453
 #: pages/checkout.php:455 pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "E-mail"
 
 #: pages/billing.php:210 pages/checkout.php:466 pages/billing.php:197
 #: pages/billing.php:201 pages/checkout.php:445 pages/checkout.php:447
 #: pages/checkout.php:449 pages/checkout.php:458 pages/checkout.php:462
 #: pages/checkout.php:464 pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "Confirmar E-mail"
 
 #: pages/billing.php:231 pages/billing.php:217 pages/billing.php:221
@@ -4687,7 +4687,7 @@ msgstr "Confirmar Senha"
 
 #: pages/checkout.php:229 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218 pages/checkout.php:225 pages/checkout.php:227
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "Confirmar Email"
 
 #: pages/checkout.php:248 pages/checkout.php:232 pages/checkout.php:235

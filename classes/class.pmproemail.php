@@ -203,7 +203,7 @@
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", 'paid-memberships-pro'), $user->user_login, get_option("blogname"));			
 
-			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
+			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url());
 			
 			if(!empty($old_level_id)) {
 				if(!is_array($old_level_id))
@@ -264,7 +264,7 @@
 								"membership_level_name" => $user->membership_level->name,
 								"membership_level_confirmation_message" => $confirmation_message,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => wp_login_url(pmpro_url("account")),
+								"login_link" => pmpro_login_url(),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,								
 							);						
@@ -368,7 +368,7 @@
 								"membership_id" => $user->membership_level->id,
 								"membership_level_name" => $user->membership_level->name,
 								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
-								"login_link" => wp_login_url(pmpro_url("account")),
+								"login_link" => pmpro_login_url(),
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,								
 							);						
@@ -471,7 +471,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url(pmpro_url("account"))
+								"login_link" => pmpro_login_url()
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -525,7 +525,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url()
+								"login_link" => pmpro_login_url()
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -574,7 +574,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url(pmpro_url("billing"))
+								"login_link" => pmpro_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -621,7 +621,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url( get_edit_user_link( $user->ID ) )
+								"login_link" => pmpro_login_url( get_edit_user_link( $user->ID ) )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -669,7 +669,7 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url(pmpro_url("billing"))
+								"login_link" => pmpro_login_url(pmpro_url("billing"))
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -723,8 +723,8 @@
 								"accountnumber" => hideCardNumber($invoice->accountnumber),
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
-								"login_link" => wp_login_url(pmpro_url("account")),
-								"invoice_link" => wp_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
+								"login_link" => pmpro_login_url(),
+								"invoice_link" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
 							));
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -784,7 +784,7 @@
 				"membership_id" => $user->membership_level->id,
 				"membership_level_name" => $user->membership_level->name, 
 				"siteemail" => pmpro_getOption("from_email"), 
-				"login_link" => wp_login_url(), 
+				"login_link" => pmpro_login_url(), 
 				"display_name" => $user->display_name, 
 				"user_email" => $user->user_email, 
 				"billing_amount" => pmpro_formatPrice($user->membership_level->billing_amount), 
@@ -812,7 +812,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"));
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
 
@@ -839,7 +839,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s will end soon", "paid-memberships-pro"), get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expiring", $this);
 
@@ -869,7 +869,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been changed", "paid-memberships-pro"), get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => pmpro_getOption("from_email"), "login_link" => wp_login_url());
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url());
 
 			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
 				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
@@ -919,7 +919,7 @@
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => get_bloginfo("admin_email"), "login_link" => wp_login_url());
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => get_bloginfo("admin_email"), "login_link" => pmpro_login_url());
 
 			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
 				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
@@ -983,8 +983,8 @@
 
 			$this->data = array(
 				'order_code' => $order->code,
-				'login_link' => wp_login_url(pmpro_url("account")),
-				'invoice_link' => wp_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				'login_link' => pmpro_login_url(),
+				'invoice_link' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
 				'invoice' => $invoice
 			);
 

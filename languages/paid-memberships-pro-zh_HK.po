@@ -5417,7 +5417,7 @@ msgstr "電話"
 #: pages/checkout.php:436 pages/checkout.php:438 pages/checkout.php:440
 #: pages/checkout.php:449 pages/checkout.php:453 pages/checkout.php:455
 #: pages/checkout.php:457 pages/checkout.php:460
-msgid "E-mail Address"
+msgid "Email Address"
 msgstr "電子郵件地址"
 
 #: pages/billing.php:216 pages/checkout.php:473 pages/billing.php:197
@@ -5426,7 +5426,7 @@ msgstr "電子郵件地址"
 #: pages/checkout.php:447 pages/checkout.php:449 pages/checkout.php:458
 #: pages/checkout.php:462 pages/checkout.php:464 pages/checkout.php:466
 #: pages/checkout.php:469
-msgid "Confirm E-mail"
+msgid "Confirm Email"
 msgstr "確認電子郵件"
 
 #: pages/billing.php:244 pages/billing.php:217 pages/billing.php:221
@@ -5558,7 +5558,7 @@ msgstr "確認密碼"
 #: pages/checkout.php:236 pages/checkout.php:213 pages/checkout.php:216
 #: pages/checkout.php:218 pages/checkout.php:225 pages/checkout.php:227
 #: pages/checkout.php:229
-msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
 msgstr "確認電郵地址"
 
 #: pages/checkout.php:255 pages/checkout.php:232 pages/checkout.php:235

@@ -232,6 +232,11 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 2.1;
 		pmpro_setOption( 'db_version', '2.1' );
 	}
+	
+	if ( $pmpro_db_version < 2.3 ) {
+		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+		pmpro_setOption( 'db_version', '2.3' );
+	}
 }
 
 function pmpro_db_delta()
@@ -267,7 +272,7 @@ function pmpro_db_delta()
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
 		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
 		  KEY `name` (`name`)
@@ -312,7 +317,7 @@ function pmpro_db_delta()
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
 		  `notes` TEXT NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `session_id` (`session_id`),
 		  KEY `user_id` (`user_id`),
@@ -372,7 +377,7 @@ function pmpro_db_delta()
 		   `startdate` datetime NOT NULL,
 		   `enddate` datetime DEFAULT NULL,
 		   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		   PRIMARY KEY (`id`),
+		   PRIMARY KEY  (`id`),
 		   KEY `membership_id` (`membership_id`),
 		   KEY `modified` (`modified`),
 		   KEY `code_id` (`code_id`),
@@ -391,7 +396,7 @@ function pmpro_db_delta()
 		  `starts` date NOT NULL,
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
 		  KEY `expires` (`expires`)
@@ -413,7 +418,7 @@ function pmpro_db_delta()
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
 		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`code_id`,`level_id`),
+		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
 		);
 	";
@@ -427,7 +432,7 @@ function pmpro_db_delta()
 		  `user_id` int(10) unsigned NOT NULL,
 		  `order_id` int(10) unsigned NOT NULL,
 		  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
 		);

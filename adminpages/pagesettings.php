@@ -39,6 +39,8 @@ if (!empty($_REQUEST['savesettings'])) {
     pmpro_setOption("confirmation_page_id", NULL, 'intval');
     pmpro_setOption("invoice_page_id", NULL, 'intval');
     pmpro_setOption("levels_page_id", NULL, 'intval');
+    pmpro_setOption("login_page_id", NULL, 'intval');
+	pmpro_setOption("member_profile_edit_page_id", NULL, 'intval');
 
     //update the pages array
     $pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -48,6 +50,8 @@ if (!empty($_REQUEST['savesettings'])) {
     $pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
     $pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
     $pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
+    $pmpro_pages['member_profile_edit'] = pmpro_getOption( 'member_profile_edit_page_id' );
 
     //save additional pages
     if (!empty($extra_pages)) {
@@ -74,6 +78,15 @@ if (!empty($_REQUEST['createpages'])) {
 
     $pages = array();
 
+	/**
+	 * These pages were added later, and so we take extra
+	 * care to make sure we only generate one version of them.
+	 */
+	$generate_once = array(
+		'member_profile_edit' => __( 'Your Profile', 'paid-memberships-pro' ),
+		'login' => 'Log In',
+	);
+
     if(empty($_REQUEST['page_name'])) {
         //default pages
         $pages['account'] = __('Membership Account', 'paid-memberships-pro' );
@@ -83,7 +96,34 @@ if (!empty($_REQUEST['createpages'])) {
         $pages['confirmation'] = __('Membership Confirmation', 'paid-memberships-pro' );
         $pages['invoice'] = __('Membership Invoice', 'paid-memberships-pro' );
         $pages['levels'] = __('Membership Levels', 'paid-memberships-pro' );
+		$pages['login'] = __('Log In', 'paid-memberships-pro' );
+		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
+	} elseif ( in_array( $_REQUEST['page_name'], array_keys( $generate_once ) ) ) {
+		$page_name = sanitize_text_field( $_REQUEST['page_name'] );
+		if ( ! empty( pmpro_getOption( $page_name . '_page_generated' ) ) ) {
+			// Don't generate again.
+			unset( $pages[$page_name] );
 
+			// Find the old page
+			$old_page = get_page_by_path( $page_name );
+			if ( ! empty( $old_page ) ) {
+				$pmpro_pages[$page_name] = $old_page->ID;
+				pmpro_setOption( $page_name . '_page_id', $old_page->ID );
+				pmpro_setOption( $page_name . '_page_generated', '1' );
+				$msg = true;
+				$msgt = sprintf( __( "Found an existing version of the %s page and used that one.", 'paid-memberships-pro' ), $page_name );
+			} else {
+				$msg = -1;
+				$msgt = sprintf( __( "Error generating the %s page. You will have to choose or create one manually.", 'paid-memberships-pro' ), $page_name );
+			}
+		} else {
+			// Generate the new Your Profile page and save an option that it was created.
+			$pages[$page_name] = array(
+				'title' => $generate_once[$page_name],
+				'content' => '[pmpro_' . $page_name . ']',
+			);
+			pmpro_setOption( $page_name . '_page_generated', '1' );
+		}
     } else {
         //generate extra pages one at a time
         $pmpro_page_name = sanitize_text_field($_REQUEST['page_name']);
@@ -105,7 +145,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 
     <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
-        
+
         <h1 class="wp-heading-inline"><?php esc_html_e( 'Page Settings', 'paid-memberships-pro' ); ?></h1>
         <hr class="wp-header-end">
         <?php
@@ -116,7 +156,8 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			$pmpro_pages['checkout'] ||
 			$pmpro_pages['confirmation'] ||
 			$pmpro_pages['invoice'] ||
-			$pmpro_pages['levels'] ) {
+			$pmpro_pages['levels'] ||
+			$pmpro_pages['member_profile_edit'] ) {
 			$pmpro_some_pages_ready = true;
 		} else {
 			$pmpro_some_pages_ready = false;
@@ -275,6 +316,73 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 					} ?>
                 </td>
             </tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="login_page_id"><?php esc_attr_e( 'Log In Page', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+					<?php
+						wp_dropdown_pages(
+							array(
+								'name' => 'login_page_id',
+								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
+								'selected' => $pmpro_pages['login'], 'post_types' => $post_types
+							)
+						);
+					?>
+
+					<?php if ( ! empty( $pmpro_pages['login'] ) ) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['login'] ?>&action=edit"
+			               class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
+			            &nbsp;
+			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['login']); ?>"
+			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
+			        <?php } elseif ( empty( pmpro_getOption( 'login_page_generated' ) ) ) { ?>
+						&nbsp;
+						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
+                    <?php } ?>
+					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>
+			    </td>
+			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="member_profile_edit_page_id"><?php esc_attr_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+					<?php
+						wp_dropdown_pages(
+							array(
+								'name' => 'member_profile_edit_page_id',
+								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
+								'selected' => $pmpro_pages['member_profile_edit'], 'post_types' => $post_types
+							)
+						);
+					?>
+
+					<?php if ( ! empty( $pmpro_pages['member_profile_edit'] ) ) { ?>
+						<a target="_blank" href="post.php?post=<?php echo $pmpro_pages['member_profile_edit'] ?>&action=edit"
+			               class="button button-secondary pmpro_page_edit"><?php _e('edit page', 'paid-memberships-pro' ); ?></a>
+			            &nbsp;
+			            <a target="_blank" href="<?php echo get_permalink($pmpro_pages['member_profile_edit']); ?>"
+			               class="button button-secondary pmpro_page_view"><?php _e('view page', 'paid-memberships-pro' ); ?></a>
+			        <?php } elseif ( empty( pmpro_getOption( 'member_profile_edit_page_generated' ) ) ) { ?>
+						&nbsp;
+						<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php _e('Generate Page', 'paid-memberships-pro' ); ?></a>
+                    <?php } ?>
+					<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ); ?></p>
+
+					<?php if ( ! class_exists( 'PMProRH_Field' ) ) {
+						$allowed_member_profile_edit_html = array (
+							'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+					echo '<br /><p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-register-helper' ) . '</p>';
+					} ?>
+			    </td>
+			</tr>
             </tbody>
         </table>
 

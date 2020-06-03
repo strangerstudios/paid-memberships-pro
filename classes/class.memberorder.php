@@ -77,8 +77,7 @@
 			if(!$id)
 				return false;
 
-			$gmt_offset = get_option('gmt_offset');
-			$dbobj = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(timestamp) + " . ($gmt_offset * 3600) . "  as timestamp FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
 
 			if($dbobj)
 			{
@@ -141,6 +140,9 @@
 
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
+
+				// Fix the timestamp for local time
+				$this->timestamp = strtotime( get_date_from_gmt( $this->timestamp, 'Y-m-d H:i:s' ) );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -369,8 +371,14 @@
 			if(!empty($this->user))
 				return $this->user;
 
-			$gmt_offset = get_option('gmt_offset');
-			$this->user = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(user_registered) + " . ($gmt_offset * 3600) . "  as user_registered FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			
+			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			
+			// Fix the timestamp for local time 
+			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
+				$this->user->user_registered = strtotime( get_date_from_gmt( $this->user->user_registered, 'Y-m-d H:i:s' ) );
+			}
+
 			return $this->user;
 		}
 
@@ -518,17 +526,21 @@
 		}
 
 		/**
-		 * Change the timestamp of an order by passing in year, month, day, time
+		 * Change the timestamp of an order by passing in year, month, day, time.
+		 *
+		 * $time should be adjusted for local timezone.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
 			if(empty($this->id))
 				return false;		//need a saved order
 
-			if(empty($time))
-				$time = "00:00:00";
-
-			$date = $year . "-" . $month . "-" . $day . " " . $time;
+			if ( empty( $time ) ) {
+				// Just save the order date.
+				$date = $year . '-' . $month . '-' . $day . ' 00:00:00';
+			} else {
+				$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $time, 'Y-m-d H:i:s' );
+			}
 
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
@@ -617,7 +629,7 @@
 				$this->gateway = pmpro_getOption("gateway");
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
-
+			
 			if(empty($this->datetime) && empty($this->timestamp))
 				$this->datetime = date("Y-m-d H:i:s", time());
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
@@ -642,11 +654,11 @@
 				$after_action = "pmpro_updated_order";
 				//update
 				$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders
-									SET `code` = '" . $this->code . "',
-									`session_id` = '" . $this->session_id . "',
+									SET `code` = '" . esc_sql( $this->code ) . "',
+									`session_id` = '" . esc_sql( $this->session_id ) . "',
 									`user_id` = " . intval($this->user_id) . ",
 									`membership_id` = " . intval($this->membership_id) . ",
-									`paypal_token` = '" . $this->paypal_token . "',
+									`paypal_token` = '" . esc_sql( $this->paypal_token ) . "',
 									`billing_name` = '" . esc_sql($this->billing->name) . "',
 									`billing_street` = '" . esc_sql($this->billing->street) . "',
 									`billing_city` = '" . esc_sql($this->billing->city) . "',
@@ -654,20 +666,20 @@
 									`billing_zip` = '" . esc_sql($this->billing->zip) . "',
 									`billing_country` = '" . esc_sql($this->billing->country) . "',
 									`billing_phone` = '" . esc_sql($this->billing->phone) . "',
-									`subtotal` = '" . $this->subtotal . "',
-									`tax` = '" . $this->tax . "',
-									`couponamount` = '" . $this->couponamount . "',
+									`subtotal` = '" . esc_sql( $this->subtotal ) . "',
+									`tax` = '" . esc_sql( $this->tax ) . "',
+									`couponamount` = '" . esc_sql( $this->couponamount ) . "',
 									`certificate_id` = " . intval($this->certificate_id) . ",
-									`certificateamount` = '" . $this->certificateamount . "',
-									`total` = '" . $this->total . "',
-									`payment_type` = '" . $this->payment_type . "',
-									`cardtype` = '" . $this->cardtype . "',
-									`accountnumber` = '" . $this->accountnumber . "',
-									`expirationmonth` = '" . $this->expirationmonth . "',
-									`expirationyear` = '" . $this->expirationyear . "',
+									`certificateamount` = '" . esc_sql( $this->certificateamount ) . "',
+									`total` = '" . esc_sql( $this->total ) . "',
+									`payment_type` = '" . esc_sql( $this->payment_type ) . "',
+									`cardtype` = '" . esc_sql( $this->cardtype ) . "',
+									`accountnumber` = '" . esc_sql( $this->accountnumber ) . "',
+									`expirationmonth` = '" . esc_sql( $this->expirationmonth ) . "',
+									`expirationyear` = '" . esc_sql( $this->expirationyear ) . "',
 									`status` = '" . esc_sql($this->status) . "',
-									`gateway` = '" . $this->gateway . "',
-									`gateway_environment` = '" . $this->gateway_environment . "',
+									`gateway` = '" . esc_sql( $this->gateway ) . "',
+									`gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "',
 									`payment_transaction_id` = '" . esc_sql($this->payment_transaction_id) . "',
 									`subscription_transaction_id` = '" . esc_sql($this->subscription_transaction_id) . "',
 									`timestamp` = '" . esc_sql($this->datetime) . "',
@@ -675,7 +687,7 @@
 									`affiliate_subid` = '" . esc_sql($this->affiliate_subid) . "',
 									`notes` = '" . esc_sql($this->notes) . "',
 									`checkout_id` = " . intval($this->checkout_id) . "
-									WHERE id = '" . $this->id . "'
+									WHERE id = '" . esc_sql( $this->id ) . "'
 									LIMIT 1";
 			}
 			else
@@ -693,32 +705,32 @@
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
-								VALUES('" . $this->code . "',
-									   '" . session_id() . "',
+								VALUES('" . esc_sql( $this->code ) . "',
+									   '" . esc_sql( session_id() ) . "',
 									   " . intval($this->user_id) . ",
 									   " . intval($this->membership_id) . ",
-									   '" . $this->paypal_token . "',
+									   '" . esc_sql( $this->paypal_token ) . "',
 									   '" . esc_sql(trim($this->billing->name)) . "',
 									   '" . esc_sql(trim($this->billing->street)) . "',
 									   '" . esc_sql($this->billing->city) . "',
 									   '" . esc_sql($this->billing->state) . "',
 									   '" . esc_sql($this->billing->zip) . "',
 									   '" . esc_sql($this->billing->country) . "',
-									   '" . cleanPhone($this->billing->phone) . "',
-									   '" . $this->subtotal . "',
-									   '" . $tax . "',
-									   '" . $this->couponamount. "',
+									   '" . esc_sql( cleanPhone($this->billing->phone) ) . "',
+									   '" . esc_sql( $this->subtotal ) . "',
+									   '" . esc_sql( $tax ) . "',
+									   '" . esc_sql( $this->couponamount ). "',
 									   " . intval($this->certificate_id) . ",
-									   '" . $this->certificateamount . "',
-									   '" . $total . "',
-									   '" . $this->payment_type . "',
-									   '" . $this->cardtype . "',
-									   '" . hideCardNumber($this->accountnumber, false) . "',
-									   '" . $this->expirationmonth . "',
-									   '" . $this->expirationyear . "',
+									   '" . esc_sql( $this->certificateamount ) . "',
+									   '" . esc_sql( $total ) . "',
+									   '" . esc_sql( $this->payment_type ) . "',
+									   '" . esc_sql( $this->cardtype ) . "',
+									   '" . esc_sql( hideCardNumber($this->accountnumber, false) ) . "',
+									   '" . esc_sql( $this->expirationmonth ) . "',
+									   '" . esc_sql( $this->expirationyear ) . "',
 									   '" . esc_sql($this->status) . "',
-									   '" . $this->gateway . "',
-									   '" . $this->gateway_environment . "',
+									   '" . esc_sql( $this->gateway ) . "',
+									   '" . esc_sql( $this->gateway_environment ) . "',
 									   '" . esc_sql($this->payment_transaction_id) . "',
 									   '" . esc_sql($this->subscription_transaction_id) . "',
 									   '" . esc_sql($this->datetime) . "',

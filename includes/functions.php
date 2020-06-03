@@ -42,11 +42,6 @@ function pmpro_setDBTables() {
 }
 pmpro_setDBTables();
 
-// from: http://stackoverflow.com/questions/5266945/wordpress-how-detect-if-current-page-is-the-login-page/5892694#5892694
-function pmpro_is_login_page() {
-	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) );
-}
-
 // thanks: http://wordpress.org/support/topic/is_plugin_active
 function pmpro_is_plugin_active( $plugin ) {
 	return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
@@ -1079,6 +1074,10 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 			if ( ! empty( $c_order->error ) ) {
 				$pmpro_error = $c_order->error;
+			} else {
+				if( $old_level_status == 'error' ) {
+					$c_order->updateStatus("error");
+				}
 			}
 		}
 	}
@@ -1777,6 +1776,19 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
 	return $text;
 }
 
+/**
+ * Filters the separator used between action navigation links.
+ *
+ * @since 2.3
+ *
+ * @param string $separator The separator used between action links.
+ */
+function pmpro_actions_nav_separator() {
+	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
+
+	return $separator;
+} 
+
 /*
  pmpro_getMembershipLevelForUser() returns the first active membership level for a user
  *
@@ -2036,15 +2048,35 @@ function pmpro_getLevel( $level ) {
 }
 
 /*
-	Function to populate pmpro_levels with all levels. We query the DB every time just to be sure we have the latest.
-	This should be called if you want to be sure you get all levels as $pmpro_levels may only have a subset of levels.
+	Get all PMPro membership levels.
+	
+	@param	bool  $include_hidden  Include levels marked as hidden/inactive.
+	@param  bool  $use_cache	   If false, use $pmpro_levels global. If true use other caches.
+	@param  bool  $force           Resets the static var caches as well.
 */
-function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
+function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force = false ) {
 	global $pmpro_levels, $wpdb;
 
-	// just use what's cached (doesn't take into account include_hidden setting)
-	if ( ! empty( $pmpro_levels ) && ! $force ) {
+	static $pmpro_all_levels;			// every single level
+	static $pmpro_visible_levels;		// every single level that's not hidden
+
+	if ( $force ) {
+		$pmpro_levels = NULL;
+		$pmpro_all_levels = NULL;
+		$pmpro_visible_levels = NULL;
+	}
+
+	// just use the $pmpro_levels global
+	if ( ! empty( $pmpro_levels ) && ! $use_cache ) {
 		return $pmpro_levels;
+	}
+
+	// If use_cache is true check if we have something in a static var.
+	if ( $include_hidden && isset( $pmpro_all_levels ) ) {
+		return $pmpro_all_levels;
+	}
+	if ( ! $include_hidden && isset( $pmpro_visible_levels ) ) {
+		return $pmpro_visible_levels;
 	}
 
 	// build query
@@ -2064,8 +2096,31 @@ function pmpro_getAllLevels( $include_hidden = false, $force = false ) {
 		$raw_level->trial_amount = pmpro_round_price( $raw_level->trial_amount );
 		$pmpro_levels[ $raw_level->id ] = $raw_level;
 	}
-
+	
+	// Store an extra cache specific to the include_hidden param.
+	if ( $include_hidden ) {
+		$pmpro_all_levels = $pmpro_levels;
+	} else {
+		$pmpro_visible_levels = $pmpro_levels;
+	}
 	return $pmpro_levels;
+}
+
+/**
+ * Check if any level(s) are available for signup.
+ * @return bool
+ * @since 2.3
+ */
+function pmpro_are_any_visible_levels() {
+	$levels = pmpro_getAllLevels( false, true );
+
+	if ( ! empty( $levels ) ) {
+		$r = true;
+	} else {
+		$r = false;
+	}
+
+	return $r;
 }
 
 /**
@@ -2846,9 +2901,15 @@ function pmpro_generatePages( $pages ) {
 				'ping_status' => 'closed',
 			);
 
-			// make non-account pages a subpage of account
-			if ( $name != 'account' ) {
+			// make some pages a subpage of account
+			$top_level_pages = array( 'account', 'login' );
+			if ( ! in_array( $name, $top_level_pages ) ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
+			}
+			
+			// tweak the login slug
+			if ( $name == 'login' ) {
+				$insert['post_name'] = 'login';
 			}
 
 			// create the page

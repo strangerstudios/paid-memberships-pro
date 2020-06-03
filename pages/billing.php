@@ -1,6 +1,6 @@
 <div class="pmpro_billing_wrap">
 <?php
-	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_paypal_link;
+	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -23,7 +23,7 @@
 
 	$levels = $current_user->membership_levels;
 	$has_recurring_levels = pmpro_has_recurring_level();
-	
+
 	//Make sure the $level object is a valid level definition
 	if(!empty($levels) ) {
 		$level = $levels[0];
@@ -48,7 +48,7 @@
 			 * @param {objects} {$level} {Passes the $level object}
 			 */
 			do_action('pmpro_billing_bullets_top', $level);?>
-			
+
 			<?php foreach( $levels as $level ) {
 				if ( $has_recurring_levels != pmpro_isLevelRecurring( $level ) ) {
 					continue;
@@ -75,6 +75,21 @@
 			<?php if($level->billing_limit) { ?>
 				<li><strong><?php _e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
 			<?php } ?>
+
+			<?php
+				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
+					, true);
+				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
+					<li><strong><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
+						<?php echo esc_html( ucwords( $CardType ) ); ?>
+						<?php _e('ending in', 'paid-memberships-pro' ); ?>
+						<?php echo esc_html( last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ) ); ?>.
+						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $ExpirationMonth ); ?>/<?php echo esc_html( $ExpirationYear ); ?>
+					</li>
+					<?php
+				}
+			?>
+
 			<?php
 			 /**
 			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
@@ -88,11 +103,20 @@
 	}
 ?>
 
-<?php if( $has_recurring_levels ) { ?>
-	<?php if($show_paypal_link) { ?>
-
+<?php if ( $has_recurring_levels ) {
+	if ( $show_check_payment_instructions ) {
+		$instructions = pmpro_getOption("instructions"); ?>
+		<div class="pmpro_check_instructions"><?php echo wpautop( wp_unslash( $instructions ) ); ?></div>
+		<hr />
+		<p class="pmpro_actions_nav">
+			<span class="pmpro_actions_nav-right"><a href="<?php echo pmpro_url( 'account' )?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+		</p> <!-- end pmpro_actions_nav -->
+	<?php } elseif ( $show_paypal_link ) { ?>
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
-
+		<hr />
+		<p class="pmpro_actions_nav">
+			<span class="pmpro_actions_nav-right"><a href="<?php echo pmpro_url( 'account' )?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+		</p> <!-- end pmpro_actions_nav -->
 	<?php } else { ?>
 		<div id="pmpro_level-<?php echo $level->id; ?>" class="<?php echo $pmpro_billing_gateway_class; ?>">
 		<form id="pmpro_form" class="pmpro_form" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
@@ -205,7 +229,7 @@
 					?>
 
 					<?php
-						$show_country = apply_filters("pmpro_international_addresses", false);
+						$show_country = apply_filters("pmpro_international_addresses", true);
 						if($show_country)
 						{
 					?>
@@ -246,11 +270,11 @@
 							$bconfirmemail = $current_user->user_email;
 					?>
 					<div class="pmpro_checkout-field pmpro_checkout-field-bemail">
-						<label for="bemail"><?php _e('E-mail Address', 'paid-memberships-pro' );?></label>
+						<label for="bemail"><?php _e('Email Address', 'paid-memberships-pro' );?></label>
 						<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bemail");?>" size="30" value="<?php echo esc_attr($bemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bemail -->
 					<div class="pmpro_checkout-field pmpro_checkout-field-bconfirmemail">
-						<label for="bconfirmemail"><?php _e('Confirm E-mail', 'paid-memberships-pro' );?></label>
+						<label for="bconfirmemail"><?php _e('Confirm Email', 'paid-memberships-pro' );?></label>
 						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="input <?php echo pmpro_getClassForField("bconfirmemail");?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bconfirmemail -->
 					<?php } ?>
@@ -374,7 +398,8 @@
 
 			<?php do_action("pmpro_billing_before_submit_button"); ?>
 
-			<div align="center">
+			<div class="pmpro_submit">
+				<hr />
 				<input type="hidden" name="update-billing" value="1" />
 				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e('Update', 'paid-memberships-pro' );?>" />
 				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url("account")?>';" />
@@ -402,24 +427,23 @@
 		$level = pmpro_getLevel( $order->membership_id );
 
 		// If no level check for a default level.
-		if ( ! isset( $level ) && empty( $level->id ) || ! $level->allow_signups ) {
+		if ( empty( $level ) || ! $level->allow_signups ) {
 			$default_level_id = apply_filters( 'pmpro_default_level', 0 );
 		}
-		
-		// If still no level, redirect to the levels page.
-		if ( empty( $level ) ) {
-			$url = pmpro_url( 'levels' );
-			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
-		} elseif ( !empty( $default_level_id ) ) {
+
+		// Show the correct checkout link.
+		if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
+			$url = pmpro_url( 'checkout', '?level=' . $level->id );
+			printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+		} elseif ( ! empty( $default_level_id ) ) {
 			$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
 			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
 		} else {
-			$url = pmpro_url( 'checkout', '?level=' . $level->id );
-			printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+			$url = pmpro_url( 'levels' );
+			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
 		}
 	} else { ?>
 		<p><?php _e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
 	<?php }
 } ?>
 </div> <!-- end pmpro_billing_wrap -->
-

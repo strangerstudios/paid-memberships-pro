@@ -131,14 +131,10 @@
 		}
 	}
 ?>
-<nav id="nav-below" class="navigation" role="navigation">
-	<div class="nav-next alignright">
-		<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a>
-	</div>
-	<?php if($pmpro_invoice) { ?>
-		<div class="nav-prev alignleft">
-			<a href="<?php echo pmpro_url("invoice")?>"><?php _e('&larr; View All Invoices', 'paid-memberships-pro' );?></a>
-		</div>
+<p class="pmpro_actions_nav">
+	<span class="pmpro_actions_nav-right"><a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+	<?php if ( $pmpro_invoice ) { ?>
+		<span class="pmpro_actions_nav-left"><a href="<?php echo pmpro_url("invoice")?>"><?php _e('&larr; View All Invoices', 'paid-memberships-pro' );?></a></span>
 	<?php } ?>
-</nav>
+</p> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->

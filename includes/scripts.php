@@ -3,6 +3,8 @@
  * Enqueue frontend JavaScript and CSS
  */
 function pmpro_enqueue_scripts() {
+    global $pmpro_pages;
+    
     // Frontend styles.
     $frontend_css_rtl = false;
     if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css")) {
@@ -49,6 +51,41 @@ function pmpro_enqueue_scripts() {
 			'discount_code_passed_in' => !empty( $_REQUEST['discount_code'] ),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
+    }
+    
+    // Change Password page JS 
+	$is_change_pass_page = ! empty( $pmpro_pages['member_profile_edit'] )
+							&& is_page( $pmpro_pages['member_profile_edit'] )
+							&& ! empty( $_REQUEST['view'] )
+							&& $_REQUEST['view'] === 'change-password';
+	$is_reset_pass_page = ! empty( $pmpro_pages['login'] )
+							&& is_page( $pmpro_pages['login'] )
+							&& ! empty( $_REQUEST['action'] )
+							&& $_REQUEST['action'] === 'rp';
+		
+	if ( $is_change_pass_page || $is_reset_pass_page ) {
+        wp_register_script( 'pmpro_login',
+                            plugins_url( 'js/pmpro-login.js', dirname(__FILE__) ),
+                            array( 'jquery', 'password-strength-meter' ),
+                            PMPRO_VERSION );
+
+        /**
+         * Filter to allow weak passwords on the 
+         * change password and reset password forms.
+         * At this time, this only disables the JS check on the frontend.
+         * There is no backend check for weak passwords on those forms.
+         * 
+         * @since 2.3.3
+         *
+         * @param bool $allow_weak_passwords    Whether to allow weak passwords.
+         */
+        $allow_weak_passwords = apply_filters( 'pmpro_allow_weak_passwords', false );
+
+        wp_localize_script( 'pmpro_login', 'pmpro', array(
+            'pmpro_login_page' => 'changepassword',
+			'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
+            'allow_weak_passwords' => $allow_weak_passwords ) );
+        wp_enqueue_script( 'pmpro_login' );	
     }
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );

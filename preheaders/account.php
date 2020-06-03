@@ -1,38 +1,56 @@
 <?php
+global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $pmpro_pages;
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
+// Redirect to login.
+if ( ! is_user_logged_in() ) {
+	$redirect = apply_filters( 'pmpro_account_preheader_redirect', pmpro_login_url( get_permalink( $pmpro_pages['account'] ) ) );
+	if ( $redirect ) {
+		wp_redirect( $redirect );
+		exit;
+	}
+}
 
-if($current_user->ID)
-    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+// Check if we are processing a confirmaction for a Data Request.
+$request_id = pmpro_confirmaction_handler();
+if ( $request_id ) {
+	$pmpro_msg = _wp_privacy_account_request_confirmed_message( $request_id );
+	$pmpro_msgt = 'pmpro_success';
+} else {
+	$pmpro_msg = 'What?';
+	$pmpro_msgt = 'pmpro_error';
+}
 
-if (isset($_REQUEST['msg'])) {
-    if ($_REQUEST['msg'] == 1) {
-        $pmpro_msg = __('Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
+// Make sure the membership level is set for the user.
+if( $current_user->ID ) {
+    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
+}
+
+// Process the msg param.
+if ( isset($_REQUEST['msg'] ) ) {
+    if ( $_REQUEST['msg'] == 1 ) {
+        $pmpro_msg = __( 'Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
     } else {
-        $pmpro_msg = __('Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
-        $pmpro_msgt = "pmpro_error";
+        $pmpro_msg = __( 'Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
+        $pmpro_msgt = 'pmpro_error';
     }
 } else {
     $pmpro_msg = false;
 }
 
-//if no user, redirect to levels page
-if (empty($current_user->ID)) {
-    $redirect = apply_filters("pmpro_account_preheader_no_user_redirect", pmpro_url("levels"));
-    if ($redirect) {
-        wp_redirect($redirect);
-        exit;
-    }
+/**
+ * Check if the current logged in user has a membership level.
+ * If not, and the site is using the pmpro_account_preheader_redirect
+ * filter, redirect to that page.
+ */
+if ( ! empty( $current_user->ID ) && empty( $current_user->membership_level->ID ) ) {
+	$redirect = apply_filters( 'pmpro_account_preheader_redirect', false );
+	if ( $redirect ) {
+		wp_redirect( $redirect );
+		exit;
+	}
 }
 
-//if no membership level, redirect to levels page
-if (empty($current_user->membership_level->ID)) {
-    $redirect = apply_filters("pmpro_account_preheader_redirect", pmpro_url("levels"));
-    if ($redirect) {
-        wp_redirect($redirect);
-        exit;
-    }
-}
-
-global $pmpro_levels;
+/**
+ * Add-Ons might need this global to be set.
+ */
 $pmpro_levels = pmpro_getAllLevels();
