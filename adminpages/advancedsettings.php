@@ -462,17 +462,18 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		            }
 		        } 
 		        ?>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="showexcerpts"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
-									</th>
-									<td>
-											<select id="uninstall" name="uninstall">
-													<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' );?></option>
-													<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
-											</select>
-									</td>
-									</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="showexcerpts"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
+					</th>
+					<td>
+						<select id="uninstall" name="uninstall">
+							<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' );?></option>
+							<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
+						</select>
+						<p class="description"><?php echo esc_textarea( $field['description'] ); ?></p>
+					</td>
+				</tr>
 	        </tbody>
 			</table>
 			<script>
