@@ -313,14 +313,10 @@ class PMProGateway_stripe extends PMProGateway {
             </th>
 			<td>
 				<?php
-					$connect_url_base = 'https://dashboard.stripe.com/oauth/authorize';
-					$connect_client_id = apply_filters( 'pmpro_stripe_connect_client_id', PMPRO_STRIPE_CONNECT_ID );
-					$connect_response_type = 'code';
-					$connect_scope = 'read_write';
+					$connect_url_base = 'https://connect.paidmembershipspro.com';
 					$connect_url = add_query_arg( array(
-						'response_type' => $connect_response_type,
-						'client_id' => $connect_client_id,
-						'scope' => $connect_scope,
+						'action' => 'authorize',
+						'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
 					), $connect_url_base );
 				?>
 				<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
