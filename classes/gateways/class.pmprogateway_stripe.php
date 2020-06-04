@@ -47,10 +47,8 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( true === $this->dependencies() ) {
 			// TODO: Test.
-			if ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' && ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
-			} elseif ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'sandbox' && ! empty( pmpro_getOption( 'test_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
+				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
 			} else {
 				$secret_key = pmpro_getOption( 'stripe_secretkey' );
 			}
@@ -408,15 +406,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 				// TODO: Test.
-				if ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' && ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-					$publishable_key = pmpro_getOption( 'live_stripe_connect_publishablekey' );
-				} elseif ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'sandbox' && ! empty( pmpro_getOption( 'test_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
-					$publishable_key = pmpro_getOption( 'test_stripe_connect_publishablekey' );
+				if ( ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
+					$publishable_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_publishablekey' );
 				} else {
 					$publishable_key = pmpro_getOption( 'stripe_publishablekey' );
 				}
+
 				$localize_vars = array(
 					'publishableKey' => $publishable_key,
+					'user_id'        => pmpro_getOption( 'stripe_connect_user_id' ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
@@ -1180,14 +1178,16 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//charge
 		try {
-			$response = Stripe_Charge::create( array(
-					"amount"                 => $amount * $currency_unit_multiplier, # amount in cents, again
-					"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
-					"currency"               => strtolower( $pmpro_currency ),
-					"customer"               => $this->customer->id,
-					"description"            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
-				)
+			$charge = array(
+				"amount"                 => $amount * $currency_unit_multiplier, # amount in cents, again
+				"currency"               => strtolower( $pmpro_currency ),
+				"customer"               => $this->customer->id,
+				"description"            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
 			);
+			if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
+				$charge['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
+			}
+			$response = Stripe_Charge::create( $charge );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;
@@ -1640,7 +1640,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$plan = array(
 				"amount"                 => $amount * $currency_unit_multiplier,
-				"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -1648,7 +1647,9 @@ class PMProGateway_stripe extends PMProGateway {
 				"currency"               => strtolower( $pmpro_currency ),
 				"id"                     => $order->code
 			);
-
+			if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
+				$plan['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
+			}
 			$plan = Stripe_Plan::create( apply_filters( 'pmpro_stripe_create_plan_array', $plan ) );
 		} catch ( \Throwable $e ) {
 			$order->error      = __( "Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
@@ -2310,13 +2311,14 @@ class PMProGateway_stripe extends PMProGateway {
 			'customer'               => $this->customer->id,
 			'payment_method'         => $this->payment_method->id,
 			'amount'                 => $amount * $currency_unit_multiplier,
-			'application_fee_amount' => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
 			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
 			'setup_future_usage'     => 'off_session',
 		);
-
+		if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
+			$params['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
+		}
 
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );
@@ -2452,7 +2454,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$plan = array(
 				"amount"                 => $amount * $currency_unit_multiplier,
-				"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -2650,7 +2651,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return float applciation fee that should be charged
 	 */
 	static function get_application_fee_amount( $amount ) {
-		return pmpro_license_isValid() ? 0 : $amount * 0.02;
+		$application_fee = ceil( $amount * 0.02 );
+		if ( 0 === $application_fee ) {
+			$application_fee = 1;
+		}
+		return $application_fee;
 	}
 
 	/**
