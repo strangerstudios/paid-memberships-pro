@@ -1184,9 +1184,7 @@ class PMProGateway_stripe extends PMProGateway {
 				"customer"               => $this->customer->id,
 				"description"            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
 			);
-			if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
-				$charge['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
-			}
+			$charge   = self::add_application_fee_amount( $charge );
 			$response = Stripe_Charge::create( $charge );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
@@ -1647,9 +1645,7 @@ class PMProGateway_stripe extends PMProGateway {
 				"currency"               => strtolower( $pmpro_currency ),
 				"id"                     => $order->code
 			);
-			if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
-				$plan['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
-			}
+			$plan = self::add_application_fee_amount( $plan );
 			$plan = Stripe_Plan::create( apply_filters( 'pmpro_stripe_create_plan_array', $plan ) );
 		} catch ( \Throwable $e ) {
 			$order->error      = __( "Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
@@ -2316,9 +2312,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
 			'setup_future_usage'     => 'off_session',
 		);
-		if ( apply_filters( 'pmpro_enable_stripe_application_fee', ! pmpro_license_isValid() ) ) {
-			$params['application_fee_amount'] = self::get_application_fee_amount( $amount * $currency_unit_multiplier );
-		}
+		$params = self::add_application_fee_amount( $params );
 
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );
@@ -2645,17 +2639,26 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Calculate the appliation fee that will be charged for stripe payment.
+	 * Add application fee to params to be sent to Stripe.
 	 *
-	 * @param  float $amount full being charged.
-	 * @return float applciation fee that should be charged
+	 * @param  array $params to be sent to Stripe.
+	 * @return array params with application fee if applicable.
 	 */
-	static function get_application_fee_amount( $amount ) {
-		$application_fee = ceil( $amount * 0.02 );
-		if ( 0 === $application_fee ) {
-			$application_fee = 1;
+	static function add_application_fee_amount( $params ) {
+		if ( empty( $params['amount'] ) ) {
+			return $params;
 		}
-		return $application_fee;
+		$amount = $params['amount'];
+		$application_fee = 0;
+		if ( ! pmpro_license_isValid() ) {
+			// 2% fee default.
+			$application_fee = ceil( $amount * 0.02 );
+		}
+		$application_fee = apply_filters( 'pmpro_set_application_fee_amount', $application_fee, $amount );
+		if ( ! empty( $application_fee ) ) {
+			$params['application_fee_amount'] = intval( $application_fee );
+		}
+		return $params;
 	}
 
 	/**
