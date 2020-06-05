@@ -473,6 +473,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_permissions_check( $request ) {
 
 			$method = $request->get_method();
+			$route = $request->get_route();
 			
 			// default permissions to 'read' (subscriber)
 			$permissions = current_user_can('read');			
@@ -481,7 +482,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			// Is the request method allowed?
-			if ( ! in_array( $method, pmpro_get_rest_api_methods( $method ) ) ) {
+			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
 				$permissions = false;
 			}
 
@@ -518,8 +519,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
  * To enable DELETE, hook into this filter.
  * @since 2.3
  */
-function pmpro_get_rest_api_methods( $endpoint = NULL ) {
+function pmpro_get_rest_api_methods( $route = NULL ) {
 	$methods = array( 'GET', 'POST', 'PUT', 'PATCH' );
-	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $endpoint );
+	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $route );
 	return $methods;
 }
