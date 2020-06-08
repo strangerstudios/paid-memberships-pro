@@ -2487,6 +2487,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'expand'                 => array(
 					'pending_setup_intent.payment_method',
 				),
+				'application_fee_percent' => self::get_application_fee_percentage(),
 			);
 			$order->subscription = Stripe_Subscription::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
@@ -2639,9 +2640,20 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Get percentage of Stripe payment to charge as application fee.
+	 *
+	 * @return int percentage to charge for application fee.
+	 */
+	static function get_application_fee_percentage() {
+		$application_fee_percentage = pmpro_license_isValid() ? 0 : 2;
+		return apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+	}
+
+	/**
 	 * Add application fee to params to be sent to Stripe.
 	 *
 	 * @param  array $params to be sent to Stripe.
+	 * @param  bool  $add_percent true if percentage should be added, false if actual amount.
 	 * @return array params with application fee if applicable.
 	 */
 	static function add_application_fee_amount( $params ) {
@@ -2649,12 +2661,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return $params;
 		}
 		$amount = $params['amount'];
-		$application_fee = 0;
-		if ( ! pmpro_license_isValid() ) {
-			// 2% fee default.
-			$application_fee = ceil( $amount * 0.02 );
-		}
-		$application_fee = apply_filters( 'pmpro_set_application_fee_amount', $application_fee, $amount );
+		$application_fee = $amount * ( self::get_application_fee_percentage() / 100 );
 		if ( ! empty( $application_fee ) ) {
 			$params['application_fee_amount'] = intval( $application_fee );
 		}
