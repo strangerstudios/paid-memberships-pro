@@ -297,6 +297,7 @@ class PMProGateway_stripe extends PMProGateway {
 	static function pmpro_payment_option_fields( $values, $gateway ) {
 		// TODO: Update to have Stripe Connect button and to hide current fields. Currently switching gateways brings fields back.
 		$has_legacy_creds = ! ( empty( $values['stripe_publishablekey'] ) || empty( $values['stripe_secretkey'] ) );
+		$connected_to_stripe = ! ( empty( $values['stripe_connect_user_id'] ) );
 		?>
         <tr class="pmpro_settings_divider gateway gateway_stripe"
 		    <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -311,13 +312,32 @@ class PMProGateway_stripe extends PMProGateway {
             </th>
 			<td>
 				<?php
-					$connect_url_base = 'https://connect.paidmembershipspro.com';
-					$connect_url = add_query_arg( array(
-						'action' => 'authorize',
-						'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
-					), $connect_url_base );
+				$connect_url_base = 'https://connect.paidmembershipspro.com';
+				if ( $connected_to_stripe ) {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'disconnect',
+							'stripe_user_id' => $values['stripe_connect_user_id'],
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<?php
+				} else {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'authorize',
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<?php
+				}
 				?>
-				<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 			</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
