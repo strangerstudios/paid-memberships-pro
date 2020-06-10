@@ -202,7 +202,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 
 		// Stripe Connect functions.
-		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 	}
 
@@ -2700,34 +2700,55 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// If we don't have values here, bounce.
+		// Be sure only to connect when param present.
+		if ( ! isset( $_REQUEST['pmpro_stripe_connected'] ) ) {
+			return false;
+		}
+
+		$error = '';
 		if (
-			! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
+			'0' === $_REQUEST['pmpro_stripe_connected']
+			&& isset( $_REQUEST['error_message'] )
+		) {
+			$error = $_REQUEST['error_message'];
+		} elseif (
+			'0' === $_REQUEST['pmpro_stripe_connected']
+			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_user_id'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token_test'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key_test'] )
 		) {
-			return;
+			$error = 'Invalid response from connect.paidmembershipspro.com';
+		} else {
+			// Update keys.
+			pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+			pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+			pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
+			pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+			pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
+
+			// Delete option for user API key.
+			delete_option( 'pmpro_stripe_secretkey' );
+			delete_option( 'pmpro_stripe_publishablekey' );
 		}
 
-		// Update keys.
-		pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-		pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-		pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
-		pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
-		pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
+		if ( ! empty( $error ) ) {
+			$class   = 'notice notice-error pmpro-stripe-connect-message';
+			$message = sprintf(
+				/* translators: %s Error Message */
+				__( '<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s', 'paid-memberships-pro' ),
+				esc_html( $error )
+			);
 
-		// Delete option for user API key.
-		delete_option( 'pmpro_stripe_secretkey' );
-		delete_option( 'pmpro_stripe_publishablekey' );
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+		}
 	}
 
 	/**
 	 * Disconnects user from the Stripe Connected App.
 	 */
 	static function stripe_connect_deauthorize() {
-		// TODO: Test.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
