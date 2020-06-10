@@ -2711,12 +2711,12 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$error = '';
 		if (
-			'0' === $_REQUEST['pmpro_stripe_connected']
+			'false' === $_REQUEST['pmpro_stripe_connected']
 			&& isset( $_REQUEST['error_message'] )
 		) {
 			$error = $_REQUEST['error_message'];
 		} elseif (
-			'0' === $_REQUEST['pmpro_stripe_connected']
+			'false' === $_REQUEST['pmpro_stripe_connected']
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_user_id'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
@@ -2758,13 +2758,13 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Be sure only to deauthorize when param present.
-		if ( ! isset( $_REQUEST['stripe_disconnected'] ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) ) {
 			return false;
 		}
 
 		// Show message if NOT disconnected.
 		if (
-			'false' === $_REQUEST['stripe_disconnected']
+			'false' === $_REQUEST['pmpro_stripe_disconnected']
 			&& isset( $_REQUEST['error_code'] )
 		) {
 
