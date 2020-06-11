@@ -2667,7 +2667,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function get_application_fee_percentage() {
 		$application_fee_percentage = pmpro_license_isValid() ? 0 : 2;
-		return apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+		return round( floatval( $application_fee_percentage ), 2 );
 	}
 
 	/**
