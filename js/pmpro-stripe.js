@@ -6,7 +6,11 @@ jQuery( document ).ready( function( $ ) {
 	var stripe, elements, cardNumber, cardExpiry, cardCvc;
 
 	// Identify with Stripe.
-	stripe = Stripe( pmproStripe.publishableKey );
+	if ( pmproStripe.user_id ) {
+		stripe = Stripe( pmproStripe.publishableKey, { stripeAccount: pmproStripe.user_id } );
+	} else {
+		stripe = Stripe( pmproStripe.publishableKey );
+	}
 	elements = stripe.elements();
 
 	// Create Elements.

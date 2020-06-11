@@ -47,10 +47,8 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( true === $this->dependencies() ) {
 			// TODO: Test.
-			if ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' && ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
-			} elseif ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'sandbox' && ! empty( pmpro_getOption( 'test_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
+				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
 			} else {
 				$secret_key = pmpro_getOption( 'stripe_secretkey' );
 			}
@@ -204,7 +202,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 
 		// Stripe Connect functions.
-		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 	}
 
@@ -299,6 +297,7 @@ class PMProGateway_stripe extends PMProGateway {
 	static function pmpro_payment_option_fields( $values, $gateway ) {
 		// TODO: Update to have Stripe Connect button and to hide current fields. Currently switching gateways brings fields back.
 		$has_legacy_creds = ! ( empty( $values['stripe_publishablekey'] ) || empty( $values['stripe_secretkey'] ) );
+		$connected_to_stripe = ! ( empty( $values['stripe_connect_user_id'] ) );
 		?>
         <tr class="pmpro_settings_divider gateway gateway_stripe"
 		    <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -313,17 +312,33 @@ class PMProGateway_stripe extends PMProGateway {
             </th>
 			<td>
 				<?php
-					$connect_url_base = 'https://dashboard.stripe.com/oauth/authorize';
-					$connect_client_id = apply_filters( 'pmpro_stripe_connect_client_id', PMPRO_STRIPE_CONNECT_ID );
-					$connect_response_type = 'code';
-					$connect_scope = 'read_write';
-					$connect_url = add_query_arg( array(
-						'response_type' => $connect_response_type,
-						'client_id' => $connect_client_id,
-						'scope' => $connect_scope,
-					), $connect_url_base );
+				$connect_url_base = 'https://connect.paidmembershipspro.com';
+				if ( $connected_to_stripe ) {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'disconnect',
+							'stripe_user_id' => $values['stripe_connect_user_id'],
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<br/><small>This will disconnect all sites linked to this Stripe account.</small>
+					<?php
+				} else {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'authorize',
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<?php
+				}
 				?>
-				<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 			</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
@@ -412,15 +427,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 				// TODO: Test.
-				if ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' && ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-					$publishable_key = pmpro_getOption( 'live_stripe_connect_publishablekey' );
-				} elseif ( pmpro_getOption( 'pmpro_gateway_environment' ) === 'sandbox' && ! empty( pmpro_getOption( 'test_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
-					$publishable_key = pmpro_getOption( 'test_stripe_connect_publishablekey' );
+				if ( ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
+					$publishable_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_publishablekey' );
 				} else {
 					$publishable_key = pmpro_getOption( 'stripe_publishablekey' );
 				}
+
 				$localize_vars = array(
 					'publishableKey' => $publishable_key,
+					'user_id'        => pmpro_getOption( 'stripe_connect_user_id' ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
@@ -1184,14 +1199,14 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//charge
 		try {
-			$response = Stripe_Charge::create( array(
-					"amount"                 => $amount * $currency_unit_multiplier, # amount in cents, again
-					"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
-					"currency"               => strtolower( $pmpro_currency ),
-					"customer"               => $this->customer->id,
-					"description"            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
-				)
+			$charge = array(
+				"amount"                 => $amount * $currency_unit_multiplier, # amount in cents, again
+				"currency"               => strtolower( $pmpro_currency ),
+				"customer"               => $this->customer->id,
+				"description"            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
 			);
+			$charge   = self::add_application_fee_amount( $charge );
+			$response = Stripe_Charge::create( $charge );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;
@@ -1644,7 +1659,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$plan = array(
 				"amount"                 => $amount * $currency_unit_multiplier,
-				"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -1652,7 +1666,7 @@ class PMProGateway_stripe extends PMProGateway {
 				"currency"               => strtolower( $pmpro_currency ),
 				"id"                     => $order->code
 			);
-
+			$plan = self::add_application_fee_amount( $plan );
 			$plan = Stripe_Plan::create( apply_filters( 'pmpro_stripe_create_plan_array', $plan ) );
 		} catch ( \Throwable $e ) {
 			$order->error      = __( "Error creating plan with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
@@ -2314,13 +2328,12 @@ class PMProGateway_stripe extends PMProGateway {
 			'customer'               => $this->customer->id,
 			'payment_method'         => $this->payment_method->id,
 			'amount'                 => $amount * $currency_unit_multiplier,
-			'application_fee_amount' => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
 			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
 			'setup_future_usage'     => 'off_session',
 		);
-
+		$params = self::add_application_fee_amount( $params );
 
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );
@@ -2456,7 +2469,6 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$plan = array(
 				"amount"                 => $amount * $currency_unit_multiplier,
-				"application_fee_amount" => self::get_application_fee_amount( $amount * $currency_unit_multiplier ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -2496,6 +2508,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'expand'                 => array(
 					'pending_setup_intent.payment_method',
 				),
+				'application_fee_percent' => self::get_application_fee_percentage(),
 			);
 			$order->subscription = Stripe_Subscription::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
@@ -2648,13 +2661,32 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Calculate the appliation fee that will be charged for stripe payment.
+	 * Get percentage of Stripe payment to charge as application fee.
 	 *
-	 * @param  float $amount full being charged.
-	 * @return float applciation fee that should be charged
+	 * @return int percentage to charge for application fee.
 	 */
-	static function get_application_fee_amount( $amount ) {
-		return pmpro_license_isValid() ? 0 : $amount * 0.02;
+	static function get_application_fee_percentage() {
+		$application_fee_percentage = pmpro_license_isValid() ? 0 : 2;
+		return apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+	}
+
+	/**
+	 * Add application fee to params to be sent to Stripe.
+	 *
+	 * @param  array $params to be sent to Stripe.
+	 * @param  bool  $add_percent true if percentage should be added, false if actual amount.
+	 * @return array params with application fee if applicable.
+	 */
+	static function add_application_fee_amount( $params ) {
+		if ( empty( $params['amount'] ) ) {
+			return $params;
+		}
+		$amount = $params['amount'];
+		$application_fee = $amount * ( self::get_application_fee_percentage() / 100 );
+		if ( ! empty( $application_fee ) ) {
+			$params['application_fee_amount'] = intval( $application_fee );
+		}
+		return $params;
 	}
 
 	/**
@@ -2669,46 +2701,70 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		// If we don't have values here, bounce.
+		// Be sure only to connect when param present.
+		if ( ! isset( $_REQUEST['pmpro_stripe_connected'] ) ) {
+			return false;
+		}
+
+		// Change current gateway to Stripe
+		pmpro_setOption( 'gateway', 'stripe' );
+
+		$error = '';
 		if (
-			! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
+			'false' === $_REQUEST['pmpro_stripe_connected']
+			&& isset( $_REQUEST['error_message'] )
+		) {
+			$error = $_REQUEST['error_message'];
+		} elseif (
+			'false' === $_REQUEST['pmpro_stripe_connected']
+			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_user_id'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token_test'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key_test'] )
 		) {
-			return;
+			$error = 'Invalid response from connect.paidmembershipspro.com';
+		} else {
+			// Update keys.
+			pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+			pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+			pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
+			pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+			pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
+
+			// Delete option for user API key.
+			delete_option( 'pmpro_stripe_secretkey' );
+			delete_option( 'pmpro_stripe_publishablekey' );
 		}
 
-		// Update keys.
-		pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-		pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-		pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
-		pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
-		pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
+		if ( ! empty( $error ) ) {
+			$class   = 'notice notice-error pmpro-stripe-connect-message';
+			$message = sprintf(
+				/* translators: %s Error Message */
+				__( '<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s', 'paid-memberships-pro' ),
+				esc_html( $error )
+			);
 
-		// Delete option for user API key.
-		delete_option( 'pmpro_stripe_secretkey' );
-		delete_option( 'pmpro_stripe_publishablekey' );
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+		}
 	}
 
 	/**
 	 * Disconnects user from the Stripe Connected App.
 	 */
 	static function stripe_connect_deauthorize() {
-		// TODO: Test.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
 		// Be sure only to deauthorize when param present.
-		if ( ! isset( $_REQUEST['stripe_disconnected'] ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) ) {
 			return false;
 		}
 
 		// Show message if NOT disconnected.
 		if (
-			'false' === $_REQUEST['stripe_disconnected']
+			'false' === $_REQUEST['pmpro_stripe_disconnected']
 			&& isset( $_REQUEST['error_code'] )
 		) {
 
