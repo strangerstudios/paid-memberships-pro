@@ -202,7 +202,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 
 		// Stripe Connect functions.
-		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 	}
 
@@ -2736,17 +2737,26 @@ class PMProGateway_stripe extends PMProGateway {
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
+
+			wp_redirect( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
+			exit;
 		}
 
 		if ( ! empty( $error ) ) {
-			$class   = 'notice notice-error pmpro-stripe-connect-message';
-			$message = sprintf(
+			global $pmpro_stripe_error;
+			$pmpro_stripe_error = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s', 'paid-memberships-pro' ),
 				esc_html( $error )
 			);
+		}
+	}
 
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+	static function stripe_connect_show_errors() {
+		global $pmpro_stripe_error;
+		if ( ! empty( $pmpro_stripe_error ) ) {
+			$class   = 'notice notice-error pmpro-stripe-connect-message';
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $pmpro_stripe_error );
 		}
 	}
 
