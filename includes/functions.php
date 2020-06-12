@@ -2371,14 +2371,65 @@ function pmpro_showMessage() {
 	}
 }
 
-// used in class definitions for input fields to see if there was an error
-function pmpro_getClassForField( $field ) {
+
+/**
+Current: <div class="pmpro_member_profile_edit_wrap">
+Updated: <div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit_wrap' ); ?>">
+
+Current: <input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+Updated: <input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'member_profile_cancel_button' ); ?>" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+
+function my_pmpro_element_class_member_profile_cancel_button( $class, $element ) {
+	if ( $element == 'member_profile_cancel_button' ) {
+		$class = '';
+	}
+
+	return $class;
+}
+add_filter( 'pmpro_element_class_member_profile_cancel_button', 'my_pmpro_element_class_member_profile_cancel_button', 10, 2 );
+
+function my_pmpro_element_class( $class, $element ) {
+	if ( $element == 'pmpro_member_profile_edit_wrap' ) {
+		$class .= ' myownclasstoo';
+	}
+
+	return $class;
+}
+add_filter( 'pmpro_element_class', 'my_pmpro_element_class', 10, 2 );
+
+*/
+
+/**
+ * Return all CSS class names for the specified element and allow custom class names to be used via filter.
+ *
+ * @param  array $class CSS class names for the element.
+ * @param  string $element element to return class names for.
+ * @return $class
+ */
+function pmpro_get_element_class( $class, $element = null ) {
+	if ( empty( $element ) ) {
+		$element = $class;
+	}
+
+	if ( ! is_array( $class ) ) {
+		$class = explode( ' ', $class );
+	}
+
+	$class = apply_filters( 'pmpro_element_class', $class, $element );
+
+	if ( ! empty( $class ) ) {
+		return implode( ' ', $class );
+	} else {
+		return '';
+	}
+}
+
+function pmpro_get_field_class( $class, $element ) {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
-	$classes = array();
 
 	// error on this field?
-	if ( ! empty( $pmpro_error_fields ) && in_array( $field, $pmpro_error_fields ) ) {
-		$classes[] = 'pmpro_error';
+	if ( ! empty( $pmpro_error_fields ) && in_array( $element, $pmpro_error_fields ) ) {
+		$class[] = 'pmpro_error';
 	}
 
 	if ( is_array( $pmpro_required_billing_fields ) && is_array( $pmpro_required_user_fields ) ) {
@@ -2392,18 +2443,15 @@ function pmpro_getClassForField( $field ) {
 	}
 
 	// required?
-	if ( in_array( $field, $required_fields ) ) {
-		$classes[] = 'pmpro_required';
+	if ( in_array( $element, $required_fields ) ) {
+		$class[] = 'pmpro_required';
 	}
 
-	$classes = apply_filters( 'pmpro_field_classes', $classes, $field );
+	$class = apply_filters( 'pmpro_field_classes', $class, $element );
 
-	if ( ! empty( $classes ) ) {
-		return implode( ' ', $classes );
-	} else {
-		return '';
-	}
+	return $class;
 }
+add_filter( 'pmpro_element_class', 'pmpro_get_field_class', 10, 2 );
 
 // get a var from $_GET or $_POST
 function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_function = 'sanitize_text_field' ) {

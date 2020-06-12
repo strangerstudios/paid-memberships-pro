@@ -538,23 +538,23 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//include ours
 		?>
-        <div id="pmpro_payment_information_fields" class="pmpro_checkout"
+        <div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
-                <span class="pmpro_checkout-h3-name"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="pmpro_checkout-h3-msg"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
-            <div class="pmpro_checkout-fields-display-seal">
+            <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
 					if ( $pmpro_include_cardtype_field ) { ?>
-                        <div class="pmpro_checkout-field pmpro_payment-card-type">
+                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-card-type' ), 'pmpro_payment-card-type' ); ?>">
                             <label for="CardType"><?php _e( 'Card Type', 'paid-memberships-pro' ); ?></label>
-                            <select id="CardType" class=" <?php echo pmpro_getClassForField( "CardType" ); ?>">
+                            <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
 								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
                                     <option value="<?php echo $cc ?>"
 									        <?php if ( $CardType == $cc ) { ?>selected="selected"<?php } ?>><?php echo $cc ?></option>
@@ -565,36 +565,36 @@ class PMProGateway_stripe extends PMProGateway {
                         <input type="hidden" id="CardType" name="CardType"
                                value="<?php echo esc_attr( $CardType ); ?>"/>
 					<?php } ?>
-                    <div class="pmpro_checkout-field pmpro_payment-account-number">
+                    <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-account-number' ), 'pmpro_payment-account-number' ); ?>">
                         <label for="AccountNumber"><?php _e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
                     </div>
-                    <div class="pmpro_checkout-field pmpro_payment-expiration">
+                    <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-expiration' ), 'pmpro_payment-expiration' ); ?>">
                         <label for="Expiry"><?php _e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
                         <div id="Expiry"></div>
                     </div>
 					<?php
 					$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
 					if ( $pmpro_show_cvv ) { ?>
-                        <div class="pmpro_checkout-field pmpro_payment-cvv">
+                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-cvv' ), 'pmpro_payment-cvv' ); ?>">
                             <label for="CVV"><?php _e( 'CVC', 'paid-memberships-pro' ); ?></label>
                             <div id="CVV"></div>
                         </div>
 					<?php } ?>
 					<?php if ( $pmpro_show_discount_code ) { ?>
-                        <div class="pmpro_checkout-field pmpro_payment-discount-code">
+                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-discount-code' ), 'pmpro_payment-discount-code' ); ?>">
                             <label for="discount_code"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-                            <input class="input <?php echo pmpro_getClassForField( "discount_code" ); ?>"
+                            <input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
                                    value="<?php _e( 'Apply', 'paid-memberships-pro' ); ?>"/>
-                            <p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
+                            <p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
                         </div>
 					<?php } ?>
                 </div> <!-- end pmpro_checkout-fields -->
 				<?php if ( ! empty( $sslseal ) ) { ?>
-                <div class="pmpro_checkout-fields-rightcol pmpro_sslseal"><?php echo stripslashes( $sslseal ); ?></div>
+                <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-fields-rightcol', 'pmpro_sslseal' ), 'pmpro_sslseal' ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
             </div> <!-- end pmpro_checkout-fields-display-seal -->
 		<?php } ?>
         </div> <!-- end pmpro_payment_information_fields -->

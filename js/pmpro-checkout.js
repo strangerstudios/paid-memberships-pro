@@ -139,7 +139,7 @@ jQuery(document).ready(function(){
 
 	//add required to required fields
 	if ( ! jQuery( '.pmpro_required' ).next().hasClass( "pmpro_asterisk" ) ) {
-	   jQuery( '.pmpro_required' ).after( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
+	   jQuery( '.pmpro_required' ).after( '<span class="' . pmpro_get_element_class( 'pmpro_asterisk' ) . '"> <abbr title="Required Field">*</abbr></span>' );
   }
 
 	//unhighlight error fields when the user edits them
