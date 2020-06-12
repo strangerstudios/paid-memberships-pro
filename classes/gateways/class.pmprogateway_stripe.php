@@ -340,6 +340,11 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
+				<input type='hidden' name='stripe_connect_user_id' value='<?php echo esc_attr( $values['stripe_connect_user_id'] ) ?>'/>
+				<input type='hidden' name='live_stripe_connect_secretkey' value='<?php echo esc_attr( $values['live_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='live_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['live_stripe_connect_publishablekey'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
