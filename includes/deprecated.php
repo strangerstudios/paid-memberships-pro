@@ -32,7 +32,7 @@ function pmpro_init_check_for_deprecated_filters() {
 add_action( 'init', 'pmpro_init_check_for_deprecated_filters', 99 );
 
 /**
- * Previously used funcion for class definitions for input fields to see if there was an error.
+ * Previously used function for class definitions for input fields to see if there was an error.
  *
  * To filter field values, we now recommend using the `pmpro_element_class` filter.
  *

@@ -5,7 +5,7 @@
 	if($pmpro_msg)
 	{
 	?>
-	<div class="<?php echo pmpro_get_element_class( array( 'pmpro_message', $pmpro_msgt ), $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
+	<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
 	<?php
 	}
 ?>
@@ -96,7 +96,7 @@
 		if($invoices)
 		{
 			?>
-			<table id="pmpro_invoices_table" class="<?php echo pmpro_get_element_class( array( 'pmpro_table', 'pmpro_invoice' ), 'pmpro_invoices_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table id="pmpro_invoices_table" class="<?php echo pmpro_get_element_class( 'pmpro_table pmpro_invoice', 'pmpro_invoices_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
 				<tr>
 					<th><?php _e('Date', 'paid-memberships-pro' ); ?></th>

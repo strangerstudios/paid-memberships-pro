@@ -552,7 +552,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
 					if ( $pmpro_include_cardtype_field ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-card-type' ), 'pmpro_payment-card-type' ); ?>">
+                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ); ?>">
                             <label for="CardType"><?php _e( 'Card Type', 'paid-memberships-pro' ); ?></label>
                             <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
 								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
@@ -565,24 +565,24 @@ class PMProGateway_stripe extends PMProGateway {
                         <input type="hidden" id="CardType" name="CardType"
                                value="<?php echo esc_attr( $CardType ); ?>"/>
 					<?php } ?>
-                    <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-account-number' ), 'pmpro_payment-account-number' ); ?>">
+                    <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
                         <label for="AccountNumber"><?php _e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
                     </div>
-                    <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-expiration' ), 'pmpro_payment-expiration' ); ?>">
+                    <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ); ?>">
                         <label for="Expiry"><?php _e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
                         <div id="Expiry"></div>
                     </div>
 					<?php
 					$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
 					if ( $pmpro_show_cvv ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-cvv' ), 'pmpro_payment-cvv' ); ?>">
+                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
                             <label for="CVV"><?php _e( 'CVC', 'paid-memberships-pro' ); ?></label>
                             <div id="CVV"></div>
                         </div>
 					<?php } ?>
 					<?php if ( $pmpro_show_discount_code ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-discount-code' ), 'pmpro_payment-discount-code' ); ?>">
+                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
                             <label for="discount_code"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
                             <input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
@@ -594,7 +594,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php } ?>
                 </div> <!-- end pmpro_checkout-fields -->
 				<?php if ( ! empty( $sslseal ) ) { ?>
-                <div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-fields-rightcol', 'pmpro_sslseal' ), 'pmpro_sslseal' ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
+                <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
             </div> <!-- end pmpro_checkout-fields-display-seal -->
 		<?php } ?>
         </div> <!-- end pmpro_payment_information_fields -->

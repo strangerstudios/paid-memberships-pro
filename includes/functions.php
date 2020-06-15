@@ -2364,66 +2364,62 @@ function pmpro_showMessage() {
 
 	if ( ! empty( $pmpro_msg ) ) {
 		?>
-		<div class="<?php echo $pmpro_msgt; ?>">
+		<div class="<?php echo pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<p><?php echo $pmpro_msg; ?></p>
 		</div>
 		<?php
 	}
 }
 
-
-/**
-Current: <div class="pmpro_member_profile_edit_wrap">
-Updated: <div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit_wrap' ); ?>">
-
-Current: <input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
-Updated: <input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'member_profile_cancel_button' ); ?>" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
-
-function my_pmpro_element_class_member_profile_cancel_button( $class, $element ) {
-	if ( $element == 'member_profile_cancel_button' ) {
-		$class = '';
-	}
-
-	return $class;
-}
-add_filter( 'pmpro_element_class_member_profile_cancel_button', 'my_pmpro_element_class_member_profile_cancel_button', 10, 2 );
-
-function my_pmpro_element_class( $class, $element ) {
-	if ( $element == 'pmpro_member_profile_edit_wrap' ) {
-		$class .= ' myownclasstoo';
-	}
-
-	return $class;
-}
-add_filter( 'pmpro_element_class', 'my_pmpro_element_class', 10, 2 );
-
-*/
-
 /**
  * Return all CSS class names for the specified element and allow custom class names to be used via filter.
  *
- * @param  array $class CSS class names for the element.
- * @param  string $element element to return class names for.
- * @return $class
+ * @since 2.3.4
+ *
+ * @param  mixed  $class A string or array of element class names.
+ * @param  string $element The element to return class names for.
+ *
+ * @return string $class A string of class names separated by spaces.
+ *
  */
 function pmpro_get_element_class( $class, $element = null ) {
 	if ( empty( $element ) ) {
 		$element = $class;
 	}
 
+	// Convert class values to an array.
 	if ( ! is_array( $class ) ) {
-		$class = explode( ' ', $class );
+		$class = explode( ' ', trim( $class ) );
 	}
 
+	// Escape elements of the array of class names.
+	$class = array_map( 'esc_attr', $class );
+
+	/**
+	 * Filters the list of CSS class names for the current element.
+	 *
+	 * @since 2.3.4
+	 *
+	 * @param array  $class An array of element class names.
+	 * @param string  $element The element to return class names for.
+	 */
 	$class = apply_filters( 'pmpro_element_class', $class, $element );
 
 	if ( ! empty( $class ) ) {
+		$class = array_unique( $class );
 		return implode( ' ', $class );
 	} else {
 		return '';
 	}
 }
 
+/**
+ * Return field state-specific CSS class names for the field.
+ *
+ * @since 2.3.4
+ *
+ * Callback for the pmpro_element_class filter.
+ */
 function pmpro_get_field_class( $class, $element ) {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
 
@@ -2447,6 +2443,7 @@ function pmpro_get_field_class( $class, $element ) {
 		$class[] = 'pmpro_required';
 	}
 
+	// DEPRECATED: Use pmpro_element_class to filter classes instead.
 	$class = apply_filters( 'pmpro_field_classes', $class, $element );
 
 	return $class;

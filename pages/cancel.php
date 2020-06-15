@@ -19,7 +19,7 @@
 		if($pmpro_msg)
 		{
 			?>
-			<div class="<?php echo pmpro_get_element_class( array( 'pmpro_message', $pmpro_msgt ), $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
 			<?php
 		}
 	?>
@@ -43,8 +43,8 @@
 				}
 			?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
-				<a class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-submit', 'pmpro_yeslink', 'yeslink' ), 'pmpro_btn-submit' ); ?>" href="<?php echo pmpro_url("cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true")?>"><?php _e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
-				<a class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-cancel', 'pmpro_nolink', 'nolink' ), 'pmpro_btn-cancel' ); ?>" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo pmpro_url("cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true")?>"><?php _e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ); ?>" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'paid-memberships-pro' );?></a>
 			</div>
 			<?php
 			}

@@ -125,7 +125,7 @@
 			<?php if($pmpro_msg)
 				{
 			?>
-				<div class="<?php echo pmpro_get_element_class( array( 'pmpro_message', $pmpro_msgt ), $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
 			<?php
 				}
 			?>
@@ -141,21 +141,21 @@
 					<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e('Billing Address', 'paid-memberships-pro' );?></span>
 				</h3>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bfirstname' ), 'pmpro_checkout-field-bfirstname' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bfirstname', 'pmpro_checkout-field-bfirstname' ); ?>">
 						<label for="bfirstname"><?php _e('First Name', 'paid-memberships-pro' );?></label>
 						<input id="bfirstname" name="bfirstname" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bfirstname' ); ?>" size="30" value="<?php echo esc_attr($bfirstname);?>" />
 					</div> <!-- end pmpro_checkout-field-bfirstname -->
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-blastname' ), 'pmpro_checkout-field-blastname' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-blastname', 'pmpro_checkout-field-blastname' ); ?>">
 						<label for="blastname"><?php _e('Last Name', 'paid-memberships-pro' );?></label>
 						<input id="blastname" name="blastname" type="text" 
 
 						class="<?php echo pmpro_get_element_class( 'input', 'blastname' ); ?>" size="30" value="<?php echo esc_attr($blastname);?>" />
 					</div> <!-- end pmpro_checkout-field-blastname -->
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-baddress1' ), 'pmpro_checkout-field-baddress1' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-baddress1', 'pmpro_checkout-field-baddress1' ); ?>">
 						<label for="baddress1"><?php _e('Address 1', 'paid-memberships-pro' );?></label>
 						<input id="baddress1" name="baddress1" type="text" class="<?php echo pmpro_get_element_class( 'input', 'baddress1' ); ?>" size="30" value="<?php echo esc_attr($baddress1);?>" />
 					</div> <!-- end pmpro_checkout-field-baddress1 -->
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-baddress2' ), 'pmpro_checkout-field-baddress2' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-baddress2', 'pmpro_checkout-field-baddress2' ); ?>">
 						<label for="baddress2"><?php _e('Address 2', 'paid-memberships-pro' );?></label>
 						<input id="baddress2" name="baddress2" type="text" class="<?php echo pmpro_get_element_class( 'input', 'baddress2' ); ?>" size="30" value="<?php echo esc_attr($baddress2);?>" /> <small class="<?php echo pmpro_get_element_class( 'lite' ); ?>">(<?php _e('optional', 'paid-memberships-pro' );?>)</small>
 					</div> <!-- end pmpro_checkout-field-baddress2 -->
@@ -165,15 +165,15 @@
 						if($longform_address)
 						{
 						?>
-							<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bcity' ), 'pmpro_checkout-field-bcity' ); ?>">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcity', 'pmpro_checkout-field-bcity' ); ?>">
 								<label for="bcity"><?php _e('City', 'paid-memberships-pro' );?></label>
 								<input id="bcity" name="bcity" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bcity' ); ?>" size="30" value="<?php echo esc_attr($bcity)?>" />
 							</div> <!-- end pmpro_checkout-field-bcity -->
-							<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bstate' ), 'pmpro_checkout-field-bstate' ); ?>">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bstate', 'pmpro_checkout-field-bstate' ); ?>">
 								<label for="bstate"><?php _e('State', 'paid-memberships-pro' );?></label>
 								<input id="bstate" name="bstate" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bstate' ); ?>" size="30" value="<?php echo esc_attr($bstate)?>" />
 							</div> <!-- end pmpro_checkout-field-bstate -->
-							<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bzipcode' ), 'pmpro_checkout-field-bzipcode' ); ?>">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bzipcode', 'pmpro_checkout-field-bzipcode' ); ?>">
 								<label for="bzipcode"><?php _e('Postal Code', 'paid-memberships-pro' );?></label>
 								<input id="bzipcode" name="bzipcode" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bzipcode' ); ?>" size="30" value="<?php echo esc_attr($bzipcode)?>" />
 							</div> <!-- end pmpro_checkout-field-bzipcode -->
@@ -182,7 +182,7 @@
 						else
 						{
 						?>
-							<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bcity_state_zip' ), 'pmpro_checkout-field-bcity_state_zip' ); ?>">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcity_state_zip', 'pmpro_checkout-field-bcity_state_zip' ); ?>">
 								<label for="bcity_state_zip"><?php _e('City, State Zip', 'paid-memberships-pro' );?></label>
 								<input id="bcity" name="bcity" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bcity' ); ?>" size="14" value="<?php echo esc_attr($bcity)?>" />,
 								<?php
@@ -235,7 +235,7 @@
 						if($show_country)
 						{
 					?>
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bcountry' ), 'pmpro_checkout-field-bcountry' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcountry', 'pmpro_checkout-field-bcountry' ); ?>">
 						<label for="bcountry"><?php _e('Country', 'paid-memberships-pro' );?></label>
 						<select name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
 							<?php
@@ -260,7 +260,7 @@
 						<?php
 						}
 					?>
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bphone' ), 'pmpro_checkout-field-bphone' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 						<label for="bphone"><?php _e('Phone', 'paid-memberships-pro' );?></label>
 						<input id="bphone" name="bphone" type="text" class="<?php echo pmpro_get_element_class( 'input', 'bphone' ); ?>" size="30" value="<?php echo esc_attr($bphone)?>" />
 					</div> <!-- end pmpro_checkout-field-bphone -->
@@ -271,11 +271,11 @@
 						if(!$bconfirmemail && $current_user->user_email)
 							$bconfirmemail = $current_user->user_email;
 					?>
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bemail' ), 'pmpro_checkout-field-bemail' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bemail', 'pmpro_checkout-field-bemail' ); ?>">
 						<label for="bemail"><?php _e('Email Address', 'paid-memberships-pro' );?></label>
 						<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo pmpro_get_element_class( 'input', 'bemail' ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bemail -->
-					<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_checkout-field-bconfirmemail' ), 'pmpro_checkout-field-bconfirmemail' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bconfirmemail', 'pmpro_checkout-field-bconfirmemail' ); ?>">
 						<label for="bconfirmemail"><?php _e('Confirm Email', 'paid-memberships-pro' );?></label>
 						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo pmpro_get_element_class( 'input', 'bconfirmemail' ); ?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
 					</div> <!-- end pmpro_checkout-field-bconfirmemail -->
@@ -348,11 +348,11 @@
 								<?php
 								}
 							?>
-						<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-account-number' ), 'pmpro_payment-account-number' ); ?>">
+						<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
 							<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
 							<input id="AccountNumber" name="AccountNumber" class="<?php echo pmpro_get_element_class( 'input', 'AccountNumber' );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
 						</div>
-						<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-expiration' ), 'pmpro_payment-expiration' ); ?>">
+						<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ); ?>">
 							<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
 							<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo pmpro_get_element_class( '', 'ExpirationMonth' ); ?>">
 								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
@@ -387,7 +387,7 @@
 									$cvv_template = plugins_url( 'paid-memberships-pro/pages/popup-cvv.html', PMPRO_DIR );
 								}
 							?>
-							<div class="<?php echo pmpro_get_element_class( array( 'pmpro_checkout-field', 'pmpro_payment-cvv' ), 'pmpro_payment-cvv' ); ?>">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
 								<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
 								<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV ');?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter($cvv_template); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 							</div>
@@ -403,8 +403,8 @@
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
 				<input type="hidden" name="update-billing" value="1" />
-				<input type="submit" class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-submit' ), 'pmpro_btn-submit' ); ?>" value="<?php _e('Update', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-cancel' ), 'pmpro_btn-cancel' ); ?>" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url("account")?>';" />
+				<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php _e('Update', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php _e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url("account")?>';" />
 			</div>
 		</form>
 		<script>

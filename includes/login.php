@@ -376,7 +376,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Note we don't show messages on the widget form.
 	if ( $message && $location !== 'widget' ) {
-		echo '<div class="' . pmpro_get_element_class( array( 'pmpro_message', esc_attr( $msgt ) ), esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
 	}
 
 	// Get the form title HTML tag.
@@ -496,13 +496,13 @@ function pmpro_login_form( $args = array() ) {
 function pmpro_lost_password_form() { ?>
 	<form id="lostpasswordform" class="<?php echo pmpro_get_element_class( 'pmpro_form', 'lostpasswordform' ); ?>" action="<?php echo wp_lostpassword_url(); ?>" method="post">
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_lost_password-fields' ); ?>">
-			<div class="<?php echo pmpro_get_element_class( array( 'pmpro_lost_password-field', 'pmpro_lost_password-field-user_login' ), 'pmpro_lost_password-field-user_login' ); ?>">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_lost_password-field pmpro_lost_password-field-user_login', 'pmpro_lost_password-field-user_login' ); ?>">
 				<label for="user_login"><?php esc_html_e( 'Username or Email Address', 'paid-memberships-pro' ); ?></label>
 				<input type="text" name="user_login" id="user_login" class="<?php echo pmpro_get_element_class( 'input', 'user_login' ); ?>" size="20" />
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
-			<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-submit' ), 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
+			<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
 		</div>
 	</form>
 	<?php
@@ -585,19 +585,19 @@ function pmpro_reset_password_form() {
 			<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['login'] ) ); ?>" autocomplete="off" />
 			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['key'] ) ); ?>" />
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password-fields' ); ?>">
-				<div class="<?php echo pmpro_get_element_class( array( 'pmpro_reset_password-field', 'pmpro_reset_password-field-pass1' ), 'pmpro_reset_password-field-pass1' ); ?>">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password-field pmpro_reset_password-field-pass1', 'pmpro_reset_password-field-pass1' ); ?>">
 					<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
-					<input type="password" name="pass1" id="pass1" class="<?php echo pmpro_get_element_class( array( 'input', 'pass1' ), 'pass1' ); ?>" size="20" value="" autocomplete="off" />
+					<input type="password" name="pass1" id="pass1" class="<?php echo pmpro_get_element_class( 'input pass1', 'pass1' ); ?>" size="20" value="" autocomplete="off" />
 					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 					<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php echo wp_get_password_hint(); ?></p>
 				</div>
-				<div class="<?php echo pmpro_get_element_class( array( 'pmpro_reset_password-field', 'pmpro_reset_password-field-pass2' ), 'pmpro_reset_password-field-pass2' ); ?>">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password-field pmpro_reset_password-field-pass2', 'pmpro_reset_password-field-pass2' ); ?>">
 					<label for="pass2"><?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ) ?></label>
 					<input type="password" name="pass2" id="pass2" class="<?php echo pmpro_get_element_class( 'input', 'pass2' ); ?>" size="20" value="" autocomplete="off" />
 				</div>
 			</div> <!-- end pmpro_reset_password-fields -->
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
-				<input type="submit" name="submit" id="resetpass-button" class="<?php echo pmpro_get_element_class( array( 'pmpro_btn', 'pmpro_btn-submit' ), 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
+				<input type="submit" name="submit" id="resetpass-button" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
 			</div>
 		</form>
 		<?php
