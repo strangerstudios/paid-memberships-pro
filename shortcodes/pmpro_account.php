@@ -166,15 +166,22 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
 							$edit_profile_url = pmpro_url( 'member_profile_edit' );
 							$change_password_url = add_query_arg( 'view', 'change-password', pmpro_url( 'member_profile_edit' ) );
-						} else {
-							$edit_profile_url = admin_url( 'profile.php' );
-							$change_password_url = admin_url( 'profile.php' );
+						} elseif ( ! empty( pmpro_getOption( 'block_dashboard' ) ) ) {
+								$edit_profile_url = admin_url( 'profile.php' );
+								$change_password_url = admin_url( 'profile.php' );
+							}
 						}
 
 						// Build the links to return.
 						$pmpro_profile_action_links = array();
-						$pmpro_profile_action_links['edit-profile'] = sprintf( '<a id="pmpro_actionlink-profile" href="%s">%s</a>', esc_url( $edit_profile_url ), esc_html__( 'Edit Profile', 'paid-memberships-pro' ) );
-						$pmpro_profile_action_links['change-password'] = sprintf( '<a id="pmpro_actionlink-change-password" href="%s">%s</a>', esc_url( $change_password_url ), esc_html__( 'Change Password', 'paid-memberships-pro' ) );
+						if ( ! empty( $edit_profile_url) ) {
+							$pmpro_profile_action_links['edit-profile'] = sprintf( '<a id="pmpro_actionlink-profile" href="%s">%s</a>', esc_url( $edit_profile_url ), esc_html__( 'Edit Profile', 'paid-memberships-pro' ) );
+						}
+
+						if ( ! empty( $change_password_url ) ) {
+							$pmpro_profile_action_links['change-password'] = sprintf( '<a id="pmpro_actionlink-change-password" href="%s">%s</a>', esc_url( $change_password_url ), esc_html__( 'Change Password', 'paid-memberships-pro' ) );
+						}
+						
 						$pmpro_profile_action_links['logout'] = sprintf( '<a id="pmpro_actionlink-logout" href="%s">%s</a>', esc_url( wp_logout_url() ), esc_html__( 'Log Out', 'paid-memberships-pro' ) );
 
 						$pmpro_profile_action_links = apply_filters( 'pmpro_account_profile_action_links', $pmpro_profile_action_links );
