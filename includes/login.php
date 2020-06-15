@@ -109,6 +109,27 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
 
 /**
+ * Make sure confirm_admin_email actions go to the default WP login page.
+ * Our login page is not set up to handle them.
+ */
+function pmpro_use_default_login_for_confirm_admin_email( $location ) {
+	if ( strpos( $location, 'action=confirm_admin_email' ) !== false ) {
+		$login_url = wp_login_url();
+		
+		remove_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+		$default_login_url = wp_login_url();
+		add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+		
+		if ( $login_url != $default_login_url ) {
+			$location = str_replace( $login_url, $default_login_url, $location );
+		}
+	}
+	
+	return $location;
+}
+add_filter( 'wp_redirect', 'pmpro_use_default_login_for_confirm_admin_email' );
+
+/**
  * Get a link to the PMPro login page.
  * Or fallback to WP default.
  * @since 2.3
