@@ -162,11 +162,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</ul>
 				<div class="pmpro_actionlinks">
 					<?php
-						// Get the edit profile and change password linkds if 'Member Profile Edit Page' is set.
+						// Get the edit profile and change password links if 'Member Profile Edit Page' is set.
 						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
 							$edit_profile_url = pmpro_url( 'member_profile_edit' );
 							$change_password_url = add_query_arg( 'view', 'change-password', pmpro_url( 'member_profile_edit' ) );
-						} elseif ( empty( pmpro_getOption( 'block_dashboard' ) ) ) {
+						} elseif ( ! pmpro_block_dashboard() ) {
 							$edit_profile_url = admin_url( 'profile.php' );
 							$change_password_url = admin_url( 'profile.php' );
 						}
