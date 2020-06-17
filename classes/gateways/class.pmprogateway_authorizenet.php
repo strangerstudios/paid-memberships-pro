@@ -337,22 +337,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		if(!empty($order->CVV2))
 			$post_values["x_card_code"] = $order->CVV2;
 
-		/**
-		 * Filters values to be sent to authorize.net.
-		 *
-		 * @since 2.4
-		 *
-		 * @param array  $post_values that will be sent.
-		 * @param string $action being performed.
-		 */
-		$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'authorize');
-
-		// This section takes the input fields and converts them to the proper format
-		// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
-		$post_string = "";
-		foreach( $post_values as $key => $value )
-			{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
-		$post_string = rtrim( $post_string, "& " );
+		$post_string = $this->build_post_string( $post_values, 'authorize' );
 
 		//curl
 		$request = curl_init($post_url); // initiate curl object
@@ -422,22 +407,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			// guide at: http://developer.authorize.net
 		);
 
-		/**
-		 * Filters values to be sent to authorize.net.
-		 *
-		 * @since 2.4
-		 *
-		 * @param array  $post_values that will be sent.
-		 * @param string $action being performed.
-		 */
-		$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'void');
-
-		// This section takes the input fields and converts them to the proper format
-		// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
-		$post_string = "";
-		foreach( $post_values as $key => $value )
-			{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
-		$post_string = rtrim( $post_string, "& " );
+		$post_string = $this->build_post_string( $post_values, 'void' );
 
 		//curl
 		$request = curl_init($post_url); // initiate curl object
@@ -548,22 +518,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			$post_values["x_card_code"] = $order->CVV2;
 		}
 
-		/**
-		 * Filters values to be sent to authorize.net.
-		 *
-		 * @since 2.4
-		 *
-		 * @param array  $post_values that will be sent.
-		 * @param string $action being performed.
-		 */
-		$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'charge');
-
-		// This section takes the input fields and converts them to the proper format
-		// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
-		$post_string = "";
-		foreach( $post_values as $key => $value )
-			{ $post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&"; }
-		$post_string = rtrim( $post_string, "& " );
+		$post_string = $this->build_post_string( $post_values, 'charge' );
 
 		//curl
 		$request = curl_init($post_url); // initiate curl object
@@ -1032,6 +987,35 @@ class PMProGateway_authorizenet extends PMProGateway
 			$order->error = $message;
 			$order->shorterror = $text;
 		}
+	}
+	
+	/**
+	 * This function takes the post_values and converts them to the proper format
+	 * for an http post. For example: "x_login=username&x_tran_key=a1B2c3D4"
+	 *
+	 * @since 2.3.4
+	 *
+	 * @param array  $post_values Values to be sent to the API
+	 * @param string $action      API action being performed.
+	 */
+	function build_post_string( $post_values, $action ) {
+		/**
+		 * Filters values to be sent to authorize.net.
+		 *
+		 * @since 2.3.4
+		 *
+		 * @param array  $post_values that will be sent.
+		 * @param string $action being performed.
+		 */
+		$post_values = apply_filters( 'pmpro_authorizenet_post_values', $post_values, $action );
+		
+		$post_string = '';
+		foreach( $post_values as $key => $value ) {
+			$post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&";
+		}
+		$post_string = rtrim( $post_string, "& " );
+		
+		return $post_string;
 	}
 
 	//Authorize.net Function
