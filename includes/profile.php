@@ -434,7 +434,7 @@ function pmpro_member_profile_edit_form() {
 	global $current_user;
 
 	if ( ! is_user_logged_in() ) {
-		echo '<div class="pmpro_message pmpro_alert"><a href="' . esc_url( pmpro_login_url() ) . '">' . esc_html__( 'Log in to edit your profile.', 'paid-memberships-pro' ) . '</a></div>';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_alert' ) . '"><a href="' . esc_url( pmpro_login_url() ) . '">' . esc_html__( 'Log in to edit your profile.', 'paid-memberships-pro' ) . '</a></div>';
 		return;
 	}
 
@@ -492,7 +492,7 @@ function pmpro_member_profile_edit_form() {
 
 		// Show error messages.
 		if ( ! empty( $errors ) ) { ?>
-			<div class="pmpro_message pmpro_error">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
 				<?php
 					foreach ( $errors as $key => $value ) {
 						echo '<p>' . $value . '</p>';
@@ -503,7 +503,7 @@ function pmpro_member_profile_edit_form() {
 			// Save updated profile fields.
 			wp_update_user( $user );
 			?>
-			<div class="pmpro_message pmpro_success">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ); ?>">
 				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
 			</div>
 		<?php }
@@ -512,38 +512,38 @@ function pmpro_member_profile_edit_form() {
 		$user = $current_user;
 	}
 	?>
-	<div class="pmpro_member_profile_edit_wrap">
-		<form id="member-profile-edit" class="pmpro_form" action="" method="post">
+	<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit_wrap' ); ?>">
+		<form id="member-profile-edit" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="" method="post">
 
 			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
 
-			<div class="pmpro_checkout_box-user">
-				<div class="pmpro_member_profile_edit-fields">
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout_box-user' ); ?>">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-fields' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name', 'pmpro_member_profile_edit-field-first_name' ); ?>">
 						<label for="first_name"><?php _e( 'First Name', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
+						<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $user->first_name ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'first_name' ); ?>" />
 					</div> <!-- end pmpro_member_profile_edit-field-first_name -->
 
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-last_name">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field-last_name', 'pmpro_member_profile_edit-field-last_name' ); ?>">
 						<label for="last_name"><?php _e( 'Last Name', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
+						<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $user->last_name ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'last_name' ); ?>" />
 					</div> <!-- end pmpro_member_profile_edit-field-last_name -->
 
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name', 'pmpro_member_profile_edit-field-display_name' ); ?>">
 						<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $user->display_name ); ?>" class="input <?php echo pmpro_getClassForField( 'display_name' );?>" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+						<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $user->display_name ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'display_name' ); ?>" />
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 					</div> <!-- end pmpro_member_profile_edit-field-display_name -->
 
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email', 'pmpro_member_profile_edit-field-email' ); ?>">
 						<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?></label>
 						
 						<?php if ( current_user_can( 'manage_options' ) ) { ?>
-						<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
-						<p class="lite"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
+						<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', '(email)' ); ?>" />
+						<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 						<?php } else { ?>
-						<input type="email" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+						<input type="email" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'email' ); ?>" />
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 						<?php } ?>
 					</div>					
 				</div> <!-- end pmpro_member_profile_edit-fields -->
@@ -561,10 +561,10 @@ function pmpro_member_profile_edit_form() {
 			?>
 			<input type="hidden" name="action" value="update-profile" />
 			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
-			<div class="pmpro_submit">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
-				<input type="submit" name="submit" class="pmpro_btn pmpro_btn-submit" value="<?php _e( 'Update Profile', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php _e( 'Update Profile', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->
@@ -652,43 +652,43 @@ function pmpro_change_password_form() {
 	?>
 	<h2><?php _e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
-		<div class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>">
+		<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<?php echo esc_html( $pmpro_msg ); ?>
 		</div>
 	<?php } ?>
-	<div class="pmpro_change_password_wrap">
-		<form id="change-password" class="pmpro_form" action="" method="post">
+	<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password_wrap' ); ?>">
+		<form id="change-password" class="<?php echo pmpro_get_element_class( 'pmpro_form', 'change-password' ); ?>" action="" method="post">
 
 			<?php wp_nonce_field( 'change-password-user_' . $current_user->ID, 'change_password_user_nonce' ); ?>
 
-			<div class="pmpro_checkout_box-password">
-				<div class="pmpro_change_password-fields">
-					<div class="pmpro_change_password-field pmpro_change_password-field-password_current">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout_box-password' ); ?>">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-fields' ); ?>">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-password_current', 'pmpro_change_password-field-password_current' ); ?>">
 						<label for="password_current"><?php _e( 'Current Password', 'paid-memberships-pro' ); ?></label></th>
-						<input type="password" name="password_current" id="password_current" value="" class="input <?php echo pmpro_getClassForField( 'password_current' );?>" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+						<input type="password" name="password_current" id="password_current" value="" class="<?php echo pmpro_get_element_class( 'input', 'password_current' ); ?>" />
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 					</div> <!-- end pmpro_change_password-field-password_current -->
-					<div class="pmpro_change_password-field pmpro_change_password-field-pass1">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-pass1', 'pmpro_change_password-field-pass1' ); ?>">
 						<label for="pass1"><?php _e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
-						<input type="password" name="pass1" id="pass1" value="" class="input pass1 <?php echo pmpro_getClassForField( 'pass1' );?>" autocomplete="off" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+						<input type="password" name="pass1" id="pass1" value="" class="<?php echo pmpro_get_element_class( 'input pass1', 'pass1' ); ?>" autocomplete="off" />
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 						<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
-						<p class="lite"><?php echo wp_get_password_hint(); ?></p>
+						<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php echo wp_get_password_hint(); ?></p>
 					</div> <!-- end pmpro_change_password-field-pass1 -->
-					<div class="pmpro_change_password-field pmpro_change_password-field-pass2">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-pass2', 'pmpro_change_password-field-pass2' ); ?>">
 						<label for="pass2"><?php _e( 'Confirm New Password', 'paid-memberships-pro' ); ?></label></th>
-						<input type="password" name="pass2" id="pass2" value="" class="input <?php echo pmpro_getClassForField( 'pass2' );?>" autocomplete="off" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+						<input type="password" name="pass2" id="pass2" value="" class="<?php echo pmpro_get_element_class( 'input', 'pass2' ); ?>" autocomplete="off" />
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 					</div> <!-- end pmpro_change_password-field-pass2 -->
 				</div> <!-- end pmpro_change_password-fields -->
 			</div> <!-- end pmpro_checkout_box-password -->
 
 			<input type="hidden" name="action" value="change-password" />
 			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
-			<div class="pmpro_submit">
+			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
-				<input type="submit" class="pmpro_btn pmpro_btn-submit" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="pmpro_btn pmpro_btn-cancel" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
+				<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_change_password_wrap -->
