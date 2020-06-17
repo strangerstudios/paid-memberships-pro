@@ -337,6 +337,16 @@
 			if(!empty($order->CVV2))
 				$post_values["x_card_code"] = $order->CVV2;
 
+			/**
+			 * Filters values to be sent to authorize.net.
+			 *
+			 * @since 2.4
+			 *
+			 * @param array  $post_values that will be sent.
+			 * @param string $action being performed.
+			 */
+			$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'authorize');
+
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
 			$post_string = "";
@@ -411,6 +421,16 @@
 				// Additional fields can be added here as outlined in the AIM integration
 				// guide at: http://developer.authorize.net
 			);
+
+			/**
+			 * Filters values to be sent to authorize.net.
+			 *
+			 * @since 2.4
+			 *
+			 * @param array  $post_values that will be sent.
+			 * @param string $action being performed.
+			 */
+			$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'void');
 
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
@@ -527,6 +547,16 @@
 			if(!empty($order->CVV2) ) {
 				$post_values["x_card_code"] = $order->CVV2;
 			}
+
+			/**
+			 * Filters values to be sent to authorize.net.
+			 *
+			 * @since 2.4
+			 *
+			 * @param array  $post_values that will be sent.
+			 * @param string $action being performed.
+			 */
+			$post_values = apply_filters("pmpro_authorizenet_post_values", $post_values, 'charge');
 
 			// This section takes the input fields and converts them to the proper format
 			// for an http post.  For example: "x_login=username&x_tran_key=a1B2c3D4"
