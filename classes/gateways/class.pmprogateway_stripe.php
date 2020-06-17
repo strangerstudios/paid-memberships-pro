@@ -2690,6 +2690,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		$amount = $params['amount'];
 		$application_fee = $amount * ( self::get_application_fee_percentage() / 100 );
+		$application_fee = floor( $application_fee );
 		if ( ! empty( $application_fee ) ) {
 			$params['application_fee_amount'] = intval( $application_fee );
 		}
