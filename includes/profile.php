@@ -517,35 +517,28 @@ function pmpro_member_profile_edit_form() {
 
 			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
 
+			<?php $user_fields = apply_filters( 'pmpro_member_profile_edit_user_object_fields', 
+				array(
+					'first_name'	=> __( 'First Name', 'paid-memberships-pro' ),
+					'last_name'		=> __( 'Last Name', 'paid-memberships-pro' ),
+					'display_name'	=> __( 'Display name publicly as', 'paid-memberships-pro' ),
+					'user_email'	=> __( 'Email', 'paid-memberships-pro' ),
+				)
+			); ?>
+
 			<div class="pmpro_checkout_box-user">
 				<div class="pmpro_member_profile_edit-fields">
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-first_name">
-						<label for="first_name"><?php _e( 'First Name', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="first_name" id="first_name" value="<?php echo esc_attr( $user->first_name ); ?>" class="input <?php echo pmpro_getClassForField( 'first_name' );?>" />
+					<?php foreach ( $user_fields as $field_key => $label ) { ?>
+						<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-<?php esc_attr_e( $field_key ); ?>">
+							<label for="<?php esc_attr_e( $field_key ); ?>"><?php esc_html_e( $label ); ?></label>
+							<?php if ( current_user_can( 'manage_options' ) && $field_key === 'user_email' ) { ?>
+								<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
+								<p class="lite"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
+							<?php } else { ?>
+								<input type="text" name="<?php esc_attr_e( $field_key ); ?>" id="<?php esc_attr_e( $field_key ); ?>" value="<?php echo esc_attr( $user->{$field_key} ); ?>" class="input <?php echo pmpro_getClassForField( esc_attr( $field_key ) ); ?>" />
+							<?php } ?>
 					</div> <!-- end pmpro_member_profile_edit-field-first_name -->
-
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-last_name">
-						<label for="last_name"><?php _e( 'Last Name', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="last_name" id="last_name" value="<?php echo esc_attr( $user->last_name ); ?>" class="input <?php echo pmpro_getClassForField( 'last_name' );?>" />
-					</div> <!-- end pmpro_member_profile_edit-field-last_name -->
-
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-display_name">
-						<label for="display_name"><?php _e( 'Display name publicly as', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="display_name" id="display_name" value="<?php echo esc_attr( $user->display_name ); ?>" class="input <?php echo pmpro_getClassForField( 'display_name' );?>" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
-					</div> <!-- end pmpro_member_profile_edit-field-display_name -->
-
-					<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-email">
-						<label for="email"><?php _e( 'Email', 'paid-memberships-pro' ); ?></label>
-						
-						<?php if ( current_user_can( 'manage_options' ) ) { ?>
-						<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
-						<p class="lite"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
-						<?php } else { ?>
-						<input type="email" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="input <?php echo pmpro_getClassForField( 'email' );?>" />
-						<span class="pmpro_asterisk"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
-						<?php } ?>
-					</div>					
+					<?php } ?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
 			</div> <!-- end pmpro_checkout_box-user -->
 
