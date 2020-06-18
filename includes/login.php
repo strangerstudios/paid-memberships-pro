@@ -738,7 +738,9 @@ add_action( 'login_form_rp', 'pmpro_do_password_reset' );
 add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
 
 /**
- * Replace the default URL inside the email with the membership account page login URL instead.
+ * Replace the default URL inside the password reset email
+ * with the membership account page login URL instead.
+ *
  * @since 2.3
  */
 function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
@@ -752,6 +754,24 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 	return $message;
 }
 add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10, 4 );
+
+/**
+ * Replace the default login URL in the new user notification email
+ * with the membership account page login URL instead.
+ *
+ * @since 2.3.4
+ */
+function pmpro_new_user_notification_email_filter( $message, $user, $blogname ) {
+
+	$login_page_id = pmpro_getOption( 'login_page_id' );
+    if ( ! empty ( $login_page_id ) ) {
+        $login_url = get_permalink( $login_page_id );
+		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
+	}
+
+	return $message;
+}
+add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.
