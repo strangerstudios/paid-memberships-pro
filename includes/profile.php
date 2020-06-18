@@ -20,7 +20,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!current_user_can($membership_level_capability))
 		return false;
 
-	global $wpdb;	
+	global $wpdb;
 	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -430,7 +430,7 @@ function pmpro_sanitize( $value ) {
  *
  * @since 2.3
  */
-function pmpro_member_profile_edit_form() { 
+function pmpro_member_profile_edit_form() {
 	global $current_user;
 
 	if ( ! is_user_logged_in() ) {
@@ -472,12 +472,12 @@ function pmpro_member_profile_edit_form() {
 		if ( empty( $user->display_name ) ) {
 			$errors[] = __( 'Please enter a display name.', 'paid-memberships-pro' );
 		}
-		
+
 		// Don't allow admins to change their email address.
 		if ( current_user_can( 'manage_options' ) ) {
 			$user->user_email = $current_user->user_email;
 		}
-		
+
 		// Validate email address.
 		if ( empty( $user->user_email ) ) {
 			$errors[] = __( 'Please enter an email address.', 'paid-memberships-pro' );
@@ -537,7 +537,7 @@ function pmpro_member_profile_edit_form() {
 							<?php } else { ?>
 								<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $user->{$field_key} ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
 							<?php } ?>
-					</div> <!-- end pmpro_member_profile_edit-field-first_name -->
+            </div>
 					<?php } ?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
 			</div> <!-- end pmpro_checkout_box-user -->
@@ -572,23 +572,23 @@ function pmpro_member_profile_edit_form() {
  *
  * @since 2.3
  */
-function pmpro_change_password_process() {		
+function pmpro_change_password_process() {
 	global $current_user;
-	
+
 	// Make sure we're on the right page.
 	if ( empty( $_POST['action'] ) || $_POST['action'] != 'change-password' ) {
 		return;
 	}
-	
+
 	// Only let users change their own password.
 	if ( empty( $current_user ) || empty( $_POST['user_id'] ) || $current_user->ID != $_POST['user_id'] ) {
 		return;
 	}
-	
+
 	// Check the nonce.
 	if ( ! wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
 		return;
-	}		
+	}
 
 	// Get all password values from the $_POST.
 	if ( ! empty( $_POST['password_current'] ) ) {
@@ -606,7 +606,7 @@ function pmpro_change_password_process() {
 	} else {
 		$pass2 = '';
 	}
-	
+
 	// Check that all password information is correct.
 	$error = false;
 	if ( isset( $password_current ) && ( empty( $pass1 ) || empty( $pass2 ) ) ) {
@@ -618,15 +618,15 @@ function pmpro_change_password_process() {
 	} elseif ( ! empty( $pass1 ) && ! wp_check_password( $password_current, $current_user->user_pass, $current_user->ID ) ) {
 		$error = __( 'Your current password is incorrect.', 'paid-memberships-pro' );
 	}
-		
+
 	// Change the password.
 	if ( ! empty( $pass1 ) && empty( $error ) ) {
 		wp_set_password( $pass1, $current_user->ID );
-		
+
 		//setting some cookies
 		wp_set_current_user( $current_user->ID, $current_user->user_login );
 		wp_set_auth_cookie( $current_user->ID, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
-		
+
 		pmpro_setMessage( __( 'Your password has been updated.', 'paid-memberships-pro' ), 'pmpro_success' );
 	} else {
 		pmpro_setMessage( $error, 'pmpro_error' );
@@ -640,8 +640,8 @@ add_action( 'init', 'pmpro_change_password_process' );
  *
  * @since 2.3
  */
-function pmpro_change_password_form() { 
-	global $current_user, $pmpro_msg, $pmpro_msgt;	
+function pmpro_change_password_form() {
+	global $current_user, $pmpro_msg, $pmpro_msgt;
 	?>
 	<h2><?php _e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
