@@ -369,7 +369,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Get Errors from password reset.
 	if ( isset( $_REQUEST['errors'] ) ) {
-		switch ( sanitize_text_field( $_REQUEST['errors'] ) ) {
+		$password_reset_errors = sanitize_text_field( $_REQUEST['errors'] );
+	} elseif ( isset( $_REQUEST['error'] ) ) {
+		$password_reset_errors = sanitize_text_field( $_REQUEST['error'] );
+	}
+	if ( isset( $password_reset_errors ) ) {
+		switch ( $password_reset_errors ) {
 			case 'invalidcombo':
 				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
