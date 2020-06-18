@@ -89,29 +89,20 @@ function pmpro_membership_level_profile_fields($user)
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			$end_date = (!empty($user->membership_level) && !empty($user->membership_level->enddate)); // Returned as UTC timestamp
 
-			// Convert UTC to local time
-            if ( $end_date ) {
-	            $user->membership_level->enddate = strtotime( $wp_tz, $user->membership_level->enddate );
-            }
-
 			//some vars for the dates
-			$current_day = date("j", current_time('timestamp'));
-			if($end_date)
-				$selected_expires_day = date("j", $user->membership_level->enddate);
-			else
-				$selected_expires_day = $current_day;
-
-			$current_month = date("M", current_time('timestamp'));
-			if($end_date)
-				$selected_expires_month = date("m", $user->membership_level->enddate);
-			else
-				$selected_expires_month = date("m");
-
-			$current_year = date("Y", current_time('timestamp'));
-			if($end_date)
-				$selected_expires_year = date("Y", $user->membership_level->enddate);
-			else
-				$selected_expires_year = (int)$current_year + 1;
+			if( $end_date && 'UTC' === $wp_tz ) {
+				$selected_expires_day =  date( 'j', $user->membership_level->enddate );
+				$selected_expires_month =  date( 'm', $user->membership_level->enddate );
+				$selected_expires_year =  date( 'Y', $user->membership_level->enddate );
+			} elseif( $end_date ) {
+				$selected_expires_day = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'j' );
+				$selected_expires_month = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'm' );
+				$selected_expires_year = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'Y' );
+			} else {
+				$selected_expires_day = date( 'j', current_time('timestamp') );
+				$selected_expires_month = date( 'm', current_time('timestamp') );
+				$selected_expires_year = date( 'Y', current_time('timestamp') ) + 1;
+			}
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -127,7 +118,7 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
+							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . date("Y", current_time( 'timestamp' ) ), current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
