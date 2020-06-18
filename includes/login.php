@@ -109,6 +109,27 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
 
 /**
+ * Make sure confirm_admin_email actions go to the default WP login page.
+ * Our login page is not set up to handle them.
+ */
+function pmpro_use_default_login_for_confirm_admin_email( $location ) {
+	if ( strpos( $location, 'action=confirm_admin_email' ) !== false ) {
+		$login_url = wp_login_url();
+		
+		remove_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+		$default_login_url = wp_login_url();
+		add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+		
+		if ( $login_url != $default_login_url ) {
+			$location = str_replace( $login_url, $default_login_url, $location );
+		}
+	}
+	
+	return $location;
+}
+add_filter( 'wp_redirect', 'pmpro_use_default_login_for_confirm_admin_email' );
+
+/**
  * Get a link to the PMPro login page.
  * Or fallback to WP default.
  * @since 2.3
@@ -348,7 +369,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Get Errors from password reset.
 	if ( isset( $_REQUEST['errors'] ) ) {
-		switch ( sanitize_text_field( $_REQUEST['errors'] ) ) {
+		$password_reset_errors = sanitize_text_field( $_REQUEST['errors'] );
+	} elseif ( isset( $_REQUEST['error'] ) ) {
+		$password_reset_errors = sanitize_text_field( $_REQUEST['error'] );
+	}
+	if ( isset( $password_reset_errors ) ) {
+		switch ( $password_reset_errors ) {
 			case 'invalidcombo':
 				$message = __( 'There is no account with that username or email address.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
@@ -717,7 +743,9 @@ add_action( 'login_form_rp', 'pmpro_do_password_reset' );
 add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
 
 /**
- * Replace the default URL inside the email with the membership account page login URL instead.
+ * Replace the default URL inside the password reset email
+ * with the membership account page login URL instead.
+ *
  * @since 2.3
  */
 function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
@@ -731,6 +759,24 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 	return $message;
 }
 add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10, 4 );
+
+/**
+ * Replace the default login URL in the new user notification email
+ * with the membership account page login URL instead.
+ *
+ * @since 2.3.4
+ */
+function pmpro_new_user_notification_email_filter( $message, $user, $blogname ) {
+
+	$login_page_id = pmpro_getOption( 'login_page_id' );
+    if ( ! empty ( $login_page_id ) ) {
+        $login_url = get_permalink( $login_page_id );
+		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
+	}
+
+	return $message;
+}
+add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.

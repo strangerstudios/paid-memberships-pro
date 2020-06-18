@@ -130,7 +130,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
 							?>
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#2997c8;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php esc_html_e( number_format_i18n( $total_members ) ); ?></span><?php esc_html_e( ' Total Members&mdash;great work!', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#2997c8;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php esc_html_e( number_format_i18n( $total_members ) ); ?></span><?php esc_html_e( ' Total Members', 'paid-memberships-pro' ); ?></h3>
 							<?php
 							$members_per_level = $wpdb->get_results(
 								"
