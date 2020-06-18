@@ -454,8 +454,8 @@ function pmpro_member_profile_edit_form() {
 		$errors = array();
 
 		// Get all values from the $_POST, sanitize them, and build the $user object.
-		if ( isset( $_POST['email'] ) ) {
-			$user->user_email = sanitize_text_field( wp_unslash( $_POST['email'] ) );
+		if ( isset( $_POST['user_email'] ) ) {
+			$user->user_email = sanitize_text_field( wp_unslash( $_POST['user_email'] ) );
 		}
 		if ( isset( $_POST['first_name'] ) ) {
 			$user->first_name = sanitize_text_field( $_POST['first_name'] );
@@ -534,7 +534,7 @@ function pmpro_member_profile_edit_form() {
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field- ' . $field_key, 'pmpro_member_profile_edit-field- ' . $field_key ); ?>">
 						<label for="<?php echo esc_attr( $field_key ); ?>"><?php esc_html_e( $label ); ?></label>
 						<?php if ( current_user_can( 'manage_options' ) && $field_key === 'user_email' ) { ?>
-							<input type="text" readonly="readonly" name="email" id="email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'email' ); ?>" />
+							<input type="text" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'user_email' ); ?>" />
 							<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 						<?php } else { ?>
 							<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $user->{$field_key} ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
