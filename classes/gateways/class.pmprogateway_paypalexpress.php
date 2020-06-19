@@ -46,7 +46,7 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
-			
+
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -236,7 +236,7 @@
 
 			return $fields;
 		}
-		
+
 		/**
 		 * Code added to checkout preheader.
 		 *
@@ -434,7 +434,7 @@
 		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
-		{	
+		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
@@ -760,19 +760,20 @@
 			// Always cancel the order locally even if PayPal might fail
 			$order->updateStatus("cancelled");
 
-			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.			
+			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
 			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
 				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
 				// recurring_payment_failed transaction still need to be cancelled
 				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
-					return true;	
+					return true;
 				}
 			}
-			
+
 			// Cancel at gateway
-			$this->cancelGateway($order);
+			$this->cancelSubscriptionAtGateway($order);
 		}
-		function cancelGateway(&$order) {
+
+		function cancelSubscriptionAtGateway(&$order) {
 			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
