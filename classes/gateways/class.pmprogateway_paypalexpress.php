@@ -768,7 +768,11 @@
 					return true;	
 				}
 			}
-
+			
+			// Cancel at gateway
+			$this->cancelGateway($order);
+		}
+		function cancelGateway(&$order) {
 			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
