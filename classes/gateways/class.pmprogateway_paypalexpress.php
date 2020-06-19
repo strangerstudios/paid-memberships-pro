@@ -770,7 +770,7 @@
 			}
 
 			// Cancel at gateway
-			$this->cancelSubscriptionAtGateway($order);
+			return $this->cancelSubscriptionAtGateway($order);
 		}
 
 		function cancelSubscriptionAtGateway(&$order) {
