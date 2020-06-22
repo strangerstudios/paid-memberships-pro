@@ -55,7 +55,7 @@ jQuery( document ).ready( function( $ ) {
 		event.preventDefault();
 
 		// Double check in case a discount code made the level free.
-		if ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) {
+		if ( ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) && ! pmproStripe.usingPaymentRequestButton ) {
 
 			if ( pmproStripe.verifyAddress ) {
 				address = {
@@ -87,6 +87,37 @@ jQuery( document ).ready( function( $ ) {
 			return true;	//not using Stripe anymore
 		}
 	});
+
+	// Additional payment methods.
+	// Create payment request
+	var paymentRequest = stripe.paymentRequest({
+		country: 'US',
+		currency: 'usd',
+		total: {
+		  label: 'Demo total',
+		  amount: 150,
+		},
+		requestPayerName: true,
+		requestPayerEmail: true,
+	  });
+	var prButton = elements.create('paymentRequestButton', {
+		paymentRequest: paymentRequest,
+	});
+	// Mount xpay button.
+	paymentRequest.canMakePayment().then(function(result) {
+	if (result) {
+		prButton.mount('#payment-request-button');
+	} else {
+		document.getElementById('payment-request-button').style.display = 'none';
+	}
+	});
+	// Handle xpay confirmation.
+	paymentRequest.on('paymentmethod', function( event ) {
+		// Confirm the PaymentIntent without handling potential next actions (yet).
+		pmproStripe.usingPaymentRequestButton = true;
+		$( '#pmpro_stripe_payment_method_id' ).val( event.paymentMethod.id );
+		$( '.pmpro_form' ).submit();
+	  });
 
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
