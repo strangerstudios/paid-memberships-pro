@@ -165,7 +165,7 @@ function pmpro_report_sales_page()
 	}
 	else
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$date_function = 'YEAR';
 		$currently_in_period = true;
 	}
