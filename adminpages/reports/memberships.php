@@ -521,7 +521,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	elseif( $period == 'this year')
 		$startdate = date_i18n( 'Y' ) . '-01-01';
 	else
-		$startdate = '';
+		$startdate = '1970-01-01';
 
 
 	//build query
