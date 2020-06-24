@@ -251,7 +251,8 @@ class PMProGateway_stripe extends PMProGateway {
 			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards'
+			'accepted_credit_cards',
+			'stripe_payment_request_button',
 		);
 
 		return $options;
@@ -323,6 +324,21 @@ class PMProGateway_stripe extends PMProGateway {
 					        <?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
                 </select>
 				<p class="description"><?php _e( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ); ?></p>
+            </td>
+        </tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+            <th scope="row" valign="top">
+                <label for="stripe_payment_request_button"><?php _e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>
+                    :</label>
+            </th>
+            <td>
+                <select id="stripe_payment_request_button" name="stripe_payment_request_button">
+                    <option value="0"
+					        <?php if ( empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+                    <option value="1"
+					        <?php if ( ! empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                </select>
+				<p class="description"><?php printf( __( "Choose 'Yes' to allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser.<br /><small>When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a %s>More Information</a></small>", 'paid-memberships-pro' ), ' target="_blank" href="https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay"' ); ?></p>
             </td>
         </tr>
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -542,7 +558,11 @@ class PMProGateway_stripe extends PMProGateway {
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
                 <span class="pmpro_checkout-h3-name"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-				<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>
+				<?php
+				if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
+					echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
+				}
+				?>
                 <span class="pmpro_checkout-h3-msg"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>

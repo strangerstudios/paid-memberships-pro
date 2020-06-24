@@ -88,33 +88,35 @@ jQuery( document ).ready( function( $ ) {
 		}
 	});
 
-	// Additional payment methods.
-	// Create payment request
-	var paymentRequest = stripe.paymentRequest({
-		country: 'US',
-		currency: 'usd',
-		total: {
-		  label: 'Demo total',
-		  amount: 150,
-		},
-		requestPayerName: true,
-		requestPayerEmail: true,
-	  });
-	var prButton = elements.create('paymentRequestButton', {
-		paymentRequest: paymentRequest,
-	});
-	// Mount payment request button.
-	paymentRequest.canMakePayment().then(function(result) {
-	if (result) {
-		prButton.mount('#payment-request-button');
-	} else {
-		document.getElementById('payment-request-button').style.display = 'none';
+	// Check if Payment Request Button is enabled.
+	if ( $('#payment-request-button').length ) {
+		// Create payment request
+		var paymentRequest = stripe.paymentRequest({
+			country: 'US',
+			currency: 'usd',
+			total: {
+			label: 'Demo total',
+			amount: 150,
+			},
+			requestPayerName: true,
+			requestPayerEmail: true,
+		});
+		var prButton = elements.create('paymentRequestButton', {
+			paymentRequest: paymentRequest,
+		});
+		// Mount payment request button.
+		paymentRequest.canMakePayment().then(function(result) {
+		if (result) {
+			prButton.mount('#payment-request-button');
+		} else {
+			$('#payment-request-button').hide();
+		}
+		});
+		// Handle payment request button confirmation.
+		paymentRequest.on('paymentmethod', function( event ) {
+			stripeResponseHandler( event );
+		});
 	}
-	});
-	// Handle payment request button confirmation.
-	paymentRequest.on('paymentmethod', function( event ) {
-		stripeResponseHandler( event );
-	  });
 
 	// Handle the response from Stripe.
 	function stripeResponseHandler( response ) {
