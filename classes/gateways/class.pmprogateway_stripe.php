@@ -410,13 +410,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
 		unset( $fields['CVV'] );
-		if ( ! empty( $_POST['pmpro_stripe_payment_method_id'] ) ) {
-			// Using xpay
-			// TODO: this may be insecure way to pass payment method id.
-			unset( $fields['AccountNumber'] );
-			unset( $fields['ExpirationMonth'] );
-			unset( $fields['ExpirationYear'] );
-		}
 
 		//if using stripe lite, remove some fields from the required array
 		if ( $pmpro_stripe_lite ) {
@@ -550,7 +543,6 @@ class PMProGateway_stripe extends PMProGateway {
             <h3>
                 <span class="pmpro_checkout-h3-name"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
 				<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>
-				<input type="hidden" name="pmpro_stripe_payment_method_id" id="pmpro_stripe_payment_method_id" />
                 <span class="pmpro_checkout-h3-msg"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
@@ -1086,9 +1078,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	function process( &$order ) {
-		if ( ! empty( $_POST['pmpro_stripe_payment_method_id'] ) ) {
-			$order->payment_method_id = $_POST['pmpro_stripe_payment_method_id'];
-		}
 		$steps = array(
 			'set_customer',
 			'set_payment_method',
