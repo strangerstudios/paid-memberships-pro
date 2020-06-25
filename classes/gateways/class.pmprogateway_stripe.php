@@ -9,6 +9,7 @@ use Stripe\SetupIntent as Stripe_SetupIntent;
 use Stripe\Source as Stripe_Source;
 use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
+use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 
 define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
 
@@ -191,6 +192,7 @@ class PMProGateway_stripe extends PMProGateway {
 			) );
 		}
 
+		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 	}
 
@@ -2607,6 +2609,76 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 	}
+
+	/**
+ 	 * Get available Apple Pay domains.
+ 	 */
+	  static function pmpro_get_apple_pay_domains( $limit = 10 ) {
+		try {
+			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
+		} catch (\Throwable $th) {
+			$apple_pay_domains = $th->getMessage();
+	   	}
+
+		return $apple_pay_domains;
+	}
+
+	/**
+ 	 * Register domain with Apple Pay.
+ 	 * 
+ 	 * @since 2.4
+ 	 */
+	static function pmpro_create_apple_pay_domain() {
+		try {
+			$create = Stripe_ApplePayDomain::create([
+				'domain_name' => $_SERVER['HTTP_HOST'],
+			]);
+		} catch (\Throwable $th) {
+			//throw $th;
+			return $th->getMessage();
+		}
+
+	}
+
+	/**
+ 	 * See if domain is registered with Apple Pay.
+ 	 * 
+ 	 * @since 2.4
+ 	 */
+	static function pmpro_does_apple_pay_domain_exist() {
+		$apple_pay_domains = self::pmpro_get_apple_pay_domains();
+	   	if ( empty( $apple_pay_domains ) ) {
+			return false;
+		}
+
+		foreach( $apple_pay_domains as $apple_pay_domain ) {
+			if ( $apple_pay_domains->domain === $_SERVER['HTTP_HOST'] ) {
+				return true;
+			}
+		}
+		return false;
+   }
+
+	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
+		// Check that we just saved Stripe settings.
+		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
+			return;
+		}
+
+		// Check that payment request button is enabled.
+		if ( empty( $payment_option_values['stripe_payment_request_button'] ) ) {
+			// We don't want to unregister domain or remove file in case
+			// other plugins are using it.
+			return;	
+		}
+
+		// Make sure that Apple Pay is set up.
+		// 1. Register Domain with Apple.
+		if ( ! self::pmpro_does_apple_pay_domain_exist() ) {
+			self::pmpro_create_apple_pay_domain();
+		}
+		// 2. Host domain association file.
+   }
 
 	function clean_up( &$order ) {
 		if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
