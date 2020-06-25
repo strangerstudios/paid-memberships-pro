@@ -1954,8 +1954,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->getCustomer( $order );
 
 		// Get open invoices.
-		$invoices = $this->customer->invoices();
-		$invoices = $invoices->all();
+		$invoices = Stripe_Invoice::all(['customer' => $this->customer->id, 'status' => 'open'])
 
 		// Found it, cancel it.
 		try {
