@@ -2612,7 +2612,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
  	 * Get available Apple Pay domains.
  	 */
-	  static function pmpro_get_apple_pay_domains( $limit = 10 ) {
+	  function pmpro_get_apple_pay_domains( $limit = 10 ) {
 		try {
 			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
@@ -2627,7 +2627,7 @@ class PMProGateway_stripe extends PMProGateway {
  	 * 
  	 * @since 2.4
  	 */
-	static function pmpro_create_apple_pay_domain() {
+	function pmpro_create_apple_pay_domain() {
 		try {
 			$create = Stripe_ApplePayDomain::create([
 				'domain_name' => $_SERVER['HTTP_HOST'],
@@ -2644,8 +2644,8 @@ class PMProGateway_stripe extends PMProGateway {
  	 * 
  	 * @since 2.4
  	 */
-	static function pmpro_does_apple_pay_domain_exist() {
-		$apple_pay_domains = self::pmpro_get_apple_pay_domains();
+	function pmpro_does_apple_pay_domain_exist() {
+		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
 	   	if ( empty( $apple_pay_domains ) ) {
 			return false;
 		}
@@ -2672,11 +2672,15 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Make sure that Apple Pay is set up.
-		// 1. Register Domain with Apple.
-		if ( ! self::pmpro_does_apple_pay_domain_exist() ) {
-			self::pmpro_create_apple_pay_domain();
+		// TODO: Apple Pay API functions don't seem to work with
+		//       test API keys. Need to figure this out.
+		$stripe = new PMProGateway_stripe();
+		if ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
+			// 1. Make sure domain association file available.
+			flush_rewrite_rules();
+			// 2. Register Domain with Apple.
+			$stripe->pmpro_create_apple_pay_domain();
 		}
-		// 2. Host domain association file.
    }
 
 	function clean_up( &$order ) {
