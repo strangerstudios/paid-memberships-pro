@@ -114,6 +114,36 @@
 					<label for="only_filter_pmpro_emails"><?php printf( __('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  $default_from_email );?></label>
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" valign="top">
+					<label for="pmpro_send_wp_signup"><?php esc_html_e( 'SendWP Connection', 'paid-memberships-pro' ); ?>:</label>
+				</th>
+				<td>
+				<?php
+					// Check to see if connected or not.
+					$sendwp_connected = function_exists( 'sendwp_client_connected' ) && sendwp_client_connected() ? true : false;
+
+					if ( ! $sendwp_connected ) {
+					?>
+					<button id='pmpro-sendwp-connect' class='button-primary'><?php esc_html_e( 'Connect to SendWP', 'paid-memberships-pro' ); ?></button>
+					<p class='description' id='pmpro-sendwp-description'><?php _e( sprintf( 'If you are having trouble with emails not being received by your customers. Try %s.', '<a href="#">SendWP</a>' ), 'paid-memberships-pro' ); ?></p>
+					<?php
+					} else {
+					?>
+					<button id='pmpro-sendwp-connect' class='button-primary'><?php esc_html_e( 'Disconnect from SendWP', 'paid-memberships-pro' ); ?></button>
+					<?php
+
+					// Update SendWP status to see if email forwarding is enabled or not.
+					$sendwp_email_forwarding = function_exists( 'sendwp_forwarding_enabled' ) && sendwp_forwarding_enabled() ? true : false;
+					
+					// Messages for connected or not.
+					$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://sendwp.com/account/' target='_blank' rel='nofollow'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
+					$disconnected = ' ' . sprintf( __( 'Please enable Email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('/tools.php?page=sendwp') . '">SendWP Settings</a>' );
+					}
+					?>
+					<p class='description' id='pmpro-sendwp-description'><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
+				</td>
+			</tr>
 		</tbody>
 		</table>
 		
