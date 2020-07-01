@@ -197,7 +197,7 @@ function pmpro_report_memberships_page()
 	}
 	elseif($period == "annual")
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'YEAR';
 	}

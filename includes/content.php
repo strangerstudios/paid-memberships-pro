@@ -368,7 +368,7 @@ function pmpro_membership_content_filter($content, $skipcheck = false)
             }
         }
 
-		$pmpro_content_message_pre = '<div class="pmpro_content_message">';
+		$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
 		$pmpro_content_message_post = '</div>';
 
 		$sr_search = array("!!levels!!", "!!referrer!!", "!!login_url!!", "!!login_page_url!!", "!!levels_url!!", "!!levels_page_url!!");

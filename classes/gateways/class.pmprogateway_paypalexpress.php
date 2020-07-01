@@ -46,7 +46,7 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
-			
+
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -236,7 +236,7 @@
 
 			return $fields;
 		}
-		
+
 		/**
 		 * Code added to checkout preheader.
 		 *
@@ -434,7 +434,7 @@
 		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
-		{	
+		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
@@ -473,12 +473,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -760,15 +760,20 @@
 			// Always cancel the order locally even if PayPal might fail
 			$order->updateStatus("cancelled");
 
-			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.			
+			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
 			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
 				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
 				// recurring_payment_failed transaction still need to be cancelled
 				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
-					return true;	
+					return true;
 				}
 			}
 
+			// Cancel at gateway
+			return $this->cancelSubscriptionAtGateway($order);
+		}
+
+		function cancelSubscriptionAtGateway(&$order) {
 			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");

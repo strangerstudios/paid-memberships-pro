@@ -32,6 +32,16 @@ function pmpro_init_check_for_deprecated_filters() {
 add_action( 'init', 'pmpro_init_check_for_deprecated_filters', 99 );
 
 /**
+ * Previously used function for class definitions for input fields to see if there was an error.
+ *
+ * To filter field values, we now recommend using the `pmpro_element_class` filter.
+ *
+ */
+function pmpro_getClassForField( $field ) {
+	pmpro_get_element_class( '', $field );
+}
+
+/**
  * Redirect some old menu items to their new location
  */
 function pmpro_admin_init_redirect_old_menu_items() {	

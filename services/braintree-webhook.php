@@ -116,6 +116,9 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//data about this transaction
 	$transaction = $webhookNotification->subscription->transactions[0];
 
+	//log it for debug email
+	$logstr[] = var_export( $transaction );
+
 	//alright. create a new order/invoice
 	$morder                              = new \MemberOrder();
 	$morder->user_id                     = $old_order->user_id;

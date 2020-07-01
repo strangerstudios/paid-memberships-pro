@@ -33,10 +33,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	?>	
 	<div id="pmpro_account">		
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
-			<div id="pmpro_account-membership" class="pmpro_box">
+			<div id="pmpro_account-membership" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ); ?>">
 				
 				<h3><?php _e("My Memberships", 'paid-memberships-pro' );?></h3>
-				<table class="pmpro_table" width="100%" cellpadding="0" cellspacing="0" border="0">
+				<table class="<?php echo pmpro_get_element_class( 'pmpro_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
 							<th><?php _e("Level", 'paid-memberships-pro' );?></th>
@@ -81,9 +81,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							foreach($mylevels as $level) {
 						?>
 						<tr>
-							<td class="pmpro_account-membership-levelname">
+							<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-levelname' ); ?>">
 								<?php echo $level->name?>
-								<div class="pmpro_actionlinks">
+								<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
 									<?php do_action("pmpro_member_action_links_before"); ?>
 									
 									<?php
@@ -122,10 +122,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									<?php do_action("pmpro_member_action_links_after"); ?>
 								</div> <!-- end pmpro_actionlinks -->
 							</td>
-							<td class="pmpro_account-membership-levelfee">
+							<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-levelfee' ); ?>">
 								<p><?php echo pmpro_getLevelCost($level, true, true);?></p>
 							</td>
-							<td class="pmpro_account-membership-expiration">
+							<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-expiration' ); ?>">
 							<?php 
 								if($level->enddate)
 									$expiration_text = date_i18n( get_option( 'date_format' ), $level->enddate );
@@ -140,7 +140,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					</tbody>
 				</table>
 				<?php //Todo: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>
-				<div class="pmpro_actionlinks">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
 					<a id="pmpro_actionlink-levels" href="<?php echo pmpro_url("levels")?>"><?php _e("View all Membership Options", 'paid-memberships-pro' );?></a>
 				</div>
 
@@ -148,7 +148,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 		
 		<?php if(in_array('profile', $sections)) { ?>
-			<div id="pmpro_account-profile" class="pmpro_box">	
+			<div id="pmpro_account-profile" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ); ?>">	
 				<?php wp_get_current_user(); ?> 
 				<h3><?php _e("My Account", 'paid-memberships-pro' );?></h3>
 				<?php if($current_user->user_firstname) { ?>
@@ -160,7 +160,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<li><strong><?php _e("Email", 'paid-memberships-pro' );?>:</strong> <?php echo $current_user->user_email?></li>
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
-				<div class="pmpro_actionlinks">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
 					<?php
 						// Get the edit profile and change password links if 'Member Profile Edit Page' is set.
 						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
@@ -201,9 +201,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 	
 		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>		
-		<div id="pmpro_account-invoices" class="pmpro_box">
+		<div id="pmpro_account-invoices" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ); ?>">
 			<h3><?php _e("Past Invoices", 'paid-memberships-pro' );?></h3>
-			<table class="pmpro_table" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table class="<?php echo pmpro_get_element_class( 'pmpro_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
 						<th><?php _e("Date", 'paid-memberships-pro' ); ?></th>
@@ -247,13 +247,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</tbody>
 			</table>						
 			<?php if($count == 6) { ?>
-				<div class="pmpro_actionlinks"><a id="pmpro_actionlink-invoices" href="<?php echo pmpro_url("invoice"); ?>"><?php _e("View All Invoices", 'paid-memberships-pro' );?></a></div>
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo pmpro_url("invoice"); ?>"><?php _e("View All Invoices", 'paid-memberships-pro' );?></a></div>
 			<?php } ?>
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
 		
 		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) { ?>
-		<div id="pmpro_account-links" class="pmpro_box">
+		<div id="pmpro_account-links" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ); ?>">
 			<h3><?php _e("Member Links", 'paid-memberships-pro' );?></h3>
 			<ul>
 				<?php 
