@@ -1836,8 +1836,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
+				UNIX_TIMESTAMP( CONVERT_TZ(enddate, '+00:00', @@global.time_zone) ) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id AND mu.status = 'active'
