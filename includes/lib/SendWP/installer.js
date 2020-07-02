@@ -6,6 +6,12 @@ jQuery(document).ready(function(){
         paid_memberships_pro_sendwp_remote_install();
     });
 
+    jQuery('#pmpro-sendwp-disconnect').on( 'click', function(e) {
+        e.preventDefault();
+        document.body.style.cursor = 'wait';
+        paid_memberships_pro_sendwp_disconnect();
+    });
+
     function paid_memberships_pro_sendwp_remote_install() {
         var data = {
             'action': 'paid_memberships_pro_sendwp_remote_install',
@@ -62,6 +68,19 @@ jQuery(document).ready(function(){
         
         document.body.appendChild(form);
         form.submit();
+    }
+
+    function paid_memberships_pro_sendwp_disconnect() {
+
+        var data = {
+            'action': 'paid_memberships_pro_sendwp_disconnect',
+            'sendwp_nonce': paid_memberships_pro_sendwp_vars.nonce
+        };
+
+        jQuery.post(ajaxurl, data, function( response ) {
+            location.reload();
+        });
+
     }
 
 });

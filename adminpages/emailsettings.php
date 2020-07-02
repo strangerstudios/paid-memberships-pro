@@ -130,7 +130,7 @@
 					<?php
 					} else {
 					?>
-					<button id='pmpro-sendwp-connect' class='button-primary'><?php esc_html_e( 'Disconnect from SendWP', 'paid-memberships-pro' ); ?></button>
+					<button id='pmpro-sendwp-disconnect' class='button-primary'><?php esc_html_e( 'Disconnect from SendWP', 'paid-memberships-pro' ); ?></button>
 					<?php
 
 					// Update SendWP status to see if email forwarding is enabled or not.
@@ -139,9 +139,9 @@
 					// Messages for connected or not.
 					$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://sendwp.com/account/' target='_blank' rel='nofollow'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
 					$disconnected = ' ' . sprintf( __( 'Please enable Email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('/tools.php?page=sendwp') . '">SendWP Settings</a>' );
-					}
 					?>
 					<p class='description' id='pmpro-sendwp-description'><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
+					<?php } ?>
 				</td>
 			</tr>
 		</tbody>

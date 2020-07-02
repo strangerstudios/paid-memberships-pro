@@ -104,6 +104,30 @@ function wp_ajax_paid_memberships_pro_sendwp_remote_install_handler () {
     exit;
 }
 
+/**
+ * Disconnect sendWP
+ */
+function paid_memberships_pro_sendwp_disconnect() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    // Check nonce same for installation
+    $security = check_ajax_referer('pmpro_sendwp_install_nonce', 'sendwp_nonce', false);
+
+    if ( ! $security ) {
+        return;
+    }
+
+    if ( function_exists( 'sendwp_disconnect_client' ) ) {
+        sendwp_disconnect_client();
+    }
+    deactivate_plugins( 'sendwp/sendwp.php' );
+    
+    wp_send_json_success();
+    exit;
+}
+add_action( 'wp_ajax_paid_memberships_pro_sendwp_disconnect', 'paid_memberships_pro_sendwp_disconnect' );
 
 /**
  * Enqueue the SendWP JavaScript SDK.
@@ -112,9 +136,6 @@ function wp_ajax_paid_memberships_pro_sendwp_remote_install_handler () {
  */
 function paid_memberships_pro_admin_enqueue_sendwp_installer() {
 
-    // if ( isset( $_REQUEST['page'] ) && ! $_REQUEST['page'] == 'pmpro-emailsettings' ) {
-    //     return;
-    // }
     //Register the JavaScript file
     wp_enqueue_script(
         'pmpro_sendwp_installer', 
