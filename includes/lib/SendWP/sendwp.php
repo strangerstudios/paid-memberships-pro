@@ -98,7 +98,7 @@ function wp_ajax_paid_memberships_pro_sendwp_remote_install_handler () {
         'register_url' => esc_url( sendwp_get_server_url() . '_/signup' ),
         'client_name' => esc_attr( sendwp_get_client_name() ),
         'client_secret' => esc_attr( sendwp_get_client_secret() ),
-        'client_redirect' => esc_url( sendwp_get_client_redirect() ),
+        'client_redirect' => esc_url( admin_url( '/admin.php?page=pmpro-emailsettings' ) ),
         'client_url' => esc_url( sendwp_get_client_url() ),
     ) );
     exit;
