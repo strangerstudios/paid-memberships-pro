@@ -397,6 +397,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
 					'pmpro_require_billing' => $pmpro_requirebilling,
+					'restUrl' => get_rest_url(),
 				);
 
 				if ( ! empty( $order ) ) {
@@ -2660,6 +2661,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
 		// Check that we just saved Stripe settings.
+		wp_die();
 		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
 			return;
 		}
@@ -2670,7 +2672,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// other plugins are using it.
 			return;	
 		}
-
+	
 		// Make sure that Apple Pay is set up.
 		// TODO: Apple Pay API functions don't seem to work with
 		//       test API keys. Need to figure this out.

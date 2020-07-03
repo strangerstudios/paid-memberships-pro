@@ -90,31 +90,64 @@ jQuery( document ).ready( function( $ ) {
 
 	// Check if Payment Request Button is enabled.
 	if ( $('#payment-request-button').length ) {
+		var paymentRequest = null;
+
 		// Create payment request
-		var paymentRequest = stripe.paymentRequest({
-			country: 'US',
-			currency: 'usd',
-			total: {
-			label: 'Demo total',
-			amount: 150,
-			},
-			requestPayerName: true,
-			requestPayerEmail: true,
+		jQuery.noConflict().ajax({
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+			dataType: 'json',
+			data: jQuery( "#pmpro_form" ).serialize(),
+			success: function(data) {
+				if ( data.hasOwnProperty('initial_payment') ) {
+					paymentRequest = stripe.paymentRequest({
+						country: 'US',
+						currency: 'usd',
+						total: {
+						label: 'Demo total',
+						amount: data.initial_payment * 100,
+						},
+						requestPayerName: true,
+						requestPayerEmail: true,
+					});
+					var prButton = elements.create('paymentRequestButton', {
+						paymentRequest: paymentRequest,
+					});
+					// Mount payment request button.
+					paymentRequest.canMakePayment().then(function(result) {
+					if (result) {
+						prButton.mount('#payment-request-button');
+					} else {
+						$('#payment-request-button').hide();
+					}
+					});
+					// Handle payment request button confirmation.
+					paymentRequest.on('paymentmethod', function( event ) {
+						stripeResponseHandler( event );
+					});
+				}
+			}
 		});
-		var prButton = elements.create('paymentRequestButton', {
-			paymentRequest: paymentRequest,
-		});
-		// Mount payment request button.
-		paymentRequest.canMakePayment().then(function(result) {
-		if (result) {
-			prButton.mount('#payment-request-button');
-		} else {
-			$('#payment-request-button').hide();
+
+		function stripeUpdatePaymentRequstButton() {
+			jQuery.noConflict().ajax({
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+				dataType: 'json',
+				data: jQuery( "#pmpro_form" ).serialize(),
+				success: function(data) {
+					if ( data.hasOwnProperty('initial_payment') ) {
+						paymentRequest.update({
+							total: {
+								label: 'Demo total',
+								amount: data.initial_payment * 100,
+							},
+						});
+					}
+				}
+			});
 		}
-		});
-		// Handle payment request button confirmation.
-		paymentRequest.on('paymentmethod', function( event ) {
-			stripeResponseHandler( event );
+	
+		$("input").change(function(){
+			stripeUpdatePaymentRequstButton();
 		});
 	}
 
