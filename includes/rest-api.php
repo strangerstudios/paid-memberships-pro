@@ -478,15 +478,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a membership level at checkout.
+		 * Note: Not compatible with MMPU.
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
+			$level_id = isset( $params['level'] ) ? $params['level'] : null;
 			if ( empty( $level_id ) ) {
-				return new WP_REST_Response( 'No level_id found.', 400 );
+				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
