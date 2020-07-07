@@ -196,7 +196,7 @@
 				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p class="description"><?php _e('This URL is passed to PayPal for all new charges and subscriptions. You SHOULD NOT set this in your PayPal account settings.', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
 				<p><code><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></code></p>
 			</td>
 		</tr>
@@ -215,8 +215,8 @@
 			if ( $gateway == 'paypal' || $default_gateway == 'paypal' ) {
 				$dependencies = array( 'jquery' );
 				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
-				$data = array();	
-				
+				$data = array();
+
 				// Setup 3DSecure if enabled.
 				if( pmpro_was_checkout_form_submitted() && $paypal_enable_3dsecure ) {
 					if( 'sandbox' === $gateway_environment || 'beta-sandbox' === $gateway_environment ) {
@@ -236,19 +236,19 @@
 						$data['cardinal_logging'] = 'Off';
 					}
 				}
-				
+
 				wp_register_script( 'pmpro_paypal',
                             plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
                             $dependencies,
-                            PMPRO_VERSION );			
+                            PMPRO_VERSION );
 				wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', $data );
 				wp_enqueue_script( 'pmpro_paypal' );
 			}
 		}
-		
-		static function get_cardinal_jwt() {			
+
+		static function get_cardinal_jwt() {
 			require_once( PMPRO_DIR . '/includes/lib/php-jwt/JWT.php' );
-			
+
 			$key = pmpro_getOption( 'paypal_cardinal_apikey' );
 			$now = current_time( 'timestamp' );
 			$token = array(
@@ -257,10 +257,10 @@
 				'exp' => $now + 7200,
 				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
 				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),
-				
+
 			);
 			$jwt = \PMPro\Firebase\JWT\JWT::encode($token, $key);
-			
+
 			return $jwt;
 		}
 
