@@ -747,6 +747,12 @@
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
+
+				if ( ! empty( $this->subscription_transaction_id ) && ! PMPro_Subscription::subscription_exists_for_order( $this ) ) {
+					// Need to create a PMPro Subscription for this order...
+					$subscription = PMPro_Subscription::build_subscription_from_order( $this );
+				}
+
 				return $this->getMemberOrderByID($this->id);
 			}
 			else
@@ -882,6 +888,8 @@
 					//remove billing numbers in pmpro_memberships_users if the membership is still active					
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
 					$wpdb->query($sqlQuery);
+					$subscription = new PMPro_Subscription( $this );
+					$subscription->cancel();
 				}
 				
 				
