@@ -125,20 +125,6 @@ class PMPro_Subscription {
 		$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
 		$subscription->startdate                   = current_time( 'Y-m-d H:i:s' );
 
-		// Link subscription to pmpro_memberships_users table.
-		$subscription->mu_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT id 
-				FROM $wpdb->pmpro_memberships_users
-				WHERE user_id = '%d'
-				AND membership_id = '%d'
-				AND status = 'active'
-				ORDER BY startdate DESC LIMIT 1",
-				intval( $morder->user_id ),
-				intval( $morder->membership_id )
-			)
-		);
-
 		// Get next payment date.
 		if ( ! empty( $morder->ProfileStartDate ) ) {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
@@ -146,6 +132,23 @@ class PMPro_Subscription {
 
 		$subscription->save();
 		return $subscription;
+	}
+
+	function link_membership_user( $user_id, $membership_id ) {
+		global $wpdb;
+		$this->mu_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT id 
+				FROM $wpdb->pmpro_memberships_users
+				WHERE user_id = '%d'
+				AND membership_id = '%d'
+				AND status = 'active'
+				ORDER BY startdate DESC LIMIT 1",
+				intval( $user_id ),
+				intval( $membership_id )
+			)
+		);
+		$this->save();
 	}
 
 	static function subscription_exists_for_order( $morder ) {
