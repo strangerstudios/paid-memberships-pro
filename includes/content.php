@@ -150,13 +150,42 @@ function pmpro_search_filter($query)
 		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
+    // If this is a post type query, set the queried post types and the post types to filter as array.
+	$post_type_query_var_array = array();
+	if ( ! empty( $query->query_vars['post_type'] ) ) {
+		// Get the post types in the query and cast the string to an array.
+		if ( is_array( $query->query_vars['post_type'] ) ) {
+			$post_type_query_var_array = $query->query_vars['post_type'];
+	    } else {
+			$post_type_query_var_array[] = $query->query_vars['post_type'];
+		}
+
+		// Get the post types to filter in the query and cast the string to an array.
+		$pmpro_search_filter_post_types_array = array();
+		
+		/**
+		 * Filter the post types included in the filter to hide members-only content from search.
+		 *
+		 * @param array $pmpro_search_filter_post_types The post types to include in the search filter.
+		 * The default included post types are page and post.
+		 *
+		 * @return array $pmpro_search_filter_post_types.
+		 */
+		$pmpro_search_filter_post_types = apply_filters( 'pmpro_search_filter_post_types', array( 'page', 'post' ) );
+		if ( is_array( $pmpro_search_filter_post_types ) ) {
+			$pmpro_search_filter_post_types_array = $pmpro_search_filter_post_types;
+		} else {
+			$pmpro_search_filter_post_types_array[] = $pmpro_search_filter_post_types;
+		}
+	}
+
     //hide member pages from non-members (make sure they aren't hidden from members)
 	if(!$query->is_admin &&
 	   !$query->is_singular &&
 	   empty($query->query['post_parent']) &&
 	   (
 		empty($query->query_vars['post_type']) ||
-		in_array($query->query_vars['post_type'], apply_filters('pmpro_search_filter_post_types', array("page", "post")))
+		array_intersect( $post_type_query_var_array, $pmpro_search_filter_post_types_array )
 	   ) && (
 		( ! defined('REST_REQUEST') || ( defined( 'REST_REQUEST' ) && false === REST_REQUEST  ) )
 		)
