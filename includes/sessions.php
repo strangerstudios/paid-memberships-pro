@@ -11,6 +11,11 @@
  * @since 1.9.2
  */
 function pmpro_start_session() {
+    // If headers were already sent, we can't use sessions.
+	if ( headers_sent() ) {
+		return;
+    }
+
     //if the session hasn't been started yet, start it (ignore if running from command line)
     if (!defined('PMPRO_USE_SESSIONS') || PMPRO_USE_SESSIONS == true) {
         if (defined('STDIN')) {
