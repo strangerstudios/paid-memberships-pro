@@ -235,11 +235,58 @@ class PMPro_Subscription {
 		do_action( $after_action, $this );
 	}
 
+	function get_gateway_object() {
+		$classname = 'PMProGateway';	// Default test gateway.
+		if ( ! empty( $this->gateway ) && $this->gateway != 'free' ) {
+			$classname .= '_' . $this->gateway;	// Adding the gateway suffix.
+		}
+
+		if ( class_exists( $classname ) && isset ( $this->gateway ) ) {
+			return new $classname( $this->gateway );
+		} else {
+			return null;
+		}
+	}
+
 	function cancel() {
+		// Cancel the gateway subscription first.
+		$gateway_object = $this->get_gateway_object();
+		if ( is_object( $gateway_object ) ) {
+			// TODO: Update all of the gateways to take a subscription instead of an order.
+			$result = $gateway_object->cancel( $this );
+		} else {
+			$result = false;
+		}
+
 		$this->status = 'cancelled';
-		$this->enddate = current_time('Y-m-d H:i:s');
-		$this->save();
-		return $this;
+		if ( $result == false ) {
+			// TODO: Maybe have a new status here?
+			// Can we check with the gateway to see if it was successful?
+			$this->status = 'cancelled';
+
+			// Notify the admin.
+			$pmproemail = new PMProEmail();
+			$pmproemail->template      = 'subscription_cancel_error';
+			$pmproemail->data          = array( 'body' => '<p>' . sprintf( __( 'There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ), strval( $this->user_id ) ) . '</p><p>Error: ' . $this->error . '</p>' );
+			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $order_user->user_email . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $order_user->user_login . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $order_user->display_name . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $this->code . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
+			$pmproemail->data['body'] .= '<hr />';
+			$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url( 'admin.php' ) ) ) . '</p>';
+			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+		} else {
+			// Remove billing numbers in pmpro_memberships_users if the membership is still active.
+			$sql_query = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE id = '" . $this->mu_id . "'";
+			$wpdb->query( $sql_query );
+			$this->status  = 'cancelled';
+			$this->enddate = current_time( 'Y-m-d H:i:s' );
+			$this->save();
+		}
+		return $result;
 	}
 
 } // end of class
