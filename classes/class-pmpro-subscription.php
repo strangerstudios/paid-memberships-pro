@@ -128,10 +128,22 @@ class PMPro_Subscription {
 		// Get next payment date.
 		if ( ! empty( $morder->ProfileStartDate ) ) {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
+		} else {
+			// Get next payment date by querying gateway.
+			$gateway_object = $this->get_gateway_object();
+			if ( is_object( $gateway_object ) ) {
+				$subscription->next_payment_date = $gateway_object->get_next_payment_date( $subscription );
+			}
 		}
 
 		$subscription->save();
 		return $subscription;
+	}
+
+	function get_last_order() {
+		$morder = new MemberOrder();
+		$morder->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
+		return $morder;
 	}
 
 	function link_membership_user( $user_id, $membership_id ) {
