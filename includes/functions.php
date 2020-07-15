@@ -1325,7 +1325,7 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	}
 
 	for ( $i = 0; $i < count( $meta_values ); $i++ ) {
-		if ( $prev_values[ $i ] ) {
+		if ( isset( $prev_values[ $i ] ) ) {
 			update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $prev_values[ $i ] );
 		} else {
 			$old_value = get_user_meta( $user_id, $meta_keys[ $i ], true );
