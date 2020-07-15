@@ -833,7 +833,11 @@ function pmpro_login_failed( $username ) {
 	}
 
 	$referrer = wp_get_referer();
-	$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+		$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	} else {
+		$redirect_to = '';
+	}
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
