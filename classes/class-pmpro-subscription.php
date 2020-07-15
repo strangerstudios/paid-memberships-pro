@@ -1,7 +1,11 @@
 <?php
 
 class PMPro_Subscription {
-
+	/**
+	 * Create a new PMPro_Subscription object.
+	 *
+	 * @param MemberOrder $morder to get subscription for.
+	 */
 	function __construct( $morder = null ) {
 		if ( ! empty( $morder ) ) {
 			$this->get_subscription_by_order( $morder );
@@ -10,15 +14,12 @@ class PMPro_Subscription {
 		}
 	}
 
-	function __get( $key ) {
-		if ( isset( $this->$key ) ) {
-			$value = $this->$key;
-		} else {
-			$value = '';
-		}		
-		return $value;
-	}
-
+	// **************************************
+	// Getters for PMPro_Subscription object
+	// **************************************
+	/**
+	 * Populate object with default values.
+	 */
 	function get_empty_subscription() {
 		$this->id                          = '';
 		$this->mu_id                       = '';
@@ -33,6 +34,12 @@ class PMPro_Subscription {
 		return $this;
 	}
 
+	/**
+	 * Populate object with subscription data for a specified user and level.
+	 *
+	 * @param int $user_id of user to get subscription data for.
+	 * @param int $membership_id of level to get subscription data for.
+	 */
 	function get_subscription_for_user( $user_id = null, $membership_id = null ) {
 		global $current_user;
 		// Get user_id if none passed.
@@ -58,6 +65,11 @@ class PMPro_Subscription {
 		$this->get_subscription_by_order( $morder );
 	}
 
+	/**
+	 * Populate object with subscription data for a given order.
+	 *
+	 * @param MemberOrder $morder to get subscription data for.
+	 */
 	function get_subscription_by_order( $morder ) {
 		// Get order object if ID passed.
 		if ( is_numeric( $morder ) ) {
@@ -77,8 +89,11 @@ class PMPro_Subscription {
 	}
 
 	/**
-	 * Function to populate a pmpro_subscription object from a subscription_transaction_id,
-	 * gateway, and gateway_environment.
+	 * Populate object with subscription data.
+	 *
+	 * @param string $subscription_transaction_id of subscription at payment gateway.
+	 * @param string $gateway that the payment subscription was created at.
+	 * @param string $gateway_environment that the subscription was created in.
 	 */
 	function get_subscription( $subscription_transaction_id, $gateway, $gateway_environment ) {
 		global $wpdb;
@@ -114,6 +129,14 @@ class PMPro_Subscription {
 		return $this;
 	}
 
+	// **************************************
+	// Building new PMPro_Subscription
+	// **************************************
+	/**
+	 * Create a new PMPro_Subscription object by pulling information from an order.
+	 *
+	 * @param MemberOrder $morder to pull data from.
+	 */
 	static function build_subscription_from_order( $morder ) {
 		global $wpdb;
 		if ( ! is_a( $morder, 'MemberOrder' ) ) {
@@ -123,6 +146,7 @@ class PMPro_Subscription {
 		$subscription->gateway                     = $morder->gateway;
 		$subscription->gateway_environment         = $morder->gateway_environment;
 		$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
+		// TODO: Change this to get the order's timestamp.
 		$subscription->startdate                   = current_time( 'Y-m-d H:i:s' );
 
 		// Get next payment date.
@@ -140,12 +164,13 @@ class PMPro_Subscription {
 		return $subscription;
 	}
 
-	function get_last_order() {
-		$morder = new MemberOrder();
-		$morder->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
-		return $morder;
-	}
-
+	/**
+	 * Set the mu_id for this subscription to the most recent active
+	 * Memberships Users entry that fits the passed parameters.
+	 *
+	 * @param int $user_id of user to search for MU entry for.
+	 * @param int $membership_id of level to search MU entry for.
+	 */
 	function link_membership_user( $user_id, $membership_id ) {
 		global $wpdb;
 		$this->mu_id = $wpdb->get_var(
@@ -163,24 +188,31 @@ class PMPro_Subscription {
 		$this->save();
 	}
 
-	static function subscription_exists_for_order( $morder ) {
-		// Get order object if ID passed.
-		if ( is_numeric( $morder ) ) {
-			$morder = new MemberOrder( $morder );
-		}
-		// Check that we have a valid order.
-		if (
-			! is_a( $morder, 'MemberOrder' ) ||
-			empty( $morder->subscription_transaction_id ) ||
-			empty( $morder->gateway ) ||
-			empty( $morder->gateway_environment )
-		) {
-			return false;
-		}
-		// Get the subscription.
-		return self::subscription_exists( $morder->subscription_transaction_id, $morder->gateway, $morder->gateway_environment );
+	// **************************************
+	// Other Getters
+	// **************************************
+	/**
+	 * Magic method to get PMPro_Subscription properties.
+	 *
+	 * @param string $key property to get.
+	 */
+	function __get( $key ) {
+		if ( isset( $this->$key ) ) {
+			$value = $this->$key;
+		} else {
+			$value = '';
+		}		
+		return $value;
 	}
 
+	/**
+	 * Return whether or not a subscription exists.
+	 *
+	 * @param string $subscription_transaction_id of subscription at payment gateway.
+	 * @param string $gateway that the payment subscription was created at.
+	 * @param string $gateway_environment that the subscription was created in.
+	 * @return bool
+	 */
 	static function subscription_exists( $subscription_transaction_id, $gateway, $gateway_environment ) {
 		global $wpdb;
 		$count = $wpdb->get_var(
@@ -199,7 +231,59 @@ class PMPro_Subscription {
 	}
 
 	/**
-	 * Save or update a subscription.
+	 * Return whether or not a subscription exists for a given order.
+	 *
+	 * @param MemberOrder $morder to check for subscription.
+	 * @return bool
+	 */
+	static function subscription_exists_for_order( $morder ) {
+		// Get order object if ID passed.
+		if ( is_numeric( $morder ) ) {
+			$morder = new MemberOrder( $morder );
+		}
+		// Check that we have a valid order.
+		if (
+			! is_a( $morder, 'MemberOrder' ) ||
+			empty( $morder->subscription_transaction_id ) ||
+			empty( $morder->gateway ) ||
+			empty( $morder->gateway_environment )
+		) {
+			return false;
+		}
+		// Get the subscription.
+		return self::subscription_exists( $morder->subscription_transaction_id, $morder->gateway, $morder->gateway_environment );
+	}
+
+	/**
+	 * Returns the most recent MemberOrder object for this subscription.
+	 */
+	function get_last_order() {
+		$morder = new MemberOrder();
+		$morder->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
+		return $morder;
+	}
+
+	/**
+	 * Returns the PMProGateway object for this subscription.
+	 */
+	function get_gateway_object() {
+		$classname = 'PMProGateway';	// Default test gateway.
+		if ( ! empty( $this->gateway ) && $this->gateway != 'free' ) {
+			$classname .= '_' . $this->gateway;	// Adding the gateway suffix.
+		}
+
+		if ( class_exists( $classname ) && isset ( $this->gateway ) ) {
+			return new $classname( $this->gateway );
+		} else {
+			return null;
+		}
+	}
+
+	// **************************************
+	// Save & Cancel
+	// **************************************
+	/**
+	 * Saves or updates a subscription.
 	 */
 	function save() {
 		global $wpdb;
@@ -247,19 +331,9 @@ class PMPro_Subscription {
 		do_action( $after_action, $this );
 	}
 
-	function get_gateway_object() {
-		$classname = 'PMProGateway';	// Default test gateway.
-		if ( ! empty( $this->gateway ) && $this->gateway != 'free' ) {
-			$classname .= '_' . $this->gateway;	// Adding the gateway suffix.
-		}
-
-		if ( class_exists( $classname ) && isset ( $this->gateway ) ) {
-			return new $classname( $this->gateway );
-		} else {
-			return null;
-		}
-	}
-
+	/**
+	 * Cancels this subscription in PMPro and at the payment gateway.
+	 */
 	function cancel() {
 		// Cancel the gateway subscription first.
 		$gateway_object = $this->get_gateway_object();
