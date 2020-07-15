@@ -8,7 +8,7 @@ class PMPro_Subscription {
 	 */
 	function __construct( $morder = null ) {
 		if ( ! empty( $morder ) ) {
-			$this->get_subscription_by_order( $morder );
+			$this->get_subscription_from_order( $morder );
 		} else {
 			$this->get_empty_subscription();
 		}
@@ -40,7 +40,7 @@ class PMPro_Subscription {
 	 * @param int $user_id of user to get subscription data for.
 	 * @param int $membership_id of level to get subscription data for.
 	 */
-	function get_subscription_for_user( $user_id = null, $membership_id = null ) {
+	function get_subscription_by_user( $user_id = null, $membership_id = null ) {
 		global $current_user;
 		// Get user_id if none passed.
 		if ( empty( $user_id ) ) {
@@ -62,7 +62,7 @@ class PMPro_Subscription {
 		// Get subscription from order.
 		$morder = new MemberOrder();
 		$morder->getLastMemberOrder( $user_id, 'success', $membership_id );
-		$this->get_subscription_by_order( $morder );
+		$this->get_subscription_from_order( $morder );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class PMPro_Subscription {
 	 *
 	 * @param MemberOrder $morder to get subscription data for.
 	 */
-	function get_subscription_by_order( $morder ) {
+	function get_subscription_from_order( $morder ) {
 		// Get order object if ID passed.
 		if ( is_numeric( $morder ) ) {
 			$morder = new MemberOrder( $morder );
@@ -334,44 +334,48 @@ class PMPro_Subscription {
 	/**
 	 * Cancels this subscription in PMPro and at the payment gateway.
 	 */
-	function cancel() {
-		// Cancel the gateway subscription first.
-		$gateway_object = $this->get_gateway_object();
-		if ( is_object( $gateway_object ) ) {
-			// TODO: Update all of the gateways to take a subscription instead of an order.
-			$result = $gateway_object->cancel( $this );
+	function cancel( $cancel_at_gateway = true ) {
+		global $wpdb;
+
+		// Cancel subscription at gateway first.
+		if ( ! empty( $cancel_at_gateway ) ) {
+			$gateway_object = $this->get_gateway_object();
+			$morder = $this->get_last_order();
+			if ( is_object( $gateway_object ) && is_a( $morder, 'MemberOrder' ) ) {
+				$result = $gateway_object->cancel( $morder );
+			} else {
+				$result = false;
+			}
+
+			if ( $result == false ) {
+				// Notify the admin.
+				$pmproemail = new PMProEmail();
+				$pmproemail->template      = 'subscription_cancel_error';
+				$pmproemail->data          = array( 'body' => '<p>' . sprintf( __( 'There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ), strval( $this->user_id ) ) . '</p><p>Error: ' . $this->error . '</p>' );
+				$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $order_user->user_email . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $order_user->user_login . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $order_user->display_name . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $this->code . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
+				$pmproemail->data['body'] .= '<hr />';
+				$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url( 'admin.php' ) ) ) . '</p>';
+				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+			}
 		} else {
-			$result = false;
+			$result = true;
 		}
 
-		$this->status = 'cancelled';
-		if ( $result == false ) {
-			// TODO: Maybe have a new status here?
-			// Can we check with the gateway to see if it was successful?
-			$this->status = 'cancelled';
-
-			// Notify the admin.
-			$pmproemail = new PMProEmail();
-			$pmproemail->template      = 'subscription_cancel_error';
-			$pmproemail->data          = array( 'body' => '<p>' . sprintf( __( 'There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ), strval( $this->user_id ) ) . '</p><p>Error: ' . $this->error . '</p>' );
-			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $order_user->user_email . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $order_user->user_login . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $order_user->display_name . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $this->code . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
-			$pmproemail->data['body'] .= '<hr />';
-			$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url( 'admin.php' ) ) ) . '</p>';
-			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-		} else {
-			// Remove billing numbers in pmpro_memberships_users if the membership is still active.
+		// Cancel PMPro Subscription in database unless already cancelled.
+		if ( $this->status != 'cancelled' ) {
 			$sql_query = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE id = '" . $this->mu_id . "'";
 			$wpdb->query( $sql_query );
-			$this->status  = 'cancelled';
+			$this->status  = 'cancelled'; // TODO: What should we do if $result is false?
 			$this->enddate = current_time( 'Y-m-d H:i:s' );
-			$this->save();
 		}
+		$this->save();
+
 		return $result;
 	}
 

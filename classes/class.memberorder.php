@@ -792,6 +792,18 @@
 			if(empty($this->id))
 				return false;
 
+			if ( 'cancelled' === $newstatus ) {
+				// Only cancel subscription, not order.
+				if ( empty( $this->subscription_transaction_id ) ) {
+					// No subscription to cancel.
+					return true;
+				} else {
+					$subscription = new PMPro_Subscription( $this );
+					$result = $subscription->cancel( false );
+					return $result;
+				}
+			}
+
 			$this->status = $newstatus;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
 			if($wpdb->query($this->sqlQuery) !== false)
@@ -825,9 +837,7 @@
 		/**
 		 * Call the cancel step of the order's subscription if needed.
 		 */
-		function cancel() {
-			global $wpdb;
-			
+		function cancel() {			
 			// Only need to cancel on the gateway if there is a subscription id.
 			if ( empty( $this->subscription_transaction_id ) ) {
 				//just mark as cancelled
