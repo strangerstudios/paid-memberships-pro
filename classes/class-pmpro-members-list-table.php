@@ -407,7 +407,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
 			$extra_cols = ob_get_clean();
 			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
-			$custom_field_num = explode( 'custom_field_', $column_name )[1];
+			$custom_field_num_arr = explode( 'custom_field_', $column_name );
+			$custom_field_num     = $custom_field_num_arr[1];
 			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
 				echo( $matches[1][ intval( $custom_field_num ) ] );
 			}
