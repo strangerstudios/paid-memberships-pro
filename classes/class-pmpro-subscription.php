@@ -154,14 +154,37 @@ class PMPro_Subscription {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
 		} else {
 			// Get next payment date by querying gateway.
-			$gateway_object = $this->get_gateway_object();
-			if ( is_object( $gateway_object ) ) {
-				$subscription->next_payment_date = $gateway_object->get_next_payment_date( $subscription );
-			}
+			$subscription->get_next_payment_date( 'Y-m-d H:i:s', true );
 		}
 
 		$subscription->save();
 		return $subscription;
+	}
+
+	/**
+	 * Get the next payment date for this subscription.
+	 *
+	 * @param bool $query_gateway for next payment date.
+	 */
+	function get_next_payment_date( $format = 'timestamp', $query_gateway = false ) {
+		if ( $query_gateway ) {
+			// Get next payment date by querying gateway.
+			$gateway_object = $this->get_gateway_object();
+			if ( is_object( $gateway_object ) ) {
+				$this->next_payment_date = $gateway_object->get_next_payment_date( $subscription );
+			} else {
+				$this->next_payment_date = '0000-00-00 00:00:00';
+			}
+		}
+		if ( empty( $this->next_payment_date ) || $this->next_payment_date == '0000-00-00 00:00:00' ) {
+			return false;
+		} elseif ( 'timestamp' === $format ) {
+			return date( 'U', strtotime( $this->next_payment_date ) );
+		} elseif ( 'date_format' === $format ) {
+			return date( get_option( 'date_format' ), $this->next_payment_date );
+		} else {
+			return date( $format, $this->next_payment_date );  // assume a PHP date format
+		}
 	}
 
 	/**
