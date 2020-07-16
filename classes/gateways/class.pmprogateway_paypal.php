@@ -672,37 +672,163 @@
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
-		}
+		}		
 
-		function cancel(&$order)
-		{
+		function cancel(&$order) {
+			// Always cancel the order locally even if PayPal might fail
+			$order->updateStatus("cancelled");
+
 			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
-			if (
-				( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
-				( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id )
-			) {
-				$order->updateStatus("cancelled");
-				return true;
+			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
+				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
+				// recurring_payment_failed transaction still need to be cancelled
+				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
+					return true;
+				}
 			}
 
-			//paypal profile stuff
+			// Cancel at gateway
+			return $this->cancelSubscriptionAtGateway($order);
+		}
+
+		function cancelSubscriptionAtGateway(&$order) {
+			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
 
+			$nvpStr = apply_filters("pmpro_manage_recurring_payments_profile_status_nvpstr", $nvpStr, $order);
+
 			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
 
-			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
-			{
-				$order->updateStatus("cancelled");
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
-			}
-			else
-			{
+			} else {
 				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
+				return false;
+			}
+		}
+
+		function getSubscriptionStatus(&$order)
+		{
+			if(empty($order->subscription_transaction_id))
+				return false;
+
+			//paypal profile stuff
+			$nvpStr = "";
+			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id);
+
+			$nvpStr = apply_filters("pmpro_get_recurring_payments_profile_details_nvpstr", $nvpStr, $order);
+
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);
+
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
+			{
+				return $this->httpParsedResponseAr;
+			}
+			else
+			{
+				$order->status = "error";
+				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
+				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
+				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
+
+				return false;
+			}
+		}
+		
+		function getTransactionStatus(&$order) {
+			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
+			if( false === $transaction_details ){
+				return false;
+			}
+
+			if( ! isset( $transaction_details['PAYMENTSTATUS'] ) ){
+				return false;
+			}
+
+			return $transaction_details['PAYMENTSTATUS'];
+		}
+
+		function getTransactionDetailsByOrder(&$order)
+		{
+			if(empty($order->payment_transaction_id))
+				return false;
+
+			if( $order->payment_transaction_id == $order->subscription_transaction_id ){
+				/** Initial payment **/
+				$nvpStr = "";
+				// STARTDATE is Required, even if useless here. Start from 24h before the order timestamp, to avoid timezone related issues.
+				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->timestamp-DAY_IN_SECONDS ) . 'Z' );
+				// filter results by a specific transaction id.
+				$nvpStr .= "&TRANSACTIONID=" . urlencode($order->subscription_transaction_id);
+
+				$this->httpParsedResponseAr = $this->PPHttpPost('TransactionSearch', $nvpStr);
+
+				if( ! in_array( strtoupper( $this->httpParsedResponseAr["ACK"] ), [ 'SUCCESS', 'SUCCESSWITHWARNING' ] ) ){
+					// since we are using TRANSACTIONID=I-... which is NOT a transaction id,
+                    			// paypal is returning an error. but the results are actually filtered by that transaction id, usually.
+
+					// let's double check it.
+					if( ! isset( $this->httpParsedResponseAr['L_TRANSACTIONID0'] ) ){
+						// really no results? it's a real error.
+						return false;
+					}
+				}
+
+				$transaction_ids = [];
+				for( $i = 0; $i < PHP_INT_MAX; $i++ ){
+	    				// loop until we have results
+					if( ! isset( $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ) ){
+						break;
+					}
+
+					// ignore I-... results
+					if( "I-" === substr( $this->httpParsedResponseAr["L_TRANSACTIONID$i"], 0 ,2 ) ){
+						if( $order->subscription_transaction_id != $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ){
+							// if we got a result from another I- subscription transaction id,
+							// then something changed into paypal responses.
+							// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
+							throw new Exception();
+						}
+
+						continue;
+					}
+
+					$transaction_ids[] = $this->httpParsedResponseAr["L_TRANSACTIONID$i"];
+				}
+
+				// no payment_transaction_ids in results
+				if( empty( $transaction_ids ) ){
+					return false;
+				}
+
+				// found the payment transaction id, it's the last one (the oldest)
+				$payment_transaction_id = end( $transaction_ids );
+				return $this->getTransactionDetails( $payment_transaction_id );
+			}else{
+				/** Recurring payment **/
+				return $this->getTransactionDetails( $order->payment_transaction_id );
+			}
+		}
+		
+		function getTransactionDetails($payment_transaction_id)
+        	{
+			$nvpStr = "";
+			$nvpStr .= "&TRANSACTIONID=" . urlencode($payment_transaction_id);
+
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetTransactionDetails', $nvpStr);
+
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
+			{
+				return $this->httpParsedResponseAr;
+			}
+			else
+			{
+				// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
 				return false;
 			}
 		}
