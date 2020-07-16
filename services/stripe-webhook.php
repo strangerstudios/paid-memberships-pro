@@ -349,8 +349,12 @@
 				
 				if(!empty($user->ID) && true === $cancel_membership ) {
 					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
-					
-					if ( $old_order->status == "cancelled" ) {
+
+					if ( PMPro_Subscription::subscription_exists_for_order( $old_order ) ) {
+						$subscription = new PMPro_Subscription( $old_order );
+					}
+
+					if ( $old_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
 						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
 					} else if ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
 						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
