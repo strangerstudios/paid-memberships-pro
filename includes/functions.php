@@ -1325,7 +1325,7 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	}
 
 	for ( $i = 0; $i < count( $meta_values ); $i++ ) {
-		if ( $prev_values[ $i ] ) {
+		if ( isset( $prev_values[ $i ] ) ) {
 			update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $prev_values[ $i ] );
 		} else {
 			$old_value = get_user_meta( $user_id, $meta_keys[ $i ], true );
@@ -1836,8 +1836,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
+				UNIX_TIMESTAMP( CONVERT_TZ(enddate, '+00:00', @@global.time_zone) ) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id AND mu.status = 'active'

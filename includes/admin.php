@@ -3,6 +3,7 @@
 	Admin code.
 */
 
+require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 /**
  * Redirect to Dashboard tab if the user hasn't been there yet.
  *
