@@ -171,7 +171,7 @@ class PMPro_Subscription {
 			// Get next payment date by querying gateway.
 			$gateway_object = $this->get_gateway_object();
 			if ( is_object( $gateway_object ) ) {
-				$this->next_payment_date = $gateway_object->get_next_payment_date( $subscription );
+				$this->next_payment_date = $gateway_object->get_next_payment_date( $this );
 			} else {
 				$this->next_payment_date = '0000-00-00 00:00:00';
 			}
