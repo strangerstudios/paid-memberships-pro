@@ -9,6 +9,9 @@ use Stripe\SetupIntent as Stripe_SetupIntent;
 use Stripe\Source as Stripe_Source;
 use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
+use Stripe\WebhookEndpoint as Stripe_Webhook;
+use Stripe\StripeClient as Stripe_Client; // Only used for deleting webhook as of 2.4
+
 
 define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
 
@@ -191,7 +194,24 @@ class PMProGateway_stripe extends PMProGateway {
 			) );
 		}
 
+		
+		add_action( 'pmpro_after_saved_payment_options', array( 'PMProGateway_stripe', 'pmpro_try_update_stripe_webhook' ), 10, 1 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
+	}
+
+	public static function pmpro_try_update_stripe_webhook( $payment_options ) {
+
+		if ( isset( $_REQUEST['gateway'] ) && $_REQUEST['gateway'] === 'stripe' ) {
+			
+			// check webhook now.
+			if ( isset( $_REQUEST['stripe_webhook'] ) ) {
+				$stripe = new PMProGateway_stripe();
+				$update_webhook = $stripe::pmpro_update_webhook_events();
+			} else {
+				$stripe = new PMProGateway_stripe();
+				$stripe::pmpro_delete_webhook( pmpro_getOption( 'stripe_webhook_id', true ) );
+			}
+		}
 	}
 
 	/**
@@ -246,6 +266,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'gateway_environment',
 			'stripe_secretkey',
 			'stripe_publishablekey',
+			'stripe_webhook',
 			'stripe_billingaddress',
 			'currency',
 			'use_ssl',
@@ -278,6 +299,47 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 */
 	static function pmpro_payment_option_fields( $values, $gateway ) {
+
+		if ( ! empty( $values['stripe_publishablekey'] ) && ! empty( $values['stripe_secretkey'] ) ) {
+		
+		// Check if webhook is enabled or not.
+		$webhook = pmpro_getOption( 'stripe_webhook_id' );
+
+		if ( ! $webhook ) {
+			$stripe = new PMProGateway_stripe;
+			$webhook = $stripe::pmpro_does_webhook_exist();
+		}
+		
+		$required_update = false;
+		// Check to see if events are missing.
+		if ( is_array( $webhook ) ) {
+
+			if ( $webhook['webhook_id'] == false ) {
+				$required_update = true;
+			}
+
+			if ( isset( $webhook['enabled_events'] ) ) {
+				$events = self::pmpro_check_missing_webhook_events( $webhook['enabled_events'] );
+
+				if ( $events ) {
+					$required_update = true;
+				} else {
+					$required_update = false;
+					pmpro_setOption( 'stripe_webhook_id', $webhook['webhook_id'] );
+					pmpro_setOption( 'stripe_webhook', 1 );
+					$values['stripe_webhook'] = 1; // Checkbox option.
+				}
+			}
+
+		} else if ( ! empty( $webhook ) && ! pmpro_getOption( 'stripe_webhook', true ) ) {
+			pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
+			$values['stripe_webhook'] = 1;
+		} else {
+			$require_update = true;
+		}
+
+	}
+
 		?>
         <tr class="pmpro_settings_divider gateway gateway_stripe"
 		    <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -327,11 +389,19 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
         <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label><?php _e( 'Web Hook URL', 'paid-memberships-pro' ); ?>:</label>
+                <label><?php _e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-                <p><?php _e( 'To fully integrate with Stripe, be sure to set your Web Hook URL to', 'paid-memberships-pro' ); ?></p>
-                <p><code><?php echo admin_url( "admin-ajax.php" ) . "?action=stripe_webhook"; ?></code></p>
+			<input type='checkbox' id='stripe_webhook' name='stripe_webhook' value='1' <?php echo checked( $values['stripe_webhook'], 1 ); ?>/><label for='stripe_webhook'><?php esc_html_e( 'Enable Stripe webhook automatically. Deselect this option to disable your webhook.', 'paid-memberships-pro' ); ?></label><br/><br/>
+			<p><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
+			<code><?php echo self::pmpro_get_site_webhook_url(); ?></code></p>
+			<p><small><?php 				
+				if ( ! $required_update ) {
+					esc_html_e( 'A webhook for this URL seems to exist. If you are unsure, please check your Stripe dashboard for a webhook with the above URL.', 'paid-memberships-pro' );
+				} else {
+					echo 'Please select the enable webhook option to automatically setup and create a webhook in Stripe save your settings.';
+				}
+				?></small></p>
             </td>
         </tr>
 
@@ -438,6 +508,217 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $fields;
+	}
+
+	static function pmpro_webhook_failed( $error = NULL ) {
+		global $msg, $msgt;
+
+		$msg = -1;
+		$msgt = 'ERROR';
+	}
+
+	/**
+	 * Get available webhooks
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_get_webhooks( $limit = 10 ) {
+	
+		try {
+			$webhooks = Stripe_Webhook::all( [ 'limit' => apply_filters( 'pmpro_stripe_webhook_retrieve_limit', $limit ) ] );
+		} catch (\Throwable $th) {
+			$webhooks = $th->getMessage();
+		}
+		
+		return $webhooks;
+	}
+
+	/**
+	 * Get current webhook URL for website to compare.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_get_site_webhook_url() {
+		return admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook';
+	}
+
+	/**
+	 * List of current enabled events required for PMPro to work.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_webhook_events() {
+		return apply_filters( 'pmpro_stripe_webhook_events', array(
+			'invoice.payment_succeeded',
+			'invoice.payment_action_required',
+			'customer.subscription.deleted',
+			'charge.failed'
+		) );
+	}
+
+	/**
+	 * Create webhook with relevant events
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_create_webhook() {
+		try {
+			$create = Stripe_Webhook::create([
+				'url' => self::pmpro_get_site_webhook_url(),
+				'enabled_events' => self::pmpro_webhook_events(),
+				'api_version' => PMPRO_STRIPE_API_VERSION
+			]);
+
+			if ( $create ) {
+				pmpro_setOption( 'stripe_webhook_id', $create->id );
+				return $create->id;
+			}
+		} catch (\Throwable $th) {
+			//throw $th;
+			return $th->getMessage();
+		}
+		
+	}
+
+	/**
+	 * See if a webhook is registered with Stripe.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_does_webhook_exist() {
+
+		$saved_webhook = pmpro_getOption( 'stripe_webhook_id', true );
+		if ( $saved_webhook ) {
+			return $saved_webhook;
+		}
+
+
+		$webhooks = self::pmpro_get_webhooks();
+		$webhook_id = false;
+		if ( ! empty( $webhooks ) ) {
+
+			$pmpro_webhook_url = self::pmpro_get_site_webhook_url();
+
+			foreach( $webhooks as $webhook ) {
+				if ( $webhook->url == $pmpro_webhook_url ) {
+					$webhook_id = $webhook->id;
+					$webhook_events = $webhook->enabled_events;
+					continue;
+				}
+			}
+		} else {
+			$webhook_id = false; // make sure it's false if none are found.
+		}
+
+		$webhook_data = array();
+		$webhook_data['webhook_id'] = $webhook_id;
+		if ( $webhook_id ) {
+			$webhook_data['enabled_events'] = $webhook_events;
+
+			/// save to the database here to speed things up.
+		}		
+		
+		
+		return $webhook_data;
+	}
+
+	/**
+	 * Get a list of events that are missing between the created existing webhook and required webhook events for Paid Memberships Pro.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_check_missing_webhook_events( $webhook_events ) {
+
+		// Get required events
+		$pmpro_webhook_events = self::pmpro_webhook_events();
+		$event_missing = false;
+
+		// No missing events if webhook event is "All Events" selected.
+		if ( is_array( $webhook_events ) && $webhook_events[0] === '*' ) {
+			return false;
+		} 
+
+		foreach( $pmpro_webhook_events as $event ) {
+			if ( ! in_array( $event, $webhook_events ) ) {
+				$event_missing = true;
+			}
+		}
+
+		if ( $event_missing ) {
+			$events = array_unique( array_merge( $pmpro_webhook_events, $webhook_events ) );
+			// Force reset of indexes for Stripe.
+			$events = array_values( $events );
+		} else {
+			$events = false;
+		}
+
+		return $events;
+	}
+
+	/**
+	 * Update required webhook enabled events.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_update_webhook_events() {
+
+		// Also checks database to see if it's been saved.
+		$webhook = self::pmpro_does_webhook_exist();
+
+		if ( empty( $webhook['webhook_id'] ) ) {
+			$create = self::pmpro_create_webhook();
+			return $create;
+		}
+
+		// Bail if no enabled events for a webhook are passed through.
+		if ( ! isset( $webhook['enabled_events'] ) ) {
+			return;
+		}
+		
+		$events = self::pmpro_check_missing_webhook_events( $webhook['enabled_events'] );
+		
+		if ( $events ) {
+
+			try {
+				$update = Stripe_Webhook::update( 
+					$webhook['webhook_id'],
+					['enabled_events' => $events ]
+				);
+	
+				if ( $update ) {
+					pmpro_setOption( 'stripe_webhook_id', $webhook['webhook_id'] );
+					return $update;
+				}
+			} catch (\Throwable $th) {
+				//throw $th;
+				return $th->getMessage();
+			}
+				
+		} else {
+			pmpro_setOption( 'stripe_webhook_id', $webhook['webhook_id'] );
+		}
+		
+	}
+
+	/**
+	 * Delete an existing webhook.
+	 * 
+	 * @since 2.4
+	 */
+	static function pmpro_delete_webhook( $webhook_id ) {
+		
+		try {
+			$stripe = new Stripe_Client( pmpro_getOption( "stripe_secretkey" ) );
+			$delete = $stripe->webhookEndpoints->delete( $webhook_id, [] );
+			delete_option( 'pmpro_stripe_webhook_id' );
+	} catch (\Throwable $th) {
+			delete_option( 'pmpro_stripe_webhook_id' );
+			return $th->getMessage();
+
+		}
+
+		return $delete;
+
 	}
 
 	/**
