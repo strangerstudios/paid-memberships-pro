@@ -130,25 +130,29 @@ class PMPro_Subscription {
 	}
 
 	// **************************************
-	// Building new PMPro_Subscription
+	// Building/Updating PMPro_Subscription
 	// **************************************
 	/**
-	 * Create a new PMPro_Subscription object by pulling information from an order.
+	 * Create a new PMPro_Subscription object or update an
+	 * existing subscription by pulling information from an order.
 	 *
 	 * @param MemberOrder $morder to pull data from.
 	 */
-	static function build_subscription_from_order( $morder ) {
+	static function update_subscription_from_order( $morder ) {
 		global $wpdb;
 		if ( ! is_a( $morder, 'MemberOrder' ) ) {
 			return false;
 		}
-		$subscription                              = new PMPro_Subscription();
-		$subscription->gateway                     = $morder->gateway;
-		$subscription->gateway_environment         = $morder->gateway_environment;
-		$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
-		// TODO: Change this to get the order's timestamp.
-		$subscription->startdate                   = current_time( 'Y-m-d H:i:s', true ); // GMT.
 
+		if ( self::subscription_exists_for_order( $morder ) ) {
+			$subscription = new PMPro_Subscription( $morder );
+		} else {
+			$subscription                              = new PMPro_Subscription();
+			$subscription->gateway                     = $morder->gateway;
+			$subscription->gateway_environment         = $morder->gateway_environment;
+			$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
+			$subscription->startdate                   = $morder->datetime;
+		}
 		// Get next payment date.
 		if ( ! empty( $morder->ProfileStartDate ) ) {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
@@ -351,6 +355,14 @@ class PMPro_Subscription {
 	function save() {
 		global $wpdb;
 
+		if (
+			empty( $this->gateway ) ||
+			empty( $this->gateway_environment ) ||
+			empty( $this->subscription_transaction_id )
+		) {
+			return false;
+		}
+
 		if ( empty( $this->id ) ) {
 			$before_action = 'pmpro_create_subscription';
 			$after_action  = 'pmpro_created_subscription';
@@ -392,6 +404,7 @@ class PMPro_Subscription {
 		}
 
 		do_action( $after_action, $this );
+		return $this;
 	}
 
 	/**
@@ -410,20 +423,21 @@ class PMPro_Subscription {
 				$result = false;
 			}
 
-			if ( $result == false ) {
+			if ( $result == false && is_a( $morder, 'MemberOrder' ) ) {
 				// Notify the admin.
+				$order_user = get_userdata($morder->user_id);
 				$pmproemail = new PMProEmail();
 				$pmproemail->template      = 'subscription_cancel_error';
 				$pmproemail->data          = array( 'body' => '<p>' . sprintf( __( 'There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ), strval( $this->user_id ) ) . '</p><p>Error: ' . $this->error . '</p>' );
 				$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $order_user->user_email . '</p>';
 				$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $order_user->user_login . '</p>';
 				$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $order_user->display_name . '</p>';
-				$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $this->code . '</p>';
-				$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
-				$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $morder->code . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $morder->gateway . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $morder->subscription_transaction_id . '</p>';
 				$pmproemail->data['body'] .= '<hr />';
-				$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-				$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url( 'admin.php' ) ) ) . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $morder->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+				$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $morder->id ), admin_url( 'admin.php' ) ) ) . '</p>';
 				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 			}
 		} else {

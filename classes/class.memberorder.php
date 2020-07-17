@@ -748,9 +748,10 @@
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
 
-				if ( ! empty( $this->subscription_transaction_id ) && ! PMPro_Subscription::subscription_exists_for_order( $this ) ) {
-					// Need to create a PMPro Subscription for this order...
-					$subscription = PMPro_Subscription::build_subscription_from_order( $this );
+				if ( ! empty( $this->subscription_transaction_id ) && 'pmpro_add_order' === $before_action ) {
+					// New order created for recurring subscription.
+					// Need to create/update PMPro Subscription for this order...
+					$subscription = PMPro_Subscription::update_subscription_from_order( $this );
 				}
 
 				return $this->getMemberOrderByID($this->id);
