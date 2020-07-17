@@ -10,10 +10,10 @@ use Stripe\Source as Stripe_Source;
 use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
-use Stripe\StripeClient as Stripe_Client; // Only used for deleting webhook as of 2.4
+use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 
 
-define( "PMPRO_STRIPE_API_VERSION", "2019-05-16" );
+define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );
