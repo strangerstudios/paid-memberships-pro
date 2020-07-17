@@ -876,11 +876,11 @@
 
 				if(!empty($status) && !empty($status['NEXTBILLINGDATE'])) {
 					//found the next billing date at PayPal, going to use that
-					$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']), current_time('timestamp'));
+					$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']));
 				}
 				elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled") {
 					//startdate is in the future and we cancelled so going to use that as the next payment date
-					$startdate_timestamp = strtotime(urldecode($status['PROFILESTARTDATE']), current_time('timestamp'));
+					$startdate_timestamp = strtotime(urldecode($status['PROFILESTARTDATE']));
 					if($startdate_timestamp > current_time('timestamp')) {
 						$timestamp = $startdate_timestamp;
 					}
@@ -889,7 +889,7 @@
 			if ( empty( $timestamp ) ) {
 				return '0000-00-00 00:00:00';
 			} else {
-				return date_i18n( 'Y-m-d H:i:s', $timestamp );
+				return date( 'Y-m-d H:i:s', $timestamp );
 			}
 		}
 

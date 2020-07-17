@@ -2035,11 +2035,9 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! empty( $stripe_subscription ) ) {
 				$customer = $morder->Gateway->getCustomer();
 				if ( ! $customer->delinquent && ! empty ( $stripe_subscription->current_period_end ) ) {
-					$offset = get_option( 'gmt_offset' );						
-					$timestamp = $stripe_subscription->current_period_end + ( $offset * 3600 );
+					$timestamp = $stripe_subscription->current_period_end;
 				} elseif ( $customer->delinquent && ! empty( $stripe_subscription->current_period_start ) ) {
-					$offset = get_option( 'gmt_offset' );						
-					$timestamp = $stripe_subscription->current_period_start + ( $offset * 3600 );
+					$timestamp = $stripe_subscription->current_period_start;
 				}
 			}
 		}
@@ -2047,7 +2045,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( empty( $timestamp ) ) {
 			return '0000-00-00 00:00:00';
 		} else {
-			return date_i18n( 'Y-m-d H:i:s', $timestamp );
+			return date( 'Y-m-d H:i:s', $timestamp );
 		}
 	}
 

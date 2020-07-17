@@ -27,9 +27,9 @@ class PMPro_Subscription {
 		$this->gateway_environment         = '';
 		$this->subscription_transaction_id = '';
 		$this->status                      = 'active';
-		$this->startdate                   = '';
-		$this->enddate                     = '';
-		$this->next_payment_date           = '';
+		$this->startdate                   = ''; // UTC YYYY-MM-DD HH:MM:SS.
+		$this->enddate                     = ''; // UTC YYYY-MM-DD HH:MM:SS.
+		$this->next_payment_date           = ''; // UTC YYYY-MM-DD HH:MM:SS.
 
 		return $this;
 	}
@@ -147,14 +147,14 @@ class PMPro_Subscription {
 		$subscription->gateway_environment         = $morder->gateway_environment;
 		$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
 		// TODO: Change this to get the order's timestamp.
-		$subscription->startdate                   = current_time( 'Y-m-d H:i:s' );
+		$subscription->startdate                   = current_time( 'Y-m-d H:i:s', true ); // GMT.
 
 		// Get next payment date.
 		if ( ! empty( $morder->ProfileStartDate ) ) {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
 		} else {
 			// Get next payment date by querying gateway.
-			$subscription->get_next_payment_date( 'Y-m-d H:i:s', true );
+			$subscription->get_next_payment_date = $subscription->get_next_payment_date( 'Y-m-d H:i:s', false, true );
 		}
 
 		$subscription->save();
@@ -164,9 +164,11 @@ class PMPro_Subscription {
 	/**
 	 * Get the next payment date for this subscription.
 	 *
-	 * @param bool $query_gateway for next payment date.
+	 * @param string $format to return the next payment date in.
+	 * @param bool   $local_time set to false for date in GMT.
+	 * @param bool   $query_gateway for next payment date.
 	 */
-	function get_next_payment_date( $format = 'timestamp', $query_gateway = false ) {
+	function get_next_payment_date( $format = 'timestamp', $local_time = true, $query_gateway = false ) {
 		if ( $query_gateway ) {
 			// Get next payment date by querying gateway.
 			$gateway_object = $this->get_gateway_object();
@@ -176,15 +178,7 @@ class PMPro_Subscription {
 				$this->next_payment_date = '0000-00-00 00:00:00';
 			}
 		}
-		if ( empty( $this->next_payment_date ) || $this->next_payment_date == '0000-00-00 00:00:00' ) {
-			return false;
-		} elseif ( 'timestamp' === $format ) {
-			return date( 'U', strtotime( $this->next_payment_date ) );
-		} elseif ( 'date_format' === $format ) {
-			return date( get_option( 'date_format' ), $this->next_payment_date );
-		} else {
-			return date( $format, $this->next_payment_date );  // assume a PHP date format
-		}
+		return $this->format_subscription_date( $this->next_payment_date, $format, $local_time );
 	}
 
 	/**
@@ -295,10 +289,56 @@ class PMPro_Subscription {
 			$classname .= '_' . $this->gateway;	// Adding the gateway suffix.
 		}
 
-		if ( class_exists( $classname ) && isset ( $this->gateway ) ) {
+		if ( class_exists( $classname ) && isset( $this->gateway ) ) {
 			return new $classname( $this->gateway );
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * Get the startdate for this subscription.
+	 *
+	 * @param string $format to return the startdate in.
+	 * @param bool   $local_time set to false for date in GMT.
+	 */
+	function get_startdate( $format = 'timestamp', $local_time = true ) {
+		return $this->format_subscription_date( $this->startdate, $format, $local_time );
+	}
+
+	/**
+	 * Get the enddate for this subscription.
+	 *
+	 * @param string $format to return the enddate in.
+	 * @param bool   $local_time set to false for date in GMT.
+	 */
+	function get_enddate( $format = 'timestamp', $local_time = true ) {
+		return $this->format_subscription_date( $this->enddate, $format, $local_time );
+	}
+
+	/**
+	 * Factoring code out of date getters.
+	 *
+	 * Function set to protected in case we later move out of class.
+	 * If we do, we only need to make changes within this class file.
+	 *
+	 * @param string $date to format.
+	 * @param string $format to return the next payment date in.
+	 * @param bool   $local_time set to false for date in GMT.
+	 */
+	protected function format_subscription_date( $date, $format = 'timestamp', $local_time = true ) {
+		if ( empty( $date ) || $date == '0000-00-00 00:00:00' ) {
+			return false;
+		} elseif ( 'timestamp' === $format ) {
+			$format = 'U';
+		} elseif ( 'date_format' === $format ) {
+			$format = get_option( 'date_format' );
+		}
+
+		if ( $local_time ) {
+			return get_date_from_gmt( $date, $format ); // Local time.
+		} else {
+			return date( $format, strtotime( $date ) ); // GMT.
 		}
 	}
 
@@ -395,7 +435,7 @@ class PMPro_Subscription {
 			$sql_query = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE id = '" . $this->mu_id . "'";
 			$wpdb->query( $sql_query );
 			$this->status  = 'cancelled'; // TODO: What should we do if $result is false?
-			$this->enddate = current_time( 'Y-m-d H:i:s' );
+			$this->enddate = current_time( 'Y-m-d H:i:s', true ); // GMT.
 		}
 		$this->save();
 

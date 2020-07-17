@@ -246,7 +246,7 @@
 			 * @param string $order_status Status or array of statuses to find the last order based on.
 			 */
 			$r = apply_filters( 'pmpro_next_payment', $r, $morder->user_id, $morder->status );
-			return date_i18n( 'Y-m-d H:i:s', $r );
+			return get_gmt_from_date( date( 'Y-m-d H:i:s', $r ) );
 		}
 
 		function getTransactionStatus(&$order)
