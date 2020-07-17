@@ -665,7 +665,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Also checks database to see if it's been saved.
 		$webhook = self::pmpro_does_webhook_exist();
 
-		if ( ! $webhook['webhook_id'] ) {
+		if ( empty( $webhook['webhook_id'] ) ) {
 			$create = self::pmpro_create_webhook();
 			return $create;
 		}
