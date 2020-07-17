@@ -2084,6 +2084,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$wpdb->query( $sqlQuery );
 
 		//save order so we know which plan to look for at stripe (order code = plan id)
+		$update_order->Gateway->clean_up( $update_order );
 		$update_order->status = "success";
 		$update_order->saveOrder();
 	}
