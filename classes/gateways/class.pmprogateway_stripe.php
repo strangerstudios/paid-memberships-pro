@@ -202,7 +202,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'init', array( 'PMProGateway_stripe', 'pmpro_clear_saved_subscriptions' ) );
 
 		// Stripe Connect functions.
-		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 	}
 
@@ -339,6 +340,11 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
+				<input type='hidden' name='stripe_connect_user_id' value='<?php echo esc_attr( $values['stripe_connect_user_id'] ) ?>'/>
+				<input type='hidden' name='live_stripe_connect_secretkey' value='<?php echo esc_attr( $values['live_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='live_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['live_stripe_connect_publishablekey'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
         <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
@@ -2667,7 +2673,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function get_application_fee_percentage() {
 		$application_fee_percentage = pmpro_license_isValid() ? 0 : 2;
-		return apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+		return round( floatval( $application_fee_percentage ), 2 );
 	}
 
 	/**
@@ -2683,6 +2690,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		$amount = $params['amount'];
 		$application_fee = $amount * ( self::get_application_fee_percentage() / 100 );
+		$application_fee = floor( $application_fee );
 		if ( ! empty( $application_fee ) ) {
 			$params['application_fee_amount'] = intval( $application_fee );
 		}
@@ -2735,17 +2743,26 @@ class PMProGateway_stripe extends PMProGateway {
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
+
+			wp_redirect( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
+			exit;
 		}
 
 		if ( ! empty( $error ) ) {
-			$class   = 'notice notice-error pmpro-stripe-connect-message';
-			$message = sprintf(
+			global $pmpro_stripe_error;
+			$pmpro_stripe_error = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s', 'paid-memberships-pro' ),
 				esc_html( $error )
 			);
+		}
+	}
 
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+	static function stripe_connect_show_errors() {
+		global $pmpro_stripe_error;
+		if ( ! empty( $pmpro_stripe_error ) ) {
+			$class   = 'notice notice-error pmpro-stripe-connect-message';
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $pmpro_stripe_error );
 		}
 	}
 
