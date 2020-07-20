@@ -368,12 +368,12 @@ class PMProGateway_stripe extends PMProGateway {
             </th>
             <td>
 				<?php if ( self::does_webhook_exist() ) { ?>
-				<button id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
+				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 				<div class="notice notice-success inline">
 					<p id="pmpro_stripe_webhook_notice">Your webhook is enabled. <a id="pmpro_stripe_delete_webhook" href="#">Disable Webhook</a></p>
 				</div>
 				<?php } else { ?>
-				<button id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
+				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 				<div class="notice error inline">
 					<p id="pmpro_stripe_webhook_notice"><?php _e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
 				</div>
@@ -429,14 +429,25 @@ class PMProGateway_stripe extends PMProGateway {
 			$r = array(
 				'success' => false,
 				'notice' => 'error',
-				'message' => __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' )
+				'message' => __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' ),
+				'response' => $r
 			);
 		} else {
-			$r = array(
-				'success' => true,
-				'notice' => 'notice-success',
-				'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' )
-			);
+			if ( is_wp_error( $r ) ) {
+				$r = array(
+					'success' => false,
+					'notice' => 'error',
+					'message' => $r->get_error_message(),
+					'response' => $r
+				);
+			} else {
+				$r = array(
+					'success' => true,
+					'notice' => 'notice-success',
+					'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
+					'response' => $r
+				);
+			}
 		}
 		
 		echo json_encode( $r );
@@ -464,20 +475,29 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			$r = $stripe::delete_webhook( $webhook, $secretkey );
 			
-			if ( ! empty( $r['deleted'] ) && $r['deleted'] == true ) {
-				$r = array(
-					'success' => true,
-					'notice' => 'error',
-					'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' ),
-					'response' => $r
-				);
-			} else {
+			if ( is_wp_error( $r ) ) {
 				$r = array(
 					'success' => false,
 					'notice' => 'error',
-					'message' => __( 'There was an error deleting the webhook.', 'paid-memberships-pro' ),
+					'message' => $r->get_error_message(),
 					'response' => $r
 				);
+			} else {
+				if ( ! empty( $r['deleted'] ) && $r['deleted'] == true ) {
+					$r = array(
+						'success' => true,
+						'notice' => 'error',
+						'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' ),
+						'response' => $r
+					);
+				} else {
+					$r = array(
+						'success' => false,
+						'notice' => 'error',
+						'message' => __( 'There was an error deleting the webhook.', 'paid-memberships-pro' ),
+						'response' => $r
+					);
+				}
 			}
 		}
 
@@ -635,7 +655,7 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		} catch (\Throwable $th) {
 			//throw $th;
-			return $th->getMessage();
+			return new WP_Error( 'error', $th->getMessage() );
 		}
 		
 	}
@@ -653,7 +673,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$webhooks = self::get_webhooks();
 		$webhook_id = false;
-		if ( ! empty( $webhooks ) ) {
+		if ( ! empty( $webhooks ) && ! empty( $webhooks['data'] ) ) {
 
 			$pmpro_webhook_url = self::get_site_webhook_url();
 
@@ -747,7 +767,7 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 			} catch (\Throwable $th) {
 				//throw $th;
-				return $th->getMessage();
+				return new WP_Error( 'error', $th->getMessage() );
 			}
 				
 		} else {
@@ -772,7 +792,7 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_stripe_webhook_id' );
 		} catch (\Throwable $th) {
 			delete_option( 'pmpro_stripe_webhook_id' );
-			return $th->getMessage();
+			return new WP_Error( 'error', $th->getMessage() );
 		}
 
 		return $delete;
