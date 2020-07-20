@@ -63,7 +63,7 @@ jQuery(document).ready(function(){
 			data: postData,
 			url: ajaxurl,
 			success: function( response ) {
-				console.log( notification_id );
+				///console.log( notification_id );
 				jQuery('#'+notification_id).hide();
 			}
 		})
@@ -96,7 +96,7 @@ jQuery(document).ready(function() {
 			url: ajaxurl,
 			success: function( response ) {
 				response = jQuery.parseJSON( response );
-                console.log( response );
+                ///console.log( response );
                 
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
@@ -129,7 +129,7 @@ jQuery(document).ready(function() {
 			url: ajaxurl,
 			success: function( response ) {
 				response = jQuery.parseJSON( response );
-                console.log( response );
+                ///console.log( response );
                 
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
