@@ -12,7 +12,6 @@ use Stripe\Subscription as Stripe_Subscription;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 
-
 define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
 
 //include pmprogateway
@@ -647,12 +646,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 */
 	static function does_webhook_exist() {
-
 		$saved_webhook = pmpro_getOption( 'stripe_webhook_id', true );
 		if ( $saved_webhook ) {
 			return $saved_webhook;
 		}
-
 
 		$webhooks = self::get_webhooks();
 		$webhook_id = false;
@@ -678,9 +675,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return $webhook_data;
 		} else {
 			return false;
-		}
-		
-		
+		}	
 	}
 
 	/**
