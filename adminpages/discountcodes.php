@@ -387,7 +387,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$edit ),
@@ -409,7 +409,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$copy ),
@@ -700,7 +700,7 @@
 		<hr class="wp-header-end">
 
 		<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
 			if( ! empty( $s ) ) {
 				$sqlQuery .= "WHERE code LIKE '%$s%' ";
 			}

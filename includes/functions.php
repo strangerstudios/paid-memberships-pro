@@ -1631,7 +1631,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 	// get code from db
 	if ( ! $error ) {
-		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
+		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
@@ -1932,8 +1932,8 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
@@ -2300,9 +2300,9 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			}
 
 			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );

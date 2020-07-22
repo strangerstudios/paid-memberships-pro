@@ -307,7 +307,7 @@
 				DISTINCT u.ID,
 				u.user_login,
 				u.user_email,
-				UNIX_TIMESTAMP(u.user_registered) as joindate,
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate,
 				u.user_login,
 				u.user_nicename,
 				u.user_url,
@@ -318,7 +318,7 @@
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_period,
-				UNIX_TIMESTAMP(max(mu.enddate)) as enddate,
+				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
