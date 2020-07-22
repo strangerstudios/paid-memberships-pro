@@ -27,6 +27,8 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 		}
 	}
 
+	// Custom redirect filters should use the core WordPress login_redirect filter instead of this one.
+	// This filter is left in place for PMPro versions dating back to 2014.
 	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
 }
 add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
