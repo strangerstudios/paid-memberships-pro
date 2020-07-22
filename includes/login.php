@@ -397,6 +397,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = __( 'Please complete all fields.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
+			case 'retrieve_password_email_failure':
+				$message = __( 'The email could not be sent. This site may not be correctly configured to send emails.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
 		}
 	}
 
