@@ -60,5 +60,5 @@ function render_dynamic_block( $attributes ) {
 		$css_class = null;
 	}
 
-	return( pmpro_getCheckoutButton( $level, $text, $css_class ) );
+	return( "<span class=\"" . pmpro_get_element_class( 'span_pmpro_checkout_button' ) . "\">" . pmpro_getCheckoutButton( $level, $text, $css_class ) . "</span>" );
 }
