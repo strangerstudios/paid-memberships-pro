@@ -82,7 +82,7 @@
 		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, $now ));
 
 		//insert/update/replace discount code
-		$wpdb->replace(
+		pmpro_insert_or_replace(
 			$wpdb->pmpro_discount_codes,
 			array(
 				'id'=>max($saveid, 0),

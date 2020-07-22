@@ -3305,3 +3305,28 @@ function pmpro_int_compare( $a, $b, $operator ) {
 	
 	return $r;
 }
+
+/**
+ * Wrapper for $wpdb to insert or replace
+ * based on the value of the primary key field.
+ * Using this since using REPLACE on some setups
+ * results in unexpected behavior.
+ *
+ * @since 2.4
+ */
+function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) {
+	global $wpdb;
+	
+	if ( empty( $data[$primary_key] ) ) {
+		// Insert. Remove keys first.
+		$index = array_search( $primary_key, array_keys( $data ) );
+		if ( $index !== false ) {
+			unset( $data[$primary_key] );
+			unset( $format[$index] );
+		}
+		return $wpdb->insert( $table, $data, $format );
+	} else {
+		// Replace.
+		return $wpdb->replace( $table, $data, $format );
+	}
+}
