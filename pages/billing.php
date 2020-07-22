@@ -1,6 +1,6 @@
 <div class="<?php echo pmpro_get_element_class( 'pmpro_billing_wrap' ); ?>">
 <?php
-	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link;
+	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -12,7 +12,8 @@
 	 */
 	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 
-	$gateway = pmpro_getOption("gateway");
+	// Get the default gateway for the site.
+	$default_gateway = pmpro_getOption( 'gateway' );
 
 	// Set the wrapping class for the checkout div based on the default gateway;
 	if ( empty( $gateway ) ) {
@@ -79,7 +80,7 @@
 			<?php
 				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
 					, true);
-				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
+				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) && $has_recurring_levels ) { ?>
 					<li><strong><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
 						<?php echo esc_html( ucwords( $CardType ) ); ?>
 						<?php _e('ending in', 'paid-memberships-pro' ); ?>
@@ -117,7 +118,13 @@
 		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
 			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo pmpro_url( 'account' )?>"><?php _e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 		</p> <!-- end pmpro_actions_nav -->
-	<?php } else { ?>
+	<?php } elseif ( $gateway != $default_gateway ) {
+		// This membership's gateway is not the default site gateway, Pay by Check, or PayPal Express.
+		?>
+		<p><?php _e( 'Your billing information cannot be updated at this time.', 'paid-memberships-pro' ); ?></p>
+	<?php } else {
+		// Show the default gateway form and allow billing information update.
+		?>
 		<div id="pmpro_level-<?php echo $level->id; ?>" class="<?php echo pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $level->id ); ?>">
 		<form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
 
