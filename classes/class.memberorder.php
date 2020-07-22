@@ -925,6 +925,10 @@
 		 * @since  1.9.5
 		 */
 		function get_tos_consent_log_entry() {
+			if ( empty( $this->id ) ) {
+				return false;
+			}
+			
 			$consent_log = pmpro_get_consent_log( $this->user_id );
 			foreach( $consent_log as $entry ) {
 				if( $entry['order_id'] == $this->id ) {
