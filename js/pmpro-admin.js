@@ -75,6 +75,11 @@ jQuery(document).ready(function(){
  * Create Webhook button for Stripe on the payment settings page.
  */
 jQuery(document).ready(function() {
+	// Check that we are on payment settings page.
+	if ( ! jQuery( '#stripe_publishablekey' ).length || ! jQuery( '#stripe_secretkey' ).length || ! jQuery( '#pmpro_stripe_create_webhook' ).length ) {
+		return;
+	}
+
     // Disable the webhook buttons if the API keys aren't complete yet.
     jQuery('#stripe_publishablekey,#stripe_secretkey').bind('change keyup', function() {
         pmpro_stripe_check_api_keys();
