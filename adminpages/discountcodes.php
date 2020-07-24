@@ -604,7 +604,7 @@
 									?>
 									<?php _e('per', 'paid-memberships-pro' ); ?>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
-									<select name="cycle_period[]" onchange="updateCyclePeriod();">
+									<select name="cycle_period[]">
 									  <?php
 										$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 										foreach ( $cycles as $name => $value ) {
