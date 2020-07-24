@@ -147,6 +147,19 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
+		/**
+		 * Get membership level after checkout options are applied.
+		 * @since 2.4
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
+		 */
+		register_rest_route( $pmpro_namespace, '/checkout_level', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_get_checkout_level' ),
+			),
+		));
+
 		}
 		
 		/**
@@ -464,16 +477,35 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get a membership level at checkout.
+		 * Note: Not compatible with MMPU.
+		 * @since 2.4
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
+		 */
+		function pmpro_rest_api_get_checkout_level( $request ) {
+			$params = $request->get_params();
+
+			$level_id = isset( $params['level'] ) ? $params['level'] : null;
+			if ( empty( $level_id ) ) {
+				return new WP_REST_Response( 'No level found.', 400 );
+			}
+
+			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+			return new WP_REST_Response( $checkout_level );
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
 		 *
 		 * @since 2.3
 		 */
-		 function pmpro_rest_api_get_permissions_check($request) {
+		 function pmpro_rest_api_get_permissions_check( $request ) {
 
 			$method = $request->get_method();
-			$endpoint = $request->get_endpoint();
+			$route = $request->get_route();
 			
 			// default permissions to 'read' (subscriber)
 			$permissions = current_user_can('read');			
@@ -482,7 +514,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			// Is the request method allowed?
-			if ( ! in_array( $method, pmpro_get_rest_api_methods( $endpoint ) ) ) {
+			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
 				$permissions = false;
 			}
 
@@ -519,8 +551,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
  * To enable DELETE, hook into this filter.
  * @since 2.3
  */
-function pmpro_get_rest_api_methods( $endpoint = NULL ) {
+function pmpro_get_rest_api_methods( $route = NULL ) {
 	$methods = array( 'GET', 'POST', 'PUT', 'PATCH' );
-	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $endpoint );
+	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $route );
 	return $methods;
 }

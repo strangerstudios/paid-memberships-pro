@@ -13,7 +13,7 @@ function pmpro_cron_expire_memberships()
 	$today = date("Y-m-d", current_time("timestamp"));
 
 	//look for memberships that expired before today
-	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '' AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
+	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
 
 	if(defined('PMPRO_CRON_LIMIT'))
 		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
@@ -71,15 +71,15 @@ function pmpro_cron_expiration_warnings()
   				mu.membership_id,
   				mu.startdate,
  				mu.enddate,
- 				um.meta_value AS notice 			  
+ 				um.meta_value AS notice
  			FROM {$wpdb->pmpro_memberships_users} AS mu
  			  LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
             	AND um.meta_key = %s
-			WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )  
-				AND ( mu.status = 'active' )		   
+			WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
+				AND ( mu.status = 'active' )
  			    AND ( mu.enddate IS NOT NULL )
  			    AND ( mu.enddate <> '0000-00-00 00:00:00' )
- 			    AND ( mu.enddate BETWEEN %s AND %s )		  
+ 			    AND ( mu.enddate BETWEEN %s AND %s )
  			    AND ( mu.membership_id <> 0 OR mu.membership_id <> NULL )
 			ORDER BY mu.enddate
 			",
@@ -92,7 +92,7 @@ function pmpro_cron_expiration_warnings()
 
 	if(defined('PMPRO_CRON_LIMIT'))
 		$sqlQuery .= " LIMIT " . PMPRO_CRON_LIMIT;
-	
+
 	$expiring_soon = $wpdb->get_results($sqlQuery);
 
 	foreach($expiring_soon as $e)
@@ -113,7 +113,7 @@ function pmpro_cron_expiration_warnings()
 
 		//delete all user meta for this key to prevent duplicate user meta rows
 		delete_user_meta($e->user_id, "pmpro_expiration_notice");
-		
+
 		//update user meta so we don't email them again
 		update_user_meta($e->user_id, "pmpro_expiration_notice", $today);
 	}

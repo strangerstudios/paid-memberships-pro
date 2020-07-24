@@ -202,7 +202,7 @@
 			?>
 			<span id="pmpro_submit_span">
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Check Out with 2Checkout', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -345,12 +345,7 @@
 			///echo str_replace("&", "&<br />", $ptpStr);
 			///exit;
 
-			//figure out gateway environment and URL to use
-			if($gateway_environment == "live")
-					$host = "www.2checkout.com";
-				else
-					$host = "sandbox.2checkout.com";
-			$tco_url = 'https://' . $host . '/checkout/purchase' . $ptpStr;
+			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 
 			//redirect to 2checkout
 			wp_redirect( $tco_url );

@@ -1,4 +1,29 @@
 == Changelog ==
+= 2.3.4 - 2020-06-18 =
+* SECURITY: Better escaping of values on the billing and confirmation pages.
+* BUG FIX: Fixed issue where expiration dates could be set to 1 day in the past when editing a user in the dashboard if certain timezones were chosen in the General settings.
+* BUG FIX: Fixed issue where users were redirected back to the /login/ page if WordPress needed them to confirm their admin email address. Users will now be taken to the default WP login page with the form to confirm their email address.
+* BUG FIX: Fixed bug where the reset password link in the new user email was not filtered to go to the frontend login page if being used.
+* BUG FIX: Fixed issue where some errors were not being shown when password resets failed.
+* BUG FIX: Fixed bug with action links added to the orders table.
+* BUG FIX: Fixed issue where empty dates would show current date in the members list.
+* BUG FIX: Fixed fatal error that was happening when using some of the new API endpoints.
+* BUG FIX: Timestamps returned by the Stripe API when getting the next payment date needed to be adjusted based on the site's timezone setting.
+* BUG FIX: Fixed a bug where the change password form wouldn't show up sometimes when using the login shortcode.
+* BUG FIX: Fixed notice in the PayPal IPN handler when adding notes to an order.
+* BUG FIX: Fixed issue where PMPro would generate the wrong excerpt in some cases where the more tag was used but the excerpt was generated before the more tag code or blog was not yet converted to HTML. Specifically this fixes an issue with excerpts generated for AMP with the SchemaApp plugin.
+* BUG FIX/ENHANCEMENT: Added an advanced setting to "Uninstall PMPro on Deletion". You must check and save this option first or PMPro will not delete data from the DB when deleting from the plugins page. This keeps users from accidentally deleting orders and member data.
+* BUG FIX/ENHANCEMENT: Now hiding the profile and change password links on the membership account page if a frontend profile page is not set and users are locked from the WP dashboard by the advanced setting.
+* BUG FIX/ENHANCEMENT: Resetting the signups and cancellations report cache when there are new membership level changes.
+* ENHANCEMENT: Added a pmpro_get_element_class function and filter. We now use this function when adding classes to HTML elements in our templates. The filter can be used to alter or append to the classes used in the HTML tags. This will make it easier to create code and CSS to make PMPro look better with popular themes.
+* ENHANCEMENT: Added a pmpro_authorizenet_post_values filter to the Authorize.net class. An array of $post_values is passed in to be filtered along with a string for the API method about to be called.
+* ENHANCEMENT: Added a pmpro_member_profile_edit_user_object_fields filter to add or remove fields from the frontend edit profile page.
+* ENHANCEMENT: Now showing information about the current billing method on the update billing page. Can hide this information by having the pmpro_billing_show_payment_method filter return false.
+* ENHANCEMENT: No longer saying "Great Work!" in the admin digest emails. This was especially embarrassing if you didn't have any sales during the diget period.
+* REFACTOR: Refactored some code in the CSV exports to avoid false positives by malware scanners.
+* REFACTOR: Added a build_post_string method to the Authorize.net class to avoid redundant code.
+* REFACTOR: Added a cancelSubscriptionAtGateway method to the PayPal Express class. This is useful if you want to cancel the subscription without cancelling the membership. (Thanks, Mirco Babini)
+
 = 2.3.3 - 2020-05-13 =
 * SECURITY: Fixed SQL injection vulnerability when logged in as an administrator and adding new orders in the dashboard. JVN#20248858 (Thanks, Kenichi Okuno of Mitsui Bussan Secure Directions, Inc)
 * SECURITY: Making sure to properly escape all values on the add/edit order form in the dashboard.
