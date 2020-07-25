@@ -9,6 +9,10 @@ function pmpro_init_recaptcha() {
 	global $recaptcha, $recaptcha_validated;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
 
+	if ( empty( $reCaptcha ) ) {
+		return;
+	}
+	
 	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
 	if ( ! empty( $recaptcha_validated ) ) {
 	    $recaptcha = false;
