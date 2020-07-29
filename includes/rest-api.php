@@ -160,6 +160,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
+		/**
+		 * Get membership levels after checkout options are applied.
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 */
+		register_rest_route( $pmpro_namespace, '/checkout_levels', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_get_checkout_levels' ),
+			),
+		));
 		}
 		
 		/**
@@ -493,6 +504,37 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 			return new WP_REST_Response( $checkout_level );
+		}
+
+		/**
+		 * Get membership levels at checkout.
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 */
+		function pmpro_rest_api_get_checkout_levels( $request ) {
+			$params = $request->get_params();
+
+			global $pmpro_checkout_level_ids;
+			if ( ! empty( $pmpro_checkout_level_ids ) ) {
+				// MMPU Compatibility...
+				$level_ids = $pmpro_checkout_level_ids;
+			} elseif ( isset( $_REQUEST['level'] ) ) {
+				$level_ids = explode( '+', $_REQUEST['level'] );
+			}
+
+			if ( empty( $level_ids ) ) {
+				return new WP_REST_Response( 'No levels found.', 400 );
+			}
+			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+
+			$r = array();
+			$r['inital_payment'] = 0.00;
+			foreach ( $level_ids as $level_id ) {
+				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
+					$r['inital_payment'] += intval( $r[ $level_id ]->initial_payment );
+				}
+			}
+			return new WP_REST_Response( $r );
 		}
 
 		/**
