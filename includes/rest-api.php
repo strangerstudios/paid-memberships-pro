@@ -527,11 +527,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
 
 			$r = array();
-			$r['inital_payment'] = 0.00;
+			$r['initial_payment'] = 0.00;
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
-					$r['inital_payment'] += intval( $r[ $level_id ]->initial_payment );
+					$r['initial_payment'] += intval( $r[ $level_id ]->initial_payment );
 				}
 			}
 			return new WP_REST_Response( $r );
