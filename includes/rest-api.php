@@ -534,6 +534,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$r['initial_payment'] += intval( $r[ $level_id ]->initial_payment );
 				}
 			}
+			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
 			return new WP_REST_Response( $r );
 		}
 
