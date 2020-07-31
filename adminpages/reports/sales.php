@@ -165,7 +165,7 @@ function pmpro_report_sales_page()
 	}
 	else
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$date_function = 'YEAR';
 		$currently_in_period = true;
 	}
@@ -520,7 +520,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	} elseif ( 'this year' === $period ) {
 		$startdate = date_i18n( 'Y', current_time( 'timestamp' ) ) . '-01-01';
 	} else {
-		$startdate = '';
+		$startdate = '1970-01-01';
 	}
 
 	$gateway_environment = pmpro_getOption( 'gateway_environment' );

@@ -685,7 +685,17 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tr>
 			<?php
 			if ( in_array( 'ExpirationDate', $read_only_fields ) && $order_id > 0 ) {
-				echo esc_html( $order->ExpirationDate );
+				?>
+
+				<tr>
+				    <th scope="row" valign="top"><label
+						for="expirationmonth"><?php esc_html_e( 'Expiration Month', 'paid-memberships-pro' ); ?>:</label></th>
+				    <td>
+					<?php echo esc_html( $order->expirationmonth . '/' . $order->expirationyear ); ?>
+				    </td>
+				</tr>
+
+				<?php
 			} else {
 						?>
 							<tr>
@@ -1353,7 +1363,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								foreach ( $actions as $action => $link ) {
 									++ $i;
 									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-									$out .= "<span class='" . esc_attr( $action ) . "'>" . esc_html( $link ) . $sep . "</span>";
+									$out .= "<span class='" . esc_attr( $action ) . "'>" . $link . $sep . "</span>";
 								}
 								echo $out;
 							}

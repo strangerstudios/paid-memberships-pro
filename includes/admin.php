@@ -3,6 +3,7 @@
 	Admin code.
 */
 
+require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 /**
  * Redirect to Dashboard tab if the user hasn't been there yet.
  *
@@ -27,10 +28,25 @@ add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 /**
  * Block Subscibers from accessing the WordPress Dashboard.
  *
+ * @since 2.3.4
+ */
+function pmpro_block_dashboard_redirect() {
+	if ( pmpro_block_dashboard() ) {
+		wp_redirect( pmpro_url( 'account' ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'pmpro_block_dashboard_redirect', 9 );
+
+/**
+ * Is the current user blocked from the dashboard
+ * per the advanced setting.
+ *
  * @since 2.3
  */
 function pmpro_block_dashboard() {
 	global $current_user;
+
 	$block_dashboard = pmpro_getOption( 'block_dashboard' );
 
 	if ( ! wp_doing_ajax()
@@ -44,9 +60,6 @@ function pmpro_block_dashboard() {
 		$block = false;
 	}	
 	$block = apply_filters( 'pmpro_block_dashboard', $block );
-	if ( $block ) {
-		wp_redirect( pmpro_url( 'account' ) );
-		exit;
-	}
+
+	return $block;
 }
-add_action( 'admin_init', 'pmpro_block_dashboard', 9 );

@@ -37,6 +37,8 @@
 			}
 		}
 
+		do_action( 'pmpro_after_saved_payment_options', $payment_options );
+
 		/*
 			Some special case options still worked out here
 		*/
