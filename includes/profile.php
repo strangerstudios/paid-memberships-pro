@@ -480,7 +480,16 @@ function pmpro_member_profile_edit_form() {
 	}
 	?>
 	<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit_wrap' ); ?>">
-		<form id="member-profile-edit" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="" method="post">
+		<form id="member-profile-edit" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="" method="post"
+			<?php
+				/**
+				 * Fires inside the member-profile-edit form tag in the pmpro_member_profile_edit_form function.
+				 *
+				 * @since 2.4.1
+				 */
+				do_action( 'pmpro_member_profile_edit_form_tag' );
+			?>
+		>
 
 			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
 
