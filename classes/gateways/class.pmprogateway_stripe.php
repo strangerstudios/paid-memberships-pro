@@ -590,13 +590,6 @@ class PMProGateway_stripe extends PMProGateway {
 		return $fields;
 	}
 
-	static function webhook_failed( $error = NULL ) {
-		global $msg, $msgt;
-
-		$msg = -1;
-		$msgt = 'ERROR';
-	}
-
 	/**
 	 * Get available webhooks
 	 * 
