@@ -8,7 +8,7 @@ function pmpro_init_recaptcha() {
 	//don't load if setting is off
 	global $recaptcha, $recaptcha_validated;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
-	if ( empty( $reCaptcha ) ) {
+	if ( empty( $recaptcha ) ) {
 		return;
 	}
 	
