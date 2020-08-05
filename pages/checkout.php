@@ -447,7 +447,20 @@
 			</h3>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
 				<div id="pmpro_license" class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field', 'pmpro_license' ); ?>">
-<?php echo wpautop(do_shortcode($tospage->post_content));?>
+<?php 
+	/**
+	 * Hook to run formatting filters before displaying the content of your "Terms of Service" page at checkout.
+	 *
+	 * @since 2.4.1
+	 *
+	 * @param string $pmpro_tos_content The content of the post assigned as the Terms of Service page.
+	 * @param string $tospage The post assigned as the Terms of Service page.
+	 *
+	 * @return string $pmpro_tos_content
+	 */
+	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', do_shortcode( $tospage->post_content ), $tospage );
+	echo $pmpro_tos_content;
+?>
 				</div> <!-- end pmpro_license -->
 				<?php
 					if ( isset( $_REQUEST['tos'] ) ) {
