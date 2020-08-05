@@ -30,6 +30,11 @@ function pmpro_compatibility_checker () {
 			'file' => 'woocommerce.php',
 			'check_type' => 'constant',
 			'check_value' => 'WC_PLUGIN_FILE'
+		),
+		array(
+			'file' => 'wp-engine.php',
+			'check_type' => 'function',
+			'check_value' => 'wpe_filter_site_url'
 		)
     );
 
