@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.2
-Stable tag: 2.3.4
+Stable tag: 2.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,37 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.4 - 2020-07-24 =
+* FEATURE: Now detecting if the Stripe webhook is set up correctly. You can now create or disable the webhook from the payment settings page in the WP admin dashboard.
+* FEATURE: Added a link to use and set up SendWP for more reliable email sending from WP.
+* BUG FIX: Fixed further issues with dates and timezones.
+* BUG FIX: Fixed issue where reports would cause white screens on some server set ups. We had some report start dates set to 1960, which caused issues. (Thanks, Sam "gausam" on GitHub)
+* BUG FIX: Fixed issue with the query to find expiring memberships that happened on certain MySQL setups.
+* BUG FIX: Fixed issue that was caused if other code called wp_login_url() too early.
+* BUG FIX: Fixed an error in the is_login_page() function.
+* BUG FIX: Fixed a fatal error that was happening in PHP 5.2 or earlier due to code syntax that was not supported then. We noticed a few other cases as well, but decided we won't support PHP 5.2 consistent with WP and other plugins.
+* BUG FIX: Fixed the URL used when using 2Checkout in sandbox mode.
+* BUG FIX: Fixed JavaScript errors that would occur sometimes on the Billing Update page when using the Stripe gateway.
+* BUG FIX: Fixed issue where the dummy $0 orders created when using the "Stripe Updates" feature weren't saving with the updated subscription_transaction_id. This would prevent future payments from being linked to that user and could prevent subscriptions cancellations from being synchronized. When updating to PMPro 2.4, an update script will run to try to restore these subscription_transaction_id values. However, any recurring orders that occured when the id was missing will not be added to PMPro. You will have to update them manually.
+* BUG FIX: Fixed JavaScript error on the edit discount code page.
+* BUG FIX/ENHANCEMENT: Showing expiration date as text when it is set as a readonly field. (Thanks, Rodmar "rodmarzavala" on GitHub)
+* BUG FIX/ENHANCEMENT: Now checking if headers were already sent before trying to start the PHP session. If headers are sent before PMPro tries to start the session, there is usually another error somewhere on the WP site that needs to be fixed. But at least we aren't adding to the confusion by trying to start the session late causing another error in the log.
+* BUG FIX/ENHANCEMENT: Updated misleading hint for the PayPal Express IPN URL on the payment settings page.
+* BUG FIX/ENHANCEMENT: Fixed invalid key description in the SQL in includes/setup.sql. The actually query used to set up table in PMPro was correct though. The setup.sql file is included for reference and developers who want to create the tables "manually" in MySQL.
+* BUG FIX/ENHANCEMENT: The post type search filter now supports cases where post type set in WPQuery is an array.
+* BUG FIX/ENHANCEMENT: Fixed warning that showed when a user with no levels visited the frontend account page.
+* BUG FIX/ENHANCEMENT: Fixing warnings that would be logged at checkout in certain cases.
+* BUG FIX/ENHANCEMENT: Better handling of cases where users who checked out using a gateway different from the current setting are shown a message that they cannot update their billing information. They should instead checkout again to renew their membership.
+* ENHANCEMENT: Updated to use the latest version of the Stripe API and SDK.
+* ENHANCEMENT: More detailed logging for Braintree webhook debug emails.
+* ENHANCEMENT: Added a getTransactionStatus method to the PayPal and PayPal Express payment gateway classes. (Thanks, Mirco Babini)
+* ENHANCEMENT: Added a checkout_level API call. This will be used in the future to update the price total at checking using JS and is also needed to implement support for Google Pay and Apple Pay through Stripe.
+* ENHANCEMENT: Cleaned up the email settings page.
+* ENHANCEMENT: Better handling of some login and password reset errors.
+* ENHANCEMENT: Added links to the PMPro YouTube and Facebook profiles.
+* REFACTOR: Cleaned up some code in incldues/content.php, especially around the pmpro_search_filter() function.
+* REFACTOR: Removed the package-lock.json file from the repository.
+
 = 2.3.4 - 2020-06-18 =
 * SECURITY: Better escaping of values on the billing and confirmation pages.
 * BUG FIX: Fixed issue where expiration dates could be set to 1 day in the past when editing a user in the dashboard if certain timezones were chosen in the General settings.

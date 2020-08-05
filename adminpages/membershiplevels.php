@@ -99,7 +99,7 @@
 			$ml_expiration_number = $ml_expiration_period = 0;
 		}
 
-		$wpdb->replace(
+		pmpro_insert_or_replace(
 			$wpdb->pmpro_membership_levels,
 			array(
 				'id'=>max($saveid, 0),

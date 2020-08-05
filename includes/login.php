@@ -4,7 +4,7 @@
  * Checks for WP default, TML, and PMPro login page.
  */
 function pmpro_is_login_page() {
-	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( ! empty( pmpro_getOption( 'login_page_id' ) ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
+	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( pmpro_getOption( 'login_page_id' ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
 }
 
 /**
@@ -27,9 +27,11 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 		}
 	}
 
+	// Custom redirect filters should use the core WordPress login_redirect filter instead of this one.
+	// This filter is left in place for PMPro versions dating back to 2014.
 	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
 }
-add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
+add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );	
 
 /**
  * Where is the sign up page? Levels page or default multisite page.
@@ -92,6 +94,8 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
  * Redirect to the login page for member login.
+ * This filter is added on wp_loaded in the pmpro_wp_loaded_login_setup() function.
+ *
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
@@ -106,7 +110,18 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 
 	return $login_url;
 }
-add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+
+/**
+ * Add the filter for login_url after WordPress is loaded.
+ * This avoids errors with certain setups that may call wp_login_url() very early.
+ *
+ * @since 2.4
+ *
+ */
+function pmpro_wp_loaded_login_setup() {
+	add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );	
+}
+add_action( 'wp_loaded', 'pmpro_wp_loaded_login_setup' );
 
 /**
  * Make sure confirm_admin_email actions go to the default WP login page.
@@ -393,6 +408,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				break;
 			case 'password_reset_empty':
 				$message = __( 'Please complete all fields.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
+			case 'retrieve_password_email_failure':
+				$message = __( 'The email could not be sent. This site may not be correctly configured to send emails.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 		}
@@ -833,7 +852,11 @@ function pmpro_login_failed( $username ) {
 	}
 
 	$referrer = wp_get_referer();
-	$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+		$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	} else {
+		$redirect_to = '';
+	}
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {

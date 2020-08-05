@@ -345,12 +345,7 @@
 			///echo str_replace("&", "&<br />", $ptpStr);
 			///exit;
 
-			//figure out gateway environment and URL to use
-			if($gateway_environment == "live")
-					$host = "www.2checkout.com";
-				else
-					$host = "sandbox.2checkout.com";
-			$tco_url = 'https://' . $host . '/checkout/purchase' . $ptpStr;
+			$tco_url = 'https://www.2checkout.com/checkout/purchase' . $ptpStr;
 
 			//redirect to 2checkout
 			wp_redirect( $tco_url );

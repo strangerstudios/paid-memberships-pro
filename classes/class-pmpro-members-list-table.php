@@ -293,9 +293,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
-				UNIX_TIMESTAMP(mu.startdate) as startdate,
-				UNIX_TIMESTAMP(max(mu.enddate)) as enddate, m.name as membership
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
 				";
 		}
 			
@@ -407,7 +407,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
 			$extra_cols = ob_get_clean();
 			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
-			$custom_field_num = explode( 'custom_field_', $column_name )[1];
+			$custom_field_num_arr = explode( 'custom_field_', $column_name );
+			$custom_field_num     = $custom_field_num_arr[1];
 			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
 				echo( $matches[1][ intval( $custom_field_num ) ] );
 			}

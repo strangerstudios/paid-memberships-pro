@@ -1325,7 +1325,7 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	}
 
 	for ( $i = 0; $i < count( $meta_values ); $i++ ) {
-		if ( $prev_values[ $i ] ) {
+		if ( isset( $prev_values[ $i ] ) ) {
 			update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $prev_values[ $i ] );
 		} else {
 			$old_value = get_user_meta( $user_id, $meta_keys[ $i ], true );
@@ -1631,7 +1631,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 	// get code from db
 	if ( ! $error ) {
-		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
+		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
@@ -1836,8 +1836,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
+				UNIX_TIMESTAMP( CONVERT_TZ(enddate, '+00:00', @@global.time_zone) ) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id AND mu.status = 'active'
@@ -1932,8 +1932,8 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
@@ -2300,9 +2300,9 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			}
 
 			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
@@ -3304,4 +3304,29 @@ function pmpro_int_compare( $a, $b, $operator ) {
 	}
 	
 	return $r;
+}
+
+/**
+ * Wrapper for $wpdb to insert or replace
+ * based on the value of the primary key field.
+ * Using this since using REPLACE on some setups
+ * results in unexpected behavior.
+ *
+ * @since 2.4
+ */
+function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) {
+	global $wpdb;
+	
+	if ( empty( $data[$primary_key] ) ) {
+		// Insert. Remove keys first.
+		$index = array_search( $primary_key, array_keys( $data ) );
+		if ( $index !== false ) {
+			unset( $data[$primary_key] );
+			unset( $format[$index] );
+		}
+		return $wpdb->insert( $table, $data, $format );
+	} else {
+		// Replace.
+		return $wpdb->replace( $table, $data, $format );
+	}
 }

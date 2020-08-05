@@ -14,10 +14,16 @@ jQuery( document ).ready( function( $ ) {
 	cardExpiry = elements.create('cardExpiry');
 	cardCvc = elements.create('cardCvc');
 
-	// Mount Elements.
-	cardNumber.mount('#AccountNumber');
-	cardExpiry.mount('#Expiry');
-	cardCvc.mount('#CVV');
+	// Mount Elements. Ensure CC field is present before loading Stripe.
+	if ( $( '#AccountNumber' ).length > 0 ) { 
+		cardNumber.mount('#AccountNumber');
+	}
+	if ( $( '#Expiry' ).length > 0 ) { 
+		cardExpiry.mount('#Expiry');
+	}
+	if ( $( '#CVV' ).length > 0 ) { 
+		cardCvc.mount('#CVV');
+	}
 	
 	// Handle authentication for charge if required.
 	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
