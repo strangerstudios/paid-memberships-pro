@@ -134,7 +134,7 @@ jQuery( document ).ready( function( $ ) {
 			}
 		});
 
-		function stripeUpdatePaymentRequstButton() {
+		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
 				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
@@ -153,7 +153,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 	
 		$("input").change(function(){
-			stripeUpdatePaymentRequstButton();
+			stripeUpdatePaymentRequestButton();
 		});
 	}
 
