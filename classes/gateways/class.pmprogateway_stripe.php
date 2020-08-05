@@ -48,14 +48,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->gateway_environment = pmpro_getOption( "gateway_environment" );
 
 		if ( true === $this->dependencies() ) {
-			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
-			} else {
-				$secret_key = pmpro_getOption( 'stripe_secretkey' );
-			}
-
 			$this->loadStripeLibrary();
-			Stripe\Stripe::setApiKey( $secret_key );
+			Stripe\Stripe::setApiKey( self::get_secretkey() );
 			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
 			self::$is_loaded = true;
 		}
@@ -304,47 +298,44 @@ class PMProGateway_stripe extends PMProGateway {
 	static function pmpro_payment_option_fields( $values, $gateway ) {
 		// TODO: Update to have Stripe Connect button and to hide current fields. Currently switching gateways brings fields back.
 		$has_legacy_creds = ! ( empty( $values['stripe_publishablekey'] ) || empty( $values['stripe_secretkey'] ) );
-		$connected_to_stripe = ! ( empty( $values['stripe_connect_user_id'] ) );
-
+		$connected_to_stripe = self::using_connect();
 		if ( $has_legacy_creds || $connected_to_stripe ) {
-		
-		// Check if webhook is enabled or not.
-		$webhook = self::get_webhook_ids( $values['stripe_secretkey'] );
+			// Check if webhook is enabled or not.
+			$webhook = self::get_webhook_ids( $values['stripe_secretkey'] );
 
-		if ( ! $webhook ) {
-			$stripe = new PMProGateway_stripe;
-			$webhook = $stripe::does_webhook_exist();
-		}
-		
-		$required_update = false;
-		// Check to see if events are missing.
-		if ( is_array( $webhook ) ) {
+			if ( ! $webhook ) {
+				$stripe = new PMProGateway_stripe;
+				$webhook = $stripe::does_webhook_exist();
+			}
+			
+			$required_update = false;
+			// Check to see if events are missing.
+			if ( is_array( $webhook ) ) {
 
-			if ( $webhook['webhook_id'] == false ) {
+				if ( $webhook['webhook_id'] == false ) {
+					$required_update = true;
+				}
+
+				if ( isset( $webhook['enabled_events'] ) ) {
+					$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
+
+					if ( $events ) {
+						$required_update = true;
+					} else {
+						$required_update = false;
+						self::update_webhook_ids( $webhook['webhook_id'], $values['stripe_secretkey'] );
+						pmpro_setOption( 'stripe_webhook', 1 );
+						$values['stripe_webhook'] = 1; // Checkbox option.
+					}
+				}
+
+			} else if ( ! empty( $webhook ) && ! pmpro_getOption( 'stripe_webhook', true ) ) {
+				pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
+				$values['stripe_webhook'] = 1;
+			} else {
 				$required_update = true;
 			}
-
-			if ( isset( $webhook['enabled_events'] ) ) {
-				$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
-
-				if ( $events ) {
-					$required_update = true;
-				} else {
-					$required_update = false;
-					self::update_webhook_ids( $webhook['webhook_id'], $values['stripe_secretkey'] );
-					pmpro_setOption( 'stripe_webhook', 1 );
-					$values['stripe_webhook'] = 1; // Checkbox option.
-				}
-			}
-
-		} else if ( ! empty( $webhook ) && ! pmpro_getOption( 'stripe_webhook', true ) ) {
-			pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
-			$values['stripe_webhook'] = 1;
-		} else {
-			$required_update = true;
 		}
-
-	}
 
 		?>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -583,15 +574,8 @@ class PMProGateway_stripe extends PMProGateway {
 			wp_enqueue_script( "stripe", "https://js.stripe.com/v3/", array(), null );
 
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
-				// TODO: Test.
-				if ( ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) && ! empty( pmpro_getOption( 'test_stripe_connect_publishablekey' ) ) ) {
-					$publishable_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_publishablekey' );
-				} else {
-					$publishable_key = pmpro_getOption( 'stripe_publishablekey' );
-				}
-
 				$localize_vars = array(
-					'publishableKey' => $publishable_key,
+					'publishableKey' => self::get_publishablekey(),
 					'user_id'        => pmpro_getOption( 'stripe_connect_user_id' ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
@@ -917,12 +901,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
-			// TODO: Try to get secretkey from Stripe Connect before sending legacy key.
-			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
-			} else {
-				$secret_key = pmpro_getOption( 'stripe_secretkey' );
-			}
+			$secretkey = self::get_secretkey();
 		}
 		
 		try {
@@ -3253,5 +3232,35 @@ class PMProGateway_stripe extends PMProGateway {
 		delete_option( 'pmpro_test_stripe_connect_secretkey' );
 		delete_option( 'pmpro_live_stripe_connect_publishablekey' );
 		delete_option( 'pmpro_test_stripe_connect_publishablekey' );
+	}
+
+	static function using_connect() {
+		return ( 
+			pmpro_getOption( 'stripe_connect_user_id' ) &&
+			pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
+			pmpro_getOption( 'test_stripe_connect_secretkey' ) &&
+			pmpro_getOption( 'live_stripe_connect_publishablekey' ) &&
+			pmpro_getOption( 'test_stripe_connect_publishablekey' )
+		);
+	}
+
+	static function get_secretkey() {
+		$secretkey = '';
+		if ( self::using_connect() ) {
+			$secretkey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
+		} else {
+			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
+		}
+		return $secretkey;
+	}
+
+	static function get_publishablekey() {
+		$publishablekey = '';
+		if ( self::using_connect() ) {
+			$publishablekey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
+		} else {
+			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
+		}
+		return $publishablekey;
 	}
 }
