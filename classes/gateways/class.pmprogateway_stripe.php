@@ -398,6 +398,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
 					'pmpro_require_billing' => $pmpro_requirebilling,
 					'restUrl' => get_rest_url(),
+					'siteName' => get_bloginfo( 'name' ),
 				);
 
 				if ( ! empty( $order ) ) {

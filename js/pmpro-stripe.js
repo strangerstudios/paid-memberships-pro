@@ -103,8 +103,8 @@ jQuery( document ).ready( function( $ ) {
 						country: 'US',
 						currency: 'usd',
 						total: {
-						label: 'Demo total',
-						amount: data.initial_payment * 100,
+							label: pmproStripe.siteName,
+							amount: data.initial_payment * 100,
 						},
 						requestPayerName: true,
 						requestPayerEmail: true,
@@ -137,7 +137,7 @@ jQuery( document ).ready( function( $ ) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
 							total: {
-								label: 'Demo total',
+								label: pmproStripe.siteName,
 								amount: data.initial_payment * 100,
 							},
 						});
