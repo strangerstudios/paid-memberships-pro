@@ -235,7 +235,7 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 	if ( ! empty( $key ) && ! empty( $api->package ) ) {
 		$api->package = add_query_arg( 'key', $key, $api->package );
 	}
-	if ( empty( $api->upgrade_notice ) && ! pmpro_license_isValid() ) {
+	if ( empty( $api->upgrade_notice ) && ! pmpro_license_isValid( null, 'plus' ) ) {
 		$api->upgrade_notice = __( 'Important: This plugin requires a valid PMPro Plus license key to update.', 'paid-memberships-pro' );
 	}
 
@@ -304,7 +304,7 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && ! pmpro_license_isValid() ) {
+		if ( ! empty( $addon ) && ! pmpro_license_isValid( null, 'plus' ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
@@ -330,7 +330,7 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && ! pmpro_license_isValid() ) {
+		if ( ! empty( $addon ) && ! pmpro_license_isValid( null, 'plus' ) ) {
 			$msg = __( 'You must enter a valid PMPro Plus License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 
