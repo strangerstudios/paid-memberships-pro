@@ -100,7 +100,7 @@ jQuery( document ).ready( function( $ ) {
 
 		// Create payment request
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 			dataType: 'json',
 			data: jQuery( "#pmpro_form" ).serialize(),
 			success: function(data) {
@@ -136,7 +136,7 @@ jQuery( document ).ready( function( $ ) {
 
 		function stripeUpdatePaymentRequstButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
 				data: jQuery( "#pmpro_form" ).serialize(),
 				success: function(data) {
