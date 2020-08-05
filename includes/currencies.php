@@ -64,6 +64,14 @@
 		'NOK' => __('Norwegian Krone', 'paid-memberships-pro' ),
 		'PHP' => __('Philippine Pesos', 'paid-memberships-pro' ),
 		'PLN' => __('Polish Zloty', 'paid-memberships-pro' ),
+		'RON' => array(	
+				'name' => __( 'Romanian Leu', 'paid-memberships-pro' ),
+				'decimals' => '2',
+				'thousands_separator' => '.',
+				'decimal_separator' => ',',
+				'symbol' => '&nbsp;Lei',
+				'position' => 'right'
+		),
 		'RUB' => array(
 			'name' => __('Russian Ruble (&#8381;)', 'paid-memberships-pro'),
 			'decimals' => '2',
