@@ -48,7 +48,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$this->gateway_environment = pmpro_getOption( "gateway_environment" );
 
 		if ( true === $this->dependencies() ) {
-			// TODO: Test.
 			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
 				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
 			} else {
@@ -342,7 +341,7 @@ class PMProGateway_stripe extends PMProGateway {
 			pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
 			$values['stripe_webhook'] = 1;
 		} else {
-			$require_update = true;
+			$required_update = true;
 		}
 
 	}
@@ -853,7 +852,11 @@ class PMProGateway_stripe extends PMProGateway {
 	function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
 			// TODO: Try to get secretkey from Stripe Connect before sending legacy key.
-			$secretkey = pmpro_getOption( "stripe_secretkey" );
+			if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
+				$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+			} else {
+				$secret_key = pmpro_getOption( 'stripe_secretkey' );
+			}
 		}
 		
 		try {
@@ -3064,7 +3067,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return void
 	 */
 	static function stripe_connect_save_options() {
-		// TODO: Test.
 		// Is user have permission to edit give setting.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
