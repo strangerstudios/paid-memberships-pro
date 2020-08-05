@@ -1,5 +1,5 @@
 === Paid Memberships Pro ===
-Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
+Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.4.2
