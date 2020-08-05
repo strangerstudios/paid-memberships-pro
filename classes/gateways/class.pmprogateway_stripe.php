@@ -651,7 +651,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 		
-		$webhook_ids = get_webhooks();
+		$webhook_ids = self::get_webhook_ids();
 		
 		if ( ! empty( $webhook_id ) ) {
 			$webhook_ids[$secret_key] = $webhook_id;
