@@ -24,9 +24,17 @@
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 			<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
 			<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
-			<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong> <?php echo ! empty( $pmpro_invoice->status ) ? ucwords( $pmpro_invoice->status ) : __( 'Success', 'paid-memberships-pro' ); ?></li>
-			<?php if($pmpro_invoice->membership_level->enddate) { ?>
-				<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $pmpro_invoice->membership_level->enddate)?></li>
+			<?php if ( ! empty( $pmpro_invoice->status ) ) { ?>
+				<li><strong><?php _e('Status', 'paid-memberships-pro' ); ?>:</strong>
+				<?php
+					if ( in_array( $pmpro_invoice->status, array( '', 'success', 'cancelled' ) ) ) {
+						$display_status = __( 'Paid', 'paid-memberships-pro' );
+					} else {
+						$display_status = ucwords( $pmpro_invoice->status );
+					}
+					esc_html_e( $display_status );
+				?>
+				</li>
 			<?php } ?>
 			<?php if($pmpro_invoice->getDiscountCode()) { ?>
 				<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>

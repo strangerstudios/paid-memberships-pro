@@ -31,7 +31,7 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 	// This filter is left in place for PMPro versions dating back to 2014.
 	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
 }
-add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
+add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );	
 
 /**
  * Where is the sign up page? Levels page or default multisite page.
@@ -94,6 +94,8 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
  * Redirect to the login page for member login.
+ * This filter is added on wp_loaded in the pmpro_wp_loaded_login_setup() function.
+ *
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
@@ -108,7 +110,18 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 
 	return $login_url;
 }
-add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+
+/**
+ * Add the filter for login_url after WordPress is loaded.
+ * This avoids errors with certain setups that may call wp_login_url() very early.
+ *
+ * @since 2.4
+ *
+ */
+function pmpro_wp_loaded_login_setup() {
+	add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );	
+}
+add_action( 'wp_loaded', 'pmpro_wp_loaded_login_setup' );
 
 /**
  * Make sure confirm_admin_email actions go to the default WP login page.

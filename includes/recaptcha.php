@@ -1,19 +1,28 @@
 <?php
+/**
+ * Prep the ReCAPTCHA library if needed.
+ * Fires on the wp hook.
+ */
 function pmpro_init_recaptcha() {
-	//don't load in admin
-	if(is_admin()) {
-		return;
-	}
-
-	//use recaptcha?
+	//don't load if setting is off
 	global $recaptcha, $recaptcha_validated;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
-
+	if ( empty( $recaptcha ) ) {
+		return;
+	}
+	
+	//don't load unless we're on the checkout page
+	if ( ! pmpro_is_checkout() ) {
+		return;
+	}
+	
+	//check for validation
 	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
 	if ( ! empty( $recaptcha_validated ) ) {
 	    $recaptcha = false;
     }
 
+	//captcha is needed. set up functions to output
 	if($recaptcha) {
 		global $recaptcha_publickey, $recaptcha_privatekey;
 		
@@ -116,7 +125,7 @@ function pmpro_init_recaptcha() {
 		$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
 	}
 }
-add_action( 'init', 'pmpro_init_recaptcha', 20);
+add_action( 'wp', 'pmpro_init_recaptcha', 5 );
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token
