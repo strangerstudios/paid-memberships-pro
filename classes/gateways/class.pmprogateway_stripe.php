@@ -3096,7 +3096,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
 		// Check that we just saved Stripe settings.
-		wp_die();
 		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
 			return;
 		}
