@@ -14,10 +14,16 @@ jQuery( document ).ready( function( $ ) {
 	cardExpiry = elements.create('cardExpiry');
 	cardCvc = elements.create('cardCvc');
 
-	// Mount Elements.
-	cardNumber.mount('#AccountNumber');
-	cardExpiry.mount('#Expiry');
-	cardCvc.mount('#CVV');
+	// Mount Elements. Ensure CC field is present before loading Stripe.
+	if ( $( '#AccountNumber' ).length > 0 ) { 
+		cardNumber.mount('#AccountNumber');
+	}
+	if ( $( '#Expiry' ).length > 0 ) { 
+		cardExpiry.mount('#Expiry');
+	}
+	if ( $( '#CVV' ).length > 0 ) { 
+		cardCvc.mount('#CVV');
+	}
 	
 	// Handle authentication for charge if required.
 	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
@@ -94,7 +100,7 @@ jQuery( document ).ready( function( $ ) {
 
 		// Create payment request
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 			dataType: 'json',
 			data: jQuery( "#pmpro_form" ).serialize(),
 			success: function(data) {
@@ -130,7 +136,7 @@ jQuery( document ).ready( function( $ ) {
 
 		function stripeUpdatePaymentRequstButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
 				data: jQuery( "#pmpro_form" ).serialize(),
 				success: function(data) {

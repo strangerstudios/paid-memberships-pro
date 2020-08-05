@@ -82,7 +82,7 @@
 		$expires = date("Y-m-d", strtotime($expires_month . "/" . $expires_day . "/" . $expires_year, $now ));
 
 		//insert/update/replace discount code
-		$wpdb->replace(
+		pmpro_insert_or_replace(
 			$wpdb->pmpro_discount_codes,
 			array(
 				'id'=>max($saveid, 0),
@@ -387,7 +387,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$edit ),
@@ -409,7 +409,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires
+						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$copy ),
@@ -604,7 +604,7 @@
 									?>
 									<?php _e('per', 'paid-memberships-pro' ); ?>
 									<input name="cycle_number[]" type="text" size="10" value="<?php echo str_replace("\"", "&quot;", stripslashes($level->cycle_number))?>" />
-									<select name="cycle_period[]" onchange="updateCyclePeriod();">
+									<select name="cycle_period[]">
 									  <?php
 										$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 										foreach ( $cycles as $name => $value ) {
@@ -700,7 +700,7 @@
 		<hr class="wp-header-end">
 
 		<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
 			if( ! empty( $s ) ) {
 				$sqlQuery .= "WHERE code LIKE '%$s%' ";
 			}

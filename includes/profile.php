@@ -7,15 +7,6 @@ function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
 
-	$server_tz = date_default_timezone_get();
-	$wp_tz =  get_option( 'timezone_string' );
-
-	//option "timezone_string" is empty if set to UTC+0
-	if(empty($wp_tz))
-		$wp_tz = 'UTC';
-
-	date_default_timezone_set($wp_tz);
-
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
 		return false;
@@ -82,27 +73,14 @@ function pmpro_membership_level_profile_fields($user)
 
 		$show_expiration = true;
 		$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
-		if($show_expiration)
-		{
-
+		if ( $show_expiration ) {
 			//is there an end date?
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			$end_date = (!empty($user->membership_level) && !empty($user->membership_level->enddate)); // Returned as UTC timestamp
 
-			//some vars for the dates
-			if( $end_date && 'UTC' === $wp_tz ) {
-				$selected_expires_day =  date( 'j', $user->membership_level->enddate );
-				$selected_expires_month =  date( 'm', $user->membership_level->enddate );
-				$selected_expires_year =  date( 'Y', $user->membership_level->enddate );
-			} elseif( $end_date ) {
-				$selected_expires_day = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'j' );
-				$selected_expires_month = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'm' );
-				$selected_expires_year = get_gmt_from_date( date( 'Y-m-d H:i:s', $user->membership_level->enddate ), 'Y' );
-			} else {
-				$selected_expires_day = date( 'j', current_time('timestamp') );
-				$selected_expires_month = date( 'm', current_time('timestamp') );
-				$selected_expires_year = date( 'Y', current_time('timestamp') ) + 1;
-			}
+			$selected_expires_day =  date( 'j', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+			$selected_expires_month =  date( 'm', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+			$selected_expires_year =  date( 'Y', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -268,8 +246,6 @@ function pmpro_membership_level_profile_fields($user)
     </script>
 <?php
 	do_action("pmpro_after_membership_level_profile_fields", $user);
-
-	date_default_timezone_set( $server_tz );
 }
 
 /*

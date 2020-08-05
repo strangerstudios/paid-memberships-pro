@@ -23,6 +23,9 @@ global $wpdb;
 // Debug log
 global $logstr;
 $logstr = array( "Logged On: " . date_i18n( "m/d/Y H:i:s", current_time( 'timestamp' ) ) );
+$logstr[] = "\nREQUEST:";
+$logstr[] = var_export( $_REQUEST, true );
+$logstr[] = "\n";
 
 // Don't run this with wrong PHP version
 if ( version_compare( PHP_VERSION, '5.4.45', '<' ) ) {
@@ -55,6 +58,10 @@ try {
 	 * since using sanitize_text_field() breaks Braintree parser
 	 */
 	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+	
+	$logstr[] = "\webhookNotification:";
+	$logstr[] = var_export( $webhookNotification, true );
+	$logstr[] = "\n";
 } catch ( Exception $e ) {
 	$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}";
 	$logstr[] = "Error message: " . $e->getMessage();
