@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.4.2
-Stable tag: 2.4
+Tested up to: 5.5
+Stable tag: 2.4.1
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,24 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.4.1 - 2020-08-10 =
+* BUG FIX: Fixed issues with password resets on WP Engine hosting due to security features added by their mu-plugin.
+* BUG FIX: Fixed issue where end dates were showing up incorrectly in the confirmation email sometimes.
+* BUG FIX: Fixed issue where renewing memberships were extended one day less than they should have been in some cases.
+* BUG FIX: Fixed issue where users without a PMPro Plus license were sometimes not getting an error when trying to update a Plus Add On.
+* BUG FIX/ENHANCEMENT: Added compatibility for core auto-updates for our Add Ons which aren't hosted in the .org repository.
+* BUG FIX/ENHANCEMENT: Fixed issue where PHP sessions were set up to track ReCAPTCHA even if you weren't using ReCAPTCHA. ReCAPTCHA is now only loaded on the checkout page. Loading sessions unecessarily would break some Varnish cache setups.
+* BUG FIX/ENHANCEMENT: Updated the single invoice/order page. No longer showing the end date, which isn't really related to the order. Showing a better status related to the order now.
+* BUG FIX/ENHANCEMENT: Fixed some links to the PMPro site in the plugin admin area.
+* BUG FIX/ENHANCEMENT: Now saving a hash of the Stripe secretkey when saving webhook ids. This allows us to keep track of webhook ids if you switch between gateway environments or swap your Stripe keys for some reason.
+* BUG FIX/ENHANCEMENT: No longer running the Terms of Service text through wpautop. This usually just added extra spacing to your TOS. Shortcodes are rendered now though. Added a filter pmpro_tos_content so you can change the TOS content or how it is shown.
+* ENHANCEMENT: Added a checkout_levels API endpoint. This will allow us to build features that adjust the price on the frontend at checkout.
+* ENHANCEMENT: Added a pmpro_member_profile_edit_form_tag action to the form tag on the frontend member profile page. This is useful to set the form enctype for file uploads.
+* ENHANCEMENT: Added Romanian Leu as a currency option.
+* ENHANCEMENT: Added the pmpro_stripe_payment_intent_params filter. Useful if you would like to set a specific statement descriptor for the site. See https://gist.github.com/ideadude/16983fdfa0da12fc40ef36d870f4cbd0
+* REFACTOR: Removed some unused methods from the Stripe class.
+* REFACTOR: Removed the help pointer about the menu location change.
+
 = 2.4 - 2020-07-24 =
 * FEATURE: Now detecting if the Stripe webhook is set up correctly. You can now create or disable the webhook from the payment settings page in the WP admin dashboard.
 * FEATURE: Added a link to use and set up SendWP for more reliable email sending from WP.
