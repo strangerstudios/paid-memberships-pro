@@ -12,7 +12,7 @@
 
 <!-- Describe the changes made to this Pull Request and the reason for such changes. -->
 
-Closes Issue: XXX.
+Resolves XXX.
 
 ### How to test the changes in this Pull Request:
 
