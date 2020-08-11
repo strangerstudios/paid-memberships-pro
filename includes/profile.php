@@ -513,7 +513,7 @@ function pmpro_member_profile_edit_form() {
 							<input type="text" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'user_email' ); ?>" />
 							<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 						<?php } else { ?>
-							<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $user->{$field_key} ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
+							<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo stripslashes( $user->{$field_key} ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
 						<?php } ?>
 	            	</div>
 				<?php } ?>
