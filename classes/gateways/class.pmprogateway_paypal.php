@@ -762,7 +762,7 @@
 				/** Initial payment **/
 				$nvpStr = "";
 				// STARTDATE is Required, even if useless here. Start from 24h before the order timestamp, to avoid timezone related issues.
-				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->timestamp-DAY_IN_SECONDS ) . 'Z' );
+				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->getTimestamp() - DAY_IN_SECONDS ) . 'Z' );
 				// filter results by a specific transaction id.
 				$nvpStr .= "&TRANSACTIONID=" . urlencode($order->subscription_transaction_id);
 

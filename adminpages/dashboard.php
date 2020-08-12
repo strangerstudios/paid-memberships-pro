@@ -343,7 +343,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
                                 echo '<br />(' . $order->status . ')'; 
                             } ?>
                         </td>
-                        <td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></td>
+                        <td><?php echo date_i18n( get_option( 'date_format' ), $order->getTimestamp() ); ?></td>
         			</tr>
                     <?php
                 }
