@@ -157,6 +157,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_checkout_level' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 
@@ -169,6 +170,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_checkout_levels' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 		}
