@@ -24,10 +24,13 @@ add_action('admin_init', 'pmpro_check_admin_capabilities', 5, 2);
 // use the capability definition for $role_name and add/remove capabilities as requested
 function pmpro_set_capabilities_for_role( $role_name, $action = 'enable' )
 {
-    $cap_array = pmpro_get_capability_defs($role_name);
-
-    //add caps to specified role
     $role = get_role( $role_name );
+    if ( empty( $role ) ) {
+        // Role does not exist.
+        return;
+    }
+
+    $cap_array = pmpro_get_capability_defs($role_name);
 
     // Iterate through the relevant caps for the role & add or remove them
     foreach( $cap_array as $cap_name )
