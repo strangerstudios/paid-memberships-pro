@@ -395,7 +395,7 @@ add_filter('the_content_rss', 'pmpro_membership_content_filter', 5);
 add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
 
 /*
-	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the ecerpt.
+	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the excerpt.
 */
 function pmpro_membership_excerpt_filter($content, $skipcheck = false) {		
 	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	
