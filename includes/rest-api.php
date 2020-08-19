@@ -552,10 +552,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$method = $request->get_method();
 			$route = $request->get_route();
 			
-			// default permissions to 'read' (subscriber)
-			$permissions = current_user_can('read');			
+			// Default to true.
+			$permissions = true;
+			
+			// Require PMPro caps for POST, UPDATE, DELETE, etc.	
 			if ( $method != 'GET' ) {
-				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
+				$permissions = current_user_can('pmpro_edit_memberships');
 			}
 
 			// Is the request method allowed?
