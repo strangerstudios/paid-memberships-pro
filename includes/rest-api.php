@@ -498,7 +498,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			$level_id = isset( $params['level'] ) ? $params['level'] : null;
+			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
 			if ( empty( $level_id ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
@@ -519,8 +519,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $_REQUEST['level'] ) ) {
-				$level_ids = explode( '+', $_REQUEST['level'] );
+			} elseif ( isset( $_REQUEST['level_id'] ) ) {
+				$level_ids = explode( '+', $_REQUEST['level_id'] );
 			}
 
 			if ( empty( $level_ids ) ) {
