@@ -190,7 +190,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$user_id = $user->ID;
 			}
 			
-			$level = pmpro_getMembershipLevelForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $user_id );
+			} else {
+				$level = false;
+			}
 
 			return new WP_REST_Response( $level, 200 );
 		}
@@ -210,7 +214,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$user_id = $user->ID;
 			}
 			
-			$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			} else {
+				$levels = false;
+			}
 
 			return new WP_REST_Response( $levels, 200 );
 		}
@@ -236,7 +244,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				}
 			}
 			
-			$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			if ( ! empty( $user_id ) ) {
+				$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			} else {
+				// No good user, so say no.
+				// Technically this will make public posts look restricted.
+				$has_access = false;
+			}
+			
 			return new WP_REST_Response( $has_access, 200 );
 		}
 
@@ -263,8 +278,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+			} else {
+				$response = false;
+			}
 
-			return new WP_REST_Response( pmpro_changeMembershipLevel( $level_id, $user_id ), 200 );
+			return new WP_REST_Response( $response, 200 );
 		}
 
 		/**
@@ -294,8 +315,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
-
-			return new WP_REST_Response( pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' ), 200 );
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' );
+			} else {
+				$response = false;
+			}
+			
+			return new WP_REST_Response( $response, 200 );
 		}
 		
 		/**
