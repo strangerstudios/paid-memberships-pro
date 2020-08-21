@@ -235,7 +235,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 				array(
 					'name' => __( 'Order Date', 'paid-memberships-pro' ),
-					'value' => date( get_option( 'date_format' ), $order->timestamp ),
+					'value' => date( get_option( 'date_format' ), $order->getTimestamp() ),
 				),
 				array(
 					'name' => __( 'Level', 'paid-memberships-pro' ),

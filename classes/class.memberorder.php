@@ -134,15 +134,12 @@
 				$this->gateway_environment = $dbobj->gateway_environment;
 				$this->payment_transaction_id = $dbobj->payment_transaction_id;
 				$this->subscription_transaction_id = $dbobj->subscription_transaction_id;
-				$this->timestamp = $dbobj->timestamp;
+				$this->timestamp = strtotime( $dbobj->timestamp );
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
-
-				// Fix the timestamp for local time
-				$this->timestamp = strtotime( get_date_from_gmt( $this->timestamp, 'Y-m-d H:i:s' ) );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -526,6 +523,16 @@
 		}
 
 		/**
+		 * Get the timestamp for this order.
+		 *
+		 * @param bool $gmt whether to return GMT time or local timestamp.
+		 * @return int timestamp.
+		 */
+		function getTimestamp( $gmt = false ) {
+			return $gmt ? $this->timestamp : strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $this->timestamp ) ) );
+		}
+
+		/**
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
@@ -545,10 +552,12 @@
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
 
-			if($wpdb->query($this->sqlQuery) !== "false")
+			if($wpdb->query($this->sqlQuery) !== "false") {
+				$this->timestamp = strtotime( $date );
 				return $this->getMemberOrderByID($this->id);
-			else
+			} else {
 				return false;
+			}
 		}
 
 		/**

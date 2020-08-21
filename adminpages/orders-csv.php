@@ -498,7 +498,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		}				
 
 		//timestamp
-		$ts = date_i18n( $dateformat, $order->timestamp );
+		$ts = date_i18n( $dateformat, $order->getTimestamp() );
 		array_push( $csvoutput, pmpro_enclose( $ts ) );
 
 		//any extra columns
