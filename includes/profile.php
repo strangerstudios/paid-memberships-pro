@@ -457,6 +457,15 @@ function pmpro_member_profile_edit_form() {
 			}
 		}
 
+		/**
+		 * Fires before member profile update errors are returned.
+		 *
+		 * @param $errors WP_Error object (passed by reference).
+		 * @param $update Whether this is a user update.
+		 * @param $user   User object (passed by reference).
+		 */
+		do_action_ref_array( 'pmpro_user_profile_update_errors', array( &$errors, $update, &$user ) );
+
 		// Show error messages.
 		if ( ! empty( $errors ) ) { ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
