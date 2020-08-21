@@ -12,7 +12,8 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	extract(shortcode_atts(array(
 		'level' => NULL,
 		'levels' => NULL,
-		'delay' => NULL
+		'delay' => NULL,
+		'show_noaccess' => NULL
 	), $atts));
 
 	//if levels is used instead of level
@@ -85,7 +86,13 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	//to show or not to show
 	if($hasaccess)
 		return do_shortcode($content);	//show content
-	else
-		return "";	//just hide it
+	else {
+		if ( empty( $show_noaccess ) ) {
+			return '';
+		} else {
+			$content = '';
+			return pmpro_get_no_access_message( $content, $levels );
+		}
+	}
 }
 add_shortcode("membership", "pmpro_shortcode_membership");
