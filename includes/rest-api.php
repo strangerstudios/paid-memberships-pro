@@ -138,12 +138,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_discount_code' ),
-				'permissions_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 			array(
 				'methods' => 'POST,PUT,PATCH',
 				'callback' => array( $this, 'pmpro_rest_api_set_discount_code' ),
-				'permissions_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 
@@ -157,9 +157,22 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_checkout_level' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 
+		/**
+		 * Get membership levels after checkout options are applied.
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 */
+		register_rest_route( $pmpro_namespace, '/checkout_levels', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_get_checkout_levels' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
 		}
 		
 		/**
@@ -177,7 +190,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$user_id = $user->ID;
 			}
 			
-			$level = pmpro_getMembershipLevelForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $user_id );
+			} else {
+				$level = false;
+			}
 
 			return new WP_REST_Response( $level, 200 );
 		}
@@ -197,7 +214,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$user_id = $user->ID;
 			}
 			
-			$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			} else {
+				$levels = false;
+			}
 
 			return new WP_REST_Response( $levels, 200 );
 		}
@@ -223,7 +244,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				}
 			}
 			
-			$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			if ( ! empty( $user_id ) ) {
+				$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			} else {
+				// No good user, so say no.
+				// Technically this will make public posts look restricted.
+				$has_access = false;
+			}
+			
 			return new WP_REST_Response( $has_access, 200 );
 		}
 
@@ -250,8 +278,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+			} else {
+				$response = false;
+			}
 
-			return new WP_REST_Response( pmpro_changeMembershipLevel( $level_id, $user_id ), 200 );
+			return new WP_REST_Response( $response, 200 );
 		}
 
 		/**
@@ -281,8 +315,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
-
-			return new WP_REST_Response( pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' ), 200 );
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' );
+			} else {
+				$response = false;
+			}
+			
+			return new WP_REST_Response( $response, 200 );
 		}
 		
 		/**
@@ -485,7 +525,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			$level_id = isset( $params['level'] ) ? $params['level'] : null;
+			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
 			if ( empty( $level_id ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
@@ -493,6 +533,38 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 			return new WP_REST_Response( $checkout_level );
+		}
+
+		/**
+		 * Get membership levels at checkout.
+		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 */
+		function pmpro_rest_api_get_checkout_levels( $request ) {
+			$params = $request->get_params();
+
+			global $pmpro_checkout_level_ids;
+			if ( ! empty( $pmpro_checkout_level_ids ) ) {
+				// MMPU Compatibility...
+				$level_ids = $pmpro_checkout_level_ids;
+			} elseif ( isset( $_REQUEST['level_id'] ) ) {
+				$level_ids = explode( '+', $_REQUEST['level_id'] );
+			}
+
+			if ( empty( $level_ids ) ) {
+				return new WP_REST_Response( 'No levels found.', 400 );
+			}
+			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+
+			$r = array();
+			$r['initial_payment'] = 0.00;
+			foreach ( $level_ids as $level_id ) {
+				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
+					$r['initial_payment'] += intval( $r[ $level_id ]->initial_payment );
+				}
+			}
+			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
+			return new WP_REST_Response( $r );
 		}
 
 		/**
@@ -507,10 +579,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$method = $request->get_method();
 			$route = $request->get_route();
 			
-			// default permissions to 'read' (subscriber)
-			$permissions = current_user_can('read');			
+			// Default to true.
+			$permissions = true;
+			
+			// Require PMPro caps for POST, UPDATE, DELETE, etc.	
 			if ( $method != 'GET' ) {
-				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
+				$permissions = current_user_can('pmpro_edit_memberships');
 			}
 
 			// Is the request method allowed?

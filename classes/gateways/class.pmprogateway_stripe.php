@@ -623,8 +623,9 @@ class PMProGateway_stripe extends PMProGateway {
 		
 		// If a secret key was passed in, return just the id for that key.
 		if ( ! empty( $secret_key ) ) {
-			if ( isset( $webhook_ids[$secret_key] ) ) {
-				return $webhook_ids[$secret_key];
+			$secret_key_hash = wp_hash( $secret_key );
+			if ( isset( $webhook_ids[$secret_key_hash] ) ) {
+				return $webhook_ids[$secret_key_hash];
 			} else {
 				return false;
 			}
@@ -651,12 +652,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 		
-		$webhook_ids = get_webhooks();
+		// Hash the secret key so it's not left behind in the DB.
+		$secret_key_hash = wp_hash( $secret_key );
+		
+		$webhook_ids = self::get_webhook_ids();
 		
 		if ( ! empty( $webhook_id ) ) {
-			$webhook_ids[$secret_key] = $webhook_id;
+			$webhook_ids[$secret_key_hash] = $webhook_id;
 		} else {
-			unset( $webhook_ids[$secret_key] );
+			unset( $webhook_ids[$secret_key_hash] );
 		}
 		
 		update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
@@ -2696,6 +2700,15 @@ class PMProGateway_stripe extends PMProGateway {
 			'setup_future_usage'  => 'off_session',
 		);
 
+		/**
+		 * Filter params used to create the payment intent.
+		 *
+		 * @since 2.4.1
+		 *
+	 	 * @param array  $params 	Array of params sent to Stripe.
+		 * @param object $order		Order object for this checkout.
+		 */
+		$params = apply_filters( 'pmpro_stripe_payment_intent_params', $params, $order );
 
 		try {
 			$payment_intent = Stripe_PaymentIntent::create( $params );

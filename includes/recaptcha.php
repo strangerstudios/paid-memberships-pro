@@ -1,14 +1,13 @@
 <?php
+/**
+ * Prep the ReCAPTCHA library if needed.
+ * Fires on the wp hook.
+ */
 function pmpro_init_recaptcha() {
-	//don't load in admin
-	if( is_admin() ) {
-		return;
-	}
-
 	//don't load if setting is off
 	global $recaptcha, $recaptcha_validated;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
-	if ( empty( $reCaptcha ) ) {
+	if ( empty( $recaptcha ) ) {
 		return;
 	}
 	
@@ -126,7 +125,7 @@ function pmpro_init_recaptcha() {
 		$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
 	}
 }
-add_action( 'init', 'pmpro_init_recaptcha', 20);
+add_action( 'wp', 'pmpro_init_recaptcha', 5 );
 
 /**
  * AJAX Method to Validate a ReCAPTCHA Response Token

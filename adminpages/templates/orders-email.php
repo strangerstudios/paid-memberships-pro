@@ -15,7 +15,7 @@
 	</tr>
 	<tr>
 		<td>
-			<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( 'Y-m-d', $order->timestamp ) ?>
+			<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( 'Y-m-d', $order->getTimestamp() ) ?>
 		</td>
 	</tr>
 	<?php if(!empty($order->billing->name)): ?>

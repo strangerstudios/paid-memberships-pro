@@ -457,6 +457,15 @@ function pmpro_member_profile_edit_form() {
 			}
 		}
 
+		/**
+		 * Fires before member profile update errors are returned.
+		 *
+		 * @param $errors WP_Error object (passed by reference).
+		 * @param $update Whether this is a user update.
+		 * @param $user   User object (passed by reference).
+		 */
+		do_action_ref_array( 'pmpro_user_profile_update_errors', array( &$errors, $update, &$user ) );
+
 		// Show error messages.
 		if ( ! empty( $errors ) ) { ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
@@ -480,7 +489,16 @@ function pmpro_member_profile_edit_form() {
 	}
 	?>
 	<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit_wrap' ); ?>">
-		<form id="member-profile-edit" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="" method="post">
+		<form id="member-profile-edit" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="" method="post"
+			<?php
+				/**
+				 * Fires inside the member-profile-edit form tag in the pmpro_member_profile_edit_form function.
+				 *
+				 * @since 2.4.1
+				 */
+				do_action( 'pmpro_member_profile_edit_form_tag' );
+			?>
+		>
 
 			<?php wp_nonce_field( 'update-user_' . $current_user->ID, 'update_user_nonce' ); ?>
 
@@ -504,7 +522,7 @@ function pmpro_member_profile_edit_form() {
 							<input type="text" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'user_email' ); ?>" />
 							<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 						<?php } else { ?>
-							<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $user->{$field_key} ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
+							<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo pmpro_get_element_class( 'input', $field_key ); ?>" />
 						<?php } ?>
 	            	</div>
 				<?php } ?>

@@ -815,11 +815,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				<td>
 					<?php
 					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->timestamp ) );
+						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
 					} else {
 						// set up date vars
 						if ( ! empty( $order->timestamp ) ) {
-							$timestamp = $order->timestamp;
+							$timestamp = $order->getTimestamp();
 						} else {
 							$timestamp = current_time( 'timestamp' );
 						}
@@ -1452,8 +1452,8 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					</td>
 					<td><?php echo esc_html( $order->status ); ?></td>
 					<td>
-						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?><br/>
-						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->timestamp ) ); ?>
+						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
+						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>
 					</td>
 					<td>
 						<?php if ( $order->getDiscountCode() ) { ?>
