@@ -185,6 +185,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
+			// Param id was used instead (old style endpoint).
+			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
+				$user_id = $params['id'];
+			}
+			
+			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
 				$user_id = $user->ID;
@@ -209,6 +215,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
+			// Param id was used instead.
+			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
+				$user_id = $params['id'];
+			}
+
+			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
 				$user_id = $user->ID;
