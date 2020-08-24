@@ -230,7 +230,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$levels = pmpro_getMembershipLevelsForUser( $user_id );
 			} else {
 				$levels = false;
-			}
+			}	
 
 			return new WP_REST_Response( $levels, 200 );
 		}
@@ -355,7 +355,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'ID not passed through', 400 );
 			}
 
-			return new WP_REST_Response( new PMPro_Membership_Level( $id ), 200 );
+			$level = new PMPro_Membership_Level( $id );
+			
+			// Hide confirmation message if not an admin or member.
+			if ( ! empty( $level->confirmation ) ) {
+				if ( ! is_user_logged_in() ) {
+					$level->confirmation = '';
+				} elseif ( ! pmpro_hasMembershipLevel( $id ) ) {
+					$level->confirmation = '';	
+				} elseif ( ! current_user_can( 'pmpro_edit_memberships' ) ) {
+					$level->confirmation = '';
+				}
+			}
+
+			return new WP_REST_Response( $level, 200 );
 		}
 
 		/**
