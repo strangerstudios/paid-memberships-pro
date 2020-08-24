@@ -358,15 +358,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level = new PMPro_Membership_Level( $id );
 			
 			// Hide confirmation message if not an admin or member.
-			if ( ! empty( $level->confirmation ) ) {
-				if ( ! is_user_logged_in() ) {
-					$level->confirmation = '';
-				} else {
-					if ( ! pmpro_hasMembershipLevel( $id ) &&
-						 ! current_user_can( 'pmpro_edit_memberships' ) ) {
-						$level->confirmation = '';
-					}
-				}				
+			if ( ! empty( $level->confirmation ) 
+				 && ! pmpro_hasMembershipLevel( $id )
+				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+					 $level->confirmation = '';					
 			}
 
 			return new WP_REST_Response( $level, 200 );
