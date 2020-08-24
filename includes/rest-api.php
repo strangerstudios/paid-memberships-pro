@@ -590,23 +590,41 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$method = $request->get_method();
 			$route = $request->get_route();
-			
-			// Default to true.
-			$permissions = true;
-			
-			// Require PMPro caps for POST, UPDATE, DELETE, etc.	
-			if ( $method != 'GET' ) {
-				$permissions = current_user_can('pmpro_edit_memberships');
-			}
 
-			// Is the request method allowed?
+			// Default to requiring pmpro_edit_memberships capability.
+			$permission = current_user_can( 'pmpro_edit_memberships' );
+
+			// Check other caps for some routes.
+			$route_caps = array(
+				'/pmpro/v1/has_membership_access' => 'pmpro_edit_memberships',
+				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_memberships',
+				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
+				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/membership_level' => true,
+				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
+				'/pmpro/v1/checkout_level' => true,
+				'/pmpro/v1/checkout_levels' => true,				
+			);
+			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
+
+			if ( isset( $route_caps[$route] ) ) {
+				if ( $route_caps[$route] === true ) {
+					// public
+					$permission = true;
+				} else {
+					$permission = current_user_can( $route_caps[$route] );				
+				}				
+			}	
+
+			// Is the request method allowed? We disable DELETE by default.
 			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
-				$permissions = false;
+				$permission = false;
 			}
 
-			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
+			$permission = apply_filters( 'pmpro_rest_api_permissions', $permission, $request );
 
-			return $permissions;
+			return $permission;
 		}
 
 		/** 
