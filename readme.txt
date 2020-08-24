@@ -153,6 +153,7 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.4.2 - 2020-08-24
 * SECURITY: Updated the PMPro REST API endpoints accessed via the GET method to also require appropriate capabilities to access. The membership confirmation text will be hidden from non-members and non-admins. The endpoints to check a user's level or access to a post require the pmpro_edit_memberships capability now. You should make sure your API users have the appropriate capabilities to use the API. You can use the pmpro_rest_api_route_capabilities filter and/or pmpro_rest_api_permissions filter to change this behavior.
 * BUG FIX: Fixed issues with the PMPro REST API endpoints, including the discount code and checkout level endpoints.
 * BUG FIX: Fixed issue with backslashes in the display name when editing form the PMPro frontend profile page.
