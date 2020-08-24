@@ -361,11 +361,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $level->confirmation ) ) {
 				if ( ! is_user_logged_in() ) {
 					$level->confirmation = '';
-				} elseif ( ! pmpro_hasMembershipLevel( $id ) ) {
-					$level->confirmation = '';	
-				} elseif ( ! current_user_can( 'pmpro_edit_memberships' ) ) {
-					$level->confirmation = '';
-				}
+				} else {
+					if ( ! pmpro_hasMembershipLevel( $id ) &&
+						 ! current_user_can( 'pmpro_edit_memberships' ) ) {
+						$level->confirmation = '';
+					}
+				}				
 			}
 
 			return new WP_REST_Response( $level, 200 );
