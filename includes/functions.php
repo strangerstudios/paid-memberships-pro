@@ -2251,6 +2251,11 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
+	// hide the confirmation message
+	if ( ! empty( $pmpro_level->confirmation ) ) {
+		$pmpro_level->confirmation = '';
+	}	
+
 	// filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
