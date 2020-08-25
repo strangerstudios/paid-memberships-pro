@@ -5,7 +5,7 @@
 function pmpro_page_meta() {
 	global $post, $wpdb;
 	$membership_levels = pmpro_getAllLevels( true, true );
-	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'" );
+	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post->ID ) . "'" );
 ?>
     <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
     <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
@@ -19,7 +19,7 @@ function pmpro_page_meta() {
 				<?php
 					echo $level->name;
 					//Check which categories are protected for this level
-					$protectedcategories = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id" );
+					$protectedcategories = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "'");
 					//See if this post is in any of the level's protected categories
 					if( in_category( $protectedcategories, $post->id ) ) {
 						$in_member_cat = true;
@@ -82,12 +82,12 @@ function pmpro_page_save( $post_id ) {
 		}
 
 		// Remove all memberships for this page.
-		$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '$post_id'" );
+		$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
 
 		// Add new memberships for this page.
 		if( is_array( $mydata ) ) {
 			foreach( $mydata as $level ) {
-				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval($level) . "', '" . intval($post_id) . "')" );
+				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level ) . "', '" . intval( $post_id ) . "')" );
 			}
 		}
 
@@ -117,7 +117,7 @@ function pmpro_taxonomy_meta( $term ) {
 
 	$protectedlevels = array();
 	foreach( $membership_levels as $level ) {
-		$protectedlevel = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = $level->id AND category_id = $term->term_id" );
+		$protectedlevel = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "' AND category_id = '" . intval( $term->term_id ) . "'" );
 		if( ! empty( $protectedlevel ) ) {
 			$protectedlevels[] .= '<a target="_blank" href="admin.php?page=pmpro-membershiplevels&edit=' . $level->id . '">' . $level->name. '</a>';
 		}
