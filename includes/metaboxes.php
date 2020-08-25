@@ -53,7 +53,13 @@ function pmpro_page_save( $post_id ) {
 		return false;
 	}
 
-	if ( isset( $_POST['pmpro_noncename'] ) && ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
+	// Post is saving somehow with our meta box not shown.
+	if ( ! isset( $_POST['pmpro_noncename'] ) ) {
+		return $post_id;
+	}
+
+	// Verify the nonce.
+	if ( ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -74,27 +80,23 @@ function pmpro_page_save( $post_id ) {
 	}
 
 	// OK, we're authenticated. We need to find and save the data.
-	if( isset( $_POST['pmpro_noncename'] ) && isset( $_POST['page_levels'] ) ) {
-		if( ! empty( $_POST['page_levels'] ) ) {
-			$mydata = $_POST['page_levels'];
-		} else {
-			$mydata = NULL;
-		}
-
-		// Remove all memberships for this page.
-		$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
-
-		// Add new memberships for this page.
-		if( is_array( $mydata ) ) {
-			foreach( $mydata as $level ) {
-				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level ) . "', '" . intval( $post_id ) . "')" );
-			}
-		}
-
-		return $mydata;
+	if( ! empty( $_POST['page_levels'] ) ) {
+		$mydata = $_POST['page_levels'];
 	} else {
-		return $post_id;
+		$mydata = NULL;
 	}
+
+	// Remove all memberships for this page.
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
+
+	// Add new memberships for this page.
+	if( is_array( $mydata ) ) {
+		foreach( $mydata as $level ) {
+			$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level ) . "', '" . intval( $post_id ) . "')" );
+		}
+	}
+
+	return $mydata;
 }
 
 /**
