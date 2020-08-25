@@ -8,16 +8,16 @@ function pmpro_page_meta() {
 	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post->ID ) . "'" );
 ?>
     <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
-    <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
+    <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) )?>" />
 	<?php
 		$in_member_cat = false;
 		foreach( $membership_levels as $level ) {
 		?>
-    	<li id="membership-level-<?php echo $level->id?>">
+    	<li id="membership-level-<?php echo esc_attr( $level->id ); ?>">
         	<label class="selectit">
-            	<input id="in-membership-level-<?php echo $level->id?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo $level->id?>" />
+            	<input id="in-membership-level-<?php echo esc_attr( $level->id ); ?>" type="checkbox" <?php if(in_array($level->id, $page_levels)) { ?>checked="checked"<?php } ?> name="page_levels[]" value="<?php echo esc_attr( $level->id ) ;?>" />
 				<?php
-					echo $level->name;
+					echo esc_html( $level->name );
 					//Check which categories are protected for this level
 					$protectedcategories = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "'");
 					//See if this post is in any of the level's protected categories
@@ -119,7 +119,7 @@ function pmpro_taxonomy_meta( $term ) {
 	foreach( $membership_levels as $level ) {
 		$protectedlevel = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "' AND category_id = '" . intval( $term->term_id ) . "'" );
 		if( ! empty( $protectedlevel ) ) {
-			$protectedlevels[] .= '<a target="_blank" href="admin.php?page=pmpro-membershiplevels&edit=' . $level->id . '">' . $level->name. '</a>';
+			$protectedlevels[] .= '<a target="_blank" href="admin.php?page=pmpro-membershiplevels&edit=' . intval( $level->id ) . '">' . esc_html( $level->name ) . '</a>';
 		}
 	}
 	
