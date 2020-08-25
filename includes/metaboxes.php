@@ -53,13 +53,11 @@ function pmpro_page_save( $post_id ) {
 		return false;
 	}
 
-	if ( ! empty( $_POST['pmpro_noncename'] ) && ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
+	if ( isset( $_POST['pmpro_noncename'] ) && ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
-	// Verify if this is an auto save routine.
-	// If it is, our form has not been submitted.
-	// So we dont want to do anything
+	// Don't try to update meta fields on AUTOSAVE.
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 		return $post_id;
 	}
@@ -76,7 +74,7 @@ function pmpro_page_save( $post_id ) {
 	}
 
 	// OK, we're authenticated. We need to find and save the data.
-	if( isset( $_POST['pmpro_noncename'] ) ) {
+	if( isset( $_POST['pmpro_noncename'] ) && isset( $_POST['page_levels'] ) ) {
 		if( ! empty( $_POST['page_levels'] ) ) {
 			$mydata = $_POST['page_levels'];
 		} else {
