@@ -641,6 +641,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
 			//we're good
+			// Add confirmation message back into $pmpro_level.
+			$pmpro_level->confirmation = $wpdb->get_var( "SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $pmpro_level->id ) . "'" );
+
 			//blank order for free levels
 			if ( empty( $morder ) ) {
 				$morder                 = new MemberOrder();
