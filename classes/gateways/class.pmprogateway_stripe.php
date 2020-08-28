@@ -1570,7 +1570,8 @@ class PMProGateway_stripe extends PMProGateway {
 					"amount"      => $amount * $currency_unit_multiplier, # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $this->customer->id,
-					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
+					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
+					"metadata"    => apply_filters( 'pmpro_stripe_order_metadata', array(), $order )
 				)
 			);
 		} catch ( \Throwable $e ) {
@@ -2697,6 +2698,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'currency'            => $pmpro_currency,
 			'confirmation_method' => 'manual',
 			'description'         => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
+			'metadata'            => apply_filters( 'pmpro_stripe_order_metadata', array(), $order ),
 			'setup_future_usage'  => 'off_session',
 		);
 
