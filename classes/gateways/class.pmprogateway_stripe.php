@@ -681,6 +681,8 @@ class PMProGateway_stripe extends PMProGateway {
 			$webhooks = Stripe_Webhook::all( [ 'limit' => apply_filters( 'pmpro_stripe_webhook_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
 			$webhooks = $th->getMessage();
+		} catch (\Exception $e) {
+			$webhooks = $e->getMessage();
 		}
 		
 		return $webhooks;
@@ -729,6 +731,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			//throw $th;
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			//throw $th;
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 		
 	}
@@ -841,6 +846,9 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch (\Throwable $th) {
 				//throw $th;
 				return new WP_Error( 'error', $th->getMessage() );
+			} catch (\Exception $e) {
+				//throw $th;
+				return new WP_Error( 'error', $e->getMessage() );
 			}
 				
 		} else {
@@ -866,6 +874,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			self::update_webhook_ids( '', $secretkey );
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			self::update_webhook_ids( '', $secretkey );
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 
 		return $delete;
