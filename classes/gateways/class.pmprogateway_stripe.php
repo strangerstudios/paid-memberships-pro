@@ -1580,13 +1580,22 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//charge
 		try {
-			$response = Stripe_Charge::create( array(
+			$params = array(
 					"amount"      => $amount * $currency_unit_multiplier, # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $this->customer->id,
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
-				)
-			);
+				);
+			/**
+			 * Filter params used to create the Stripe charge.
+			 *
+			 * @since 2.4.4
+			 *
+		 	 * @param array  $params 	Array of params sent to Stripe.
+			 * @param object $order		Order object for this checkout.
+			 */
+			$params = apply_filters( 'pmpro_stripe_charge_params', $params, $order );
+			$response = Stripe_Charge::create( $params );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;
