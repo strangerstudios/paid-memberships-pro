@@ -553,6 +553,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+			
+			// Hide confirmation message if not an admin or member.
+			if ( ! empty( $checkout_level->confirmation ) 
+				 && ! pmpro_hasMembershipLevel( $level_id )
+				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+					 $checkout_level->confirmation = '';					
+			}
+			
 			return new WP_REST_Response( $checkout_level );
 		}
 
