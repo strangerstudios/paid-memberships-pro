@@ -672,9 +672,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 2.4
 	 */
-	static function get_webhooks( $limit = 10 ) {
-	
-		try {
+	static function get_webhooks( $limit = 10 ) {		
+		if ( ! class_exists( 'Stripe_Webhook' ) ) {
+			return false;			
+		}
+
+		try {			
 			$webhooks = Stripe_Webhook::all( [ 'limit' => apply_filters( 'pmpro_stripe_webhook_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
 			$webhooks = $th->getMessage();
