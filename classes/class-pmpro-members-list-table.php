@@ -621,7 +621,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$l = false;
 			}
 			_e('Show', 'paid-memberships-pro' );?>
-			<select name="l" onchange="jQuery('#member-list-form').submit();">
+			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').submit();">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
