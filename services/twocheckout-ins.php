@@ -428,6 +428,9 @@
 			$morder->PaymentAmount = sanitize_text_field($_POST['item_list_amount_1']);
 			$morder->datetime = sanitize_text_field($_POST['timestamp']);
 
+			//Assume no tax for now. Add ons will handle it later.
+			$morder->tax = 0;
+
 			$morder->FirstName = sanitize_text_field($_POST['customer_first_name']);
 			$morder->LastName = sanitize_text_field($_POST['customer_last_name']);
 			$morder->Email = sanitize_text_field($_POST['customer_email']);

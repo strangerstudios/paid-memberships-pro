@@ -123,8 +123,9 @@ if ( $txn_type == "subscr_payment" ) {
 			//Adjust gross for tax if provided
 			if( !empty($_POST['tax']) ) {
 				$amount = (float)$amount - (float)$_POST['tax'];
-			
-				//TODO: We should maybe update the order to reflect the tax amount and new total
+				$morder->tax = (float)$_POST['tax'];
+			} else {
+				$morder->tax = 0;
 			}
 			
 			if ( (float) $amount != (float) $morder->total ) {

@@ -130,12 +130,13 @@
 					
 					if(isset($invoice->amount))
 					{
-						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;					
+						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;
+						$morder->tax = 0;
 					}
 					elseif(isset($invoice->subtotal))
 					{
 						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0);
-						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : null);
+						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : 0);
 						$morder->total = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 					}
 
