@@ -55,7 +55,7 @@ function pmpro_membership_level_profile_fields($user)
 				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
                 {
 					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
-						echo __('Paid', 'paid-memberships-pro' ) . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
+						echo __('Paid', 'paid-memberships-pro' ) . " " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
 					else
 						_e('Not paying.', 'paid-memberships-pro' );
 				}
