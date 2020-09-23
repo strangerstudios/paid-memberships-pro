@@ -73,10 +73,13 @@
 									</td>
 									<td class="<?php echo pmpro_get_element_class( 'pmpro_cancel-membership-expiration' ); ?>">
 									<?php
-										if($level->enddate)
-											echo date_i18n(get_option('date_format'), $level->enddate);
-										else
-											echo "---";
+										if($level->enddate) {
+											$expiration_text = date_i18n( get_option( 'date_format' ), $level->enddate );
+   										} else {
+   											$expiration_text = "---";
+										}
+       									 
+										echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
 									?>
 									</td>
 									<td class="<?php echo pmpro_get_element_class( 'pmpro_cancel-membership-cancel' ); ?>">

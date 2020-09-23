@@ -668,7 +668,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 
 		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
 			// next payment date
-			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->timestamp );
+			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->getTimestamp() );
 
 			$r = $nextdate;
 		} else {
@@ -1787,7 +1787,66 @@ function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
 
 	return $separator;
-} 
+}
+
+/**
+ * pmpro_get_no_access_message to return the appropriate content message for the protected content.
+ *
+ * @param array $level_ids The array of level IDs this post is protected for.
+ * @param array $level_names The array of names for the levels this post is protected for.
+ *
+ * @return string $content The appropriate content message for the given user/visitor and required levels.
+ *
+ */
+function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL ) {
+	global $current_user;
+
+	if ( empty( $level_ids ) ) {
+		$level_ids = array();
+	}
+
+	if ( empty( $level_names ) ) {
+		$level_names = array();
+		foreach ( $level_ids as $key => $id ) {
+			$level_obj = pmpro_getLevel( $id );
+			$level_names[] = $level_obj->name;
+		}
+	}
+
+	// Hide levels which don't allow signups by default.
+	if( ! apply_filters( 'pmpro_membership_content_filter_disallowed_levels', false, $level_ids, $level_names ) ) {
+		foreach ( $level_ids as $key => $id ) {
+			// Does this level allow registrations?
+			$level_obj = pmpro_getLevel( $id );
+			if ( empty( $level_obj ) || empty( $level_obj->allow_signups ) ) {
+				unset( $level_ids[$key] );
+				unset( $level_names[$key] );
+			}
+		}
+	}
+
+	$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
+	$pmpro_content_message_post = '</div>';
+
+	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
+	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( $_SERVER['REQUEST_URI'] ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
+
+	// Get the correct message to show at the bottom.
+	if ( is_feed() ) {
+		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( pmpro_getOption( 'rsstext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	} elseif ( $current_user->ID ) {
+		//not a member
+		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( pmpro_getOption( 'nonmembertext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	} else {
+		//not logged in!
+		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( pmpro_getOption( 'notloggedintext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	}
+
+	return $content;
+}
 
 /*
  pmpro_getMembershipLevelForUser() returns the first active membership level for a user

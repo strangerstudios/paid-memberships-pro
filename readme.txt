@@ -1,9 +1,9 @@
 === Paid Memberships Pro ===
-Contributors: strangerstudios, kimannwall, andrewza, dlparker1005
+Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.4.2
-Stable tag: 2.4
+Tested up to: 5.5
+Stable tag: 2.4.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,51 @@ Not sure? You can find out by doing a bit a research.
 8. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.4.4 - 2020-09-02 =
+* BUG FIX: Fixed fatal error that sometimes occurred on the payment settings page when using PHP 5.6 or earlier.
+* BUG FIX: Fixed fatal errors that showed up on the frontend invoice page.
+* BUG FIX: Fixed issue where the confirmation message was not showing up in the confirmation email if that option was checked.
+* ENHANCEMENT: Added a pmpro_stripe_charge_params filter that can be used to edit or add params sent to the Stripe create charge method. (Thanks, Michael Bester)
+* ENHANCEMENT: Tweaked the markup of the invoice page so the payment type information looks a little better.
+
+= 2.4.3 - 2020-08-25
+* SECURITY: Fixed a cross-site scripting vulnerability in the code that updates the Required Membership settings on a post. This vulnerability could have been used in conjunction with other security vulnerabilities to trick an admin into editing the membership settings for a page, potentially exposing members only content to non-members. It is unlikely that there was any active exploitation of this vulnerability. This issue may also have shown up as a bug on some sites using page builders, where the membership settings for a post would be cleared out when editing a post. (Thanks to the wp.org plugin review team for catching this issue.)
+* SECURITY: Better escaping of variables shown in the Require Membership meta box and related SQL queries.
+* BUG FIX/ENHANCEMENT: Renamed the Vietnamese language files to match what is expected.
+
+= 2.4.2 - 2020-08-24
+* SECURITY: Updated the PMPro REST API endpoints accessed via the GET method to also require appropriate capabilities to access. The membership confirmation text will be hidden from non-members and non-admins. The endpoints to check a user's level or access to a post require the pmpro_edit_memberships capability now. You should make sure your API users have the appropriate capabilities to use the API. You can use the pmpro_rest_api_route_capabilities filter and/or pmpro_rest_api_permissions filter to change this behavior.
+* BUG FIX: Fixed issues with the PMPro REST API endpoints, including the discount code and checkout level endpoints.
+* BUG FIX: Fixed issue with backslashes in the display name when editing form the PMPro frontend profile page.
+* BUG FIX: Fixed issue where timestamps were showing up incorrectly for recent orders shown on the dashboard page.
+BUG FIX: Fixed issue where PMPro would always try to add capabilities to the administrator role, even if you removed that role for some reason.
+* ENHANCEMENT: Added a pmpro_get_no_access_message() function, which can be used to show the no access messages.
+* ENHANCEMENT: Added a "show_noaccess" property to the membership shortcode. When set, it will show the noaccess message to users who don't have the levels specified.
+* ENHANCEMENT: Added a pmpro_user_profile_update_errors hook, which can be used to show errors on the PMPro frontend profile page.
+* ENHANCEMENT: The pmpro_set_capabilities_for_role() function now returns true or false if the caps were added in case others want to use this function and tell if it worked.
+* ENHANCEMENT: You can now include links in the description of the fields you add to the PMPro advanced settings page via the pmpro_custom_advanced_settings filter.
+* ENHANCEMENT: Updated the PayPal gateways to use the latest versions of the PayPal buttons.
+* ENHANCEMENT: Fixed styling of the PMPro update script notice.
+* ENHANCEMENT: Added the pmpro_account_membership_expiration_text filter to the expiration dates shown on the cancel page when using MMPU.
+
+= 2.4.1 - 2020-08-10 =
+* BUG FIX: Fixed issues with password resets on WP Engine hosting due to security features added by their mu-plugin.
+* BUG FIX: Fixed issue where end dates were showing up incorrectly in the confirmation email sometimes.
+* BUG FIX: Fixed issue where renewing memberships were extended one day less than they should have been in some cases.
+* BUG FIX: Fixed issue where users without a PMPro Plus license were sometimes not getting an error when trying to update a Plus Add On.
+* BUG FIX/ENHANCEMENT: Added compatibility for core auto-updates for our Add Ons which aren't hosted in the .org repository.
+* BUG FIX/ENHANCEMENT: Fixed issue where PHP sessions were set up to track ReCAPTCHA even if you weren't using ReCAPTCHA. ReCAPTCHA is now only loaded on the checkout page. Loading sessions unecessarily would break some Varnish cache setups.
+* BUG FIX/ENHANCEMENT: Updated the single invoice/order page. No longer showing the end date, which isn't really related to the order. Showing a better status related to the order now.
+* BUG FIX/ENHANCEMENT: Fixed some links to the PMPro site in the plugin admin area.
+* BUG FIX/ENHANCEMENT: Now saving a hash of the Stripe secretkey when saving webhook ids. This allows us to keep track of webhook ids if you switch between gateway environments or swap your Stripe keys for some reason.
+* BUG FIX/ENHANCEMENT: No longer running the Terms of Service text through wpautop. This usually just added extra spacing to your TOS. Shortcodes are rendered now though. Added a filter pmpro_tos_content so you can change the TOS content or how it is shown.
+* ENHANCEMENT: Added a checkout_levels API endpoint. This will allow us to build features that adjust the price on the frontend at checkout.
+* ENHANCEMENT: Added a pmpro_member_profile_edit_form_tag action to the form tag on the frontend member profile page. This is useful to set the form enctype for file uploads.
+* ENHANCEMENT: Added Romanian Leu as a currency option.
+* ENHANCEMENT: Added the pmpro_stripe_payment_intent_params filter. Useful if you would like to set a specific statement descriptor for the site. See https://gist.github.com/ideadude/16983fdfa0da12fc40ef36d870f4cbd0
+* REFACTOR: Removed some unused methods from the Stripe class.
+* REFACTOR: Removed the help pointer about the menu location change.
+
 = 2.4 - 2020-07-24 =
 * FEATURE: Now detecting if the Stripe webhook is set up correctly. You can now create or disable the webhook from the payment settings page in the WP admin dashboard.
 * FEATURE: Added a link to use and set up SendWP for more reliable email sending from WP.

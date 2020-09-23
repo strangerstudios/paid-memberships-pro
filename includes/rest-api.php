@@ -138,12 +138,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_discount_code' ),
-				'permissions_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 			array(
 				'methods' => 'POST,PUT,PATCH',
 				'callback' => array( $this, 'pmpro_rest_api_set_discount_code' ),
-				'permissions_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 
@@ -157,6 +157,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_checkout_level' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 
@@ -169,6 +170,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			array(
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_get_checkout_levels' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
 		}
@@ -183,12 +185,22 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
+			// Param id was used instead (old style endpoint).
+			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
+				$user_id = $params['id'];
+			}
+			
+			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
 				$user_id = $user->ID;
 			}
 			
-			$level = pmpro_getMembershipLevelForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $user_id );
+			} else {
+				$level = false;
+			}
 
 			return new WP_REST_Response( $level, 200 );
 		}
@@ -203,12 +215,22 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 
+			// Param id was used instead.
+			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
+				$user_id = $params['id'];
+			}
+
+			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
 				$user = get_user_by_email( $params['email'] );
 				$user_id = $user->ID;
 			}
 			
-			$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			if ( ! empty( $user_id ) ) {
+				$levels = pmpro_getMembershipLevelsForUser( $user_id );
+			} else {
+				$levels = false;
+			}	
 
 			return new WP_REST_Response( $levels, 200 );
 		}
@@ -234,7 +256,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				}
 			}
 			
-			$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			if ( ! empty( $user_id ) ) {
+				$has_access = pmpro_has_membership_access( $post_id, $user_id );
+			} else {
+				// No good user, so say no.
+				// Technically this will make public posts look restricted.
+				$has_access = false;
+			}
+			
 			return new WP_REST_Response( $has_access, 200 );
 		}
 
@@ -261,8 +290,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+			} else {
+				$response = false;
+			}
 
-			return new WP_REST_Response( pmpro_changeMembershipLevel( $level_id, $user_id ), 200 );
+			return new WP_REST_Response( $response, 200 );
 		}
 
 		/**
@@ -292,8 +327,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
-
-			return new WP_REST_Response( pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' ), 200 );
+			
+			if ( ! empty( $user_id ) ) {
+				$response = pmpro_cancelMembershipLevel( $level_id, $user_id, 'inactive' );
+			} else {
+				$response = false;
+			}
+			
+			return new WP_REST_Response( $response, 200 );
 		}
 		
 		/**
@@ -314,7 +355,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'ID not passed through', 400 );
 			}
 
-			return new WP_REST_Response( new PMPro_Membership_Level( $id ), 200 );
+			$level = new PMPro_Membership_Level( $id );
+			
+			// Hide confirmation message if not an admin or member.
+			if ( ! empty( $level->confirmation ) 
+				 && ! pmpro_hasMembershipLevel( $id )
+				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+					 $level->confirmation = '';					
+			}
+
+			return new WP_REST_Response( $level, 200 );
 		}
 
 		/**
@@ -496,13 +546,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			$level_id = isset( $params['level'] ) ? $params['level'] : null;
+			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
 			if ( empty( $level_id ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
 			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+			
+			// Hide confirmation message if not an admin or member.
+			if ( ! empty( $checkout_level->confirmation ) 
+				 && ! pmpro_hasMembershipLevel( $level_id )
+				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+					 $checkout_level->confirmation = '';					
+			}
+			
 			return new WP_REST_Response( $checkout_level );
 		}
 
@@ -517,8 +575,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $_REQUEST['level'] ) ) {
-				$level_ids = explode( '+', $_REQUEST['level'] );
+			} elseif ( isset( $_REQUEST['level_id'] ) ) {
+				$level_ids = explode( '+', $_REQUEST['level_id'] );
 			}
 
 			if ( empty( $level_ids ) ) {
@@ -549,21 +607,41 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$method = $request->get_method();
 			$route = $request->get_route();
-			
-			// default permissions to 'read' (subscriber)
-			$permissions = current_user_can('read');			
-			if ( $method != 'GET' ) {
-				$permissions = current_user_can('pmpro_edit_memberships'); //Assume they can edit membership levels.
-			}
 
-			// Is the request method allowed?
+			// Default to requiring pmpro_edit_memberships capability.
+			$permission = current_user_can( 'pmpro_edit_memberships' );
+
+			// Check other caps for some routes.
+			$route_caps = array(
+				'/pmpro/v1/has_membership_access' => 'pmpro_edit_memberships',
+				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_memberships',
+				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
+				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/membership_level' => true,
+				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
+				'/pmpro/v1/checkout_level' => true,
+				'/pmpro/v1/checkout_levels' => true,				
+			);
+			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
+
+			if ( isset( $route_caps[$route] ) ) {
+				if ( $route_caps[$route] === true ) {
+					// public
+					$permission = true;
+				} else {
+					$permission = current_user_can( $route_caps[$route] );				
+				}				
+			}	
+
+			// Is the request method allowed? We disable DELETE by default.
 			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
-				$permissions = false;
+				$permission = false;
 			}
 
-			$permissions = apply_filters( 'pmpro_rest_api_permissions', $permissions, $request );
+			$permission = apply_filters( 'pmpro_rest_api_permissions', $permission, $request );
 
-			return $permissions;
+			return $permission;
 		}
 
 		/** 
