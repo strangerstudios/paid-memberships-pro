@@ -549,6 +549,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pmpro_require_billing' => $pmpro_requirebilling,
 					'restUrl' => get_rest_url(),
 					'siteName' => get_bloginfo( 'name' ),
+					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
 				);
 
 				if ( ! empty( $order ) ) {
