@@ -777,7 +777,15 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
+		$login_url = get_permalink( $login_page_id );
+		if ( strpos( $login_url, '?' ) && ! strpos( $login_url, site_url( 'wp-login.php' ) ) ) {
+			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
+			// Second condition in `if` above prevents infinite loop.
+			while ( strpos( $message, site_url( 'wp-login.php' ) . '?' ) ) {
+				$index_to_replace = strpos( $message, site_url( 'wp-login.php' ) . '?' ) + strlen( site_url( 'wp-login.php' ) );
+				$message = substr_replace( $message, '&#038;', $index_to_replace, 1 );
+			}
+		}
 		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
 	}
 
