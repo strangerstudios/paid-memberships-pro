@@ -142,15 +142,15 @@ Not sure? You can find out by doing a bit a research.
 
 == Screenshots ==
 
-= Memberships Admin Pages =
-1. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
-2. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
-3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
-4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
-5. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
-6. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
-7. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
-8. Membership Account page, display all sections or show specific sections using shortcode attributes.
+1. Optimized Membership Checkout page that blends seamlessly into your WordPress site. Fields captured at checkout can be modified with other Add Ons.
+2. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
+3. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
+4. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
+5. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
+6. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
+7. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
+8. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
+9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
 = 2.4.4 - 2020-09-02 =
