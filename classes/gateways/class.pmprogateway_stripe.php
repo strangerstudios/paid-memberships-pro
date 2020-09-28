@@ -571,6 +571,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pmpro_require_billing' => $pmpro_requirebilling,
 					'restUrl' => get_rest_url(),
 					'siteName' => get_bloginfo( 'name' ),
+					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
 				);
 
 				if ( ! empty( $order ) ) {
@@ -665,8 +666,9 @@ class PMProGateway_stripe extends PMProGateway {
 		
 		// If a secret key was passed in, return just the id for that key.
 		if ( ! empty( $secret_key ) ) {
-			if ( isset( $webhook_ids[$secret_key] ) ) {
-				return $webhook_ids[$secret_key];
+			$secret_key_hash = wp_hash( $secret_key );
+			if ( isset( $webhook_ids[$secret_key_hash] ) ) {
+				return $webhook_ids[$secret_key_hash];
 			} else {
 				return false;
 			}
@@ -693,12 +695,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 		
+		// Hash the secret key so it's not left behind in the DB.
+		$secret_key_hash = wp_hash( $secret_key );
+		
 		$webhook_ids = self::get_webhook_ids();
 		
 		if ( ! empty( $webhook_id ) ) {
-			$webhook_ids[$secret_key] = $webhook_id;
+			$webhook_ids[$secret_key_hash] = $webhook_id;
 		} else {
-			unset( $webhook_ids[$secret_key] );
+			unset( $webhook_ids[$secret_key_hash] );
 		}
 		
 		update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
@@ -710,12 +715,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 2.4
 	 */
-	static function get_webhooks( $limit = 10 ) {
-	
+	static function get_webhooks( $limit = 10 ) {		
+		if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
+			return false;			
+		}
+
 		try {
 			$webhooks = Stripe_Webhook::all( [ 'limit' => apply_filters( 'pmpro_stripe_webhook_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
 			$webhooks = $th->getMessage();
+		} catch (\Exception $e) {
+			$webhooks = $e->getMessage();
 		}
 		
 		return $webhooks;
@@ -764,6 +774,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			//throw $th;
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			//throw $th;
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 		
 	}
@@ -876,6 +889,9 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch (\Throwable $th) {
 				//throw $th;
 				return new WP_Error( 'error', $th->getMessage() );
+			} catch (\Exception $e) {
+				//throw $th;
+				return new WP_Error( 'error', $e->getMessage() );
 			}
 				
 		} else {
@@ -901,6 +917,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			self::update_webhook_ids( '', $secretkey );
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			self::update_webhook_ids( '', $secretkey );
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 
 		return $delete;
@@ -1008,17 +1027,17 @@ class PMProGateway_stripe extends PMProGateway {
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-				<?php
-				if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
-					echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
-				}
-				?>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
+		<?php
+			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
+				echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
+			}
+		?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
@@ -1055,7 +1074,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php if ( $pmpro_show_discount_code ) { ?>
                         <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
                             <label for="discount_code"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-                            <input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>"
+                            <input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
@@ -1609,13 +1628,22 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//charge
 		try {
-			$response = Stripe_Charge::create( array(
+			$params = array(
 					"amount"      => $amount * $currency_unit_multiplier, # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $this->customer->id,
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
-				)
-			);
+				);
+			/**
+			 * Filter params used to create the Stripe charge.
+			 *
+			 * @since 2.4.4
+			 *
+		 	 * @param array  $params 	Array of params sent to Stripe.
+			 * @param object $order		Order object for this checkout.
+			 */
+			$params = apply_filters( 'pmpro_stripe_charge_params', $params, $order );
+			$response = Stripe_Charge::create( $params );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;

@@ -85,6 +85,9 @@
 				$morder->payment_transaction_id = $fields['x_trans_id'];
 				$morder->subscription_transaction_id = $fields['x_subscription_id'];
 
+				//Assume no tax for now. Add ons will handle it later.
+				$morder->tax = 0;
+
 				$morder->gateway = $old_order->gateway;
 				$morder->gateway_environment = $old_order->gateway_environment;
 

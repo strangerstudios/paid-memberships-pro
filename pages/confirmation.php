@@ -44,7 +44,7 @@
 		echo wp_kses_post( $confirmation_message );
 	?>
 	<h3>
-		<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->timestamp));?>
+		<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp()));?>
 	</h3>
 	<a class="<?php echo pmpro_get_element_class( 'pmpro_a-print' ); ?>" href="javascript:window.print()"><?php _e('Print', 'paid-memberships-pro' );?></a>
 	<ul>
@@ -78,8 +78,9 @@
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-payment-method' ); ?>">
 				<strong><?php _e('Payment Method', 'paid-memberships-pro' );?></strong>
 				<?php if($pmpro_invoice->accountnumber) { ?>
-					<p><?php echo esc_html( ucwords( $pmpro_invoice->cardtype ) ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo esc_html( last4($pmpro_invoice->accountnumber ) );?></p>
-					<p><?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $pmpro_invoice->expirationmonth );?>/<?php echo esc_html( $pmpro_invoice->expirationyear );?></p>
+					<p><?php echo esc_html( ucwords( $pmpro_invoice->cardtype ) ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo esc_html( last4($pmpro_invoice->accountnumber ) );?>
+					<br />
+					<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $pmpro_invoice->expirationmonth );?>/<?php echo esc_html( $pmpro_invoice->expirationyear );?></p>
 				<?php } else { ?>
 					<p><?php echo esc_html( $pmpro_invoice->payment_type ); ?></p>
 				<?php } ?>

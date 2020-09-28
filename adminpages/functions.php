@@ -158,6 +158,109 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 	return true;
 }
 
+/**
+ * Checks if a discount code's settings are compatible with the active gateway.
+ *
+ */
+function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = NULL ) {
+	// Return if no gateway is set.
+	$gateway = pmpro_getOption( 'gateway' );
+	if ( empty( $gateway ) ) {
+		return true;
+	}
+
+	global $wpdb;
+	
+	// Check ALL the discount codes if none specified.
+	if ( empty( $discount_code ) ) {
+		$discount_codes = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_discount_codes" );
+		if ( ! empty( $discount_codes ) ) {
+			foreach ( $discount_codes as $discount_code ) {
+				if ( ! pmpro_check_discount_code_for_gateway_compatibility( $discount_code ) ) {
+					return false;
+				}
+			}
+		}
+	} else {
+		if ( ! is_numeric( $discount_code ) ) {
+			// Convert the code array into a single id.
+			$discount_code = $discount_code->id;
+		}
+		// Check ALL the discount code levels for this code.
+		$discount_codes_levels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = %d", $discount_code ) );
+		if ( ! empty( $discount_codes_levels ) ) {
+			foreach ( $discount_codes_levels as $discount_code_level ) {
+				if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level ) ) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+/**
+ * Checks if a discount code's settings are compatible with the active gateway.
+ *
+ */
+function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level = NULL ) {
+	// Return if no gateway is set.
+	$gateway = pmpro_getOption( 'gateway' );
+	if ( empty( $gateway ) ) {
+		return true;
+	}
+
+	global $wpdb;
+
+	// Check ALL the discount code levels if none specified.
+	if ( empty( $discount_code_level ) ) {
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes_levels ORDER BY id ASC";
+		$discount_codes_levels = $wpdb->get_results($sqlQuery, OBJECT);
+		if ( ! empty( $discount_codes_levels ) ) {
+			foreach ( $discount_codes_levels as $discount_code_level ) {
+				if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level ) ) {
+					return false;
+				}
+			}
+		}
+	} else {
+		// Need to look it up?
+		if ( is_numeric( $discount_code_level ) ) {
+			$discount_code_level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes_levels WHERE id = %d LIMIT 1" , $discount_code_level ) );
+		}
+
+		// Check this discount code level for gateway compatibility
+		if ( $gateway == 'stripe' ) {
+			if ( ( $discount_code_level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+				global $pmpro_stripe_error;
+				$pmpro_stripe_error = true;
+				return false;
+			}
+		} elseif ( $gateway == 'payflowpro' ) {
+			if ( $discount_code_level->trial_amount > 0 ) {
+				global $pmpro_payflow_error;
+				$pmpro_payflow_error = true;
+				return false;
+			}
+		} elseif ( $gateway == 'braintree' ) {
+			if ( $discount_code_level->trial_amount > 0 ||
+			   ( $discount_code_level->cycle_number > 0 && ( $discount_code_level->cycle_period == "Day" || $discount_code_level->cycle_period == "Week" ) ) ) {
+			   	global $pmpro_braintree_error;
+				$pmpro_braintree_error = true;
+				return false;
+			}
+		} if ( $gateway == 'twocheckout' ) {
+			if ( $discount_code_level->trial_amount > $discount_code_level->billing_amount ) {
+				global $pmpro_twocheckout_error;
+				$pmpro_twocheckout_error = true;
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 /*
 	Checks if PMPro settings are complete or if there are any errors.
 	

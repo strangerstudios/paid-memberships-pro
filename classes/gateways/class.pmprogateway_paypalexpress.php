@@ -473,7 +473,7 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
@@ -614,6 +614,7 @@
 				$order->status = "review";
 
 				//update order
+
 				$order->saveOrder();
 
 				return true;
@@ -844,7 +845,7 @@
 				/** Initial payment **/
 				$nvpStr = "";
 				// STARTDATE is Required, even if useless here. Start from 24h before the order timestamp, to avoid timezone related issues.
-				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->timestamp-DAY_IN_SECONDS ) . 'Z' );
+				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->getTimestamp() - DAY_IN_SECONDS ) . 'Z' );
 				// filter results by a specific transaction id.
 				$nvpStr .= "&TRANSACTIONID=" . urlencode($order->subscription_transaction_id);
 

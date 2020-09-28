@@ -99,6 +99,12 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
+	// Don't filter when specifically on wp-login.php.
+	if ( $_SERVER['SCRIPT_NAME'] === '/wp-login.php' ) {
+		return $login_url;
+	}
+	
+	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
 	if ( ! empty ( $login_page_id ) ) {
 		$login_url = get_permalink( $login_page_id );

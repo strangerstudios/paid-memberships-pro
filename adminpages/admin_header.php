@@ -124,6 +124,23 @@
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels') . "\">" . __("Please edit your levels", 'paid-memberships-pro' ) . "</a>.";
 	}
 
+	if ( ! pmpro_check_discount_code_for_gateway_compatibility() ) {
+		$msg = -1;
+		$msgt = __( 'The billing details for some of your discount codes are not supported by your gateway.', 'paid-memberships-pro' );
+		if ( $view == 'pmpro-discountcodes' && ! empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0 ) {
+			if ( ! pmpro_check_discount_code_for_gateway_compatibility( $_REQUEST['edit'] ) ) {
+				$msg = -1;
+				$msgt = __( 'The billing details for this discount code are not supported by your gateway.', 'paid-memberships-pro' );
+			}
+		} elseif ( $view == 'pmpro-discountcodes' ) {
+			$msg = -1;
+			$msgt .= " " . __("The discount codes with issues are highlighted below.", 'paid-memberships-pro' );
+		} else {
+			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-discountcodes') . "\">" . __("Please edit your discount codes", 'paid-memberships-pro' ) . "</a>.";
+
+		}
+	}
+
 	//check gateway dependencies
 	$gateway = pmpro_getOption('gateway');
 	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {

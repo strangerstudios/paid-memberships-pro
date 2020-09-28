@@ -347,45 +347,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			$content = "";
 		}
 
-		if( empty($post_membership_levels_ids ) ) {
-			$post_membership_levels_ids = array();
-		}
-
-		if( empty( $post_membership_levels_names ) ) {
-			$post_membership_levels_names = array();
-		}
-
-        //hide levels which don't allow signups by default
-        if( ! apply_filters("pmpro_membership_content_filter_disallowed_levels", false, $post_membership_levels_ids, $post_membership_levels_names ) ) {
-            foreach($post_membership_levels_ids as $key=>$id) {
-                //does this level allow registrations?
-                $level_obj = pmpro_getLevel( $id );
-                if( empty( $level_obj ) || empty( $level_obj->allow_signups ) ) {
-                    unset( $post_membership_levels_ids[$key] );
-                    unset( $post_membership_levels_names[$key] );
-                }
-            }
-        }
-
-		$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
-		$pmpro_content_message_post = '</div>';
-
-		$sr_search = array("!!levels!!", "!!referrer!!", "!!login_url!!", "!!login_page_url!!", "!!levels_url!!", "!!levels_page_url!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), urlencode(site_url($_SERVER['REQUEST_URI'])), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ));
-		
-		//get the correct message to show at the bottom
-		if( is_feed() ) {
-			$newcontent = apply_filters("pmpro_rss_text_filter", stripslashes(pmpro_getOption("rsstext")));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		} elseif( $current_user->ID ) {
-			//not a member
-			$newcontent = apply_filters("pmpro_non_member_text_filter", stripslashes(pmpro_getOption("nonmembertext")));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		} else {
-			//not logged in!
-			$newcontent = apply_filters("pmpro_not_logged_in_text_filter", stripslashes(pmpro_getOption("notloggedintext")));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		}
+		$content = pmpro_get_no_access_message( $content, $post_membership_levels_ids, $post_membership_levels_names );
 	}
 
 	return $content;
@@ -395,7 +357,7 @@ add_filter('the_content_rss', 'pmpro_membership_content_filter', 5);
 add_filter('comment_text_rss', 'pmpro_membership_content_filter', 5);
 
 /*
-	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the ecerpt.
+	If the_excerpt is called, we want to disable the_content filters so the PMPro messages aren't added to the content before AND after the excerpt.
 */
 function pmpro_membership_excerpt_filter($content, $skipcheck = false) {		
 	remove_filter('the_content', 'pmpro_membership_content_filter', 5);	

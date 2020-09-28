@@ -151,10 +151,12 @@ jQuery( document ).ready( function( $ ) {
 				}
 			});
 		}
-	
-		$("input").change(function(){
-			stripeUpdatePaymentRequestButton();
-		});
+
+		if ( pmproStripe.updatePaymentRequestButton ) {
+			$(".pmpro_alter_price").change(function(){
+				stripeUpdatePaymentRequestButton();
+			});
+		}
 	}
 
 	// Handle the response from Stripe.
