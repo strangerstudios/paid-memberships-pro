@@ -3132,12 +3132,12 @@ class PMProGateway_stripe extends PMProGateway {
  	 */
 	function pmpro_does_apple_pay_domain_exist() {
 		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
-	   	if ( empty( $apple_pay_domains ) ) {
+		if ( empty( $apple_pay_domains ) ) {
 			return false;
 		}
 
 		foreach( $apple_pay_domains as $apple_pay_domain ) {
-			if ( $apple_pay_domains->domain === $_SERVER['HTTP_HOST'] ) {
+			if ( $apple_pay_domain->domain_name === $_SERVER['HTTP_HOST'] ) {
 				return true;
 			}
 		}
