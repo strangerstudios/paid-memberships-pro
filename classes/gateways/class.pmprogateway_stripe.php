@@ -1011,12 +1011,12 @@ class PMProGateway_stripe extends PMProGateway {
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
+		<?php
+			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
+				echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
+			}
+		?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
-			<?php
-				if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
-					echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
-				}
-			?>
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
 					if ( $pmpro_include_cardtype_field ) { ?>
