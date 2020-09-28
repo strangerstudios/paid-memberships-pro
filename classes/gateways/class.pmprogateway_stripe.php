@@ -294,8 +294,8 @@ class PMProGateway_stripe extends PMProGateway {
 		// Check if webhook is enabled or not.
 		$webhook = self::get_webhook_ids( $values['stripe_secretkey'] );
 
+		$stripe = new PMProGateway_stripe;
 		if ( ! $webhook ) {
-			$stripe = new PMProGateway_stripe;
 			$webhook = $stripe::does_webhook_exist();
 		}
 		
@@ -413,6 +413,28 @@ class PMProGateway_stripe extends PMProGateway {
 					        <?php if ( ! empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
                 </select>
 				<p class="description"><?php printf( __( "Choose 'Yes' to allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser.<br /><small>When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a %s>More Information</a></small>", 'paid-memberships-pro' ), ' target="_blank" href="https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay"' ); ?></p>
+					<?php
+					if ( ! empty( $values['stripe_payment_request_button'] ) ) {
+						// Are there any issues with how the payment request button is set up?
+						$payment_request_error = null;
+						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
+							$payment_request_error = esc_html__( "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you can set up WordPress to always use HTTPS: ", 'paid-memberships-pro' ) . '<a href="https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/">https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/<a>';
+						} elseif ( substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_live_" && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_test_" ) {
+							$payment_request_error = esc_html__( "It looks like you are using an older Stripe publishable key. In order to use Payment Request Button, you will need to use a modern publishable API key, which is prefixed with 'pk_live_' or 'pk_test_'. You can roll your publishable key here: ", 'paid-memberships-pro' ) . '<a href="https://dashboard.stripe.com/account/apikeys">https://dashboard.stripe.com/account/apikeys</a>';
+						} elseif ( substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_live_" && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_test_" ) {
+							$payment_request_error = esc_html__( "It looks like you are using an older Stripe secret key. In order to use Payment Request Button, you will need to use a modern secret API key, which is prefixed with 'sk_live_' or 'sk_test_'. You can roll your secret key here: ", 'paid-memberships-pro' ) . '<a href="https://dashboard.stripe.com/account/apikeys">https://dashboard.stripe.com/account/apikeys</a>';
+						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
+							$payment_request_error = esc_html__( "Your website domain could not be registered with Apple to enable Apple Pay. Please try registering your domain manually from the Apple Pay settings page in Stripe:", 'paid-memberships-pro' ) . '<a href="https://dashboard.stripe.com/settings/payments/apple_pay">https://dashboard.stripe.com/settings/payments/apple_pay</a>';
+						}
+						if ( ! empty( $payment_request_error ) ) {
+							?>
+							<div class="notice error inline">
+								<p id="pmpro_stripe_payment_request_button_notice"><?php echo( $payment_request_error ); ?></p>
+							</div>
+							<?php
+						}
+					}
+					?>
             </td>
         </tr>
         <?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
