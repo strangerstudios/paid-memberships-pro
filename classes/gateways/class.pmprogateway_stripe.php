@@ -1005,11 +1005,6 @@ class PMProGateway_stripe extends PMProGateway {
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-				<?php
-				if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
-					echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
-				}
-				?>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
@@ -1017,6 +1012,11 @@ class PMProGateway_stripe extends PMProGateway {
             <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
+			<?php
+				if ( pmpro_getOption( 'stripe_payment_request_button' ) ) {
+					echo( '<div id="payment-request-button"><!-- Aternate payment method will be inserted here. --></div>' );
+				}
+			?>
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
 					if ( $pmpro_include_cardtype_field ) { ?>
