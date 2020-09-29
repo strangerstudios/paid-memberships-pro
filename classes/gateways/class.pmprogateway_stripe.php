@@ -672,12 +672,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 2.4
 	 */
-	static function get_webhooks( $limit = 10 ) {
-	
+	static function get_webhooks( $limit = 10 ) {		
+		if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
+			return false;			
+		}
+
 		try {
 			$webhooks = Stripe_Webhook::all( [ 'limit' => apply_filters( 'pmpro_stripe_webhook_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
 			$webhooks = $th->getMessage();
+		} catch (\Exception $e) {
+			$webhooks = $e->getMessage();
 		}
 		
 		return $webhooks;
@@ -726,6 +731,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			//throw $th;
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			//throw $th;
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 		
 	}
@@ -838,6 +846,9 @@ class PMProGateway_stripe extends PMProGateway {
 			} catch (\Throwable $th) {
 				//throw $th;
 				return new WP_Error( 'error', $th->getMessage() );
+			} catch (\Exception $e) {
+				//throw $th;
+				return new WP_Error( 'error', $e->getMessage() );
 			}
 				
 		} else {
@@ -863,6 +874,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Throwable $th) {
 			self::update_webhook_ids( '', $secretkey );
 			return new WP_Error( 'error', $th->getMessage() );
+		} catch (\Exception $e) {
+			self::update_webhook_ids( '', $secretkey );
+			return new WP_Error( 'error', $e->getMessage() );
 		}
 
 		return $delete;
@@ -1566,13 +1580,22 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//charge
 		try {
-			$response = Stripe_Charge::create( array(
+			$params = array(
 					"amount"      => $amount * $currency_unit_multiplier, # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $this->customer->id,
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
-				)
-			);
+				);
+			/**
+			 * Filter params used to create the Stripe charge.
+			 *
+			 * @since 2.4.4
+			 *
+		 	 * @param array  $params 	Array of params sent to Stripe.
+			 * @param object $order		Order object for this checkout.
+			 */
+			$params = apply_filters( 'pmpro_stripe_charge_params', $params, $order );
+			$response = Stripe_Charge::create( $params );
 		} catch ( \Throwable $e ) {
 			//$order->status = "error";
 			$order->errorcode  = true;
