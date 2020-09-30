@@ -108,6 +108,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.p
 
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_stripe.php' );
+	require_once( PMPRO_DIR . '/includes/lib/stripe-apple-pay/stripe-apple-pay.php' ); // rewrite rules to set up Apple Pay.
 }
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php' );
