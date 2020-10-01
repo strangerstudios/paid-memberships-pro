@@ -1697,7 +1697,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	 *
 	 * @param bool $okay true if code check is okay or false if there was an error
 	 * @param object $dbcode Object containing code data from the database row
-	 * @param int $level_id ID of the level the user is checking out for.
+	 * @param int|array $level_id ID of the level the user is checking out for.
 	 * @param string $code Discount code string.
 	 *
 	 * @return mixed $okay true if okay, false or error message string if not okay
