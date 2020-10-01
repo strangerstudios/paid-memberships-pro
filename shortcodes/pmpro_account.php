@@ -237,7 +237,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						}
 						?>
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
-							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->getTimestamp())?></td>
+							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->getTimestamp())?></a></td>
 							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php echo pmpro_formatPrice($invoice->total)?></td>
 							<td><?php echo $display_status; ?></td>
