@@ -3389,3 +3389,24 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 		return $wpdb->replace( $table, $data, $format );
 	}
 }
+
+/**
+ * Checks if a webhook is running
+ */
+function pmpro_doing_webhook( $gateway = null ){
+
+	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
+		if( $gateway !== null ){
+			if( PMPRO_DOING_WEBHOOK == $gateway ){
+				return true;
+			} else {
+				return false;	
+			}
+		} else {
+			return true;
+		}
+	} else {
+		return false;
+	}
+	
+}
