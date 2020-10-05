@@ -158,7 +158,7 @@
 
 			global $wpdb;
 			//double check for a user_id, gateway and gateway environment
-			$sql = "SELECT * FROM $wpdb->pmpro_membership_orders WHERE `subscription_transaction_id` = $subscription_id ORDER BY id ASC "; //Gets the first one. Should be active/success?
+			$sql = "SELECT * FROM $wpdb->pmpro_membership_orders WHERE `subscription_transaction_id` = '$subscription_id' ORDER BY id ASC "; //Gets the first one. Should be active/success?
 
 			$result = $wpdb->get_row( $sql );
 
