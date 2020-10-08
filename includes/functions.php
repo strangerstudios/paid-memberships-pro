@@ -2227,7 +2227,12 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
 
 		// check code
-		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		global $pmpro_checkout_level_ids; // Set by MMPU.
+		if ( isset( $pmpro_checkout_level_ids ) ) {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+		} else {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		}
 		if ( $code_check[0] != false ) {
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
