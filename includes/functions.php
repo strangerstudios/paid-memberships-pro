@@ -378,7 +378,11 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	if ( ! $short ) {
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
 	} else {
-		$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+		if ( pmpro_isLevelFree( $level ) ) {
+			$r = '<strong>' . __('Free', 'paid-memberships-pro' ) . '</strong>';
+		} else {
+			$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+		}
 	}
 
 	// recurring part
