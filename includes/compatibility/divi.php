@@ -9,7 +9,6 @@ class PMProDivi{
 			add_filter( 'et_builder_get_parent_modules', array( $this, 'toggle' ) );
 			add_filter( 'et_pb_module_content', array( $this, 'restrict_content' ), 10, 4 );
 			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( $this, 'row_settings' ) );
-			add_filter( 'save_post', array( $this, 'save_post' ), 10, 1 );
 		}
 
 	}
