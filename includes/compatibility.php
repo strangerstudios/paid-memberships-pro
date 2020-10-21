@@ -35,7 +35,12 @@ function pmpro_compatibility_checker () {
 			'file' => 'wp-engine.php',
 			'check_type' => 'function',
 			'check_value' => 'wpe_filter_site_url'
-		)
+		),
+        array(
+            'file' => 'divi.php',
+            'check_type' => 'constant',
+            'check_value' => 'ET_BUILDER_PLUGIN_DIR'
+        )
     );
 
     foreach ( $compat_checks as $key => $value ) {
