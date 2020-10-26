@@ -152,6 +152,68 @@
 		}
 
 		/**
+		 * Get the first order for this subscription.
+		 * Useful to find the original order from a recurring order.
+		 * @since 2.5
+		 * @return mixed Order object if found or false if not.
+		 */
+		function get_original_subscription_order( $subscription_id = '' ){
+			global $wpdb;
+			
+			// Default to use the subscription ID on this order object.
+			if ( empty( $subscription_id ) && ! empty( $this->subscription_transaction_id ) ) {
+				$subscription_id = $this->subscription_transaction_id;
+			}
+			
+			// Must have a subscription ID.
+			if ( empty( $subscription_id ) ) {
+				return false;
+			}
+			
+			// Get some other values from this order to narrow the search.
+			if ( ! empty( $this->user_id ) ) {
+				$user_id = $this->user_id;
+			} else {
+				$user_id = '';
+			}
+			if ( ! empty( $this->gateway ) ) {
+				$gateway = $this->gateway;
+			} else {
+				$gateway = '';
+			}
+			if ( ! empty( $this->gateway_environment ) ) {
+				$gateway_environment = $this->gateway_environment;
+			} else {
+				$gateway_environment = '';
+			}
+			
+			// Double check for a user_id, gateway and gateway environment.
+			$sql = $wpdb->prepare(
+				"SELECT ID
+				 FROM $wpdb->pmpro_membership_orders
+				 WHERE `subscription_transaction_id` = %s
+				   AND `user_id` = %d
+				   AND `gateway` = %s
+				   AND `gateway_environment` = %s
+				 ORDER BY id ASC
+				 LIMIT 1",
+				 array(
+					 $subscription_id,
+					 $user_id,
+					 $gateway,
+					 $gateway_environment
+				 )
+			 );
+			
+			$order_id = $wpdb->get_var( $sql );
+			if ( ! empty( $order_id ) ) {
+				return new MemberOrder( $order_id );
+			} else {
+				return false;
+			}
+		}
+
+		/**
 		 * Set up the Gateway class to use with this order.
 		 *
 		 * @param string $gateway Name/label for the gateway to set.

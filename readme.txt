@@ -91,7 +91,7 @@ Our plugin is 100% GPL and available from the WordPress repository or on our sit
 3. Activate the plugin.
 
 = Complete the Initial Plugin Setup =
-Go to Memberships > Dashboard in the WordPress admin to begin setup. Our [Initial Setup Tutorial](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/) will show you how to configure the following required pages:
+Go to Memberships > Dashboard in the WordPress admin to begin setup. Our [Initial Setup Tutorial](https://www.paidmembershipspro.com/documentation/initial-plugin-setup/) will show you how to configure the following required pages:
 
 1. Membership Levels: Add one or more levels
 2. Page Settings: Generate frontend pages
@@ -100,8 +100,8 @@ Go to Memberships > Dashboard in the WordPress admin to begin setup. Our [Initia
 5. Advanced Settings: Update non-member messages, content filters, dashboard access, and more.
 
 = More Installation and Setup Documentation =
-* [Installation Video](http://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/)
-* [Installation Docs]()
+* [Installation Video](https://www.paidmembershipspro.com/documentation/initial-plugin-setup/tutorial-video/)
+* [Installation Docs](https://www.paidmembershipspro.com/documentation/initial-plugin-setup/)
 * [Membership Levels](https://www.paidmembershipspro.com/documentation/membership-levels/)
 * [Payment Gateways](https://www.paidmembershipspro.com/gateway/)
 * [Add Ons](https://www.paidmembershipspro.com/add-ons/)
@@ -109,15 +109,15 @@ Go to Memberships > Dashboard in the WordPress admin to begin setup. Our [Initia
 == Frequently Asked Questions ==
 
 = I need help installing, configuring, or customizing the plugin. =
-Please visit [our support site at http://www.paidmembershipspro.com](http://www.paidmembershipspro.com) for more documentation and our support forums.
+Please visit [our support site at https://www.paidmembershipspro.com](https://www.paidmembershipspro.com) for more documentation and our support forums.
 
 = I found a bug in the plugin. =
-Please post it in the [WordPress support forum](http://wordpress.org/tags/paid-memberships-pro?forum_id=10) and we'll fix it right away. Thanks for helping.
+Please post it in the [WordPress support forum](https://wordpress.org/support/plugin/paid-memberships-pro/) and we'll fix it right away. Thanks for helping.
 
 = My site is broken or blank or not letting me log in after activating Paid Memberships Pro =
 This is typically caused by a conflict with another plugin that is trying to redirect around the login/register pages or trying to redirect from HTTP to HTTPS, etc.
 
-To regain access to your site, FTP to your site and rename the wp-content/plugins/paid-memberships-pro folder to wp-content/plugins/paid-memberships-pro-d (or anything different). Now WP will not be able to find PMPro, and you can gain access to /wp-admin/ again. From there, visit the plugins page to fully deactivate Paid Memberships Pro. (You'll want to rename the folder back to paid-memberships-pro again.)
+To regain access to your site, FTP to your site and rename the `wp-content/plugins/paid-memberships-pro` folder to wp-content/plugins/paid-memberships-pro-d (or anything different). Now WP will not be able to find PMPro, and you can gain access to /wp-admin/ again. From there, visit the plugins page to fully deactivate Paid Memberships Pro. (You'll want to rename the folder back to paid-memberships-pro again.)
 
 Long term, you will need to find and fix the conflict. We can usually do this for you very quickly if you sign up for support at https://www.paidmembershipspro.com/pricing/ and send us your WP admin and FTP credentials.
 
@@ -142,15 +142,15 @@ Not sure? You can find out by doing a bit a research.
 
 == Screenshots ==
 
-= Memberships Admin Pages =
-1. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
-2. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
-3. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
-4. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
-5. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
-6. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
-7. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
-8. Membership Account page, display all sections or show specific sections using shortcode attributes.
+1. Optimized Membership Checkout page that blends seamlessly into your WordPress site. Fields captured at checkout can be modified with other Add Ons.
+2. Set up the membership levels that best fit your business, whether they are Free, Paid, or Subscriptions (Annual, Monthly, Weekly, Daily). Offer Custom Trial Periods (Free Trial, Custom-length Trial, 'Introductory' Pricing)
+3. Easy to use Membership Access Settings by Page, Post, or Category. Shortcodes to display restricted content inline. Developer-friendly hooks to restrict access any way you need.
+4. Members are WordPress Users. PMPro provides a unique interface to view, filter and search Members or export your Members List.
+5. Offer Membership Discounts with specific price rules (restricted by level, unique pricing for each level, # of uses, expiration date.)
+6. Filterable Sales Revenue Reports (reports also included for Visits, Views, Logins, Signups, Cancellations, and other Membership Stats).
+7. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
+8. Membership levels selection page, filter the shortcode with additional attributes using add ons or the Memberlite theme.
+9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
 = 2.4.4 - 2020-09-02 =

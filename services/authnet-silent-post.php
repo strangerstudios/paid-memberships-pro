@@ -14,6 +14,8 @@
 
 	global $wpdb;
 
+	define( 'PMPRO_DOING_WEBHOOK', 'authnet' );
+
 	//some code taken from http://www.merchant-account-services.org/blog/handling-authorizenet-arb-subscription-failures/
 	// Flag if this is an ARB transaction. Set to false by default.
 	$arb = false;
