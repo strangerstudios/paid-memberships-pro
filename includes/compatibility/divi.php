@@ -7,8 +7,8 @@ class PMProDivi{
 		if ( empty( $_GET['page'] ) || 'et_divi_role_editor' !== $_GET['page'] ) {
 			add_filter( 'et_builder_get_parent_modules', array( $this, 'toggle' ) );
 			add_filter( 'et_pb_module_content', array( $this, 'restrict_content' ), 10, 4 );
-			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( $this, 'row_settings' ) );
-			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( $this, 'section_settings' ) );			
+			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( $this, 'settings' ) );
+			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( $this, 'settings' ) );			
 		}
 
 	}
@@ -27,7 +27,7 @@ class PMProDivi{
 
 	}
 
-	public function row_settings( $settings ) {
+	public function settings( $settings ) {
 
 	    $settings['paid-memberships-pro'] = array(
 			'tab_slug' => 'custom_css',
@@ -45,24 +45,6 @@ class PMProDivi{
 
 	}
 
-	public function section_settings( $settings ) {
-
-	    $settings['paid-memberships-pro'] = array(
-			'tab_slug' => 'custom_css',
-			'label' => __( 'Paid Memberships Pro Level', 'pmpro' ),
-			'description' => __( 'Select a level to restrict member content.', 'pmpro' ),
-			'type' => 'multiple_checkboxes',
-			'multi_selection' => true,
-			'default' => 'none',
-			'option_category' => 'configuration',
-			'options' => $this->return_levels( $settings ),
-			'toggle_slug' => 'paid-memberships-pro',
-	    );
-
-		return $settings;
-
-	}
-  
   	public function restrict_content( $output, $props, $attrs, $slug ) {
 
 	    if ( et_fb_is_enabled() ) {
