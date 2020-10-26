@@ -49,6 +49,7 @@ abstract class Base Extends \WP_UnitTestCase {
 			$wpdb->pmpro_discount_codes_uses,
 			$wpdb->pmpro_membership_levelmeta,
 			$wpdb->pmpro_membership_levels,
+			$wpdb->pmpro_membership_ordermeta,
 			$wpdb->pmpro_membership_orders,
 			$wpdb->pmpro_memberships_categories,
 			$wpdb->pmpro_memberships_pages,
