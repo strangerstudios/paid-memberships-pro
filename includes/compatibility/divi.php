@@ -69,10 +69,6 @@ class PMProDivi{
 			return $output;
 	    }
 
-	    if( 'et_pb_row' !== $slug || 'et_pb_section' !== $slug ){
-	    	return $output; //Show content unless it's a section or row
-	    }
-
 	    if( !isset( $props['paid-memberships-pro'] ) ){
 	    	return $output;
 	    }
