@@ -1071,4 +1071,44 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			*/
 			return apply_filters( 'pmpro_braintree_plan_id', 'pmpro_' . $level_id, $level_id );
 	}
+
+	function get_subscription( &$order ) {
+		// Does order have a subscription?
+		if ( empty( $order ) || empty( $order->subscription_transaction_id ) ) {
+			return false;
+		}
+
+		try {
+			$subscription = Braintree_Subscription::find( $order->subscription_transaction_id );
+		} catch ( Exception $e ) {
+			$order->error      = __( "Error getting subscription with Braintree:", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		return $subscription;
+	}
+
+	/**
+	 * Filter pmpro_next_payment to get date via API if possible
+	 */
+	static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
+		// Check that we have a user ID...
+		if ( ! empty( $user_id ) ) {
+			// Get last order...
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user_id, $order_status );
+
+			// Check if this is a Braintree order with a subscription transaction id...
+			if ( ! empty( $order->id ) && ! empty( $order->subscription_transaction_id ) && $order->gateway == "braintree" ) {
+				// Get the subscription and return the next billing date.
+				$subscription = $order->Gateway->get_subscription( $order );
+				if ( ! empty( $subscription ) ) {
+					$timestamp = $subscription->nextBillingDate->getTimestamp();
+				}
+			}
+		}
+
+		return $timestamp;
+	}
 }
