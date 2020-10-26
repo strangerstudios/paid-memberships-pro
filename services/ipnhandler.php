@@ -15,6 +15,8 @@ if ( ! defined( "ABSPATH" ) ) {
 global $wpdb, $gateway_environment, $logstr;
 $logstr = "";    //will put debug info here and write to ipnlog.txt
 
+define( 'PMPRO_DOING_WEBHOOK', 'paypal' );
+
 //validate?
 if ( ! pmpro_ipnValidate() ) {
 	//validation failed

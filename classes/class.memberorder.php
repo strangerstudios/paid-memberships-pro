@@ -152,6 +152,21 @@
 		}
 
 		/**
+		 * Returns an object containing the order data or false if it doesn't exist
+		 */
+		function get_original_subscription_order( $subscription_id ){
+
+			global $wpdb;
+			//double check for a user_id, gateway and gateway environment
+			$sql = "SELECT * FROM $wpdb->pmpro_membership_orders WHERE `subscription_transaction_id` = '$subscription_id' ORDER BY id ASC "; //Gets the first one. Should be active/success?
+
+			$result = $wpdb->get_row( $sql );
+
+			return $result;
+
+		}
+
+		/**
 		 * Set up the Gateway class to use with this order.
 		 *
 		 * @param string $gateway Name/label for the gateway to set.

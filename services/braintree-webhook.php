@@ -20,6 +20,8 @@ if ( ! defined( "ABSPATH" ) ) {
 //globals
 global $wpdb;
 
+define( 'PMPRO_DOING_WEBHOOK', 'braintree' );
+
 // Debug log
 global $logstr;
 $logstr = array( "Logged On: " . date_i18n( "m/d/Y H:i:s", current_time( 'timestamp' ) ) );
