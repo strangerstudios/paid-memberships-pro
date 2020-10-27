@@ -273,7 +273,7 @@
 				else
 					$username = "";
 				if(isset($_REQUEST['password']))
-					$password = sanitize_text_field($_REQUEST['password']);
+					$password = $_REQUEST['password'];
 				else
 					$password = "";
 				if(isset($_REQUEST['bemail']))

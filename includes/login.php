@@ -377,7 +377,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	}
 
 	if ( isset( $_GET['password'] ) ) {
-		switch( sanitize_text_field( $_GET['password'] ) ) {
+		switch( $_GET['password'] ) {
 			case 'changed':
 				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_success';

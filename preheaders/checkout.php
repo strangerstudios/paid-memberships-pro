@@ -238,14 +238,14 @@ if ( isset( $_REQUEST['username'] ) ) {
 	$username = "";
 }
 if ( isset( $_REQUEST['password'] ) ) {
-	$password = sanitize_text_field($_REQUEST['password']);
+	$password = $_REQUEST['password'];
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
 } elseif ( isset( $_REQUEST['password2'] ) ) {
-	$password2 = sanitize_text_field($_REQUEST['password2']);
+	$password2 = $_REQUEST['password2'];
 } else {
 	$password2 = "";
 }
