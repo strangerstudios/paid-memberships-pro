@@ -829,22 +829,24 @@
 		/**
 		 * Get a random code to use as the order code.
 		 */
-		function getRandomCode()
-		{
+		function getRandomCode() {
 			global $wpdb;
 
-			while(empty($code))
-			{
+			// We mix this with the seed to make sure we get unique codes.
+			static $count = 0;
+			$count++;
 
-				$scramble = md5(AUTH_KEY . current_time('timestamp') . SECURE_AUTH_KEY);
-				$code = substr($scramble, 0, 10);
-				$code = apply_filters("pmpro_random_code", $code, $this);	//filter
-				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");
-				if($check || is_numeric($code))
+			while( empty( $code ) ) {
+				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$code = substr( $scramble, 0, 10 );
+				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
+				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
+				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
+				}
 			}
 
-			return strtoupper($code);
+			return strtoupper( $code );
 		}
 
 		/**
