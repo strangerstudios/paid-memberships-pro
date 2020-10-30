@@ -990,18 +990,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			
 				try {
 					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
+					    // Return, we're already processing the cancellation
+					    return true;
+		            }
 				} catch ( \Exception $e ) {
 				    // Don't do anything
 				}
 			}
 			
 			// Always cancel, even if Braintree fails
-			$order->updateStatus("cancelled" );
-			
-			if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
-			    // Return, we're already processing the cancellation
-			    return true;
-            }
+			$order->updateStatus("cancelled" );			
             
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
