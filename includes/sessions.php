@@ -21,15 +21,19 @@ function pmpro_start_session() {
         if (defined('STDIN')) {
             //command line
         } else {
-            if (version_compare(phpversion(), '5.4.0', '>=')) {
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
+	    if (headers_sent() {
+		//someone already sent something
+	    }else{
+		if (version_compare(phpversion(), '5.4.0', '>=')) {
+		    if (session_status() == PHP_SESSION_NONE) {
+                        session_start();
+                    }
+                } else {
+                    if (!session_id()) {
+                        session_start();
+		    }
                 }
-            } else {
-                if (!session_id()) {
-                    session_start();
-                }
-            }
+	    }
         }
     }
 }
