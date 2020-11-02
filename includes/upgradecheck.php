@@ -247,6 +247,16 @@ function pmpro_checkForUpgrades()
  	if($pmpro_db_version < 2.4) {
  		$pmpro_db_version = pmpro_upgrade_2_4();
  	}
+	
+	/**
+	 * Version 2.5
+	 * Running pmpro_db_delta to install the ordermeta table.
+	 */
+	if( $pmpro_db_version < 2.5 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = 2.5;
+		pmpro_setOption( 'db_version', '2.5' );
+	}
 }
 
 function pmpro_db_delta()
