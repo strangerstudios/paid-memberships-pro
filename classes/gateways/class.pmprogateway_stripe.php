@@ -293,14 +293,39 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $values['stripe_publishablekey'] ) && ! empty( $values['stripe_secretkey'] ) ) {
 		
 			// Check if webhook is enabled or not.
-			$webhook = self::does_webhook_exist();
+			$webhook = self::get_webhook_ids( $values['stripe_secretkey'] );
+
+			$stripe = new PMProGateway_stripe;
+			if ( ! $webhook ) {
+				$webhook = $stripe::does_webhook_exist();
+			}
 			
+			$required_update = false;
 			// Check to see if events are missing.
 			if ( is_array( $webhook ) && isset( $webhook['enabled_events'] ) ) {
-				$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
-				if ( $events ) {
-					self::update_webhook_events();
+
+				if ( $webhook['webhook_id'] == false ) {
+					$required_update = true;
 				}
+
+				if ( isset( $webhook['enabled_events'] ) ) {
+					$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
+
+					if ( $events ) {
+						$required_update = true;
+					} else {
+						$required_update = false;
+						self::update_webhook_ids( $webhook['webhook_id'], $values['stripe_secretkey'] );
+						pmpro_setOption( 'stripe_webhook', 1 );
+						$values['stripe_webhook'] = 1; // Checkbox option.
+					}
+				}
+
+			} else if ( ! empty( $webhook ) && ! pmpro_getOption( 'stripe_webhook', true ) ) {
+				pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
+				$values['stripe_webhook'] = 1;
+			} else {
+				$require_update = true;
 			}
 		}
 
@@ -714,6 +739,83 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $fields;
+	}
+	
+	/**
+	 * Get the webhook ids stored locally in wp_options.
+	 *
+	 * @since 2.4.1
+	 */
+	static function get_webhook_ids( $secret_key = null ) {
+		$webhook_ids = pmpro_getOption( 'stripe_webhook_ids' );
+		
+		// Need to check in case its stored using the old option.
+		if ( empty( $webhook_ids ) ) {
+			$webhook_id = pmpro_getOption( 'stripe_webhook_id' );
+			if ( ! empty( $webhook_id ) ) {
+				// We store ids with the cooresponding secret key now.
+				// Assume this webhook is for the currently selected environment.
+				$secret_key = pmpro_getOption( 'stripe_secretkey' );
+				$webhook_ids = array( $secret_key => $webhook_id );
+				delete_option( 'pmpro_stripe_webhook_id' );
+				update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
+			}
+		}
+		
+		// If secret key is 'true', then load the current secret key.
+		if ( $secret_key === true ) {
+			$secret_key = pmpro_getOption( 'stripe_secretkey' );
+			
+			// No key, then there will be no webhook.
+			if ( empty( $secret_key ) ) {
+				return false;
+			}			
+		}
+		
+		// If a secret key was passed in, return just the id for that key.
+		if ( ! empty( $secret_key ) ) {
+			$secret_key_hash = wp_hash( $secret_key );
+			if ( isset( $webhook_ids[$secret_key_hash] ) ) {
+				return $webhook_ids[$secret_key_hash];
+			} else {
+				return false;
+			}
+		}
+		
+		if ( empty( $webhook_ids ) ) {
+			$webhook_ids = array();
+		}
+		
+		return $webhook_ids;
+	}
+	
+	/**
+	 * Update webhook ids.
+	 *
+	 * @since 2.4.1
+	 */
+	static function update_webhook_ids( $webhook_id, $secret_key = null ) {
+		if ( empty( $secret_key ) ) {
+			$secret_key = pmpro_getOption( 'stripe_secretkey' );
+		}
+		
+		if ( empty( $secret_key ) ) {
+			return false;
+		}
+		
+		// Hash the secret key so it's not left behind in the DB.
+		$secret_key_hash = wp_hash( $secret_key );
+		
+		$webhook_ids = self::get_webhook_ids();
+		
+		if ( ! empty( $webhook_id ) ) {
+			$webhook_ids[$secret_key_hash] = $webhook_id;
+		} else {
+			unset( $webhook_ids[$secret_key_hash] );
+		}
+		
+		update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
+		return true;
 	}
 
 	/**
