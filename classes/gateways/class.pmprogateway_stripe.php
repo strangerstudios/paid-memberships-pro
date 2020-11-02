@@ -151,6 +151,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//AJAX services for creating/disabling webhooks
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
+		add_action( 'wp_ajax_pmpro_stripe_rebuild_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_rebuild_webhook' ) );
 
 		/*
             Filter pmpro_next_payment to get actual value
@@ -288,43 +289,16 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( ! empty( $values['stripe_publishablekey'] ) && ! empty( $values['stripe_secretkey'] ) ) {
 		
-		// Check if webhook is enabled or not.
-		$webhook = self::get_webhook_ids( $values['stripe_secretkey'] );
-
-		if ( ! $webhook ) {
-			$stripe = new PMProGateway_stripe;
-			$webhook = $stripe::does_webhook_exist();
-		}
-		
-		$required_update = false;
-		// Check to see if events are missing.
-		if ( is_array( $webhook ) ) {
-
-			if ( $webhook['webhook_id'] == false ) {
-				$required_update = true;
-			}
-
-			if ( isset( $webhook['enabled_events'] ) ) {
+			// Check if webhook is enabled or not.
+			$webhook = self::does_webhook_exist();
+			// Check to see if events are missing.
+			if ( is_array( $webhook ) && isset( $webhook['enabled_events'] ) ) {
 				$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
-
 				if ( $events ) {
-					$required_update = true;
-				} else {
-					$required_update = false;
-					self::update_webhook_ids( $webhook['webhook_id'], $values['stripe_secretkey'] );
-					pmpro_setOption( 'stripe_webhook', 1 );
-					$values['stripe_webhook'] = 1; // Checkbox option.
+					self::update_webhook_events();
 				}
 			}
-
-		} else if ( ! empty( $webhook ) && ! pmpro_getOption( 'stripe_webhook', true ) ) {
-			pmpro_setOption( 'stripe_webhook', 1 ); // Checkbox option.
-			$values['stripe_webhook'] = 1;
-		} else {
-			$require_update = true;
 		}
-
-	}
 
 		?>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -367,12 +341,31 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php _e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php if ( self::does_webhook_exist() ) { ?>
+				<?php if ( ! empty( $webhook ) && is_array( $webhook ) ) { ?>
 				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
-				<div class="notice notice-success inline">
-					<p id="pmpro_stripe_webhook_notice">Your webhook is enabled. <a id="pmpro_stripe_delete_webhook" href="#">Disable Webhook</a></p>
-				</div>
-				<?php } else { ?>
+					<?php 
+						if ( 'disabled' === $webhook['status'] ) {
+							// Check webhook status.
+							?>
+							<div class="notice error inline">
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is disabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#">Rebuild Webhook</a></p>
+							</div>
+							<?php
+						} elseif ( $webhook['api_version'] < PMPRO_STRIPE_API_VERSION ) {
+							// Check webhook API version.
+							?>
+							<div class="notice error inline">
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#">Rebuild Webhook</a></p>
+							</div>
+							<?php
+						} else {
+							?>
+							<div class="notice notice-success inline">
+								<p id="pmpro_stripe_webhook_notice">Your webhook is enabled. <a id="pmpro_stripe_delete_webhook" href="#">Disable Webhook</a></p>
+							</div>
+							<?php
+						}
+					 } else { ?>
 				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 				<div class="notice error inline">
 					<p id="pmpro_stripe_webhook_notice"><?php _e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
@@ -507,6 +500,80 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * AJAX callback to disable webhooks.
+	 */
+	static function wp_ajax_pmpro_stripe_rebuild_webhook() {
+		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
+		
+		$stripe = new PMProGateway_stripe();
+		Stripe\Stripe::setApiKey( $secretkey );
+		
+		$webhook = self::does_webhook_exist();
+
+		if ( empty( $webhook ) ) {
+			$r = array(
+				'success' => true,
+				'notice' => 'error',
+				'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
+			);
+		} else {
+			$r = $stripe::delete_webhook( $webhook, $secretkey );
+			
+			if ( is_wp_error( $r ) ) {
+				$r = array(
+					'success' => false,
+					'notice' => 'error',
+					'message' => $r->get_error_message(),
+					'response' => $r
+				);
+			} else {
+				if ( ! empty( $r['deleted'] ) && $r['deleted'] == true ) {
+					// Deletion succeeded. Rebuild...
+					self::does_webhook_exist( true ); // Break the webhook cache.
+					$r = $stripe::update_webhook_events();
+		
+					if ( empty( $r ) ) {
+						$r = array(
+							'success' => false,
+							'notice' => 'error',
+							'message' => $r,
+							'message' => __( 'Webhook creation failed. Please refresh and try again.', 'paid-memberships-pro' ),
+							'response' => $r
+						);
+					} else {
+						if ( is_wp_error( $r ) ) {
+							$r = array(
+								'success' => false,
+								'notice' => 'error',
+								'message' => $r->get_error_message(),
+								'response' => $r
+							);
+						} else {
+							$r = array(
+								'success' => true,
+								'notice' => 'notice-success',
+								'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
+								'response' => $r
+							);
+						}
+					}
+				} else {
+					$r = array(
+						'success' => false,
+						'notice' => 'error',
+						'message' => __( 'There was an error deleting the webhook.', 'paid-memberships-pro' ),
+						'response' => $r
+					);
+				}
+			}
+		}
+
+		echo json_encode( $r );
+		
+		exit;
+	}
+
+	/**
 	 * Code added to checkout preheader.
 	 *
 	 * @since 1.8
@@ -589,83 +656,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		return $fields;
 	}
-	
-	/**
-	 * Get the webhook ids stored locally in wp_options.
-	 *
-	 * @since 2.4.1
-	 */
-	static function get_webhook_ids( $secret_key = null ) {
-		$webhook_ids = pmpro_getOption( 'stripe_webhook_ids' );
-		
-		// Need to check in case its stored using the old option.
-		if ( empty( $webhook_ids ) ) {
-			$webhook_id = pmpro_getOption( 'stripe_webhook_id' );
-			if ( ! empty( $webhook_id ) ) {
-				// We store ids with the cooresponding secret key now.
-				// Assume this webhook is for the currently selected environment.
-				$secret_key = pmpro_getOption( 'stripe_secretkey' );
-				$webhook_ids = array( $secret_key => $webhook_id );
-				delete_option( 'pmpro_stripe_webhook_id' );
-				update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
-			}
-		}
-		
-		// If secret key is 'true', then load the current secret key.
-		if ( $secret_key === true ) {
-			$secret_key = pmpro_getOption( 'stripe_secretkey' );
-			
-			// No key, then there will be no webhook.
-			if ( empty( $secret_key ) ) {
-				return false;
-			}			
-		}
-		
-		// If a secret key was passed in, return just the id for that key.
-		if ( ! empty( $secret_key ) ) {
-			$secret_key_hash = wp_hash( $secret_key );
-			if ( isset( $webhook_ids[$secret_key_hash] ) ) {
-				return $webhook_ids[$secret_key_hash];
-			} else {
-				return false;
-			}
-		}
-		
-		if ( empty( $webhook_ids ) ) {
-			$webhook_ids = array();
-		}
-		
-		return $webhook_ids;
-	}
-	
-	/**
-	 * Update webhook ids.
-	 *
-	 * @since 2.4.1
-	 */
-	static function update_webhook_ids( $webhook_id, $secret_key = null ) {
-		if ( empty( $secret_key ) ) {
-			$secret_key = pmpro_getOption( 'stripe_secretkey' );
-		}
-		
-		if ( empty( $secret_key ) ) {
-			return false;
-		}
-		
-		// Hash the secret key so it's not left behind in the DB.
-		$secret_key_hash = wp_hash( $secret_key );
-		
-		$webhook_ids = self::get_webhook_ids();
-		
-		if ( ! empty( $webhook_id ) ) {
-			$webhook_ids[$secret_key_hash] = $webhook_id;
-		} else {
-			unset( $webhook_ids[$secret_key_hash] );
-		}
-		
-		update_option( 'pmpro_stripe_webhook_ids', $webhook_ids );
-		return true;
-	}
 
 	/**
 	 * Get available webhooks
@@ -674,7 +664,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function get_webhooks( $limit = 10 ) {		
 		if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
-			return false;			
+			// Load Stripe library.
+			new PMProGateway_stripe();
+			if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
+				// Couldn't load library.
+				return false;
+			}
 		}
 
 		try {
@@ -725,7 +720,6 @@ class PMProGateway_stripe extends PMProGateway {
 			]);
 
 			if ( $create ) {
-				self::update_webhook_ids( $create->id );
 				return $create->id;
 			}
 		} catch (\Throwable $th) {
@@ -743,10 +737,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 2.4
 	 */
-	static function does_webhook_exist() {
-		$saved_webhook = self::get_webhook_ids( true );
-		if ( $saved_webhook ) {
-			return $saved_webhook;
+	static function does_webhook_exist( $force = false ) {
+		static $cached_webhook = null;
+		if ( ! empty( $cached_webhook ) && ! $force ) {
+			return $cached_webhook;
 		}
 
 		$webhooks = self::get_webhooks();
@@ -759,6 +753,8 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( $webhook->url == $pmpro_webhook_url ) {
 					$webhook_id = $webhook->id;
 					$webhook_events = $webhook->enabled_events;
+					$webhook_api_version = $webhook->api_version;
+					$webhook_status = $webhook->status;
 					continue;
 				}
 			}
@@ -770,10 +766,13 @@ class PMProGateway_stripe extends PMProGateway {
 			$webhook_data = array();
 			$webhook_data['webhook_id'] = $webhook_id;
 			$webhook_data['enabled_events'] = $webhook_events;
-			return $webhook_data;
+			$webhook_data['api_version'] = $webhook_api_version;
+			$webhook_data['status'] = $webhook_status;
+			$cached_webhook = $webhook_data;
 		} else {
-			return false;
-		}	
+			$cached_webhook = false;
+		}
+		return $cached_webhook;
 	}
 
 	/**
@@ -785,20 +784,13 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Get required events
 		$pmpro_webhook_events = self::webhook_events();
-		$event_missing = false;
 
 		// No missing events if webhook event is "All Events" selected.
 		if ( is_array( $webhook_events ) && $webhook_events[0] === '*' ) {
 			return false;
 		} 
 
-		foreach( $pmpro_webhook_events as $event ) {
-			if ( ! in_array( $event, $webhook_events ) ) {
-				$event_missing = true;
-			}
-		}
-
-		if ( $event_missing ) {
+		if ( count( array_diff( $pmpro_webhook_events, $webhook_events ) ) ) {
 			$events = array_unique( array_merge( $pmpro_webhook_events, $webhook_events ) );
 			// Force reset of indexes for Stripe.
 			$events = array_values( $events );
@@ -818,7 +810,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Also checks database to see if it's been saved.
 		$webhook = self::does_webhook_exist();
-		
+
 		if ( empty( $webhook ) ) {
 			$create = self::create_webhook();
 			return $create;
@@ -840,7 +832,6 @@ class PMProGateway_stripe extends PMProGateway {
 				);
 	
 				if ( $update ) {
-					self:update_webhook_ids( $webhook['webhook_id'] );
 					return $update;
 				}
 			} catch (\Throwable $th) {
@@ -851,8 +842,6 @@ class PMProGateway_stripe extends PMProGateway {
 				return new WP_Error( 'error', $e->getMessage() );
 			}
 				
-		} else {
-			self::update_webhook_ids( $webhook['webhook_id'] );
 		}
 		
 	}
@@ -866,16 +855,16 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( empty( $secretkey ) ) {
 			$secretkey = pmpro_getOption( "stripe_secretkey" );
 		}
+		if ( is_array( $webhook_id ) ) {
+			$webhook_id = $webhook_id['webhook_id'];
+		}
 		
 		try {
 			$stripe = new Stripe_Client( $secretkey );
 			$delete = $stripe->webhookEndpoints->delete( $webhook_id, [] );
-			self::update_webhook_ids( '', $secretkey );
 		} catch (\Throwable $th) {
-			self::update_webhook_ids( '', $secretkey );
 			return new WP_Error( 'error', $th->getMessage() );
 		} catch (\Exception $e) {
-			self::update_webhook_ids( '', $secretkey );
 			return new WP_Error( 'error', $e->getMessage() );
 		}
 
