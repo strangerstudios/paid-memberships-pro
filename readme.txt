@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
 Tested up to: 5.5
-Stable tag: 2.4.4
+Stable tag: 2.5
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,35 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5 - 2020-10-02 =
+* FEATURE: When using the Stripe Gateway, you may now allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. Enable this feature from the payment settings page.
+* FEATURE: Added Divi Builder compatibility.
+* FEATURE: Updated the Braintree Gateway class to be able to use the Braintree API for the pmpro_next_payment() function. Note, for performance reasons, you must call this method directly or enable it by hooking it up with code like `add_filter('pmpro_next_payment', array('PMProGateway_braintree', 'pmpro_next_payment'), 10, 3);`
+* FEATURE: Added ordermeta tables and functions. We will wait about a year for all users to upgrade before using these widespread. (Thanks, Mirco Babini)
+* ENHANCEMENT: The "short" version of the level cost text for a free level is now "Free" instead of "0.00 now".
+* ENHANCEMENT: Added a `get_original_subscription_order` method to the MemberOrder class. This will return the first order in a subscription when called from a recurring order.
+* ENHANCEMENT: Removed the old style license nags.
+* BUG FIX/ENHANCEMENT: Using microtime and a static counter int to make sure our order and discount codes are unique. In the past very high traffic sites could run into duplicates if two checkouts happened at the exact same second.
+* BUG FIX/ENHANCEMENT: Adjust order delete prompt to support other locales.
+* BUG FIX/ENHANCEMENT: Better handling of tax amounts in recurring payments, e.g. when using the PMPro VAT Tax add on.
+* BUG FIX/ENHANCEMENT: Optimized how often we hit the Stripe API when events on the checkout page could potentially update the price of checkout.
+* BUG FIX/ENHANCEMENT: The checkout_levels api call now takes `level` as param.
+* BUG FIX/ENHANCEMENT: No longer running sanitize_text_field on password fields. This would break passwords that had strings of characters resembling html tags.
+* BUG FIX/ENHANCEMENT: Now warning admins if the Stripe billing period is longer than 1 year. Billing periods greater than 1 year are not allowed by Stripe.
+* BUG FIX/ENHANCEMENT: Now detecting when a Stripe webhook is set up for an older version of the Stripe API and showing a notice with a link to update.
+* BUG FIX/ENHANCEMENT: Adding MAXFAILEDPAYMENTS=1 to PayPal add subscription requests. This tells PayPal to cancel a subscription after the first failed payment. In our experience, the automatic retries rarely worked well. This change fixes issues with subscriptions going out of sync or users retaining access to your site when their payment has failed. Members still receive the payment failed email, which prompts users to return to the site to renew.
+* BUG FIX/ENHANCEMENT: Fixing some issues where we are adding extra break tags into the password reset email. There are still some issues like this when using certain plugins. We are working on a general fix.
+* BUG FIX: Fixed MMPU compatibility when using discount codes.
+* BUG FIX: No longer filtering the wp login url when on wp-login.php. This fixes issues with iThemes Security 2FA.
+* BUG FIX: Fixed issues where the Stripe webhook was not being updated sometimes when clicking the button to update.
+* BUG FIX: Fixed some notices and warnings when using Braintree.
+* BUG FIX: Now resetting memberslist page number when changing shown level.
+* BUG FIX: Now ensuring that the discount code field updates, update the Request Button price.
+* BUG FIX: Fixed issue where non-pretty permalinks may break frontend password resets.
+* BUG FIX: Fixed invoice links on the account page. (Thanks, Mateusz Hołtyn)
+* BUG FIX: Fixed incorrect label "for" attribute for uninstall setting.
+* BUG FIX: Fixed issue where some free plugins distributed by PMPro would show warnings about requiring a Plus license.
+
 = 2.4.4 - 2020-09-02 =
 * BUG FIX: Fixed fatal error that sometimes occurred on the payment settings page when using PHP 5.6 or earlier.
 * BUG FIX: Fixed fatal errors that showed up on the frontend invoice page.
