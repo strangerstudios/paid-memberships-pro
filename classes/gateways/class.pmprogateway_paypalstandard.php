@@ -372,7 +372,8 @@
 					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
 					'src'			=> '1',
 					'sra'			=> '1',
-					'bn'			=> PAYPAL_BN_CODE
+					'bn'			=> PAYPAL_BN_CODE,
+					'MAXFAILEDPAYMENTS' => 1
 				);
 
 				//trial?
