@@ -249,7 +249,7 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 				$pmpro_braintree_error = true;
 				return false;
 			}
-		} if ( $gateway == 'twocheckout' ) {
+		} elseif ( $gateway == 'twocheckout' ) {
 			if ( $discount_code_level->trial_amount > $discount_code_level->billing_amount ) {
 				global $pmpro_twocheckout_error;
 				$pmpro_twocheckout_error = true;
