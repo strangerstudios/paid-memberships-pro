@@ -9,6 +9,7 @@ use Stripe\SetupIntent as Stripe_SetupIntent;
 use Stripe\Source as Stripe_Source;
 use Stripe\PaymentMethod as Stripe_PaymentMethod;
 use Stripe\Subscription as Stripe_Subscription;
+use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 
@@ -198,6 +199,7 @@ class PMProGateway_stripe extends PMProGateway {
 			) );
 		}
 
+		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'clear_saved_subscriptions' ) );
 	}
 
@@ -259,7 +261,8 @@ class PMProGateway_stripe extends PMProGateway {
 			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards'
+			'accepted_credit_cards',
+			'stripe_payment_request_button',
 		);
 
 		return $options;
@@ -291,6 +294,7 @@ class PMProGateway_stripe extends PMProGateway {
 		
 			// Check if webhook is enabled or not.
 			$webhook = self::does_webhook_exist();
+			
 			// Check to see if events are missing.
 			if ( is_array( $webhook ) && isset( $webhook['enabled_events'] ) ) {
 				$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
@@ -388,6 +392,58 @@ class PMProGateway_stripe extends PMProGateway {
 					        <?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
                 </select>
 				<p class="description"><?php _e( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ); ?></p>
+            </td>
+        </tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+            <th scope="row" valign="top">
+				<label for="stripe_payment_request_button"><?php _e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>:</label>
+            </th>
+            <td>
+                <select id="stripe_payment_request_button" name="stripe_payment_request_button">
+                    <option value="0"
+					        <?php if ( empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+                    <option value="1"
+					        <?php if ( ! empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                </select>
+                <?php
+	                $allowed_stripe_payment_button_html = array (
+						'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+				?>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target="_blank" href="%s" title="More Information about the domain association file for Apple Pay">More Information &raquo;</a>', 'paid-memberships-pro' ), $allowed_stripe_payment_button_html ), 'https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay' ); ?></p>
+					<?php
+					if ( ! empty( $values['stripe_payment_request_button'] ) ) {
+						// Are there any issues with how the payment request button is set up?
+						$payment_request_error = null;
+						$allowed_payment_request_error_html = array (
+							'a' => array (
+								'href' => array(),
+								'target' => array(),
+								'title' => array(),
+							),
+						);
+						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
+							$payment_request_error = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
+						} elseif ( substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_live_" && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_test_" ) {
+							$payment_request_error = sprintf( wp_kses( __( 'It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "pk_live_" or "pk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your publishable key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
+						} elseif ( substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_live_" && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_test_" ) {
+							$payment_request_error = sprintf( wp_kses( __( 'It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "sk_live_" or "sk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your secret key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
+						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
+							$payment_request_error = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
+						}
+						if ( ! empty( $payment_request_error ) ) {
+							?>
+							<div class="notice error inline">
+								<p id="pmpro_stripe_payment_request_button_notice"><?php echo( $payment_request_error ); ?></p>
+							</div>
+							<?php
+						}
+					}
+					?>
             </td>
         </tr>
         <?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
@@ -596,6 +652,9 @@ class PMProGateway_stripe extends PMProGateway {
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
 					'pmpro_require_billing' => $pmpro_requirebilling,
+					'restUrl' => get_rest_url(),
+					'siteName' => get_bloginfo( 'name' ),
+					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
 				);
 
 				if ( ! empty( $order ) ) {
@@ -979,6 +1038,15 @@ class PMProGateway_stripe extends PMProGateway {
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
+		<?php
+			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) { ?>
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ); ?>">
+					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
+					<h4 class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ); ?>"><?php esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' ); ?></h4>
+				</div>
+				<?php
+			}
+		?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
 					<?php
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
@@ -1015,7 +1083,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php if ( $pmpro_show_discount_code ) { ?>
                         <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
                             <label for="discount_code"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-                            <input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>"
+                            <input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
@@ -3035,6 +3103,80 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 	}
+
+	/**
+ 	 * Get available Apple Pay domains.
+ 	 */
+	  function pmpro_get_apple_pay_domains( $limit = 10 ) {
+		try {
+			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
+		} catch (\Throwable $th) {
+			$apple_pay_domains = $th->getMessage();
+	   	}
+
+		return $apple_pay_domains;
+	}
+
+	/**
+ 	 * Register domain with Apple Pay.
+ 	 * 
+ 	 * @since 2.4
+ 	 */
+	function pmpro_create_apple_pay_domain() {
+		try {
+			$create = Stripe_ApplePayDomain::create([
+				'domain_name' => $_SERVER['HTTP_HOST'],
+			]);
+		} catch (\Throwable $th) {
+			//throw $th;
+			return $th->getMessage();
+		}
+
+	}
+
+	/**
+ 	 * See if domain is registered with Apple Pay.
+ 	 * 
+ 	 * @since 2.4
+ 	 */
+	function pmpro_does_apple_pay_domain_exist() {
+		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
+		if ( empty( $apple_pay_domains ) ) {
+			return false;
+		}
+
+		foreach( $apple_pay_domains as $apple_pay_domain ) {
+			if ( $apple_pay_domain->domain_name === $_SERVER['HTTP_HOST'] ) {
+				return true;
+			}
+		}
+		return false;
+   }
+
+	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
+		// Check that we just saved Stripe settings.
+		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
+			return;
+		}
+
+		// Check that payment request button is enabled.
+		if ( empty( $payment_option_values['stripe_payment_request_button'] ) ) {
+			// We don't want to unregister domain or remove file in case
+			// other plugins are using it.
+			return;	
+		}
+	
+		// Make sure that Apple Pay is set up.
+		// TODO: Apple Pay API functions don't seem to work with
+		//       test API keys. Need to figure this out.
+		$stripe = new PMProGateway_stripe();
+		if ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
+			// 1. Make sure domain association file available.
+			flush_rewrite_rules();
+			// 2. Register Domain with Apple.
+			$stripe->pmpro_create_apple_pay_domain();
+		}
+   }
 
 	function clean_up( &$order ) {
 		if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
