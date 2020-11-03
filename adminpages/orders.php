@@ -243,9 +243,15 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'tax', $read_only_fields ) && isset( $_POST['tax'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
-	if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-		$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+
+	// Hiding couponamount by default.
+	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+	if ( ! empty( $coupons ) ) {
+		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
+			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+		}
 	}
+
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -619,20 +625,27 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 					<?php } ?>
 				</td>
 			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="couponamount"><?php _e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
-					<?php
-					if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-						echo $order->couponamount;
-					} else {
-										?>
-											<input id="couponamount" name="couponamount" type="text" size="10"
-												   value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
+			<?php
+				// Hiding couponamount by default.
+				$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+				if ( ! empty( $coupons ) ) { ?>
+				<tr>
+					<th scope="row" valign="top"><label for="couponamount"><?php _e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
+					</th>
+					<td>
+						<?php
+						if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
+							echo $order->couponamount;
+						} else {
+											?>
+												<input id="couponamount" name="couponamount" type="text" size="10"
+													   value="<?php echo esc_attr( $order->couponamount ); ?>"/>
+						<?php } ?>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
 			<tr>
 				<th scope="row" valign="top"><label for="total"><?php _e( 'Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -644,8 +657,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 											<input id="total" name="total" type="text" size="10"
 												   value="<?php echo esc_attr( $order->total ); ?>"/>
 					<?php } ?>
-					<small
-						class="pmpro_lite"><?php _e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></small>
 				</td>
 			</tr>
 
