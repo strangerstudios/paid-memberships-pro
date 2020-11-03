@@ -290,6 +290,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_payment_option_fields( $values, $gateway ) {
 
+		$stripe = new PMProGateway_stripe();
+
 		if ( ! empty( $values['stripe_publishablekey'] ) && ! empty( $values['stripe_secretkey'] ) ) {
 		
 			// Check if webhook is enabled or not.
@@ -803,6 +805,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$webhooks = self::get_webhooks();
+		
 		$webhook_id = false;
 		if ( ! empty( $webhooks ) && ! empty( $webhooks['data'] ) ) {
 
@@ -3107,7 +3110,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
  	 * Get available Apple Pay domains.
  	 */
-	  function pmpro_get_apple_pay_domains( $limit = 10 ) {
+	function pmpro_get_apple_pay_domains( $limit = 10 ) {
 		try {
 			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
