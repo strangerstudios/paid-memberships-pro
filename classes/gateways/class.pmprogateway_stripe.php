@@ -361,13 +361,13 @@ class PMProGateway_stripe extends PMProGateway {
 							// Check webhook API version.
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#">Rebuild Webhook</a></p>
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php _e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div class="notice notice-success inline">
-								<p id="pmpro_stripe_webhook_notice">Your webhook is enabled. <a id="pmpro_stripe_delete_webhook" href="#">Disable Webhook</a></p>
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'Your webhook is enabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_delete_webhook" href="#"><?php _e( 'Disable Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						}
