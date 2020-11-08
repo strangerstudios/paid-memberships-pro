@@ -99,6 +99,14 @@
 		'TWD' => __('Taiwan New Dollars', 'paid-memberships-pro' ),
 		'THB' => __('Thai Baht', 'paid-memberships-pro' ),
 		'TRY' => __('Turkish Lira', 'paid-memberships-pro' ),
+		'UAH' => array(
+			'name' => __('Ukrainian Hryvnia (&#8372;)', 'paid-memberships-pro' ),
+			'decimals' => 0,
+			'thousands_separator' => '',
+			'decimal_separator' => ',',
+			'symbol' => '&#8372;',
+			'position' => 'right'
+			),
 		'VND' => array(
 			'name' => __('Vietnamese Dong', 'paid-memberships-pro' ),
 			'decimals' => 0,
