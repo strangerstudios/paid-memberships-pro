@@ -15,6 +15,8 @@ if ( ! defined( "ABSPATH" ) ) {
 global $wpdb, $gateway_environment, $logstr;
 $logstr = "";    //will put debug info here and write to ipnlog.txt
 
+define( 'PMPRO_DOING_WEBHOOK', 'paypal' );
+
 //validate?
 if ( ! pmpro_ipnValidate() ) {
 	//validation failed
@@ -123,8 +125,8 @@ if ( $txn_type == "subscr_payment" ) {
 			//Adjust gross for tax if provided
 			if( !empty($_POST['tax']) ) {
 				$amount = (float)$amount - (float)$_POST['tax'];
-			
-				//TODO: We should maybe update the order to reflect the tax amount and new total
+			} else {
+				$morder->tax = 0;
 			}
 			
 			if ( (float) $amount != (float) $morder->total ) {
@@ -173,10 +175,8 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 		//Adjust gross for tax if provided
 		if(!empty($_POST['tax']) ) {
 			$amount = (float)$amount - (float)$_POST['tax'];
-		
-			//TODO: We should maybe update the order to reflect the tax amount and new total
 		}
-				
+
 		if ( (float) $amount != (float) $morder->total ) {
 			ipnlog( "ERROR: PayPal transaction #" . $_POST['txn_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 		} else {

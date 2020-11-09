@@ -450,12 +450,17 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                        default:
 		                            break;
 		                    }
-		                    if (!empty($field['description'])) {
-		                        ?>
-		                        <p class="description"><?php echo esc_textarea( $field['description'] ); ?></p>
-		                    <?php
-		                    }
-		                    ?>
+							if ( ! empty( $field['description'] ) ) {
+								$allowed_pmpro_custom_advanced_settings_html = array (
+									'a' => array (
+										'href' => array(),
+										'target' => array(),
+										'title' => array(),
+									),
+								);
+								?>
+								<p class="description"><?php echo wp_kses( $field['description'], $allowed_pmpro_custom_advanced_settings_html ); ?></p>
+								<?php } ?>
 		                </td>
 		            </tr>
 		            <?php
@@ -464,7 +469,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		        ?>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="showexcerpts"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
+						<label for="uninstall"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="uninstall" name="uninstall">

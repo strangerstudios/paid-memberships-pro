@@ -815,11 +815,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				<td>
 					<?php
 					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->timestamp ) );
+						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
 					} else {
 						// set up date vars
 						if ( ! empty( $order->timestamp ) ) {
-							$timestamp = $order->timestamp;
+							$timestamp = $order->getTimestamp();
 						} else {
 							$timestamp = current_time( 'timestamp' );
 						}
@@ -1343,8 +1343,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								<a title="<?php esc_attr_e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => '-1', 'copy' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Copy', 'paid-memberships-pro' ); ?></a>
 							</span> |
 							<span class="delete">
-								<a href="javascript:pmpro_askfirst('<?php echo esc_attr
-								( sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
+							<?php $delete_prompt = sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ); ?>
+								<a href='javascript:pmpro_askfirst("<?php echo esc_attr
+								( $delete_prompt ) ?>", "admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>"); void(0);'><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
 							</span> |
 							<span class="print">
 								<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
@@ -1452,8 +1453,8 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					</td>
 					<td><?php echo esc_html( $order->status ); ?></td>
 					<td>
-						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?><br/>
-						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->timestamp ) ); ?>
+						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
+						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>
 					</td>
 					<td>
 						<?php if ( $order->getDiscountCode() ) { ?>

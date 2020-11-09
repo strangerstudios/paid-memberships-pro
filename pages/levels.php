@@ -50,11 +50,8 @@ if($pmpro_msg)
 	<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if($current_level == $level) { ?> active<?php } ?>">
 		<td><?php echo $current_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
 		<td>
-			<?php 
-				if(pmpro_isLevelFree($level))
-					$cost_text = "<strong>" . __("Free", 'paid-memberships-pro' ) . "</strong>";
-				else
-					$cost_text = pmpro_getLevelCost($level, true, true); 
+			<?php
+				$cost_text = pmpro_getLevelCost($level, true, true); 
 				$expiration_text = pmpro_getLevelExpiration($level);
 				if(!empty($cost_text) && !empty($expiration_text))
 					echo $cost_text . "<br />" . $expiration_text;

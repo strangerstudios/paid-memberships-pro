@@ -99,6 +99,12 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
+	// Don't filter when specifically on wp-login.php.
+	if ( $_SERVER['SCRIPT_NAME'] === '/wp-login.php' ) {
+		return $login_url;
+	}
+	
+	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
 	if ( ! empty ( $login_page_id ) ) {
 		$login_url = get_permalink( $login_page_id );
@@ -371,7 +377,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	}
 
 	if ( isset( $_GET['password'] ) ) {
-		switch( sanitize_text_field( $_GET['password'] ) ) {
+		switch( $_GET['password'] ) {
 			case 'changed':
 				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_success';
@@ -771,7 +777,11 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
+		$login_url = get_permalink( $login_page_id );
+		if ( strpos( $login_url, '?' ) ) {
+			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
+			$message = str_replace( site_url( 'wp-login.php' ) . '?', site_url( 'wp-login.php' ) . '&', $message );
+		}
 		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
 	}
 

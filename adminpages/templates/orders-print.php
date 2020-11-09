@@ -51,7 +51,7 @@
 				</tr>
 				<tr>
 					<td>
-						<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->timestamp ); ?>
+						<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ); ?>
 					</td>
 				</tr>
 			</table>
