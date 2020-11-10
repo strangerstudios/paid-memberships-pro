@@ -837,9 +837,15 @@
 			$count++;
 
 			while( empty( $code ) ) {
+				// create a unique scramble which uses a base-36 representation
 				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$scramble = base_convert( $scramble, 16, 36 );
+
+				// create the code stripping out the extra chars
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
+
+				// ensure the uniqueness
 				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
 				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
