@@ -107,7 +107,7 @@ jQuery( document ).ready( function( $ ) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					paymentRequest = stripe.paymentRequest({
 						country: 'US',
-						currency: 'usd',
+						currency: pmproStripe.currency,
 						total: {
 							label: pmproStripe.siteName,
 							amount: data.initial_payment * 100,

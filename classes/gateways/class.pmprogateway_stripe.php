@@ -638,7 +638,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
 
-		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages;
+		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages, $pmpro_currency;
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
@@ -657,6 +657,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'restUrl' => get_rest_url(),
 					'siteName' => get_bloginfo( 'name' ),
 					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
+					'currency' => strtolower( $pmpro_currency ),
 				);
 
 				if ( ! empty( $order ) ) {
