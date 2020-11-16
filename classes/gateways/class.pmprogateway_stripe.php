@@ -12,6 +12,7 @@ use Stripe\Subscription as Stripe_Subscription;
 use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
+use Stripe\Account as Stripe_Account;
 
 define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
 define( "PMPRO_STRIPE_CONNECT_ID", "ca_GiqGRrbKQgyPtBFPfjcTQ2RLEdE4u6F6" );
@@ -317,6 +318,9 @@ class PMProGateway_stripe extends PMProGateway {
 					self::update_webhook_events();
 				}
 			}
+
+			// Break the country cache in case new credentials were saved.
+			delete_transient( 'pmpro_stripe_account_country' );
 		}
 
 		?>
@@ -414,13 +418,13 @@ class PMProGateway_stripe extends PMProGateway {
 							// Check webhook API version.
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#">Rebuild Webhook</a></p>
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php _e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div class="notice notice-success inline">
-								<p id="pmpro_stripe_webhook_notice">Your webhook is enabled. <a id="pmpro_stripe_delete_webhook" href="#">Disable Webhook</a></p>
+								<p id="pmpro_stripe_webhook_notice"><?php _e( 'Your webhook is enabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_delete_webhook" href="#"><?php _e( 'Disable Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						}
@@ -692,7 +696,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 */
 	static function pmpro_checkout_after_preheader( $order ) {
-		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages;
+		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages, $pmpro_currency;
 
 		$default_gateway = pmpro_getOption( "gateway" );
 
@@ -711,6 +715,8 @@ class PMProGateway_stripe extends PMProGateway {
 					'restUrl' => get_rest_url(),
 					'siteName' => get_bloginfo( 'name' ),
 					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
+					'currency' => strtolower( $pmpro_currency ),
+					'accountCountry' => self::get_account_country(),
 				);
 
 				if ( ! empty( $order ) ) {
@@ -3237,6 +3243,37 @@ class PMProGateway_stripe extends PMProGateway {
 			$stripe->pmpro_create_apple_pay_domain();
 		}
    }
+
+   function get_account() {
+		try {
+			$account = Stripe_Account::retrieve();
+		} catch ( Stripe\Error\Base $e ) {
+			return false;
+		} catch ( \Throwable $e ) {
+			return false;
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
+		if ( empty( $account ) ) {
+			return false;
+		}
+
+		return $account;
+	}
+
+	static function get_account_country() {
+		$account_country = get_transient( 'pmpro_stripe_account_country' );
+		if ( empty( $account_country ) ) {
+			$stripe = new PMProGateway_stripe();
+			$account = $stripe->get_account();
+			if ( ! empty( $account ) && ! empty( $account->country ) ) {
+				$account_country = $account->country;
+				set_transient( 'pmpro_stripe_account_country', $account_country );
+			}
+		}
+		return $account_country ?: 'US';
+	}
 
 	function clean_up( &$order ) {
 		if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {

@@ -171,6 +171,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Now detecting when a Stripe webhook is set up for an older version of the Stripe API and showing a notice with a link to update.
 * BUG FIX/ENHANCEMENT: Adding MAXFAILEDPAYMENTS=1 to PayPal add subscription requests. This tells PayPal to cancel a subscription after the first failed payment. In our experience, the automatic retries rarely worked well. This change fixes issues with subscriptions going out of sync or users retaining access to your site when their payment has failed. Members still receive the payment failed email, which prompts users to return to the site to renew.
 * BUG FIX/ENHANCEMENT: Fixing some issues where we are adding extra break tags into the password reset email. There are still some issues like this when using certain plugins. We are working on a general fix.
+* BUG FIX/ENHANCEMENT: Removed the "coupon amount" field from the edit order page. These were hold outs from the 2007! ecommerce plugin PMPro was forked from. You can set the pmpro_orders_show_coupon_amounts filter to __return_true to show these fields again if you were using them for tracking things in your custom code.
 * BUG FIX: Fixed MMPU compatibility when using discount codes.
 * BUG FIX: No longer filtering the wp login url when on wp-login.php. This fixes issues with iThemes Security 2FA.
 * BUG FIX: Fixed issues where the Stripe webhook was not being updated sometimes when clicking the button to update.
