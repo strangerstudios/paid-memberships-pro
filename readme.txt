@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.5
-Stable tag: 2.5
+Tested up to: 5.5.3
+Stable tag: 2.5.1
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,15 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.1 - 2020-10-16 =
+* SECURITY: Fixed XSS vulnerability on the Members List page of the dashboard. (Thanks, Ron Masas from Checkmarx.com)
+* ENHANCEMENT: Add Ukrainian Hryvnia currency. (Thanks, Mirco Babini)
+* ENHANCEMENT: Added a "non-members" option to the Beaver Build module.
+* BUG FIX: Fixed issue where only USD and US were allowed with Stripe's GooglePay/ApplePay buttons.
+* BUG FIX: Fixed issue where some profile fields, e.g. those added with Register Helper, were accidentally updated or removed when accessing the frontend profile page.
+* BUG FIX: Fixed issue with tracking discount code uses when using the 2Checkout gateway. (Thanks, karambk on GitHub)
+* BUG FIX: No longer running excerpts through wpautop when a more tag is used.
+
 = 2.5 - 2020-10-02 =
 * FEATURE: When using the Stripe Gateway, you may now allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. Enable this feature from the payment settings page.
 * FEATURE: Added Divi Builder compatibility.
