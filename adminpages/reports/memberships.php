@@ -120,7 +120,7 @@ function pmpro_report_memberships_widget() {
 		jQuery('.pmpro_report_th ').click(function(event) {
 			//prevent form submit onclick
 			event.preventDefault();
-			 
+
 			//toggle sub rows
 			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
 
@@ -197,7 +197,7 @@ function pmpro_report_memberships_page()
 	}
 	elseif($period == "annual")
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'YEAR';
 	}
@@ -207,8 +207,8 @@ function pmpro_report_memberships_page()
 
 	//get data
 	if (
-		$type === "signup_v_cancel" || 
-		$type === "signup_v_expiration" || 
+		$type === "signup_v_cancel" ||
+		$type === "signup_v_expiration" ||
 		$type === "signup_v_all"
 	) {
 		$sqlQuery = "SELECT $date_function(mu.startdate) as date, COUNT(DISTINCT mu.user_id) as signups
@@ -521,7 +521,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	elseif( $period == 'this year')
 		$startdate = date_i18n( 'Y' ) . '-01-01';
 	else
-		$startdate = '';
+		$startdate = '1970-01-01';
 
 
 	//build query
@@ -693,8 +693,9 @@ function pmpro_report_memberships_delete_transients()
 	delete_transient("pmpro_report_memberships_cancellations");
 	delete_transient("pmpro_report_memberships_signups");
 }
-add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_change_membership_level", "pmpro_report_memberships_delete_transients");
 
 
 /**

@@ -134,15 +134,12 @@
 				$this->gateway_environment = $dbobj->gateway_environment;
 				$this->payment_transaction_id = $dbobj->payment_transaction_id;
 				$this->subscription_transaction_id = $dbobj->subscription_transaction_id;
-				$this->timestamp = $dbobj->timestamp;
+				$this->timestamp = strtotime( $dbobj->timestamp );
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
-
-				// Fix the timestamp for local time
-				$this->timestamp = strtotime( get_date_from_gmt( $this->timestamp, 'Y-m-d H:i:s' ) );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -152,6 +149,68 @@
 			}
 			else
 				return false;	//didn't find it in the DB
+		}
+
+		/**
+		 * Get the first order for this subscription.
+		 * Useful to find the original order from a recurring order.
+		 * @since 2.5
+		 * @return mixed Order object if found or false if not.
+		 */
+		function get_original_subscription_order( $subscription_id = '' ){
+			global $wpdb;
+			
+			// Default to use the subscription ID on this order object.
+			if ( empty( $subscription_id ) && ! empty( $this->subscription_transaction_id ) ) {
+				$subscription_id = $this->subscription_transaction_id;
+			}
+			
+			// Must have a subscription ID.
+			if ( empty( $subscription_id ) ) {
+				return false;
+			}
+			
+			// Get some other values from this order to narrow the search.
+			if ( ! empty( $this->user_id ) ) {
+				$user_id = $this->user_id;
+			} else {
+				$user_id = '';
+			}
+			if ( ! empty( $this->gateway ) ) {
+				$gateway = $this->gateway;
+			} else {
+				$gateway = '';
+			}
+			if ( ! empty( $this->gateway_environment ) ) {
+				$gateway_environment = $this->gateway_environment;
+			} else {
+				$gateway_environment = '';
+			}
+			
+			// Double check for a user_id, gateway and gateway environment.
+			$sql = $wpdb->prepare(
+				"SELECT ID
+				 FROM $wpdb->pmpro_membership_orders
+				 WHERE `subscription_transaction_id` = %s
+				   AND `user_id` = %d
+				   AND `gateway` = %s
+				   AND `gateway_environment` = %s
+				 ORDER BY id ASC
+				 LIMIT 1",
+				 array(
+					 $subscription_id,
+					 $user_id,
+					 $gateway,
+					 $gateway_environment
+				 )
+			 );
+			
+			$order_id = $wpdb->get_var( $sql );
+			if ( ! empty( $order_id ) ) {
+				return new MemberOrder( $order_id );
+			} else {
+				return false;
+			}
 		}
 
 		/**
@@ -398,7 +457,7 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
@@ -526,6 +585,16 @@
 		}
 
 		/**
+		 * Get the timestamp for this order.
+		 *
+		 * @param bool $gmt whether to return GMT time or local timestamp.
+		 * @return int timestamp.
+		 */
+		function getTimestamp( $gmt = false ) {
+			return $gmt ? $this->timestamp : strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $this->timestamp ) ) );
+		}
+
+		/**
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
@@ -545,10 +614,12 @@
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
 
-			if($wpdb->query($this->sqlQuery) !== "false")
+			if($wpdb->query($this->sqlQuery) !== "false") {
+				$this->timestamp = strtotime( $date );
 				return $this->getMemberOrderByID($this->id);
-			else
+			} else {
 				return false;
+			}
 		}
 
 		/**
@@ -758,22 +829,24 @@
 		/**
 		 * Get a random code to use as the order code.
 		 */
-		function getRandomCode()
-		{
+		function getRandomCode() {
 			global $wpdb;
 
-			while(empty($code))
-			{
+			// We mix this with the seed to make sure we get unique codes.
+			static $count = 0;
+			$count++;
 
-				$scramble = md5(AUTH_KEY . current_time('timestamp') . SECURE_AUTH_KEY);
-				$code = substr($scramble, 0, 10);
-				$code = apply_filters("pmpro_random_code", $code, $this);	//filter
-				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");
-				if($check || is_numeric($code))
+			while( empty( $code ) ) {
+				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$code = substr( $scramble, 0, 10 );
+				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
+				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
+				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
+				}
 			}
 
-			return strtoupper($code);
+			return strtoupper( $code );
 		}
 
 		/**
@@ -925,6 +998,10 @@
 		 * @since  1.9.5
 		 */
 		function get_tos_consent_log_entry() {
+			if ( empty( $this->id ) ) {
+				return false;
+			}
+			
 			$consent_log = pmpro_get_consent_log( $this->user_id );
 			foreach( $consent_log as $entry ) {
 				if( $entry['order_id'] == $this->id ) {

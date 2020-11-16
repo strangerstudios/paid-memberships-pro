@@ -99,7 +99,7 @@
 			$ml_expiration_number = $ml_expiration_period = 0;
 		}
 
-		$wpdb->replace(
+		pmpro_insert_or_replace(
 			$wpdb->pmpro_membership_levels,
 			array(
 				'id'=>max($saveid, 0),
@@ -446,7 +446,9 @@
 							<?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro' );?>
 							<?php if($gateway == "braintree") { ?>
 								<strong <?php if(!empty($pmpro_braintree_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'paid-memberships-pro' );?></strong>
-							<?php } ?>
+							<?php } elseif($gateway == "stripe") { ?>
+								<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration does not allow billing periods longer than 1 year.', 'paid-memberships-pro' );?></strong></p>
+							<?php }?>
 						</p>
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
 							<p class="pmpro_message"><strong><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' );?></p>

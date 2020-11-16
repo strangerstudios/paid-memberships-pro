@@ -20,9 +20,14 @@ if ( ! defined( "ABSPATH" ) ) {
 //globals
 global $wpdb;
 
+define( 'PMPRO_DOING_WEBHOOK', 'braintree' );
+
 // Debug log
 global $logstr;
 $logstr = array( "Logged On: " . date_i18n( "m/d/Y H:i:s", current_time( 'timestamp' ) ) );
+$logstr[] = "\nREQUEST:";
+$logstr[] = var_export( $_REQUEST, true );
+$logstr[] = "\n";
 
 // Don't run this with wrong PHP version
 if ( version_compare( PHP_VERSION, '5.4.45', '<' ) ) {
@@ -55,6 +60,10 @@ try {
 	 * since using sanitize_text_field() breaks Braintree parser
 	 */
 	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+	
+	$logstr[] = "\webhookNotification:";
+	$logstr[] = var_export( $webhookNotification, true );
+	$logstr[] = "\n";
 } catch ( Exception $e ) {
 	$logstr[] = "Couldn't extract notification from payload: {$_REQUEST['bt_payload']}";
 	$logstr[] = "Error message: " . $e->getMessage();
@@ -116,6 +125,9 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//data about this transaction
 	$transaction = $webhookNotification->subscription->transactions[0];
 
+	//log it for debug email
+	$logstr[] = var_export( $transaction );
+
 	//alright. create a new order/invoice
 	$morder                              = new \MemberOrder();
 	$morder->user_id                     = $old_order->user_id;
@@ -124,6 +136,9 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->PaymentAmount               = $transaction->amount;
 	$morder->payment_transaction_id      = $transaction->id;
 	$morder->subscription_transaction_id = $webhookNotification->subscription->id;
+
+	//Assume no tax for now. Add ons will handle it later.
+	$morder->tax = 0;
 	
 	$morder->gateway             = $old_order->gateway;
 	$morder->gateway_environment = $old_order->gateway_environment;

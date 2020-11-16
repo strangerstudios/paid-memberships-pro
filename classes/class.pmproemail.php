@@ -212,12 +212,12 @@
 				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
 
 				//start and end date
-				$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(startdate) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 				if(!empty($startdate))
 					$this->data['startdate'] = date_i18n(get_option('date_format'), $startdate);
 				else
 					$this->data['startdate'] = "";
-				$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
 				if(!empty($enddate))
 					$this->data['enddate'] = date_i18n(get_option('date_format'), $enddate);
 				else
@@ -288,7 +288,7 @@
 
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -333,7 +333,7 @@
 					$this->data["discount_code"] = "";	
 			}
 			
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
@@ -388,7 +388,7 @@
 
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -429,7 +429,7 @@
 				$this->data["discount_code"] = "";
 			}			
 			
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
@@ -711,7 +711,7 @@
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->code,
 								"invoice_total" => pmpro_formatPrice($invoice->total),
-								"invoice_date" => date_i18n(get_option('date_format'), $invoice->timestamp),
+								"invoice_date" => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
 								"billing_name" => $invoice->billing->name,
 								"billing_street" => $invoice->billing->street,
 								"billing_city" => $invoice->billing->city,
@@ -744,7 +744,7 @@
 				$this->data["discount_code"] = "";
 			}
 		
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(enddate) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
@@ -766,7 +766,7 @@
 				return false;
 			
 			//make sure we have the current membership level data
-			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(mu.startdate) as startdate, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.trial_amount, mu.trial_limit
+			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.trial_amount, mu.trial_limit
 														FROM {$wpdb->pmpro_membership_levels} AS l
 														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 														WHERE mu.user_id = " . $user->ID . "
@@ -829,7 +829,7 @@
 				return false;
 			
 			//make sure we have the current membership level data
-			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(mu.enddate) as enddate
+			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate
 														FROM {$wpdb->pmpro_membership_levels} AS l
 														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 														WHERE mu.user_id = " . $user->ID . "

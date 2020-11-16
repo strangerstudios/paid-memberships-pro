@@ -39,6 +39,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
 }
 pmpro_setDBTables();
 
@@ -378,7 +379,11 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	if ( ! $short ) {
 		$r = sprintf( __( 'The price for membership is <strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
 	} else {
-		$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+		if ( pmpro_isLevelFree( $level ) ) {
+			$r = '<strong>' . __('Free', 'paid-memberships-pro' ) . '</strong>';
+		} else {
+			$r = sprintf( __( '<strong>%s</strong> now', 'paid-memberships-pro' ), pmpro_formatPrice( $level->initial_payment ) );
+		}
 	}
 
 	// recurring part
@@ -640,6 +645,25 @@ function delete_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value =
 	return delete_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value );
 }
 
+/**
+ * pmpro_membership_order Meta Functions
+ */
+function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $unique = false ) {
+	return add_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $unique );
+}
+
+function get_pmpro_membership_order_meta( $order_id, $key, $single = false ) {
+	return get_metadata( 'pmpro_membership_order', $order_id, $key, $single );
+}
+
+function update_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $prev_value );
+}
+
+function delete_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value = '' ) {
+	return delete_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value );
+}
+
 function pmpro_hideAds() {
 	global $pmpro_display_ads;
 	return ! $pmpro_display_ads;
@@ -668,7 +692,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 
 		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
 			// next payment date
-			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->timestamp );
+			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->getTimestamp() );
 
 			$r = $nextdate;
 		} else {
@@ -1325,7 +1349,7 @@ function pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values, $prev_values
 	}
 
 	for ( $i = 0; $i < count( $meta_values ); $i++ ) {
-		if ( $prev_values[ $i ] ) {
+		if ( isset( $prev_values[ $i ] ) ) {
 			update_user_meta( $user_id, $meta_keys[ $i ], $meta_values[ $i ], $prev_values[ $i ] );
 		} else {
 			$old_value = get_user_meta( $user_id, $meta_keys[ $i ], true );
@@ -1604,9 +1628,13 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 // get a new random code for discount codes
 function pmpro_getDiscountCode( $seed = null ) {
 	global $wpdb;
-
+	
+	// We mix this with the seed to make sure we get unique codes.
+	static $count = 0;
+	$count++;
+	
 	while ( empty( $code ) ) {
-		$scramble = md5( AUTH_KEY . current_time( 'timestamp' ) . $seed . SECURE_AUTH_KEY );
+		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
 		$code = substr( $scramble, 0, 10 );
 		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
 		if ( $check || is_numeric( $code ) ) {
@@ -1631,7 +1659,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 	// get code from db
 	if ( ! $error ) {
-		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(starts) as starts, UNIX_TIMESTAMP(expires) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
+		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
@@ -1697,7 +1725,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	 *
 	 * @param bool $okay true if code check is okay or false if there was an error
 	 * @param object $dbcode Object containing code data from the database row
-	 * @param int $level_id ID of the level the user is checking out for.
+	 * @param int|array $level_id ID of the level the user is checking out for.
 	 * @param string $code Discount code string.
 	 *
 	 * @return mixed $okay true if okay, false or error message string if not okay
@@ -1787,7 +1815,66 @@ function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
 
 	return $separator;
-} 
+}
+
+/**
+ * pmpro_get_no_access_message to return the appropriate content message for the protected content.
+ *
+ * @param array $level_ids The array of level IDs this post is protected for.
+ * @param array $level_names The array of names for the levels this post is protected for.
+ *
+ * @return string $content The appropriate content message for the given user/visitor and required levels.
+ *
+ */
+function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL ) {
+	global $current_user;
+
+	if ( empty( $level_ids ) ) {
+		$level_ids = array();
+	}
+
+	if ( empty( $level_names ) ) {
+		$level_names = array();
+		foreach ( $level_ids as $key => $id ) {
+			$level_obj = pmpro_getLevel( $id );
+			$level_names[] = $level_obj->name;
+		}
+	}
+
+	// Hide levels which don't allow signups by default.
+	if( ! apply_filters( 'pmpro_membership_content_filter_disallowed_levels', false, $level_ids, $level_names ) ) {
+		foreach ( $level_ids as $key => $id ) {
+			// Does this level allow registrations?
+			$level_obj = pmpro_getLevel( $id );
+			if ( empty( $level_obj ) || empty( $level_obj->allow_signups ) ) {
+				unset( $level_ids[$key] );
+				unset( $level_names[$key] );
+			}
+		}
+	}
+
+	$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
+	$pmpro_content_message_post = '</div>';
+
+	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
+	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( $_SERVER['REQUEST_URI'] ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
+
+	// Get the correct message to show at the bottom.
+	if ( is_feed() ) {
+		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( pmpro_getOption( 'rsstext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	} elseif ( $current_user->ID ) {
+		//not a member
+		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( pmpro_getOption( 'nonmembertext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	} else {
+		//not logged in!
+		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( pmpro_getOption( 'notloggedintext' ) ) );
+		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+	}
+
+	return $content;
+}
 
 /*
  pmpro_getMembershipLevelForUser() returns the first active membership level for a user
@@ -1836,8 +1923,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
+				UNIX_TIMESTAMP( CONVERT_TZ(enddate, '+00:00', @@global.time_zone) ) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id AND mu.status = 'active'
@@ -1932,8 +2019,8 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(startdate) as startdate,
-				UNIX_TIMESTAMP(enddate) as enddate
+				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
@@ -2168,9 +2255,14 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
 
 		// check code
-		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		global $pmpro_checkout_level_ids; // Set by MMPU.
+		if ( isset( $pmpro_checkout_level_ids ) ) {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+		} else {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
+		}
 		if ( $code_check[0] != false ) {
-			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
 
 			// if the discount code doesn't adjust the level, let's just get the straight level
@@ -2300,9 +2392,9 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			}
 
 			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
@@ -2364,21 +2456,68 @@ function pmpro_showMessage() {
 
 	if ( ! empty( $pmpro_msg ) ) {
 		?>
-		<div class="<?php echo $pmpro_msgt; ?>">
+		<div class="<?php echo pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<p><?php echo $pmpro_msg; ?></p>
 		</div>
 		<?php
 	}
 }
 
-// used in class definitions for input fields to see if there was an error
-function pmpro_getClassForField( $field ) {
+/**
+ * Return all CSS class names for the specified element and allow custom class names to be used via filter.
+ *
+ * @since 2.3.4
+ *
+ * @param  mixed  $class A string or array of element class names.
+ * @param  string $element The element to return class names for.
+ *
+ * @return string $class A string of class names separated by spaces.
+ *
+ */
+function pmpro_get_element_class( $class, $element = null ) {
+	if ( empty( $element ) ) {
+		$element = $class;
+	}
+
+	// Convert class values to an array.
+	if ( ! is_array( $class ) ) {
+		$class = explode( ' ', trim( $class ) );
+	}
+
+	// Escape elements of the array of class names.
+	$class = array_map( 'esc_attr', $class );
+
+	/**
+	 * Filters the list of CSS class names for the current element.
+	 *
+	 * @since 2.3.4
+	 *
+	 * @param array  $class An array of element class names.
+	 * @param string  $element The element to return class names for.
+	 */
+	$class = apply_filters( 'pmpro_element_class', $class, $element );
+
+	if ( ! empty( $class ) ) {
+		$class = array_unique( $class );
+		return implode( ' ', $class );
+	} else {
+		return '';
+	}
+}
+
+/**
+ * Return field state-specific CSS class names for the field.
+ *
+ * @since 2.3.4
+ *
+ * Callback for the pmpro_element_class filter.
+ */
+function pmpro_get_field_class( $class, $element ) {
 	global $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields;
-	$classes = array();
 
 	// error on this field?
-	if ( ! empty( $pmpro_error_fields ) && in_array( $field, $pmpro_error_fields ) ) {
-		$classes[] = 'pmpro_error';
+	if ( ! empty( $pmpro_error_fields ) && in_array( $element, $pmpro_error_fields ) ) {
+		$class[] = 'pmpro_error';
 	}
 
 	if ( is_array( $pmpro_required_billing_fields ) && is_array( $pmpro_required_user_fields ) ) {
@@ -2392,18 +2531,16 @@ function pmpro_getClassForField( $field ) {
 	}
 
 	// required?
-	if ( in_array( $field, $required_fields ) ) {
-		$classes[] = 'pmpro_required';
+	if ( in_array( $element, $required_fields ) ) {
+		$class[] = 'pmpro_required';
 	}
 
-	$classes = apply_filters( 'pmpro_field_classes', $classes, $field );
+	// DEPRECATED: Use pmpro_element_class to filter classes instead.
+	$class = apply_filters( 'pmpro_field_classes', $class, $element );
 
-	if ( ! empty( $classes ) ) {
-		return implode( ' ', $classes );
-	} else {
-		return '';
-	}
+	return $class;
 }
+add_filter( 'pmpro_element_class', 'pmpro_get_field_class', 10, 2 );
 
 // get a var from $_GET or $_POST
 function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_function = 'sanitize_text_field' ) {
@@ -3259,4 +3396,50 @@ function pmpro_int_compare( $a, $b, $operator ) {
 	}
 	
 	return $r;
+}
+
+/**
+ * Wrapper for $wpdb to insert or replace
+ * based on the value of the primary key field.
+ * Using this since using REPLACE on some setups
+ * results in unexpected behavior.
+ *
+ * @since 2.4
+ */
+function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) {
+	global $wpdb;
+	
+	if ( empty( $data[$primary_key] ) ) {
+		// Insert. Remove keys first.
+		$index = array_search( $primary_key, array_keys( $data ) );
+		if ( $index !== false ) {
+			unset( $data[$primary_key] );
+			unset( $format[$index] );
+		}
+		return $wpdb->insert( $table, $data, $format );
+	} else {
+		// Replace.
+		return $wpdb->replace( $table, $data, $format );
+	}
+}
+
+/**
+ * Checks if a webhook is running
+ */
+function pmpro_doing_webhook( $gateway = null ){
+
+	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
+		if( $gateway !== null ){
+			if( PMPRO_DOING_WEBHOOK == $gateway ){
+				return true;
+			} else {
+				return false;	
+			}
+		} else {
+			return true;
+		}
+	} else {
+		return false;
+	}
+	
 }

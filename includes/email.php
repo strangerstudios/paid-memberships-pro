@@ -156,7 +156,7 @@ function pmpro_retrieve_password_message( $message ) {
 	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {		
 		$message = make_clickable( $message );
 		
-		if ( strpos( '<br />', $message ) === false ) {
+		if ( strpos( '<br', strtolower( $message ) ) === false ) {
 			$message = nl2br( $message );
 		}		
 	}	

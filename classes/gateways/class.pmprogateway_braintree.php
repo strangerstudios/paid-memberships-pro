@@ -449,35 +449,35 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			//include ours
 			?>
-			<div id="pmpro_payment_information_fields" class="pmpro_checkout" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
+			<div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
 				<h3>
-					<span class="pmpro_checkout-h3-name"><?php _e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="pmpro_checkout-h3-msg"><?php printf(__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
+					<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e('Payment Information', 'paid-memberships-pro' );?></span>
+				<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf(__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
 				</h3>
 				<?php $sslseal = pmpro_getOption("sslseal"); ?>
 				<?php if(!empty($sslseal)) { ?>
-					<div class="pmpro_checkout-fields-display-seal">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
 				<?php } ?>
-				<div class="pmpro_checkout-fields">
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
 					<?php
 						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
 						if($pmpro_include_cardtype_field) { ?>
-						<div class="pmpro_checkout-field pmpro_payment-card-type">
+						<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ); ?>">
 							<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
-							<select id="CardType" name="CardType" class=" <?php echo pmpro_getClassForField("CardType");?>">
+							<select id="CardType" name="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
 								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 									<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 								<?php } ?>
 							</select>
 						</div>
 					<?php } ?>
-					<div class="pmpro_checkout-field pmpro_payment-account-number">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
 						<label for="AccountNumber"><?php _e('Card Number', 'paid-memberships-pro' );?></label>
-						<input id="AccountNumber" name="AccountNumber" class="input <?php echo pmpro_getClassForField("AccountNumber");?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
+						<input id="AccountNumber" name="AccountNumber" class="<?php echo pmpro_get_element_class( 'input', 'AccountNumber' ); ?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
 					</div>
-					<div class="pmpro_checkout-field pmpro_payment-expiration">
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ); ?>">
 						<label for="ExpirationMonth"><?php _e('Expiration Date', 'paid-memberships-pro' );?></label>
-						<select id="ExpirationMonth" name="ExpirationMonth" class=" <?php echo pmpro_getClassForField("ExpirationMonth");?>">
+						<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo pmpro_get_element_class( 'ExpirationMonth' ); ?>">
 							<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
 							<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
 							<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
@@ -490,7 +490,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 							<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
 							<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
 							<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-						</select>/<select id="ExpirationYear" name="ExpirationYear" class=" <?php echo pmpro_getClassForField("ExpirationYear");?>">
+						</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo pmpro_get_element_class( 'ExpirationYear' ); ?>">
 							<?php for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++) { ?>
 								<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
 							<?php } ?>
@@ -499,22 +499,22 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					<?php
 						$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 						if($pmpro_show_cvv) { ?>
-							<div class="pmpro_checkout-field pmpro_payment-cvv">
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
 								<label for="CVV"><?php _e('CVV', 'paid-memberships-pro' );?></label>
-								<input class="input" id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class=" <?php echo pmpro_getClassForField("CVV");?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+								<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV' ); ?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php _e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 							</div>
 					<?php } ?>
 					<?php if($pmpro_show_discount_code) { ?>
-						<div class="pmpro_checkout-field pmpro_payment-discount-code">
+						<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
 							<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-							<input class="input <?php echo pmpro_getClassForField("discount_code");?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
+							<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
 							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
-							<p id="discount_code_message" class="pmpro_message" style="display: none;"></p>
+							<p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
 						</div>
 					<?php } ?>
 				</div> <!-- end pmpro_checkout-fields -->
 				<?php if(!empty($sslseal)) { ?>
-					<div class="pmpro_checkout-fields-rightcol pmpro_sslseal"><?php echo stripslashes($sslseal); ?></div>
+					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ); ?>"><?php echo stripslashes($sslseal); ?></div>
 				</div> <!-- end pmpro_checkout-fields-display-seal -->
 				<?php } ?>
 			</div> <!-- end pmpro_payment_information_fields -->
@@ -990,18 +990,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			
 				try {
 					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
+					    // Return, we're already processing the cancellation
+					    return true;
+		            }
 				} catch ( \Exception $e ) {
 				    // Don't do anything
 				}
 			}
 			
 			// Always cancel, even if Braintree fails
-			$order->updateStatus("cancelled" );
-			
-			if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
-			    // Return, we're already processing the cancellation
-			    return true;
-            }
+			$order->updateStatus("cancelled" );			
             
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
@@ -1070,5 +1069,45 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			* @param int $level_id the level id to make a plan id for
 			*/
 			return apply_filters( 'pmpro_braintree_plan_id', 'pmpro_' . $level_id, $level_id );
+	}
+
+	function get_subscription( &$order ) {
+		// Does order have a subscription?
+		if ( empty( $order ) || empty( $order->subscription_transaction_id ) ) {
+			return false;
+		}
+
+		try {
+			$subscription = Braintree_Subscription::find( $order->subscription_transaction_id );
+		} catch ( Exception $e ) {
+			$order->error      = __( "Error getting subscription with Braintree:", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		return $subscription;
+	}
+
+	/**
+	 * Filter pmpro_next_payment to get date via API if possible
+	 */
+	static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
+		// Check that we have a user ID...
+		if ( ! empty( $user_id ) ) {
+			// Get last order...
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user_id, $order_status );
+
+			// Check if this is a Braintree order with a subscription transaction id...
+			if ( ! empty( $order->id ) && ! empty( $order->subscription_transaction_id ) && $order->gateway == "braintree" ) {
+				// Get the subscription and return the next billing date.
+				$subscription = $order->Gateway->get_subscription( $order );
+				if ( ! empty( $subscription ) ) {
+					$timestamp = $subscription->nextBillingDate->getTimestamp();
+				}
+			}
+		}
+
+		return $timestamp;
 	}
 }

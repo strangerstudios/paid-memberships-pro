@@ -46,7 +46,7 @@
 				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
-			
+
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
@@ -236,7 +236,7 @@
 
 			return $fields;
 		}
-		
+
 		/**
 		 * Code added to checkout preheader.
 		 *
@@ -273,7 +273,7 @@
 				else
 					$username = "";
 				if(isset($_REQUEST['password']))
-					$password = sanitize_text_field($_REQUEST['password']);
+					$password = $_REQUEST['password'];
 				else
 					$password = "";
 				if(isset($_REQUEST['bemail']))
@@ -434,7 +434,7 @@
 		 * Repurposed in v2.0. The old process() method is now confirm().
 		 */
 		function process(&$order)
-		{	
+		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
@@ -473,12 +473,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="pmpro_btn-submit-checkout" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -614,6 +614,7 @@
 				$order->status = "review";
 
 				//update order
+
 				$order->saveOrder();
 
 				return true;
@@ -728,8 +729,12 @@
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
+			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
+			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
+
 			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
+			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
 
 			///echo str_replace("&", "&<br />", $nvpStr);
@@ -760,15 +765,20 @@
 			// Always cancel the order locally even if PayPal might fail
 			$order->updateStatus("cancelled");
 
-			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.			
+			// If we're processing an IPN request for this subscription, it's already cancelled at PayPal.
 			if ( ( ! empty( $_POST['subscr_id'] ) && $_POST['subscr_id'] == $order->subscription_transaction_id ) ||
 				 ( ! empty( $_POST['recurring_payment_id'] ) && $_POST['recurring_payment_id'] == $order->subscription_transaction_id ) ) {
 				// recurring_payment_failed transaction still need to be cancelled
 				if ( $_POST['txn_type'] !== 'recurring_payment_failed' ) {
-					return true;	
+					return true;
 				}
 			}
 
+			// Cancel at gateway
+			return $this->cancelSubscriptionAtGateway($order);
+		}
+
+		function cancelSubscriptionAtGateway(&$order) {
 			// Build the nvp string for PayPal API
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode($order->subscription_transaction_id) . "&ACTION=Cancel&NOTE=" . urlencode("User requested cancel.");
@@ -813,6 +823,99 @@
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
+				return false;
+			}
+		}
+		
+		function getTransactionStatus(&$order) {
+			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
+			if( false === $transaction_details ){
+				return false;
+			}
+
+			if( ! isset( $transaction_details['PAYMENTSTATUS'] ) ){
+				return false;
+			}
+
+			return $transaction_details['PAYMENTSTATUS'];
+		}
+
+		function getTransactionDetailsByOrder(&$order)
+		{
+			if(empty($order->payment_transaction_id))
+				return false;
+
+			if( $order->payment_transaction_id == $order->subscription_transaction_id ){
+				/** Initial payment **/
+				$nvpStr = "";
+				// STARTDATE is Required, even if useless here. Start from 24h before the order timestamp, to avoid timezone related issues.
+				$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->getTimestamp() - DAY_IN_SECONDS ) . 'Z' );
+				// filter results by a specific transaction id.
+				$nvpStr .= "&TRANSACTIONID=" . urlencode($order->subscription_transaction_id);
+
+				$this->httpParsedResponseAr = $this->PPHttpPost('TransactionSearch', $nvpStr);
+
+				if( ! in_array( strtoupper( $this->httpParsedResponseAr["ACK"] ), [ 'SUCCESS', 'SUCCESSWITHWARNING' ] ) ){
+					// since we are using TRANSACTIONID=I-... which is NOT a transaction id,
+                    			// paypal is returning an error. but the results are actually filtered by that transaction id, usually.
+
+					// let's double check it.
+					if( ! isset( $this->httpParsedResponseAr['L_TRANSACTIONID0'] ) ){
+						// really no results? it's a real error.
+						return false;
+					}
+				}
+
+				$transaction_ids = [];
+				for( $i = 0; $i < PHP_INT_MAX; $i++ ){
+	    				// loop until we have results
+					if( ! isset( $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ) ){
+						break;
+					}
+
+					// ignore I-... results
+					if( "I-" === substr( $this->httpParsedResponseAr["L_TRANSACTIONID$i"], 0 ,2 ) ){
+						if( $order->subscription_transaction_id != $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ){
+							// if we got a result from another I- subscription transaction id,
+							// then something changed into paypal responses.
+							// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
+							throw new Exception();
+						}
+
+						continue;
+					}
+
+					$transaction_ids[] = $this->httpParsedResponseAr["L_TRANSACTIONID$i"];
+				}
+
+				// no payment_transaction_ids in results
+				if( empty( $transaction_ids ) ){
+					return false;
+				}
+
+				// found the payment transaction id, it's the last one (the oldest)
+				$payment_transaction_id = end( $transaction_ids );
+				return $this->getTransactionDetails( $payment_transaction_id );
+			}else{
+				/** Recurring payment **/
+				return $this->getTransactionDetails( $order->payment_transaction_id );
+			}
+		}
+		
+		function getTransactionDetails($payment_transaction_id)
+        	{
+			$nvpStr = "";
+			$nvpStr .= "&TRANSACTIONID=" . urlencode($payment_transaction_id);
+
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetTransactionDetails', $nvpStr);
+
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
+			{
+				return $this->httpParsedResponseAr;
+			}
+			else
+			{
+				// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
 				return false;
 			}
 		}

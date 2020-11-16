@@ -318,6 +318,9 @@ select.pmpro_error {
 }
 
 /* Stripe gateway Membership Checkout specific styles. */
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
+	margin-top: 1em;
+}
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
 	display: -ms-grid;
@@ -631,6 +634,16 @@ li.pmpro_more {
 /*---------------------------------------
 	Responsive Styles
 ---------------------------------------*/
+@media only screen and (min-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
 @media (max-width:768px) {
 	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
 	#pmpro_levels_table td:nth-child(1) {
