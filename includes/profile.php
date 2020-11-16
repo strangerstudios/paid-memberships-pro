@@ -405,13 +405,12 @@ function pmpro_member_profile_edit_form() {
 		return;
 	}
 
-	do_action( 'pmpro_personal_options_update', $current_user->ID );
-
 	// Saving profile updates.
 	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
 		$user->ID         = $_POST[ 'user_id' ];
+		do_action( 'pmpro_personal_options_update', $user->ID );
 	} else {
 		$update = false;
 	}
