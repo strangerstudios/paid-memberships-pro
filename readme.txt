@@ -153,6 +153,10 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.2 - 2020-10-23 =
+* BUG FIX: Fixed issue where the RECAPTCHA library wasn't being loaded early enough to validate at checkout.
+* BUG FIX: Fixed issue where code in the Stripe class was unsetting some required fields, even if Stripe was not being used at checkout.
+
 = 2.5.1 - 2020-10-16 =
 * SECURITY: Fixed XSS vulnerability on the Members List page of the dashboard. (Thanks, Ron Masas from Checkmarx.com)
 * ENHANCEMENT: Add Ukrainian Hryvnia currency. (Thanks, Mirco Babini)
