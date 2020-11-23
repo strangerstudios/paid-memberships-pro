@@ -142,7 +142,12 @@ class PMProGateway_stripe extends PMProGateway {
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! pmpro_getOption( "stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
-		add_filter( 'pmpro_required_billing_fields', array( 'PMProGateway_stripe', 'pmpro_required_billing_fields' ) );
+
+		$gateway = pmpro_getGateway();
+		if($gateway == "stripe")
+		{
+			add_filter( 'pmpro_required_billing_fields', array( 'PMProGateway_stripe', 'pmpro_required_billing_fields' ) );
+		}
 
 		//updates cron
 		add_action( 'pmpro_cron_stripe_subscription_updates', array(
