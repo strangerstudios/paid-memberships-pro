@@ -98,7 +98,7 @@ function pmpro_wp()
 		}
 	}
 }
-add_action("wp", "pmpro_wp", 1);
+add_action("wp", "pmpro_wp", 2);
 
 /*
 	Add PMPro page names to the BODY class.
