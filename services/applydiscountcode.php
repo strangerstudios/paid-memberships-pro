@@ -61,7 +61,14 @@
 
 	// Okay, send back new price info.
 	// Find levels whose price this code changed...
-	$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id IN (" . implode( ',', $level_ids ) . ")";
+	$sqlQuery = "
+		SELECT l.id, cl.*, l.name, l.description, l.allow_signups 
+		FROM $wpdb->pmpro_discount_codes_levels cl 
+			LEFT JOIN $wpdb->pmpro_membership_levels l
+				ON cl.level_id = l.id 
+			LEFT JOIN $wpdb->pmpro_discount_codes dc
+				ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "'
+				AND cl.level_id IN (" . implode( ',', $level_ids ) . ")";
 	$code_levels = $wpdb->get_results($sqlQuery);
 
 	// ... and then get prices for the remaining levels.
