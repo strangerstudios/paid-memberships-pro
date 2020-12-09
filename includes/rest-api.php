@@ -173,6 +173,62 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
+
+		register_rest_route( $pmpro_namespace, '/webhook_subscribe', 
+			array(
+				array(
+					'methods' => 'POST,PUT,PATCH',
+					'callback' => array( $this, 'pmpro_rest_api_webook_subscribe' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				),
+			));
+		
+
+		register_rest_route( $pmpro_namespace, '/webhook_delete', 
+			array(
+				array(
+					'methods' => 'POST,PUT,PATCH',
+					'callback' => array( $this, 'pmpro_rest_api_webook_delete' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				),
+			));
+		
+
+		register_rest_route( $pmpro_namespace, '/webhook_retrieve', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_webook_rerieve' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
+
+		}
+
+		
+		
+
+		function pmpro_rest_api_webook_subscribe( $request ){
+			$params = $request->get_params();
+
+			return new WP_REST_Response( array( 'status' => 'subscribed' ), 200 );
+		}
+
+		function pmpro_rest_api_webook_delete( $request ){
+			$params = $request->get_params();
+
+			return new WP_REST_Response( array( 'status' => 'deleted' ), 200 );
+
+		}
+
+		function pmpro_rest_api_webook_rerieve( $request ){
+			$params = $request->get_params();
+
+			$stored_changes = get_option( 'pmpro_changes' );
+
+
+			return new WP_REST_Response( array( $stored_changes ), 200 );
+
 		}
 		
 		/**
@@ -647,7 +703,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$permission = apply_filters( 'pmpro_rest_api_permissions', $permission, $request );
-
+			// return true; //remove this
 			return $permission;
 		}
 
