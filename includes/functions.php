@@ -1379,7 +1379,7 @@ function pmpro_getMetavalues( $query ) {
 }
 
 // function to return the pagination string
-function pmpro_getPaginationString( $page = 1, $totalitems, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
+function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
 	// defaults
 	if ( ! $adjacents ) {
 		$adjacents = 1;
@@ -2065,7 +2065,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * @param  int $user_id User ID to check for
  * @param  int $level_id Level ID to check for.
  */
-function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id ) {
+function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id = null ) {
 	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
