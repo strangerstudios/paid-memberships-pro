@@ -846,7 +846,7 @@
 				return false;
 
 			if( $order->payment_transaction_id == $order->subscription_transaction_id ){
-				$payment_transaction_id = $this->getRealPaymentTransactionId();
+				$payment_transaction_id = $this->getRealPaymentTransactionId( $order );
 				if( ! $payment_transaction_id ){
 					return false;
 				}
@@ -863,7 +863,7 @@
 		 *
 		 * @since 1.8.5
 		*/
-		function getRealPaymentTransactionId()
+		function getRealPaymentTransactionId(&$order)
 		{
 			/** Initial payment **/
 			$nvpStr = "";
