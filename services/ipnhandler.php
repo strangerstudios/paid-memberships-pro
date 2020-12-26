@@ -23,6 +23,8 @@ if ( ! pmpro_ipnValidate() ) {
 	pmpro_ipnExit();
 }
 
+do_action( 'pmpro_doing_webhook' );
+
 //assign posted variables to local variables
 $txn_type               = pmpro_getParam( "txn_type", "POST" );
 $subscr_id              = pmpro_getParam( "subscr_id", "POST" );
