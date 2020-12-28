@@ -84,17 +84,16 @@ add_action('login_init', 'pmpro_login_head');
  * @since 1.7.14
  */
 function pmpro_redirect_to_logged_in() {
-	
+	// Fixes Site Health loopback test.
+	if ( ! empty( $_SERVER['PHP_AUTH_USER'] ) ) {
+		return;
+	}
+
 	if( ( pmpro_is_login_page() || is_page("login") )
 		&& ! empty( $_REQUEST['redirect_to'] )
 		&& is_user_logged_in()
 		&& ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] == 'login' )
 		&& empty( $_REQUEST['reauth']) ) {
-
-		// Avoid cases redirecting to admin so we don't break the loopback test.
-		if ( strpos( $_REQUEST['redirect_to'], 'wp-admin' ) !== false ) {
-			return;
-		}
 
 		wp_safe_redirect( esc_url_raw( $_REQUEST['redirect_to'] ) );
 		exit;
