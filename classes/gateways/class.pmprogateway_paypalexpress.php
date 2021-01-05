@@ -273,7 +273,7 @@
 				else
 					$username = "";
 				if(isset($_REQUEST['password']))
-					$password = sanitize_text_field($_REQUEST['password']);
+					$password = $_REQUEST['password'];
 				else
 					$password = "";
 				if(isset($_REQUEST['bemail']))
@@ -729,8 +729,12 @@
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
+			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
+			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
+
 			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
+			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
 
 			///echo str_replace("&", "&<br />", $nvpStr);

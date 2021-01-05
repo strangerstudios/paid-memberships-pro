@@ -26,9 +26,11 @@ function pmpro_beaver_builder_settings_form( $form, $id ) {
 	}
 	global $membership_levels;
 	$levels = array();
+	$levels[0] = __( 'Non-members', 'paid-memberships-pro' );
 	foreach ( $membership_levels as $level ) {
 		$levels[ $level->id ] = $level->name;
 	}
+
 	$row_settings_pmpro = array(
 		'title'    => __( 'PMPro', 'paid-memberships-pro' ),
 		'sections' => array(
@@ -83,6 +85,7 @@ function pmpro_beaver_builder_check_field_connections( $is_visible, $node ) {
 	if ( ! defined( 'PMPRO_VERSION' ) ) {
 		return $is_visible;
 	}
+
 	if ( 'row' === $node->type ) {
 		if ( isset( $node->settings->pmpro_enable ) && 'yes' === $node->settings->pmpro_enable ) {
 			if ( pmpro_hasMembershipLevel( $node->settings->pmpro_memberships ) || empty( $node->settings->pmpro_memberships ) ) {
@@ -120,6 +123,7 @@ function pmpro_beaver_builder_add_custom_tab_all_modules( $form, $slug ) {
 	if ( in_array( $slug, $modules, true ) ) {
 		global $membership_levels;
 		$levels = array();
+		$levels[0] = __( 'Non-members', 'paid-memberships-pro' );
 		foreach ( $membership_levels as $level ) {
 			$levels[ $level->id ] = $level->name;
 		}

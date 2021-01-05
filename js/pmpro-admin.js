@@ -150,6 +150,39 @@ jQuery(document).ready(function() {
                 }				
 			}
 		})
+	});
+
+	// AJAX call to rebuild webhook.
+    jQuery('#pmpro_stripe_rebuild_webhook').click(function(event){
+        event.preventDefault();
+                
+		var postData = {
+			action: 'pmpro_stripe_rebuild_webhook',
+            secretkey: jQuery('#stripe_secretkey').val(),
+		}
+
+		jQuery.ajax({
+			type: "POST",
+			data: postData,
+			url: ajaxurl,
+			success: function( response ) {
+				response = jQuery.parseJSON( response );
+                ///console.log( response );
+                
+                jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
+                jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
+                
+                if ( response.notice ) {
+                    jQuery('#pmpro_stripe_webhook_notice').parent('div').addClass(response.notice);
+                }
+                if ( response.message ) {
+                    jQuery('#pmpro_stripe_webhook_notice').html(response.message);
+                }
+                if ( response.success ) {
+                    jQuery('#pmpro_stripe_create_webhook').hide();
+                }				
+			}
+		})
     });
 });
 

@@ -306,6 +306,14 @@ select.pmpro_error {
 	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
 	grid-column-gap: 1em;
+	grid-template-areas:
+		"leftcol rightcol";
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-leftcol {
+	grid-area: leftcol;
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-rightcol {
+	grid-area: rightcol;
 }
 #pmpro_license {
 	background: #FFF;
@@ -318,12 +326,23 @@ select.pmpro_error {
 }
 
 /* Stripe gateway Membership Checkout specific styles. */
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button {
+	grid-area: paymentrequestbutton;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
+	margin-top: 1em;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal  {
+	grid-template-areas:
+		"paymentrequestbutton rightcol"
+		"leftcol rightcol";
+}
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
 	display: -ms-grid;
 	display: grid;
 	-ms-grid-rows: auto 1em auto 1em auto;
-	    grid-template-areas:
+	grid-template-areas:
 		"AccountNumber AccountNumber"
 		"Expiry CVV"
 		"DiscountCode DiscountCode";
@@ -631,6 +650,16 @@ li.pmpro_more {
 /*---------------------------------------
 	Responsive Styles
 ---------------------------------------*/
+@media only screen and (min-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
 @media (max-width:768px) {
 	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
 	#pmpro_levels_table td:nth-child(1) {

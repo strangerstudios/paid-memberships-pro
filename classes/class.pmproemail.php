@@ -860,10 +860,10 @@
 
 			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
 				$membership_level_name = $user->membership_level->name;
-				$membership_level_id = '';
+				$membership_level_id = $user->membership_level->id;
 			} else {
 				$membership_level_name = __('None', 'paid-memberships-pro');
-				$membership_level_id = $user->membership_level->id;
+				$membership_level_id = '';
 			}
 						
 			$this->email = $user->user_email;
@@ -910,10 +910,10 @@
 						
 			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
 				$membership_level_name = $user->membership_level->name;
-				$membership_level_id = '';
+				$membership_level_id = $user->membership_level->id;
 			} else {
 				$membership_level_name = __('None', 'paid-memberships-pro');
-				$membership_level_id = $user->membership_level->id;
+				$membership_level_id = '';
 			}
 
 			$this->email = get_bloginfo("admin_email");

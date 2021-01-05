@@ -247,6 +247,16 @@ function pmpro_checkForUpgrades()
  	if($pmpro_db_version < 2.4) {
  		$pmpro_db_version = pmpro_upgrade_2_4();
  	}
+	
+	/**
+	 * Version 2.5
+	 * Running pmpro_db_delta to install the ordermeta table.
+	 */
+	if( $pmpro_db_version < 2.5 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = 2.5;
+		pmpro_setOption( 'db_version', '2.5' );
+	}
 }
 
 function pmpro_db_delta()
@@ -264,6 +274,7 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -458,6 +469,20 @@ function pmpro_db_delta()
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+		  KEY `meta_key` (`meta_key`)
+		);
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_membership_ordermeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_ordermeta . "` (
+		  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_order_id` int(10) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`meta_id`),
+		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
 		  KEY `meta_key` (`meta_key`)
 		);
 	";

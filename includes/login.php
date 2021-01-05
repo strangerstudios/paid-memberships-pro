@@ -84,12 +84,22 @@ add_action('login_init', 'pmpro_login_head');
  * @since 1.7.14
  */
 function pmpro_redirect_to_logged_in() {
-	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login') && empty($_REQUEST['reauth'])) {
-		wp_safe_redirect($_REQUEST['redirect_to']);
+	// Fixes Site Health loopback test.
+	if ( ! empty( $_SERVER['PHP_AUTH_USER'] ) ) {
+		return;
+	}
+
+	if( ( pmpro_is_login_page() || is_page("login") )
+		&& ! empty( $_REQUEST['redirect_to'] )
+		&& is_user_logged_in()
+		&& ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] == 'login' )
+		&& empty( $_REQUEST['reauth']) ) {
+
+		wp_safe_redirect( esc_url_raw( $_REQUEST['redirect_to'] ) );
 		exit;
 	}
 }
-add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
+add_action("template_redirect", "pmpro_redirect_to_logged_in", 15);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
@@ -377,7 +387,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	}
 
 	if ( isset( $_GET['password'] ) ) {
-		switch( sanitize_text_field( $_GET['password'] ) ) {
+		switch( $_GET['password'] ) {
 			case 'changed':
 				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_success';
@@ -777,7 +787,11 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
+		$login_url = get_permalink( $login_page_id );
+		if ( strpos( $login_url, '?' ) ) {
+			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
+			$message = str_replace( site_url( 'wp-login.php' ) . '?', site_url( 'wp-login.php' ) . '&', $message );
+		}
 		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
 	}
 

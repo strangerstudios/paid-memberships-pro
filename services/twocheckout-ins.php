@@ -20,6 +20,8 @@
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
+	define( 'PMPRO_DOING_WEBHOOK', 'twocheckout' );
+
 	//validate?
 	if( ! pmpro_twocheckoutValidate() ) {
 
@@ -272,6 +274,17 @@
 		//set the start date to current_time('mysql') but allow filters (documented in preheaders/checkout.php)
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
 
+		//get discount code
+		$morder->getDiscountCode();
+		if(!empty($morder->discount_code))
+		{
+			//update membership level
+			$morder->getMembershipLevel(true);
+			$discount_code_id = $morder->discount_code->id;
+		}
+		else
+			$discount_code_id = "";
+		
 		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
@@ -284,19 +297,6 @@
 
 		//filter the enddate (documented in preheaders/checkout.php)
 		$enddate = apply_filters("pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate);
-
-		//get discount code
-		$morder->getDiscountCode();
-		if(!empty($morder->discount_code))
-		{
-			//update membership level
-			$morder->getMembershipLevel(true);
-			$discount_code_id = $morder->discount_code->id;
-		}
-		else
-			$discount_code_id = "";
-
-		
 
 		//custom level to change user to
 		$custom_level = array(

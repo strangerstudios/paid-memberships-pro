@@ -313,18 +313,18 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			} elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false) {
 				//more tag
 				$pos = strpos($content, "<span id=\"more-" . $post->ID . "\"></span>");
-				$content = wpautop(substr($content, 0, $pos));
+				$content = substr($content, 0, $pos);
 			} elseif(strpos($content, 'class="more-link">') !== false) {
 				//more link
 				$content = preg_replace("/\<a.*class\=\"more\-link\".*\>.*\<\/a\>/", "", $content);
 			} elseif(strpos($content, "<!-- wp:more -->") !== false) {
 				//more block
 				$pos = strpos($content, "<!-- wp:more -->");
-				$content = wpautop(substr($content, 0, $pos));
+				$content = substr($content, 0, $pos);
 			} elseif(strpos($content, "<!--more-->") !== false) {
 				//more tag
 				$pos = strpos($content, "<!--more-->");
-				$content = wpautop(substr($content, 0, $pos));
+				$content = substr($content, 0, $pos);
 			} else {
 				//auto generated excerpt. pulled from wp_trim_excerpt
 				$content = strip_shortcodes( $content );
