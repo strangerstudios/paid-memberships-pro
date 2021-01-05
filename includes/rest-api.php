@@ -738,7 +738,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$permission = apply_filters( 'pmpro_rest_api_permissions', $permission, $request );
-			return true;
 			return $permission;
 		}
 
