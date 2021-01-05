@@ -173,7 +173,96 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
 			),
 		));
+
+		/// ZAPIER
+		register_rest_route( $pmpro_namespace, '/me', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'validate_me' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
+
+
+		register_rest_route( $pmpro_namespace, '/webhook_subscribe', 
+			array(
+				array(
+					'methods' => 'POST,PUT,PATCH',
+					'callback' => array( $this, 'pmpro_rest_api_webhook_subscribe' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				),
+			));
+		
+
+		register_rest_route( $pmpro_namespace, '/webhook_delete', 
+			array(
+				array(
+					'methods' => 'POST,PUT,PATCH',
+					'callback' => array( $this, 'pmpro_rest_api_webhook_delete' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				),
+			));
+		
+
+		register_rest_route( $pmpro_namespace, '/webhook_retrieve', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_webhook_rerieve' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
+
 		}
+
+		
+		
+		// ZAPIER
+		function pmpro_rest_api_webhook_subscribe( $request ){
+			$params = $request->get_params();
+
+			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $params ) );
+
+			return new WP_REST_Response( array( 'status' => 'subscribed' ), 200 );
+		}
+
+		function pmpro_rest_api_webhook_delete( $request ){
+			$params = $request->get_params();
+
+			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $params ) );
+
+			return new WP_REST_Response( array( 'status' => 'deleted' ), 200 );
+
+		}
+
+		function pmpro_rest_api_webhook_rerieve( $request ){
+			$params = $request->get_params();
+
+			$stored_changes = get_option( 'pmpro_changes' );
+
+			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook params', json_encode( $params ) );
+
+			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $stored_changes ) );
+
+
+			return new WP_REST_Response( array( $stored_changes ), 200 );
+
+		}
+
+		/// VALIDATE ME TEST FOR ZAPIER
+		public function validate_me( $request ) {
+
+			$params = $request->get_params();
+
+			if ( is_user_logged_in() ) {
+			  $me = wp_get_current_user()->display_name;
+			} else {
+				$me = false;
+			}
+		
+			wp_send_json_success( array( 'username' => $me ) );
+		  }
 		
 		/**
 		 * Get user's membership level.
@@ -296,6 +385,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			} else {
 				$response = false;
 			}
+
+			wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id ) );
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -628,7 +719,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/membership_level' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/checkout_level' => true,
-				'/pmpro/v1/checkout_levels' => true,				
+				'/pmpro/v1/checkout_levels' => true,
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
 
@@ -647,7 +738,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$permission = apply_filters( 'pmpro_rest_api_permissions', $permission, $request );
-
+			return true;
 			return $permission;
 		}
 
@@ -684,3 +775,20 @@ function pmpro_get_rest_api_methods( $route = NULL ) {
 	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $route );
 	return $methods;
 }
+
+function my_pmpro_after_change_membership_level( $level_id, $user_id, $cancel_level ){
+
+	$stored_changes = get_option( 'pmpro_changes' );
+
+	$class = new StdClass();
+	$class->user_id = intval( $level_id );
+	$class->level_id = intval( $user_id );
+	$class->cancel_id = intval( $cancel_id );
+
+	$stored_changes = array( 'data' => $class );
+	
+	
+	update_option( 'pmpro_changes', $stored_changes );
+
+}
+add_action( 'pmpro_after_change_membership_level', 'my_pmpro_after_change_membership_level', 10, 3 );
