@@ -23,6 +23,8 @@ if ( isset( $_REQUEST['l'] ) ) {
 
 if ( isset( $_REQUEST['discount_code'] ) ) {
 	$discount_code = intval( $_REQUEST['discount_code'] );
+} elseif ( isset( $_REQUEST['discount-code'] ) ) {
+	$discount_code = intval( $_REQUEST['discount-code'] );
 } else {
 	$discount_code = false;
 }
