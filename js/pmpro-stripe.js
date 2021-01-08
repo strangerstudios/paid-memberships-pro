@@ -110,7 +110,7 @@ jQuery( document ).ready( function( $ ) {
 						currency: pmproStripe.currency,
 						total: {
 							label: pmproStripe.siteName,
-							amount: data.initial_payment * 100,
+							amount: Math.round( data.initial_payment * 100 ),
 						},
 						requestPayerName: true,
 						requestPayerEmail: true,
@@ -144,7 +144,7 @@ jQuery( document ).ready( function( $ ) {
 						paymentRequest.update({
 							total: {
 								label: pmproStripe.siteName,
-								amount: data.initial_payment * 100,
+								amount: Math.round( data.initial_payment * 100 ),
 							},
 						});
 					}
