@@ -174,7 +174,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
-		/// ZAPIER
+		/**
+		 * Authentication route for Zapier integration.
+		 * Used to do authentication when connecting Zapier to PMPro.
+		 * @since xx ///
+		 */
 		register_rest_route( $pmpro_namespace, '/me', 
 		array(
 			array(
@@ -184,73 +188,31 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
+	}
 
-		register_rest_route( $pmpro_namespace, '/webhook_subscribe', 
-			array(
-				array(
-					'methods' => 'POST,PUT,PATCH',
-					'callback' => array( $this, 'pmpro_rest_api_webhook_subscribe' ),
-					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
-				),
-			));
-		
-
-		register_rest_route( $pmpro_namespace, '/webhook_delete', 
-			array(
-				array(
-					'methods' => 'POST,PUT,PATCH',
-					'callback' => array( $this, 'pmpro_rest_api_webhook_delete' ),
-					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
-				),
-			));
-		
-
-		register_rest_route( $pmpro_namespace, '/webhook_retrieve', 
-		array(
-			array(
-				'methods' => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'pmpro_rest_api_webhook_rerieve' ),
-				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
-			),
-		));
-
-		}
-
-		
-		
-		// ZAPIER
-		function pmpro_rest_api_webhook_subscribe( $request ){
-			$params = $request->get_params();
-
-			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $params ) );
-
-			return new WP_REST_Response( array( 'status' => 'subscribed' ), 200 );
-		}
-
+		/**
+		 * Remove webhook ID from Zapier resthooks listener.
+		 * Example: /wp-json/pmpro/v1/webhook_unsubscribe/(?P<id>[\d]+)
+		 * @since 2.7
+		 */
 		function pmpro_rest_api_webhook_delete( $request ){
 			$params = $request->get_params();
+			$id = intval( $params['id'] );
 
-			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $params ) );
+			$zapier_webhooks = get_option( 'pmpro_zapier_webhooks', false );
+			unset( $zapier_webhooks[$id] );
 
-			return new WP_REST_Response( array( 'status' => 'deleted' ), 200 );
-
+			if ( update_option( 'pmpro_zapier_webhooks', $zapier_webhooks ) ) {
+				wp_send_json_success();
+			} else {
+				wp_send_json_error( array( 'message' => 'Unable to unsubscribe this webhook', 'id' => $id ) );
+			}
 		}
 
-		function pmpro_rest_api_webhook_rerieve( $request ){
-			$params = $request->get_params();
-
-			$stored_changes = get_option( 'pmpro_changes' );
-
-			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook params', json_encode( $params ) );
-
-			wp_mail( 'jarryd@paidmembershipspro.com, andrew@paidmembershipspro.com', 'Webhook Activity', json_encode( $stored_changes ) );
-
-
-			return new WP_REST_Response( array( $stored_changes ), 200 );
-
-		}
-
-		/// VALIDATE ME TEST FOR ZAPIER
+		/**
+		 * Function used for testing authentication through Zapier API.
+		 * @since 2.7
+		 */
 		public function validate_me( $request ) {
 
 			$params = $request->get_params();
@@ -262,8 +224,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 		
 			wp_send_json_success( array( 'username' => $me ) );
-		  }
-		
+		}
+
 		/**
 		 * Get user's membership level.
 		 * @since 2.3
@@ -365,28 +327,39 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
+			$email = isset( $params['email'] ) ? $params['email'] : null;
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
-				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+				if ( ! empty( $email ) ) {
+					$user = get_user_by_email( $email );
 					$user_id = $user->ID;
 				} else {
+					if ( $response_type == 'json' ) {
+						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
+					}
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
 
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
+				if ( $response_type == 'json' ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'Paid Memberships Pro function not found.' ) );
+				}
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
-			
+
 			if ( ! empty( $user_id ) ) {
 				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
 			} else {
 				$response = false;
 			}
 
-			wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id ) );
+			if ( $response_type == 'json' ) {
+				wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id, 'response' => $response, 'status' => 200 ) );
+			}
 
 			return new WP_REST_Response( $response, 200 );
 		}
@@ -400,22 +373,34 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
 			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
+			$email = isset( $params['email'] ) ? $params['email'] : null;
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
-				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+				if ( ! empty( $email ) ) {
+					$user = get_user_by_email( $email );
 					$user_id = $user->ID;
 				} else {
+					if ( $response_type == 'json' ) {
+						wp_send_json_error( array( 'email' => $email ) );
+					}
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
 			
 			if ( empty( $level_id ) ) {
+				if ( $response_type == 'json' ) {
+					wp_send_json_error( array( 'email' => $email ) );
+				}
 				return new WP_REST_Response( 'No membership level ID data.', 400 );
 			}
 
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
+				if ( $response_type == 'json' ) {
+					wp_send_json_error( array( 'email' => $email ) );
+				}
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 			
@@ -424,7 +409,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			} else {
 				$response = false;
 			}
-			
+
+			if ( $response_type == 'json' ) {
+				wp_send_json_success( array( 'email' => $email ) );
+			}
 			return new WP_REST_Response( $response, 200 );
 		}
 		
@@ -473,6 +461,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$method = $request->get_method();
 
 			$id = isset( $params['id'] ) ? intval( $params['id'] ) : '';
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			// Pass through an ID only for PUT/PATCH methods. POST treats it as a brand new level.
 			if ( ! empty( $id ) && ( $method === 'PUT' || $method === 'PATCH' ) ) {
@@ -513,6 +502,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level->categories = $categories;
 			$level->save();	
 
+			if ( $response_type == 'json' ) {
+				wp_send_json_success( array( "level" => $level ) );
+			}
 			return new WP_REST_Response( $level, 200 );
 
 		}
@@ -720,6 +712,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
+				'/pmpro/v1/me' => true,
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
 
@@ -774,20 +767,3 @@ function pmpro_get_rest_api_methods( $route = NULL ) {
 	$methods = apply_filters( 'pmpro_rest_api_methods', $methods, $route );
 	return $methods;
 }
-
-function my_pmpro_after_change_membership_level( $level_id, $user_id, $cancel_level ){
-
-	$stored_changes = get_option( 'pmpro_changes' );
-
-	$class = new StdClass();
-	$class->user_id = intval( $level_id );
-	$class->level_id = intval( $user_id );
-	$class->cancel_id = intval( $cancel_id );
-
-	$stored_changes = array( 'data' => $class );
-	
-	
-	update_option( 'pmpro_changes', $stored_changes );
-
-}
-add_action( 'pmpro_after_change_membership_level', 'my_pmpro_after_change_membership_level', 10, 3 );
