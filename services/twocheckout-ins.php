@@ -283,7 +283,7 @@
 		if ( empty( pmpro_getParam( 'message_type', 'REQUEST' ) ) || pmpro_getParam( 'message_type', 'REQUEST' ) === 'ORDER_CREATED' ) {
 			// Apply discount code level changes.
 			if ( ! empty( $discount_code_id ) ) {
-				$sqlQuery                 = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.id = '" . $discount_code_id . "' AND cl.level_id = '" . $morder->membership_level->level_id . "' LIMIT 1";
+				$sqlQuery                 = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.id = '" . esc_sql( $discount_code_id ) . "' AND cl.level_id = '" . esc_sql( $morder->membership_level->level_id ) . "' LIMIT 1";
 				$morder->membership_level = $wpdb->get_row( $sqlQuery );
 			}
 	
@@ -346,7 +346,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time('mysql') . "')");
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')");
 			}
 
 			//save first and last name fields
@@ -427,7 +427,7 @@
 		global $wpdb;
 
 		//check that txn_id has not been previously processed
-		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
+		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql( $txn_id ) . "' LIMIT 1");
 
 		if( empty( $old_txn ) ) {
 
