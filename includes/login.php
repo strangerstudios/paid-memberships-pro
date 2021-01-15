@@ -609,8 +609,7 @@ function pmpro_reset_password_redirect() {
 		}
 		
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
-		$user = check_password_reset_key( $_REQUEST['rp_key'], $_REQUEST['rp_login'] );
-		
+		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
 		if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
 				wp_redirect( add_query_arg( 'login', urlencode( 'expiredkey' ), $redirect_url ) );
@@ -620,8 +619,8 @@ function pmpro_reset_password_redirect() {
             exit;
         }
 
-        $redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['rp_login'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
-        $redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['rp_key'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
+        $redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['login'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
+		$redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['key'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
 
         wp_redirect( $redirect_url );
         exit;
