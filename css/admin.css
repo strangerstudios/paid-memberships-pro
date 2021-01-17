@@ -169,22 +169,18 @@
 .admin_page_pmpro-userfields .pmpro_userfield-hide:before {
 	content: "\f140";
 }
-
-.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-inside {
-	padding: 8px 12px;
-}
-.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-inside label {
+.admin_page_pmpro-userfields .pmpro_userfield-inside label,
+.admin_page_pmpro-userfields .pmpro_userfield-inside .description {
 	display: block;
-	margin-bottom: 3px;
+	margin: 3px 0;
 }
-.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-inside select {
-	width: 70%;
+.admin_page_pmpro-userfields .pmpro_userfield-inside .description {
+	font-style: italic;
 }
-.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-inside ul {
-
-}
-.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-inside ul li {
-	margin-bottom: 8px;
+.admin_page_pmpro-userfields .pmpro_userfield-inside input[type=text],
+.admin_page_pmpro-userfields .pmpro_userfield-inside select,
+.admin_page_pmpro-userfields .pmpro_userfield-inside textarea {
+	width: 90%;
 }
 .admin_page_pmpro-userfields .pmpro_userfield-group {
 	background: #FFF;
@@ -192,9 +188,47 @@
 	box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
 	margin-bottom: 20px;
 }
-.admin_page_pmpro-userfields .pmpro_userfield-group-collapse .pmpro_userfield-group-inside {
+.admin_page_pmpro-userfields .pmpro_userfield-group-collapse .pmpro_userfield-inside {
 	display: none;
 }
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead,
+.admin_page_pmpro-userfields .pmpro_userfield-group-tbody {
+	display: flex;
+	margin: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead {
+	background: #f5f5f5;
+	border-top: 3px solid #ccd0d4;
+}
+
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-tbody {
+	background: #007cba;
+	color: #FFF;
+}
+
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead li,
+.admin_page_pmpro-userfields .pmpro_userfield-group-tbody li {
+	flex: 1;
+	padding: 8px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead li {
+	font-weight: bold;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-label {
+	font-weight: bold;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-options a {
+	font-size: 90%;
+	display: inline-block;
+	margin-right: 5px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-options a {
+	display: none;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field {
+	border-bottom: 1px solid #ccd0d4;
+}
+
 .admin_page_pmpro-userfields .pmpro_userfield-group-header {
 	align-items: center;
 	background: #f5f5f5;
@@ -214,10 +248,19 @@
 	display: inline-block;
 	margin-right: 5px;
 }
-.admin_page_pmpro-userfields .pmpro_userfield-group-field {
-	border: 1px solid #ccd0d4;
-	box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings {
+	padding: 0 12px;
 }
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting {
+	margin: 12px 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-radio span {
+	display: inline-block;
+	margin-right: 12px;	
+}
+
+/*
 .admin_page_pmpro-userfields .pmpro_userfield-group-field-header {
 	align-items: center;
 	border-bottom: 1px solid #ccd0d4;
@@ -236,6 +279,8 @@
 	display: inline-block;
 	margin-right: 5px;
 }
+*/
+
 
 /** MOVE THIS LATER TO OTHER MEDIA QUERY AT BOTTOM **/
 @media (min-width: 1200px) {
@@ -243,10 +288,11 @@
 	.admin_page_pmpro-userfields .pmpro_userfield-group-field-header .pmpro_userfield-group-field-header-field input[type=text] {
 		width: 500px;
 	}
-	.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-settings {
+	.admin_page_pmpro-userfields .pmpro_userfield-field-settings {
 		display: flex;
+		flex-wrap: wrap;
 	}
-	.admin_page_pmpro-userfields .pmpro_userfield-group .pmpro_userfield-group-settings ul {
+	.admin_page_pmpro-userfields .pmpro_userfield-field-setting {
 		flex: 50%;
 	}
 }
@@ -507,6 +553,9 @@ button.pmpro_report_th_closed:before {
 }
 .pmpro_admin p.text-center {
     text-align: center;
+}
+.pmpro_admin p.text-right {
+	text-align: right;
 }
 
 /* new installation notices */
