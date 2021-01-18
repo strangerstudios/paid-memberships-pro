@@ -70,6 +70,7 @@ require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue f
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
+require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
@@ -202,6 +203,7 @@ function pmpro_activation() {
 	// schedule crons
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'daily', 'pmpro_cron_expire_memberships' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'daily', 'pmpro_cron_expiration_warnings' );
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 2, 'daily', 'pmpro_cron_delete_tmp');
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
 	pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 
@@ -215,6 +217,7 @@ function pmpro_deactivation() {
 	// remove crons
 	wp_clear_scheduled_hook( 'pmpro_cron_expiration_warnings' );
 	wp_clear_scheduled_hook( 'pmpro_cron_trial_ending_warnings' );
+	wp_clear_scheduled_hook('pmpro_cron_delete_tmp');
 	wp_clear_scheduled_hook( 'pmpro_cron_expire_memberships' );
 	wp_clear_scheduled_hook( 'pmpro_cron_credit_card_expiring_warnings' );
 	wp_clear_scheduled_hook( 'pmpro_cron_admin_activity_email' );
