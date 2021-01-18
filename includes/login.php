@@ -797,7 +797,7 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_d
 
 	return $message;
 }
-add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10, 4 );
+add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 4 );
 
 /**
  * Replace the default login URL in the new user notification email
