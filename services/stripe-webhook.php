@@ -7,6 +7,7 @@
 	use Stripe\Invoice as Stripe_Invoice;
 	use Stripe\Event as Stripe_Event;
 	use Stripe\PaymentIntent as Stripe_PaymentIntent;
+	use Stripe\Charge as Stripe_Charge;
 
 	global $isapage;
 	$isapage = true;
@@ -148,25 +149,45 @@
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
 
-					$morder->FirstName = $old_order->FirstName;
-					$morder->LastName = $old_order->LastName;
-					$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
-					$morder->Address1 = $old_order->Address1;
-					$morder->City = $old_order->billing->city;
-					$morder->State = $old_order->billing->state;
-					//$morder->CountryCode = $old_order->billing->city;
-					$morder->Zip = $old_order->billing->zip;
-					$morder->PhoneNumber = $old_order->billing->phone;
+					$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->charge );
+					if ( ! empty ( $charge->billing_details->address->line1 ) ) {
+						// Get order billing details from Stripe.
+						$morder->billing = $charge->billing_details->address;
+						$morder->billing->name = $charge->name; // Add name.
+						$morder->billing->phone = $charge->phone; // Add phone.
+						$morder->billing->zip = $morder->billing->postal_code; // Fix zip.
+						$morder->billing->street = $morder->billing->line1; // Fix street. 
 
-					$morder->billing = new stdClass();
+						$nameparts = pnp_split_full_name( $morder->billing->name );
+						$morder->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+						$morder->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
+						$morder->Address1 = $morder->billing->street;
+						$morder->City = $morder->billing->city;
+						$morder->State = $morder->billing->state;
+						$morder->Zip = $morder->billing->zip;
+						$morder->PhoneNumber = $morder->billing->phone;
+					} else {
+						// Pull from previous order.
+						$morder->FirstName = $old_order->FirstName;
+						$morder->LastName = $old_order->LastName;
+						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
+						$morder->Address1 = $old_order->Address1;
+						$morder->City = $old_order->billing->city;
+						$morder->State = $old_order->billing->state;
+						$morder->Zip = $old_order->billing->zip;
+						$morder->PhoneNumber = $old_order->billing->phone;
+
+						$morder->billing = new stdClass();
 					
-					$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
-					$morder->billing->street = $old_order->billing->street;
-					$morder->billing->city = $old_order->billing->city;
-					$morder->billing->state = $old_order->billing->state;
-					$morder->billing->zip = $old_order->billing->zip;
-					$morder->billing->country = $old_order->billing->country;
-					$morder->billing->phone = $old_order->billing->phone;
+						$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
+						$morder->billing->street = $old_order->billing->street;
+						$morder->billing->city = $old_order->billing->city;
+						$morder->billing->state = $old_order->billing->state;
+						$morder->billing->zip = $old_order->billing->zip;
+						$morder->billing->country = $old_order->billing->country;
+						$morder->billing->phone = $old_order->billing->phone;
+					}
 
 					//get CC info that is on file
 					$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
