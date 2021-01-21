@@ -188,6 +188,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
+
+		register_rest_route( $pmpro_namespace, '/recent_memberships',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_recent_memberships' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)));
+
 	}
 
 		/**
@@ -224,6 +233,35 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 		
 			wp_send_json_success( array( 'username' => $me ) );
+		}
+
+		/// ZAPIER TRIGGERS
+		// Get last 10 recent membership orders etc.
+		function pmpro_rest_api_recent_memberships( $request ) {
+			$params = $request->get_params();
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+
+			// Grab the useful information.
+			global $wpdb;
+			$SQL = "SELECT mu.user_id, u.user_email, u.user_nicename, mu.membership_id, ml.name as membership_name, mu.status, mu.modified FROM $wpdb->pmpro_memberships_users AS mu
+					LEFT JOIN $wpdb->users AS u
+					ON mu.user_id = u.id
+					LEFT JOIN $wpdb->pmpro_membership_levels AS ml
+					ON ml.id = mu.membership_id
+					WHERE mu.status = 'active' 
+					ORDER BY mu.modified DESC 
+					LIMIT " . intval( $limit );
+			$results = $wpdb->get_results( $SQL );
+
+			$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
+
+			// Generate random ID for Zapier and then also add all member information.
+			if ( $response_type == 'json' ) {
+				wp_send_json( array( 'id' => $id, 'results' => $results ) );
+			}
+
 		}
 
 		/**
@@ -713,6 +751,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
+				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
 
