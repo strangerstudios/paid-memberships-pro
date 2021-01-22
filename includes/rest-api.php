@@ -197,6 +197,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)));
 
+		register_rest_route( $pmpro_namespace, '/recent_orders',
+		array(
+			array(
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+			)));
+
 	}
 
 		/**
@@ -236,7 +244,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/// ZAPIER TRIGGERS
-		// Get last 10 recent membership orders etc.
 		function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
 
@@ -262,6 +269,29 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
 
+		}
+
+		/// Get last order added
+		function pmpro_rest_api_recent_orders( $request ) {
+			$params = $request->get_params();
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
+
+			global $wpdb;
+			$SQL = "SELECT o.id as order_id, o.code, u.ID as user_id, u.user_email, u.user_nicename, o.billing_name, o.billing_street, o.billing_city, o.billing_state, o.billing_zip, o.billing_country, o.billing_phone, o.subtotal, o.tax, o.couponamount, o.total, o.status, o.gateway, o.gateway_environment, o.timestamp FROM $wpdb->pmpro_membership_orders AS o
+					LEFT JOIN $wpdb->users AS u
+					ON o.user_id = u.ID
+					ORDER BY o.timestamp DESC
+					LIMIT " . intval( $limit );
+
+			$results = $wpdb->get_results( $SQL );
+
+			$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
+
+			if ( $response_type == 'json' ) {
+				wp_send_json( array( 'id' => $id, 'results' => $results ) );
+			}
 		}
 
 		/**
@@ -752,6 +782,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
+				'/pmpro/v1/recent_orders' => 'pmpro_orders'
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
 
