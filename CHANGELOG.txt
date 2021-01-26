@@ -1,4 +1,8 @@
 == Changelog ==
+= 2.5.3 - 2021-01-26 =
+* SECURITY: Fixed indirect object reference vulnerability where order information, including customer names, email addresses, and order numbers could be accessed by non-admin WordPress users. (Thanks, WP Plugins Team)
+* SECURITY: Now checking ReCAPTCHA validation before enabling the submit button on the checkout form when using ReCAPTCHA v2. This helps to keep bad actors from testing credit cards on your checkout page. We were already doing a similar check when using ReCAPTCHA v3. Further updates to rate limit credit card failures are planned.
+
 = 2.5.2 - 2020-10-23 =
 * BUG FIX: Fixed issue where the RECAPTCHA library wasn't being loaded early enough to validate at checkout.
 * BUG FIX: Fixed issue where code in the Stripe class was unsetting some required fields, even if Stripe was not being used at checkout.

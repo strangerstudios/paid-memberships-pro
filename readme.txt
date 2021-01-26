@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.5.3
-Stable tag: 2.5.2
+Tested up to: 5.6
+Stable tag: 2.5.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,10 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.3 - 2021-01-26 =
+* SECURITY: Fixed indirect object reference vulnerability where order information, including customer names, email addresses, and order numbers could be accessed by non-admin WordPress users. (Thanks, WP Plugins Team)
+* SECURITY: Now checking ReCAPTCHA validation before enabling the submit button on the checkout form when using ReCAPTCHA v2. This helps to keep bad actors from testing credit cards on your checkout page. We were already doing a similar check when using ReCAPTCHA v3. Further updates to rate limit credit card failures are planned.
+
 = 2.5.2 - 2020-10-23 =
 * BUG FIX: Fixed issue where the RECAPTCHA library wasn't being loaded early enough to validate at checkout.
 * BUG FIX: Fixed issue where code in the Stripe class was unsetting some required fields, even if Stripe was not being used at checkout.
