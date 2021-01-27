@@ -3352,7 +3352,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
 
 	// Return false if there is no plugin data.
-	if ( empty( $plugin_data ) ) {
+	if ( empty( $plugin_data ) || empty( $plugin_data['Version'] ) ) {
 		return false;
 	}
 
