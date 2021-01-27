@@ -637,11 +637,30 @@ add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
 function pmpro_reset_password_form() {
 	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 
-		// Error messages
+		// Check if reset key is valid, if not just redirect away.
+		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
 		$errors = array();
+		if ( ! $user || is_wp_error( $user ) ) {
+			if ( $user && $user->get_error_code() === 'expired_key' ) {
+				$errors[] = 'expiredkey';
+			} else {
+				$errors[] = 'invalidkey';			
+            }
+		}
+
 		if ( isset( $_REQUEST['error'] ) ) {
-			$error_codes = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
-		} ?>
+			$errors = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
+		} 
+		
+		if ( ! empty( $errors ) ) {
+			$message = __( sprintf( 'There is an error with your password reset link. Code: %s', $errors[0] ), 'paid-memberships-pro' );
+			$msgt = 'pmpro_error';
+			echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+			echo pmpro_lost_password_form();
+			return;
+		}
+
+		?>
 		<form name="resetpassform" id="resetpassform" class="<?php echo pmpro_get_element_class( 'pmpro_form', 'resetpassform' ); ?>" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
 			<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['login'] ) ); ?>" autocomplete="off" />
 			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['key'] ) ); ?>" />
