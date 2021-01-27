@@ -1424,7 +1424,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php if ( ! empty( $order->billing->street ) ) { ?>
 							<?php echo esc_html( $order->billing->street ); ?><br/>
 							<?php if ( $order->billing->city && $order->billing->state ) { ?>
-								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?><?php echo esc_html( $order->billing->zip ); ?>
+								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?> <?php echo esc_html( $order->billing->zip ); ?>
 									<?php
 									if ( ! empty( $order->billing->country ) ) {
 										echo esc_html( $order->billing->country ); }
