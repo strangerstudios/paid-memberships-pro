@@ -1549,6 +1549,8 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 			UNION
 		SELECT SUM((365/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Day' AND cycle_number <> 365 $user_ids_query
 			UNION
+		SELECT SUM((24/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Hour' AND cycle_number <> 24 $user_ids_query
+			UNION
 		SELECT SUM((52/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Week' AND cycle_number <> 52 $user_ids_query
 			UNION
 		SELECT SUM(billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Year' $user_ids_query
@@ -3472,13 +3474,3 @@ function pmpro_adjusted_expiration_schedule( $schedules ) {
 
 }
 add_filter( 'cron_schedules', 'pmpro_adjusted_expiration_schedule', 10, 1 );
-
-function pmpro_reschedule_expiration_cron(){
-
-	$timestamp = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
-
-	wp_unschedule_event( $timestamp, 'pmpro_cron_expire_memberships' );
-
-	wp_schedule_event( current_time( 'timestamp' ), 'pmpro_expiration_schedule', 'pmpro_cron_expire_memberships' );
-
-}
