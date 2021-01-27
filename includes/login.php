@@ -637,23 +637,35 @@ add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
 function pmpro_reset_password_form() {
 	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 
-		// Check if reset key is valid, if not just redirect away.
+		// Check if reset key is valid.
 		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
-		$errors = array();
+		$errors = new WP_Error();
 		if ( ! $user || is_wp_error( $user ) ) {
-			if ( $user && $user->get_error_code() === 'expired_key' ) {
-				$errors[] = 'expiredkey';
-			} else {
-				$errors[] = 'invalidkey';			
+			if ( $user && $user->get_error_code() === 'invalid_key' ) {
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+			} elseif ( $user && $user->get_error_code() === 'expired_key' ) {
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
             }
 		}
 
-		if ( isset( $_REQUEST['error'] ) ) {
-			$errors = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
-		} 
+		// Grabbing errors from $_GET like wp-login.php does.
+		if ( isset( $_GET['error'] ) ) {
+			if ( 'invalidkey' === $_GET['error'] ) {
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+			} elseif ( 'expiredkey' === $_GET['error'] ) {
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
+			}
+		}
 		
-		if ( ! empty( $errors ) ) {
-			$message = __( sprintf( 'There is an error with your password reset link. Code: %s', $errors[0] ), 'paid-memberships-pro' );
+		if ( ! empty( $errors ) && $errors->has_errors() ) {
+			// Combine errors into one message.
+			$message = '';
+			foreach ( $errors->get_error_codes() as $code ) {
+				foreach ( $errors->get_error_messages( $code ) as $error_message ) {
+					$message .= ' ' . $error_message . ' ';
+				}
+			}
+			
 			$msgt = 'pmpro_error';
 			echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
 			echo pmpro_lost_password_form();
