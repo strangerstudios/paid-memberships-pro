@@ -281,7 +281,6 @@
 				),
 					OBJECT
 				);
-				var_dump($level);
 				$temp_id = $level->id;
 			} elseif(!empty($copy) && $copy > 0) {
 				$level = $wpdb->get_row( $wpdb->prepare( "
@@ -562,7 +561,6 @@
 				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>					
 					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Expires In', 'paid-memberships-pro' );?>:</label></th>
 					<td>
-						<?php var_dump($level->expiration_period);?>
 						<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number);?>" class="small-text" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php

@@ -3431,11 +3431,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 		return $wpdb->insert( $table, $data, $format );
 	} else {		
 		// Replace.
-		var_dump($table);
-		var_dump($data);
-		var_dump($format);
 		$replaced = $wpdb->replace( $table, $data, $format );
-		var_dump($replaced);
 	}
 }
 
