@@ -1,7 +1,7 @@
 <?php
 /*
 	Expiring Memberships
-*/
+*/	
 add_action("pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships");
 function pmpro_cron_expire_memberships()
 {
@@ -10,7 +10,7 @@ function pmpro_cron_expire_memberships()
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
-	$today = date("Y-m-d", current_time("timestamp"));
+	$today = date("Y-m-d H:i:00", current_time("timestamp"));
 
 	//look for memberships that expired before today
 	$sqlQuery = "SELECT mu.user_id, mu.membership_id, mu.startdate, mu.enddate FROM $wpdb->pmpro_memberships_users mu WHERE mu.status = 'active' AND mu.enddate IS NOT NULL AND mu.enddate <> '0000-00-00 00:00:00' AND DATE(mu.enddate) <= '" . esc_sql( $today ) . "' ORDER BY mu.enddate";
@@ -59,13 +59,13 @@ function pmpro_cron_expiration_warnings()
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
-	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
+	$today = date("Y-m-d H:i:s", current_time("timestamp"));
 
 	$pmpro_email_days_before_expiration = apply_filters("pmpro_email_days_before_expiration", 7);
 
 	// Configure the interval to select records from
 	$interval_start = $today;
-	$interval_end = date( 'Y-m-d 00:00:00', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
+	$interval_end = date( 'Y-m-d H:i:s', strtotime( "{$today} +{$pmpro_email_days_before_expiration} days", current_time( 'timestamp' ) ) );
 
 	//look for memberships that are going to expire within one week (but we haven't emailed them within a week)
 	$sqlQuery = $wpdb->prepare(
