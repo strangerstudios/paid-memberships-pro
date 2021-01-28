@@ -132,7 +132,7 @@ function pmpro_init_recaptcha() {
 						};
 						
 						// Expiration callback.
-						function pmpro_recaptcha_validatedCallback() {
+						function pmpro_recaptcha_expiredCallback() {
 							pmpro_recaptcha_validated = false;
 						}
 						
