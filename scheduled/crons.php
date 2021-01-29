@@ -21,14 +21,19 @@ function pmpro_cron_expire_memberships()
 
 	foreach($expired as $e)
 	{
-		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );
+		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );		
 
 		//remove their membership
 		pmpro_changeMembershipLevel(false, $e->user_id, 'expired', $e->membership_id);
 
 		do_action("pmpro_membership_post_membership_expiry", $e->user_id, $e->membership_id );
 
+		if( get_user_meta( $e->user_id, 'pmpro_disable_notifications', true ) ){
+			$send_email = false;
+		}
+		
 		$send_email = apply_filters("pmpro_send_expiration_email", true, $e->user_id);
+
 		if($send_email)
 		{
 			//send an email

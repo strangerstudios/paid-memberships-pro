@@ -3458,15 +3458,3 @@ function pmpro_doing_webhook( $gateway = null ){
 	}
 	
 }
-
-function pmpro_adjusted_expiration_schedule( $schedules ) { 
-
-    $schedules['pmpro_expiration_schedule'] = array(
-        'interval' => 3600,
-        'display'  => esc_html__( 'PMPro Custom Expiration Cron' )
-    );
-
-    return $schedules;
-
-}
-add_filter( 'cron_schedules', 'pmpro_adjusted_expiration_schedule', 10, 1 );
