@@ -16,6 +16,12 @@ xgettext -j -o languages/paid-memberships-pro.pot \
 --keyword=_ex \
 --keyword=_n \
 --keyword=_x \
+--keyword=esc_html__ \
+--keyword=esc_html_e \
+--keyword=esc_html_x \
+--keyword=esc_attr__ \
+--keyword=esc_attr_e \
+--keyword=esc_attr_x \
 --sort-by-file \
 --package-version=1.0 \
 --msgid-bugs-address="jason@strangerstudios.com" \

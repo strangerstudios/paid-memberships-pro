@@ -242,7 +242,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Get the table data
 	 *
-	 * @return Array or integer if $count parameter = true
+	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false ) {
 		global $wpdb;

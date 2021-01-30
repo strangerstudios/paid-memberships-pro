@@ -946,7 +946,7 @@ function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level
  * @param int    $level ID of level to set as new level, use 0 to cancel membership
  * @param int    $user_id ID of the user to change levels for
  * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
- * $param int $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
+ * @param int    $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
  * Return values:
  *      Success returns boolean true.
@@ -1019,7 +1019,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
 	 * @param array $old_levels array of prior levels the user belonged to.
-	 * $param int $cancel_level ID of the level being cancelled if specified
+	 * @param int $cancel_level ID of the level being cancelled if specified
 	 */
 	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $old_levels, $cancel_level );
 
@@ -1181,7 +1181,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
-	 * $param int $cancel_level ID of the level being cancelled if specified.
+	 * @param int $cancel_level ID of the level being cancelled if specified.
 	 */
 	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, $cancel_level );
 	return true;
@@ -1224,8 +1224,9 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 /*
  pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * $level may either be the ID or name of the desired membership_level.
- * $category must be a valid post category ID.
+ * @param $level may either be the ID or name of the desired membership_level.
+ * @param $category must be a valid post category ID.
+ * @param $value
  *
  * Return values:
  *		Success returns boolean true.
@@ -1263,8 +1264,8 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
  pmpro_updateMembershipCategories() ensures that all those and only those categories given
 * are associated with the given membership level.
 *
-* $level is a valid membership level ID or name
-* $categories is an array of post category IDs
+* @param $level is a valid membership level ID or name
+* @param $categories is an array of post category IDs
 *
 * Return values:
 *		Success returns boolean true.
@@ -1302,7 +1303,7 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /*
  pmpro_getMembershipCategories() returns the categories for a given level
 *
-* $level_id is a valid membership level ID
+* @param $level_id is a valid membership level ID
 *
 * Return values:
 *		Success returns boolean true.
@@ -1379,7 +1380,7 @@ function pmpro_getMetavalues( $query ) {
 }
 
 // function to return the pagination string
-function pmpro_getPaginationString( $page = 1, $totalitems, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
+function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $adjacents = 1, $targetpage = '/', $pagestring = '&pn=' ) {
 	// defaults
 	if ( ! $adjacents ) {
 		$adjacents = 1;
@@ -2065,7 +2066,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * @param  int $user_id User ID to check for
  * @param  int $level_id Level ID to check for.
  */
-function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id ) {
+function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id = null ) {
 	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
@@ -2089,7 +2090,7 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id ) {
 /*
  pmpro_getLevel() returns the level object for a level
  *
- * $level may be the level id or name
+ * @param $level may be the level id or name
  *
  * Return values:
  *		Success returns the level object.
@@ -3352,7 +3353,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
 
 	// Return false if there is no plugin data.
-	if ( empty( $plugin_data ) ) {
+	if ( empty( $plugin_data ) || empty( $plugin_data['Version'] ) ) {
 		return false;
 	}
 
@@ -3425,6 +3426,9 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 
 /**
  * Checks if a webhook is running
+ * @since 2.5
+ * @param string $gateway If passed in, requires that specific gateway.
+ * @return bool True or false if a PMPro webhook set the constant or not.
  */
 function pmpro_doing_webhook( $gateway = null ){
 

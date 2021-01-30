@@ -596,7 +596,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
-					$r['initial_payment'] += intval( $r[ $level_id ]->initial_payment );
+					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
 				}
 			}
 			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );

@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.5
-Stable tag: 2.5
+Tested up to: 5.6
+Stable tag: 2.5.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,55 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.4 - 2021-01-28 =
+* ENHANCEMENT: Bump license year 2021 - 10 years.
+* ENHANCEMENT: Now passing billing street in `pmpro_tax` filter.
+* ENHANCEMENT: Prefixed our pmpro_stripeResponseHandler function to avoid conflicts.
+* ENHANCEMENT: Added getRealPaymentTransactionId method to PayPal Express gateway class to recover a missing transaction ID.
+* ENHANCEMENT: Added `pmpro_checkout_before_form` action to hook anything before the membership checkout form.
+* ENHANCEMENT: Added avatar as a valid field type for the [pmpro_member] shortcode.
+* ENHANCEMENT: Changed license key field to text type and unmasked. Masking implied the key was hashed before saving which is not true.
+* ENHANCEMENT: Added`pmpro_discount_code_used` action hook for when a discount code is used.
+* ENHANCEMENT: Stripe will now pull billing address info for recurring orders from webhooks.
+* BUG FIX/ENHANCEMENT: Improved user interface, error handling, and messages in the frontend password reset process.
+* BUG FIX/ENHANCEMENT: Added a space between state and zip code in billing info.
+* BUG FIX/ENHANCEMENT: Now rounding amount sent with Stripe payment request button.
+* BUG FIX/ENHANCEMENT: Improved `pmpro_check_plugin_version` function to also check a specific value of the `get_plugin_data` array.
+* BUG FIX/ENHANCEMENT: Added `pmpro_membership_levelmeta` and `pmpro_membership_ordermeta` tables to uninstall process.
+* BUG FIX/ENHANCEMENT: Escaped things in SQL queries in 2Checkout INS service handler.
+* BUG FIX/ENHANCEMENT: Cleaned up levels page template and added MMPU compatibility.
+* BUG FIX/ENHANCEMENT: Fixed pagination and export issues with a discount code filter on the Orders admin page.
+* BUG FIX/ENHANCEMENT: Prefixed our `pmpro_stripeResponseHandler` function to avoid conflicts with other Stripe code that may not be prefixed.
+* BUG FIX/ENHANCEMENT: Cleaned up conditionals and escaping improvements in the `pmpro_redirect_to_logged_in` function.
+* BUG FIX/ENHANCEMENT: Fixed deprecation notices for sites running PHP 8.
+* BUG FIX/ENHANCEMENT: Improved SQL query format in the applydiscountcode service.
+* BUG FIX: Fixed issues with ReCAPTCHA v2 and certain gateways.
+* BUG FIX: Fixed bug where blog name was not showing in Admin Activity email.
+* BUG FIX: Improved incorrect PHP doc blocks.
+* BUG FIX: Fixed an issue on some sites where password reset link in email was incorrect.
+* BUG FIX: Fixed level change issues during 2Checkout checkout.
+* BUG FIX: Fixed issue where `checkout_levels` REST API endpoint could return the wrong initial payment
+* BUG FIX: Fixed undefined notice for timestamp variable in the Stripe gateway class.
+* BUG FIX: Avoiding warnings when user ids are in the memberships_users table, but a user doesn't exist.
+* BUG FIX: Now setting the correct value for membership_id in the admin change emails.
+
+= 2.5.3 - 2021-01-26 =
+* SECURITY: Fixed indirect object reference vulnerability where order information, including customer names, email addresses, and order numbers could be accessed by non-admin WordPress users. (Thanks, WP Plugins Team)
+* SECURITY: Now checking ReCAPTCHA validation before enabling the submit button on the checkout form when using ReCAPTCHA v2. This helps to keep bad actors from testing credit cards on your checkout page. We were already doing a similar check when using ReCAPTCHA v3. Further updates to rate limit credit card failures are planned.
+
+= 2.5.2 - 2020-10-23 =
+* BUG FIX: Fixed issue where the RECAPTCHA library wasn't being loaded early enough to validate at checkout.
+* BUG FIX: Fixed issue where code in the Stripe class was unsetting some required fields, even if Stripe was not being used at checkout.
+
+= 2.5.1 - 2020-10-16 =
+* SECURITY: Fixed XSS vulnerability on the Members List page of the dashboard. (Thanks, Ron Masas from Checkmarx.com)
+* ENHANCEMENT: Add Ukrainian Hryvnia currency. (Thanks, Mirco Babini)
+* ENHANCEMENT: Added a "non-members" option to the Beaver Build module.
+* BUG FIX: Fixed issue where only USD and US were allowed with Stripe's GooglePay/ApplePay buttons.
+* BUG FIX: Fixed issue where some profile fields, e.g. those added with Register Helper, were accidentally updated or removed when accessing the frontend profile page.
+* BUG FIX: Fixed issue with tracking discount code uses when using the 2Checkout gateway. (Thanks, karambk on GitHub)
+* BUG FIX: No longer running excerpts through wpautop when a more tag is used.
+
 = 2.5 - 2020-10-02 =
 * FEATURE: When using the Stripe Gateway, you may now allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. Enable this feature from the payment settings page.
 * FEATURE: Added Divi Builder compatibility.
