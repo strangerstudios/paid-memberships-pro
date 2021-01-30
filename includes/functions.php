@@ -257,6 +257,7 @@ function pmpro_isLevelTrial( &$level ) {
 
 function pmpro_isLevelExpiring( &$level ) {
 	if ( ! empty( $level ) && ( ! empty( $level->expiration_number ) && $level->expiration_number > 0 ) || ! empty( $level->enddate ) ) {
+
 		$r = true;
 	} else {
 		$r = false;
@@ -276,12 +277,14 @@ function pmpro_isLevelExpiring( &$level ) {
 function pmpro_isLevelExpiringSoon( &$level ) {
 	if ( ! pmpro_isLevelExpiring( $level ) || empty( $level->enddate ) ) {
 		$r = false;
-	} else {
+	} else {		
 		// days til expiration for the standard level
 		$standard = pmpro_getLevel( $level->id );
 
 		if ( ! empty( $standard->expiration_number ) ) {
-			if ( $standard->expiration_period == 'Day' ) {
+			if ( $standard->expiration_period == 'Hour' ) {
+				$days = $level->expiration_number;
+			} else if ( $standard->expiration_period == 'Day' ) {
 				$days = $level->expiration_number;
 			} elseif ( $standard->expiration_period == 'Week' ) {
 				$days = $level->expiration_number * 7;
@@ -297,7 +300,13 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 		// are we within the days til expiration?
 		$now = current_time( 'timestamp' );
 
-		if ( $now + ( $days * 3600 * 24 ) >= $level->enddate ) {
+		if( $standard->expiration_period == 'Hour' ){
+			if( $now + ( $days * 60 ) >= $level->enddate ){
+				$r = true;
+			} else {
+				$r = false;
+			}
+		} else if ( $now + ( $days * 3600 * 24 ) >= $level->enddate ) {
 			$r = true;
 		} else {
 			$r = false;
@@ -564,6 +573,7 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 }
 
 function pmpro_getLevelExpiration( &$level ) {
+
 	if ( $level->expiration_number ) {
 		$expiration_text = sprintf( __( 'Membership expires after %1$d %2$s.', 'paid-memberships-pro' ), $level->expiration_number, pmpro_translate_billing_period( $level->expiration_period, $level->expiration_number ) );
 	} else {
@@ -1540,6 +1550,8 @@ function pmpro_calculateRecurringRevenue( $s, $l ) {
 			UNION
 		SELECT SUM((365/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Day' AND cycle_number <> 365 $user_ids_query
 			UNION
+		SELECT SUM((24/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Hour' AND cycle_number <> 24 $user_ids_query
+			UNION
 		SELECT SUM((52/cycle_number)*billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Week' AND cycle_number <> 52 $user_ids_query
 			UNION
 		SELECT SUM(billing_amount) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND cycle_period = 'Year' $user_ids_query
@@ -1675,7 +1687,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
 
 		// today
-		$today = strtotime( date_i18n( 'm/d/Y 00:00:00', current_time( 'timestamp' ) ) );
+		$today = strtotime( date_i18n( 'm/d/Y H:i:00', current_time( 'timestamp' ) ) );
 
 		// has this code started yet?
 		if ( ! empty( $dbcode->starts ) && $dbcode->starts > $today ) {
@@ -3418,9 +3430,9 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 			unset( $format[$index] );
 		}
 		return $wpdb->insert( $table, $data, $format );
-	} else {
+	} else {		
 		// Replace.
-		return $wpdb->replace( $table, $data, $format );
+		$replaced = $wpdb->replace( $table, $data, $format );
 	}
 }
 

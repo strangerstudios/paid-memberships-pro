@@ -432,4 +432,3 @@ function pmpro_add_email_order_modal() {
 	</div>
 	<?php
 }
-

@@ -257,6 +257,16 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 2.5;
 		pmpro_setOption( 'db_version', '2.5' );
 	}
+
+	/**
+	 * Version 2.4
+	 * Fixing subscription_transaction_id
+	 * for orders created through a Stripe Update.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );	
+ 	if($pmpro_db_version < 2.6) {
+ 		$pmpro_db_version = pmpro_upgrade_2_6();
+ 	}
 }
 
 function pmpro_db_delta()

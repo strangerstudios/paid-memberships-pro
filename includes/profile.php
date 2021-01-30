@@ -81,6 +81,9 @@ function pmpro_membership_level_profile_fields($user)
 			$selected_expires_day =  date( 'j', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 			$selected_expires_month =  date( 'm', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 			$selected_expires_year =  date( 'Y', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+
+			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -103,6 +106,21 @@ function pmpro_membership_level_profile_fields($user)
 					</select>
 					<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
 					<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
+					<?php _e('at', 'paid-memberships-pro'); ?>
+					<select name='expires_hour'>
+						<?php
+						for( $i = 0; $i <= 24; $i++ ){
+							echo "<option value='".$i."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+						}
+						?>
+					</select>
+					<select name='expires_minute'>
+						<?php
+						for( $i = 0; $i <= 59; $i++ ){
+							echo "<option value='".$i."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+						}
+						?>
+					</select>
 				</span>
 				<script>
 					jQuery('#expires').change(function() {
@@ -313,6 +331,14 @@ function pmpro_membership_level_profile_fields_update()
 	{
 		//update the expiration date
 		$expiration_date = intval($_REQUEST['expires_year']) . "-" . str_pad(intval($_REQUEST['expires_month']), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day']), 2, "0", STR_PAD_LEFT);
+		if( !empty( $_REQUEST['expires_hour'] ) ){
+			if( !empty( $_REQUEST['expires_minute'] ) ){
+				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":".$_REQUEST['expires_minute'].":00";
+			} else{
+				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":00:00";
+			}
+		}
+		
 		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
