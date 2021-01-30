@@ -1,5 +1,17 @@
 <?php
-
+/**
+ * Upgrade to 2.6
+ * We changed the pmpro_cron_expire_memberships cron
+ * to run hourly instead of daily.
+ * To ensure that existing members still expire at least
+ * 1 calendar day after their expiration date, we are
+ * updating old expiration date timestamps to set
+ * the time component to 11:59. This way e.g.
+ * someone who checked out at 3pm on Dec 31 won't expire
+ * until Jan 1 at midnight.
+ * Going forward, we will always set the expiration time to 11:59
+ * unless the level is set up to expire hourly.
+ */
 function pmpro_upgrade_2_6(){
 
 	global $wpdb;
@@ -22,11 +34,9 @@ function pmpro_upgrade_2_6(){
 	/**
 	 * Reschedule Cron Job for Hourly Checks
 	 */
-	$timestamp = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
-
-	wp_unschedule_event( $timestamp, 'pmpro_cron_expire_memberships' );
-
-	wp_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
-
+	$next = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
+	if ( ! empty( $next ) ) {
+		wp_unschedule_event( $next, 'pmpro_cron_expire_memberships' );
+	}
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
 }
-
