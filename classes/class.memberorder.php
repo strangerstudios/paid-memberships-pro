@@ -556,6 +556,8 @@
 
 			//set values array for filter
 			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate);
+			if(!empty($this->billing->street))
+				$values['billing_street'] = $this->billing->street;
 			if(!empty($this->billing->state))
 				$values['billing_state'] = $this->billing->state;
 			if(!empty($this->billing->city))

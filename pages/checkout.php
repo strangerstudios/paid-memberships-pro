@@ -19,6 +19,9 @@
 		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
 	}
 ?>
+
+<?php do_action('pmpro_checkout_before_form'); ?>
+
 <div id="pmpro_level-<?php echo $pmpro_level->id; ?>" class="<?php echo pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ); ?>">
 <form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 

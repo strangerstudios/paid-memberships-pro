@@ -108,7 +108,57 @@ function pmpro_init_recaptcha() {
 						 src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo $lang;?>&render=explicit" async defer>
 					 </script>
 				<?php } else { ?>
-					<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>"></div>
+					<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo $pubkey;?>"></div>
+					<script type="text/javascript">															
+						var pmpro_recaptcha_validated = false;
+						var pmpro_recaptcha_error_msg = "<?php esc_attr_e( 'Please check the ReCAPTCHA box to confirm you are not a bot.', 'paid-memberships-pro' ); ?>";
+						
+						// Validation callback.
+						function pmpro_recaptcha_validatedCallback() {
+							// ReCAPTCHA worked.
+							pmpro_recaptcha_validated = true;
+							
+							// Re-enable the submit button.
+							jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
+
+							// Hide processing message.
+							jQuery('#pmpro_processing_message').css('visibility', 'hidden');
+							
+							// Hide error message.
+							if ( jQuery('#pmpro_message').text() == pmpro_recaptcha_error_msg ) {
+								jQuery( '#pmpro_message' ).hide();
+								jQuery( '#pmpro_message_bottom' ).hide();
+							}
+						};
+						
+						// Expiration callback.
+						function pmpro_recaptcha_expiredCallback() {
+							pmpro_recaptcha_validated = false;
+						}
+						
+						// Check validation on submit.
+						jQuery(document).ready(function(){
+							jQuery('#pmpro_form').submit(function(event){
+								if( pmpro_recaptcha_validated == false ) {
+									event.preventDefault();
+									
+									// Re-enable the submit button.
+									jQuery('.pmpro_btn-submit-checkout,.pmpro_btn-submit').removeAttr('disabled');
+
+									// Hide processing message.
+									jQuery('#pmpro_processing_message').css('visibility', 'hidden');
+
+									// error message
+									jQuery( '#pmpro_message' ).text( pmpro_recaptcha_error_msg ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).hide().fadeIn();
+									jQuery( '#pmpro_message_bottom' ).hide().fadeIn();
+
+									return false;
+								} else {
+									return true;
+								}
+							});
+						});
+					 </script>
 					<script type="text/javascript"
 						src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang;?>">
 					</script>

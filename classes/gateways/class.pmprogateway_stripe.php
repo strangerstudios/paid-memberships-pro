@@ -2532,7 +2532,7 @@ class PMProGateway_stripe extends PMProGateway {
 						$offset = get_option( 'gmt_offset' );						
 						$timestamp = $subscription->current_period_start + ( $offset * 3600 );
 					} else {
-						$timestamp = $false;  // shouldn't really get here
+						$timestamp = null;  // shouldn't really get here
 					}
 				}
 			}
