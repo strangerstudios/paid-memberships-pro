@@ -183,16 +183,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			// Param id was used instead (old style endpoint).
 			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
-				$user_id = $params['id'];
+				$user_id = intval( $params['id'] );
 			}
 			
 			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( $params['email'] );
+				$user = get_user_by_email( sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -213,16 +213,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			// Param id was used instead.
 			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
-				$user_id = $params['id'];
+				$user_id = intval( $params['id'] );
 			}
 
 			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( $params['email'] );
+				$user = get_user_by_email( sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -243,13 +243,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_get_has_membership_access($request) {
 			$params = $request->get_params();
-			$post_id = isset( $params['post_id'] ) ? $params['post_id'] : null;
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+					$user = get_user_by_email( sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -274,13 +274,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
+			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+					$user = get_user_by_email( sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -307,13 +307,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_cancel_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
+			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+					$user = get_user_by_email( sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -460,7 +460,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$params = $request->get_params();
-			$code = isset( $params['code'] ) ? $params['code'] : null;
+			$code = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
 
 			if ( empty( $code ) ) {
 				return new WP_REST_Response( 'No discount code sent.', 400 );
@@ -487,7 +487,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$uses = isset( $params['uses'] ) ? intval( $params['uses'] ) : '';
 			$starts = isset( $params['starts'] ) ? sanitize_text_field( $params['starts'] ) : '';
 			$expires = isset( $params['expires'] ) ? sanitize_text_field( $params['expires'] ) : '';
-			$levels = isset( $params['levels'] ) ? $params['levels'] : null;
+			$levels = isset( $params['levels'] ) ? sanitize_text_field( $params['levels'] ) : null;
 
 			if ( ! empty( $levels ) ) {
 				$levels = json_decode( $levels, true );
@@ -547,16 +547,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 
 			if ( isset( $params['level_id'] ) ) {
-				$level_id = $params['level_id'];
+				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
-				$level_id = $params['level'];
+				$level_id = intval( $params['level'] );
 			}
 
 			if ( empty( $level_id ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
-			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 			
 			// Hide confirmation message if not an admin or member.
@@ -581,15 +581,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
 			} elseif ( isset( $params['level_id'] ) ) {
-				$level_ids = explode( '+', $params['level_id'] );
+				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
-				$level_ids = explode( '+', $params['level'] );
+				$level_ids = explode( '+', intval( $params['level'] ) );
 			}
 
 			if ( empty( $level_ids ) ) {
 				return new WP_REST_Response( 'No levels found.', 400 );
 			}
-			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
 
 			$r = array();
 			$r['initial_payment'] = 0.00;
