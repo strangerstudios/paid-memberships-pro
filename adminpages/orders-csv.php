@@ -330,6 +330,14 @@ $default_columns = array(
 	array( "discount_code", "code" )
 );
 
+// Hiding couponamount by default.
+$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+if ( empty( $coupons ) ) {
+	$csv_file_header_array = array_diff( $csv_file_header_array, array( 'couponamount' ) );
+	$couponamount_array_key = array_keys( $default_columns, array( 'order', 'couponamount' ) );
+	unset( $default_columns[ $couponamount_array_key[0] ] );
+}
+
 $default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
 
 $csv_file_header_array = apply_filters( "pmpro_order_list_csv_export_header_array", $csv_file_header_array );

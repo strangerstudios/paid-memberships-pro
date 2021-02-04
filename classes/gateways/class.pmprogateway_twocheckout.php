@@ -217,7 +217,7 @@
 		 */
 		static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 		{
-			global $wpdb, $discount_code_id;
+			global $wpdb;
 
 			//if no order, no need to pay
 			if(empty($morder))
@@ -227,9 +227,11 @@
 			$morder->saveOrder();
 
 			//save discount code use
-			if(!empty($discount_code_id))
+			if(isset($morder->membership_level) && !empty($morder->membership_level->code_id))
+			{
+				$discount_code_id = (int)$morder->membership_level->code_id;
 				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
-
+			}
 			do_action("pmpro_before_send_to_twocheckout", $user_id, $morder);
 
 			$morder->Gateway->sendToTwocheckout($morder);

@@ -33,7 +33,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 	
@@ -45,7 +45,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 
@@ -84,7 +84,7 @@ jQuery( document ).ready( function( $ ) {
 					address: address,
 					name: name,
 				}
-			}).then( stripeResponseHandler );
+			}).then( pmpro_stripeResponseHandler );
 
 			// Prevent the form from submitting with the default action.
 			return false;
@@ -94,8 +94,73 @@ jQuery( document ).ready( function( $ ) {
 		}
 	});
 
+	// Check if Payment Request Button is enabled.
+	if ( $('#payment-request-button').length ) {
+		var paymentRequest = null;
+
+		// Create payment request
+		jQuery.noConflict().ajax({
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			dataType: 'json',
+			data: jQuery( "#pmpro_form" ).serialize(),
+			success: function(data) {
+				if ( data.hasOwnProperty('initial_payment') ) {
+					paymentRequest = stripe.paymentRequest({
+						country: pmproStripe.accountCountry,
+						currency: pmproStripe.currency,
+						total: {
+							label: pmproStripe.siteName,
+							amount: Math.round( data.initial_payment * 100 ),
+						},
+						requestPayerName: true,
+						requestPayerEmail: true,
+					});
+					var prButton = elements.create('paymentRequestButton', {
+						paymentRequest: paymentRequest,
+					});
+					// Mount payment request button.
+					paymentRequest.canMakePayment().then(function(result) {
+					if (result) {
+						prButton.mount('#payment-request-button');
+					} else {
+						$('#payment-request-button').hide();
+					}
+					});
+					// Handle payment request button confirmation.
+					paymentRequest.on('paymentmethod', function( event ) {
+						pmpro_stripeResponseHandler( event );
+					});
+				}
+			}
+		});
+
+		function stripeUpdatePaymentRequestButton() {
+			jQuery.noConflict().ajax({
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				dataType: 'json',
+				data: jQuery( "#pmpro_form" ).serialize(),
+				success: function(data) {
+					if ( data.hasOwnProperty('initial_payment') ) {
+						paymentRequest.update({
+							total: {
+								label: pmproStripe.siteName,
+								amount: Math.round( data.initial_payment * 100 ),
+							},
+						});
+					}
+				}
+			});
+		}
+
+		if ( pmproStripe.updatePaymentRequestButton ) {
+			$(".pmpro_alter_price").change(function(){
+				stripeUpdatePaymentRequestButton();
+			});
+		}
+	}
+
 	// Handle the response from Stripe.
-	function stripeResponseHandler( response ) {
+	function pmpro_stripeResponseHandler( response ) {
 
 		var form, data, card, paymentMethodId, customerId;
 

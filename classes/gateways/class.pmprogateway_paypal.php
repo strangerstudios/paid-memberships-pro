@@ -601,8 +601,16 @@
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&COUNTRYCODE=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&SHIPTOPHONENUM=" . $order->billing->phone;
 			}
 
+			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
+			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
+			
+			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
+
 			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
+			
+			///echo str_replace("&", "&<br />", $nvpStr);
+			///exit;
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 

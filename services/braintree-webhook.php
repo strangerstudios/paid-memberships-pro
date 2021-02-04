@@ -20,6 +20,8 @@ if ( ! defined( "ABSPATH" ) ) {
 //globals
 global $wpdb;
 
+define( 'PMPRO_DOING_WEBHOOK', 'braintree' );
+
 // Debug log
 global $logstr;
 $logstr = array( "Logged On: " . date_i18n( "m/d/Y H:i:s", current_time( 'timestamp' ) ) );
@@ -134,6 +136,9 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->PaymentAmount               = $transaction->amount;
 	$morder->payment_transaction_id      = $transaction->id;
 	$morder->subscription_transaction_id = $webhookNotification->subscription->id;
+
+	//Assume no tax for now. Add ons will handle it later.
+	$morder->tax = 0;
 	
 	$morder->gateway             = $old_order->gateway;
 	$morder->gateway_environment = $old_order->gateway_environment;

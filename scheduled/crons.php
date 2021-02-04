@@ -35,12 +35,15 @@ function pmpro_cron_expire_memberships()
 			//send an email
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);
-			$pmproemail->sendMembershipExpiredEmail($euser);
+			if ( ! empty( $euser ) ) {
+				$pmproemail->sendMembershipExpiredEmail($euser);
 
-			if(current_user_can('manage_options'))
-				printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-			else
-				echo ". ";
+				if(current_user_can('manage_options')) {
+					printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
+				} else {
+					echo ". ";
+				}
+			}
 		}
 	}
 }
@@ -103,12 +106,15 @@ function pmpro_cron_expiration_warnings()
 			//send an email
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);
-			$pmproemail->sendMembershipExpiringEmail($euser);
+			if ( ! empty( $euser ) ) {
+				$pmproemail->sendMembershipExpiringEmail($euser);
 
-			if(current_user_can('manage_options'))
-				printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-			else
-				echo ". ";
+				if(current_user_can('manage_options')) {
+					printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
+				} else {
+					echo ". ";
+				}
+			}
 		}
 
 		//delete all user meta for this key to prevent duplicate user meta rows
@@ -161,6 +167,9 @@ function pmpro_cron_credit_card_expiring_warnings()
 		{
 			//get user
 			$euser = get_userdata($user_id);
+			if ( empty( $euser ) ) {
+				continue;
+			}
 
 			//make sure their level doesn't have a billing limit that's been reached
 			$euser->membership_level = pmpro_getMembershipLevelForUser($euser->ID);
@@ -189,10 +198,11 @@ function pmpro_cron_credit_card_expiring_warnings()
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
-				if(current_user_can('manage_options'))
+				if(current_user_can('manage_options')) {
 					printf(__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				else
+				} else {
 					echo ". ";
+				}
 			}
 
 			//update user meta so we don't email them again
@@ -245,12 +255,15 @@ function pmpro_cron_trial_ending_warnings()
 			//send an email
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);
-			$pmproemail->sendTrialEndingEmail($euser);
+			if ( ! empty( $euser ) ) {
+				$pmproemail->sendTrialEndingEmail($euser);
 
-			if(current_user_can('manage_options'))
-				printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-			else
-				echo ". ";
+				if(current_user_can('manage_options')) {
+					printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
+				} else {
+					echo ". ";
+				}
+			}
 		}
 
 		//update user meta so we don't email them again

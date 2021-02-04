@@ -21,8 +21,8 @@ if ( isset( $_REQUEST['l'] ) ) {
 	$l = false;
 }
 
-if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = intval( $_REQUEST['discount_code'] );
+if ( isset( $_REQUEST['discount-code'] ) ) {
+	$discount_code = intval( $_REQUEST['discount-code'] );
 } else {
 	$discount_code = false;
 }
@@ -230,9 +230,15 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'tax', $read_only_fields ) && isset( $_POST['tax'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
-	if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-		$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+
+	// Hiding couponamount by default.
+	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+	if ( ! empty( $coupons ) ) {
+		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
+			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
+		}
 	}
+
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -611,19 +617,28 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php } ?>
 				</td>
 			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
+			<?php
+				// Hiding couponamount by default.
+				$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+				if ( ! empty( $coupons ) ) { ?>
+				<tr>
+					<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
+					</th>
+					<td>
 					<?php
-					if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->couponamount );
-					} else {
+						if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
+							echo $order->couponamount;
+						} else {
+						?>
+							<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
+						<?php 
+						}
 					?>
-						<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
+					</td>
+				</tr>
+				<?php
+				}
+			?>
 			<tr>
 				<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -635,7 +650,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 											<input id="total" name="total" type="text" size="10"
 												   value="<?php echo esc_attr( $order->total ); ?>"/>
 					<?php } ?>
-					<p class="description"><?php esc_html_e( 'Should be subtotal + tax - couponamount.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 
@@ -1069,7 +1083,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				$sqlQuery .= "ORDER BY id DESC ";
 				$codes = $wpdb->get_results($sqlQuery, OBJECT);
 				if ( ! empty( $codes ) ) { ?>
-				<select id="discount_code" name="discount_code">
+				<select id="discount-code" name="discount-code">
 					<?php foreach ( $codes as $code ) { ?>
 						<option
 							value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
@@ -1111,7 +1125,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
 					jQuery('#submit').show();
@@ -1127,7 +1141,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').show();
 					jQuery('#to').show();
@@ -1143,7 +1157,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').show();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1159,7 +1173,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').show();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1175,7 +1189,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
-					jQuery('#discount_code').show();
+					jQuery('#discount-code').show();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1191,7 +1205,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').show();
 					jQuery('#l').hide();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1207,7 +1221,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					jQuery('#predefined-date').hide();
 					jQuery('#status').hide();
 					jQuery('#l').hide();
-					jQuery('#discount_code').hide();
+					jQuery('#discount-code').hide();
 					jQuery('#submit').show();
 					jQuery('#from').hide();
 					jQuery('#to').hide();
@@ -1343,8 +1357,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								<a title="<?php esc_attr_e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => '-1', 'copy' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Copy', 'paid-memberships-pro' ); ?></a>
 							</span> |
 							<span class="delete">
-								<a href="javascript:pmpro_askfirst('<?php echo esc_attr
-								( sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ) ); ?>', 'admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>'); void(0);"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
+							<?php $delete_prompt = sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ); ?>
+								<a href='javascript:pmpro_askfirst("<?php echo esc_attr
+								( $delete_prompt ) ?>", "admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>"); void(0);'><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
 							</span> |
 							<span class="print">
 								<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
@@ -1409,7 +1424,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php if ( ! empty( $order->billing->street ) ) { ?>
 							<?php echo esc_html( $order->billing->street ); ?><br/>
 							<?php if ( $order->billing->city && $order->billing->state ) { ?>
-								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?><?php echo esc_html( $order->billing->zip ); ?>
+								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?> <?php echo esc_html( $order->billing->zip ); ?>
 									<?php
 									if ( ! empty( $order->billing->country ) ) {
 										echo esc_html( $order->billing->country ); }

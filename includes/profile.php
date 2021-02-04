@@ -55,7 +55,7 @@ function pmpro_membership_level_profile_fields($user)
 				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
                 {
 					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
-						echo __('Paid', 'paid-memberships-pro' ) . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
+						echo __('Paid', 'paid-memberships-pro' ) . " " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
 					else
 						_e('Not paying.', 'paid-memberships-pro' );
 				}
@@ -405,13 +405,12 @@ function pmpro_member_profile_edit_form() {
 		return;
 	}
 
-	do_action( 'pmpro_personal_options_update', $current_user->ID );
-
 	// Saving profile updates.
 	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
 		$user->ID         = $_POST[ 'user_id' ];
+		do_action( 'pmpro_personal_options_update', $user->ID );
 	} else {
 		$update = false;
 	}

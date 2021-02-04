@@ -51,8 +51,18 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			if(is_numeric($level))
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
-			//check this level
+			// Check if this level uses billing limits.
 			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+				return false;
+			}
+
+			// Check if this level has a billing period longer than 1 year.
+			if ( 
+				( $level->cycle_period === 'Year' && $level->cycle_number > 1 ) ||
+				( $level->cycle_period === 'Month' && $level->cycle_number > 12 ) ||
+				( $level->cycle_period === 'Week' && $level->cycle_number > 52 ) ||
+				( $level->cycle_period === 'Day' && $level->cycle_number > 365 )
+			) {
 				return false;
 			}
 		}
@@ -231,7 +241,19 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 
 		// Check this discount code level for gateway compatibility
 		if ( $gateway == 'stripe' ) {
-			if ( ( $discount_code_level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+			// Check if this code level has a billing limit.
+			if ( ( intval( $discount_code_level->billing_limit ) > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+				global $pmpro_stripe_error;
+				$pmpro_stripe_error = true;
+				return false;
+			}
+			// Check if this code level has a billing period longer than 1 year.
+			if ( 
+				( $discount_code_level->cycle_period === 'Year' && intval( $discount_code_level->cycle_number ) > 1 ) ||
+				( $discount_code_level->cycle_period === 'Month' && intval( $discount_code_level->cycle_number ) > 12 ) ||
+				( $discount_code_level->cycle_period === 'Week' && intval( $discount_code_level->cycle_number ) > 52 ) ||
+				( $discount_code_level->cycle_period === 'Day' && intval( $discount_code_level->cycle_number ) > 365 )
+			) {
 				global $pmpro_stripe_error;
 				$pmpro_stripe_error = true;
 				return false;
@@ -249,7 +271,7 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 				$pmpro_braintree_error = true;
 				return false;
 			}
-		} if ( $gateway == 'twocheckout' ) {
+		} elseif ( $gateway == 'twocheckout' ) {
 			if ( $discount_code_level->trial_amount > $discount_code_level->billing_amount ) {
 				global $pmpro_twocheckout_error;
 				$pmpro_twocheckout_error = true;
