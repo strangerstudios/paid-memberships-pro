@@ -732,24 +732,10 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->LastName  = $_POST['last_name'];
 		$morder->Email     = $_POST['payer_email'];
 
-		//get address info if appropriate
-		if ( $last_order->gateway == "paypal" )    //website payments pro
-		{
-			$morder->Address1    = get_user_meta( $last_order->user_id, "pmpro_baddress1", true );
-			$morder->City        = get_user_meta( $last_order->user_id, "pmpro_bcity", true );
-			$morder->State       = get_user_meta( $last_order->user_id, "pmpro_bstate", true );
-			$morder->CountryCode = "US";
-			$morder->Zip         = get_user_meta( $last_order->user_id, "pmpro_bzip", true );
-			$morder->PhoneNumber = get_user_meta( $last_order->user_id, "pmpro_bphone", true );
+		$morder->find_billing_address();
 
-			$morder->billing->name    = $_POST['first_name'] . " " . $_POST['last_name'];
-			$morder->billing->street  = get_user_meta( $last_order->user_id, "pmpro_baddress1", true );
-			$morder->billing->city    = get_user_meta( $last_order->user_id, "pmpro_bcity", true );
-			$morder->billing->state   = get_user_meta( $last_order->user_id, "pmpro_bstate", true );
-			$morder->billing->zip     = get_user_meta( $last_order->user_id, "pmpro_bzip", true );
-			$morder->billing->country = get_user_meta( $last_order->user_id, "pmpro_bcountry", true );
-			$morder->billing->phone   = get_user_meta( $last_order->user_id, "pmpro_bphone", true );
-
+		//get card info if appropriate
+		if ( $last_order->gateway == "paypal" ) {   //website payments pro
 			//get CC info that is on file
 			$morder->cardtype              = get_user_meta( $last_order->user_id, "pmpro_CardType", true );
 			$morder->accountnumber         = hideCardNumber( get_user_meta( $last_order->user_id, "pmpro_AccountNumber", true ), false );
