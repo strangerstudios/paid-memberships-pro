@@ -2978,7 +2978,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pending_setup_intent.payment_method',
 				),
 			);
-			$order->subscription = Stripe_Subscription::create( $params );
+			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_params_array', $params ) );
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
