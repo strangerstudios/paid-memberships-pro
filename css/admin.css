@@ -135,10 +135,10 @@
 
 /* members list */
 .wp-list-table.members .column-ID {
-    width: 5%;
+	white-space: nowrap;
 }
-.wp-list-table.members .column-username {
-    width: 15%;
+.wp-list-table.members #display_name {
+	width: auto;
 }
 
 /* settings */
