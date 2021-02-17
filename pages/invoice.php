@@ -54,12 +54,16 @@
 			<?php if(!empty($pmpro_invoice->billing->name)) { ?>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-billing-address' ); ?>">
 					<strong><?php _e('Billing Address', 'paid-memberships-pro' );?></strong>
-					<p><?php echo $pmpro_invoice->billing->name?><br />
-					<?php echo $pmpro_invoice->billing->street?><br />
-					<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-						<?php echo $pmpro_invoice->billing->city?>, <?php echo $pmpro_invoice->billing->state?> <?php echo $pmpro_invoice->billing->zip?> <?php echo $pmpro_invoice->billing->country?><br />
-					<?php } ?>
-					<?php echo formatPhone($pmpro_invoice->billing->phone)?>
+					<p>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_name' ); ?>"><?php echo $pmpro_invoice->billing->name; ?></span>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_street' ); ?>"><?php echo $pmpro_invoice->billing->street; ?></span>
+						<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
+							<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_city' ); ?>"><?php echo $pmpro_invoice->billing->city; ?></span>
+							<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_state' ); ?>"><?php echo $pmpro_invoice->billing->state; ?></span>
+							<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_zip' ); ?>"><?php echo $pmpro_invoice->billing->zip; ?></span>
+							<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_country' ); ?>"><?php echo $pmpro_invoice->billing->country; ?></span>
+						<?php } ?>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_phone' ); ?>"><?php echo formatPhone($pmpro_invoice->billing->phone); ?></span>
 					</p>
 				</div> <!-- end pmpro_invoice-billing-address -->
 			<?php } ?>
