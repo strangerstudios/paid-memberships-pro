@@ -413,6 +413,17 @@ select.pmpro_error {
 	padding-right: 10px;
 }
 
+.pmpro_invoice-field-billing_name,
+.pmpro_invoice-field-billing_street,
+.pmpro_invoice-field-billing_country,
+.pmpro_invoice-field-billing_phone {
+	display: block;
+}
+
+.pmpro_invoice-field-billing_city:after {
+	content: ',';
+}
+
 /*---------------------------------------
 	Membership Account
 ---------------------------------------*/
