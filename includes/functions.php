@@ -3428,10 +3428,18 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
  * Checks if a webhook is running
  * @since 2.5
  * @param string $gateway If passed in, requires that specific gateway.
+ * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
  */
-function pmpro_doing_webhook( $gateway = null ){
+function pmpro_doing_webhook( $gateway = null, $set = false ){
+	// If second param is set, set things up.
+	if ( ! empty( $set ) ) {
+		define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		do_action( 'pmpro_doing_webhook', $gateway );
+		return true;
+	}
 
+	// Otherwise, check if we were already set up.
 	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
 		if( $gateway !== null ){
 			if( PMPRO_DOING_WEBHOOK == $gateway ){

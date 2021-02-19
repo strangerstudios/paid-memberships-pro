@@ -20,7 +20,8 @@ if ( ! defined( "ABSPATH" ) ) {
 //globals
 global $wpdb;
 
-define( 'PMPRO_DOING_WEBHOOK', 'braintree' );
+// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+pmpro_doing_webhook( 'braintree', true );
 
 // Debug log
 global $logstr;

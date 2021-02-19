@@ -15,7 +15,8 @@
 	global $logstr;
 	$logstr = "";
 
-	define( 'PMPRO_DOING_WEBHOOK', 'stripe' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))

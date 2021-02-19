@@ -20,7 +20,8 @@
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
-	define( 'PMPRO_DOING_WEBHOOK', 'twocheckout' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'twocheckout', true );
 
 	//validate?
 	if( ! pmpro_twocheckoutValidate() ) {
