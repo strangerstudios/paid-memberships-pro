@@ -709,12 +709,12 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		//set amount based on which PayPal type
 		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
 
-			if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-				$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = $_POST['amount'];
-			} elseif ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
+			if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
 				$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
 				$morder->PaymentAmount  = $_POST['mc_gross'];
+			} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
+				$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = $_POST['amount'];
 			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
 				$morder->InitialPayment = $_POST['payment_gross'];    //not the initial payment, but the class is expecting that
 				$morder->PaymentAmount  = $_POST['payment_gross'];
@@ -723,6 +723,10 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 			//check for tax
 			if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
 				$morder->tax = (float) $_POST['tax'];
+				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->InitialPayment > (float) $_POST['amount'] ) {
+					$morder->tax *= (float) $morder->InitialPayment / (float) $_POST['amount'];
+				}
+
 				$morder->total = $morder->InitialPayment;	//so tax isn't added into the subtotal again
 				$morder->subtotal = $morder->total - $morder->tax;
 			}
