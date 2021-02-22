@@ -533,7 +533,11 @@
 
 			</tbody>
 		</table>
+
+		<?php do_action( 'pmpro_membership_level_after_billing_details_settings' ); ?>
+
 		<hr />
+
 		<h2 class="title"><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
 			<tbody>
