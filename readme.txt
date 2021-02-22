@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4
-Tested up to: 5.6
-Stable tag: 2.5.4
+Tested up to: 5.6.2
+Stable tag: 2.5.5
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,19 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.5 - 2021-02-22 =
+* SECURITY: Better sanitization of parameters on some REST API endpoints.
+* SECURITY: Now showing reCAPTCHA field at checkout even for logged in users.
+* ENHANCEMENT: Added find_billing_address() method to the MemberOrder class. This will look for the address on the last order with the same sub id or in user meta.
+* ENHANCEMENT: Better styling for invoices shown on the frontend.
+* ENHANCEMENT: No longer forcing column width % in the members list table.
+* ENHANCEMENT: Added a pmpro_doing_webhook action that is fired at the beginning of our webhook/IPN handlers.
+* ENHANCEMENT: Added a pmpro_membership_level_after_billing_details_settings hook to the edit membership level page. This hook should now be used to add billing related settings.
+* BUG FIX/ENHANCEMENT: Allowing order total to be set to 0, even if there is a subtotal and tax amount.
+* BUG FIX/ENHANCEMENT: Stripe checkout fields will now use the language set in the Stripe settings.
+* BUG FIX/ENHANCEMENT: The URL check in our notifications code now accepts arrays (e.g. to see if a URL has one of a group of top level domains). This fixes a warning some may have seen in error logs.
+* BUG FIX: Fixed issues where totals on PayPal recurring payments were sometimes incorrect if both an mt_gross and amount field were passed via IPN.
+
 = 2.5.4 - 2021-01-28 =
 * ENHANCEMENT: Bump license year 2021 - 10 years.
 * ENHANCEMENT: Now passing billing street in `pmpro_tax` filter.
