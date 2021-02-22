@@ -1016,6 +1016,11 @@
 			return false;
 		}
 
+		/**
+		 * Sets the billing address fields on the order object.
+		 * Checks the last order for the same sub or pulls from user meta.
+		 * @since 2.5.5
+		 */
 		function find_billing_address() {
 			global $wpdb;
 
