@@ -384,7 +384,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:103 adminpages/advancedsettings.php:94
 #: adminpages/advancedsettings.php:101
 msgid "Message for Logged-out Users"
-msgstr "Messaggio per Visitatori (NON-Autenticati - Login NON effettuato)"
+msgstr "Messaggio per Visitatori (Login NON effettuato)"
 
 #: adminpages/advancedsettings.php:107 adminpages/advancedsettings.php:98
 #: adminpages/advancedsettings.php:105
@@ -434,7 +434,7 @@ msgstr "No - Nascondi estratto."
 #: adminpages/advancedsettings.php:138 adminpages/advancedsettings.php:118
 #: adminpages/advancedsettings.php:125
 msgid "Yes - Show excerpts."
-msgstr "Si - Mostra estratto."
+msgstr "Sì - Mostra estratto."
 
 #: adminpages/advancedsettings.php:144
 msgid "Hide Ads From Members?"
@@ -525,7 +525,7 @@ msgstr "solo per multisito"
 #: classes/gateways/class.pmprogateway_stripe.php:209 includes/profile.php:102
 #: includes/profile.php:106 includes/profile.php:122 includes/profile.php:124
 msgid "Yes"
-msgstr "Si"
+msgstr "Sì"
 
 #: adminpages/advancedsettings.php:215 adminpages/advancedsettings.php:195
 #: adminpages/advancedsettings.php:202
@@ -535,17 +535,17 @@ msgstr "Abilitare reCAPTCHA?"
 #: adminpages/advancedsettings.php:220 adminpages/advancedsettings.php:200
 #: adminpages/advancedsettings.php:207
 msgid "Yes - Free memberships only."
-msgstr "Si - Solo iscrizioni gratuite."
+msgstr "Sì - Solo iscrizioni gratuite."
 
 #: adminpages/advancedsettings.php:221 adminpages/advancedsettings.php:201
 #: adminpages/advancedsettings.php:208
 msgid "Yes - All memberships."
-msgstr "Si -  Tutte le iscrizioni."
+msgstr "Sì - Tutte le iscrizioni."
 
 #: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
 #: adminpages/advancedsettings.php:210
 msgid "A free reCAPTCHA key is required."
-msgstr "E' richiesta una chiave reCAPTCHA gratuita."
+msgstr "È richiesta una chiave reCAPTCHA gratuita."
 
 #: adminpages/advancedsettings.php:223 adminpages/advancedsettings.php:203
 #: adminpages/advancedsettings.php:210
@@ -573,7 +573,7 @@ msgid ""
 "If yes, create a WordPress page containing your TOS agreement and assign it "
 "using the dropdown above."
 msgstr ""
-"Se si, creata una pagina contenente i Termini di Servizio e selezionala nel "
+"Se sì, crea una pagina contenente i Termini di Servizio e selezionala nel "
 "menù a tendina qui sopra."
 
 #: adminpages/advancedsettings.php:285 adminpages/advancedsettings.php:272
@@ -1109,7 +1109,7 @@ msgid ""
 "<em><strong>wordpress@yourdomain.com</strong></em>. You can update this from "
 "address using the fields below."
 msgstr ""
-"Il sistema invia le imail dall'indirizzo <em><strong>wordpress@yourdomain."
+"Il sistema invia le email dall'indirizzo <em><strong>wordpress@yourdomain."
 "com</strong></em>. Puoi cambiare questa impostazione usando il campo "
 "seguente."
 
@@ -2493,7 +2493,7 @@ msgid ""
 "<a target=\"_blank\" href=\"http://www.paidmembershipspro.com/2013/10/non-us-"
 "taxes-paid-memberships-pro/\">pmpro_tax filter</a>."
 msgstr ""
-"Solo pe USA. Se fornito, la tassazione verrà applicata ad ogni membro che "
+"Solo per USA. Se fornito, la tassazione verrà applicata ad ogni membro che "
 "ordina dallo stato selezionato. <br />Per gli utenti non-US o per creare "
 "regole più complesse, utilizzare il filtro <a target=\"_blank\" href="
 "\"http://www.paidmembershipspro.com/2013/10/non-us-taxes-paid-memberships-"
@@ -6296,7 +6296,7 @@ msgstr "Annulla Iscrizione"
 
 #: pages/cancel.php:17 pages/cancel.php:37
 msgid "Yes, cancel my account"
-msgstr "Si, cancella il mio conto"
+msgstr "Sì, cancella il mio conto"
 
 #: pages/cancel.php:19 pages/cancel.php:38
 msgid "No, keep my account"
