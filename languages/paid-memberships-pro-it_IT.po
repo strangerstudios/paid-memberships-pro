@@ -3109,7 +3109,7 @@ msgid ""
 "A partial payment was made that we could not void. Please contact the site "
 "owner immediately to correct this."
 msgstr ""
-"E' appena stato fatto un pagamento parziale. Per favore contatta "
+"È appena stato fatto un pagamento parziale. Per favore contatta "
 "l'amministratore immediatamente per correggere l'errore."
 
 #: classes/gateways/class.pmprogateway_authorizenet.php:39
@@ -3607,9 +3607,8 @@ msgid ""
 "A partial payment was made that we could not refund. Please contact the site "
 "owner immediately to correct this."
 msgstr ""
-"E' appena stato fatto un pagamento parziale che non ci è possibile "
-"risarcire. Per favore contatta l'amministratore immediatamente per "
-"correggere l'errore."
+"È appena stato fatto un pagamento parziale che non ci è possibile risarcire. "
+"Per favore contatta l'amministratore immediatamente per correggere l'errore."
 
 #: classes/gateways/class.pmprogateway_paypal.php:68
 #: paid-memberships-pro.php:132
@@ -5885,8 +5884,8 @@ msgid ""
 "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments "
 "will be processed."
 msgstr ""
-"E' necessario <a href=\"%s\">configurare un metodo di pagamento</a> prima "
-"che qualunque pagamento possa essere effettuato."
+"È necessario <a href=\"%s\">configurare un metodo di pagamento</a> prima che "
+"qualunque pagamento possa essere effettuato."
 
 #: preheaders/checkout.php:818 preheaders/checkout.php:707
 #: preheaders/checkout.php:709 preheaders/checkout.php:726
@@ -5898,7 +5897,7 @@ msgstr ""
 #: preheaders/checkout.php:1065 preheaders/checkout.php:1066
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
-"E' necessario impostare un metodo di pagamento prima che qualunque pagamento "
+"È necessario impostare un metodo di pagamento prima che qualunque pagamento "
 "possa essere effettuato."
 
 #: scheduled/crons.php:39 scheduled/crons.php:31 scheduled/crons.php:34
