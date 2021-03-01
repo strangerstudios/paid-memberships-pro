@@ -680,24 +680,25 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 		$user_id = $current_user->ID;
 	}
 
-	if ( ! $user_id ) {
-		$r = false;
-	} else {
+	$r = false;
+
+	if ( $user_id ) {
 		// get last order
 		$order = new MemberOrder();
 		$order->getLastMemberOrder( $user_id, $order_status );
 
-		// get current membership level
-		$level = pmpro_getMembershipLevelForUser( $user_id );
+		// if an order is found
+		if ( ! empty( $order ) && ! empty( $order->id ) ) {
+			// get current membership level
+			$level = pmpro_getMembershipLevelForUser( $user_id );
 
-		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
-			// next payment date
-			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->getTimestamp() );
+			// if the order is recurring
+		    if( ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ){
+			    // next payment date
+			    $nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->getTimestamp() );
 
-			$r = $nextdate;
-		} else {
-			// no order or level found, or level was not recurring
-			$r = false;
+			    $r = $nextdate;
+            }
 		}
 	}
 
