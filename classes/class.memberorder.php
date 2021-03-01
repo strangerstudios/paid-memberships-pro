@@ -997,6 +997,40 @@
 			}
 		}
 
+		function getNextPayment($format = 'timestamp'){
+			$r = false;
+
+			$level = $this->getMembershipLevel();
+			if( ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ){
+				// next payment date
+				$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $this->getTimestamp() );
+
+				$r = $nextdate;
+			}
+
+			/**
+			 * Filter the next payment date.
+			 *
+			 * @since 1.8.5
+			 *
+			 * @param mixed $r false or the next payment date timestamp
+			 * @param int $user_id The user id to get the next payment date for
+			 * @param string $order_status Status or array of statuses to find the last order based on.
+			 */
+			$r = apply_filters( 'pmpro_next_payment', $r, $this->user_id, $this->status );
+
+			// return in desired format
+			if ( $r === false ) {
+				return false;               // always return false when no date found
+			} elseif ( $format == 'timestamp' ) {
+				return $r;
+			} elseif ( $format == 'date_format' ) {
+				return date_i18n( get_option( 'date_format' ), $r );
+			} else {
+				return date_i18n( $format, $r );  // assume a PHP date format
+			}
+		}
+
 		/** 
 		 * Get TOS consent information.
 		 * @since  1.9.5
