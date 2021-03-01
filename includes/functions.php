@@ -675,7 +675,7 @@ function pmpro_displayAds() {
 }
 
 function pmpro_next_payment( $user_id = null, $order_status = 'success', $format = 'timestamp' ) {
-	global $wpdb, $current_user;
+	global $current_user;
 	if ( ! $user_id ) {
 		$user_id = $current_user->ID;
 	}
