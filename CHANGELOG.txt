@@ -1,4 +1,9 @@
 == Changelog ==
+= 2.5.6 - 2021-03-05 =
+* SECURITY: Now sanitizing and escaping the `order` parameter when filtering the users table in the dashboard. (Thanks, Gen Sato)
+* BUG FIX/ENHANCEMENT: Now hiding the ApplePay/GooglePay "Payment Request" buttons when the main checkout form is submitted. This helps to prevent double checkouts.
+* BUG FIX: Fixed missing membership data in the billing failed email.
+
 = 2.5.5 - 2021-02-22 =
 * SECURITY: Better sanitization of parameters on some REST API endpoints.
 * SECURITY: Now showing reCAPTCHA field at checkout even for logged in users.
