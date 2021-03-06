@@ -2057,7 +2057,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * Get a specific membership level for a user if they have that level.
  * This is better to use when MMPU is enabled on the site.
  *
- * If $user_id is omitted, the value will be retrieved from $current_user.
+ * If $user_id is null, the value will be retrieved from $current_user.
  *
  * Return values:
  *      Success returns the level object.
@@ -2066,7 +2066,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * @param  int $user_id User ID to check for
  * @param  int $level_id Level ID to check for.
  */
-function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id = null ) {
+function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
