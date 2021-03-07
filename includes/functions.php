@@ -132,6 +132,11 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 
 	global $pmpro_pages;
 
+	// BUG FIX: PHP Notice when PMPro pages haven't been configured
+	if ( ! isset( $pmpro_pages[ $page ] ) ) {
+	    return null;
+	}
+	
 	// start with the permalink
 	$url = get_permalink( $pmpro_pages[ $page ] );
 
