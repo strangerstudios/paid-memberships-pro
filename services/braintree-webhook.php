@@ -252,6 +252,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
 	$morder->user_id = $user_id;
+	$morder->membership_id = $old_order->membership_id;
 	
 	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
 		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
@@ -337,6 +338,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
 	$morder->user_id = $user_id;
+	$morder->membership_id = $old_order->membership_id;
 	
 	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
 		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
@@ -420,6 +422,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
 	$morder->user_id = $user_id;
+	$morder->membership_id = $old_order->membership_id;
 	
 	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
 		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
@@ -523,6 +526,7 @@ if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotificati
 	//prep this order for the failure emails
 	$morder          = new \MemberOrder();
 	$morder->user_id = $user_id;
+	$morder->membership_id = $old_order->membership_id;
 	
 	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
 		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
