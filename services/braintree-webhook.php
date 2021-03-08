@@ -469,7 +469,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 }
 
 //subscription cancelled (they used one l canceled)
-if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
+if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_CANCELED ) {
 	
 	$logstr[] = "The Braintree gateway cancelled the subscription plan";
 	
@@ -523,53 +523,19 @@ if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotificati
 		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
 	}
 	
-	//prep this order for the failure emails
-	$morder          = new \MemberOrder();
-	$morder->user_id = $user_id;
-	$morder->membership_id = $old_order->membership_id;
+	// Cancel the related membership.
+	pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
 	
-	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
-		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
-		$old_order->billing->name;
+	$logstr[] = "Cancelled membership for user with id = {$old_order->user_id}. Subscription transaction id = {$old_order->subscription_transaction_id}.\n";
 	
-	$morder->billing->street = isset( $transaction->billing_details->street_address ) ?
-		$transaction->billing_details->street_address :
-		$old_order->billing->street;
+	// Send an email to the member.
+	$myemail = new PMProEmail();
+	$myemail->sendCancelEmail( $user, $old_order->membership_id );
 	
-	$morder->billing->city = isset( $transaction->billing_details->locality ) ?
-		$transaction->billing_details->locality :
-		$old_order->billing->city;
+	// Send an email to the admin.
+	$myemail = new PMProEmail();
+	$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
 	
-	$morder->billing->state = isset( $transaction->billing_details->region ) ?
-		$transaction->billing_details->region :
-		$old_order->billing->state;
-	
-	$morder->billing->zip = isset( $transaction->billing_details->postal_code ) ?
-		$transaction->billing_details->postal_code :
-		$old_order->billing->zip;
-	
-	$morder->billing->country = isset( $transaction->billing_details->country_code_alpha2 ) ?
-		$transaction->billing_details->country_code_alpha2 :
-		$old_order->billing->country;
-	
-	$morder->billing->phone = $old_order->billing->phone;
-	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
-	
-	// Email the user and let them know the membership was cancelled
-	$pmproemail = new \PMProEmail();
-	$pmproemail->sendBillingFailureEmail( $user, $morder );
-	
-	// Email admin so they are aware of the failure
-	$pmproemail = new \PMProEmail();
-	$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( "admin_email" ), $morder );
-	
-	// Send email
-	$logstr[] = "Sent billing failure email to the member and site admin. Thanks.";
 	pmpro_braintreeWebhookExit();
 }
 
