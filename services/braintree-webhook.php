@@ -419,52 +419,16 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
 	}
 	
-	//prep this order for the failure emails
-	$morder          = new \MemberOrder();
-	$morder->user_id = $user_id;
-	$morder->membership_id = $old_order->membership_id;
+	// We don't currently allow billing limits (number_of_billing_cycles) on Braintree subscriptions.
+	// But in case we get here, let's send the correct email to the admin.	
+	$myemail = new PMProEmail();
+	$body = sprintf( __( "<p>A member's Braintree subscription has expired at your site. This typically happens if you've set up billing limits on your levels.</p><p>We have not removed the user's membership level.</p><p>You can view details on this user here: %s</p>", 'paid-memberships-pro' ), esc_url( admin_url( 'user-edit.php?user_id=' . $user_id ) ) );	
+	$myemail->template = 'braintree_subscription_expired';
+	$myemail->subject = sprintf( __( "A member's Braintree subscription has expired at %s", 'paid-memberships-pro' ), get_bloginfo( 'name' ) );
+	$myemail->data = array( 'body' => $body );
+	$myemail->sendEmail( get_bloginfo( 'admin_email' ) );
 	
-	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
-		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
-		$old_order->billing->name;
-	
-	$morder->billing->street = isset( $transaction->billing_details->street_address ) ?
-		$transaction->billing_details->street_address :
-		$old_order->billing->street;
-	
-	$morder->billing->city = isset( $transaction->billing_details->locality ) ?
-		$transaction->billing_details->locality :
-		$old_order->billing->city;
-	
-	$morder->billing->state = isset( $transaction->billing_details->region ) ?
-		$transaction->billing_details->region :
-		$old_order->billing->state;
-	
-	$morder->billing->zip = isset( $transaction->billing_details->postal_code ) ?
-		$transaction->billing_details->postal_code :
-		$old_order->billing->zip;
-	
-	$morder->billing->country = isset( $transaction->billing_details->country_code_alpha2 ) ?
-		$transaction->billing_details->country_code_alpha2 :
-		$old_order->billing->country;
-	
-	$morder->billing->phone = $old_order->billing->phone;
-	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
-	
-	// Email the user and ask them to update their credit card information
-	$pmproemail = new \PMProEmail();
-	$pmproemail->sendBillingFailureEmail( $user, $morder );
-	
-	// Email admin so they are aware of the failure
-	$pmproemail = new \PMProEmail();
-	$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( "admin_email" ), $morder );
-	
-	$logstr[] = "Sent email to the member and site admin. Thanks.";
+	$logstr[] = "Sent email to the site admin. Thanks.";
 	pmpro_braintreeWebhookExit();
 }
 
