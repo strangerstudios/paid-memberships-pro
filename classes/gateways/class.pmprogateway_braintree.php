@@ -706,8 +706,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$this->customer = Braintree_Customer::find($customer_id);
 
 					//update the customer address, description and card
-					if(!empty($order->accountnumber))
-					{
+					if( ! empty( $order->braintree ) && ! empty( $order->braintree->number ) ) {
 						//put data in array for Braintree API calls
 						$update_array = array(
 							'firstName' => $order->FirstName,
