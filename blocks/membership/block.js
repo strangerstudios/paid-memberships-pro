@@ -16,9 +16,6 @@ const {
     CheckboxControl,
 } = wp.components;
 const {
-    useState,
-} = wp.element;
-const {
     InspectorControls,
     InnerBlocks,
 } = wp.blockEditor;
