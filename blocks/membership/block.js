@@ -58,25 +58,24 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
              }
              
              // Build an array of checkboxes for each level.
-             var checkboxes = all_levels.map(function(level) {
-                 const [ isChecked, setChecked ] = useState( level.value in levels );  
-                                  
-                 function setLevelsAttribute( checked ) {                     
-                     if ( checked && ! ( level.value in levels ) ) {
-                         // Add the level.                         
-                     } else if ( ! checked && level.value in levels ) {
-                         // Remove the level.                         
+             var checkboxes = all_levels.map( function(level) {
+                 function setLevelsAttribute( nowChecked ) {
+                     if ( nowChecked && ! ( levels.some( levelID => levelID == level.value ) ) ) {
+                        // Add the level.
+                        const newLevels = levels.slice();
+                        newLevels.push( level.value + '' );
+                        setAttributes( { levels:newLevels } );
+                     } else if ( ! nowChecked && levels.some( levelID => levelID == level.value ) ) {
+                        // Remove the level.
+                        const newLevels = levels.filter(( levelID ) => levelID != level.value);
+                        setAttributes( { levels:newLevels } );
                      }
-                                          
-                     setChecked( level.value );
-                     setAttributes( { levels } );                     
                  }
-                 
                  return [                    
                     <CheckboxControl                    
                         label = { level.label }
-                        checked = { isChecked }
-                        onChange = { setLevelsAttribute( isChecked ) }
+                        checked = { levels.some( levelID => levelID == level.value ) }
+                        onChange = { setLevelsAttribute }
                     />
                  ]
              });
