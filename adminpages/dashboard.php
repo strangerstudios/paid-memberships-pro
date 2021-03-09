@@ -333,7 +333,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 								<?php }
 							?>
                         </td>
-        				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
+        				<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
         				<td>
                             <?php echo $order->gateway; ?>
                             <?php if ( $order->gateway_environment == 'test' ) {
