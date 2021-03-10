@@ -322,22 +322,28 @@
 
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
-				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
-				if($morder->Token)
-				{
-					if($morder->Gateway->getExpressCheckoutDetails($morder))
+				
+				if( $morder->status === 'token' ){
+					$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
+					if($morder->Token)
 					{
-						$pmpro_review = true;
+						if($morder->Gateway->getExpressCheckoutDetails($morder))
+						{
+							$pmpro_review = true;
+						}
+						else
+						{
+							$pmpro_msg = $morder->error;
+							$pmpro_msgt = "pmpro_error";
+						}
 					}
 					else
 					{
-						$pmpro_msg = $morder->error;
+						$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 						$pmpro_msgt = "pmpro_error";
 					}
-				}
-				else
-				{
-					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
+				}else{
+					$pmpro_msg = __("Checkout was already processed.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
