@@ -95,7 +95,7 @@
 						<?php echo pmpro_escape_price( pmpro_formatPrice($pmpro_invoice->total) );?>
 					<?php } ?>
 				<?php } else { ?>
-					<small class="<?php echo pmpro_get_element_class( 'pmpro_grey' ); ?>"><?php echo pmpro_escape_price( pmpro_formatPrice(0) ); ?></small>
+					<?php echo pmpro_escape_price( pmpro_formatPrice(0) ); ?>
 				<?php } ?></p>
 			</div> <!-- end pmpro_invoice-total -->
 		</div> <!-- end pmpro_invoice_details -->
