@@ -543,7 +543,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} else {
 			// Display the member's initial payment.
 			if ( (float)$item['initial_payment'] > 0 ) {
-				$fee .= pmpro_formatPrice( $item['initial_payment'] );
+				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['initial_payment'] ) );
 			}
 			// If there is a recurring payment, show a plus sign.
 			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
@@ -551,7 +551,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 			// If there is a recurring payment, show the recurring payment amount and cycle.
 			if ( (float)$item['billing_amount'] > 0 ) {
-				$fee .= pmpro_formatPrice( $item['billing_amount'] );
+				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['billing_amount'] ) );
 				$fee .= esc_html( ' per ', 'paid-memberships-pro' );
 				if ( $item['cycle_number'] > 1 ) {
 					$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";

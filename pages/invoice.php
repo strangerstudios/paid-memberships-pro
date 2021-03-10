@@ -85,17 +85,17 @@
 				<strong><?php _e('Total Billed', 'paid-memberships-pro' );?></strong>
 				<p><?php if($pmpro_invoice->total != '0.00') { ?>
 					<?php if(!empty($pmpro_invoice->tax)) { ?>
-						<?php _e('Subtotal', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
-						<?php _e('Tax', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
+						<?php _e('Subtotal', 'paid-memberships-pro' );?>: <?php echo pmpro_escape_price( pmpro_formatPrice($pmpro_invoice->subtotal) ); ?><br />
+						<?php _e('Tax', 'paid-memberships-pro' );?>: <?php echo pmpro_escape_price( pmpro_formatPrice($pmpro_invoice->tax) );?><br />
 						<?php if(!empty($pmpro_invoice->couponamount)) { ?>
-							<?php _e('Coupon', 'paid-memberships-pro' );?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
+							<?php _e('Coupon', 'paid-memberships-pro' );?>: (<?php echo pmpro_escape_price (pmpro_formatPrice($pmpro_invoice->couponamount) );?>)<br />
 						<?php } ?>
-						<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
+						<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_escape_price( pmpro_formatPrice($pmpro_invoice->total) );?></strong>
 					<?php } else { ?>
-						<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
+						<?php echo pmpro_escape_price( pmpro_formatPrice($pmpro_invoice->total) );?>
 					<?php } ?>
 				<?php } else { ?>
-					<small class="<?php echo pmpro_get_element_class( 'pmpro_grey' ); ?>"><?php echo pmpro_formatPrice(0);?></small>
+					<small class="<?php echo pmpro_get_element_class( 'pmpro_grey' ); ?>"><?php echo pmpro_escape_price( pmpro_formatPrice(0) ); ?></small>
 				<?php } ?></p>
 			</div> <!-- end pmpro_invoice-total -->
 		</div> <!-- end pmpro_invoice_details -->
