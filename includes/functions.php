@@ -130,17 +130,21 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 		$page = 'levels';
 	}
 
-	global $pmpro_pages;
+	global $pmpro_pages;	
 
-	// start with the permalink
-	$url = get_permalink( $pmpro_pages[ $page ] );
+	if ( ! empty( $pmpro_pages[ $page ] ) ) {
+		// start with the permalink
+		$url = get_permalink( $pmpro_pages[ $page ] );
 
-	// WPML/etc support
-	if ( function_exists( 'icl_object_id' ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
-		$trans_id = icl_object_id( $pmpro_pages[ $page ], 'page', false, ICL_LANGUAGE_CODE );
-		if ( ! empty( $trans_id ) ) {
-			$url = get_permalink( $trans_id );
+		// WPML/etc support
+		if ( function_exists( 'icl_object_id' ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
+			$trans_id = icl_object_id( $pmpro_pages[ $page ], 'page', false, ICL_LANGUAGE_CODE );
+			if ( ! empty( $trans_id ) ) {
+				$url = get_permalink( $trans_id );
+			}
 		}
+	} else {
+		$url = '';
 	}
 
 	// figure out querystring
