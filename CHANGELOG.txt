@@ -1,4 +1,5 @@
 == Changelog ==
+= 2.5.7 - 2021-03-10 =
 * ENHANCEMENT: Added a pmpro_checkout_message filter that can be used to filter error messages shown at checkout.
 * BUG FIX/ENHANCEMENT: Now making sure some billing address fields are available for the billing failure emails sent during the PayPal IPN handler.
 * BUG FIX/ENHANCEMENT: Fixed issues where HTML entities were shown in level prices in some places when using certain currencies. All prices are sent through a special pmpro_escape_price function that allows div, span, and sup tags with id and class attributes. Also removed from unneeded small tags and grey coloring of prices in certain spots.
