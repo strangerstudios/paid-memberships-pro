@@ -667,6 +667,22 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
 		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
 		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
+	} elseif ( $last_order->gateway == "paypalexpress" ) {
+		$morder->billing = new stdClass();
+
+		$morder->billing->name    = $last_order->billing->name;
+		$morder->billing->street  = $last_order->billing->street;
+		$morder->billing->city    = $last_order->billing->city;
+		$morder->billing->state   = $last_order->billing->state;
+		$morder->billing->zip     = $last_order->billing->zip;
+		$morder->billing->country = $last_order->billing->country;
+		$morder->billing->phone   = $last_order->billing->phone;
+
+		//get CC info that is on file
+		$morder->cardtype        = get_user_meta( $morder->user_id, "pmpro_CardType", true );
+		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
+		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
+		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
 	}
 
 	// Email the user and ask them to update their credit card information
