@@ -972,6 +972,12 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
 
+	/**
+	 * Filter the level passed in.
+	 * @since 2.5.8
+	 */
+	$level = apply_filters( 'pmpro_change_level', $level, $user_id, $old_level_status, $cancel_level );
+
 	if ( empty( $level ) ) {
 		$level = 0;
 	} else if ( is_array( $level ) ) {
@@ -1002,8 +1008,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( ! is_array( $level ) ) {
 		// are they even changing?
 		if ( pmpro_hasMembershipLevel( $level, $user_id ) ) {
-			$pmpro_error = __( 'not changing?', 'paid-memberships-pro' );
-			return false; // not changing
+			return true;
 		}
 	}
 
