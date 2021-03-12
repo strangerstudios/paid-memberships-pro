@@ -778,6 +778,9 @@
 					return false;
 				}
 			} else  {
+				// stop processing the review request on checkout page
+				$pmpro_review = false;
+
 				//$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
