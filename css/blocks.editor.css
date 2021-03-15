@@ -44,14 +44,22 @@
     text-transform: uppercase;
 }
 .pmpro-block-require-membership-element .components-panel__body {
-	background: rgba(237, 239, 240, 0.8);
+	background: rgba(237, 239, 240, 0);
 	border-bottom: 0;
 	border-top: none;
+	border-left: 5px solid rgba(237, 239, 240, 0.8);
+	border-bottom: 5px solid rgba(237, 239, 240, 0.8);
 	padding-top: 0;
+	height: 200px;
+	overflow: auto;
 }
 .pmpro-block-require-membership-element .block-editor-inner-blocks {
 	padding-left: 16px;
 	padding-right: 16px;
+}
+.pmpro-block-inspector-scrollable {
+	height: 200px;
+	overflow: auto;
 }
 
 /* Checkout Button Block */

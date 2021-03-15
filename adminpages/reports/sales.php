@@ -69,7 +69,7 @@ function pmpro_report_sales_widget() {
 					<?php } ?>
 				</th>
 				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type ) ) ); ?></td>
-				<td><?php echo esc_html(pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
 				//sale prices stats
@@ -82,9 +82,9 @@ function pmpro_report_sales_widget() {
 					}
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo esc_html( pmpro_formatPrice( $price ) );?></th>
+					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
 					<td><?php echo esc_html( number_format_i18n( $quantity ) ); ?></td>
-					<td><?php echo esc_html( pmpro_formatPrice( $price * $quantity ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity ) ); ?></td>
 				</tr>
 			<?php
 			}

@@ -62,7 +62,7 @@
 				</tr>
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 					<th colspan="2" style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;"><?php _e('Total', 'paid-memberships-pro' ); ?></th>
-					<th style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;"><?php echo pmpro_formatPrice($order->total); ?></th>
+					<th style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></th>
 				</tr>
 			</table>
 		</td>
