@@ -67,7 +67,7 @@
 				<p><?php echo esc_html( $pmpro_invoice->billing->name );?><br />
 				<?php echo esc_html( $pmpro_invoice->billing->street );?><br />
 				<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-					<?php echo esc_html( $pmpro_invoice->billing->city );?>, <?php echo esc_html( $pmpro_invoice->billing->state );?> <?php echo esc_html( $pmpro_invoice->billing->zip );?><br /><?php echo esc_html( $pmpro_invoice->billing->country );?><br />
+					<?php echo esc_html( $pmpro_invoice->billing->city );?>, <?php echo esc_html( $pmpro_invoice->billing->state );?> <?php echo esc_html( $pmpro_invoice->billing->zip );?> <?php echo esc_html( $pmpro_invoice->billing->country );?><br />
 				<?php } ?>
 				<?php echo formatPhone($pmpro_invoice->billing->phone)?>
 				</p>
