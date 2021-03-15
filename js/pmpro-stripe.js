@@ -95,7 +95,7 @@ jQuery( document ).ready( function( $ ) {
 	});
 
 	// Check if Payment Request Button is enabled.
-	if ( $('#payment-request-button').length && $('#pmpro_message').html() == '' ) {
+	if ( $('#payment-request-button').length ) {
 		var paymentRequest = null;
 
 		// Create payment request
