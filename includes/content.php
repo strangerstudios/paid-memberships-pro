@@ -481,7 +481,9 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-level-required';
 			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-level-' . $post_level[0];
+				if ( isset( $post_level[0] ) ) {
+					$classes[] = 'pmpro-level-' . $post_level[0];
+				} 	
 			}
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true) {
