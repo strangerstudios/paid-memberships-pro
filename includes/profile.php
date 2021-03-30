@@ -388,7 +388,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
 		</ul>
 		<br class="clear" />
-		<div id="member-history-orders" class="widgets-holder-wrap">
+		<div id="member-history-orders" class="widgets-holder-wrap" <?php if(count($invoices) > 5) { ?>style="height: 150px; overflow: auto;"<?php } ?>>
 		<?php if ( $invoices ) { ?>
 			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -480,13 +480,13 @@ function pmpro_membership_history_profile_fields( $user ) {
 					$level = pmpro_getLevel( $levelhistory->membership_id );
 
 					if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
-						$levelhistory->enddate = 'Never';
+						$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
 					} else {
 						$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
 					} ?>
 					<tr>
-						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { _e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { _e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
 						<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
 						<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
 						<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
@@ -534,6 +534,10 @@ function pmpro_membership_history_profile_fields( $user ) {
 					{
 						jQuery('div#member-history-orders').hide();
 						jQuery('#member-history-memberships').show();
+
+						<?php if ( count( $levelshistory ) > 5 ) { ?>
+						jQuery('#member-history-memberships').css({'height': '150px', 'overflow': 'auto' });
+						<?php } ?>
 					}
 				});
 			});
