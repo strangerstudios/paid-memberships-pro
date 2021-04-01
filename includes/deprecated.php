@@ -53,3 +53,48 @@ function pmpro_admin_init_redirect_old_menu_items() {
 	}
 }
 add_action( 'init', 'pmpro_admin_init_redirect_old_menu_items' );
+
+// Check if installed, deactivate it and show a notice now.
+function pmpro_check_for_deprecated_add_ons() {
+
+	$deprecated = array(
+		'pmpro-member-history' => array(
+			'file' => 'pmpro-member-history.php',
+			'label' => 'Member History Add On'
+		)
+	);
+	
+	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
+	
+	// If the list is empty or not an array, just bail.
+	if ( empty( $deprecated ) || ! is_array( $deprecated ) ) {
+		return;
+	}
+	
+	$deprecated_active = array();
+	foreach( $deprecated as $key => $values ) {
+		$path = '/' . $key . '/' . $values['file'];
+		if ( file_exists( WP_PLUGIN_DIR . $path ) ) {
+			$deprecated_active[] = $values['label'];
+
+			// Try to deactivate it if it's enabled.
+			if ( is_plugin_active( $path ) ) {
+				deactivate_plugins( $path );
+			}
+		}
+	}
+
+	// If any deprecated add ons are active, show warning.
+	if ( is_array( $deprecated_active ) || ! empty( $deprecated_active ) ) {
+		// Only show on certain pages.
+		if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
+			return;
+		}
+		?>
+		<div class="notice notice-warning">
+        <p><?php _e( sprintf( 'You have the following Add Ons on your site: <strong>%s</strong>. <br/> This functionality has now been moved into Paid Memberships Pro core, <u><strong>please remove these Add Ons from your site</strong></u>.', implode( ', ', $deprecated_active ) ), 'paid-memberships-pro' ); ?></p>
+    	</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
