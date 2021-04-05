@@ -147,7 +147,6 @@ function pmpro_search_filter($query)
 		if( empty( $query->query_vars['post_parent'] ) ) {
 			$query->set('post__not_in', $pmpro_pages );
 		}
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
     // If this is a post type query, get the queried post types into an array.	
