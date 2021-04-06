@@ -681,7 +681,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
 				
-				do_action( 'pmpro_discount_code_used', $code_id, $user_id, $order_id );
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $order_id );
 			}
 
 			//save billing info ect, as user meta
