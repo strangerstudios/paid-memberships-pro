@@ -1408,7 +1408,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<?php }
 						?>
 					</td>
-					<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
 					<td>
 						<?php
 						if ( ! empty( $order->payment_type ) ) {

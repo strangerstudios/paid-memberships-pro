@@ -15,7 +15,8 @@
 	global $logstr;
 	$logstr = "";
 
-	define( 'PMPRO_DOING_WEBHOOK', 'stripe' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
@@ -158,8 +159,8 @@
 					if ( ! empty ( $charge->billing_details->address->line1 ) ) {
 						// Get order billing details from Stripe.
 						$morder->billing = $charge->billing_details->address;
-						$morder->billing->name = $charge->name; // Add name.
-						$morder->billing->phone = $charge->phone; // Add phone.
+						$morder->billing->name = $charge->billing_details->name; // Add name.
+						$morder->billing->phone = $charge->billing_details->phone; // Add phone.
 						$morder->billing->zip = $morder->billing->postal_code; // Fix zip.
 						$morder->billing->street = $morder->billing->line1; // Fix street. 
 
@@ -174,24 +175,7 @@
 						$morder->PhoneNumber = $morder->billing->phone;
 					} else {
 						// Pull from previous order.
-						$morder->FirstName = $old_order->FirstName;
-						$morder->LastName = $old_order->LastName;
-						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
-						$morder->Address1 = $old_order->Address1;
-						$morder->City = $old_order->billing->city;
-						$morder->State = $old_order->billing->state;
-						$morder->Zip = $old_order->billing->zip;
-						$morder->PhoneNumber = $old_order->billing->phone;
-
-						$morder->billing = new stdClass();
-					
-						$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
-						$morder->billing->street = $old_order->billing->street;
-						$morder->billing->city = $old_order->billing->city;
-						$morder->billing->state = $old_order->billing->state;
-						$morder->billing->zip = $old_order->billing->zip;
-						$morder->billing->country = $old_order->billing->country;
-						$morder->billing->phone = $old_order->billing->phone;
+						$morder->find_billing_address();
 					}
 
 					//get CC info that is on file

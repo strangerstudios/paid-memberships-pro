@@ -128,7 +128,7 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		if(empty($r) || $r == '0.00')
 			$r = '';
 		else
-			$r = pmpro_formatPrice($r);
+			$r = pmpro_escape_price( pmpro_formatPrice($r) );
 	}
 
 	/** 

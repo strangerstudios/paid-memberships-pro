@@ -434,14 +434,17 @@ function pmpro_notification_test_pmpro_setting( $data ) {
 
 /**
  * PMPro site URL test.
- * @param string $string String to look for in the site URL
+ * @param string $string String or array of strings to look for in the site URL
  * @returns bool true if the string shows up in the site URL
  */
-function pmpro_notification_test_site_url_match( $string ) {
+function pmpro_notification_test_site_url_match( $string ) {	
 	if ( ! empty( $string ) ) {
-		if ( strpos( get_bloginfo( 'url' ), $string ) !== false ) {
-			return true;
-		}
+		$strings_to_check = (array) $string;
+		foreach( $strings_to_check as $check ) {
+			if ( strpos( get_bloginfo( 'url' ), $check ) !== false ) {
+				return true;
+			}
+		}		
 	}
 	return false;
 }

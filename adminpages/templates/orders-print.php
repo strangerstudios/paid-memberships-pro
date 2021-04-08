@@ -91,7 +91,7 @@
 			</tr>
 			<tr>
 				<th colspan="2" class="alignright"><?php _e('Total', 'paid-memberships-pro' ); ?></th>
-				<th class="alignright"><?php echo pmpro_formatPrice( $order->total ); ?></th>
+				<th class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></th>
 			</tr>
 		</table>
 	</main>
