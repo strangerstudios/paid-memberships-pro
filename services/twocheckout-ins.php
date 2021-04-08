@@ -247,7 +247,7 @@
 		else if( empty ( $check['response_code'] ) )
 			$r = false;	//Invalid response
 		else
-			$r = $check['response_code'];
+			$r = $check['response_code'] === 'Success';
 
 		/**
 		 * Filter if an twocheckout request is valid or not.
@@ -259,7 +259,7 @@
 		 */
 		$r = apply_filters('pmpro_twocheckout_validate', $r, $check);
 
-		return $check['response_code'] === 'Success';
+		return $r;
 	}
 
 	/*
