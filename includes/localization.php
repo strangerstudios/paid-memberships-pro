@@ -2,7 +2,7 @@
 function pmpro_load_textdomain()
 {
     //get the locale
-	$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
+	$locale = apply_filters("plugin_locale", get_user_locale(), "paid-memberships-pro");
 	$mofile = "paid-memberships-pro-" . $locale . ".mo";
 
 	//paths to local (plugin) and global (WP) language files
