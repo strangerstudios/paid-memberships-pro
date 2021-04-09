@@ -402,7 +402,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" class="regular-text code" />
             </td>
         </tr>
-        <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php _e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
