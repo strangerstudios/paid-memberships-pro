@@ -96,7 +96,7 @@
 			<p>
 				<?php
 					if ( $pmpro_invoice->total != '0.00' ) {
-						echo pmpro_display_price_parts( $pmpro_invoice );
+						echo pmpro_get_price_parts( $pmpro_invoice, 'span' );
 					} else {
 						echo pmpro_escape_price( pmpro_formatPrice(0) );
 					}

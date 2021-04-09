@@ -283,6 +283,9 @@ select.pmpro_error {
 /*---------------------------------------
 	Display Price Parts
 ---------------------------------------*/
+.pmpro_price_part_span {
+	display: block;
+}
 .pmpro_price_part_label:after {
 	content: ": ";
 }
