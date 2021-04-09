@@ -2724,6 +2724,41 @@ function pmpro_is_ready() {
 }
 
 /**
+ * Display Invoice Price Data with Parts
+ *
+ */
+function pmpro_display_price_parts( $pmpro_invoice ) {
+	$pmpro_display_price_parts = array();
+
+	if ( ! empty( $pmpro_invoice->subtotal ) && $pmpro_invoice->subtotal != $pmpro_invoice->total ) {
+		$pmpro_display_price_parts['subtotal'] = sprintf( __('<span class="%s">%s</span> %s', 'paid-memberships-pro' ), pmpro_get_element_class( 'pmpro_price_part_label' ), __( 'Subtotal', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->subtotal ) ) );
+	}
+
+	if ( ! empty( $pmpro_invoice->tax ) ) {
+		$pmpro_display_price_parts['tax'] = sprintf( __('<span class="%s">%s</span> %s', 'paid-memberships-pro' ), pmpro_get_element_class( 'pmpro_price_part_label' ), __( 'Tax', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->tax ) ) );
+	}
+
+	if ( ! empty( $pmpro_invoice->couponamount ) ) {
+		$pmpro_display_price_parts['couponamount'] = sprintf( __('<span class="%s">%s</span> %s', 'paid-memberships-pro' ), pmpro_get_element_class( 'pmpro_price_part_label' ), __( 'Coupon', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->couponamount ) ) );
+	}
+
+	if ( ! empty( $pmpro_invoice->total ) ) {
+		$pmpro_display_price_parts['total'] = sprintf( __('<span class="%s">%s</span> %s', 'paid-memberships-pro' ), pmpro_get_element_class( 'pmpro_price_part_label' ), __( 'Total', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->total ) ) );
+	}
+
+	$pmpro_display_price_parts_separator = '<br />';
+
+	$pmpro_display_price_parts = apply_filters( 'pmpro_display_price_parts', $pmpro_display_price_parts, $pmpro_display_price_parts_separator, $pmpro_invoice );
+
+	$pmpro_display_price = '';
+	foreach ( $pmpro_display_price_parts as $pmpro_display_price_part ) {
+		$pmpro_display_price .= $pmpro_display_price_part . $pmpro_display_price_parts_separator;
+	}
+
+	return $pmpro_display_price;
+}
+
+/**
  * Format a price per the currency settings.
  *
  * @since  1.7.15

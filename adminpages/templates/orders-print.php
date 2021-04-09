@@ -70,7 +70,7 @@
 				$order->billing->phone
 			); ?>
 		</p>
-		<table class="invoice">
+		<table class="invoice" style="border-width:0px;border-collapse:collapse;">
 			<tr>
 				<th><?php _e('ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php _e('Item', 'paid-memberships-pro' ); ?></th>
@@ -79,19 +79,18 @@
 			<tr>
 				<td class="aligncenter"><?php echo $level->id; ?></td>
 				<td><?php echo $level->name; ?></td>
-				<td class="alignright"><?php echo $order->subtotal; ?></td>
+				<td class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); ?></td>
 			</tr>
-			<tr>
-				<th colspan="2" class="alignright"><?php _e('Subtotal', 'paid-memberships-pro' ); ?></th>
-				<td class="alignright"><?php echo $order->subtotal; ?></td>
-			</tr>
-			<tr>
-				<th colspan="2" class="alignright"><?php _e('Tax', 'paid-memberships-pro' ); ?></th>
-				<td class="alignright"><?php echo $order->tax; ?></td>
-			</tr>
-			<tr>
-				<th colspan="2" class="alignright"><?php _e('Total', 'paid-memberships-pro' ); ?></th>
-				<th class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></th>
+			<tr style="border-width:0px;border-collapse:collapse;">
+				<td colspan="3" style="border-width:0px;border-collapse:collapse;text-align:right;">
+					<?php
+						if ( $order->total != '0.00' ) {
+							echo pmpro_display_price_parts( $order );
+						} else {
+							echo pmpro_escape_price( pmpro_formatPrice(0) );
+						}
+					?>
+				</td>
 			</tr>
 		</table>
 	</main>
