@@ -81,6 +81,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 	else
 	{
+		// Reorder the $post_membership_levels to match sorted order.
+		$post_membership_levels = pmpro_get_ordered_levels( $post_membership_levels );
+
 		//we need to see if the user has access
 		foreach($post_membership_levels as $level)
 		{

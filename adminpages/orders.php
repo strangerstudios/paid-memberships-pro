@@ -1068,7 +1068,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 				<?php
 				// Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
-				$levels = pmpro_getAllLevels( true, true );
+				$levels = pmpro_get_ordered_levels( pmpro_getAllLevels( true, true ) );
 				?>
 				<select id="l" name="l">
 					<?php foreach ( $levels as $level ) { ?>

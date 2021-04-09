@@ -363,6 +363,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 
 								$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 								$levels = $wpdb->get_results($sqlQuery, OBJECT);
+								$levels = pmpro_get_ordered_levels( $levels );
 								foreach($levels as $level)
 								{
 							?>
