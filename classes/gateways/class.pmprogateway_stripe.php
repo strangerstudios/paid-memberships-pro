@@ -310,9 +310,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$stripe = new PMProGateway_stripe();
 
 		// TODO: Update to have Stripe Connect button and to hide current fields. Currently switching gateways brings fields back.
-		$has_legacy_creds = ! ( empty( $values['stripe_publishablekey'] ) || empty( $values['stripe_secretkey'] ) );
-		$connected_to_stripe = self::using_connect();
-		if ( $has_legacy_creds || $connected_to_stripe ) {
+		if ( self::using_legacy_keys() ) {
 			// Check if webhook is enabled or not.
 			$webhook = self::does_webhook_exist();
 
@@ -347,7 +345,7 @@ class PMProGateway_stripe extends PMProGateway {
 			<td>
 				<?php
 				$connect_url_base = 'https://connect.paidmembershipspro.com';
-				if ( $connected_to_stripe ) {
+				if ( self::has_connect_credentials() ) {
 					$connect_url = add_query_arg(
 						array(
 							'action' => 'disconnect',
@@ -380,7 +378,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<input type='hidden' name='test_stripe_connect_publishablekey' id='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
-        <tr class="gateway" <?php if ( $gateway != "stripe" || ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_publishablekey"><?php _e( 'Legacy Publishable Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -396,7 +394,7 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
             </td>
         </tr>
-        <tr class="gateway" <?php if ( $gateway != "stripe" ||  ! $has_legacy_creds ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway" <?php if ( $gateway != "stripe" ||  ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_secretkey"><?php _e( 'Legacy Secret Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -3439,7 +3437,13 @@ class PMProGateway_stripe extends PMProGateway {
 		delete_option( 'pmpro_test_stripe_connect_publishablekey' );
 	}
 
-	static function using_connect() {
+	static function using_legacy_keys() {
+		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );
+		$r = apply_filters( 'pmpro_stripe_using_legacy_keys', $r );
+		return $r;
+	}
+
+	static function has_connect_credentials() {
 		return ( 
 			pmpro_getOption( 'stripe_connect_user_id' ) &&
 			pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
@@ -3451,20 +3455,20 @@ class PMProGateway_stripe extends PMProGateway {
 
 	static function get_secretkey() {
 		$secretkey = '';
-		if ( self::using_connect() ) {
-			$secretkey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
-		} else {
+		if ( self::using_legacy_keys() ) {
 			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
+		} else {
+			$secretkey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
 		}
 		return $secretkey;
 	}
 
 	static function get_publishablekey() {
 		$publishablekey = '';
-		if ( self::using_connect() ) {
-			$publishablekey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
-		} else {
+		if ( self::using_legacy_keys() ) {
 			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
+		} else {
+			$publishablekey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
 	}
