@@ -468,7 +468,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_login_wrap' ); ?>">
 					<?php
 						if ( ! pmpro_is_login_page() ) {
-							echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title;
+							echo $before_title . esc_html__( 'Log In', 'paid-memberships-pro' ) . $after_title;
 						}
 					?>
 					<?php
@@ -490,7 +490,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_lost_password_wrap' ); ?>">
 				<?php
 					if ( ! pmpro_is_login_page() ) {
-						echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
+						echo $before_title . esc_html__( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
 				<p class="<?php echo pmpro_get_element_class( 'pmpro_lost_password-instructions' ); ?>">
@@ -510,7 +510,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password_wrap' ); ?>">
 				<?php
 					if ( ! pmpro_is_login_page() ) {
-						echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
+						echo $before_title . esc_html__( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
 				<?php pmpro_reset_password_form(); ?>
