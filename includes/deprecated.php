@@ -78,7 +78,7 @@ function pmpro_check_for_deprecated_add_ons() {
 			$deprecated_active[] = $values['label'];
 
 			// Try to deactivate it if it's enabled.
-			if ( is_plugin_active( $path ) ) {
+			if ( is_plugin_active( plugin_basename( $path ) ) ) {
 				deactivate_plugins( $path );
 			}
 		}
@@ -92,7 +92,7 @@ function pmpro_check_for_deprecated_add_ons() {
 		}
 		?>
 		<div class="notice notice-warning">
-        <p><?php _e( sprintf( 'You have the following Add Ons on your site: <strong>%s</strong>. <br/> This functionality has now been moved into Paid Memberships Pro core, <u><strong>please remove these Add Ons from your site</strong></u>.', implode( ', ', $deprecated_active ) ), 'paid-memberships-pro' ); ?></p>
+        <p><?php _e( sprintf( 'Some of the PMPro Add Ons on your site have been merged into the core PMPro plugin or are otherwise not needed. <br />The following plugins <strong>should be deleted</strong> from your site: <strong>%s</strong>.', implode( ', ', $deprecated_active ) ), 'paid-memberships-pro' ); ?></p>
     	</div>
 		<?php
 	}
