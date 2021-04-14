@@ -42,13 +42,13 @@
 		//get the id
 		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
-			$livemode = $post_event->livemode;
+			$livemode = ! empty( $post_event->livemode );
 		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
-		$livemode = $_REQUEST['livemode'];
+		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
 	}
 
 	try {
