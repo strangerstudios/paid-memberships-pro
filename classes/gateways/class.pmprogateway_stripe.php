@@ -402,12 +402,12 @@ class PMProGateway_stripe extends PMProGateway {
                 <input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" class="regular-text code" />
             </td>
         </tr>
-        <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php _e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php if ( ! empty( $webhook ) && is_array( $webhook ) ) { ?>
+				<?php if ( ! empty( $webhook ) && is_array( $webhook ) && self::using_legacy_keys()) { ?>
 				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 					<?php 
 						if ( 'disabled' === $webhook['status'] ) {
@@ -431,14 +431,25 @@ class PMProGateway_stripe extends PMProGateway {
 							</div>
 							<?php
 						}
-					 } else { ?>
-				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
-				<div class="notice error inline">
-					<p id="pmpro_stripe_webhook_notice"><?php _e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
-				</div>
-				<?php } ?>
-			<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-			<code><?php echo self::get_site_webhook_url(); ?></code></p>
+					} elseif ( self::using_legacy_keys() ) { ?>
+						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
+						<div class="notice error inline">
+							<p id="pmpro_stripe_webhook_notice"><?php _e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
+						</div>
+						<?php
+					}
+					$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved' );
+					if ( ! empty( $last_webhook ) ) {
+						echo '<p>' . esc_html( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+					} else {
+						echo '<p>' . esc_html( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
+					}
+					if ( ! self::webhook_is_working() ) {
+						echo '<p class="pmpro_error">' . esc_html( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
+					}
+				?>
+				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
+				<code><?php echo self::get_site_webhook_url(); ?></code></p>
             </td>
         </tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -3471,5 +3482,27 @@ class PMProGateway_stripe extends PMProGateway {
 			$publishablekey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
+	}
+
+	static function webhook_is_working() {
+		global $wpdb;
+		$last_webhook       = get_option( 'pmpro_stripe_last_webhook_recieved' );
+		if ( empty( $last_webhook ) ) {
+			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years',  ) ); // Probably never got webhook
+		} else {
+			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes',  ) ); // In case recurring order made after webhook recieved.
+		}
+
+		$hour_before_now    = date( 'Y-m-d H:i:s', strtotime( '- 1 hour' ) );
+		$num_problem_orders = $wpdb->get_var( "
+			SELECT COUNT(*)
+			FROM $wpdb->pmpro_membership_orders
+			WHERE gateway = 'stripe'
+			AND subscription_transaction_id <> '' 
+			AND subscription_transaction_id IS NOT NULL
+			AND timestamp > '" . $last_webhook_safe . "'
+			AND timestamp < '" . $hour_before_now . "'
+		");
+		return ( empty( $num_problem_orders ) );
 	}
 }
