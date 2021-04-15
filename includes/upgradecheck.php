@@ -257,14 +257,15 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 2.5;
 		pmpro_setOption( 'db_version', '2.5' );
 	}
-	
+
 	/**
 	 * Version 2.6
 	 * Running pmpro_db_delta to update column types to bigint/etc
 	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );
 	if( $pmpro_db_version < 2.6 ) {
 		pmpro_db_delta();
-		$pmpro_db_version = 2.6;
+		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
 	}
 }

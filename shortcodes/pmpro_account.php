@@ -127,12 +127,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								</td>
 								<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-expiration' ); ?>">
 								<?php
-									if($level->enddate)
+									if($level->enddate){
 										$expiration_text = date_i18n( get_option( 'date_format' ), $level->enddate );
-									else
+										if( apply_filters( 'pmpro_show_time_on_expiration_date', true ) ){
+											$expiration_text = date_i18n( get_option( 'date_format' ).' - H:i', $level->enddate );
+										}
+									} else {
 										$expiration_text = "---";
-
-								    	echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
+								    	
+								    }
+								    echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
 								?>
 								</td>
 							</tr>

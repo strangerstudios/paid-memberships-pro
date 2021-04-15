@@ -519,8 +519,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				}
 				pmpro_updateRecaptchaTRs();
 			</script>
-		</div> <!-- end pmpro_admin_section-other-settings -->
-
+		</div> <!-- end pmpro_admin_section-other-settings -->		
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
