@@ -2954,7 +2954,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		/*
 		Figure out the trial length (first payment handled by initial charge)
-        
+
 		There are two parts to the trial. Part 1 is simply the delay until the first payment
         since we are doing the first payment as a separate transaction.
         The second part is the actual "trial" set by the admin.
@@ -3042,8 +3042,10 @@ class PMProGateway_stripe extends PMProGateway {
 				'expand'                 => array(
 					'pending_setup_intent.payment_method',
 				),
-				'application_fee_percent' => self::get_application_fee_percentage(),
 			);
+			if ( ! self::using_legacy_keys() ) {
+				$params['application_fee_percent'] = self::get_application_fee_percentage();
+			}
 			$order->subscription = Stripe_Subscription::create( $params );
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
@@ -3318,7 +3320,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return array params with application fee if applicable.
 	 */
 	static function add_application_fee_amount( $params ) {
-		if ( empty( $params['amount'] ) ) {
+		if ( empty( $params['amount'] ) || self::using_legacy_keys() ) {
 			return $params;
 		}
 		$amount = $params['amount'];
