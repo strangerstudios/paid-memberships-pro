@@ -20,7 +20,8 @@
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
-	define( 'PMPRO_DOING_WEBHOOK', 'twocheckout' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'twocheckout', true );
 
 	//validate?
 	if( ! pmpro_twocheckoutValidate() ) {
@@ -246,7 +247,7 @@
 		else if( empty ( $check['response_code'] ) )
 			$r = false;	//Invalid response
 		else
-			$r = $check['response_code'];
+			$r = $check['response_code'] === 'Success';
 
 		/**
 		 * Filter if an twocheckout request is valid or not.
@@ -258,7 +259,7 @@
 		 */
 		$r = apply_filters('pmpro_twocheckout_validate', $r, $check);
 
-		return $check['response_code'] === 'Success';
+		return $r;
 	}
 
 	/*

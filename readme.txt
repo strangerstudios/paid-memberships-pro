@@ -1,9 +1,9 @@
 === Paid Memberships Pro ===
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
-Requires at least: 4
-Tested up to: 5.6
-Stable tag: 2.5.4
+Requires at least: 4.7
+Tested up to: 5.7
+Stable tag: 2.5.7
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,36 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.7 - 2021-03-10 =
+* ENHANCEMENT: Added a pmpro_checkout_message filter that can be used to filter error messages shown at checkout.
+* BUG FIX/ENHANCEMENT: Now making sure some billing address fields are available for the billing failure emails sent during the PayPal IPN handler.
+* BUG FIX/ENHANCEMENT: Fixed issues where HTML entities were shown in level prices in some places when using certain currencies. All prices are sent through a special pmpro_escape_price function that allows div, span, and sup tags with id and class attributes. Also removed from unneeded small tags and grey coloring of prices in certain spots.
+* BUG FIX: Now cancelling membership when a SUBSCRIPTION_CANCELED message is sent to the Braintree webhook handler. In the past, we incorrectly sent the payment failed email instead.
+* BUG FIX: Fixed display issues with the Require Membership block. The level select field has been swapped with a list of checkboxes.
+* BUG FIX: Fixed warnings that occurred when processing failed payments in webhook and IPN handlers.
+* BUG FIX: Fixed our Braintree class so we will only attempt to update a user's credit card and address when the getCustomer method is called at checkout or during a billing update.
+* BUG FIX: Fixed issue where refreshing the checkout review page when using PayPal Express caused the associated order to be updated again. Now the order status is updated to review and only updates again when the user confirms.
+* BUG FIX: Avoiding warnings when the pmpro_url function is used if the PMPro pages haven't been set up yet. (Thanks, Thomas Sjolshagen)
+* REFACTOR: Updated the pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) function so both fields are required. Will still default to the current user if null is passed for the $user_id.
+
+= 2.5.6 - 2021-03-05 =
+* SECURITY: Now sanitizing and escaping the `order` parameter when filtering the users table in the dashboard. (Thanks, Gen Sato)
+* BUG FIX/ENHANCEMENT: Now hiding the ApplePay/GooglePay "Payment Request" buttons when the main checkout form is submitted. This helps to prevent double checkouts.
+* BUG FIX: Fixed missing membership data in the billing failed email.
+
+= 2.5.5 - 2021-02-22 =
+* SECURITY: Better sanitization of parameters on some REST API endpoints.
+* SECURITY: Now showing reCAPTCHA field at checkout even for logged in users.
+* ENHANCEMENT: Added find_billing_address() method to the MemberOrder class. This will look for the address on the last order with the same sub id or in user meta.
+* ENHANCEMENT: Better styling for invoices shown on the frontend.
+* ENHANCEMENT: No longer forcing column width % in the members list table.
+* ENHANCEMENT: Added a pmpro_doing_webhook action that is fired at the beginning of our webhook/IPN handlers.
+* ENHANCEMENT: Added a pmpro_membership_level_after_billing_details_settings hook to the edit membership level page. This hook should now be used to add billing related settings.
+* BUG FIX/ENHANCEMENT: Allowing order total to be set to 0, even if there is a subtotal and tax amount.
+* BUG FIX/ENHANCEMENT: Stripe checkout fields will now use the language set in the Stripe settings.
+* BUG FIX/ENHANCEMENT: The URL check in our notifications code now accepts arrays (e.g. to see if a URL has one of a group of top level domains). This fixes a warning some may have seen in error logs.
+* BUG FIX: Fixed issues where totals on PayPal recurring payments were sometimes incorrect if both an mt_gross and amount field were passed via IPN.
+
 = 2.5.4 - 2021-01-28 =
 * ENHANCEMENT: Bump license year 2021 - 10 years.
 * ENHANCEMENT: Now passing billing street in `pmpro_tax` filter.

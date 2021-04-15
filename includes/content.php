@@ -145,9 +145,8 @@ function pmpro_search_filter($query)
     if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
         //avoiding post_parent queries for now
 		if( empty( $query->query_vars['post_parent'] ) ) {
-			$query->set('post__not_in', $pmpro_pages );
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_pages ) );
 		}
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
     // If this is a post type query, get the queried post types into an array.	
@@ -223,7 +222,7 @@ function pmpro_search_filter($query)
         if( $hidden_page_ids ) {
 			//avoiding post_parent queries for now
 			if( empty( $query->query_vars['post_parent'] ) ) {
-				$query->set( 'post__not_in', $hidden_page_ids );
+				$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_page_ids ) );
 			}
 		}
 				
@@ -248,7 +247,7 @@ function pmpro_search_filter($query)
 				
         //make this work
         if( $hidden_cat_ids ) {
-            $query->set( 'category__not_in', $hidden_cat_ids );
+			$query->set( 'category__not_in', array_merge( $query->get( 'category__not_in' ), $hidden_cat_ids ) );
 						
 			//filter so posts in this member's categories are allowed
 			add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );

@@ -15,7 +15,8 @@
 	global $logstr;
 	$logstr = "";
 
-	define( 'PMPRO_DOING_WEBHOOK', 'stripe' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
@@ -32,19 +33,6 @@
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
-
-	try {
-		if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
-			$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
-		} else {
-			$secret_key = pmpro_getOption( 'stripe_secretkey' );
-		}
-		Stripe\Stripe::setApiKey( $secret_key );
-	} catch ( Exception $e ) {
-		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
-		pmpro_stripeWebhookExit();
-	}
-
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
 	{
@@ -52,12 +40,29 @@
 		$post_event = json_decode($body);
 
 		//get the id
-		if(!empty($post_event))
+		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
+			$livemode = ! empty( $post_event->livemode );
+		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
+		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+	}
+
+	try {
+		if ( PMProGateway_stripe::using_legacy_keys() ) {
+			$secret_key = pmpro_getOption( "stripe_secretkey" );
+		} elseif ( $livemode ) {
+			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+		} else {
+			$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+		}
+		Stripe\Stripe::setApiKey( $secret_key );
+	} catch ( Exception $e ) {
+		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
+		pmpro_stripeWebhookExit();
 	}
 
 	//get the event through the API now
@@ -81,6 +86,9 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Log that we have successfully recieved a webhook from Stripe.
+		update_option( 'pmpro_stripe_last_webhook_recieved', date( 'Y-m-d H:i:s' ) );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
@@ -158,8 +166,8 @@
 					if ( ! empty ( $charge->billing_details->address->line1 ) ) {
 						// Get order billing details from Stripe.
 						$morder->billing = $charge->billing_details->address;
-						$morder->billing->name = $charge->name; // Add name.
-						$morder->billing->phone = $charge->phone; // Add phone.
+						$morder->billing->name = $charge->billing_details->name; // Add name.
+						$morder->billing->phone = $charge->billing_details->phone; // Add phone.
 						$morder->billing->zip = $morder->billing->postal_code; // Fix zip.
 						$morder->billing->street = $morder->billing->line1; // Fix street. 
 
@@ -174,24 +182,7 @@
 						$morder->PhoneNumber = $morder->billing->phone;
 					} else {
 						// Pull from previous order.
-						$morder->FirstName = $old_order->FirstName;
-						$morder->LastName = $old_order->LastName;
-						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
-						$morder->Address1 = $old_order->Address1;
-						$morder->City = $old_order->billing->city;
-						$morder->State = $old_order->billing->state;
-						$morder->Zip = $old_order->billing->zip;
-						$morder->PhoneNumber = $old_order->billing->phone;
-
-						$morder->billing = new stdClass();
-					
-						$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
-						$morder->billing->street = $old_order->billing->street;
-						$morder->billing->city = $old_order->billing->city;
-						$morder->billing->state = $old_order->billing->state;
-						$morder->billing->zip = $old_order->billing->zip;
-						$morder->billing->country = $old_order->billing->country;
-						$morder->billing->phone = $old_order->billing->phone;
+						$morder->find_billing_address();
 					}
 
 					//get CC info that is on file
