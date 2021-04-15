@@ -206,7 +206,7 @@ function pmpro_sortable_column_query( $query ) {
 	$vars = $query->query_vars;
 
 	if ( $vars['orderby'] == 'level' ){
-		$order = pmpro_sanitize_with_safelist( $vars['order'], array( 'asc', 'desc' ) );
+		$order = pmpro_sanitize_with_safelist( $vars['order'], array( 'ASC', 'DESC' ) );
 		
 		if ( ! empty( $order ) ) {
 			$query->query_from .= " LEFT JOIN {$wpdb->prefix}pmpro_memberships_users AS pmpro_mu ON {$wpdb->prefix}users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active'";
