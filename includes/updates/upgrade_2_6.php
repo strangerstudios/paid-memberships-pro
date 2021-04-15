@@ -12,25 +12,7 @@
  * Going forward, we will always set the expiration time to 11:59
  * unless the level is set up to expire hourly.
  */
-function pmpro_upgrade_2_6(){
-
-	global $wpdb;
-
-	$wpdb->hide_errors();
-
-	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
-	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_membership_levels . "` MODIFY `expiration_period` enum('Hour', 'Day','Week','Month','Year') NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
-	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_discount_codes_levels . "` MODIFY `expiration_period` enum('Hour', 'Day','Week','Month','Year') NOT NULL
-	";
-	$wpdb->query($sqlQuery);
-
+function pmpro_upgrade_2_6() {
 	/**
 	 * Reschedule Cron Job for Hourly Checks
 	 */
