@@ -35,7 +35,12 @@
 
 
 	try {
-		Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
+		if ( ! empty( pmpro_getOption( 'live_stripe_connect_secretkey' ) ) && ! empty( pmpro_getOption( 'live_stripe_connect_publishablekey' ) ) ) {
+			$secret_key = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : $secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+		} else {
+			$secret_key = pmpro_getOption( 'stripe_secretkey' );
+		}
+		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
 		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
 		pmpro_stripeWebhookExit();

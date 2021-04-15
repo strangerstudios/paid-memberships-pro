@@ -83,8 +83,8 @@ jQuery(document).ready(function() {
     // Disable the webhook buttons if the API keys aren't complete yet.
     jQuery('#stripe_publishablekey,#stripe_secretkey').bind('change keyup', function() {
         pmpro_stripe_check_api_keys();
-    });    
-    pmpro_stripe_check_api_keys();
+    });
+	pmpro_stripe_check_api_keys();
     
     // AJAX call to create webhook.
     jQuery('#pmpro_stripe_create_webhook').click(function(event){
@@ -92,9 +92,8 @@ jQuery(document).ready(function() {
                 
 		var postData = {
 			action: 'pmpro_stripe_create_webhook',
-            secretkey: jQuery('#stripe_secretkey').val(),
+			secretkey: pmpro_stripe_get_secretkey(),
 		}
-
 		jQuery.ajax({
 			type: "POST",
 			data: postData,
@@ -125,7 +124,7 @@ jQuery(document).ready(function() {
                 
 		var postData = {
 			action: 'pmpro_stripe_delete_webhook',
-            secretkey: jQuery('#stripe_secretkey').val(),
+			secretkey: pmpro_stripe_get_secretkey(),
 		}
 
 		jQuery.ajax({
@@ -158,7 +157,7 @@ jQuery(document).ready(function() {
                 
 		var postData = {
 			action: 'pmpro_stripe_rebuild_webhook',
-            secretkey: jQuery('#stripe_secretkey').val(),
+			secretkey: pmpro_stripe_get_secretkey(),
 		}
 
 		jQuery.ajax({
@@ -187,12 +186,24 @@ jQuery(document).ready(function() {
 });
 
 // Disable the webhook buttons if the API keys aren't complete yet.
-function pmpro_stripe_check_api_keys() {    
-    if( jQuery('#stripe_publishablekey').val().length > 0 && jQuery('#stripe_secretkey').val().length > 0 ) {
+function pmpro_stripe_check_api_keys() {  
+    if( ( jQuery('#stripe_publishablekey').val().length > 0 && jQuery('#stripe_secretkey').val().length > 0 ) || jQuery('#live_stripe_connect_secretkey').val().length > 0 ) {
         jQuery('#pmpro_stripe_create_webhook').removeClass('disabled');
         jQuery('#pmpro_stripe_create_webhook').addClass('button-secondary');
     } else {            
         jQuery('#pmpro_stripe_create_webhook').removeClass('button-secondary');
         jQuery('#pmpro_stripe_create_webhook').addClass('disabled');
     }
+}
+
+function pmpro_stripe_get_secretkey() {
+	if ( jQuery('#live_stripe_connect_secretkey').val().length > 0 && jQuery( "select[name='gateway_environment']" ).val() === 'live' ) {
+		return jQuery('#live_stripe_connect_secretkey').val();
+	} else if ( jQuery('#test_stripe_connect_secretkey').val().length > 0 && jQuery( "select[name='gateway_environment']" ).val() === 'sandbox' ) {
+		return jQuery('#test_stripe_connect_secretkey').val();
+	} else if ( jQuery('#stripe_secretkey').val().length > 0 ) {
+		return jQuery('#stripe_secretkey').val();
+	} else {
+		return '';
+	}
 }
