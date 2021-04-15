@@ -264,7 +264,7 @@ function pmpro_checkForUpgrades()
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );
 	if( $pmpro_db_version < 2.6 ) {
-		pmpro_db_delta();
+		pmpro_db_delta();		
 		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
 	}
@@ -303,7 +303,7 @@ function pmpro_db_delta()
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
 		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
@@ -449,7 +449,7 @@ function pmpro_db_delta()
 		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
 		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
 		);
