@@ -51,7 +51,7 @@
 
 		<hr />
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice_details' ); ?>">
-			<?php if(!empty($pmpro_invoice->billing->name)) { ?>
+			<?php if(!empty($pmpro_invoice->billing->street)) { ?>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-billing-address' ); ?>">
 					<strong><?php _e('Billing Address', 'paid-memberships-pro' );?></strong>
 					<p>

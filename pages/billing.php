@@ -168,7 +168,7 @@
 					</div> <!-- end pmpro_checkout-field-baddress2 -->
 
 					<?php
-						$longform_address = apply_filters("pmpro_longform_address", false);
+						$longform_address = apply_filters("pmpro_longform_address", true);
 						if($longform_address)
 						{
 						?>

@@ -600,6 +600,10 @@
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
+		 *
+		 * NOTE: This function should no longer be used. Instead, set the timestamp
+		 * for the order directly and call the MemberOrder->saveOrder() function.
+		 * This function is no longer used on the /adminpages/orders.php page.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{

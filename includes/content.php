@@ -297,6 +297,16 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			$hasaccess = $hasaccess[0];
 		}
 	}
+	
+	/**
+	 * Filter to let other plugins change how PMPro filters member content.
+	 * If anything other than false is returned, that value will overwrite
+	 * the $content variable and no further processing is done in this function.
+	 */
+	$content_filter = apply_filters( 'pmpro_membership_content_filter', false, $content, $hasaccess );
+	if ( $content_filter !== false ) {
+		return $content_filter;
+	}
 
 	if( $hasaccess ) {
 		//all good, return content
@@ -480,7 +490,9 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-level-required';
 			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-level-' . $post_level[0];
+				if ( isset( $post_level[0] ) ) {
+					$classes[] = 'pmpro-level-' . $post_level[0];
+				} 	
 			}
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true) {
