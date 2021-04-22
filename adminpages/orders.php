@@ -277,6 +277,14 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		global $allowedposttags;
 		$order->notes = wp_kses( wp_unslash( $_REQUEST['notes'] ), $allowedposttags );
 	}
+	if ( ! in_array( 'timestamp', $read_only_fields ) && isset( $_POST['ts_year'] ) && isset( $_POST['ts_month'] ) && isset( $_POST['ts_day'] ) && isset( $_POST['ts_hour'] ) && isset( $_POST['ts_minute'] ) ) {
+		$year   = intval( $_POST['ts_year'] );
+		$month  = intval( $_POST['ts_month'] );
+		$day    = intval( $_POST['ts_day'] );
+		$hour   = intval( $_POST['ts_hour'] );
+		$minute = intval( $_POST['ts_minute'] );
+		$order->timestamp = $date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );;
+	}
 
 	// affiliate stuff
 	$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
@@ -298,15 +306,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	// save
 	if ( $order->saveOrder() !== false && $nonceokay ) {
 		$order_id = $order->id;
-		
-		// handle timestamp
-		if ( $order->updateTimestamp( intval( $_POST['ts_year'] ), intval( $_POST['ts_month'] ), intval( $_POST['ts_day'] ), intval( $_POST['ts_hour'] ) . ':' . intval( $_POST['ts_minute'] ) . ':00' ) !== false ) {
-			$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
-			$pmpro_msgt = 'success';
-		} else {
-			$pmpro_msg  = __( 'Error updating order timestamp.', 'paid-memberships-pro' );
-			$pmpro_msgt = 'error';
-		}
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
@@ -1408,7 +1407,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<?php }
 						?>
 					</td>
-					<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
 					<td>
 						<?php
 						if ( ! empty( $order->payment_type ) ) {
@@ -1424,7 +1423,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php if ( ! empty( $order->billing->street ) ) { ?>
 							<?php echo esc_html( $order->billing->street ); ?><br/>
 							<?php if ( $order->billing->city && $order->billing->state ) { ?>
-								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?><?php echo esc_html( $order->billing->zip ); ?>
+								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?> <?php echo esc_html( $order->billing->zip ); ?>
 									<?php
 									if ( ! empty( $order->billing->country ) ) {
 										echo esc_html( $order->billing->country ); }

@@ -130,17 +130,21 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 		$page = 'levels';
 	}
 
-	global $pmpro_pages;
+	global $pmpro_pages;	
 
-	// start with the permalink
-	$url = get_permalink( $pmpro_pages[ $page ] );
+	if ( ! empty( $pmpro_pages[ $page ] ) ) {
+		// start with the permalink
+		$url = get_permalink( $pmpro_pages[ $page ] );
 
-	// WPML/etc support
-	if ( function_exists( 'icl_object_id' ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
-		$trans_id = icl_object_id( $pmpro_pages[ $page ], 'page', false, ICL_LANGUAGE_CODE );
-		if ( ! empty( $trans_id ) ) {
-			$url = get_permalink( $trans_id );
+		// WPML/etc support
+		if ( function_exists( 'icl_object_id' ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
+			$trans_id = icl_object_id( $pmpro_pages[ $page ], 'page', false, ICL_LANGUAGE_CODE );
+			if ( ! empty( $trans_id ) ) {
+				$url = get_permalink( $trans_id );
+			}
 		}
+	} else {
+		$url = '';
 	}
 
 	// figure out querystring
@@ -946,7 +950,7 @@ function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level
  * @param int    $level ID of level to set as new level, use 0 to cancel membership
  * @param int    $user_id ID of the user to change levels for
  * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
- * $param int $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
+ * @param int    $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
  * Return values:
  *      Success returns boolean true.
@@ -967,6 +971,12 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
+
+	/**
+	 * Filter the level passed in.
+	 * @since 2.5.8
+	 */
+	$level = apply_filters( 'pmpro_change_level', $level, $user_id, $old_level_status, $cancel_level );
 
 	if ( empty( $level ) ) {
 		$level = 0;
@@ -998,8 +1008,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( ! is_array( $level ) ) {
 		// are they even changing?
 		if ( pmpro_hasMembershipLevel( $level, $user_id ) ) {
-			$pmpro_error = __( 'not changing?', 'paid-memberships-pro' );
-			return false; // not changing
+			return true;
 		}
 	}
 
@@ -1019,7 +1028,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
 	 * @param array $old_levels array of prior levels the user belonged to.
-	 * $param int $cancel_level ID of the level being cancelled if specified
+	 * @param int $cancel_level ID of the level being cancelled if specified
 	 */
 	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $old_levels, $cancel_level );
 
@@ -1181,7 +1190,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 *
 	 * @param int $level_id ID of the level changed to.
 	 * @param int $user_id ID of the user changed.
-	 * $param int $cancel_level ID of the level being cancelled if specified.
+	 * @param int $cancel_level ID of the level being cancelled if specified.
 	 */
 	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, $cancel_level );
 	return true;
@@ -1224,8 +1233,9 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 /*
  pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * $level may either be the ID or name of the desired membership_level.
- * $category must be a valid post category ID.
+ * @param $level may either be the ID or name of the desired membership_level.
+ * @param $category must be a valid post category ID.
+ * @param $value
  *
  * Return values:
  *		Success returns boolean true.
@@ -1263,8 +1273,8 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
  pmpro_updateMembershipCategories() ensures that all those and only those categories given
 * are associated with the given membership level.
 *
-* $level is a valid membership level ID or name
-* $categories is an array of post category IDs
+* @param $level is a valid membership level ID or name
+* @param $categories is an array of post category IDs
 *
 * Return values:
 *		Success returns boolean true.
@@ -1302,7 +1312,7 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /*
  pmpro_getMembershipCategories() returns the categories for a given level
 *
-* $level_id is a valid membership level ID
+* @param $level_id is a valid membership level ID
 *
 * Return values:
 *		Success returns boolean true.
@@ -2056,7 +2066,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * Get a specific membership level for a user if they have that level.
  * This is better to use when MMPU is enabled on the site.
  *
- * If $user_id is omitted, the value will be retrieved from $current_user.
+ * If $user_id is null, the value will be retrieved from $current_user.
  *
  * Return values:
  *      Success returns the level object.
@@ -2065,7 +2075,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  * @param  int $user_id User ID to check for
  * @param  int $level_id Level ID to check for.
  */
-function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id = null ) {
+function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 	if ( empty( $user_id ) ) {
 		global $current_user;
 		$user_id = $current_user->ID;
@@ -2089,7 +2099,7 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id = null, $level_id = n
 /*
  pmpro_getLevel() returns the level object for a level
  *
- * $level may be the level id or name
+ * @param $level may be the level id or name
  *
  * Return values:
  *		Success returns the level object.
@@ -2757,6 +2767,35 @@ function pmpro_formatPrice( $price ) {
 	return apply_filters( 'pmpro_format_price', $formatted, $price, $pmpro_currency, $pmpro_currency_symbol );
 }
 
+/**
+ * Filter a sanitized price for display with only the allowed HTML.
+ *
+ * @since 2.5.7
+ *
+ * @param string $price A price value.
+ * @return string $price The escaped price with allowed HTML. 
+ *
+ */
+function pmpro_escape_price( $price ) {
+	$allowed_price_html = apply_filters( 
+		'pmpro_escape_price_html', 
+		array(
+			'div' => array (
+				'class' => array(),
+				'id' => array(),
+			),
+			'span' => array (
+				'class' => array(),
+				'id' => array(),
+			),
+			'sup' => array (
+				'class' => array(),
+				'id' => array(),
+			),
+		)
+	);
+	return wp_kses( $price, $allowed_price_html );
+}
 
 /**
  * Function to trim trailing zeros from an amount.
@@ -3352,7 +3391,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
 
 	// Return false if there is no plugin data.
-	if ( empty( $plugin_data ) ) {
+	if ( empty( $plugin_data ) || empty( $plugin_data['Version'] ) ) {
 		return false;
 	}
 
@@ -3427,10 +3466,18 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
  * Checks if a webhook is running
  * @since 2.5
  * @param string $gateway If passed in, requires that specific gateway.
+ * @param bool $set Set to true to set the constant and fire the action hook.
  * @return bool True or false if a PMPro webhook set the constant or not.
  */
-function pmpro_doing_webhook( $gateway = null ){
+function pmpro_doing_webhook( $gateway = null, $set = false ){
+	// If second param is set, set things up.
+	if ( ! empty( $set ) ) {
+		define( 'PMPRO_DOING_WEBHOOK', $gateway );
+		do_action( 'pmpro_doing_webhook', $gateway );
+		return true;
+	}
 
+	// Otherwise, check if we were already set up.
 	if( defined( 'PMPRO_DOING_WEBHOOK' ) && !empty ( PMPRO_DOING_WEBHOOK ) ){
 		if( $gateway !== null ){
 			if( PMPRO_DOING_WEBHOOK == $gateway ){
