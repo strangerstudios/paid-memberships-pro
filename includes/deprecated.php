@@ -61,6 +61,10 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-member-history' => array(
 			'file' => 'pmpro-member-history.php',
 			'label' => 'Member History Add On'
+		),
+		'pmpro-email-templates' => array(
+			'file' => 'pmpro-email-templates.php',
+			'label' => 'Paid Memberships Pro - Email Templates Add On'
 		)
 	);
 	
@@ -85,7 +89,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 
 	// If any deprecated add ons are active, show warning.
-	if ( is_array( $deprecated_active ) || ! empty( $deprecated_active ) ) {
+	if ( is_array( $deprecated_active ) && ! empty( $deprecated_active ) ) {
 		// Only show on certain pages.
 		if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
 			return;

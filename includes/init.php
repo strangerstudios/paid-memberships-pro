@@ -7,8 +7,9 @@ function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/countries.php');
 	require_once(PMPRO_DIR . '/includes/states.php');
 	require_once(PMPRO_DIR . '/includes/currencies.php');
+	require_once(PMPRO_DIR . '/includes/email-templates.php');
 
-	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
+	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol, $pmproet_email_defaults, $pmproet_test_order_id;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
 	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");

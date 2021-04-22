@@ -250,7 +250,7 @@ function pmproet_send_test() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	global $pmproet_test_order_id, $current_user;
+	global $current_user;
 
 	//setup test email
 	$test_email = new PMProEmail();
@@ -261,8 +261,7 @@ function pmproet_send_test() {
 	add_filter('pmpro_email_recipient', 'pmproet_test_pmpro_email_recipient', 10, 2);
 	
 	//load test order
-	$pmproet_test_order_id = get_option('pmproet_test_order_id');
-	$test_order = new MemberOrder($pmproet_test_order_id);
+	$test_order = pmproet_admin_init_test_order();
 	
 	$test_user = $current_user;
 	
