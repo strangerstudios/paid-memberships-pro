@@ -818,9 +818,9 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 		$login_url = get_permalink( $login_page_id );
 		if ( strpos( $login_url, '?' ) ) {
 			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
-			$message = str_replace( site_url( 'wp-login.php' ) . '?', site_url( 'wp-login.php' ) . '&', $message );
+			$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
 		}
-		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
+		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
 	}
 
 	return $message;
