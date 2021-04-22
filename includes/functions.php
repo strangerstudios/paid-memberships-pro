@@ -1210,6 +1210,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
  * @param mixed $filter_contents to not break the wp_redirect filter.
  */
 function pmpro_do_action_after_all_membership_level_changes( $filter_contents = null ) {
+	global $pmpro_old_user_levels;
 	/**
 	 * Run code after all membership level changes have occured. Users who have had changes
 	 * will be stored in the global $pmpro_old_user_levels array.
@@ -1217,6 +1218,9 @@ function pmpro_do_action_after_all_membership_level_changes( $filter_contents = 
 	 * @since  2.6
 	 */
 	do_action( 'pmpro_after_all_membership_level_changes' );
+
+	// Start fresh for next call.
+	unset( $pmpro_old_user_levels );
 	return $filter_contents;
 }
 add_action( 'template_redirect', 'pmpro_do_action_after_all_membership_level_changes', 2 );
