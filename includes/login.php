@@ -826,7 +826,7 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 	return $message;
 }
 add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 3 );
-add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
+add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.
