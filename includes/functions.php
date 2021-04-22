@@ -1211,16 +1211,24 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
  */
 function pmpro_do_action_after_all_membership_level_changes( $filter_contents = null ) {
 	global $pmpro_old_user_levels;
+	if ( empty( $pmpro_old_user_levels ) ) {
+		// No level changes occured, return.
+		return $filter_contents;
+	}
+
+	// Clear global so that we don't run twice for same level changes
+	$pmpro_old_user_levels_copy = $pmpro_old_user_levels;
+	$pmpro_old_user_levels = null;
+
 	/**
 	 * Run code after all membership level changes have occured. Users who have had changes
 	 * will be stored in the global $pmpro_old_user_levels array.
 	 *
 	 * @since  2.6
+	 * @param array $pmpro_old_user_levels_copy array of user_id => array( old_level_objs )
 	 */
-	do_action( 'pmpro_after_all_membership_level_changes' );
+	do_action( 'pmpro_after_all_membership_level_changes', $pmpro_old_user_levels_copy );
 
-	// Start fresh for next call.
-	unset( $pmpro_old_user_levels );
 	return $filter_contents;
 }
 add_action( 'template_redirect', 'pmpro_do_action_after_all_membership_level_changes', 2 );
