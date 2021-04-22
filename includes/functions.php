@@ -1015,6 +1015,14 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// get all active membershipships for this user
 	$old_levels = pmpro_getMembershipLevelsForUser( $user_id );
 
+	global $pmpro_old_user_levels;
+	if ( empty( $pmpro_old_user_levels ) ) {
+		$pmpro_old_user_levels = array();
+	}
+	if ( ! array_key_exists( $user_id, $pmpro_old_user_levels ) ) {
+		$pmpro_old_user_levels[$user_id] = empty( $old_levels ) ? array() : $old_levels;
+	}
+
 		// get level id
 	if ( is_array( $level ) ) {
 		$level_id = $level['membership_id'];    // custom level
@@ -1195,6 +1203,26 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, $cancel_level );
 	return true;
 }
+
+/**
+ * Runs after all membership level changes have been performed.
+ *
+ * @param mixed $filter_contents to not break the wp_redirect filter.
+ */
+function pmpro_do_action_after_all_membership_level_changes( $filter_contents = null ) {
+	/**
+	 * Run code after all membership level changes have occured. Users who have had changes
+	 * will be stored in the global $pmpro_old_user_levels array.
+	 *
+	 * @since  2.6
+	 */
+	do_action( 'pmpro_after_all_membership_level_changes' );
+	return $filter_contents;
+}
+add_action( 'template_redirect', 'pmpro_do_action_after_all_membership_level_changes', 2 );
+add_filter( 'wp_redirect', 'pmpro_do_action_after_all_membership_level_changes', 100 );
+add_action( 'pmpro_membership_post_membership_expiry', 'pmpro_do_action_after_all_membership_level_changes' );
+add_action( 'shutdown', 'pmpro_do_action_after_all_membership_level_changes' );
 
 /**
  * Function to list WordPress categories in hierarchical format.
