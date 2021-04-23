@@ -4,7 +4,7 @@
  * @param	text	The prompt, i.e. are you sure?
  * @param	url		The url to redirect to.
  */
-function pmpro_askfirst( text, url ) {
+ function pmpro_askfirst( text, url ) {
 	var answer = window.confirm( text );
 
 	if ( answer ) {
@@ -262,7 +262,7 @@ jQuery(document).ready(function($) {
         //get template data
         $data = {
             template: template,
-            action: 'pmproet_get_template_data',
+            action: 'pmpro_email_templates_get_template_data',
             security: $('input[name=security]').val()
         };
 
@@ -318,7 +318,7 @@ jQuery(document).ready(function($) {
             template: template,
             subject: $("#email_template_subject").val(),
             body: $("#email_template_body").val(),
-            action: 'pmproet_save_template_data',
+            action: 'pmpro_email_templates_save_template_data',
             security: $('input[name=security]').val()
         };
         $.post(ajaxurl, $data, function(response) {
@@ -345,7 +345,7 @@ jQuery(document).ready(function($) {
 
         $data = {
             template: template,
-            action: 'pmproet_reset_template_data',
+            action: 'pmpro_email_templates_reset_template_data',
             security: $('input[name=security]').val()
         };
         $.post(ajaxurl, $data, function(response) {
@@ -362,7 +362,7 @@ jQuery(document).ready(function($) {
         //update wp_options
         data = {
             template: template,
-            action: 'pmproet_disable_template',
+            action: 'pmpro_email_templates_disable_template',
             disabled: $("#email_template_disable").is(":checked"),
             security: $('input[name=security]').val()
         };
@@ -404,7 +404,7 @@ jQuery(document).ready(function($) {
         data = {
             template: template,
             email: $("#test_email_address").val(),			
-            action: 'pmproet_send_test',
+            action: 'pmpro_email_templates_send_test',
             security: $('input[name=security]').val()
         };
 

@@ -3,11 +3,11 @@
  * File used to setup default email templates data.
  */
 
- global $pmproet_email_defaults;
+ global $pmpro_email_templates_defaults;
  /**
  * Default email templates.
  */
-$pmproet_email_defaults = array(
+$pmpro_email_templates_defaults = array(
 	'default'                  => array(
 		'subject'     => __( "An Email From !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __( 'Default Email', 'paid-memberships-pro')
@@ -116,7 +116,7 @@ $pmproet_email_defaults = array(
 
 // add SCA payment action required emails if we're using PMPro 2.1 or later
 if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 ) {
-	$pmproet_email_defaults = array_merge( $pmproet_email_defaults, array(
+	$pmpro_email_templates_defaults = array_merge( $pmpro_email_templates_defaults, array(
 		'payment_action'            => array(
 			'subject'     => __( "Payment action required for your !!sitename!! membership", 'paid-memberships-pro' ),
 			'description' => __('Payment Action Required', 'paid-memberships-pro')
@@ -133,13 +133,13 @@ if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 )
  *
  * @since 0.5.7
  */
-$pmproet_email_defaults = apply_filters( 'pmproet_templates', $pmproet_email_defaults );
+$pmpro_email_templates_defaults = apply_filters( 'pmproet_templates', $pmpro_email_templates_defaults );
 
 
 /*
  * Generates a test order on the fly for orders.
  */
-function pmproet_admin_init_test_order() {
+function pmpro_test_order() {
 	global $current_user;
 
 	//make sure PMPro is activated

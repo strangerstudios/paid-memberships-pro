@@ -166,11 +166,11 @@ function pmpro_retrieve_password_message( $message ) {
 add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 1 );
 
 //get template data
-function pmproet_get_template_data() {
+function pmpro_email_templates_get_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	global $pmproet_email_defaults;
+	global $pmpro_email_templates_defaults;
 
 	$template = $_REQUEST['template'];
 
@@ -181,24 +181,24 @@ function pmproet_get_template_data() {
 
 	if (empty($template_data['body'])) {
 		//if not found, load template
-		$template_data['body'] = pmproet_getTemplateBody($template);
+		$template_data['body'] = pmpro_email_templates_get_template_body($template);
 	}
 
 	// Temporary workaround for avoiding double period when using !!membership_change!!
 	$template_data['body'] = str_replace( '!!membership_change!!.', '!!membership_change!!', $template_data['body'] );
 
 	if (empty($template_data['subject']) && $template != "header" && $template != "footer") {
-		$template_data['subject'] = $pmproet_email_defaults[$template]['subject'];
+		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
 
 	echo json_encode($template_data);
 	
 	exit;
 }
-add_action('wp_ajax_pmproet_get_template_data', 'pmproet_get_template_data');
+add_action('wp_ajax_pmpro_email_templates_get_template_data', 'pmpro_email_templates_get_template_data');
 
 //save template data
-function pmproet_save_template_data() {
+function pmpro_email_templates_save_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
 
@@ -210,30 +210,30 @@ function pmproet_save_template_data() {
 	
 	exit;
 }
-add_action('wp_ajax_pmproet_save_template_data', 'pmproet_save_template_data');
+add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_templates_save_template_data');
 
 //reset template data
-function pmproet_reset_template_data() {
+function pmpro_email_templates_reset_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	global $pmproet_email_defaults;
+	global $pmpro_email_templates_defaults;
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
 
 	delete_option('pmpro_email_' . $template . '_subject');
 	delete_option('pmpro_email_' . $template . '_body');
 
-	$template_data['subject'] = $pmproet_email_defaults[$template]['subject'];
-	$template_data['body'] = pmproet_getTemplateBody($template);
+	$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
+	$template_data['body'] = pmpro_email_templates_get_template_body($template);
 
 	echo json_encode($template_data);
 	exit;
 }
-add_action('wp_ajax_pmproet_reset_template_data', 'pmproet_reset_template_data');
+add_action('wp_ajax_pmpro_email_templates_reset_template_data', 'pmpro_email_templates_reset_template_data');
 
 // disable template
-function pmproet_disable_template() {
+function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
 
@@ -243,10 +243,10 @@ function pmproet_disable_template() {
 	echo json_encode($response);
 	exit;
 }
-add_action('wp_ajax_pmproet_disable_template', 'pmproet_disable_template');
+add_action('wp_ajax_pmpro_email_templates_disable_template', 'pmpro_email_templates_disable_template');
 
 //send test email
-function pmproet_send_test() {
+function pmpro_email_templates_send_test() {
 
 	check_ajax_referer('pmproet', 'security');
 
@@ -258,10 +258,10 @@ function pmproet_send_test() {
 	$test_email->template = str_replace('email_', '', $_REQUEST['template']);
 	
 	//add filter to change recipient
-	add_filter('pmpro_email_recipient', 'pmproet_test_pmpro_email_recipient', 10, 2);
+	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
 	
 	//load test order
-	$test_order = pmproet_admin_init_test_order();
+	$test_order = pmpro_test_order();
 	
 	$test_user = $current_user;
 	
@@ -270,10 +270,10 @@ function pmproet_send_test() {
 	$test_user->membership_level = array_pop( $all_levels );
 	
 	//add notice to email body
-	add_filter('pmpro_email_body', 'pmproet_test_email_body', 10, 2);
+	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
 
 	//force the template
-	add_filter('pmpro_email_filter', 'pmproet_test_email_template', 5, 1);
+	add_filter('pmpro_email_filter', 'pmpro_email_templates_test_template', 5, 1);
 
 	//figure out how to send the email
 	switch($test_email->template) {
@@ -359,25 +359,25 @@ function pmproet_send_test() {
 	echo $response;
 	exit;
 }
-add_action('wp_ajax_pmproet_send_test', 'pmproet_send_test');
+add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_send_test');
 
-function pmproet_test_pmpro_email_recipient($email) {
+function pmpro_email_templates_test_recipient($email) {
 	if(!empty($_REQUEST['email']))
 		$email = $_REQUEST['email'];
 	return $email;
 }
 
 /* Filter Subject and Body */
-function pmproet_email_filter($email ) {
+function pmpro_email_templates_email_filter($email ) {
 
-	global $pmproet_email_defaults;
+	global $pmpro_email_templates_defaults;
 
 	//is this email disabled or is it not in the templates array?
 	if(pmpro_getOption('email_' . $email->template . '_disabled') == 'true')
 		return false;
 
 	//leave the email alone if it's not in the list of templates
-	if( empty( $pmproet_email_defaults[$email->template] ) )
+	if( empty( $pmpro_email_templates_defaults[$email->template] ) )
 		return $email;
 
 	$et_subject = pmpro_getOption('email_' . $email->template . '_subject');
@@ -393,7 +393,7 @@ function pmproet_email_filter($email ) {
 		if(!empty($et_header))
 			$temp_content = $et_header;
 		else
-			$temp_content = pmproet_getTemplateBody('header');
+			$temp_content = pmpro_email_templates_get_template_body('header');
 	} else {
 		$temp_content = '';
 	}
@@ -401,14 +401,14 @@ function pmproet_email_filter($email ) {
 	if(!empty($et_body))
 		$temp_content .= $et_body;
 	else
-		$temp_content .= pmproet_getTemplateBody($email->template);
+		$temp_content .= pmpro_email_templates_get_template_body($email->template);
 
 	//is footer disabled?
 	if(pmpro_getOption('email_footer_disabled') != 'true') {
 		if(!empty($et_footer))
 			$temp_content .= $et_footer;
 		else
-			$temp_content .= pmproet_getTemplateBody('footer');
+			$temp_content .= pmpro_email_templates_get_template_body('footer');
 	}
 	
 	$email->body = $temp_content;
@@ -427,15 +427,15 @@ function pmproet_email_filter($email ) {
 
 	return $email;
 }
-add_filter('pmpro_email_filter', 'pmproet_email_filter', 10, 1);
+add_filter('pmpro_email_filter', 'pmpro_email_templates_email_filter', 10, 1);
 
 //for test emails
-function pmproet_test_email_body($body, $email = null) {
+function pmpro_email_templates_test_body($body, $email = null) {
 	$body .= '<br><br><b>--- ' . __('THIS IS A TEST EMAIL', 'pmproet') . ' --</b>';
 	return $body;
 }
 
-function pmproet_test_email_template($email)
+function pmpro_email_templates_test_template($email)
 {
 	if(!empty($_REQUEST['template']))
 		$email->template = str_replace('email_', '', $_REQUEST['template']);
@@ -444,7 +444,7 @@ function pmproet_test_email_template($email)
 }
 
 /* Filter for Variables */
-function pmproet_email_data($data, $email) {
+function pmpro_email_templates_email_data($data, $email) {
 
 	global $current_user, $pmpro_currency_symbol, $wpdb;
 
@@ -570,7 +570,7 @@ function pmproet_email_data($data, $email) {
 
 	return $data;
 }
-add_filter('pmpro_email_data', 'pmproet_email_data', 10, 2);
+add_filter('pmpro_email_data', 'pmpro_email_templates_email_data', 10, 2);
 
 
 /**
@@ -584,9 +584,9 @@ add_filter('pmpro_email_data', 'pmproet_email_data', 10, 2);
  *
  * @return string
  */
-function pmproet_getTemplateBody($template) {
+function pmpro_email_templates_get_template_body($template) {
 
-	global $pmproet_email_defaults;
+	global $pmpro_email_templates_defaults;
 
 	// Defaults
 	$body = "";
@@ -594,8 +594,8 @@ function pmproet_getTemplateBody($template) {
 	
 	if ( get_transient( 'pmproet_' . $template ) === false ) {
 		// Load template    
-		if(!empty($pmproet_email_defaults[$template]['body'])) {
-			$body = $pmproet_email_defaults[$template]['body'];
+		if(!empty($pmpro_email_templates_defaults[$template]['body'])) {
+			$body = $pmpro_email_templates_defaults[$template]['body'];
 		} elseif ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $template . '.html' ) ) {
 			$file = get_stylesheet_directory() . '/paid-memberships-pro/email/' . $template . '.html';
 		} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/email/' . $template . '.html') ) {
