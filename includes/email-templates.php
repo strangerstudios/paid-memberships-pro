@@ -9,108 +9,108 @@
  */
 $pmproet_email_defaults = array(
 	'default'                  => array(
-		'subject'     => __( "An Email From !!sitename!!", "pmproet" ),
-		'description' => __( 'Default Email', 'pmproet')
+		'subject'     => __( "An Email From !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __( 'Default Email', 'paid-memberships-pro')
 	),
 	'admin_change'             => array(
-		'subject'     => __( "Your membership at !!sitename!! has been changed", 'pmproet' ),
-		'description' => __( 'Admin Change', 'pmproet')
+		'subject'     => __( "Your membership at !!sitename!! has been changed", 'paid-memberships-pro' ),
+		'description' => __( 'Admin Change', 'paid-memberships-pro')
 	),
 	'admin_change_admin'       => array(
-		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been changed", 'pmproet' ),
-		'description' => __('Admin Change (admin)', 'pmproet')
+		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been changed", 'paid-memberships-pro' ),
+		'description' => __('Admin Change (admin)', 'paid-memberships-pro')
 	),
 	'billing'                  => array(
-		'subject'     => __( "Your billing information has been udpated at !!sitename!!", 'pmproet' ),
-		'description' => __('Billing', 'pmproet')
+		'subject'     => __( "Your billing information has been udpated at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Billing', 'paid-memberships-pro')
 	),
 	'billing_admin'            => array(
-		'subject'     => __( "Billing information has been udpated for !!user_login!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Billing (admin)', 'pmproet')
+		'subject'     => __( "Billing information has been udpated for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Billing (admin)', 'paid-memberships-pro')
 	),
 	'billing_failure'          => array(
-		'subject'     => __( "Membership Payment Failed at !!sitename!!", 'pmproet' ),
-		'description' => __('Billing Failure', 'pmproet')
+		'subject'     => __( "Membership Payment Failed at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Billing Failure', 'paid-memberships-pro')
 	),
 	'billing_failure_admin'    => array(
-		'subject'     => __( "Membership Payment Failed For !!display_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Billing Failure (admin)', 'pmproet')
+		'subject'     => __( "Membership Payment Failed For !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Billing Failure (admin)', 'paid-memberships-pro')
 	),
 	'cancel'                   => array(
-		'subject'     => __( "Your membership at !!sitename!! has been CANCELLED", 'pmproet' ),
-		'description' => __('Cancel', 'pmproet')
+		'subject'     => __( "Your membership at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel', 'paid-memberships-pro')
 	),
 	'cancel_admin'             => array(
-		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'pmproet' ),
-		'description' => __('Cancel (admin)', 'pmproet')
+		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel (admin)', 'paid-memberships-pro')
 	),
 	'checkout_check'           => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Check', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Check', 'paid-memberships-pro')
 	),
 	'checkout_check_admin'     => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Check (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Check (admin)', 'paid-memberships-pro')
 	),
 	'checkout_express'         => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - PayPal Express', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - PayPal Express', 'paid-memberships-pro')
 	),
 	'checkout_express_admin'   => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - PayPal Express (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - PayPal Express (admin)', 'paid-memberships-pro')
 	),
 	'checkout_free'            => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Free', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Free', 'paid-memberships-pro')
 	),
 	'checkout_free_admin'      => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Free (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Free (admin)', 'paid-memberships-pro')
 	),
 	'checkout_freetrial'       => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Free Trial', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Free Trial', 'paid-memberships-pro')
 	),
 	'checkout_freetrial_admin' => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Free Trial (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Free Trial (admin)', 'paid-memberships-pro')
 	),
 	'checkout_paid'            => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Paid', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Paid', 'paid-memberships-pro')
 	),
 	'checkout_paid_admin'      => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Paid (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Paid (admin)', 'paid-memberships-pro')
 	),
 	'checkout_trial'           => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Trial', 'pmproet')
+		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Trial', 'paid-memberships-pro')
 	),
 	'checkout_trial_admin'     => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'pmproet' ),
-		'description' => __('Checkout - Trial (admin)', 'pmproet')
+		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Checkout - Trial (admin)', 'paid-memberships-pro')
 	),
 	'credit_card_expiring'     => array(
-		'subject'     => __( "Credit Card on File Expiring Soon at !!sitename!!", 'pmproet' ),
-		'description' => __('Credit Card Expiring', 'pmproet')
+		'subject'     => __( "Credit Card on File Expiring Soon at !!sitename!!", 'paid-memberships-pro' ),
+		'description' => __('Credit Card Expiring', 'paid-memberships-pro')
 	),
 	'invoice'                  => array(
-		'subject'     => __( "INVOICE for !!sitename!! membership", 'pmproet' ),
-		'description' => __('Invoice', 'pmproet')
+		'subject'     => __( "INVOICE for !!sitename!! membership", 'paid-memberships-pro' ),
+		'description' => __('Invoice', 'paid-memberships-pro')
 	),
 	'membership_expired'       => array(
-		'subject'     => __( "Your membership at !!sitename!! has ended", 'pmproet' ),
-		'description' => __('Membership Expired', 'pmproet')
+		'subject'     => __( "Your membership at !!sitename!! has ended", 'paid-memberships-pro' ),
+		'description' => __('Membership Expired', 'paid-memberships-pro')
 	),
 	'membership_expiring'      => array(
-		'subject'     => __( "Your membership at !!sitename!! will end soon", 'pmproet' ),
-		'description' => __('Membership Expiring', 'pmproet')
+		'subject'     => __( "Your membership at !!sitename!! will end soon", 'paid-memberships-pro' ),
+		'description' => __('Membership Expiring', 'paid-memberships-pro')
 	),
 	'trial_ending'             => array(
-		'subject'     => __( "Your trial at !!sitename!! is ending soon", 'pmproet' ),
-		'description' => __('Trial Ending', 'pmproet')
+		'subject'     => __( "Your trial at !!sitename!! is ending soon", 'paid-memberships-pro' ),
+		'description' => __('Trial Ending', 'paid-memberships-pro')
 	),
 );
 
@@ -118,12 +118,12 @@ $pmproet_email_defaults = array(
 if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 ) {
 	$pmproet_email_defaults = array_merge( $pmproet_email_defaults, array(
 		'payment_action'            => array(
-			'subject'     => __( "Payment action required for your !!sitename!! membership", 'pmproet' ),
-			'description' => __('Payment Action Required', 'pmproet')
+			'subject'     => __( "Payment action required for your !!sitename!! membership", 'paid-memberships-pro' ),
+			'description' => __('Payment Action Required', 'paid-memberships-pro')
 		),
 		'payment_action_admin'      => array(
-			'subject'     => __( "Payment action required: membership for !!user_login!! at !!sitename!!", 'pmproet' ),
-			'description' => __('Payment Action Required (admin)', 'pmproet')
+			'subject'     => __( "Payment action required: membership for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
+			'description' => __('Payment Action Required (admin)', 'paid-memberships-pro')
 		)
 	));
 }
@@ -176,6 +176,7 @@ function pmproet_admin_init_test_order() {
 	$test_order->billing->zip        = '12345';
 	$test_order->billing->phone      = '5558675309';
 	$test_order->gateway_environment = 'sandbox';
-	$test_order->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'pmproet' );
-	return $test_order;
+	$test_order->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
+
+	return apply_filters( 'pmpro_test_order_data', $test_order );
 }
