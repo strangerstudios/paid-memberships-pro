@@ -845,9 +845,14 @@
 									);
 									$levels = $wpdb->get_results($sqlQuery);
 
+									global $pmpro_pages_ready;
 									$level_names = array();
 									foreach( $levels as $level ) {
-										$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+										if ( $pmpro_pages_ready ) {
+											$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+										} else {
+											$level_names[] = $level->name;
+										}
 									}
 									if( $level_names ) {
 										echo implode( ', ', $level_names );
