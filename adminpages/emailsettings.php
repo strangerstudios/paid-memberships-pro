@@ -10,9 +10,7 @@
 	//get/set settings
 	global $pmpro_pages;
 
-	// Email Templates
-	global $pmproet_test_order_id, $pmproet_email_defaults, $current_user;
-	$pmproet_test_order_id = get_option( 'pmproet_test_order_id' );
+	global $pmpro_email_templates_defaults, $current_user;
 	
 	//check nonce for saving settings
 	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_emailsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_emailsettings_nonce'))) {
@@ -209,9 +207,7 @@
 		<td>
 		<select name="pmpro_email_template_switcher" id="pmpro_email_template_switcher">
 		<option value="" selected="selected"><?php echo '--- ' . __( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
-		<option value="header"><?php _e('Email Header', 'paid-memberships-pro'); ?></option>
-		<option value="footer"><?php _e('Email Footer', 'paid-memberships-pro'); ?></option>
-		<?php foreach ( $pmproet_email_defaults as $key => $template ): ?>
+		<?php foreach ( $pmpro_email_templates_defaults as $key => $template ): ?>
 		<option value="<?php echo $key; ?>"><?php echo $template['description']; ?></option>
 		<?php endforeach; ?>
 		</select>
@@ -252,10 +248,6 @@
 					type="button"/>
 
 				<p class="description">
-					<a href="<?php echo add_query_arg( array( 'page'  => 'pmpro-orders',
-															'order' => $pmproet_test_order_id
-					), admin_url( 'admin.php' ) ); ?>"
-					target="_blank"><?php esc_html_e( 'Click here to edit the order used for test emails.', 'paid-memberships-pro' ); ?></a>
 					<?php esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' ); ?>
 				</p>
 			</td>
