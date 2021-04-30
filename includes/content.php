@@ -148,7 +148,7 @@ function pmpro_search_filter($query)
     if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
         //avoiding post_parent queries for now
 		if( empty( $query->query_vars['post_parent'] ) ) {
-			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_pages ) );
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
 		}
     }
 
