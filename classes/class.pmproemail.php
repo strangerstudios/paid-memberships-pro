@@ -72,6 +72,8 @@
 				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
 			elseif($this->getDefaultEmailTemplate($this->template))
 				$this->body = $this->getDefaultEmailTemplate($this->template);
+			elseif( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
+				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
 			elseif( empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[$this->template]['body'] ) )
 				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
