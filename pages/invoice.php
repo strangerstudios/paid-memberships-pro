@@ -85,7 +85,7 @@
 				<strong><?php _e('Total Billed', 'paid-memberships-pro' );?></strong>
 				<p>
 					<?php
-						if ( $pmpro_invoice->total != '0.00' ) {
+						if ( (float)$pmpro_invoice->total > 0 ) {
 							echo pmpro_get_price_parts( $pmpro_invoice, 'span' );
 						} else {
 							echo pmpro_escape_price( pmpro_formatPrice(0) );

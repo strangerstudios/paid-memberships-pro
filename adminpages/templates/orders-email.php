@@ -53,7 +53,7 @@
 					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); ?></td>
 				</tr>
 				<?php
-					if ( $order->total != '0.00' ) {
+					if ( (float)$order->total > 0 ) {
 						$pmpro_price_parts = pmpro_get_price_parts( $order, 'array' );
 						foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
 							<tr style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;">

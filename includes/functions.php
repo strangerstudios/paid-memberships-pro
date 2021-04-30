@@ -391,7 +391,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	}
 
 	// recurring part
-	if ( $level->billing_amount != '0.00' ) {
+	if ( (float)$level->billing_amount > 0 ) {
 		if ( $level->billing_limit > 1 ) {
 			if ( $level->cycle_number == '1' ) {
 				$r .= sprintf( __( ' and then <strong>%1$s per %2$s for %3$d more %4$s</strong>.', 'paid-memberships-pro' ), pmpro_formatPrice( $level->billing_amount ), pmpro_translate_billing_period( $level->cycle_period ), $level->billing_limit, pmpro_translate_billing_period( $level->cycle_period, $level->billing_limit ) );
@@ -432,7 +432,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// trial part
 	if ( $level->trial_limit ) {
-		if ( $level->trial_amount == '0.00' ) {
+		if ( (float)$level->trial_amount > 0 ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
 			} else {
@@ -472,7 +472,7 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	$trialperiods = 0;
 	foreach ( $levels as $curlevel ) {
 		$initpmt += $curlevel->initial_payment;
-		if ( $curlevel->billing_amount != '0.00' ) {
+		if ( (float)$curlevel->billing_amount > 0 ) {
 			if ( array_key_exists( $curlevel->cycle_period, $recurpmts ) ) {
 				if ( array_key_exists( $curlevel->cycle_number, $recurpmts[ $curlevel->cycle_period ] ) ) {
 					if ( array_key_exists( $curlevel->billing_limit, $recurpmts[ $curlevel->cycle_period ][ $curlevel->cycle_number ] ) ) {
