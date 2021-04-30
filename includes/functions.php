@@ -3365,6 +3365,14 @@ function pmpro_is_checkout() {
 		$is_checkout = true;
 	}
 
+	// If it's not checkout, let's try one last time to see if it is.
+	if ( ! $is_checkout && function_exists( 'pmpro_getLevelAtCheckout' ) ) {
+		$level = pmpro_getLevelAtCheckout();
+		if ( isset( $level->id ) ) {
+			$is_checkout = true;
+		}
+	}
+
 	/**
 	 * Filter for pmpro_is_checkout return value.
 	 * @since 2.1
