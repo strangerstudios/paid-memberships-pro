@@ -2300,6 +2300,40 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	return $pmpro_level;
 }
 
+/**
+ * Get an ordered list of level objects or level IDs.
+ *
+ * @param array $pmpro_levels An array of level objects or level IDs to be reordered.
+ * @return array $pmpro_levels An ordered array of level objects or level IDs.
+ *
+ */
+function pmpro_get_ordered_levels( $pmpro_levels ) {
+	$pmpro_level_order = pmpro_getOption( 'level_order' );
+
+	// No custom sort order, just return.
+	if ( empty( $pmpro_level_order ) ) {
+		return $pmpro_levels;
+	}
+
+	// Convert the level order option to an array.
+	$order = explode( ',',$pmpro_level_order );
+
+	// Reorder the array.
+	$reordered_levels = array();
+	foreach ( $order as $level_id ) {
+		foreach ( $pmpro_levels as $key => $level ) {
+			if ( ! empty ( $level->id ) && $level_id == $level->id ) {
+				$reordered_levels[] = $pmpro_levels[$key];
+			} elseif ( ! empty( $level ) && is_string( $level ) && $level_id == $level ) {
+				$reordered_levels[] = $pmpro_levels[$key];
+			}
+		}
+	}
+	$pmpro_levels = $reordered_levels;
+
+	return $pmpro_levels;
+}
+
 function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = null ) {
 	if ( ! empty( $level_id ) ) {
 		// get level
