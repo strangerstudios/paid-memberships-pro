@@ -223,6 +223,7 @@ function pmpro_email_templates_reset_template_data() {
 
 	delete_option('pmpro_email_' . $template . '_subject');
 	delete_option('pmpro_email_' . $template . '_body');
+	delete_transient( 'pmproet_' . $template );
 
 	$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	$template_data['body'] = pmpro_email_templates_get_template_body($template);
