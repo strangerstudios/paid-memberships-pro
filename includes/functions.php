@@ -2307,7 +2307,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
  * @return array $pmpro_levels An ordered array of level objects or level IDs.
  *
  */
-function pmpro_get_ordered_levels( $pmpro_levels ) {
+function pmpro_sort_levels_by_order( $pmpro_levels ) {
 	$pmpro_level_order = pmpro_getOption( 'level_order' );
 
 	// No custom sort order, just return.

@@ -31,7 +31,7 @@ function pmpro_report_memberships_widget() {
 	global $wpdb;
 
 	//get levels to show stats on first 3
-	$pmpro_levels = pmpro_get_ordered_levels( pmpro_getAllLevels(true, true) );
+	$pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(true, true) );
 
 	$pmpro_levels = apply_filters( 'pmpro_report_levels', $pmpro_levels );
 ?>
@@ -357,7 +357,7 @@ function pmpro_report_memberships_page()
 				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "free-levels"){?> selected="selected" <?php }?>><?php _e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					$levels = pmpro_get_ordered_levels( $levels );
+					$levels = pmpro_sort_levels_by_order( $levels );
 					foreach($levels as $level)
 					{
 				?>

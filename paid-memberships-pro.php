@@ -181,7 +181,7 @@ global $all_membership_levels;
 // we sometimes refer to this array of levels
 // DEPRECATED: Remove this in v3.0.
 global $membership_levels;
-$membership_levels = pmpro_get_ordered_levels( pmpro_getAllLevels( true, true ) );
+$membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
 /*
 	Activation/Deactivation

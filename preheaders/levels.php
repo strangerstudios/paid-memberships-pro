@@ -37,5 +37,5 @@ global $pmpro_levels, $pmpro_level_order;
  * We will evenutally deprecate this.
  *
  */
-$pmpro_levels = pmpro_get_ordered_levels( pmpro_getAllLevels(false, true) );
+$pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(false, true) );
 $pmpro_levels = apply_filters( 'pmpro_levels_array', $pmpro_levels );
