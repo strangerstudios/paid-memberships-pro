@@ -1319,7 +1319,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			<tr class="thead">
 				<th><?php esc_html_e( 'ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Username', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
 				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
 				<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 				<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
@@ -1387,7 +1387,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<td class="username column-username">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
-							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a>
+							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?> (<?php echo esc_html( $order->user->user_email ); ?>)</a>
 						<?php } elseif ( $order->user_id > 0 ) { ?>
 							[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
