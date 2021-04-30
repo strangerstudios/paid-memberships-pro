@@ -1189,6 +1189,8 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// remove levels cache for user
 	$cache_key = 'user_' . $user_id . '_levels';
 	wp_cache_delete( $cache_key, 'pmpro' );
+	wp_cache_delete( $cache_key . '_all', 'pmpro' );
+	wp_cache_delete( $cache_key . '_active', 'pmpro' );
 
 	// update user data and call action
 	pmpro_set_current_user();
@@ -2046,7 +2048,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	 * reduces future MySQL requests. If there is an external object cache like Redis then it will be
 	 * persisted until the user level changes.
 	 **/
-	$cache_key = 'user_' . $user_id . '_levels';
+	$cache_key = 'user_' . $user_id . '_levels' . ( $include_inactive ? '_all' : '_active' );
     $levels = wp_cache_get( $cache_key, 'pmpro' );
 	
 	if ( $levels === false ) {
