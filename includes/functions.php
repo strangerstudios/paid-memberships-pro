@@ -2316,11 +2316,11 @@ function pmpro_sort_levels_by_order( $pmpro_levels ) {
 	}
 
 	// Convert the level order option to an array.
-	$order = explode( ',',$pmpro_level_order );
+	$sort_order  = explode( ',',$pmpro_level_order );
 
 	// Reorder the array.
 	$reordered_levels = array();
-	foreach ( $order as $level_id ) {
+	foreach ( $sort_order as $level_id ) {
 		foreach ( $pmpro_levels as $key => $level ) {
 			if ( ! empty ( $level->id ) && $level_id == $level->id ) {
 				$reordered_levels[] = $pmpro_levels[$key];
