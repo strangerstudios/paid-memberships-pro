@@ -123,8 +123,6 @@
 				}
 			}
 			
-
-			
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
 
