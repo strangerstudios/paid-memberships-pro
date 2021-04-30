@@ -368,68 +368,6 @@ function pmpro_email_templates_test_recipient($email) {
 	return $email;
 }
 
-/* Filter Subject and Body */
-function pmpro_email_templates_email_filter($email ) {
-
-	global $pmpro_email_templates_defaults;
-
-	//is this email disabled or is it not in the templates array?
-	if(pmpro_getOption('email_' . $email->template . '_disabled') == 'true')
-		return false;
-
-	//leave the email alone if it's not in the list of templates
-	if( empty( $pmpro_email_templates_defaults[$email->template] ) )
-		return $email;
-
-	$et_subject = pmpro_getOption('email_' . $email->template . '_subject');
-	$et_header = pmpro_getOption('email_header_body');
-	$et_body = pmpro_getOption('email_' . $email->template . '_body');
-	$et_footer = pmpro_getOption('email_footer_body');
-
-	if(!empty($et_subject))
-		$email->subject = $et_subject;
-
-	//is header disabled?
-	if(pmpro_getOption('email_header_disabled') != 'true') {
-		if(!empty($et_header))
-			$temp_content = $et_header;
-		else
-			$temp_content = pmpro_email_templates_get_template_body('header');
-	} else {
-		$temp_content = '';
-	}
-
-	if(!empty($et_body))
-		$temp_content .= $et_body;
-	else
-		$temp_content .= pmpro_email_templates_get_template_body($email->template);
-
-	//is footer disabled?
-	if(pmpro_getOption('email_footer_disabled') != 'true') {
-		if(!empty($et_footer))
-			$temp_content .= $et_footer;
-		else
-			$temp_content .= pmpro_email_templates_get_template_body('footer');
-	}
-	
-	$email->body = $temp_content;
-
-	// Temporary workaround for avoiding double period when using !!membership_change!!
-	$email->body = str_replace( '!!membership_change!!.', '!!membership_change!!', $email->body);
-
-	//replace data
-	foreach($email->data as $key => $value)
-	{
-		$email->body = str_replace("!!" . $key . "!!", $value, $email->body);
-		$email->subject = str_replace("!!" . $key . "!!", $value, $email->subject);
-	}
-
-	$email->subject = html_entity_decode($email->subject, ENT_QUOTES);
-
-	return $email;
-}
-add_filter('pmpro_email_filter', 'pmpro_email_templates_email_filter', 10, 1);
-
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
 	$body .= '<br><br><b>--- ' . __('THIS IS A TEST EMAIL', 'pmproet') . ' --</b>';
