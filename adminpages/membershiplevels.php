@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags, $pmpro_pages;
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
@@ -823,8 +823,7 @@
 				</td>
 				<td><?php
 					if($level->allow_signups) {
-						global $pmpro_pages_ready;
-						if ( $pmpro_pages_ready ) {
+						if ( ! empty( $pmpro_pages['checkout'] ) ) {
 							?><a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'paid-memberships-pro' );?></a><?php
 						} else {
 							_e('Yes', 'paid-memberships-pro' );
