@@ -1,6 +1,7 @@
 <?php
 	class PMProEmail
 	{
+		
 		function __construct()
 		{
 			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
@@ -8,6 +9,8 @@
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
 		{
+			global $pmpro_email_templates_defaults;
+		
 			//if values were passed
 			if($email)
 				$this->email = $email;
@@ -69,22 +72,10 @@
 				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
 			elseif($this->getDefaultEmailTemplate($this->template))
 				$this->body = $this->getDefaultEmailTemplate($this->template);
-			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");										//default template in plugin
+			elseif(empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[$this->template]['body'] ) )
+				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
-
-			//header and footer
-			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
-			if(file_exists(get_template_directory() . "/email_header.html"))
-			{
-				$this->body = file_get_contents(get_template_directory() . "/email_header.html") . "\n" . $this->body;
-			}			
-			if(file_exists(get_template_directory() . "/email_footer.html"))
-			{
-				$this->body = $this->body . "\n" . file_get_contents(get_template_directory() . "/email_footer.html");
-			}
-			*/
 			
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
