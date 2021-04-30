@@ -8,9 +8,7 @@
 		}					
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
-		{
-			global $pmpro_email_templates_defaults;
-		
+		{			
 			//if values were passed
 			if($email)
 				$this->email = $email;
@@ -24,9 +22,15 @@
 				$this->template = $template;
 			if($data)
 				$this->data = $data;
-		
+			
+
+			// If email is disabled don't send it.
+			if ( pmpro_getOption( 'email_' . $this->template . '_disabled' ) ) {
+				return false;
+			}
+
 			//default values
-			global $current_user;
+			global $current_user, $pmpro_email_templates_defaults;
 			if(!$this->email)
 				$this->email = $current_user->user_email;
 				
@@ -35,15 +39,19 @@
 			
 			if(!$this->fromname)
 				$this->fromname = pmpro_getOption("from_name");
-			
-			if(!$this->subject)
-				$this->subject = sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
-			
-			//decode the subject line in case there are apostrophes/etc in it
-			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
 	
 			if(!$this->template)
 				$this->template = "default";
+			
+			//Okay let's get the subject stuff.
+			if ( empty( $this->subject ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_subject' ) ) ) {
+				$this->subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
+			} elseif ( empty( $this->subject ) ) {
+				$this->subject = ! empty( $pmpro_email_templates_defaults[$this->template]['subject'] ) ? sanitize_text_field( $pmpro_email_templates_defaults[$this->template]['subject'] ) : sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
+			}
+
+			//decode the subject line in case there are apostrophes/etc in it
+			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
 						
 			$this->headers = array("Content-Type: text/html");
 			
@@ -78,7 +86,25 @@
 				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
-			
+
+
+			// Get template header.
+			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+				$email_header = pmpro_email_templates_get_template_body('header');
+			} else {
+				$email_header = '';
+			}
+
+			// Get template footer
+			if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
+				$email_footer = pmpro_email_templates_get_template_body('footer');
+			} else {
+				$email_footer = '';
+			}
+
+			// Add header and footer to email body.
+			$this->body = $email_header . $this->body . $email_footer;
+
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
@@ -96,6 +122,8 @@
 					}
 				}
 			}
+			
+
 			
 			//filters
 			$temail = apply_filters("pmpro_email_filter", $this);		//allows filtering entire email at once
