@@ -593,17 +593,19 @@ function pmpro_email_templates_get_template_body($template) {
 	$body = "";
 	$file = false;
 	
+
+	// Load the template.
 	if ( get_transient( 'pmproet_' . $template ) === false ) {
-		// Load template    
-		if(!empty($pmpro_email_templates_defaults[$template]['body'])) {
+		// Load template  
+		if ( ! empty( pmpro_getOption('email_' . $template . '_body') ) ) {
+			$body = pmpro_getOption('email_' . $template . '_body');
+		}elseif( ! empty($pmpro_email_templates_defaults[$template]['body'])) {
 			$body = $pmpro_email_templates_defaults[$template]['body'];
 		} elseif ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $template . '.html' ) ) {
 			$file = get_stylesheet_directory() . '/paid-memberships-pro/email/' . $template . '.html';
 		} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/email/' . $template . '.html') ) {
 			$file = get_template_directory() . '/paid-memberships-pro/email/' . $template . '.html';
-		} elseif( file_exists( PMPRO_DIR . '/email/' . $template . '.html')) {
-			$file = PMPRO_DIR . '/email/' . $template . '.html';
-		} 
+		}
 			
 		if( $file && ! $body ) {
 			ob_start();
