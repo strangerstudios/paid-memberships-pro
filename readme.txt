@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4.7
 Tested up to: 5.7
-Stable tag: 2.5.7
+Stable tag: 2.5.8
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,38 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.8 - 2021-04-30 =
+* ENHANCEMENT: Added `pmpro_membership_content_filter` filter to let other plugins change how PMPro filters member content.
+* ENHANCEMENT: Improved de_DE email template translation. (Thanks, biker238 on GitHub)
+* ENHANCEMENT: Added `pmpro_change_level` filter.
+* ENHANCEMENT: Improved display of prices on invoices and added pmpro_display_price_parts function and filters so plugins like the upcoming AvaTax add on can add subtotals to the price displays.
+* ENHANCEMENT: Added a pmpro_after_all_membesrhip_level_changes hook that fires at the end of the page load and can be used to process all membership changes in bulk.
+* ENHANCEMENT: The "User" column on the orders page now shows the username and email.
+* ENHANCEMENT: Added a pmpro_stripe_create_subscription_array filter. (Thanks, ermGit on GitHub)
+* BUG FIX/ENHANCEMENT: pmpro_change_level returns true now if the function is called to change a user’s level to one they already have.
+* BUG FIX/ENHANCEMENT: No longer calling $order->updateTimestamp() on orders adminpage.
+* BUG FIX/ENHANCEMENT: Updated conditional to check ‘street’ instead of ‘name’ when displaying billing address on Invoice/Confirmation.
+* BUG FIX/ENHANCEMENT: Improved localization and added missing strings to translation.
+* BUG FIX/ENHANCEMENT: Updated to use `get_user_locale1 to load localization.
+* BUG FIX/ENHANCEMENT: Now Preserving existing values for `post__not_in` and `category__not_in` when filtering search and archive queries.
+* BUG FIX/ENHANCEMENT: Fixed sorting of the Membership Level column on the Users List table in the WP admin dashboard.
+* BUG FIX/ENHANCEMENT: Added a pmpro_sort_levels_by_order function and using it in various places to make sure levels are listed in the order they are in on the PMPro settings page.
+* BUG FIX/ENHANCEMENT: Added an extra check in the pmpro_is_checkout function that helps with issues that were coming up in some add ons.
+* BUG FIX/ENHANCEMENT: The level cache now takes into account the $include_active parameter.
+* BUG FIX/ENHANCEMENT: The CSS class is now properly added to the body tag when a PMPro page block is used on a page.
+* BUG FIX/EHNANCEMENT: Better timezone handling in sales reports.
+* BUG FIX/ENHANCEMENT: Fixed a few places where we might think a free order was paid if using a currency with more or less than 2 decimal places.
+* BUG FIX: Fixed deprecated jQuery functions in pmpro-admin.js.
+* BUG FIX: Fixed warning for a missing/deleted level in the pmpro_post_classes function.
+* BUG FIX: Default `pmpro_longform_address` to true on Billing Information page.
+* BUG FIX: Fixed `pmpro_twocheckout_validate` filter.
+* BUG FIX: Fixed variables passed to the `pmpro_discount_code_used` filter.
+* BUG FIX: CZK currency should have 2 decimals.
+* BUG FIX: Avoiding a redirect loop if the login page is deleted. (Thanks, George Stephanis)
+* BUG FIX: Fixed the password reset link in new user notification email when not using pretty permalinks.
+* BUG FIX: Fixed issues with password reset URLs on multisite networks.
+* BUG FIX: Fixed the issue where sales weren't showing up on report charts sometimes on the 31st of the month.
+
 = 2.5.7 - 2021-03-10 =
 * ENHANCEMENT: Added a pmpro_checkout_message filter that can be used to filter error messages shown at checkout.
 * BUG FIX/ENHANCEMENT: Now making sure some billing address fields are available for the billing failure emails sent during the PayPal IPN handler.
