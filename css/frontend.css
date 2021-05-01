@@ -279,6 +279,17 @@ select.pmpro_error {
 #pmpro_message_bottom {
 	margin-bottom: 1em;
 }
+
+/*---------------------------------------
+	Display Price Parts
+---------------------------------------*/
+.pmpro_price_part_span {
+	display: block;
+}
+.pmpro_price_part_label:after {
+	content: ": ";
+}
+
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/

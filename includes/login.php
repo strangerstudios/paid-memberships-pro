@@ -114,8 +114,12 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
 	if ( ! empty ( $login_page_id ) ) {
-		$login_url = get_permalink( $login_page_id );
-
+		$login_page_permalink = get_permalink( $login_page_id );
+		// If the page or permalink is unavailable, don't override the url here.
+		if ( $login_page_permalink ) {
+			$login_url = $login_page_permalink;
+		}
+		
 		if ( ! empty( $redirect ) ) {
 			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 		}
@@ -811,39 +815,22 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  *
  * @since 2.3
  */
-function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
+function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
 		$login_url = get_permalink( $login_page_id );
 		if ( strpos( $login_url, '?' ) ) {
 			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
-			$message = str_replace( site_url( 'wp-login.php' ) . '?', site_url( 'wp-login.php' ) . '&', $message );
+			$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
 		}
-		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
-	}
-
-	return $message;
-}
-add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 4 );
-
-/**
- * Replace the default login URL in the new user notification email
- * with the membership account page login URL instead.
- *
- * @since 2.3.4
- */
-function pmpro_new_user_notification_email_filter( $message, $user, $blogname ) {
-
-	$login_page_id = pmpro_getOption( 'login_page_id' );
-    if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
 		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
 	}
 
 	return $message;
 }
-add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
+add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 3 );
+add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.

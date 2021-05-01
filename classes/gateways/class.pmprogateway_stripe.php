@@ -2218,7 +2218,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// subscribe to the plan
 		try {
 			$subscription = array( "plan" => $order->code );
-			$result       = $this->customer->subscriptions->create( apply_filters( 'pmpro_stripe_create_subscription_array', $subscription ) );
+			$result       = $this->create_subscription( $order );
 		} catch ( \Throwable $e ) {
 			//try to delete the plan
 			$plan->delete();
@@ -3046,7 +3046,7 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! self::using_legacy_keys() ) {
 				$params['application_fee_percent'] = self::get_application_fee_percentage();
 			}
-			$order->subscription = Stripe_Subscription::create( $params );
+			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;

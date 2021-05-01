@@ -537,6 +537,7 @@
 			<div class="pmpro_discount_levels">
 			<?php
 				$levels = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_membership_levels");
+				$levels = pmpro_sort_levels_by_order( $levels );
 				foreach($levels as $level)
 				{
 					//if this level is already managed for this discount code, use the code values

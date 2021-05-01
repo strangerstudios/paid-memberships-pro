@@ -81,6 +81,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 	else
 	{
+		// Reorder the $post_membership_levels to match sorted order.
+		$post_membership_levels = pmpro_sort_levels_by_order( $post_membership_levels );
+
 		//we need to see if the user has access
 		foreach($post_membership_levels as $level)
 		{
@@ -145,7 +148,7 @@ function pmpro_search_filter($query)
     if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
         //avoiding post_parent queries for now
 		if( empty( $query->query_vars['post_parent'] ) ) {
-			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_pages ) );
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
 		}
     }
 
