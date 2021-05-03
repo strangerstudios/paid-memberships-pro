@@ -337,6 +337,24 @@
 		}
 
 		/**
+		 * Returns the first order using the given subscription_transaction_id.
+		 */
+		function getFirstMemberOrderBySubscriptionTransactionID($subscription_transaction_id)
+		{
+			//did they pass a sub id?
+			if(empty($subscription_transaction_id))
+				return false;
+
+			global $wpdb;
+			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($subscription_transaction_id) . "' ORDER BY id ASC LIMIT 1");
+
+			if($id)
+				return $this->getMemberOrderByID($id);
+			else
+				return false;
+		}
+		
+		/**
 		 * Returns the last order using the given paypal token.
 		 */
 		function getMemberOrderByPayPalToken($token)
