@@ -1387,7 +1387,8 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<td class="username column-username">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
-							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?> (<?php echo esc_html( $order->user->user_email ); ?>)</a>
+							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a><br />
+							<?php echo esc_html( $order->user->user_email ); ?>
 						<?php } elseif ( $order->user_id > 0 ) { ?>
 							[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
