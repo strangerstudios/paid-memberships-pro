@@ -2873,17 +2873,17 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 		$pmpro_price = '';
 		if ( $format == 'span' ) {
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part_span pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span>';
+				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part_span pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span>';
 			}
 		} elseif ( $format == 'list' ) {
 			$pmpro_price .= '<ul class="' . pmpro_get_element_class( 'pmpro_price_part_list' ) . '">';
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<li class="' . pmpro_get_element_class( 'pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></li>';
+				$pmpro_price .= '<li class="' . pmpro_get_element_class( 'pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></li>';
 			}
 		} else {
 			// Default to each line separate by breaks.
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span><br />';
+				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span><br />';
 			}
 		}
 	}
