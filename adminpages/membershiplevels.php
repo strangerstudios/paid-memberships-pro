@@ -5,7 +5,7 @@
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
-	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags;
+	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags, $pmpro_pages;
 
 	//some vars
 	$gateway = pmpro_getOption("gateway");
@@ -821,7 +821,17 @@
 						<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
 				</td>
-				<td><?php if($level->allow_signups) { ?><a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'paid-memberships-pro' );?></a><?php } else { ?><?php _e('No', 'paid-memberships-pro' );?><?php } ?></td>
+				<td><?php
+					if($level->allow_signups) {
+						if ( ! empty( $pmpro_pages['checkout'] ) ) {
+							?><a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php _e('Yes', 'paid-memberships-pro' );?></a><?php
+						} else {
+							_e('Yes', 'paid-memberships-pro' );
+						}
+					} else {
+						_e('No', 'paid-memberships-pro' );
+					} 
+					?></td>
 				<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
 			</tr>
 			<?php
