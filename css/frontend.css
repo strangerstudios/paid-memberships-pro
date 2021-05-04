@@ -286,8 +286,20 @@ select.pmpro_error {
 .pmpro_price_part_span {
 	display: block;
 }
+.pmpro_price_part-total {
+	border-top: 1px solid #CCC;
+	margin-top: 5px;
+	padding-top: 5px;
+}
 .pmpro_price_part_label:after {
 	content: ": ";
+}
+.pmpro_price_part_sub {
+	font-size: 75%;
+}
+span.pmpro_price_part_sub:before {
+	content: "\2022";
+	padding-right: 5px;
 }
 
 /*---------------------------------------
