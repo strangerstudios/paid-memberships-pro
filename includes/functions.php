@@ -2264,6 +2264,10 @@ function pmpro_are_any_visible_levels() {
 
 /**
  * Get level at checkout and place into $pmpro_level global.
+ * If no level is passed or found in the URL parameters, global vars,
+ * or in the post options, then this will return the first level found.
+ * @param int $level_id (optional) Pass a level ID to force that level.
+ * @param string $discount_code (optional) Pass a discount code to force that code.
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
@@ -3409,14 +3413,6 @@ function pmpro_is_checkout() {
 		)
 	) {
 		$is_checkout = true;
-	}
-
-	// If it's not checkout, let's try one last time to see if it is.
-	if ( ! $is_checkout && function_exists( 'pmpro_getLevelAtCheckout' ) ) {
-		$level = pmpro_getLevelAtCheckout();
-		if ( isset( $level->id ) ) {
-			$is_checkout = true;
-		}
 	}
 
 	/**
