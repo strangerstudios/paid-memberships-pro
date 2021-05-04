@@ -294,7 +294,7 @@ select.pmpro_error {
 .pmpro_price_part_label:after {
 	content: ": ";
 }
-span.pmpro_price_part_sub {
+.pmpro_price_part_sub {
 	font-size: 75%;
 }
 span.pmpro_price_part_sub:before {
