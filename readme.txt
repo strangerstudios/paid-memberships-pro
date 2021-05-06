@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4.7
 Tested up to: 5.7
-Stable tag: 2.5.8
+Stable tag: 2.5.9
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.9 - 2021-05-05 =
+* ENHANCEMENT: Adjusting style for prices and price parts shown on the frontend.
+* ENHANCEMENT: Adjusting HTML for links in the Orders table in the dashboard.
+* BUG FIX: Reverted the change to the pmpro_is_checkout() function. Since we default to the first available level, calling pmpro_getLevelForCheckout() was causing pmpro_is_checkout to return true on ALL pages. This disrupted a lot of functionality.
+* BUG FIX: Fixed warnings in the pmpro_getLevelAtCheckout() function.
+* BUG FIX: Fixed issue where "All Time Sales" was showing up as 0, even when there were sales.
+
 = 2.5.8 - 2021-04-30 =
 * ENHANCEMENT: Added `pmpro_membership_content_filter` filter to let other plugins change how PMPro filters member content.
 * ENHANCEMENT: Improved de_DE email template translation. (Thanks, biker238 on GitHub)
