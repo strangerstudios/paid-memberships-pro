@@ -306,6 +306,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	// save
 	if ( $order->saveOrder() !== false && $nonceokay ) {
 		$order_id = $order->id;
+		$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'success';
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
