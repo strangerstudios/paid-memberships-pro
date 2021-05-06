@@ -479,7 +479,7 @@ function pmpro_getSales($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
@@ -593,7 +593,7 @@ function pmpro_getRevenue($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
 
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
