@@ -2276,6 +2276,10 @@ function pmpro_are_any_visible_levels() {
 
 /**
  * Get level at checkout and place into $pmpro_level global.
+ * If no level is passed or found in the URL parameters, global vars,
+ * or in the post options, then this will return the first level found.
+ * @param int $level_id (optional) Pass a level ID to force that level.
+ * @param string $discount_code (optional) Pass a discount code to force that code.
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
@@ -2297,9 +2301,13 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		if ( empty( $level_id ) ) {
 			$all_levels = pmpro_getAllLevels( false, false );
 
-			// Get lowest level ID.
-			$default_level =  min( array_keys( $all_levels ) );
-
+			if ( ! empty( $all_levels ) ) {
+				// Get lowest level ID.
+				$default_level =  min( array_keys( $all_levels ) );
+			} else {
+				$default_level = null;
+			}
+			
 			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
 			
 			// Bail back to levels page if level ID is empty or less than 1.
@@ -2885,17 +2893,17 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 		$pmpro_price = '';
 		if ( $format == 'span' ) {
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part_span pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span>';
+				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part_span pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span>';
 			}
 		} elseif ( $format == 'list' ) {
 			$pmpro_price .= '<ul class="' . pmpro_get_element_class( 'pmpro_price_part_list' ) . '">';
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<li class="' . pmpro_get_element_class( 'pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></li>';
+				$pmpro_price .= '<li class="' . pmpro_get_element_class( 'pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></li>';
 			}
 		} else {
 			// Default to each line separate by breaks.
 			foreach ( $pmpro_price_parts_with_total as $key => $pmpro_price_part ) {
-				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part-' . $key, 'pmpro_price_part-' . $key ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span><br />';
+				$pmpro_price .= '<span class="' . pmpro_get_element_class( 'pmpro_price_part-' . sanitize_html_class( $key ), 'pmpro_price_part-' . sanitize_html_class( $key ) ) . '"><span class="' . pmpro_get_element_class( 'pmpro_price_part_label' ) . '">' . esc_html( $pmpro_price_part['label'] ) . '</span> <span class="' . pmpro_get_element_class( 'pmpro_price_part_price' ) . '">' . esc_html( $pmpro_price_part['value'] ) . '</span></span><br />';
 			}
 		}
 	}
@@ -3417,14 +3425,6 @@ function pmpro_is_checkout() {
 		)
 	) {
 		$is_checkout = true;
-	}
-
-	// If it's not checkout, let's try one last time to see if it is.
-	if ( ! $is_checkout && function_exists( 'pmpro_getLevelAtCheckout' ) ) {
-		$level = pmpro_getLevelAtCheckout();
-		if ( isset( $level->id ) ) {
-			$is_checkout = true;
-		}
 	}
 
 	/**
