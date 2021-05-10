@@ -335,20 +335,23 @@ function pmpro_membership_level_profile_fields_update()
 	//emails if there was a change
 	if(!empty($level_changed) || !empty($expiration_changed))
 	{
+
+
 		//email to admin
 		$pmproemail = new PMProEmail();
-		if(!empty($expiration_changed))
+		if(!empty($expiration_changed)) {
 			$pmproemail->expiration_changed = true;
-		$pmproemail->sendAdminChangeAdminEmail(get_userdata($user_ID));
+			$pmproemail->sendAdminChangeAdminEmail(get_userdata($user_ID));
+		}
 
 		//send email
-		if(!empty($_REQUEST['send_admin_change_email']))
-		{
+		if(!empty($_REQUEST['send_admin_change_email'])) {
 			//email to member
 			$pmproemail = new PMProEmail();
-			if(!empty($expiration_changed))
+			if(!empty($expiration_changed)) {
 				$pmproemail->expiration_changed = true;
-			$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
+				$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
+			}
 		}
 	}
 }
