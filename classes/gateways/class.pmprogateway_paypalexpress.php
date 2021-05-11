@@ -421,9 +421,15 @@
 			if(!$current_user->ID)
 			{
 				//reload the user fields
-				$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
-				$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
-				$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+				if( ! empty( $_SESSION['pmpro_signup_username'] ) ){
+					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
+				}
+				if( ! empty( $_SESSION['pmpro_signup_password'] ) ){
+					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
+				}
+				if( ! empty( $_SESSION['pmpro_signup_email'] ) ){
+					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+				}
 
 				//unset the user fields in session
 				unset($_SESSION['pmpro_signup_username']);
