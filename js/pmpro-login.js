@@ -12,7 +12,7 @@ jQuery(document).ready(function(){
 		
 		var strength;		
 		if ( pass1 != '' ) {
-			strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputBlacklist(), pass1 );
+			strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputDisallowedList(), pass1 );
 		} else {
 			strength = -1;
 		}
