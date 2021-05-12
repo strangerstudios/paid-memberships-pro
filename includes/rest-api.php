@@ -177,7 +177,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Authentication route for Zapier integration.
 		 * Used to do authentication when connecting Zapier to PMPro.
-		 * @since xx ///
+		 * @since 
 		 */
 		register_rest_route( $pmpro_namespace, '/me', 
 		array(
@@ -188,14 +188,18 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			),
 		));
 
-
+		/**
+		 * Get the last couple of membership levels/members
+		 * @since
+		 */	
 		register_rest_route( $pmpro_namespace, '/recent_memberships',
 			array(
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_memberships' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
-				)));
+				)
+		));
 
 		register_rest_route( $pmpro_namespace, '/recent_orders',
 		array(
@@ -203,97 +207,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
 				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
-			)));
-
-	}
-
-		/**
-		 * Remove webhook ID from Zapier resthooks listener.
-		 * Example: /wp-json/pmpro/v1/webhook_unsubscribe/(?P<id>[\d]+)
-		 * @since 2.7
-		 */
-		function pmpro_rest_api_webhook_delete( $request ){
-			$params = $request->get_params();
-			$id = intval( $params['id'] );
-
-			$zapier_webhooks = get_option( 'pmpro_zapier_webhooks', false );
-			unset( $zapier_webhooks[$id] );
-
-			if ( update_option( 'pmpro_zapier_webhooks', $zapier_webhooks ) ) {
-				wp_send_json_success();
-			} else {
-				wp_send_json_error( array( 'message' => 'Unable to unsubscribe this webhook', 'id' => $id ) );
-			}
+			)
+		));
 		}
-
-		/**
-		 * Function used for testing authentication through Zapier API.
-		 * @since 2.7
-		 */
-		public function validate_me( $request ) {
-
-			$params = $request->get_params();
-
-			if ( is_user_logged_in() ) {
-			  $me = wp_get_current_user()->display_name;
-			} else {
-				$me = false;
-			}
 		
-			wp_send_json_success( array( 'username' => $me ) );
-		}
-
-		/// ZAPIER TRIGGERS
-		function pmpro_rest_api_recent_memberships( $request ) {
-			$params = $request->get_params();
-
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
-
-			// Grab the useful information.
-			global $wpdb;
-			$SQL = "SELECT mu.user_id, u.user_email, u.user_nicename, mu.membership_id, ml.name as membership_name, mu.status, mu.modified FROM $wpdb->pmpro_memberships_users AS mu
-					LEFT JOIN $wpdb->users AS u
-					ON mu.user_id = u.id
-					LEFT JOIN $wpdb->pmpro_membership_levels AS ml
-					ON ml.id = mu.membership_id
-					WHERE mu.status = 'active' 
-					ORDER BY mu.modified DESC 
-					LIMIT " . intval( $limit );
-			$results = $wpdb->get_results( $SQL );
-
-			$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
-
-			// Generate random ID for Zapier and then also add all member information.
-			if ( $response_type == 'json' ) {
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
-
-		}
-
-		/// Get last order added
-		function pmpro_rest_api_recent_orders( $request ) {
-			$params = $request->get_params();
-
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
-
-			global $wpdb;
-			$SQL = "SELECT o.id as order_id, o.code, u.ID as user_id, u.user_email, u.user_nicename, o.billing_name, o.billing_street, o.billing_city, o.billing_state, o.billing_zip, o.billing_country, o.billing_phone, o.subtotal, o.tax, o.couponamount, o.total, o.status, o.gateway, o.gateway_environment, o.timestamp FROM $wpdb->pmpro_membership_orders AS o
-					LEFT JOIN $wpdb->users AS u
-					ON o.user_id = u.ID
-					ORDER BY o.timestamp DESC
-					LIMIT " . intval( $limit );
-
-			$results = $wpdb->get_results( $SQL );
-
-			$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
-
-			if ( $response_type == 'json' ) {
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
-		}
-
 		/**
 		 * Get user's membership level.
 		 * @since 2.3
@@ -302,16 +219,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_membership_level_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			// Param id was used instead (old style endpoint).
 			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
-				$user_id = $params['id'];
+				$user_id = intval( $params['id'] );
 			}
 			
 			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( $params['email'] );
+				$user = get_user_by_email( sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -332,16 +249,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 function pmpro_rest_api_get_membership_levels_for_user($request) {
 			$params = $request->get_params();
 			
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			// Param id was used instead.
 			if ( empty( $user_id ) && !empty( $params['id'] ) ) {
-				$user_id = $params['id'];
+				$user_id = intval( $params['id'] );
 			}
 
 			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( $params['email'] );
+				$user = get_user_by_email( sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -362,13 +279,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_get_has_membership_access($request) {
 			$params = $request->get_params();
-			$post_id = isset( $params['post_id'] ) ? $params['post_id'] : null;
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( $params['email'] );
+					$user = get_user_by_email( sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -393,9 +310,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
-			$email = isset( $params['email'] ) ? $params['email'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
+			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
+			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
@@ -439,9 +356,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_cancel_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? $params['user_id'] : null;
-			$level_id = isset( $params['level_id'] ) ? $params['level_id'] : null;
-			$email = isset( $params['email'] ) ? $params['email'] : null;
+			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
+			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
+			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
@@ -611,7 +528,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$params = $request->get_params();
-			$code = isset( $params['code'] ) ? $params['code'] : null;
+			$code = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
 
 			if ( empty( $code ) ) {
 				return new WP_REST_Response( 'No discount code sent.', 400 );
@@ -638,7 +555,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$uses = isset( $params['uses'] ) ? intval( $params['uses'] ) : '';
 			$starts = isset( $params['starts'] ) ? sanitize_text_field( $params['starts'] ) : '';
 			$expires = isset( $params['expires'] ) ? sanitize_text_field( $params['expires'] ) : '';
-			$levels = isset( $params['levels'] ) ? $params['levels'] : null;
+			$levels = isset( $params['levels'] ) ? sanitize_text_field( $params['levels'] ) : null;
 
 			if ( ! empty( $levels ) ) {
 				$levels = json_decode( $levels, true );
@@ -698,16 +615,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 
 			if ( isset( $params['level_id'] ) ) {
-				$level_id = $params['level_id'];
+				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
-				$level_id = $params['level'];
+				$level_id = intval( $params['level'] );
 			}
 
 			if ( empty( $level_id ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
-			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 			
 			// Hide confirmation message if not an admin or member.
@@ -732,26 +649,96 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
 			} elseif ( isset( $params['level_id'] ) ) {
-				$level_ids = explode( '+', $params['level_id'] );
+				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
-				$level_ids = explode( '+', $params['level'] );
+				$level_ids = explode( '+', intval( $params['level'] ) );
 			}
 
 			if ( empty( $level_ids ) ) {
 				return new WP_REST_Response( 'No levels found.', 400 );
 			}
-			$discount_code = isset( $params['discount_code'] ) ? $params['discount_code'] : null;
+			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
 
 			$r = array();
 			$r['initial_payment'] = 0.00;
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
-					$r['initial_payment'] += intval( $r[ $level_id ]->initial_payment );
+					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
 				}
 			}
 			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
 			return new WP_REST_Response( $r );
+		}
+
+
+		/// ZAPIER TRIGGERS
+		/**
+		 * Function used for testing authentication through Zapier API.
+		 * @since 2.7
+		 */
+		public function validate_me( $request ) {
+
+			$params = $request->get_params();
+
+			if ( is_user_logged_in() ) {
+			  $me = wp_get_current_user()->display_name;
+			} else {
+				$me = false;
+			}
+		
+			wp_send_json_success( array( 'username' => $me ) );
+		}
+
+
+		function pmpro_rest_api_recent_memberships( $request ) {
+			$params = $request->get_params();
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+
+			// Grab the useful information.
+			global $wpdb;
+			$SQL = "SELECT mu.user_id, u.user_email, u.user_nicename, mu.membership_id, ml.name as membership_name, mu.status, mu.modified FROM $wpdb->pmpro_memberships_users AS mu
+					LEFT JOIN $wpdb->users AS u
+					ON mu.user_id = u.id
+					LEFT JOIN $wpdb->pmpro_membership_levels AS ml
+					ON ml.id = mu.membership_id
+					WHERE mu.status = 'active' 
+					ORDER BY mu.modified DESC 
+					LIMIT " . intval( $limit );
+			$results = $wpdb->get_results( $SQL );
+
+			$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
+
+			// Generate random ID for Zapier and then also add all member information.
+			if ( $response_type == 'json' ) {
+				wp_send_json( array( 'id' => $id, 'results' => $results ) );
+			}
+
+		}
+
+		/// Get last order added
+		function pmpro_rest_api_recent_orders( $request ) {
+			$params = $request->get_params();
+
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
+
+			global $wpdb;
+			$SQL = "SELECT o.id as order_id, o.code, u.ID as user_id, u.user_email, u.user_nicename, o.billing_name, o.billing_street, o.billing_city, o.billing_state, o.billing_zip, o.billing_country, o.billing_phone, o.subtotal, o.tax, o.couponamount, o.total, o.status, o.gateway, o.gateway_environment, o.timestamp FROM $wpdb->pmpro_membership_orders AS o
+					LEFT JOIN $wpdb->users AS u
+					ON o.user_id = u.ID
+					ORDER BY o.timestamp DESC
+					LIMIT " . intval( $limit );
+
+			$results = $wpdb->get_results( $SQL );
+
+			$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
+
+			if ( $response_type == 'json' ) {
+				wp_send_json( array( 'id' => $id, 'results' => $results ) );
+			}
 		}
 
 		/**
