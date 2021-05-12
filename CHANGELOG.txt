@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.5.9.1 - 2021-05-12 =
+* BUG FIX/ENHANCEMENT: Updated pmpro_changeMembershipLevel() to return null if the user's level is not changed. For the past 2 vesions, we've been returning true in these cases, which caused PMPro to send emails to the admin when the edit use page was saved, even if there was no level change. This change has been backported to versions 2.5.8 and 2.5.9.
+
 = 2.5.9 - 2021-05-05 =
 * ENHANCEMENT: Adjusting style for prices and price parts shown on the frontend.
 * ENHANCEMENT: Adjusting HTML for links in the Orders table in the dashboard.
