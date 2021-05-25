@@ -1123,6 +1123,7 @@
 			$this->billing->zip        = '12345';
 			$this->billing->phone      = '5558675309';
 			$this->gateway_environment = 'sandbox';
+			$this->timestamp		   = time();
 			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
 
 			return apply_filters( 'pmpro_test_order_data', $this );
