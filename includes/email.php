@@ -262,7 +262,8 @@ function pmpro_email_templates_send_test() {
 	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
 	
 	//load test order
-	$test_order = pmpro_test_order();
+	$test_order = new MemberOrder();
+	$test_order->get_test_order();
 	
 	$test_user = $current_user;
 	
