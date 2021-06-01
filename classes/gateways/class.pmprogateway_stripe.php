@@ -3365,7 +3365,7 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token_test'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key_test'] )
 		) {
-			$error = 'Invalid response from connect.paidmembershipspro.com';
+			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
 			pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
