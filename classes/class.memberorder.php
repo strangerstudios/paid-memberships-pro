@@ -600,6 +600,10 @@
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
+		 *
+		 * NOTE: This function should no longer be used. Instead, set the timestamp
+		 * for the order directly and call the MemberOrder->saveOrder() function.
+		 * This function is no longer used on the /adminpages/orders.php page.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
@@ -656,10 +660,12 @@
 			//calculate total
 			if(!empty($this->total))
 				$total = $this->total;
-			else {
+			elseif ( ! isset( $this->total ) || $this->total === '' ) {
 				$total = (float)$amount + (float)$tax;
 				$this->total = $total;
-			}			
+			} else {
+				$total = 0;
+			}
 			
 			//these fix some warnings/notices
 			if(empty($this->billing))
@@ -1012,6 +1018,58 @@
 			}
 
 			return false;
+		}
+
+		/**
+		 * Sets the billing address fields on the order object.
+		 * Checks the last order for the same sub or pulls from user meta.
+		 * @since 2.5.5
+		 */
+		function find_billing_address() {
+			global $wpdb;
+
+			if ( empty( $this->billing ) || empty( $this->billing->street ) ) {
+				// We do not already have a billing address.
+				$last_subscription_order = new MemberOrder();
+				$last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
+				if ( ! empty( $last_subscription_order->billing ) && ! empty( $last_subscription_order->billing->street ) ) {
+					// Last order in subscription has biling information. Pull data from there. 
+					$this->Address1    = $last_subscription_order->billing->street;
+					$this->City        = $last_subscription_order->billing->city;
+					$this->State       = $last_subscription_order->billing->state;
+					$this->Zip         = $last_subscription_order->billing->zip;
+					$this->CountryCode = $last_subscription_order->billing->country;
+					$this->PhoneNumber = $last_subscription_order->billing->phone;
+					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+
+					$this->billing          = new stdClass();
+					$this->billing->name    = $last_subscription_order->billing->name;
+					$this->billing->street  = $last_subscription_order->billing->street;
+					$this->billing->city    = $last_subscription_order->billing->city;
+					$this->billing->state   = $last_subscription_order->billing->state;
+					$this->billing->zip     = $last_subscription_order->billing->zip;
+					$this->billing->country = $last_subscription_order->billing->country;
+					$this->billing->phone   = $last_subscription_order->billing->phone;
+				} else {
+					// Last order did not have billing information. Try to pull from usermeta.
+					$this->Address1    = get_user_meta( $this->user_id, "pmpro_baddress1", true );
+					$this->City        = get_user_meta( $this->user_id, "pmpro_bcity", true );
+					$this->State       = get_user_meta( $this->user_id, "pmpro_bstate", true );
+					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzip", true );
+					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
+					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
+					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+
+					$this->billing          = new stdClass();
+					$this->billing->name    = get_user_meta( $this->user_id, "pmpro_bfirstname", true ) . " " . get_user_meta( $this->user_id, "pmpro_blastname", true ) ;
+					$this->billing->street  = $this->Address1;
+					$this->billing->city    = $this->City;
+					$this->billing->state   = $this->State;
+					$this->billing->zip     = $this->Zip;
+					$this->billing->country = $this->CountryCode;
+					$this->billing->phone   = $this->PhoneNumber;
+				}
+			}
 		}
 
 		/**

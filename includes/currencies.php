@@ -26,7 +26,7 @@
 		'CNY' => __('Chinese Yuan', 'paid-memberships-pro' ),
 		'CZK' => array(
 			'name' => __('Czech Koruna', 'paid-memberships-pro' ),
-	    			'decimals' => '0',
+	    			'decimals' => '2',
 	    			'thousands_separator' => '&nbsp;',
 	    			'decimal_separator' => ',',
 	    			'symbol' => '&nbsp;Kč',

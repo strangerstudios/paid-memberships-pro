@@ -105,6 +105,7 @@ function pmpro_report_login_page()
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro')?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+					$levels = pmpro_sort_levels_by_order( $levels );
 					foreach($levels as $level)
 					{
 				?>
