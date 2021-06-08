@@ -393,7 +393,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
 			global $recaptcha, $recaptcha_validated;
-			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
 
 				global $recaptcha_privatekey;
 
@@ -680,6 +680,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				}
 
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
 			//save billing info ect, as user meta

@@ -69,7 +69,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false)
+			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -179,7 +179,6 @@ function pmpro_manage_users_columns($columns) {
 
 function pmpro_sortable_column($columns)
 {
-	// $columns['pmpro_membership_level'] = ['level', 'desc'];
 	$columns['pmpro_membership_level'] = array( 'level', 'desc' );
 	return $columns;
 }
@@ -200,16 +199,19 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
     return $column_data;
 }
 
-function pmpro_sortable_column_query($query) {
+function pmpro_sortable_column_query( $query ) {
     global $wpdb;
 
 	$vars = $query->query_vars;
 
-	if($vars['orderby'] == 'level'){
-		$query->query_from .= " LEFT JOIN {$wpdb->prefix}pmpro_memberships_users AS pmpro_mu ON {$wpdb->prefix}users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active'";
-		$query->query_orderby = "ORDER BY pmpro_mu.membership_id " . $vars['order'] . ", {$wpdb->prefix}users.user_registered";
-	}
+	if ( $vars['orderby'] == 'level' ){
+		$order = pmpro_sanitize_with_safelist( $vars['order'], array( 'asc', 'desc', 'ASC', 'DESC' ) );
 
+		if ( ! empty( $order ) ) {
+			$query->query_from .= " LEFT JOIN $wpdb->pmpro_memberships_users AS pmpro_mu ON $wpdb->users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels AS pmpro_ml ON pmpro_mu.membership_id = pmpro_ml.id";
+			$query->query_orderby = "ORDER BY pmpro_ml.name " . esc_sql( $order ) . ", $wpdb->users.user_registered";
+		}
+	}
 }
 
 add_filter('manage_users_columns', 'pmpro_manage_users_columns');

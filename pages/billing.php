@@ -61,11 +61,11 @@
 						<?php
 							$level = $current_user->membership_level;
 							if($current_user->membership_level->cycle_number > 1) {
-								printf(__('%s every %d %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
+								printf(__('%s every %d %s.', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice($level->billing_amount) ), $level->cycle_number, pmpro_translate_billing_period($level->cycle_period, $level->cycle_number));
 							} elseif($current_user->membership_level->cycle_number == 1) {
-								printf(__('%s per %s.', 'paid-memberships-pro' ), pmpro_formatPrice($level->billing_amount), pmpro_translate_billing_period($level->cycle_period));
+								printf(__('%s per %s.', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice($level->billing_amount) ), pmpro_translate_billing_period($level->cycle_period));
 							} else {
-								echo pmpro_formatPrice($current_user->membership_level->billing_amount);
+								echo pmpro_escape_price( pmpro_formatPrice($current_user->membership_level->billing_amount) );
 							}
 						?>
 
@@ -168,7 +168,7 @@
 					</div> <!-- end pmpro_checkout-field-baddress2 -->
 
 					<?php
-						$longform_address = apply_filters("pmpro_longform_address", false);
+						$longform_address = apply_filters("pmpro_longform_address", true);
 						if($longform_address)
 						{
 						?>

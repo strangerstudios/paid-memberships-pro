@@ -56,7 +56,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 				<tbody>
 					<tr id="pmpro-settings-key-box">
 						<td>
-							<input type="password" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40"  />
+							<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
 							<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
 							<?php submit_button( __( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>
 						</td>

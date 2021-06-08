@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages;
 
 	$now = current_time( 'timestamp' );
 
@@ -537,6 +537,7 @@
 			<div class="pmpro_discount_levels">
 			<?php
 				$levels = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_membership_levels");
+				$levels = pmpro_sort_levels_by_order( $levels );
 				foreach($levels as $level)
 				{
 					//if this level is already managed for this discount code, use the code values
@@ -814,7 +815,7 @@
 									</span>
 									<?php if ( (int)$uses > 0 ) { ?>
 										| <span class="orders">
-											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount_code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
+											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
 										</span>
 									<?php } ?>
 								</div>
@@ -847,7 +848,11 @@
 
 									$level_names = array();
 									foreach( $levels as $level ) {
-										$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+										if ( ! empty( $pmpro_pages['checkout'] ) ) {
+											$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+										} else {
+											$level_names[] = $level->name;
+										}
 									}
 									if( $level_names ) {
 										echo implode( ', ', $level_names );

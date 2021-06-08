@@ -6,7 +6,9 @@ jQuery( document ).ready( function( $ ) {
 	var stripe, elements, cardNumber, cardExpiry, cardCvc;
 
 	// Identify with Stripe.
-	stripe = Stripe( pmproStripe.publishableKey );
+	stripe = Stripe( pmproStripe.publishableKey, 
+		{ locale: 'auto' } 
+	);
 	elements = stripe.elements();
 
 	// Create Elements.
@@ -33,7 +35,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 	
@@ -45,7 +47,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 
@@ -84,7 +86,7 @@ jQuery( document ).ready( function( $ ) {
 					address: address,
 					name: name,
 				}
-			}).then( stripeResponseHandler );
+			}).then( pmpro_stripeResponseHandler );
 
 			// Prevent the form from submitting with the default action.
 			return false;
@@ -110,7 +112,7 @@ jQuery( document ).ready( function( $ ) {
 						currency: pmproStripe.currency,
 						total: {
 							label: pmproStripe.siteName,
-							amount: data.initial_payment * 100,
+							amount: Math.round( data.initial_payment * 100 ),
 						},
 						requestPayerName: true,
 						requestPayerEmail: true,
@@ -128,11 +130,21 @@ jQuery( document ).ready( function( $ ) {
 					});
 					// Handle payment request button confirmation.
 					paymentRequest.on('paymentmethod', function( event ) {
-						stripeResponseHandler( event );
+						$('#pmpro_btn-submit').attr('disabled', 'disabled');
+						$('#pmpro_processing_message').css('visibility', 'visible');
+						$('#payment-request-button').hide();
+						event.complete('success');
+						pmpro_stripeResponseHandler( event );
 					});
 				}
 			}
 		});
+
+		// Find ALL <form> tags on your page
+		jQuery('form').submit(function(){
+			// Hide payment request button on form submit to prevent double charges.
+			jQuery('#payment-request-button').hide();
+		});	
 
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
@@ -144,7 +156,7 @@ jQuery( document ).ready( function( $ ) {
 						paymentRequest.update({
 							total: {
 								label: pmproStripe.siteName,
-								amount: data.initial_payment * 100,
+								amount: Math.round( data.initial_payment * 100 ),
 							},
 						});
 					}
@@ -160,7 +172,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 
 	// Handle the response from Stripe.
-	function stripeResponseHandler( response ) {
+	function pmpro_stripeResponseHandler( response ) {
 
 		var form, data, card, paymentMethodId, customerId;
 

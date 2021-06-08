@@ -313,7 +313,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
-
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
@@ -359,7 +358,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
 			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
-
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {

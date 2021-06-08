@@ -2154,7 +2154,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// subscribe to the plan
 		try {
 			$subscription = array( "plan" => $order->code );
-			$result       = $this->customer->subscriptions->create( apply_filters( 'pmpro_stripe_create_subscription_array', $subscription ) );
+			$result       = $this->create_subscription( $order );
 		} catch ( \Throwable $e ) {
 			//try to delete the plan
 			$plan->delete();
@@ -2532,7 +2532,7 @@ class PMProGateway_stripe extends PMProGateway {
 						$offset = get_option( 'gmt_offset' );						
 						$timestamp = $subscription->current_period_start + ( $offset * 3600 );
 					} else {
-						$timestamp = $false;  // shouldn't really get here
+						$timestamp = null;  // shouldn't really get here
 					}
 				}
 			}
@@ -2978,7 +2978,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'pending_setup_intent.payment_method',
 				),
 			);
-			$order->subscription = Stripe_Subscription::create( $params );
+			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;

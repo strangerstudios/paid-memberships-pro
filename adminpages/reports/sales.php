@@ -69,7 +69,7 @@ function pmpro_report_sales_widget() {
 					<?php } ?>
 				</th>
 				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type ) ) ); ?></td>
-				<td><?php echo esc_html(pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
 				//sale prices stats
@@ -82,9 +82,9 @@ function pmpro_report_sales_widget() {
 					}
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo esc_html( pmpro_formatPrice( $price ) );?></th>
+					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
 					<td><?php echo esc_html( number_format_i18n( $quantity ) ); ?></td>
-					<td><?php echo esc_html( pmpro_formatPrice( $price * $quantity ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity ) ); ?></td>
 				</tr>
 			<?php
 			}
@@ -152,7 +152,7 @@ function pmpro_report_sales_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $startdate ) );
 		$date_function = 'DAY';
 		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
@@ -173,17 +173,22 @@ function pmpro_report_sales_page()
 	//testing or live data
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
+	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
+	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
+	// for performance so that we don't need to go through each order manually to calculate the local time.
+	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
+
 	//get data
-	$sqlQuery = "SELECT $date_function(o.timestamp) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
+	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 
-	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= '" . esc_sql( $startdate ) . "' AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND ) AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp <= '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND o.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
 
 	if(!empty($l))
 		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
@@ -311,6 +316,7 @@ function pmpro_report_sales_page()
 			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 			<?php
 				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+				$levels = pmpro_sort_levels_by_order( $levels );
 				foreach($levels as $level)
 				{
 			?>
@@ -473,9 +479,12 @@ function pmpro_getSales($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
+
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
 	//build query
 	global $wpdb;
@@ -522,6 +531,9 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	} else {
 		$startdate = '1970-01-01';
 	}
+
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
 	$gateway_environment = pmpro_getOption( 'gateway_environment' );
 
@@ -581,7 +593,10 @@ function pmpro_getRevenue($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
+
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
 

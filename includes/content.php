@@ -81,6 +81,9 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	}
 	else
 	{
+		// Reorder the $post_membership_levels to match sorted order.
+		$post_membership_levels = pmpro_sort_levels_by_order( $post_membership_levels );
+
 		//we need to see if the user has access
 		foreach($post_membership_levels as $level)
 		{
@@ -145,9 +148,8 @@ function pmpro_search_filter($query)
     if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
         //avoiding post_parent queries for now
 		if( empty( $query->query_vars['post_parent'] ) ) {
-			$query->set('post__not_in', $pmpro_pages );
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
 		}
-		$query->set('post__not_in', $pmpro_pages ); // id of page or post
     }
 
     // If this is a post type query, get the queried post types into an array.	
@@ -223,7 +225,7 @@ function pmpro_search_filter($query)
         if( $hidden_page_ids ) {
 			//avoiding post_parent queries for now
 			if( empty( $query->query_vars['post_parent'] ) ) {
-				$query->set( 'post__not_in', $hidden_page_ids );
+				$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_page_ids ) );
 			}
 		}
 				
@@ -248,7 +250,7 @@ function pmpro_search_filter($query)
 				
         //make this work
         if( $hidden_cat_ids ) {
-            $query->set( 'category__not_in', $hidden_cat_ids );
+			$query->set( 'category__not_in', array_merge( $query->get( 'category__not_in' ), $hidden_cat_ids ) );
 						
 			//filter so posts in this member's categories are allowed
 			add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
@@ -297,6 +299,16 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 		}
+	}
+	
+	/**
+	 * Filter to let other plugins change how PMPro filters member content.
+	 * If anything other than false is returned, that value will overwrite
+	 * the $content variable and no further processing is done in this function.
+	 */
+	$content_filter = apply_filters( 'pmpro_membership_content_filter', false, $content, $hasaccess );
+	if ( $content_filter !== false ) {
+		return $content_filter;
 	}
 
 	if( $hasaccess ) {
@@ -481,7 +493,9 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-level-required';
 			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-level-' . $post_level[0];
+				if ( isset( $post_level[0] ) ) {
+					$classes[] = 'pmpro-level-' . $post_level[0];
+				} 	
 			}
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true) {
