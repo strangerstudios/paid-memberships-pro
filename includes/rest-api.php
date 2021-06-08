@@ -414,6 +414,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$params = $request->get_params();
 			$id = isset( $params['id'] ) ? intval( $params['id'] ) : null;
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : false;
 
 			if ( empty( $id ) ) {
 				return new WP_REST_Response( 'ID not passed through', 400 );
@@ -426,6 +427,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				 && ! pmpro_hasMembershipLevel( $id )
 				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
 					 $level->confirmation = '';					
+			}
+
+			if ( $response_type == 'json' ) {
+				wp_send_json_success( array( 'level' => $level ) );
 			}
 
 			return new WP_REST_Response( $level, 200 );
@@ -716,6 +721,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
 
+			return new WP_REST_Response( $results );
+
 		}
 
 		/// Get last order added
@@ -739,6 +746,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( $response_type == 'json' ) {
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
+
+			return new WP_REST_Response( $results );
 		}
 
 		/**
