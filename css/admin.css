@@ -87,7 +87,6 @@
 
 /* checkboxes */
 .checkbox_box {
-<<<<<<< HEAD
 	background: #FFFFFF;
 	border: 1px solid #7e8993;
 	border-radius: 4px;
@@ -100,11 +99,6 @@
 }
 .checkbox_box div:last-child {
 	border-bottom: none;
-}
-.checkbox_box div {
-	border-bottom: 1px solid #CCC;
-	padding: 3px;
->>>>>>> dev
 }
 .checkbox_box .clickable {
 	cursor: pointer;
