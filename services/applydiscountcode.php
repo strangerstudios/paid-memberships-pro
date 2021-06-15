@@ -132,6 +132,44 @@
 			jQuery('#other_discount_code_p').hide();
 		});
 
+		jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost($code_level), array('"', "'", "\n", "\r"))?><?php echo pmpro_no_quotes(pmpro_getLevelExpiration($code_level), array('"', "'", "\n", "\r"))?></p>');
+
+
+		// if(!window.storeOriginal) {
+		// 	if(jQuery("#pmpro_level-<?= $code_level->id ?> #pmpro_level-<?= $code_level->id ?> .entry-content p")[0]) {
+		// 		window.storeOriginal = jQuery("#pmpro_level-<?= $code_level->id ?> #pmpro_level-<?= $code_level->id ?> .entry-content p")[0].innerHTML;
+		// 	}
+		// }
+
+
+		// if(!window.storeOriginalButton) {
+		// 	window.storeOriginalButton = jQuery("#pmpro_btn-submit")[0].value;
+		// }
+
+
+		if('<?= $code_level->id ?>' == 4) {
+			console.log("Applying discount design tweaks disabled for Expert");
+		} else  {
+
+
+			<?php if($discount_code) { ?>
+				var discountCode = '<?= strtoupper($discount_code)?>';
+				jQuery('#pmpro_message').removeClass('is-success');
+				if(discountCode.includes("MOJOMONTH") || discountCode == "MOJOVEMBER" || discountCode == "CHARITY10") {
+					jQuery('#pmpro_message')[0].innerHTML = 'Discount applied. First month free.'
+					jQuery('.title-tweak')[0].innerHTML = "Start your 30 day free trial";
+					jQuery('#pmpro_message').show();
+					jQuery('#pmpro_message').addClass('is-success');
+
+				} else if(discountCode == "MOJO2MONTHS") {
+					jQuery('#pmpro_message')[0].innerHTML = 'Discount applied. First 2 months free.'
+					jQuery('.title-tweak')[0].innerHTML = "Start your 60 day free trial";
+					jQuery('#pmpro_message').show();
+					jQuery('#pmpro_message').addClass('is-success');
+				}
+			<?php } ?>
+		}
+
 			<?php
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];

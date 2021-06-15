@@ -340,6 +340,13 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		$pmpro_error_fields[] = "password";
 		$pmpro_error_fields[] = "password2";
 	}
+
+	if ( ! empty( $password ) && (strlen($password) < 8) ) {
+		pmpro_setMessage( __( "Your password needs to be at least 8 characters long.", 'paid-memberships-pro' ), "pmpro_error" );
+		$pmpro_error_fields[] = "password";
+		$pmpro_error_fields[] = "password2";
+	}
+
 	if ( strcasecmp($bemail, $bconfirmemail) !== 0 ) {
 		pmpro_setMessage( __( "Your email addresses do not match. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "bemail";
@@ -379,7 +386,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		}
 
 		if ( ! empty( $ouser->user_login ) ) {
-			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
+			pmpro_setMessage( __( "That username is already in use. Please use a different one or click 'I already have an account' below", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "username";
 		}
 
