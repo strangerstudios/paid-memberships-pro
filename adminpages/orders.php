@@ -304,7 +304,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 
 	// save
-	if ( $order->saveOrder() !== false && $nonceokay ) {
+	if ( $nonceokay && false !== $order->saveOrder() ) {
 		$order_id = $order->id;
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
