@@ -534,7 +534,16 @@
 			</tbody>
 		</table>
 
-		<?php do_action( 'pmpro_membership_level_after_billing_details_settings' ); ?>
+		<?php
+		/**
+		 * Allow adding form fields after the Billing Details Settings section.
+		 *
+		 * @since unknown
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_billing_details_settings', $level );
+		?>
 
 		<hr />
 
@@ -601,7 +610,16 @@
 			</tbody>
 		</table>
 
-		<?php do_action("pmpro_membership_level_after_other_settings"); ?>
+		<?php
+		/**
+		 * Allow adding form fields after the Other Settings section.
+		 *
+		 * @since unknown
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_other_settings', $level );
+		?>
 
 		<hr />
 
@@ -642,6 +660,18 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<?php
+		/**
+		 * Allow adding form fields after the Content Settings section.
+		 *
+		 * @since TBD
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_content_settings', $level );
+		?>
+
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
 			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
