@@ -304,13 +304,13 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 
 	// save
-	if ( $order->saveOrder() !== false && $nonceokay ) {
+	if ( $nonceokay && false !== $order->saveOrder() ) {
 		$order_id = $order->id;
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
 	}
-	
+
 	// also update the discount code if needed
 	if( isset( $_REQUEST['discount_code_id'] ) ) {
 		$order->updateDiscountCode( intval( $_REQUEST['discount_code_id'] ) );
@@ -424,7 +424,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							echo esc_html( $order->code );
 						} else { ?>
 							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" class="regular-text" />
-						<?php 
+						<?php
 						}
 					?>
 					<?php if ( $order_id < 0 ) { ?>
@@ -440,7 +440,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							echo esc_html( $order->user_id );
 						} else { ?>
 							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" class="regular-text" />
-						<?php 
+						<?php
 						}
 					?>
 				</td>
@@ -453,7 +453,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						echo esc_html( $order->membership_id );
 						} else { ?>
 							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" class="regular-text" />
-						<?php 
+						<?php
 						}
 					?>
 				</td>
@@ -630,7 +630,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						} else {
 						?>
 							<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-						<?php 
+						<?php
 						}
 					?>
 					</td>
@@ -746,8 +746,8 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
 							<?php } ?>
 						</select>
-						<?php 
-						} 
+						<?php
+						}
 					?>
 				</td>
 			</tr>
@@ -836,7 +836,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						} else {
 							$timestamp = current_time( 'timestamp' );
 						}
-						
+
 						$year   = date( 'Y', $timestamp );
 						$month  = date( 'n', $timestamp );
 						$day    = date( 'j', $timestamp );
@@ -921,7 +921,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
-					if ( in_array( 'notes', $read_only_fields ) && $order_id > 0 ) {						
+					if ( in_array( 'notes', $read_only_fields ) && $order_id > 0 ) {
 						echo wp_kses_post( $order->notes );
 					} else {
 					?>
@@ -979,7 +979,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
 		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
-		
+
 		<hr class="wp-header-end">
 
 
@@ -1011,9 +1011,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php esc_html_e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
 					<option
 						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php esc_html_e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
-					<option 
+					<option
 						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php esc_html_e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
-					<option 
+					<option
 						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php esc_html_e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
@@ -1076,7 +1076,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php } ?>
 
 				</select>
-				
+
 				<?php
 				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
 				$sqlQuery .= "ORDER BY id DESC ";
@@ -1248,7 +1248,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			if ( $join_with_usermeta ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 			}
-			
+
 			if ( $filter === 'with-discount-code' ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
@@ -1294,18 +1294,18 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 		} else {
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
-			
+
 			if ( $filter === 'with-discount-code' ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
-			
+
 			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
 		$sqlQuery .= "LIMIT $start, $limit";
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
-		
+
 		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
 
 		if ( $order_ids ) {
@@ -1393,7 +1393,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
 							[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
-						<?php } ?>	
+						<?php } ?>
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td>
@@ -1446,7 +1446,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						?>
 					</td>
 					<td>
-						<?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>: 
+						<?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
 						<?php
 						if ( ! empty( $order->payment_transaction_id ) ) {
 							echo esc_html( $order->payment_transaction_id );
@@ -1456,7 +1456,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						?>
 						<br/>
 						<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>
-						: 
+						:
 						<?php
 						if ( ! empty( $order->subscription_transaction_id ) ) {
 							echo esc_html( $order->subscription_transaction_id );
@@ -1475,7 +1475,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
 								<?php echo esc_html( $order->discount_code->code ); ?>
 							</a>
-						<?php } ?>							
+						<?php } ?>
 					</td>
 				</tr>
 				<?php
