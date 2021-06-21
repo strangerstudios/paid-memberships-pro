@@ -159,7 +159,7 @@
 }
 
 .admin_page_pmpro-paymentsettings .pmpro-admin-secure-key {
-	-webkit-text-security: circle;
+	-webkit-text-security: disc;
 }
 
 /* advanced settings */
