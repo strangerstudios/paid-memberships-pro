@@ -2386,9 +2386,9 @@ function pmpro_sort_levels_by_order( $pmpro_levels ) {
 	foreach ( $sort_order as $level_id ) {
 		foreach ( $pmpro_levels as $key => $level ) {
 			if ( ! empty ( $level->id ) && $level_id == $level->id ) {
-				$reordered_levels[] = $pmpro_levels[$key];
+				$reordered_levels[$level_id] = $pmpro_levels[$key];
 			} elseif ( ! empty( $level ) && is_string( $level ) && $level_id == $level ) {
-				$reordered_levels[] = $pmpro_levels[$key];
+				$reordered_levels[$level_id] = $pmpro_levels[$key];
 			}
 		}
 	}
