@@ -176,8 +176,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Authentication route for Zapier integration.
+		 *
 		 * Used to do authentication when connecting Zapier to PMPro.
-		 * @since 
+		 *
+		 * @since 2.6.0
 		 */
 		register_rest_route( $pmpro_namespace, '/me', 
 			array(
@@ -190,8 +192,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		);
 
 		/**
-		 * Get the last couple of membership levels/members
-		 * @since
+		 * Get the last couple of membership levels/members.
+		 *
+		 * @since 2.6.0
 		 */	
 		register_rest_route( $pmpro_namespace, '/recent_memberships',
 			array(
@@ -686,8 +689,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/// ZAPIER TRIGGERS
 		/**
-		 * Function used for testing authentication through Zapier API.
-		 * @since 2.7
+		 * Function used for testing authentication through the Zapier API.
+		 *
+		 * @since 2.6.0
 		 */
 		public function validate_me( $request ) {
 
@@ -702,8 +706,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			wp_send_json_success( array( 'username' => $me ) );
 		}
 
-
-		function pmpro_rest_api_recent_memberships( $request ) {
+		/**
+		 * Handle requests for the list of recent memberships.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 *
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
@@ -711,15 +723,29 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Grab the useful information.
 			global $wpdb;
-			$SQL = "SELECT mu.user_id, u.user_email, u.user_nicename, mu.membership_id, ml.name as membership_name, mu.status, mu.modified FROM $wpdb->pmpro_memberships_users AS mu
-					LEFT JOIN $wpdb->users AS u
-					ON mu.user_id = u.id
-					LEFT JOIN $wpdb->pmpro_membership_levels AS ml
-					ON ml.id = mu.membership_id
-					WHERE mu.status = 'active' 
-					ORDER BY mu.modified DESC 
-					LIMIT " . intval( $limit );
-			$results = $wpdb->get_results( $SQL );
+
+			$sql = "
+				SELECT
+					`mu`.`user_id`,
+					`u`.`user_email`,
+					`u`.`user_nicename`,
+					`mu`.`membership_id`,
+					`ml`.`name` as membership_name,
+					`mu`.`status`,
+					`mu`.`modified`
+				FROM `{$wpdb->pmpro_memberships_users}` AS `mu`
+				LEFT JOIN `{$wpdb->users}` AS `u`
+					ON `mu`.`user_id` = `u`.`id`
+				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
+					ON `ml`.`id` = `mu`.`membership_id`
+				WHERE
+					`mu`.`status` = 'active' 
+				ORDER BY
+					`mu`.`modified` DESC
+				LIMIT %d
+			";
+
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
 			$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
 
@@ -732,25 +758,58 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		}
 
-		/// Get last order added
-		function pmpro_rest_api_recent_orders( $request ) {
+		/**
+		 * Handle requests for the list of recent orders.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 *
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_recent_orders( $request ) {
 			$params = $request->get_params();
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
 
 			global $wpdb;
-			$SQL = "SELECT o.id as order_id, o.code, u.ID as user_id, u.user_email, u.user_nicename, o.billing_name, o.billing_street, o.billing_city, o.billing_state, o.billing_zip, o.billing_country, o.billing_phone, o.subtotal, o.tax, o.couponamount, o.total, o.status, o.gateway, o.gateway_environment, o.timestamp FROM $wpdb->pmpro_membership_orders AS o
-					LEFT JOIN $wpdb->users AS u
-					ON o.user_id = u.ID
-					ORDER BY o.timestamp DESC
-					LIMIT " . intval( $limit );
 
-			$results = $wpdb->get_results( $SQL );
+		  $sql = "
+				SELECT
+					`o`.`id` AS `order_id`,
+					`o`.`code`,
+					`u`.`ID` AS `user_id`,
+					`u`.`user_email`,
+					`u`.`user_nicename`,
+					`o`.`billing_name`,
+					`o`.`billing_street`,
+					`o`.`billing_city`,
+					`o`.`billing_state`,
+					`o`.`billing_zip`,
+					`o`.`billing_country`,
+					`o`.`billing_phone`,
+					`o`.`subtotal`,
+					`o`.`tax`,
+					`o`.`couponamount`,
+					`o`.`total`,
+					`o`.`status`,
+					`o`.`gateway`,
+					`o`.`gateway_environment`,
+					`o`.`timestamp`
+				FROM `{$wpdb->pmpro_membership_orders}` AS `o`
+				LEFT JOIN `{$wpdb->users}` AS `u`
+					ON `o`.`user_id` = `u`.`ID`
+				ORDER BY
+					`o`.`timestamp` DESC
+				LIMIT %d
+			";
+			
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
 			$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
 
-			if ( $response_type == 'json' ) {
+			if ( 'json' === $response_type ) {
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
 
