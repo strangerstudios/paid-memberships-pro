@@ -689,9 +689,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/// ZAPIER TRIGGERS
 		/**
-		 * Function used for testing authentication through the Zapier API.
+		 * Handle authentication testing for the Zapier API.
 		 *
 		 * @since 2.6.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
 		 */
 		public function validate_me( $request ) {
 
