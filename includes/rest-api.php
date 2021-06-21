@@ -180,13 +180,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * @since 
 		 */
 		register_rest_route( $pmpro_namespace, '/me', 
-		array(
 			array(
-				'methods' => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'validate_me' ),
-				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
-			),
-		));
+				array(
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'validate_me' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+				),
+			)
+		);
 
 		/**
 		 * Get the last couple of membership levels/members
@@ -202,13 +203,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		register_rest_route( $pmpro_namespace, '/recent_orders',
-		array(
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
-				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
 			)
-		));
+		);
 		}
 		
 		/**
@@ -321,17 +323,19 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$user = get_user_by_email( $email );
 					$user_id = $user->ID;
 				} else {
-					if ( $response_type == 'json' ) {
+					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
 					}
+
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
 
 			if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
-				if ( $response_type == 'json' ) {
+				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email, 'error' => 'Paid Memberships Pro function not found.' ) );
 				}
+
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 
@@ -341,7 +345,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$response = false;
 			}
 
-			if ( $response_type == 'json' ) {
+			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id, 'response' => $response, 'status' => 200 ) );
 			}
 
@@ -366,24 +370,27 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					$user = get_user_by_email( $email );
 					$user_id = $user->ID;
 				} else {
-					if ( $response_type == 'json' ) {
+					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email ) );
 					}
+
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
 			
 			if ( empty( $level_id ) ) {
-				if ( $response_type == 'json' ) {
+				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email ) );
 				}
+
 				return new WP_REST_Response( 'No membership level ID data.', 400 );
 			}
 
 			if ( ! function_exists( 'pmpro_cancelMembershipLevel' ) ) {
-				if ( $response_type == 'json' ) {
+				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email ) );
 				}
+
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 			
@@ -393,9 +400,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$response = false;
 			}
 
-			if ( $response_type == 'json' ) {
+			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'email' => $email ) );
 			}
+
 			return new WP_REST_Response( $response, 200 );
 		}
 		
@@ -427,7 +435,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					 $level->confirmation = '';					
 			}
 
-			if ( $response_type == 'json' ) {
+			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'level' => $level ) );
 			}
 
@@ -490,9 +498,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level->categories = $categories;
 			$level->save();	
 
-			if ( $response_type == 'json' ) {
+			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( "level" => $level ) );
 			}
+
 			return new WP_REST_Response( $level, 200 );
 
 		}
