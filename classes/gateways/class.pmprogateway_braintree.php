@@ -337,7 +337,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" autocomplete="off" class="pmpro-admin-secure-key" rows="3" cols="50" class="large-text code"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
+				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" autocomplete="off" rows="3" cols="50" class="large-text code pmpro-admin-secure-key"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
