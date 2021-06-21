@@ -749,10 +749,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
-
 			// Generate random ID for Zapier and then also add all member information.
 			if ( $response_type == 'json' ) {
+				$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
 
@@ -809,9 +808,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
-
 			if ( 'json' === $response_type ) {
+				$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
 				wp_send_json( array( 'id' => $id, 'results' => $results ) );
 			}
 
