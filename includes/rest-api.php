@@ -775,7 +775,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			global $wpdb;
 
-		  $sql = "
+			$sql = "
 				SELECT
 					`o`.`id` AS `order_id`,
 					`o`.`code`,
