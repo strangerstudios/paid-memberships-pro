@@ -329,7 +329,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_privatekey"><?php _e('Private Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="password" id="braintree_privatekey" name="braintree_privatekey" value="<?php echo esc_attr($values['braintree_privatekey'])?>" class="regular-text code" />
+				<input type="text" id="braintree_privatekey" name="braintree_privatekey" value="<?php echo esc_attr($values['braintree_privatekey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
