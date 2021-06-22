@@ -15,7 +15,7 @@ jQuery(document).ready(function(){
 			// Call the disallowed list method corresponding to appropriate WP version.
 			const disallowedList = ( 'function' == typeof wp.passwordStrength.userInputDisallowedList )
 				? wp.passwordStrength.userInputDisallowedList()
-				: wp.passwordStrength. userInputBlacklist();
+				: wp.passwordStrength.userInputBlacklist();
 
 			strength = wp.passwordStrength.meter( pass1, disallowedList, pass1 );
 
