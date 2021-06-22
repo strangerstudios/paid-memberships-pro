@@ -937,6 +937,17 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tbody>
 		</table>
 
+		<?php
+		/**
+		 * Allow adding other content after the Order Settings table.
+		 *
+		 * @since TBD
+		 *
+		 * @param MemberOrder $order Member order object.
+		 */
+		do_action( 'pmpro_after_order_settings_table', $order );
+		?>
+
 		<p class="submit topborder">
 			<input name="order" type="hidden" value="
 			<?php
