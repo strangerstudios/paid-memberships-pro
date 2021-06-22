@@ -158,6 +158,10 @@
 	max-width: none;
 }
 
+.admin_page_pmpro-paymentsettings .pmpro-admin-secure-key {
+	-webkit-text-security: disc;
+}
+
 /* advanced settings */
 .admin_page_pmpro-advancedsettings .form-table select:not(.admin_page_pmpro-advancedsettings .form-table select#tospage) {
 	max-width: none;
