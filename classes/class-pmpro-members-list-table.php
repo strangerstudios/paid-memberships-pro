@@ -574,7 +574,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( empty( $joindate ) ) {
 			return;
 		}
-		return date_i18n( get_option('date_format'), $joindate );
+		return date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $joindate ) ) ) );
 	}
 
 	/**
