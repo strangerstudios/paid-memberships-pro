@@ -538,7 +538,7 @@
 		/**
 		 * Allow adding form fields after the Billing Details Settings section.
 		 *
-		 * @since unknown
+		 * @since 2.5.10
 		 *
 		 * @param object $level The Membership Level object.
 		 */
@@ -614,7 +614,7 @@
 		/**
 		 * Allow adding form fields after the Other Settings section.
 		 *
-		 * @since unknown
+		 * @since 2.5.10
 		 *
 		 * @param object $level The Membership Level object.
 		 */
@@ -665,7 +665,7 @@
 		/**
 		 * Allow adding form fields after the Content Settings section.
 		 *
-		 * @since TBD
+		 * @since 2.5.10
 		 *
 		 * @param object $level The Membership Level object.
 		 */

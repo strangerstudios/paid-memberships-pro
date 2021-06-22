@@ -555,7 +555,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			/**
 			 * Allow hooking before the user authentication process when setting up new user.
 			 *
-			 * @since TBD
+			 * @since 2.5.10
 			 *
 			 * @param int $user_id The user ID that is being setting up.
 			 */

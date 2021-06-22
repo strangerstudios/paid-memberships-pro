@@ -941,7 +941,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		/**
 		 * Allow adding other content after the Order Settings table.
 		 *
-		 * @since TBD
+		 * @since 2.5.10
 		 *
 		 * @param MemberOrder $order Member order object.
 		 */
