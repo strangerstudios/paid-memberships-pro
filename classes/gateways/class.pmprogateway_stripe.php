@@ -15,7 +15,6 @@ use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
 
 define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
-define( "PMPRO_STRIPE_CONNECT_ID", "ca_GiqGRrbKQgyPtBFPfjcTQ2RLEdE4u6F6" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );
