@@ -136,11 +136,11 @@
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
 				?>
-				jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost( $code_level, array('"', "'", "\n", "\r")))?><?php echo pmpro_no_quotes(pmpro_getLevelExpiration( $code_level, array('"', "'", "\n", "\r")))?></p>');
+				jQuery('#pmpro_level_cost').html('<p><?php printf( esc_attr__( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ); ?></p><p><?php echo esc_js( pmpro_getLevelCost( $code_level ) . pmpro_getLevelExpiration( $code_level ) ); ?></p>');
 				<?php
 			} else {
 				?>
-				jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelsCost($code_levels), array('"', "'", "\n", "\r"))?><?php echo pmpro_no_quotes(pmpro_getLevelsExpiration($code_levels), array('"', "'", "\n", "\r"))?></p>');
+				jQuery('#pmpro_level_cost').html('<p><?php echo esc_js( sprintf(__( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ); ?></p><p><?php echo esc_js( pmpro_getLevelsCost( $code_levels ) ); ?><?php echo esc_js( pmpro_getLevelsExpiration( $code_levels ) ); ?></p>');
 				<?php
 			}
 
