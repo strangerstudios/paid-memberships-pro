@@ -136,7 +136,7 @@
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
 				?>
-				jQuery('#pmpro_level_cost').html('<p><?php echo esc_js( sprintf(__( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ); ?></p><p><?php echo esc_js( pmpro_getLevelCost( $code_level ) ); ?><?php echo esc_js( pmpro_getLevelExpiration( $code_level ) ); ?></p>');
+				jQuery('#pmpro_level_cost').html('<p><?php printf( esc_attr__( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ); ?></p><p><?php echo esc_js( pmpro_getLevelCost( $code_level ) . pmpro_getLevelExpiration( $code_level ) ); ?></p>');
 				<?php
 			} else {
 				?>
