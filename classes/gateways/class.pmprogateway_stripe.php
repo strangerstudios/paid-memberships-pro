@@ -266,9 +266,10 @@ class PMProGateway_stripe extends PMProGateway {
 			'gateway_environment',
 			'stripe_secretkey',
 			'stripe_publishablekey',
-			'stripe_connect_user_id',
+			'live_stripe_connect_user_id',
 			'live_stripe_connect_secretkey',
 			'live_stripe_connect_publishablekey',
+			'test_stripe_connect_user_id',
 			'test_stripe_connect_secretkey',
 			'test_stripe_connect_publishablekey',
 			'stripe_webhook',
@@ -339,16 +340,17 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label> <?php esc_attr_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
+                <label> <?php esc_attr_e( 'Stripe Connection (Live):', 'paid-memberships-pro' ); ?></label>
             </th>
 			<td>
 				<?php
 				$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
-				if ( self::has_connect_credentials() ) {
+				if ( self::has_connect_credentials( 'live' ) ) {
 					$connect_url = add_query_arg(
 						array(
 							'action' => 'disconnect',
-							'stripe_user_id' => $values['stripe_connect_user_id'],
+							'gateway_environment' => 'live',
+							'stripe_user_id' => $values['live_stripe_connect_user_id'],
 							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
 						),
 						$connect_url_base
@@ -361,6 +363,7 @@ class PMProGateway_stripe extends PMProGateway {
 					$connect_url = add_query_arg(
 						array(
 							'action' => 'authorize',
+							'gateway_environment' => 'live',
 							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
 						),
 						$connect_url_base
@@ -370,10 +373,48 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
-				<input type='hidden' name='stripe_connect_user_id' id='stripe_connect_user_id' value='<?php echo esc_attr( $values['stripe_connect_user_id'] ) ?>'/>
+				<input type='hidden' name='live_stripe_connect_user_id' id='live_stripe_connect_user_id' value='<?php echo esc_attr( $values['live_stripe_connect_user_id'] ) ?>'/>
 				<input type='hidden' name='live_stripe_connect_secretkey' id='live_stripe_connect_secretkey' value='<?php echo esc_attr( $values['live_stripe_connect_secretkey'] ) ?>'/>
-				<input type='hidden' name='test_stripe_connect_secretkey' id='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ) ?>'/>
 				<input type='hidden' name='live_stripe_connect_publishablekey' id='live_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['live_stripe_connect_publishablekey'] ) ?>'/>
+			</td>
+        </tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+            <th scope="row" valign="top">
+                <label> <?php esc_attr_e( 'Stripe Connection (Sandbox):', 'paid-memberships-pro' ); ?></label>
+            </th>
+			<td>
+				<?php
+				$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+				if ( self::has_connect_credentials( 'sandbox' ) ) {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'disconnect',
+							'gateway_environment' => 'test',
+							'stripe_user_id' => $values['test_stripe_connect_user_id'],
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<br/><small>This will disconnect all sites linked to this Stripe account.</small>
+					<?php
+				} else {
+					$connect_url = add_query_arg(
+						array(
+							'action' => 'authorize',
+							'gateway_environment' => 'test',
+							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+						),
+						$connect_url_base
+					);
+					?>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<?php
+				}
+				?>
+				<input type='hidden' name='test_stripe_connect_user_id' id='test_stripe_connect_user_id' value='<?php echo esc_attr( $values['test_stripe_connect_user_id'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_secretkey' id='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ) ?>'/>
 				<input type='hidden' name='test_stripe_connect_publishablekey' id='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
@@ -720,7 +761,7 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 				$localize_vars = array(
 					'publishableKey' => self::get_publishablekey(),
-					'user_id'        => pmpro_getOption( 'stripe_connect_user_id' ),
+					'user_id'        => self::get_connect_user_id(),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
@@ -3343,12 +3384,13 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Be sure only to connect when param present.
-		if ( ! isset( $_REQUEST['pmpro_stripe_connected'] ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_connected'] ) || ! isset( $_REQUEST['pmpro_stripe_connected_environment'] ) ) {
 			return false;
 		}
-
+		
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
+		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] );
 
 		$error = '';
 		if (
@@ -3361,17 +3403,22 @@ class PMProGateway_stripe extends PMProGateway {
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_user_id'] )
 			|| ! isset( $_REQUEST['pmpro_stripe_access_token'] )
-			|| ! isset( $_REQUEST['pmpro_stripe_access_token_test'] )
-			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key_test'] )
 		) {
 			$error = __( 'Invalid response from the Stripe Connect server.', 'paid-memberships-pro' );
 		} else {
 			// Update keys.
-			pmpro_setOption( 'stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-			pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-			pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token_test'] );
-			pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
-			pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key_test'] );
+			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
+				// Update live keys.
+				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+			} else {
+				// Update test keys.
+				pmpro_setOption( 'test_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+				pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+				pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+			}
+			
 
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
@@ -3408,7 +3455,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Be sure only to deauthorize when param present.
-		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) ) {
+		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) || ! isset( $_REQUEST['pmpro_stripe_disconnected_environment'] ) ) {
 			return false;
 		}
 
@@ -3429,24 +3476,17 @@ class PMProGateway_stripe extends PMProGateway {
 
 		}
 
-		// If user disconnects, remove the options regardless.
-		// They can always click reconnect even if connected.
-		self::stripe_connect_delete_options();
-	}
-
-	/**
-	 * Delete all the PMPro settings options for Stripe Connect.
-	 *
-	 * @return void
-	 */
-	static function stripe_connect_delete_options() {
-		// Disconnection successful.
-		// Remove the connect options within the db.
-		delete_option( 'pmpro_stripe_connect_user_id' );
-		delete_option( 'pmpro_live_stripe_connect_secretkey' );
-		delete_option( 'pmpro_test_stripe_connect_secretkey' );
-		delete_option( 'pmpro_live_stripe_connect_publishablekey' );
-		delete_option( 'pmpro_test_stripe_connect_publishablekey' );
+		if ( $_REQUEST['pmpro_stripe_disconnected_environment'] === 'live' ) {
+			// Delete live keys.
+			delete_option( 'pmpro_live_stripe_connect_user_id' );
+			delete_option( 'pmpro_live_stripe_connect_secretkey' );
+			delete_option( 'pmpro_live_stripe_connect_publishablekey' );
+		} else {
+			// Delete test keys.
+			delete_option( 'pmpro_test_stripe_connect_user_id' );
+			delete_option( 'pmpro_test_stripe_connect_secretkey' );
+			delete_option( 'pmpro_test_stripe_connect_publishablekey' );
+		}
 	}
 
 	static function using_legacy_keys() {
@@ -3455,14 +3495,26 @@ class PMProGateway_stripe extends PMProGateway {
 		return $r;
 	}
 
-	static function has_connect_credentials() {
-		return ( 
-			pmpro_getOption( 'stripe_connect_user_id' ) &&
-			pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
-			pmpro_getOption( 'test_stripe_connect_secretkey' ) &&
-			pmpro_getOption( 'live_stripe_connect_publishablekey' ) &&
-			pmpro_getOption( 'test_stripe_connect_publishablekey' )
-		);
+	static function has_connect_credentials( $gateway_environment = null ) {
+		if ( empty( $gateway_environment ) ) {
+			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
+		}
+
+		if ( $gateway_environment === 'live' ) {
+			// Return whether Stripe is connected for live gateway environment.
+			return ( 
+				pmpro_getOption( 'live_stripe_connect_user_id' ) &&
+				pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
+				pmpro_getOption( 'live_stripe_connect_publishablekey' )
+			);
+		} else {
+			// Return whether Stripe is connected for sandbox gateway environment.
+			return ( 
+				pmpro_getOption( 'test_stripe_connect_user_id' ) &&
+				pmpro_getOption( 'test_stripe_connect_secretkey' ) &&
+				pmpro_getOption( 'test_stripe_connect_publishablekey' )
+			);
+		}
 	}
 
 	static function get_secretkey() {
@@ -3470,7 +3522,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
 		} else {
-			$secretkey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
+			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
 		}
 		return $secretkey;
 	}
@@ -3480,9 +3532,13 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
 		} else {
-			$publishablekey = pmpro_getOption( 'pmpro_gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
+			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
+	}
+
+	static function get_connect_user_id() {
+		return pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_user_id' ) : pmpro_getOption( 'test_stripe_connect_user_id' );
 	}
 
 	static function webhook_is_working() {
