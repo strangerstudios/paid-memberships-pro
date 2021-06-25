@@ -147,7 +147,7 @@ function pmpro_search_filter($query)
     //hide pmpro pages from search results
     if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
         //avoiding post_parent queries for now
-		if( empty( $query->query_vars['post_parent'] ) ) {
+		if( empty( $query->query_vars['post_parent'] ) && ! empty( $pmpro_pages ) ) {
 			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
 		}
     }

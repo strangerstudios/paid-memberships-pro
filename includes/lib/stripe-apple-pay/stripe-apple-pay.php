@@ -11,11 +11,11 @@ add_action( 'init', 'pmpro_stripe_apple_pay_rewrite_rule' );
 /*
  * Create query var to detect if Stripe is looking for domain association file.
  */
-function wpd_add_query_vars( $qvars ) {
+function pmpro_stripe_apple_pay_add_query_vars( $qvars ) {
 	$qvars[] = 'pmpro_stripe_apple_pay';
 	return $qvars;
 }
-add_filter( 'query_vars', 'wpd_add_query_vars' );
+add_filter( 'query_vars', 'pmpro_stripe_apple_pay_add_query_vars' );
 
 /**
  * If query var is present, serve the domain association file.

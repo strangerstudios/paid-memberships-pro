@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4.7
-Tested up to: 5.7
-Stable tag: 2.5.9.1
+Tested up to: 5.8
+Stable tag: 2.5.10
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,23 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.10 - 2021-06-25 =
+* SECURITY: Fixed XSS vulnerability on the edit order page in the dashboard. (Thanks, Scott Kingsley Clark)
+* ENHANCEMENT: Improved escaping and localization for the message returned when clicking to apply discount code.
+* ENHANCEMENT: Now hiding gateway setting API keys behind asterisks.
+* BUG FIX/ENHANCEMENT: Now passing a CARDONFILE parameter with PayPal Payflow payment and subscription transactions.
+* BUG FIX/ENHANCEMENT: Using the wp.passwordStrength.userInputDisallowedList function from WP 4.5 if available.
+* BUG FIX: Fixed issue in getfile script where parameters in the URL would cause File not found errors.
+* BUG FIX: Fixed how the PayPal IPN handler handles cases where a subscription is set up correctly but the initial payment failed. We now correctly cancel these users and mark their order as error.
+* BUG FIX: Improved error handling in the PayPal Express integration, particularly when a subscriptions PROFILESTATUS is missing.
+* BUG FIX: User registered date is now shown in local time.
+* BUG FIX: Fixed issue where the deprecated pmpro_getClassForField function wasn't returning a value properly. (Thanks, Elena Draculet)
+* BUG FIX: Updated the pmpro_sort_levels_by_order function to use level IDs for keys, since some code expects that for level arrays. This matches the behavior we had before introducing this function.
+* BUG FIX: Updated the pmpro_changeMembershipLevel function always set the order status to error if that was passed in as the "old level status".
+* BUG FIX: Fixed warning in searches/pages when PMPro pages is not set.
+* BUG FIX: Fixed warnings being generated when using PHP 8 and Divi
+* BUG FIX: Fixed warnings related to PayPal Express session variables.
+
 = 2.5.9.1 - 2021-05-12 =
 * BUG FIX/ENHANCEMENT: Updated pmpro_changeMembershipLevel() to return null if the user's level is not changed. For the past 2 vesions, we've been returning true in these cases, which caused PMPro to send emails to the admin when the edit use page was saved, even if there was no level change. This change has been backported to versions 2.5.8 and 2.5.9.
 

@@ -129,7 +129,7 @@
 				<label for="twocheckout_apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" class="regular-text code" />
+				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 				<p class="description"><?php esc_html_e( 'Password for the API user created.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>

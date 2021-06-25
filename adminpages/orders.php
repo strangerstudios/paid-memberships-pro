@@ -306,6 +306,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	// save
 	if ( $nonceokay && false !== $order->saveOrder() ) {
 		$order_id = $order->id;
+		$pmpro_msg  = __( 'Order saved successfully.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'success';
 	} else {
 		$pmpro_msg  = __( 'Error saving order.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
@@ -934,6 +936,17 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 			</tbody>
 		</table>
+
+		<?php
+		/**
+		 * Allow adding other content after the Order Settings table.
+		 *
+		 * @since 2.5.10
+		 *
+		 * @param MemberOrder $order Member order object.
+		 */
+		do_action( 'pmpro_after_order_settings_table', $order );
+		?>
 
 		<p class="submit topborder">
 			<input name="order" type="hidden" value="

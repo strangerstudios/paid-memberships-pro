@@ -278,7 +278,12 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 			} else {
 				//if the initial payment failed, cancel with status error instead of cancelled
 				if ( $initial_payment_status === "Failed" ) {
-					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+					$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+					
+					// If we couldn't cancel, still set the order status to error.
+					if ( $cancelled === null ) {
+						$last_subscription_order->updateStatus('error');
+					}
 				} else {
 					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
 				}

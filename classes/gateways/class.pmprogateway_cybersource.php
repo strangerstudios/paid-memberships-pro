@@ -102,7 +102,7 @@
 				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="cybersource_securitykey" name="cybersource_securitykey" rows="3" cols="50" class="large-text code"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
+				<textarea id="cybersource_securitykey" name="cybersource_securitykey" autocomplete="off" rows="3" cols="50" class="large-text code pmpro-admin-secure-key"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
 			</td>
 		</tr>
 		<?php
