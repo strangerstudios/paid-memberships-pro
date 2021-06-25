@@ -533,7 +533,7 @@
 			 *
 			 * @link https://developer.paypal.com/docs/payflow/integration-guide/card-on-file/
 			 */
-			$nvpStr .= "&CARDONFILE=MITR";
+			$nvpStr .= "&CARDONFILE=CITR";
 
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
