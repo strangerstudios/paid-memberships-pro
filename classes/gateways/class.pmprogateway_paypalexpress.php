@@ -815,7 +815,6 @@
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
 			} else {
-				//$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
