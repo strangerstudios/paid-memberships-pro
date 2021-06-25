@@ -597,7 +597,6 @@
 
 				//exit('SetExpressCheckout Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -631,7 +630,6 @@
 
 				return true;
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -685,7 +683,6 @@
 
 				return true;
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -696,7 +693,7 @@
 
 		function subscribe(&$order)
 		{
-			global $pmpro_currency;
+			global $pmpro_currency, $pmpro_review;
 
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -755,16 +752,44 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->status = "success";
-				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
-				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+				// PayPal docs says that PROFILESTATUS can be:
+				// 1. ActiveProfile — The recurring payment profile has been successfully created and activated for scheduled payments according the billing instructions from the recurring payments profile.
+				// 2. PendingProfile — The system is in the process of creating the recurring payment profile. Please check your IPN messages for an update.
+				// Also, we have seen that PROFILESTATUS can be missing. That case would be an error.
+				if(isset($this->httpParsedResponseAr["PROFILESTATUS"]) && in_array($this->httpParsedResponseAr["PROFILESTATUS"], array("ActiveProfile", "PendingProfile"))) {
+					$order->status = "success";
 
-				//update order
-				$order->saveOrder();
+					// this is wrong, but we don't know the real transaction id at this point
+					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 
-				return true;
+					//update order
+					$order->saveOrder();
+
+					return true;
+				} else {
+					// stop processing the review request on checkout page
+					$pmpro_review = false;
+
+					$order->status = "error";
+
+					// this is wrong, but we don't know the real transaction id at this point
+					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+
+					$order->errorcode = '';
+					$order->error = __( 'Something went wrong creating plan with PayPal; missing PROFILESTATUS.', 'paid-memberships-pro' );
+					$order->shorterror = __( 'Error creating plan with PayPal.', 'paid-memberships-pro' );
+
+					//update order
+					$order->saveOrder();
+
+					return false;
+				}
 			} else  {
-				$order->status = "error";
+				// stop processing the review request on checkout page
+				$pmpro_review = false;
+
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -802,7 +827,6 @@
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
 			} else {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -830,7 +854,6 @@
 			}
 			else
 			{
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
