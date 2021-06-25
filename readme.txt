@@ -157,8 +157,11 @@ Not sure? You can find out by doing a bit a research.
 * SECURITY: Fixed XSS vulnerability on the edit order page in the dashboard. (Thanks, Scott Kingsley Clark)
 * ENHANCEMENT: Improved escaping and localization for the message returned when clicking to apply discount code.
 * ENHANCEMENT: Now hiding gateway setting API keys behind asterisks.
+* ENHANCEMENT: Added some extra hooks to the edit membership levels page in the dashboard: pmpro_membership_level_after_billing_details_settings, pmpro_membership_level_after_other_settings, pmpro_membership_level_after_content_settings.
+* ENHANCEMENT: Added a pmpro_after_order_settings_table hook to the edit order page in the dashboard.
 * BUG FIX/ENHANCEMENT: Now passing a CARDONFILE parameter with PayPal Payflow payment and subscription transactions.
 * BUG FIX/ENHANCEMENT: Using the wp.passwordStrength.userInputDisallowedList function from WP 4.5 if available.
+* BUG FIX/EHNANCEMENT: Now making sure that the pmpro_update_order and pmpro_updated_order hooks fire whenever an order is updated in the DB.
 * BUG FIX: Fixed issue in getfile script where parameters in the URL would cause File not found errors.
 * BUG FIX: Fixed how the PayPal IPN handler handles cases where a subscription is set up correctly but the initial payment failed. We now correctly cancel these users and mark their order as error.
 * BUG FIX: Improved error handling in the PayPal Express integration, particularly when a subscriptions PROFILESTATUS is missing.
