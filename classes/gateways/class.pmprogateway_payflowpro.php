@@ -320,7 +320,22 @@
 
 			//paypal profile stuff
 			$nvpStr = "";
+
+			// Only add CARDONFILE for initial charge if it's recurring.
+			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+				/*
+				 * Card on File is now required.
+				 *
+				 * CITR: The customer just performed an action to make the transaction.
+				 * MITR: The customer passively approved during CITR to make this subsequent (recurring) transaction.
+				 *
+				 * @link https://developer.paypal.com/docs/payflow/integration-guide/card-on-file/
+				 */
+				$nvpStr .= "&CARDONFILE=CITR";
+			}
+
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
+
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
@@ -390,7 +405,19 @@
 
 			//paypal profile stuff
 			$nvpStr = "&ACTION=A";
+
+			/*
+			 * Card on File is now required.
+			 *
+			 * CITR: The customer just performed an action to make the transaction.
+			 * MITR: The customer passively approved during CITR to make this subsequent (recurring) transaction.
+			 *
+			 * @link https://developer.paypal.com/docs/payflow/integration-guide/card-on-file/
+			 */
+			$nvpStr .="&CARDONFILE=CITR";
+
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
+
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
@@ -497,6 +524,17 @@
 
 			//paypal profile stuff
 			$nvpStr = "&ORIGPROFILEID=" . $order->subscription_transaction_id . "&ACTION=M";
+
+			/*
+			 * Card on File is now required.
+			 *
+			 * CITR: The customer just performed an action to make the transaction.
+			 * MITR: The customer passively approved during CIT to make this subsequent (recurring) transaction.
+			 *
+			 * @link https://developer.paypal.com/docs/payflow/integration-guide/card-on-file/
+			 */
+			$nvpStr .= "&CARDONFILE=CITR";
+
 			/* PayFlow Pro doesn't use IPN so this is a little confusing */
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 
