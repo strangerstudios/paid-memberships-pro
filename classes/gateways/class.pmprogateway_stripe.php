@@ -3634,16 +3634,22 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$hour_before_now    = date( 'Y-m-d H:i:s', strtotime( '- 1 hour' ) );
-		$num_problem_orders = $wpdb->get_var( "
-			SELECT COUNT(*)
-			FROM $wpdb->pmpro_membership_orders
-			WHERE gateway = 'stripe'
-			AND gateway_environment = '" . $gateway_environment . "'
-			AND subscription_transaction_id <> '' 
-			AND subscription_transaction_id IS NOT NULL
-			AND timestamp > '" . $last_webhook_safe . "'
-			AND timestamp < '" . $hour_before_now . "'
-		");
+		$num_problem_orders = $wpdb->get_var(
+			$wpdb->prepare( "
+				SELECT COUNT(*)
+				FROM $wpdb->pmpro_membership_orders
+				WHERE gateway = 'stripe'
+				AND gateway_environment = '%s'
+				AND subscription_transaction_id <> '' 
+				AND subscription_transaction_id IS NOT NULL
+				AND timestamp > '%s'
+				AND timestamp < '%s'
+			",
+			$gateway_environment,
+			$last_webhook_safe,
+			$hour_before_now
+			)
+		);
 		return ( empty( $num_problem_orders ) );
 	}
 }
