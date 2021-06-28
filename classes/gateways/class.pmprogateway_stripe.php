@@ -3580,7 +3580,12 @@ class PMProGateway_stripe extends PMProGateway {
 			: pmpro_getOption( 'test_stripe_connect_user_id' );
 	}
 
-	static function webhook_is_working() {
+	/**
+	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
+	 *
+	 * @return bool Whether the webhook is working.
+	 */
+	public static function webhook_is_working() {
 		global $wpdb;
 		$last_webhook       = get_option( 'pmpro_stripe_last_webhook_recieved' );
 		if ( empty( $last_webhook ) ) {
