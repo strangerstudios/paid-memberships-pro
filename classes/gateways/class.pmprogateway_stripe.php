@@ -3548,7 +3548,9 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
 		} else {
-			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_secretkey' ) : pmpro_getOption( 'test_stripe_connect_secretkey' );
+			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live'
+				? pmpro_getOption( 'live_stripe_connect_secretkey' )
+				: pmpro_getOption( 'test_stripe_connect_secretkey' );
 		}
 		return $secretkey;
 	}
