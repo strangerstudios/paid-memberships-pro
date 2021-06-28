@@ -3490,7 +3490,12 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
-	static function using_legacy_keys() {
+	/**
+	 * Determine whether the site is using legacy Stripe keys.
+	 *
+	 * @return bool Whether the site is using legacy Stripe keys.
+	 */
+	public static function using_legacy_keys() {
 		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );
 		$r = apply_filters( 'pmpro_stripe_using_legacy_keys', $r );
 		return $r;
