@@ -397,7 +397,7 @@ class PMProGateway_stripe extends PMProGateway {
 						$connect_url_base
 					);
 					?>
-					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<a href="<?php echo esc_url( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<br/><small><?php esc_html_e( 'This will disconnect all sites linked to this Stripe account.', 'paid-memberships-pro' ); ?></small>
 					<?php
 				} else {
