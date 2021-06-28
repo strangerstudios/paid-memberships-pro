@@ -384,6 +384,13 @@ class PMProGateway_stripe extends PMProGateway {
             </th>
 			<td>
 				<?php
+				/**
+				 * Allow customization of the Stripe Connect URL used by Paid Memberships Pro.
+				 *
+				 * @since 2.6.0
+				 *
+				 * @param string $connect_url_base The Stripe Connect URL to be used.
+				 */
 				$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
 				if ( self::has_connect_credentials( 'sandbox' ) ) {
 					$connect_url = add_query_arg(
