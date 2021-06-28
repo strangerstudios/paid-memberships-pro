@@ -380,7 +380,7 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label> <?php esc_attr_e( 'Stripe Connection (Sandbox):', 'paid-memberships-pro' ); ?></label>
+                <label> <?php esc_html_e( 'Stripe Connection (Sandbox):', 'paid-memberships-pro' ); ?></label>
             </th>
 			<td>
 				<?php
