@@ -3644,10 +3644,10 @@ class PMProGateway_stripe extends PMProGateway {
 				AND subscription_transaction_id IS NOT NULL
 				AND timestamp > '%s'
 				AND timestamp < '%s'
-			",
-			$gateway_environment,
-			$last_webhook_safe,
-			$hour_before_now
+				",
+				$gateway_environment,
+				$last_webhook_safe,
+				$hour_before_now
 			)
 		);
 		return ( empty( $num_problem_orders ) );
