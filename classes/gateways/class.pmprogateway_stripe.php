@@ -3391,7 +3391,7 @@ class PMProGateway_stripe extends PMProGateway {
 		
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
-		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] );
+		pmpro_setOption( 'gateway_environment', sanitize_text_field( $_REQUEST['pmpro_stripe_connected_environment'] ) );
 
 		$error = '';
 		if (
