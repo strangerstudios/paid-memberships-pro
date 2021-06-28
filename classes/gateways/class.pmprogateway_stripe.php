@@ -336,7 +336,7 @@ class PMProGateway_stripe extends PMProGateway {
 		    <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <td colspan="2">
 				<hr />
-				<h2><?php _e( 'Stripe Settings', 'paid-memberships-pro' ); ?></h2>
+				<h2><?php esc_html_e( 'Stripe Settings', 'paid-memberships-pro' ); ?></h2>
             </td>
         </tr>
 		<tr class="gateway gateway_stripe_live" <?php if ( $gateway != "stripe" || $gateway_environment != "live" ) { ?>style="display: none;"<?php } ?>>
@@ -454,47 +454,47 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
         <tr class="gateway <?php if ( ! self::using_legacy_keys() ) { echo 'gateway_stripe_live'; } ?>" <?php if ( $gateway != "stripe" || $gateway_environment != "live" || self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label><?php _e( 'Webhook (Live)', 'paid-memberships-pro' ); ?>:</label>
+                <label><?php esc_html_e( 'Webhook (Live)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
 				<?php
 					$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_live' );
 					if ( ! empty( $last_webhook ) ) {
-						echo '<p>' . esc_html( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+						echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
 					} else {
-						echo '<p>' . esc_html( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
+						echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
 					}
 					if ( ! self::webhook_is_working( 'live' ) ) {
-						echo '<p class="pmpro_error">' . esc_html( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
+						echo '<p class="pmpro_error">' . esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
 					}
 				?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo self::get_site_webhook_url(); ?></code></p>
+				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
         </tr>
 		<tr class="gateway <?php if ( ! self::using_legacy_keys() ) { echo 'gateway_stripe_sandbox'; } ?>" <?php if ( $gateway != "stripe" || $gateway_environment != "sandbox" || self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label><?php _e( 'Webhook (Sandbox)', 'paid-memberships-pro' ); ?>:</label>
+                <label><?php esc_html_e( 'Webhook (Sandbox)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
 				<?php
 					$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_sandbox' );
 					if ( ! empty( $last_webhook ) ) {
-						echo '<p>' . esc_html( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+						echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
 					} else {
-						echo '<p>' . esc_html( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
+						echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
 					}
 					if ( ! self::webhook_is_working( 'sandbox' ) ) {
-						echo '<p class="pmpro_error">' . esc_html( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
+						echo '<p class="pmpro_error">' . esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
 					}
 				?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo self::get_site_webhook_url(); ?></code></p>
+				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
         </tr>
 		<tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label><?php _e( 'Webhook (Legacy)', 'paid-memberships-pro' ); ?>:</label>
+                <label><?php esc_html_e( 'Webhook (Legacy)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
 				<?php if ( ! empty( $webhook ) && is_array( $webhook ) && self::using_legacy_keys()) { ?>
