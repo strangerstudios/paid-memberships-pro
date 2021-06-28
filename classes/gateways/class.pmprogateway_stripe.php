@@ -3558,7 +3558,9 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
 		} else {
-			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_publishablekey' ) : pmpro_getOption( 'test_stripe_connect_publishablekey' );
+			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live'
+				? pmpro_getOption( 'live_stripe_connect_publishablekey' )
+				: pmpro_getOption( 'test_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
 	}
