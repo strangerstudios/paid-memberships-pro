@@ -3565,7 +3565,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $publishablekey;
 	}
 
-	static function get_connect_user_id() {
+	/**
+	 * Get the Stripe Connect User ID based on gateway environment.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The Stripe Connect User ID.
+	 */
+	public static function get_connect_user_id() {
 		return pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_user_id' ) : pmpro_getOption( 'test_stripe_connect_user_id' );
 	}
 
