@@ -3538,7 +3538,12 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
-	static function get_secretkey() {
+	/**
+	 * Get the Stripe secret key based on gateway environment.
+	 *
+	 * @return The Stripe secret key.
+	 */
+	public static function get_secretkey() {
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
 			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
