@@ -3575,7 +3575,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string The Stripe Connect User ID.
 	 */
 	public static function get_connect_user_id() {
-		return pmpro_getOption( 'gateway_environment' ) === 'live' ? pmpro_getOption( 'live_stripe_connect_user_id' ) : pmpro_getOption( 'test_stripe_connect_user_id' );
+		return pmpro_getOption( 'gateway_environment' ) === 'live'
+			? pmpro_getOption( 'live_stripe_connect_user_id' )
+			: pmpro_getOption( 'test_stripe_connect_user_id' );
 	}
 
 	static function webhook_is_working() {
