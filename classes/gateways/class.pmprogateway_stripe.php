@@ -3501,7 +3501,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $r;
 	}
 
-	static function has_connect_credentials( $gateway_environment = null ) {
+	/**
+	 * Determine whether the site has Stripe Connect credentials set based on gateway environment.
+	 *
+	 * @param null|string $gateway_environment The gateway environment to use, default uses the current saved setting.
+	 *
+	 * @return bool Whether the site has Stripe Connect credentials set.
+	 */
+	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
 			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
