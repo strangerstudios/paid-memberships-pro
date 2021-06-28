@@ -389,6 +389,7 @@ class PMProGateway_stripe extends PMProGateway {
 					$connect_url = add_query_arg(
 						array(
 							'action' => 'disconnect',
+							'gateway' => 'stripe',
 							'gateway_environment' => 'test',
 							'stripe_user_id' => $values['test_stripe_connect_user_id'],
 							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
