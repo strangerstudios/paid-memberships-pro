@@ -414,8 +414,8 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
-				<input type='hidden' name='test_stripe_connect_user_id' id='test_stripe_connect_user_id' value='<?php echo esc_attr( $values['test_stripe_connect_user_id'] ) ?>'/>
-				<input type='hidden' name='test_stripe_connect_secretkey' id='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='test_stripe_connect_user_id' id='test_stripe_connect_user_id' value='<?php echo esc_attr( $values['test_stripe_connect_user_id'] ); ?>'/>
+				<input type='hidden' name='test_stripe_connect_secretkey' id='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ); ?>'/>
 				<input type='hidden' name='test_stripe_connect_publishablekey' id='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
