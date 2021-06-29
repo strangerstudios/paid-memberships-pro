@@ -269,9 +269,9 @@ class PMProGateway_stripe extends PMProGateway {
 			'live_stripe_connect_user_id',
 			'live_stripe_connect_secretkey',
 			'live_stripe_connect_publishablekey',
-			'test_stripe_connect_user_id',
-			'test_stripe_connect_secretkey',
-			'test_stripe_connect_publishablekey',
+			'sandbox_stripe_connect_user_id',
+			'sandbox_stripe_connect_secretkey',
+			'sandbox_stripe_connect_publishablekey',
 			'stripe_webhook',
 			'stripe_billingaddress',
 			'currency',
@@ -399,7 +399,7 @@ class PMProGateway_stripe extends PMProGateway {
 							'action' => 'disconnect',
 							'gateway' => 'stripe',
 							'gateway_environment' => 'test',
-							'stripe_user_id' => $values['test_stripe_connect_user_id'],
+							'stripe_user_id' => $values['sandbox_stripe_connect_user_id'],
 							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
 						),
 						$connect_url_base
@@ -423,9 +423,9 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
-				<input type='hidden' name='test_stripe_connect_user_id' id='test_stripe_connect_user_id' value='<?php echo esc_attr( $values['test_stripe_connect_user_id'] ); ?>'/>
-				<input type='hidden' name='test_stripe_connect_secretkey' id='test_stripe_connect_secretkey' value='<?php echo esc_attr( $values['test_stripe_connect_secretkey'] ); ?>'/>
-				<input type='hidden' name='test_stripe_connect_publishablekey' id='test_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['test_stripe_connect_publishablekey'] ) ?>'/>
+				<input type='hidden' name='sandbox_stripe_connect_user_id' id='sandbox_stripe_connect_user_id' value='<?php echo esc_attr( $values['sandbox_stripe_connect_user_id'] ); ?>'/>
+				<input type='hidden' name='sandbox_stripe_connect_secretkey' id='sandbox_stripe_connect_secretkey' value='<?php echo esc_attr( $values['sandbox_stripe_connect_secretkey'] ); ?>'/>
+				<input type='hidden' name='sandbox_stripe_connect_publishablekey' id='sandbox_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['sandbox_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
         <tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
@@ -3454,10 +3454,10 @@ class PMProGateway_stripe extends PMProGateway {
 				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
 				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
 			} else {
-				// Update test keys.
-				pmpro_setOption( 'test_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-				pmpro_setOption( 'test_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-				pmpro_setOption( 'test_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+				// Update sandbox keys.
+				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
+				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
+				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
 			}
 			
 
@@ -3523,10 +3523,10 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_live_stripe_connect_secretkey' );
 			delete_option( 'pmpro_live_stripe_connect_publishablekey' );
 		} else {
-			// Delete test keys.
-			delete_option( 'pmpro_test_stripe_connect_user_id' );
-			delete_option( 'pmpro_test_stripe_connect_secretkey' );
-			delete_option( 'pmpro_test_stripe_connect_publishablekey' );
+			// Delete sandbox keys.
+			delete_option( 'pmpro_sandbox_stripe_connect_user_id' );
+			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
+			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
 	}
 
@@ -3563,9 +3563,9 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			// Return whether Stripe is connected for sandbox gateway environment.
 			return ( 
-				pmpro_getOption( 'test_stripe_connect_user_id' ) &&
-				pmpro_getOption( 'test_stripe_connect_secretkey' ) &&
-				pmpro_getOption( 'test_stripe_connect_publishablekey' )
+				pmpro_getOption( 'sandbox_stripe_connect_user_id' ) &&
+				pmpro_getOption( 'sandbox_stripe_connect_secretkey' ) &&
+				pmpro_getOption( 'sandbox_stripe_connect_publishablekey' )
 			);
 		}
 	}
@@ -3582,7 +3582,7 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live'
 				? pmpro_getOption( 'live_stripe_connect_secretkey' )
-				: pmpro_getOption( 'test_stripe_connect_secretkey' );
+				: pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
 		}
 		return $secretkey;
 	}
@@ -3594,7 +3594,7 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live'
 				? pmpro_getOption( 'live_stripe_connect_publishablekey' )
-				: pmpro_getOption( 'test_stripe_connect_publishablekey' );
+				: pmpro_getOption( 'sandbox_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
 	}
@@ -3609,7 +3609,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function get_connect_user_id() {
 		return pmpro_getOption( 'gateway_environment' ) === 'live'
 			? pmpro_getOption( 'live_stripe_connect_user_id' )
-			: pmpro_getOption( 'test_stripe_connect_user_id' );
+			: pmpro_getOption( 'sandbox_stripe_connect_user_id' );
 	}
 
 	/**
