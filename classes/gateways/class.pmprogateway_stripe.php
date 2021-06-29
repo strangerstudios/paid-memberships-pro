@@ -3627,29 +3627,36 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_' . $gateway_environment );
+
 		if ( empty( $last_webhook ) ) {
-			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years',  ) ); // Probably never got webhook
+			// Probably never got a webhook event.
+			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
 		} else {
-			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes',  ) ); // In case recurring order made after webhook recieved.
+			// In case recurring order made after webhook event recieved.
+			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
 		}
 
-		$hour_before_now    = date( 'Y-m-d H:i:s', strtotime( '- 1 hour' ) );
+		$hour_before_now = date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) );
+
 		$num_problem_orders = $wpdb->get_var(
-			$wpdb->prepare( "
-				SELECT COUNT(*)
-				FROM $wpdb->pmpro_membership_orders
-				WHERE gateway = 'stripe'
-				AND gateway_environment = '%s'
-				AND subscription_transaction_id <> '' 
-				AND subscription_transaction_id IS NOT NULL
-				AND timestamp > '%s'
-				AND timestamp < '%s'
+			$wpdb->prepare(
+				"
+					SELECT COUNT(*)
+					FROM `{$wpdb->pmpro_membership_orders}`
+					WHERE
+						`gateway` = 'stripe'
+						AND `gateway_environment` = %s
+						AND `subscription_transaction_id` <> '' 
+						AND `subscription_transaction_id` IS NOT NULL
+						AND `timestamp` > %s
+						AND `timestamp` < %s
 				",
 				$gateway_environment,
 				$last_webhook_safe,
 				$hour_before_now
 			)
 		);
+
 		return ( empty( $num_problem_orders ) );
 	}
 }
