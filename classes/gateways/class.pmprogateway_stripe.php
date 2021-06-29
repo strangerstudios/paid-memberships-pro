@@ -337,6 +337,15 @@ class PMProGateway_stripe extends PMProGateway {
             <td colspan="2">
 				<hr />
 				<h2><?php esc_html_e( 'Stripe Settings', 'paid-memberships-pro' ); ?></h2>
+				<?php
+				if ( self::using_legacy_keys() ) {
+					?>
+					<div class="notice notice-warning inline">
+							<p id="pmpro_stripe_webhook_notice"><?php esc_html_e( 'Your website is currently authenticating with Stripe using legacy API keys. In order to more securely integrate with Stripe, please use the "Connect with Stripe" button below to instead authenticate using Stripe Connect. As long as you connect with the same Stripe account that you were previously using, existing subscriptions should not be affected by this migration.', 'paid-memberships-pro' );?></p>
+					</div>
+					<?php
+				}
+				?>
             </td>
         </tr>
 		<tr class="gateway gateway_stripe_live" <?php if ( $gateway != "stripe" || $gateway_environment != "live" ) { ?>style="display: none;"<?php } ?>>
@@ -430,7 +439,7 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
         <tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label for="stripe_publishablekey"><?php _e( 'Legacy Publishable Key', 'paid-memberships-pro' ); ?>:</label>
+                <label for="stripe_publishablekey"><?php _e( 'Publishable Key (Legacy)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
                 <input type="text" id="stripe_publishablekey" name="stripe_publishablekey" value="<?php echo esc_attr( $values['stripe_publishablekey'] ) ?>" class="regular-text code" />
@@ -446,7 +455,7 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
         <tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label for="stripe_secretkey"><?php _e( 'Legacy Secret Key', 'paid-memberships-pro' ); ?>:</label>
+                <label for="stripe_secretkey"><?php _e( 'Secret Key (Legacy)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
                 <input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
