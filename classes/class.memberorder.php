@@ -600,6 +600,10 @@
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
+		 *
+		 * NOTE: This function should no longer be used. Instead, set the timestamp
+		 * for the order directly and call the MemberOrder->saveOrder() function.
+		 * This function is no longer used on the /adminpages/orders.php page.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
@@ -616,8 +620,11 @@
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
 
+			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== "false") {
 				$this->timestamp = strtotime( $date );
+				do_action('pmpro_updated_order', $this);
+				
 				return $this->getMemberOrderByID($this->id);
 			} else {
 				return false;
@@ -863,12 +870,17 @@
 			if(empty($this->id))
 				return false;
 
-			$this->status = $newstatus;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
-			if($wpdb->query($this->sqlQuery) !== false)
+			
+			do_action('pmpro_update_order', $this);
+			if($wpdb->query($this->sqlQuery) !== false){
+				$this->status = $newstatus;
+				do_action('pmpro_updated_order', $this);
+				
 				return true;
-			else
+			}else{
 				return false;
+			}
 		}
 
 		/**
@@ -925,8 +937,10 @@
 					$this->gateway,
 					$this->gateway_environment,
 					$this->subscription_transaction_id
-				);								
+				);
+				do_action('pmpro_update_order', $this);
 				$wpdb->query($sqlQuery);
+				do_action('pmpro_updated_order', $this);
 				
 				//cancel the gateway subscription first
 				if (is_object($this->Gateway)) {
@@ -1129,3 +1143,6 @@
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}
 	}
+
+} // End of Class
+

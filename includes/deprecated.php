@@ -38,7 +38,7 @@ add_action( 'init', 'pmpro_init_check_for_deprecated_filters', 99 );
  *
  */
 function pmpro_getClassForField( $field ) {
-	pmpro_get_element_class( '', $field );
+	return pmpro_get_element_class( '', $field );
 }
 
 /**

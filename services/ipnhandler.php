@@ -263,12 +263,27 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 
 			if ( $last_subscription_order->status == "cancelled" ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
+				
+				// Still check if there was an error.
+				if ( $initial_payment_status === "Failed" ) {
+					$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+					
+					// If we couldn't cancel, still set the order status to error.
+					if ( $cancelled === null ) {
+						$last_subscription_order->updateStatus('error');
+					}
+				}
 			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} else {
 				//if the initial payment failed, cancel with status error instead of cancelled
 				if ( $initial_payment_status === "Failed" ) {
-					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+					$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+					
+					// If we couldn't cancel, still set the order status to error.
+					if ( $cancelled === null ) {
+						$last_subscription_order->updateStatus('error');
+					}
 				} else {
 					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
 				}

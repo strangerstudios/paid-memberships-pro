@@ -552,13 +552,22 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//make the user a subscriber
 			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
 
+			/**
+			 * Allow hooking before the user authentication process when setting up new user.
+			 *
+			 * @since 2.5.10
+			 *
+			 * @param int $user_id The user ID that is being setting up.
+			 */
+			do_action( 'pmpro_checkout_before_user_auth', $user_id );
+
+
 			//okay, log them in to WP
 			$creds                  = array();
 			$creds['user_login']    = $new_user_array['user_login'];
 			$creds['user_password'] = $new_user_array['user_pass'];
 			$creds['remember']      = true;
 			$user                   = wp_signon( $creds, false );
-
 			//setting some cookies
 			wp_set_current_user( $user_id, $username );
 			wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
