@@ -835,6 +835,20 @@
 						<span class="edit"><a title="<?php _e('Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url('admin.php' ) ); ?>"><?php _e('Edit', 'paid-memberships-pro' ); ?></a></span> |
 						<span class="copy"><a title="<?php _e('Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'copy' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php _e('Copy', 'paid-memberships-pro' ); ?></a></span> |
 						<span class="delete"><a title="<?php _e('Delete', 'paid-memberships-pro' ); ?>" href="javascript:pmpro_askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", 'paid-memberships-pro' ), $level->name));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ), 'delete_membership_level', 'pmpro_membershiplevels_nonce'); ?>'); void(0);"><?php _e('Delete', 'paid-memberships-pro' ); ?></a></span>
+
+						<?php
+						// Set up the hover actions for this user
+						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', array(), $level );
+
+						$actions_html = array();
+						foreach( $actions as $action => $link ) {
+							$actions_html[] = "<span class='" . esc_attr( $action ) . "'>" . $link . "</span>";
+						}
+
+						if( ! empty( $actions_html ) ) {
+							echo ' | ' . implode( ' | ', $actions_html );
+						}
+						?>
 					</div>
 				</td>
 				<td>

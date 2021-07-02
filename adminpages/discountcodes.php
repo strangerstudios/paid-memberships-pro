@@ -818,6 +818,20 @@
 											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
 										</span>
 									<?php } ?>
+                                    
+                                    <?php
+                                    // Set up the hover actions for this user
+                                    $actions = apply_filters( 'pmpro_discountcodes_row_actions', array(), $code );
+
+                                    $actions_html = array();
+                                    foreach( $actions as $action => $link ) {
+	                                    $actions_html[] = "<span class='" . esc_attr( $action ) . "'>" . $link . "</span>";
+                                    }
+
+                                    if( ! empty( $actions_html ) ) {
+	                                    echo ' | ' . implode( ' | ', $actions_html );
+                                    }
+                                    ?>
 								</div>
 							</td>
 							<td>
