@@ -820,7 +820,14 @@
 									<?php } ?>
                                     
                                     <?php
-                                    // Set up the hover actions for this user
+                                    // Set up the hover actions for this discount code
+                                    /**
+                                     * Filter the extra actions for this discount code
+                                     *
+                                     * @since TBD
+                                     *
+                                     * @param stdClass $code The discount code data
+                                     */
                                     $actions = apply_filters( 'pmpro_discountcodes_row_actions', array(), $code );
 
                                     $actions_html = array();
