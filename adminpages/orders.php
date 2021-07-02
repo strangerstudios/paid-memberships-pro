@@ -1382,18 +1382,14 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							</span>
 							<?php
 							// Set up the hover actions for this user
-							$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
-							$action_count = count( $actions );
-							$i            = 0;
-							if ( $action_count ) {
-								$out = ' | ';
-								foreach ( $actions as $action => $link ) {
-									++ $i;
-									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-									$out .= "<span class='" . esc_attr( $action ) . "'>" . $link . $sep . "</span>";
-								}
-								echo $out;
+							$actions = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
+
+							$actions_html = array();
+							foreach( $actions as $action => $link ) {
+								$actions_html[] = "<span class='" . esc_attr( $action ) . "'>" . $link . "</span>";
 							}
+
+							echo ' | ' . implode( ' | ', $actions_html );
 							?>
 						</div>
 					</td>
