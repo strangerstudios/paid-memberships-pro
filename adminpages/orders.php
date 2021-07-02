@@ -1389,7 +1389,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								$actions_html[] = "<span class='" . esc_attr( $action ) . "'>" . $link . "</span>";
 							}
 
-							echo ' | ' . implode( ' | ', $actions_html );
+							if( ! empty( $actions_html ) ) {
+								echo ' | ' . implode( ' | ', $actions_html );
+							}
 							?>
 						</div>
 					</td>
