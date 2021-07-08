@@ -1142,7 +1142,4 @@
 
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}
-	}
-
-} // End of Class
-
+	} // End of Class
