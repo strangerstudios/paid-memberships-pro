@@ -339,6 +339,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			case 'recovered':
 				$message = __( 'Check your email for the confirmation link.', 'paid-memberships-pro' );
 				break;
+			case 'confirmaction':
+				// Check if we are processing a confirmaction for a Data Request.
+				$request_id = pmpro_confirmaction_handler();
+				$message = _wp_privacy_account_request_confirmed_message( $request_id );
+				$msgt = 'pmpro_success';
+				break;
 		}
 	}
 
@@ -438,7 +444,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Note we don't show messages on the widget form.
 	if ( $message && $location !== 'widget' ) {
-		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. wp_kses_post( $message ) .'</div>';
 	}
 
 	// Get the form title HTML tag.
@@ -1008,4 +1014,6 @@ function pmpro_confirmaction_handler() {
 
 	/** This action is documented in wp-login.php */
 	do_action( 'user_request_action_confirmed', $request_id );
+
+	return $request_id;
 }
