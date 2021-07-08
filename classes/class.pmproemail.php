@@ -1,13 +1,14 @@
 <?php
 	class PMProEmail
 	{
+		
 		function __construct()
 		{
 			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
 		}					
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
-		{
+		{			
 			//if values were passed
 			if($email)
 				$this->email = $email;
@@ -21,9 +22,15 @@
 				$this->template = $template;
 			if($data)
 				$this->data = $data;
-		
+			
+
+			// If email is disabled don't send it.
+			if ( pmpro_getOption( 'email_' . $this->template . '_disabled' ) ) {
+				return false;
+			}
+
 			//default values
-			global $current_user;
+			global $current_user, $pmpro_email_templates_defaults;
 			if(!$this->email)
 				$this->email = $current_user->user_email;
 				
@@ -32,15 +39,19 @@
 			
 			if(!$this->fromname)
 				$this->fromname = pmpro_getOption("from_name");
-			
-			if(!$this->subject)
-				$this->subject = sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
-			
-			//decode the subject line in case there are apostrophes/etc in it
-			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
 	
 			if(!$this->template)
 				$this->template = "default";
+			
+			//Okay let's get the subject stuff.
+			if ( empty( $this->subject ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_subject' ) ) ) {
+				$this->subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
+			} elseif ( empty( $this->subject ) || ! $this->subject ) {
+				$this->subject = ! empty( $pmpro_email_templates_defaults[$this->template]['subject'] ) ? sanitize_text_field( $pmpro_email_templates_defaults[$this->template]['subject'] ) : sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
+			}
+
+			//decode the subject line in case there are apostrophes/etc in it
+			$this->subject = html_entity_decode($this->subject, ENT_QUOTES, 'UTF-8');
 						
 			$this->headers = array("Content-Type: text/html");
 			
@@ -49,7 +60,9 @@
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 
-			if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
+			if( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
+				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
+			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
 				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in child theme
 			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
 				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in child theme
@@ -67,25 +80,29 @@
 				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");								//email folder in WP language folder
 			elseif(file_exists(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html"))
 				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
-			elseif($this->getDefaultEmailTemplate($this->template))
-				$this->body = $this->getDefaultEmailTemplate($this->template);
-			elseif(file_exists(PMPRO_DIR . "/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/email/" . $this->template . ".html");										//default template in plugin
+			elseif( empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[$this->template]['body'] ) )
+				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-			//header and footer
-			/* This is handled for all emails via the pmpro_send_html function in paid-memberships-pro now
-			if(file_exists(get_template_directory() . "/email_header.html"))
-			{
-				$this->body = file_get_contents(get_template_directory() . "/email_header.html") . "\n" . $this->body;
-			}			
-			if(file_exists(get_template_directory() . "/email_footer.html"))
-			{
-				$this->body = $this->body . "\n" . file_get_contents(get_template_directory() . "/email_footer.html");
+
+			// Get template header.
+			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+				$email_header = pmpro_email_templates_get_template_body('header');
+			} else {
+				$email_header = '';
 			}
-			*/
-			
+
+			// Get template footer
+			if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
+				$email_footer = pmpro_email_templates_get_template_body('footer');
+			} else {
+				$email_footer = '';
+			}
+
+			// Add header and footer to email body.
+			$this->body = $email_header . $this->body . $email_footer;
+
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
@@ -1069,35 +1086,5 @@
 							);
 						
 			return $this->sendEmail();
-		}
-
-		
-		/**
-		 * Load the text for each default email template.
-		 * This overrides the old /email/*.html templates.
-		 */
-		function getDefaultEmailTemplate( $template = null ) {
-			if( empty( $template ) && !empty( $this->template ) )
-				$template = $this->template;
-			
-			if( empty( $template ) )
-				return false;
-			
-			$r = '';
-			
-			switch($template) {
-				case "admin_change":
-					$r = __( "<p>An administrator at !!sitename!! has changed your membership level.</p>
-
-<p>!!membership_change!!.</p>
-
-<p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
-
-<p>Log in to your membership account here: !!login_link!!</p>", 'paid-memberships-pro' );
-					break;
-				//repeat above for each template
-			}
-			
-			return $r;
 		}
 	}
