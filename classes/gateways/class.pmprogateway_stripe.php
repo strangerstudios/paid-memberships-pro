@@ -466,17 +466,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php esc_html_e( 'Webhook (Live)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php
-					$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_live' );
-					if ( ! empty( $last_webhook ) ) {
-						echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
-					} else {
-						echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
-					}
-					if ( ! self::webhook_is_working( 'live' ) ) {
-						echo '<p class="pmpro_error">' . esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
-					}
-				?>
+				<?php PMProGateway_stripe::get_last_webhook_date( 'live' ); ?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
@@ -486,17 +476,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php esc_html_e( 'Webhook (Sandbox)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php
-					$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_sandbox' );
-					if ( ! empty( $last_webhook ) ) {
-						echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
-					} else {
-						echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
-					}
-					if ( ! self::webhook_is_working( 'sandbox' ) ) {
-						echo '<p class="pmpro_error">' . esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' ) . '</p>';
-					}
-				?>
+				<?php PMProGateway_stripe::get_last_webhook_date( 'sandbox' ); ?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
@@ -3667,5 +3647,28 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 
 		return ( empty( $num_problem_orders ) );
+	}
+	
+	/**
+	 * Get the date the last webhook was processed.
+	 * @param environment The gateway environment (live or sandbox) to check for.
+	 * @returns HTML with the date of the last webhook or an error message.
+	 * @since 2.6
+	 */
+	public static function get_last_webhook_date( $environment = 'live' ) {	
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_' . $environment );
+		if ( ! empty( $last_webhook ) ) {
+			echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+		} else {
+			echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
+		}
+		if ( ! self::webhook_is_working( $environment ) ) {
+			echo '<div class="notice error inline"><p>';
+			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
+			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/#tab-gateway-setup?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook">';
+			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
+			echo '</a>';
+			echo '</p></div>';
+		}
 	}
 }
