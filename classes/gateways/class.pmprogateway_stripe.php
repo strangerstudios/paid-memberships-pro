@@ -437,7 +437,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<input type='hidden' name='sandbox_stripe_connect_publishablekey' id='sandbox_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['sandbox_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
-        <tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_publishablekey"><?php _e( 'Publishable Key (Legacy)', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -453,7 +453,7 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
             </td>
         </tr>
-        <tr class="gateway <?php if ( self::using_legacy_keys() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::using_legacy_keys() ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_secretkey"><?php _e( 'Secret Key (Legacy)', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -466,7 +466,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php esc_html_e( 'Webhook (Live)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php PMProGateway_stripe::get_last_webhook_date( 'live' ); ?>
+				<?php self::get_last_webhook_date( 'live' ); ?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
@@ -476,7 +476,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <label><?php esc_html_e( 'Webhook (Sandbox)', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php PMProGateway_stripe::get_last_webhook_date( 'sandbox' ); ?>
+				<?php self::get_last_webhook_date( 'sandbox' ); ?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
@@ -1531,7 +1531,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 			//if when is now, update the subscription
 			if ( $update['when'] == "now" ) {
-				PMProGateway_stripe::updateSubscription( $update, $user_id );
+				self::updateSubscription( $update, $user_id );
 
 				continue;
 			} elseif ( $update['when'] == 'date' ) {
@@ -1613,7 +1613,7 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( $ud['when'] == 'date' &&
 						     $ud['date_year'] . "-" . $ud['date_month'] . "-" . $ud['date_day'] <= date_i18n( "Y-m-d", current_time( 'timestamp' ) )
 						) {
-							PMProGateway_stripe::updateSubscription( $ud, $user_id );
+							self::updateSubscription( $ud, $user_id );
 
 							//remove update from list
 							unset( $user_updates[ $key ] );
@@ -2626,7 +2626,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Sometimes we don't want to cancel the local membership when Stripe sends its webhook.
 			if ( $preserve_local_membership ) {
-				PMProGateway_stripe::ignoreCancelWebhookForThisSubscription( $subscription->id, $order->user_id );
+				self::ignoreCancelWebhookForThisSubscription( $subscription->id, $order->user_id );
 			}
 
 			// Cancel
@@ -3520,13 +3520,24 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Should we show the legacy key fields on the payment settings page.
+	 * We should if the site is using legacy keys already or
+	 * if a filter has been set.
+	 * @since 2.6
+	 */
+	public static function show_legacy_keys_settings() {
+		$r = self::using_legacy_keys();
+		$r = apply_filters( 'pmpro_stripe_show_legacy_keys_settings', $r );
+		return $r;
+	}
+
+	/**
 	 * Determine whether the site is using legacy Stripe keys.
 	 *
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
 	public static function using_legacy_keys() {
-		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );
-		$r = apply_filters( 'pmpro_stripe_using_legacy_keys', $r );
+		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );		
 		return $r;
 	}
 
