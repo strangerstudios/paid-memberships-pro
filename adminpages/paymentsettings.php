@@ -127,7 +127,7 @@
 					<label for="gateway"><?php _e('Payment Gateway', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
+					<select id="gateway" name="gateway">
 						<?php
 							$pmpro_gateways = pmpro_gateways();
 							foreach($pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label)
@@ -148,16 +148,20 @@
 					<label for="gateway_environment"><?php _e('Gateway Environment', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
-					<select name="gateway_environment">
+					<select id="gateway_environment" name="gateway_environment">
 						<option value="sandbox" <?php selected( $gateway_environment, "sandbox" ); ?>><?php _e('Sandbox/Testing', 'paid-memberships-pro' );?></option>
 						<option value="live" <?php selected( $gateway_environment, "live" ); ?>><?php _e('Live/Production', 'paid-memberships-pro' );?></option>
 					</select>
 					<script>
-						function pmpro_changeGateway(gateway)
+						function pmpro_changeGateway()
 						{
+							const gateway = jQuery('#gateway').val();
+							const gateway_environment = jQuery('#gateway_environment').val();
+
 							//hide all gateway options
 							jQuery('tr.gateway').hide();
 							jQuery('tr.gateway_'+gateway).show();
+							jQuery('tr.gateway_'+gateway+'_'+gateway_environment).show();
 							
 							//hide sub settings and toggle them on based on triggers
 							jQuery('tr.pmpro_toggle_target').hide();
@@ -173,7 +177,10 @@
 								jQuery('#pmpro-default-gateway-message').hide();
 							}
 						}
-						pmpro_changeGateway(jQuery('#gateway').val());
+						pmpro_changeGateway();
+
+						// Handle change events.
+						jQuery('#gateway, #gateway_environment').on('change', pmpro_changeGateway);
 					</script>
 				</td>
 			</tr>
