@@ -57,7 +57,12 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
             return $should_render;
         }
 
-		$should_render = $this->pmpro_elementor_has_access( $element );
+		// Make sure not to override other plugins logic.
+		$pmpro_should_render = $this->pmpro_elementor_has_access( $element );
+		
+		if ( $pmpro_should_render === false ) {
+			$should_render = $pmpro_should_render;
+		}
 
 		return apply_filters( 'pmpro_elementor_section_access', $should_render, $element );
 	}
