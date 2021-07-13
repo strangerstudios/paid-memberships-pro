@@ -7,9 +7,6 @@
  /**
  * Default email templates.
  */
-
-
- // __( '', 'paid-memberships-pro' )
 $pmpro_email_templates_defaults = array(
 	'default'                  => array(
 		'subject'     => __( "An Email From !!sitename!!", 'paid-memberships-pro' ),
