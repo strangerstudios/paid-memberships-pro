@@ -3,6 +3,7 @@
 use Stripe\Customer as Stripe_Customer;
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Plan as Stripe_Plan;
+use Stripe\Product as Stripe_Product;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\PaymentIntent as Stripe_PaymentIntent;
 use Stripe\SetupIntent as Stripe_SetupIntent;
@@ -2010,7 +2011,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Create a new subscription with Stripe
+	 * Create a new subscription with Stripe.
+	 *
+	 * This function is not run as a part of the PMPro Checkout Process.
+	 * See method create_setup_intent().
 	 *
 	 * @since 1.4
 	 */
@@ -2996,6 +3000,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 	function delete_plan( &$order ) {
 		try {
+			// Delete the product first while we have a reference to it...
+			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
+				return false;
+			}
+			// Then delete the plan.
 			$order->plan->delete();
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
@@ -3008,6 +3017,23 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( \Exception $e ) {
 			$order->error = $e->getMessage();
 
+			return false;
+		}
+
+		return true;
+	}
+
+	function archive_product( &$order ) {
+		try {
+			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		}
 
