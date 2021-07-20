@@ -1005,6 +1005,7 @@
 				'order_code' => $order->code,
 				'login_link' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				"invoice_id" => $order->id,
 				'invoice' => $invoice
 			);
 

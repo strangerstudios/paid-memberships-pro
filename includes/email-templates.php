@@ -58,7 +58,7 @@ $pmpro_email_templates_defaults = array(
 <p>To view an online version of this invoice, click here: !!invoice_link!!</p>', 'paid-memberships-pro' )
 	),
 	'billing'	=> array(
-		'subject'     => __( "Your billing information has been udpated at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Your billing information has been updated at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing', 'paid-memberships-pro'),
 		'body' => __( '<p>Your billing information at !!sitename!! has been changed.</p><p>Account: !!display_name!! (!!user_email!!)</p>
 <p>
@@ -70,7 +70,7 @@ $pmpro_email_templates_defaults = array(
 </p><p>If you did not request a billing information change please contact us at !!siteemail!!</p><p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'billing_admin'            => array(
-		'subject'     => __( "Billing information has been udpated for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Billing information has been updated for !!user_login!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>The billing information for !!display_name!! at !!sitename!! has been changed.</p>
 

@@ -60,11 +60,11 @@ function pmpro_check_for_deprecated_add_ons() {
 	$deprecated = array(
 		'pmpro-member-history' => array(
 			'file' => 'pmpro-member-history.php',
-			'label' => 'Member History Add On'
+			'label' => 'Member History'
 		),
 		'pmpro-email-templates' => array(
 			'file' => 'pmpro-email-templates.php',
-			'label' => 'Paid Memberships Pro - Email Templates Add On'
+			'label' => 'Email Templates'
 		)
 	);
 	
@@ -96,7 +96,7 @@ function pmpro_check_for_deprecated_add_ons() {
 		}
 		?>
 		<div class="notice notice-warning">
-        <p><?php _e( sprintf( 'Some of the PMPro Add Ons on your site have been merged into the core PMPro plugin or are otherwise not needed. <br />The following plugins <strong>should be deleted</strong> from your site: <strong>%s</strong>.', implode( ', ', $deprecated_active ) ), 'paid-memberships-pro' ); ?></p>
+        <p><?php _e( sprintf( 'Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>.', implode( ', ', $deprecated_active ) ), 'paid-memberships-pro' ); ?></p>
     	</div>
 		<?php
 	}
