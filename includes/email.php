@@ -191,6 +191,9 @@ function pmpro_email_templates_get_template_data() {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
 
+	// Get template help text from defaults.
+	$template_data['help_text'] = $pmpro_email_templates_defaults[$template]['help_text'];
+
 	echo json_encode($template_data);
 	
 	exit;

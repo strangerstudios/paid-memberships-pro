@@ -296,7 +296,8 @@ jQuery(document).ready(function($) {
                 $("#disable_description").show().text("PMPro emails with this template will not be sent.");
             }
 
-            // populate subject and body
+            // populate help text, subject, and body
+            $('#email_template_help_text').text(template_data['help_text']);
 			$('#email_template_subject').val(template_data['subject']);
 			$('#email_template_body').val(template_data['body']);
 
@@ -415,11 +416,11 @@ jQuery(document).ready(function($) {
 
             if(success) {
                 $(".status_message_wrapper").addClass("updated").removeClass("error");
-                $(".status_message").show().text("Test e-mail sent successfully.");
+                $(".status_message").show().text("Test email sent successfully.");
             }
             else {
                 $(".status_message_wrapper").addClass("error").removeClass("updated");
-                $(".status_message").show().text("Test e-mail failed.");
+                $(".status_message").show().text("Test email failed.");
             }
 
         })
