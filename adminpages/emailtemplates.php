@@ -100,7 +100,8 @@
 							value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
 
 						<input id="reset_template_data" name="reset_template" type="button" class="button"
-							value="Reset Template"/>
+							value="<?php esc_attr_e( 'Reset Template', 'paid-memberships-pro' ); ?>"/>
+
 					</p>
 				</td>
 			</tr>
