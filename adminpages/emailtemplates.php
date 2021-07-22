@@ -38,7 +38,8 @@
 				</th>
 				<td>
 					<select name="pmpro_email_template_switcher" id="pmpro_email_template_switcher">
-						<option value="" selected="selected"><?php echo '--- ' . __( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
+						<option value="" selected="selected"><?php echo '--- ' . esc_html__( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
+
 					<?php foreach ( $pmpro_email_templates_defaults as $key => $template ): ?>
 						<option value="<?php echo $key; ?>"><?php echo $template['description']; ?></option>
 					<?php endforeach; ?>
