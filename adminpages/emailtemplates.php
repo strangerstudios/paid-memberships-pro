@@ -69,7 +69,8 @@
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="email_template_body"><?php esc_html_e('Body', 'paid-memberships-pro');?></label></th>
+				<th scope="row" valign="top"><label for="email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
+
 				<td>
 					<div id="template_editor_container">
 						<textarea rows="10" cols="80" name="email_template_body" id="email_template_body"></textarea>
