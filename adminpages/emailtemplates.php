@@ -45,7 +45,8 @@
 
 					<?php endforeach; ?>
 					</select>
-					<img src="<?php echo admin_url( 'images/wpspin_light.gif' ); ?>" id="pmproet-spinner" style="display:none;"/>
+					<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" id="pmproet-spinner" style="display:none;"/>
+
 					<p id="email_template_help_text" class="description"></p>
 				</td>
 			</tr>
