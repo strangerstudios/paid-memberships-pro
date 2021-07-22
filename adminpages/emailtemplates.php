@@ -155,82 +155,38 @@
 					<td>
 						<table class="widefat striped">
 							<tbody>
-								<tr>
-									<td>!!billing_address!!</td>
-									<td><?php esc_html_e('Billing Info Complete Address', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_name!!</td>
-									<td><?php esc_html_e('Billing Info Name', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_street!!</td>
-									<td><?php esc_html_e('Billing Info Street Address', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_city!!</td>
-									<td><?php esc_html_e('Billing Info City', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_state!!</td>
-									<td><?php esc_html_e('Billing Info State', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_zip!!</td>
-									<td><?php esc_html_e('Billing Info ZIP Code', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_country!!</td>
-									<td><?php esc_html_e('Billing Info Country', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!billing_phone!!</td>
-									<td><?php esc_html_e('Billing Info Phone #', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!cardtype!!</td>
-									<td><?php esc_html_e('Credit Card Type', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!accountnumber!!</td>
-									<td><?php esc_html_e('Credit Card Number (last 4 digits)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!expirationmonth!!</td>
-									<td><?php esc_html_e('Credit Card Expiration Month (mm format)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!expirationyear!!</td>
-									<td><?php esc_html_e('Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!membership_cost!!</td>
-									<td><?php esc_html_e('Membership Level Cost Text', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!instructions!!</td>
-									<td><?php esc_html_e('Payment Instructions (used in Checkout - Email Template)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!invoice_id!!</td>
-									<td><?php esc_html_e('Invoice ID', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!invoice_total!!</td>
-									<td><?php esc_html_e('Invoice Total', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!invoice_date!!</td>
-									<td><?php esc_html_e('Invoice Date', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!discount_code!!</td>
-									<td><?php esc_html_e('Discount Code Applied', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!invoice_link!!</td>
-									<td><?php esc_html_e('Invoice Page URL', 'paid-memberships-pro');?></td>
-								</tr>
+								<?php
+								$email_variables = [
+									'!!billing_address!!' => __( 'Billing Info Complete Address', 'paid-memberships-pro' ),
+									'!!billing_name!!'    => __( 'Billing Info Name', 'paid-memberships-pro' ),
+									'!!billing_street!!'  => __( 'Billing Info Street Address', 'paid-memberships-pro' ),
+									'!!billing_city!!'    => __( 'Billing Info City', 'paid-memberships-pro' ),
+									'!!billing_state!!'   => __( 'Billing Info State', 'paid-memberships-pro' ),
+									'!!billing_zip!!'     => __( 'Billing Info ZIP Code', 'paid-memberships-pro' ),
+									'!!billing_country!!' => __( 'Billing Info Country', 'paid-memberships-pro' ),
+									'!!billing_phone!!'   => __( 'Billing Info Phone #', 'paid-memberships-pro' ),
+									'!!cardtype!!'        => __( 'Credit Card Type', 'paid-memberships-pro' ),
+									'!!accountnumber!!'   => __( 'Credit Card Number (last 4 digits)', 'paid-memberships-pro' ),
+									'!!expirationmonth!!' => __( 'Credit Card Expiration Month (mm format)', 'paid-memberships-pro' ),
+									'!!expirationyear!!'  => __( 'Credit Card Expiration Year (yyyy format)', 'paid-memberships-pro' ),
+									'!!membership_cost!!' => __( 'Membership Level Cost Text', 'paid-memberships-pro' ),
+									'!!instructions!!'    => __( 'Payment Instructions (used in Checkout - Email Template)', 'paid-memberships-pro' ),
+									'!!invoice_id!!'      => __( 'Invoice ID', 'paid-memberships-pro' ),
+									'!!invoice_total!!'   => __( 'Invoice Total', 'paid-memberships-pro' ),
+									'!!invoice_date!!'    => __( 'Invoice Date', 'paid-memberships-pro' ),
+									'!!discount_code!!'   => __( 'Discount Code Applied', 'paid-memberships-pro' ),
+									'!!invoice_link!!'    => __( 'Invoice Page URL', 'paid-memberships-pro' ),
+								];
+
+								foreach ( $email_variables as $email_variable => $description ) {
+									?>
+										<tr>
+											<td><?php echo esc_html( $email_variable ); ?></td>
+											<td><?php echo esc_html( $description ); ?></td>
+										</tr>
+									<?php
+								}
+								?>
 							</tbody>
 						</table>
 					</td>
