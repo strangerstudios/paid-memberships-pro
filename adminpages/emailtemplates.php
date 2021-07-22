@@ -120,58 +120,32 @@
 					<td>
 						<table class="widefat striped">
 							<tbody>
-								<tr>
-									<td>!!name!!</td>
-									<td><?php esc_html_e('Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!user_login!!</td>
-									<td><?php esc_html_e('Username', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!sitename!!</td>
-									<td><?php esc_html_e('Site Title', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!siteemail!!</td>
-									<td><?php esc_html_e('Site Email Address (General Settings > Email OR Memberships > Settings > Email Settings)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!membership_id!!</td>
-									<td><?php esc_html_e('Membership Level ID', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!membership_level_name!!</td>
-									<td><?php esc_html_e('Membership Level Name', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!membership_change!!</td>
-									<td><?php esc_html_e('Membership Level Change', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!membership_expiration!!</td>
-									<td><?php esc_html_e('Membership Level Expiration', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!display_name!!</td>
-									<td><?php esc_html_e('Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!enddate!!</td>
-									<td><?php esc_html_e('User Subscription End Date', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!user_email!!</td>
-									<td><?php esc_html_e('User Email', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!login_link!!</td>
-									<td><?php esc_html_e('Login URL', 'paid-memberships-pro');?></td>
-								</tr>
-								<tr>
-									<td>!!levels_link!!</td>
-									<td><?php esc_html_e('Membership Levels Page URL', 'paid-memberships-pro');?></td>
-								</tr>
+								<?php
+								$email_variables = [
+									'!!name!!'                  => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
+									'!!user_login!!'            => __( 'Username', 'paid-memberships-pro' ),
+									'!!sitename!!'              => __( 'Site Title', 'paid-memberships-pro' ),
+									'!!siteemail!!'             => __( 'Site Email Address (General Settings > Email OR Memberships > Settings > Email Settings)', 'paid-memberships-pro' ),
+									'!!membership_id!!'         => __( 'Membership Level ID', 'paid-memberships-pro' ),
+									'!!membership_level_name!!' => __( 'Membership Level Name', 'paid-memberships-pro' ),
+									'!!membership_change!!'     => __( 'Membership Level Change', 'paid-memberships-pro' ),
+									'!!membership_expiration!!' => __( 'Membership Level Expiration', 'paid-memberships-pro' ),
+									'!!display_name!!'          => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
+									'!!enddate!!'               => __( 'User Subscription End Date', 'paid-memberships-pro' ),
+									'!!user_email!!'            => __( 'User Email', 'paid-memberships-pro' ),
+									'!!login_link!!'            => __( 'Login URL', 'paid-memberships-pro' ),
+									'!!levels_link!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
+								];
+								
+								foreach ( $email_variables as $email_variable => $description ) {
+									?>
+										<tr>
+											<td><?php echo esc_html( $email_variable ); ?></td>
+											<td><?php echo esc_html( $description ); ?></td>
+										</tr>
+									<?php
+								}
+								?>
 							</tbody>
 						</table>
 					</td>
