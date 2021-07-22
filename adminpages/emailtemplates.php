@@ -53,7 +53,7 @@
 			<tr class="hide-while-loading">
 				<th scope="row" valign="top"></th>
 				<td>
-					<label><input id="email_template_disable" name="email_template_disable" type="checkbox"/><span
+					<label><input id="email_template_disable" name="email_template_disable" type="checkbox" /><span
 							id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
 
 

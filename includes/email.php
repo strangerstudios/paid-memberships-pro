@@ -172,7 +172,7 @@ function pmpro_email_templates_get_template_data() {
 
 	global $pmpro_email_templates_defaults;
 
-	$template = $_REQUEST['template'];
+	$template = sanitize_text_field( $_REQUEST['template'] );
 
 	//get template data
 	$template_data['body'] = pmpro_getOption('email_' . $template . '_body');
@@ -241,9 +241,10 @@ function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	$template = $_REQUEST['template'];
-	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $_REQUEST['disabled']);
-	$response['status'] = $_REQUEST['disabled'];
+	$template = sanitize_text_field( $_REQUEST['template'] );	
+	$disabled = sanitize_text_field( $_REQUEST['disabled'] );
+	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $disabled );
+	$response['status'] = $disabled;
 	echo json_encode($response);
 	exit;
 }
@@ -368,7 +369,7 @@ add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_sen
 
 function pmpro_email_templates_test_recipient($email) {
 	if(!empty($_REQUEST['email']))
-		$email = $_REQUEST['email'];
+		$email = sanitize_email( $_REQUEST['email'] );
 	return $email;
 }
 
@@ -380,8 +381,9 @@ function pmpro_email_templates_test_body($body, $email = null) {
 
 function pmpro_email_templates_test_template($email)
 {
-	if(!empty($_REQUEST['template']))
-		$email->template = str_replace('email_', '', $_REQUEST['template']);
+	if( ! empty( $_REQUEST['template'] ) ) {
+		$email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
+	}		
 
 	return $email;
 }

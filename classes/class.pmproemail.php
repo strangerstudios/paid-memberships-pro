@@ -22,10 +22,11 @@
 				$this->template = $template;
 			if($data)
 				$this->data = $data;
-			
 
 			// If email is disabled don't send it.
-			if ( pmpro_getOption( 'email_' . $this->template . '_disabled' ) ) {
+			// Note option may have 'false' stored as a string.
+			$template_disabled = pmpro_getOption( 'email_' . $this->template . '_disabled' );
+			if ( ! empty( $template_disabled ) && $template_disabled !== 'false' ) {
 				return false;
 			}
 
