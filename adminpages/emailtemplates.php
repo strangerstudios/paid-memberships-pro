@@ -41,7 +41,8 @@
 						<option value="" selected="selected"><?php echo '--- ' . esc_html__( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
 
 					<?php foreach ( $pmpro_email_templates_defaults as $key => $template ): ?>
-						<option value="<?php echo $key; ?>"><?php echo $template['description']; ?></option>
+						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $template['description'] ); ?></option>
+
 					<?php endforeach; ?>
 					</select>
 					<img src="<?php echo admin_url( 'images/wpspin_light.gif' ); ?>" id="pmproet-spinner" style="display:none;"/>
