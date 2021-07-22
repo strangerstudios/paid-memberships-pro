@@ -110,7 +110,8 @@
 		<hr />
 
 		<div class="pmpro-email-templates-variable-reference">
-			<h1><?php esc_html_e('Variable Reference', 'paid-memberships-pro');?></h1>
+			<h1><?php esc_html_e( 'Variable Reference', 'paid-memberships-pro' ); ?></h1>
+
 			<p><?php esc_html_e( 'Use the placeholder variables below to customize your member and admin emails with specific user or membership data.', 'paid-memberships-pro' ); ?></p>
 			<table class="form-table">
 				<tbody>
