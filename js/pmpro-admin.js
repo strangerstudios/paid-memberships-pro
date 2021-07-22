@@ -219,7 +219,6 @@ jQuery(document).ready(function($) {
 	
     $(".hide-while-loading").hide();
     $(".controls").hide();
-    $(".striped tr:even").css('background-color','#efefef');
 
     /* PMPro Email Template Switcher */
     $("#pmpro_email_template_switcher").change(function() {
@@ -297,7 +296,8 @@ jQuery(document).ready(function($) {
                 $("#disable_description").show().text("PMPro emails with this template will not be sent.");
             }
 
-            // populate subject and body
+            // populate help text, subject, and body
+            $('#email_template_help_text').text(template_data['help_text']);
 			$('#email_template_subject').val(template_data['subject']);
 			$('#email_template_body').val(template_data['body']);
 
@@ -323,10 +323,10 @@ jQuery(document).ready(function($) {
         };
         $.post(ajaxurl, $data, function(response) {
             if(response != 0) {
-                $("#message").addClass('updated');
+                $(".status_message_wrapper").addClass('updated');
             }
             else {
-                $("#message").addClass("error");
+                $(".status_message_wrapper").addClass("error");
             }
             $("#submit_template_data").attr("disabled", false);
             $(".status_message").html(response);
@@ -373,16 +373,16 @@ jQuery(document).ready(function($) {
 
             //failure
             if(response['result'] == false) {
-                $("#message").addClass("error");
+                $(".status_message_wrapper").addClass("error");
                 $(".status_message").show().text("There was an error updating your template settings.");
             }
             else {
                 if(response['status'] == 'true') {
-                    $("#message").addClass("updated");
+                    $(".status_message_wrapper").addClass("updated");
                     $(".status_message").show().text("Template Disabled");
                 }
                 else {
-                    $("#message").addClass("updated");
+                    $(".status_message_wrapper").addClass("updated");
                     $(".status_message").show().text("Template Enabled");
                 }
             }
@@ -415,12 +415,12 @@ jQuery(document).ready(function($) {
             $(".hide-while-loading").show();
 
             if(success) {
-                $("#message").addClass("updated").removeClass("error");
-                $(".status_message").show().text("Test e-mail sent successfully.");
+                $(".status_message_wrapper").addClass("updated").removeClass("error");
+                $(".status_message").show().text("Test email sent successfully.");
             }
             else {
-                $("#message").addClass("error").removeClass("updated");
-                $(".status_message").show().text("Test e-mail failed.");
+                $(".status_message_wrapper").addClass("error").removeClass("updated");
+                $(".status_message").show().text("Test email failed.");
             }
 
         })

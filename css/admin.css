@@ -186,6 +186,14 @@ tr.pmpro_settings_divider td {
 	margin: 0;
 }
 
+/* admin pages */
+.pmpro_admin_section-email-templates-content .pmpro-email-templates-variable-reference .form-table td {
+	padding: 5px;
+}
+.pmpro_admin_section-email-templates-content .pmpro-email-templates-variable-reference .form-table .widefat {
+	margin-bottom: 20px;
+}
+
 /* messages */
 .pmpro_admin .pmpro_message {
 	background: #FFF;
