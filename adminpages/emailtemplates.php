@@ -83,7 +83,8 @@
 					<?php esc_html_e( 'Send a test email to ', 'paid-memberships-pro' ); ?>
 					<input id="test_email_address" name="test_email_address" type="text"
 						value="<?php echo esc_attr( $current_user->user_email ); ?>"/>
-					<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e('Save Template and Send Email', 'paid-memberships-pro');?>"
+					<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>"
+
 						type="button"/>
 
 					<p class="description">
