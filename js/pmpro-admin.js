@@ -265,7 +265,7 @@ jQuery(document).ready(function($) {
             security: $('input[name=security]').val()
         };
 
-    //    console.log( $data );
+        //console.log( $data );
 
         $.post(ajaxurl, $data, function(response) {
             var template_data = JSON.parse(response);
@@ -309,7 +309,6 @@ jQuery(document).ready(function($) {
 
     function saveTemplate() {
 
-//        $(".controls").hide();
         $("#submit_template_data").attr("disabled", true);
         $(".status").hide();
         // console.log(template);
