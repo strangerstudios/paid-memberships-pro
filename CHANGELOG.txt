@@ -5,7 +5,6 @@
 * FEATURE: You can now set levels to expire after a certain number of hours, and can set users to expire at a specific time down to the minute.
 * FEATURE: The Member History Add On has been merged into the core PMPro plugin. A table of the user's membership and order history is shown on the edit user page of the admin dashboard.
 * FEATURE: The Email Templates Add On has been merged into the core PMPro plugin. You can edit PMPro-related email templates from the Memberships -> Settings -> Email Templates page in the admin dashboard.
-* BUG FIX: Now archiving Stripe products after checkout. We create a unique product for each checkout, and these would clutter up the Stripe reports.
 
 = 2.5.10.1 - 2021-07-05 =
 * BUG FIX/ENHANCEMENT: The 'Edit Code: %s' string on the discount codes page is now wrapped for translation.
