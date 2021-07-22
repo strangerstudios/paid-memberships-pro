@@ -57,7 +57,8 @@
 							id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
 
 
-					<p id="disable_description" class="description"><?php esc_html_e('Emails with this template will not be sent.', 'paid-memberships-pro');?></p>
+					<p id="disable_description" class="description"><?php esc_html_e( 'Emails with this template will not be sent.', 'paid-memberships-pro' ); ?></p>
+
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
