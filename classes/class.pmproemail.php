@@ -111,13 +111,14 @@
 			//filter for data
 			$this->data = apply_filters("pmpro_email_data", $this->data, $this);	//filter
 			
-			//swap data into body
+			//swap data into body and subject line
 			if(is_array($this->data))
 			{
 				foreach($this->data as $key => $value)
 				{
 					if ( 'body' != $key ) {
 						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
 					}
 				}
 			}
