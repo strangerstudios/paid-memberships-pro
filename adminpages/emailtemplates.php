@@ -97,7 +97,8 @@
 				<td>
 					<p class="submit">
 						<input id="submit_template_data" name="save_template" type="button" class="button-primary"
-							value="Save Template"/>
+							value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
+
 						<input id="reset_template_data" name="reset_template" type="button" class="button"
 							value="Reset Template"/>
 					</p>
