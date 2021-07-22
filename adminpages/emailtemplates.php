@@ -53,7 +53,8 @@
 				<th scope="row" valign="top"></th>
 				<td>
 					<label><input id="email_template_disable" name="email_template_disable" type="checkbox"/><span
-							id="disable_label"><?php esc_html_e('Disable this email?', 'paid-memberships-pro');?></span></label>
+							id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
+
 
 					<p id="disable_description" class="description"><?php esc_html_e('Emails with this template will not be sent.', 'paid-memberships-pro');?></p>
 				</td>
