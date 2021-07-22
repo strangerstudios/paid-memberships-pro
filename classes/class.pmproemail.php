@@ -44,9 +44,10 @@
 				$this->template = "default";
 			
 			//Okay let's get the subject stuff.
-			if ( empty( $this->subject ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_subject' ) ) ) {
-				$this->subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
-			} elseif ( empty( $this->subject ) || ! $this->subject ) {
+			$template_subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
+			if ( ! empty( $template_subject ) ) {
+				$this->subject = $template_subject;
+			} elseif ( empty( $this->subject ) ) {
 				$this->subject = ! empty( $pmpro_email_templates_defaults[$this->template]['subject'] ) ? sanitize_text_field( $pmpro_email_templates_defaults[$this->template]['subject'] ) : sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
 			}
 
