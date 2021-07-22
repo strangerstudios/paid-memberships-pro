@@ -62,7 +62,8 @@
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="email_template_subject"><?php esc_html_e('Subject', 'paid-memberships-pro');?></label></th>
+				<th scope="row" valign="top"><label for="email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
+
 				<td>
 					<input id="email_template_subject" name="email_template_subject" type="text" size="100"/>
 				</td>
