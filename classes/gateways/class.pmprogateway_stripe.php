@@ -3378,7 +3378,7 @@ class PMProGateway_stripe extends PMProGateway {
 			//throw $th;
 			return false;
 		}
-
+		return $create;
 	}
 
 	/**
