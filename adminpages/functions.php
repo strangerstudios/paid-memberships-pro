@@ -389,7 +389,7 @@ function pmpro_add_email_order_modal() {
 		$email = new PMProEmail();
 		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
 		$order = new MemberOrder( $_REQUEST['order'] );
-		if ( $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
+		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success is-dismissible">
 				<p><?php _e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
 			</div>

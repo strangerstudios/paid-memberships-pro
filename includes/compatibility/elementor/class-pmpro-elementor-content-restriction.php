@@ -54,9 +54,15 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		// Don't hide content in editor mode.
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-            return $should_render;
-        }
+			return $should_render;
+		}
 
+		// Bypass if it's already hidden.
+		if ( $should_render === false ) {
+			return $should_render;
+		}
+		
+		// Checks if the element is restricted and then if the user has access.
 		$should_render = $this->pmpro_elementor_has_access( $element );
 
 		return apply_filters( 'pmpro_elementor_section_access', $should_render, $element );

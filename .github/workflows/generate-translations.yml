@@ -1,0 +1,18 @@
+name: Generate Translations
+on: workflow_dispatch
+jobs:
+  generate-translations:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: WordPress POT/PO/MO Generator
+      uses: strangerstudios/action-wp-pot-po-mo-generator@main
+      with:
+        generate_pot: 1
+        generate_po: 1
+        generate_mo: 1
+        generate_lang_packs: 1
+        merge_changes: 1
+        headers: '{"Report-Msgid-Bugs-To":"info@paidmembershipspro.com","Last-Translator":"Paid Memberships Pro <info@paidmembershipspro.com>","Language-Team":"Paid Memberships Pro <info@paidmembershipspro.com>"}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
