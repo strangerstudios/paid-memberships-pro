@@ -328,26 +328,48 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_transient( 'pmpro_stripe_account_country' );
 		}
 
+		// Determine if the gateway is connected in live mode and set var.
+		if ( self::has_connect_credentials( 'live' ) ) {
+			$live_connection_selector = 'pmpro_gateway-mode-connected';
+		} else {
+			$live_connection_selector = 'pmpro_gateway-mode-not-connected';
+		}
+
+		// Determine if the gateway is connected in test mode and set var.
+		if ( self::has_connect_credentials( 'sandbox' ) ) {
+			$test_connection_selector = 'pmpro_gateway-mode-connected';
+		} else {
+			$test_connection_selector = 'pmpro_gateway-mode-not-connected';
+		}
 		?>		
 		<tr class="pmpro_settings_divider gateway gateway_stripe_live"
 		    <?php if ( $gateway != "stripe" || $gateway_environment != "live" ) { ?>style="display: none;"<?php } ?>>
             <td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( 'Stripe Connect Settings - Live Mode', 'paid-memberships-pro' ); ?></h2>
-				<?php
-				if ( self::using_legacy_keys() ) {
-					?>
-					<div class="notice notice-warning inline">
-							<p class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'Your website is currently authenticating with Stripe using legacy API keys. In order to more securely integrate with Stripe, please use the "Connect with Stripe" button below to instead authenticate using Stripe Connect. As long as you connect with the same Stripe account that you were previously using, existing subscriptions should not be affected by this migration.', 'paid-memberships-pro' );?></p>
+				<h2>
+					<?php esc_html_e( 'Stripe Connect Settings', 'paid-memberships-pro' ); ?>
+					<span class="pmpro_gateway-mode pmpro_gateway-mode-live <?php esc_attr_e( $live_connection_selector ); ?>">
+						<?php esc_html_e( 'Live Mode:', 'paid-memberships-pro' ); ?>
+						<?php if ( self::has_connect_credentials( 'live' ) ) {
+							esc_html_e( 'Connected', 'paid-memberships-pro' );
+						} else {
+							esc_html_e( 'Not Connected', 'paid-memberships-pro' );
+						} ?>
+					</span>
+				</h2>
+				<?php if ( self::using_legacy_keys() ) { ?>
+					<div class="notice notice-large notice-warning inline">
+						<p class="pmpro_stripe_webhook_notice">
+							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update.', 'paid-memberships-pro' ); ?>
+						</p>
 					</div>
-					<?php
-				}
-				?>
+				<?php } ?>
             </td>
         </tr>
 		<tr class="gateway gateway_stripe_live" <?php if ( $gateway != "stripe" || $gateway_environment != "live" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label> <?php esc_html_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
+                <label><?php esc_html_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
             </th>
 			<td>
 				<?php
@@ -363,8 +385,8 @@ class PMProGateway_stripe extends PMProGateway {
 						$connect_url_base
 					);
 					?>
-					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
-					<br/><small><?php esc_html_e( 'This will disconnect all sites linked to this Stripe account.', 'paid-memberships-pro' ); ?></small>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<p class="description"><?php esc_html_e( 'This will disconnect your site from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site.', 'paid-memberships-pro' ); ?></p>
 					<?php
 				} else {
 					$connect_url = add_query_arg(
@@ -376,10 +398,21 @@ class PMProGateway_stripe extends PMProGateway {
 						$connect_url_base
 					);
 					?>
-					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<a href="<?php echo esc_url_raw( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<?php
 				}
 				?>
+				<p class="description">
+					<?php
+						if ( pmpro_license_isValid( null, 'plus' ) ) {
+							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
+							echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/#tab-fees" target="_blank">' . esc_html( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
+						} else {
+							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a Plus license.', 'paid-memberships-pro');
+							echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/#tab-fees" target="_blank">' . esc_html( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
+						}
+					?>
+				</p>
 				<input type='hidden' name='live_stripe_connect_user_id' id='live_stripe_connect_user_id' value='<?php echo esc_attr( $values['live_stripe_connect_user_id'] ) ?>'/>
 				<input type='hidden' name='live_stripe_connect_secretkey' id='live_stripe_connect_secretkey' value='<?php echo esc_attr( $values['live_stripe_connect_secretkey'] ) ?>'/>
 				<input type='hidden' name='live_stripe_connect_publishablekey' id='live_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['live_stripe_connect_publishablekey'] ) ?>'/>
@@ -399,18 +432,27 @@ class PMProGateway_stripe extends PMProGateway {
 		    <?php if ( $gateway != "stripe" || $gateway_environment != "sandbox" ) { ?>style="display: none;"<?php } ?>>
             <td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( 'Stripe Connect Settings - Test Mode', 'paid-memberships-pro' ); ?></h2>
-				<?php
-				if ( self::using_legacy_keys() ) {
-					?>
-					<div class="notice notice-warning inline">
-							<p class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'Your website is currently authenticating with Stripe using legacy API keys. In order to more securely integrate with Stripe, please use the "Connect with Stripe" button below to instead authenticate using Stripe Connect. As long as you connect with the same Stripe account that you were previously using, existing subscriptions should not be affected by this migration.', 'paid-memberships-pro' );?></p>
+				<h2>
+					<?php esc_html_e( 'Stripe Connect Settings', 'paid-memberships-pro' ); ?>
+					<span class="pmpro_gateway-mode pmpro_gateway-mode-test <?php esc_attr_e( $live_connection_selector ); ?>">
+						<?php esc_html_e( 'Test Mode:', 'paid-memberships-pro' ); ?>
+						<?php if ( self::has_connect_credentials( 'sandbox' ) ) {
+							esc_html_e( 'Connected', 'paid-memberships-pro' );
+						} else {
+							esc_html_e( 'Not Connected', 'paid-memberships-pro' );
+						} ?>
+					</span>
+				</h2>
+				<?php if ( self::using_legacy_keys() ) { ?>
+					<div class="notice notice-large notice-warning inline">
+						<p class="pmpro_stripe_webhook_notice">
+							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect in test mode.', 'paid-memberships-pro' ); ?>
+						</p>
 					</div>
-					<?php
-				}
-				?>
+				<?php } ?>
             </td>
-        </tr>		
+		</tr>
 		<tr class="gateway gateway_stripe_sandbox" <?php if ( $gateway != "stripe" || $gateway_environment != "sandbox" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label> <?php esc_html_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
@@ -437,8 +479,8 @@ class PMProGateway_stripe extends PMProGateway {
 						$connect_url_base
 					);
 					?>
-					<a href="<?php echo esc_url( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
-					<br/><small><?php esc_html_e( 'This will disconnect all sites linked to this Stripe account.', 'paid-memberships-pro' ); ?></small>
+					<a href="<?php echo esc_url( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Disconnect From Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<p class="description"><?php esc_html_e( 'This will disconnect your site from Stripe in test mode only.', 'paid-memberships-pro' ); ?></p>
 					<?php
 				} else {
 					$connect_url = add_query_arg(
@@ -451,7 +493,7 @@ class PMProGateway_stripe extends PMProGateway {
 						$connect_url_base
 					);
 					?>
-					<a href="<?php echo esc_url( $connect_url ); ?>" class="stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
+					<a href="<?php echo esc_url( $connect_url ); ?>" class="pmpro-stripe-connect"><span><?php esc_html_e( 'Connect with Stripe', 'paid-memberships-pro' ); ?></span></a>
 					<?php
 				}
 				?>
@@ -459,7 +501,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<input type='hidden' name='sandbox_stripe_connect_secretkey' id='sandbox_stripe_connect_secretkey' value='<?php echo esc_attr( $values['sandbox_stripe_connect_secretkey'] ); ?>'/>
 				<input type='hidden' name='sandbox_stripe_connect_publishablekey' id='sandbox_stripe_connect_publishablekey' value='<?php echo esc_attr( $values['sandbox_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
-        </tr>
+		</tr>
 		<tr class="gateway gateway_stripe_sandbox" <?php if ( $gateway != "stripe" || $gateway_environment != "sandbox" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
@@ -553,8 +595,7 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label for="stripe_billingaddress"><?php _e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>
-                    :</label>
+                <label for="stripe_billingaddress"><?php _e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
                 <select id="stripe_billingaddress" name="stripe_billingaddress">
@@ -3347,6 +3388,7 @@ class PMProGateway_stripe extends PMProGateway {
  	 */
 	function pmpro_does_apple_pay_domain_exist() {
 		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
+
 		if ( empty( $apple_pay_domains ) ) {
 			return false;
 		}
@@ -3680,13 +3722,13 @@ class PMProGateway_stripe extends PMProGateway {
 			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
 
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_' . $gateway_environment );
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
 
 		if ( empty( $last_webhook ) ) {
 			// Probably never got a webhook event.
 			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
 		} else {
-			// In case recurring order made after webhook event recieved.
+			// In case recurring order made after webhook event received.
 			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
 		}
 
@@ -3721,11 +3763,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.6
 	 */
 	public static function get_last_webhook_date( $environment = 'live' ) {	
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_recieved_' . $environment );
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 		if ( ! empty( $last_webhook ) ) {
-			echo '<p>' . esc_html__( 'Last webhook recieved at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
 		} else {
-			echo '<p>' . esc_html__( 'No webhooks have been recieved.', 'paid-memberships-pro' ) . '</p>';
+			echo '<p>' . esc_html__( 'No webhooks have been received.', 'paid-memberships-pro' ) . '</p>';
 		}
 		if ( ! self::webhook_is_working( $environment ) ) {
 			echo '<div class="notice error inline"><p>';
