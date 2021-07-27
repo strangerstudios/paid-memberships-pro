@@ -54,8 +54,8 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		// Don't hide content in editor mode.
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-            return $should_render;
-        }
+			return $should_render;
+		}
 
 		$should_render = $this->pmpro_elementor_has_access( $element );
 
