@@ -417,7 +417,10 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 
 	//set cookie for visits
 	if($type == "visits" && empty($_COOKIE['pmpro_visit']))
-		setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false);	
+        if(empty($_SERVER['HTTPS']))
+            setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false, true);
+        else
+            setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, true, true);
 
 	//some vars for below
 	$now = current_time('timestamp');
