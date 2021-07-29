@@ -416,11 +416,13 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		return false;
 
 	//set cookie for visits
-	if($type == "visits" && empty($_COOKIE['pmpro_visit']))
-        if(empty($_SERVER['HTTPS']))
-            setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false, true);
-        else
-            setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, true, true);
+	if($type == "visits" && empty($_COOKIE['pmpro_visit'])) {
+        if (empty($_SERVER['HTTPS'])) {
+            setcookie("pmpro_visit", "1", null, COOKIEPATH, COOKIE_DOMAIN, false, true);
+        } else {
+            setcookie("pmpro_visit", "1", null, COOKIEPATH, COOKIE_DOMAIN, true, true);
+        }
+    }
 
 	//some vars for below
 	$now = current_time('timestamp');
