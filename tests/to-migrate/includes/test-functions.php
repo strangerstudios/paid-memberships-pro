@@ -3,6 +3,9 @@ namespace PMPro\Tests\Includes;
 
 use PMPro\Tests\Base;
 
+/**
+ * @todo Move these tests over.
+ */
 class Functions extends Base {
 
     /**
@@ -11,83 +14,6 @@ class Functions extends Base {
     function setUp() {
         $this->markTestSkipped( 'Tests need work -- skipping for now.' );
     }
-
-	public function data_pmpro_getLevel() {
-		$level_id = $this->factory->pmpro_level->create();
-		$level    = pmpro_getLevel( $level_id );
-
-		return [
-			[ // #0
-				$level_id,
-				$level,
-			],
-			[ // #1
-				$level->name,
-				$level,
-			],
-			[ // #2
-				$level,
-				$level,
-			],
-			[ // #3
-				9999999,
-				false,
-			],
-			[ // #4
-				'Not a Level',
-				false,
-			],
-		];
-	}
-
-	/**
-	 * @covers ::pmpro_getLevel()
-	 * @dataProvider data_pmpro_getLevel
-	 *
-	 * @param $level
-	 */
-	public function test_pmpro_getLevel( $level, $expects ) {
-		$this->assertEquals( $expects, pmpro_getLevel( $level ) );
-	}
-
-	public function data_pmpro_getAllLevels() {
-
-		$level_id = $this->factory->pmpro_level->create();
-		$level    = pmpro_getLevel( $level_id );
-
-		return [
-			[ // #0
-				false,
-				false,
-				$level,
-				'assertContains',
-			],
-			[ // #1
-				false,
-				true,
-				$level,
-				'assertNotContains',
-			],
-			[ // #2
-				true,
-				true,
-				$level,
-				'assertNotContains',
-			],
-		];
-	}
-
-	/**
-	 * @covers ::pmpro_getAllLevels()
-	 * @dataProvider data_pmpro_getAllLevels
-	 *
-	 * @param $include_hidden
-	 * @param $force
-	 * @param $assert
-	 */
-	public function test_pmpro_getAllLevels( $include_hidden, $force, $expects, $assert ) {
-		$this->$assert( $expects, pmpro_getAllLevels( $include_hidden, $force ) );
-	}
 
 	public function data_pmpro_getMembershipLevelsForUser() {
 		return [

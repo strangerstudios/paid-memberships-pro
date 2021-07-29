@@ -19,6 +19,10 @@ $RECYCLE.BIN/
 node_modules
 package-lock.json
 
+# composer
+vendor
+composer-lock.json
+
 # Temporary files
 *~
 
