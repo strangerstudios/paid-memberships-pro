@@ -184,9 +184,6 @@ function pmpro_email_templates_get_template_data() {
 		$template_data['body'] = pmpro_email_templates_get_template_body($template);
 	}
 
-	// Temporary workaround for avoiding double period when using !!membership_change!!
-	$template_data['body'] = str_replace( '!!membership_change!!.', '!!membership_change!!', $template_data['body'] );
-
 	if (empty($template_data['subject']) && $template != "header" && $template != "footer") {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
@@ -413,18 +410,18 @@ function pmpro_email_templates_email_data($data, $email) {
 
 		// Membership Information.
 		$new_data['membership_expiration'] = '';
-		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
+		$new_data["membership_change"] = __("Your membership has been cancelled", "paid-memberships-pro") . '.';
 		if ( empty( $user->membership_level ) ) { 
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
 		if ( ! empty( $user->membership_level->name ) ) {
-			$new_data["membership_change"] = sprintf(__("The new level is %s.", "paid-memberships-pro"), $user->membership_level->name);
+			$new_data["membership_change"] = sprintf(__("The new level is %s.", "paid-memberships-pro"), $user->membership_level->name) . '.';
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
 				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
-				$new_data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
+				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . '.';
 			} else if ( ! empty( $email->expiration_changed ) ) {
-				$new_data["membership_change"] .= ". " . __("This membership does not expire.", "paid-memberships-pro");
+				$new_data["membership_change"] .= " " . __("This membership does not expire", "paid-memberships-pro") . '.';
 			}
 			
 		}
@@ -491,9 +488,6 @@ function pmpro_email_templates_email_data($data, $email) {
 		if(!isset($data[$key]))
 			$data[$key] = $value;
 	}
-
-	// Make sure to use this version of !!membership_change!! because of period issue.
-	$data['membership_change'] = $new_data['membership_change'];
 
 	return $data;
 }
