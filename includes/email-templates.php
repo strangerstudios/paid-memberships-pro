@@ -9,7 +9,7 @@
  */
 $pmpro_email_templates_defaults = array(
 	'default'                  => array(
-		'subject'     => __( "An Email From !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "An email from !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __( 'Default Email', 'paid-memberships-pro'),
 		'body' => __( '!!body!!', 'paid-memberships-pro' )
 	),
@@ -47,7 +47,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'billable_invoice' => array(
-		'subject' => __( 'Invoice for Order #: !!order_code!!', 'paid-memberships-pro' ),
+		'subject' => __( 'Invoice for order #: !!order_code!!', 'paid-memberships-pro' ),
         'description' => __( 'Billable Invoice', 'paid-membershps-pro' ),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is your invoice for order #: !!order_code!!</p>
 
@@ -91,14 +91,14 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress dashboard here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'billing_failure'          => array(
-		'subject'     => __( "Membership Payment Failed at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Failure', 'paid-memberships-pro'),
 		'body' => __( '<p>The current subscription payment for your !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_link!!</strong></p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' )
 	),
 	'billing_failure_admin'    => array(
-		'subject'     => __( "Membership Payment Failed For !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Membership payment failed for !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Failure (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>The subscription payment for !!user_login!! at !!sitename!! has failed.</p>
 
@@ -154,7 +154,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'checkout_check_admin'     => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Check (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 
@@ -195,7 +195,7 @@ $pmpro_email_templates_defaults = array(
 ', 'paid-memberships-pro' )
 	),
 	'checkout_express_admin'   => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - PayPal Express (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
@@ -227,7 +227,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'checkout_free_admin'      => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Free (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 <p>Below are details about the new membership account.</p>
@@ -263,7 +263,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'checkout_freetrial_admin' => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Free Trial (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
@@ -314,7 +314,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'checkout_paid_admin'      => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Paid (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
@@ -369,7 +369,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'checkout_trial_admin'     => array(
-		'subject'     => __( "Member Checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Trial (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
@@ -396,7 +396,7 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' )
 	),
 	'credit_card_expiring'     => array(
-		'subject'     => __( "Credit Card on File Expiring Soon at !!sitename!!", 'paid-memberships-pro' ),
+		'subject'     => __( "Credit card on file expiring soon at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Credit Card Expiring', 'paid-memberships-pro'),
 		'body' => __( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_link!!</strong></p>
 
@@ -413,7 +413,7 @@ $pmpro_email_templates_defaults = array(
 </p>', 'paid-memberships-pro' )
 	),
 	'invoice'                  => array(
-		'subject'     => __( "INVOICE for !!sitename!! membership", 'paid-memberships-pro' ),
+		'subject'     => __( "Invoice for !!sitename!! membership", 'paid-memberships-pro' ),
 		'description' => __('Invoice', 'paid-memberships-pro'),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership invoice.</p>
 
