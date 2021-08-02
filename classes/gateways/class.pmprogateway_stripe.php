@@ -3358,7 +3358,7 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
-			$apple_pay_domains = $th->getMessage();
+			$apple_pay_domains = array();
 	   	}
 
 		return $apple_pay_domains;
@@ -3376,9 +3376,9 @@ class PMProGateway_stripe extends PMProGateway {
 			]);
 		} catch (\Throwable $th) {
 			//throw $th;
-			return $th->getMessage();
+			return false;
 		}
-
+		return $create;
 	}
 
 	/**
