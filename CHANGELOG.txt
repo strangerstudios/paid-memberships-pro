@@ -1,8 +1,12 @@
 == Changelog ==
-= 2.5.10.2 - 2021-07-23 =
+= 2.5.10.2 - 2021-08-02 =
+* ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
 * BUG FIX/ENHANCEMENT: Updated cancellation logic to support upcoming Cancel on Next Payment Date Add On changes.
+* BUG FIX/ENHANCEMENT: Making sure to use the correct security setting when calling setcookie from an HTTPS site. (Thanks, freax on GitHub)
 * BUG FIX: Now archiving Stripe products after checkout. We create a unique product for each checkout, and these would clutter up the Stripe reports.
 * BUG FIX: Fixing data erasure and data export request action for login page.
+* BUG FIX: Fixed issue where PMPro settings on Elementor elements could override the "should_render" setting incorrectly. (Thanks, codezz on GitHub)
+* BUG FIX: Now catching the case where you try to email an invoice for an order that has no user.
 
 = 2.5.10.1 - 2021-07-05 =
 * BUG FIX/ENHANCEMENT: The 'Edit Code: %s' string on the discount codes page is now wrapped for translation.
