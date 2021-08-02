@@ -412,12 +412,15 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		return false;
 
 	//check for cookie for visits
-	if($type == "visits" && !empty($_COOKIE['pmpro_visit']))
+	if( $type === 'visits' && !empty( $_COOKIE['pmpro_visit'] ) ) {
 		return false;
+	}
 
 	//set cookie for visits
-	if($type == "visits" && empty($_COOKIE['pmpro_visit']))
-		setcookie("pmpro_visit", "1", NULL, COOKIEPATH, COOKIE_DOMAIN, false);	
+	if( $type === 'visits' && empty( $_COOKIE['pmpro_visit'] ) ) {
+		// The secure parameter is set to is_ssl(), true if HTTPS.
+        setcookie( 'pmpro_visit', '1', null, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+    }
 
 	//some vars for below
 	$now = current_time('timestamp');
