@@ -98,7 +98,7 @@
 		<th scope="row" valign="top"></th>
 		<td>
 			<h3><?php esc_html_e('Variable Reference', 'paid-memberships-pro');?></h3>
-			<div id="template_reference" style="overflow:scroll;height:250px;width:800px;;">
+			<div id="template_reference" style="overflow:scroll;height:250px;width:800px;">
 				<table class="widefat striped">
 					<tr>
 						<th colspan=2><?php esc_html_e('General Settings / Membership Info', 'paid-memberships-pro');?></th>
