@@ -34,7 +34,7 @@ $pmpro_email_templates_defaults = array(
 		'description' => __( 'Admin Change', 'paid-memberships-pro'),
 		'body' => __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
 		
-<p>!!membership_change!!.</p>
+<p>!!membership_change!!</p>
 		
 <p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
 		
@@ -46,7 +46,7 @@ $pmpro_email_templates_defaults = array(
 		'description' => __('Admin Change (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>An administrator at !!sitename!! has changed a membership level for !!name!!.</p>
 
-<p>!!membership_change!!.</p>
+<p>!!membership_change!!</p>
 
 <p>Log in to your WordPress admin here: !!login_link!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' )

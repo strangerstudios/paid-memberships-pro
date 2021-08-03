@@ -86,8 +86,8 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
-		// Log that we have successfully recieved a webhook from Stripe.
-		update_option( 'pmpro_stripe_last_webhook_recieved_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+		// Log that we have successfully received a webhook from Stripe.
+		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
 
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")

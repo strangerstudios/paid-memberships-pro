@@ -184,9 +184,6 @@ function pmpro_email_templates_get_template_data() {
 		$template_data['body'] = pmpro_email_templates_get_template_body($template);
 	}
 
-	// Temporary workaround for avoiding double period when using !!membership_change!!
-	$template_data['body'] = str_replace( '!!membership_change!!.', '!!membership_change!!', $template_data['body'] );
-
 	if (empty($template_data['subject']) && $template != "header" && $template != "footer") {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
@@ -375,7 +372,7 @@ function pmpro_email_templates_test_recipient($email) {
 
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
-	$body .= '<br><br><b>--- ' . __('THIS IS A TEST EMAIL', 'pmproet') . ' --</b>';
+	$body .= '<br /><br /><b>-- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
 	return $body;
 }
 
@@ -417,18 +414,30 @@ function pmpro_email_templates_email_data($data, $email) {
 		$new_data['login_link'] = wp_login_url();
 	$new_data['levels_link'] = pmpro_url("levels");        
 	
-	//user data
-	if(!empty($user))
-	{
+	// User Data.
+	if ( ! empty( $user ) ) {
 		$new_data['name'] = $user->display_name;
 		$new_data['user_login'] = $user->user_login;
 		$new_data['display_name'] = $user->display_name;
 		$new_data['user_email'] = $user->user_email;
-	}
-	
-	//membership data
-	if(!empty($user->membership_level)) {
-		$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
+
+		// Membership Information.
+		$new_data['membership_expiration'] = '';
+		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
+		if ( empty( $user->membership_level ) ) { 
+			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
+		}
+		if ( ! empty( $user->membership_level->name ) ) {
+			$new_data["membership_change"] = sprintf(__("The new level is %s.", "paid-memberships-pro"), $user->membership_level->name);
+			if ( ! empty($user->membership_level->enddate) ) {
+				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
+				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
+				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
+			} else if ( ! empty( $email->expiration_changed ) ) {
+				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
+			}
+			
+		}
 	}
 	
 	//invoice data
@@ -464,45 +473,24 @@ function pmpro_email_templates_email_data($data, $email) {
 				$invoice->billing->country,
 				$invoice->billing->phone);
 		}
-	}        
-
-	//membership change
-	if(!empty($user->membership_level) && !empty($user->membership_level->ID))
-		$new_data["membership_change"] = sprintf(__("The new level is %s.", "pmproet"), $user->membership_level->name);
-	else
-		$new_data["membership_change"] = __("Your membership has been cancelled.", "pmproet");
-
-	if(!empty($user->membership_level) && !empty($user->membership_level->enddate))
-		$new_data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s.", "pmproet"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
-
-	elseif(!empty($email->expiration_changed))
-		$new_data["membership_change"] .= ". " . __("This membership does not expire.", "pmproet");
-
-	//membership expiration
-	$new_data['membership_expiration'] = '';
-	if(!empty($pmpro_user_meta->enddate)) {
-		$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "pmproet"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
 	}
 
 	//if others are used in the email look in usermeta
 	$et_body = pmpro_getOption('email_' . $email->template . '_body');
 	$templates_in_email = preg_match_all("/!!([^!]+)!!/", $et_body, $matches);
-	if(!empty($templates_in_email))
-	{
+	if ( ! empty( $templates_in_email ) && ! empty( $user->ID ) ) {
 		$matches = $matches[1];
-		foreach($matches as $match)
-		{
-			if(empty($new_data[$match]))
-			{
+		foreach($matches as $match) {
+			if ( empty( $new_data[ $match ] ) ) {
 				$usermeta = get_user_meta($user->ID, $match, true);
-				if(!empty($usermeta))
-				{
-					if(is_array($usermeta) && !empty($usermeta['fullurl']))
+				if ( ! empty( $usermeta ) ) {
+					if( is_array( $usermeta ) && ! empty( $usermeta['fullurl'] ) ) {
 						$new_data[$match] = $usermeta['fullurl'];
-					elseif(is_array($usermeta))
+					} elseif( is_array($usermeta ) ) {
 						$new_data[$match] = implode(", ", $usermeta);					
-					else
+					} else {
 						$new_data[$match] = $usermeta;
+					}
 				}
 			}
 		}
@@ -514,9 +502,6 @@ function pmpro_email_templates_email_data($data, $email) {
 		if(!isset($data[$key]))
 			$data[$key] = $value;
 	}
-
-	// Make sure to use this version of !!membership_change!! because of period issue.
-	$data['membership_change'] = $new_data['membership_change'];
 
 	return $data;
 }
