@@ -744,8 +744,9 @@
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_login_url(),
-								"invoice_link" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
-							));
+								"invoice_link" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)),
+								"invoice_url" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code))
+							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
 																 "", //address 2
@@ -1005,6 +1006,7 @@
 				'order_code' => $order->code,
 				'login_link' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				'invoice_url' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
 				'invoice' => $invoice
 			);
 
@@ -1044,6 +1046,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"invoice_link" => $invoice_url,
 								"invoice_url" => $invoice_url,
 							);
 						
@@ -1082,6 +1085,7 @@
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
 								"user_email" => $user->user_email,
+								"invoice_link" => $invoice_url,
 								"invoice_url" => $invoice_url,
 							);
 						
