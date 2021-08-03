@@ -117,6 +117,7 @@
 				{
 					if ( 'body' != $key ) {
 						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
 					}
 				}
 			}
