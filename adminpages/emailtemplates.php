@@ -231,7 +231,7 @@
 						<td><?php esc_html_e('Discount Code Applied', 'paid-memberships-pro');?></td>
 					</tr>
 					<tr>
-						<td>!!invoice_link!!</td>
+						<td>!!invoice_url!!</td>
 						<td><?php esc_html_e('Invoice Page URL', 'paid-memberships-pro');?></td>
 					</tr>
 				</table>
