@@ -188,6 +188,9 @@ function pmpro_email_templates_get_template_data() {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
 
+	// Get template help text from defaults.
+	$template_data['help_text'] = $pmpro_email_templates_defaults[$template]['help_text'];
+
 	echo json_encode($template_data);
 	
 	exit;
@@ -385,10 +388,18 @@ function pmpro_email_templates_email_data($data, $email) {
 
 	global $current_user, $pmpro_currency_symbol, $wpdb;
 
-	if(!empty($data) && !empty($data['user_login']))
-		$user = get_user_by('login', $data['user_login']);
-	if(empty($user))
+	if ( ! empty( $data ) && ! empty( $data['user_login'] ) ) {
+		$user = get_user_by( 'login', $data['user_login'] );
+	} elseif ( ! empty( $email ) ) {
+		$user = get_user_by( 'email', $email->email );
+	} else {
 		$user = $current_user;
+	}
+
+	$pmpro_user_meta = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status='active'");
+	
+	//make sure we have the current membership level data
+	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 
 	//make sure data is an array
 	if(!is_array($data))
@@ -447,6 +458,7 @@ function pmpro_email_templates_email_data($data, $email) {
 			$new_data['instructions'] = wpautop(pmpro_getOption('instructions'));
 			$new_data['invoice_id'] = $invoice->code;
 			$new_data['invoice_total'] = $pmpro_currency_symbol . number_format($invoice->total, 2);
+			$new_data['invoice_date'] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
 			$new_data['invoice_link'] = pmpro_url('invoice', '?invoice=' . $invoice->code);
 			
 				//billing address
