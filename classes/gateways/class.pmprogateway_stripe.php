@@ -534,7 +534,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
 			);
 		} else {
-			$r = $stripe::delete_webhook( $webhook, $secretkey );
+			$r = $stripe->delete_webhook( $webhook, $secretkey );
 			
 			if ( is_wp_error( $r ) ) {
 				$r = array(
@@ -585,7 +585,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
 			);
 		} else {
-			$r = $stripe::delete_webhook( $webhook, $secretkey );
+			$r = $stripe->delete_webhook( $webhook, $secretkey );
 			
 			if ( is_wp_error( $r ) ) {
 				$r = array(
