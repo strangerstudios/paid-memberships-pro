@@ -377,7 +377,7 @@
 				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Member Checkout for %s at %s", 'paid-memberships-pro' ), $user->membership_level->name, get_option("blogname"));	
+			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $user->membership_level->name, get_option("blogname"));	
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -573,7 +573,7 @@
 			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Membership Payment Failed at %s", "paid-memberships-pro"), get_option("blogname"));
+			$this->subject = sprintf(__("Membership payment failed at %s", "paid-memberships-pro"), get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -621,7 +621,7 @@
 			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
 			
 			$this->email = $email;
-			$this->subject = sprintf(__("Membership Payment Failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
+			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -669,7 +669,7 @@
 				return false;
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Credit Card on File Expiring Soon at %s", "paid-memberships-pro"), get_option("blogname"));
+			$this->subject = sprintf(__("Credit card on file expiring soon at %s", "paid-memberships-pro"), get_option("blogname"));
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -720,7 +720,7 @@
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("INVOICE for %s membership", "paid-memberships-pro"), get_option("blogname"));
+			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -988,7 +988,7 @@
 			$level = pmpro_getLevel($order->membership_id);
 
 			$this->email = $user->user_email;
-			$this->subject = __('Invoice for Order #: ', 'paid-memberships-pro') . $order->code;
+			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
 
 			// Load invoice template
 			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
