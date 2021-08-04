@@ -196,3 +196,26 @@ function pmpro_stripe_check_api_keys() {
         jQuery('#pmpro_stripe_create_webhook').addClass('disabled');
     }
 }
+
+// User Fields Code.
+jQuery(document).ready(function() {
+    // Add group button.
+	jQuery('#pmpro_userfields_add_group').on( 'click', function(event){
+        event.preventDefault();
+                
+		var postData = {
+			action: 'pmpro_userfields_get_group',
+            pmpro_userfield_group_name: '',            
+		}
+
+		jQuery.ajax({
+			type: "GET",
+			data: postData,
+			url: ajaxurl,
+			success: function( response ) {
+                console.log( response );
+				jQuery('#pmpro_userfields_add_group').parent('p').before( response );                			
+			}
+		})
+    });
+});
