@@ -172,7 +172,7 @@ function pmpro_email_templates_get_template_data() {
 
 	global $pmpro_email_templates_defaults;
 
-	$template = $_REQUEST['template'];
+	$template = sanitize_text_field( $_REQUEST['template'] );
 
 	//get template data
 	$template_data['body'] = pmpro_getOption('email_' . $template . '_body');
@@ -184,12 +184,12 @@ function pmpro_email_templates_get_template_data() {
 		$template_data['body'] = pmpro_email_templates_get_template_body($template);
 	}
 
-	// Temporary workaround for avoiding double period when using !!membership_change!!
-	$template_data['body'] = str_replace( '!!membership_change!!.', '!!membership_change!!', $template_data['body'] );
-
 	if (empty($template_data['subject']) && $template != "header" && $template != "footer") {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$template]['subject'];
 	}
+
+	// Get template help text from defaults.
+	$template_data['help_text'] = $pmpro_email_templates_defaults[$template]['help_text'];
 
 	echo json_encode($template_data);
 	
@@ -238,9 +238,10 @@ function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	$template = $_REQUEST['template'];
-	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $_REQUEST['disabled']);
-	$response['status'] = $_REQUEST['disabled'];
+	$template = sanitize_text_field( $_REQUEST['template'] );	
+	$disabled = sanitize_text_field( $_REQUEST['disabled'] );
+	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $disabled );
+	$response['status'] = $disabled;
 	echo json_encode($response);
 	exit;
 }
@@ -255,8 +256,8 @@ function pmpro_email_templates_send_test() {
 
 	//setup test email
 	$test_email = new PMProEmail();
-	$test_email->to = $_REQUEST['email'];
-	$test_email->template = str_replace('email_', '', $_REQUEST['template']);
+	$test_email->to = sanitize_email( $_REQUEST['email'] );
+	$test_email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
 	
 	//add filter to change recipient
 	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
@@ -365,20 +366,21 @@ add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_sen
 
 function pmpro_email_templates_test_recipient($email) {
 	if(!empty($_REQUEST['email']))
-		$email = $_REQUEST['email'];
+		$email = sanitize_email( $_REQUEST['email'] );
 	return $email;
 }
 
 //for test emails
 function pmpro_email_templates_test_body($body, $email = null) {
-	$body .= '<br><br><b>--- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
+	$body .= '<br /><br /><b>-- ' . __('THIS IS A TEST EMAIL', 'paid-memberships-pro') . ' --</b>';
 	return $body;
 }
 
 function pmpro_email_templates_test_template($email)
 {
-	if(!empty($_REQUEST['template']))
-		$email->template = str_replace('email_', '', $_REQUEST['template']);
+	if( ! empty( $_REQUEST['template'] ) ) {
+		$email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
+	}		
 
 	return $email;
 }
@@ -388,10 +390,18 @@ function pmpro_email_templates_email_data($data, $email) {
 
 	global $current_user, $pmpro_currency_symbol, $wpdb;
 
-	if(!empty($data) && !empty($data['user_login']))
-		$user = get_user_by('login', $data['user_login']);
-	if(empty($user))
+	if ( ! empty( $data ) && ! empty( $data['user_login'] ) ) {
+		$user = get_user_by( 'login', $data['user_login'] );
+	} elseif ( ! empty( $email ) ) {
+		$user = get_user_by( 'email', $email->email );
+	} else {
 		$user = $current_user;
+	}
+
+	$pmpro_user_meta = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status='active'");
+	
+	//make sure we have the current membership level data
+	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 
 	//make sure data is an array
 	if(!is_array($data))
@@ -422,9 +432,9 @@ function pmpro_email_templates_email_data($data, $email) {
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
 				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
-				$new_data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
+				$new_data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) );
 			} else if ( ! empty( $email->expiration_changed ) ) {
-				$new_data["membership_change"] .= ". " . __("This membership does not expire.", "paid-memberships-pro");
+				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
 			}
 			
 		}
@@ -450,6 +460,7 @@ function pmpro_email_templates_email_data($data, $email) {
 			$new_data['instructions'] = wpautop(pmpro_getOption('instructions'));
 			$new_data['invoice_id'] = $invoice->code;
 			$new_data['invoice_total'] = $pmpro_currency_symbol . number_format($invoice->total, 2);
+			$new_data['invoice_date'] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
 			$new_data['invoice_link'] = pmpro_url('invoice', '?invoice=' . $invoice->code);
 			
 				//billing address
@@ -491,9 +502,6 @@ function pmpro_email_templates_email_data($data, $email) {
 		if(!isset($data[$key]))
 			$data[$key] = $value;
 	}
-
-	// Make sure to use this version of !!membership_change!! because of period issue.
-	$data['membership_change'] = $new_data['membership_change'];
 
 	return $data;
 }

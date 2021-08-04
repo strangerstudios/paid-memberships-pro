@@ -22,10 +22,11 @@
 				$this->template = $template;
 			if($data)
 				$this->data = $data;
-			
 
 			// If email is disabled don't send it.
-			if ( pmpro_getOption( 'email_' . $this->template . '_disabled' ) ) {
+			// Note option may have 'false' stored as a string.
+			$template_disabled = pmpro_getOption( 'email_' . $this->template . '_disabled' );
+			if ( ! empty( $template_disabled ) && $template_disabled !== 'false' ) {
 				return false;
 			}
 
@@ -44,10 +45,11 @@
 				$this->template = "default";
 			
 			//Okay let's get the subject stuff.
-			if ( empty( $this->subject ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_subject' ) ) ) {
-				$this->subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
-			} elseif ( empty( $this->subject ) || ! $this->subject ) {
-				$this->subject = ! empty( $pmpro_email_templates_defaults[$this->template]['subject'] ) ? sanitize_text_field( $pmpro_email_templates_defaults[$this->template]['subject'] ) : sprintf(__("An email from %s", 'paid-memberships-pro' ), get_option("blogname"));
+			$template_subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
+			if ( ! empty( $template_subject ) ) {
+				$this->subject = $template_subject;
+			} elseif ( empty( $this->subject ) ) {
+				$this->subject = ! empty( $pmpro_email_templates_defaults[$this->template]['subject'] ) ? sanitize_text_field( $pmpro_email_templates_defaults[$this->template]['subject'] ) : sprintf(__("An Email From %s", 'paid-memberships-pro' ), get_option("blogname"));
 			}
 
 			//decode the subject line in case there are apostrophes/etc in it
@@ -110,13 +112,14 @@
 			//filter for data
 			$this->data = apply_filters("pmpro_email_data", $this->data, $this);	//filter
 			
-			//swap data into body
+			//swap data into body and subject line
 			if(is_array($this->data))
 			{
 				foreach($this->data as $key => $value)
 				{
 					if ( 'body' != $key ) {
 						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
 					}
 				}
 			}
@@ -744,8 +747,9 @@
 								"expirationmonth" => $invoice->expirationmonth,
 								"expirationyear" => $invoice->expirationyear,
 								"login_link" => pmpro_login_url(),
-								"invoice_link" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)
-							));
+								"invoice_link" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code)),
+								"invoice_url" => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $invoice->code))
+							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
 																 "", //address 2
@@ -892,18 +896,18 @@
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url());
 
 			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
-				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s.", 'paid-memberships-pro' ), $user->membership_level->name);
 			} else {
-				$this->data["membership_change"] = __("Your membership has been cancelled", "paid-memberships-pro");
+				$this->data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
 			}
 
 			if(!empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
-				$this->data["membership_change"] .= ". " . __("This membership does not expire", 'paid-memberships-pro' );
+				$this->data["membership_change"] .= " " . __("This membership does not expire.", 'paid-memberships-pro' );
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change", $this);
@@ -942,18 +946,18 @@
 			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "display_name" => $user->display_name, "user_login" => $user->user_login, "user_email" => $user->user_email, "sitename" => get_option("blogname"), "membership_id" => $membership_level_id, "membership_level_name" => $membership_level_name, "siteemail" => get_bloginfo("admin_email"), "login_link" => pmpro_login_url());
 
 			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
-				$this->data["membership_change"] = sprintf(__("The new level is %s", 'paid-memberships-pro' ), $user->membership_level->name);
+				$this->data["membership_change"] = sprintf(__("The new level is %s.", 'paid-memberships-pro' ), $user->membership_level->name);
 			} else {
-				$this->data["membership_change"] = __("Membership has been cancelled", 'paid-memberships-pro' );	
+				$this->data["membership_change"] = __("Membership has been cancelled.", 'paid-memberships-pro' );	
 			}
 			
 			if(!empty($user->membership_level) && !empty($user->membership_level->enddate))
 			{
-					$this->data["membership_change"] .= ". " . sprintf(__("This membership will expire on %s", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
+					$this->data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
 			}
 			elseif(!empty($this->expiration_changed))
 			{
-				$this->data["membership_change"] .= ". " . __("This membership does not expire", 'paid-memberships-pro' );
+				$this->data["membership_change"] .= " " . __("This membership does not expire.", 'paid-memberships-pro' );
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
@@ -1005,6 +1009,8 @@
 				'order_code' => $order->code,
 				'login_link' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				'invoice_url' => pmpro_login_url(pmpro_url("invoice", "?invoice=" . $order->code)),
+				"invoice_id" => $order->id,
 				'invoice' => $invoice
 			);
 
@@ -1044,6 +1050,7 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
+								"invoice_link" => $invoice_url,
 								"invoice_url" => $invoice_url,
 							);
 						
@@ -1082,6 +1089,7 @@
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
 								"user_email" => $user->user_email,
+								"invoice_link" => $invoice_url,
 								"invoice_url" => $invoice_url,
 							);
 						
