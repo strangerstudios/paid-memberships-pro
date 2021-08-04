@@ -134,7 +134,7 @@
 				'%d',		//allow_signups
 			)
 		);
-				
+
 		if($saveid < 1) {
 			//added a level
 			$saveid = $wpdb->insert_id;
@@ -164,10 +164,10 @@
 				$msgt = __("Error updating membership level.", 'paid-memberships-pro' );
 			}
 		}
-		
+
 		if( ! empty( $msgt ) && $ml_recurring && $ml_expiration ) {
 			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
-				
+
 			// turn success to errors
 			if( $msg > 0 ) {
 				$msg = 0 - $msg;
@@ -178,7 +178,7 @@
 		if ( isset( $ml_confirmation_in_email ) ) {
 			update_pmpro_membership_level_meta( $saveid, 'confirmation_in_email', $ml_confirmation_in_email );
 		}
-		
+
 		do_action("pmpro_save_membership_level", $saveid);
 	}
 	elseif($action == "delete_membership_level")
@@ -269,7 +269,7 @@
 		?>
 	</h1>
 	<hr class="wp-header-end">
-	
+
 	<div>
 		<?php
 			// get the level...
@@ -328,7 +328,7 @@
 				) );
 			if(empty($level->categories))
 				$level->categories = array();
-			
+
 			// grab the meta for the given level...
 			if ( ! empty( $temp_id ) ) {
 				$confirmation_in_email = get_pmpro_membership_level_meta( $temp_id, 'confirmation_in_email', true );
@@ -534,7 +534,16 @@
 			</tbody>
 		</table>
 
-		<?php do_action( 'pmpro_membership_level_after_billing_details_settings' ); ?>
+		<?php
+		/**
+		 * Allow adding form fields after the Billing Details Settings section.
+		 *
+		 * @since 2.5.10
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_billing_details_settings', $level );
+		?>
 
 		<hr />
 
@@ -562,7 +571,7 @@
 						echo '<tr><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank">Set Expiration Date Add On</a>.', 'paid-memberships-pro' ), $allowed_sed_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date' ) . '</p></td></tr>';
 				} ?>
 
-				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>					
+				<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top"><label for="billing_amount"><?php _e('Expires In', 'paid-memberships-pro' );?>:</label></th>
 					<td>
 						<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number);?>" class="small-text" />
@@ -577,7 +586,7 @@
 						  ?>
 						</select>
 						<p class="description"><?php _e('Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires.', 'paid-memberships-pro' );?></p>
-						
+
 						<div id="pmpro_expiration_warning" style="display: none;" class="notice error inline">
 							<p><?php printf( __( 'WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ); ?></p>
 						</div>
@@ -590,9 +599,9 @@
 										jQuery('#pmpro_expiration_warning').hide();
 									}
 								}
-								
+
 								pmpro_expirationWarningCheck();
-								
+
 								jQuery('#recurring,#expiration').change(function() { pmpro_expirationWarningCheck(); });
 							});
 						</script>
@@ -601,7 +610,16 @@
 			</tbody>
 		</table>
 
-		<?php do_action("pmpro_membership_level_after_other_settings"); ?>
+		<?php
+		/**
+		 * Allow adding form fields after the Other Settings section.
+		 *
+		 * @since 2.5.10
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_other_settings', $level );
+		?>
 
 		<hr />
 
@@ -642,6 +660,18 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<?php
+		/**
+		 * Allow adding form fields after the Content Settings section.
+		 *
+		 * @since 2.5.10
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_after_content_settings', $level );
+		?>
+
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
 			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
@@ -790,7 +820,7 @@
 				<td colspan="5">
 					<?php echo esc_attr_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?>
 				</td>
-			</tr> 
+			</tr>
 			<?php } ?>
 			<?php
 				$count = 0;
@@ -830,7 +860,7 @@
 						}
 					} else {
 						_e('No', 'paid-memberships-pro' );
-					} 
+					}
 					?></td>
 				<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
 			</tr>

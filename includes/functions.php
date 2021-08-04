@@ -1376,7 +1376,7 @@ function pmpro_getMembershipCategories( $level_id ) {
 
 
 function pmpro_isAdmin( $user_id = null ) {
-	global $current_user, $wpdb;
+	global $current_user;
 	if ( ! $user_id ) {
 		$user_id = $current_user->ID;
 	}

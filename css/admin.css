@@ -363,6 +363,9 @@
 	.admin_page_pmpro-userfields .pmpro_userfield-field-setting {
 		flex: 50%;
 	}
+	.admin_page_pmpro-paymentsettings .pmpro-admin-secure-key {
+		-webkit-text-security: disc;
+	}
 }
 
 /* advanced settings */

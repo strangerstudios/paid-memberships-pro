@@ -28,7 +28,7 @@
 	$uri = $_SERVER['REQUEST_URI'];
 
 	// Remove the query string from the path.
-	$uri_parts = explode( $uri, '?' );
+	$uri_parts = explode( '?', $uri );
 	$uri       = $uri_parts[0];
 
 	// Take the / off of the 
