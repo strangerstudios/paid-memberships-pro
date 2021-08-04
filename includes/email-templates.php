@@ -38,7 +38,7 @@ $pmpro_email_templates_defaults = array(
 		
 <p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>
 		
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the member of the level update.', 'paid-memberships-pro' )
 	),
 	'admin_change_admin'       => array(
@@ -48,7 +48,7 @@ $pmpro_email_templates_defaults = array(
 
 <p>!!membership_change!!</p>
 
-<p>Log in to your WordPress admin here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' )
 	),
 	'billable_invoice' => array(
@@ -58,9 +58,9 @@ $pmpro_email_templates_defaults = array(
 
 !!invoice!!
 
-<p>Log in to your membership account here: !!login_link!!</p>
+<p>Log in to your membership account here: !!login_url!!</p>
 
-<p>To view an online version of this invoice, click here: !!invoice_link!!</p>', 'paid-memberships-pro' ),
+<p>To view an online version of this invoice, click here: !!invoice_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually send a user a copy of this invoice email via the Memberships > Orders admin page.', 'paid-memberships-pro' )
 	),
 	'billing'	=> array(
@@ -73,7 +73,7 @@ $pmpro_email_templates_defaults = array(
 </p><p>
 	!!cardtype!!: !!accountnumber!!<br />
 	Expires: !!expirationmonth!!/!!expirationyear!!
-</p><p>If you did not request a billing information change please contact us at !!siteemail!!</p><p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+</p><p>If you did not request a billing information change please contact us at !!siteemail!!</p><p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'Members can update the payment method associated with their recurring subscription. This email is sent to the member as a confirmation of a payment method update.', 'paid-memberships-pro' )
 	),
 	'billing_admin'            => array(
@@ -95,13 +95,13 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your WordPress dashboard here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your WordPress dashboard here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'Members can update the payment method associated with their recurring subscription. This email is sent to the site administrator as a confirmation of a payment method update.', 'paid-memberships-pro' )
 	),
 	'billing_failure'          => array(
 		'subject'     => __( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Failure', 'paid-memberships-pro'),
-		'body' => __( '<p>The current subscription payment for your !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_link!!</strong></p>
+		'body' => __( '<p>The current subscription payment for your !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' )
@@ -114,7 +114,7 @@ $pmpro_email_templates_defaults = array(
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>Membership Level: !!membership_level_name!!</p>
 
-<p>Log in to your WordPress admin here: !!login_link!!</p>
+<p>Log in to your WordPress admin here: !!login_url!!</p>
 ', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed for a member, usually due to an expired or cancelled credit card. This email is sent to the site administrator.', 'paid-memberships-pro' )
 	),
@@ -139,7 +139,7 @@ $pmpro_email_templates_defaults = array(
 <p>Start Date: !!startdate!!</p>
 <p>Cancellation Date: !!enddate!!</p>
 
-<p>Log in to your WordPress admin here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )
 	),
 	'checkout_check'           => array(
@@ -163,7 +163,7 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: !!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "Pay by Check" gateway.', 'paid-memberships-pro' )
 	),
 	'checkout_check_admin'     => array(
@@ -185,7 +185,7 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: $!!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout using the "Pay by Check" gateway.', 'paid-memberships-pro' )
 	),
 	'checkout_express'         => array(
@@ -205,7 +205,7 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: !!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>
+<p>Log in to your membership account here: !!login_url!!</p>
 ', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "PayPal Express" gateway.', 'paid-memberships-pro' )
 
@@ -226,7 +226,7 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: !!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>
+<p>Log in to your membership account here: !!login_url!!</p>
 ', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout using the "PayPal Express" gateway.', 'paid-memberships-pro' )
 	),
@@ -241,7 +241,7 @@ $pmpro_email_templates_defaults = array(
 <p>Membership Level: !!membership_level_name!!</p>
 !!membership_expiration!! !!discount_code!!
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level when the level has no charge.', 'paid-memberships-pro' )
 	),
 	'checkout_free_admin'      => array(
@@ -254,7 +254,7 @@ $pmpro_email_templates_defaults = array(
 <p>Membership Level: !!membership_level_name!!</p>
 !!membership_expiration!! !!discount_code!!
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout that has no charge.', 'paid-memberships-pro' )
 	),
 	'checkout_freetrial'       => array(
@@ -279,7 +279,7 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level with a trial period.', 'paid-memberships-pro' )
 	),
 	'checkout_freetrial_admin' => array(
@@ -303,7 +303,7 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout with a trial period.', 'paid-memberships-pro' )
 	),
 	'checkout_paid'            => array(
@@ -332,7 +332,7 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level and complete a paid checkout on the site.', 'paid-memberships-pro' )
 	),
 	'checkout_paid_admin'      => array(
@@ -360,7 +360,7 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' )
 	),
 	'checkout_trial'           => array(
@@ -389,7 +389,7 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level with a trial period.', 'paid-memberships-pro' )
 	),
 	'checkout_trial_admin'     => array(
@@ -417,13 +417,13 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout with a trial period.', 'paid-memberships-pro' )
 	),
 	'credit_card_expiring'     => array(
 		'subject'     => __( "Credit card on file expiring soon at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Credit Card Expiring', 'paid-memberships-pro'),
-		'body' => __( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_link!!</strong></p>
+		'body' => __( '<p>The payment method used for your membership at !!sitename!! will expire soon. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>The most recent account information we have on file is:</p>
@@ -458,8 +458,8 @@ $pmpro_email_templates_defaults = array(
 	Expires: !!expirationmonth!!/!!expirationyear!!
 </p>
 
-<p>Log in to your membership account here: !!login_link!!</p>
-<p>To view an online version of this invoice, click here: !!invoice_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>
+<p>To view an online version of this invoice, click here: !!invoice_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member each time a new subscription payment is made.', 'paid-memberships-pro' )
 	),
 	'membership_expired'       => array(
@@ -469,9 +469,9 @@ $pmpro_email_templates_defaults = array(
 
 <p>Thank you for your support.</p>
 
-<p>View our current membership offerings here: !!levels_link!!</p>
+<p>View our current membership offerings here: !!levels_url!!</p>
 
-<p>Log in to manage your account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to manage your account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when their membership expires.', 'paid-memberships-pro' )
 	),
 	'membership_expiring'      => array(
@@ -482,7 +482,7 @@ $pmpro_email_templates_defaults = array(
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>Membership Level: !!membership_level_name!!</p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when their expiration date is approaching, at an interval based on the term of the membership.', 'paid-memberships-pro' )
 	),
 	'trial_ending'             => array(
@@ -495,7 +495,7 @@ $pmpro_email_templates_defaults = array(
 
 <p>Your fee will be changing from !!trial_amount!! to !!billing_amount!! every !!cycle_number!! !!cycle_period!!(s).</p>
 
-<p>Log in to your membership account here: !!login_link!!</p>', 'paid-memberships-pro' ),
+<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when the trial portion of their membership level is approaching, at an interval based on the term of the trial.', 'paid-memberships-pro' )
 	),
 

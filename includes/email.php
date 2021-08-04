@@ -118,6 +118,7 @@ function pmpro_send_html( $phpmailer ) {
 				"name" => $current_user->display_name,
 				"sitename" => get_option("blogname"),
 				"login_link" => pmpro_url("account"),
+				"login_url" => pmpro_url("account"),
 				"display_name" => $current_user->display_name,
 				"user_email" => $current_user->user_email,
 				"subject" => $phpmailer->Subject
@@ -410,8 +411,10 @@ function pmpro_email_templates_email_data($data, $email) {
 	//general data	
 	$new_data['sitename'] = get_option("blogname");
 	$new_data['siteemail'] = pmpro_getOption("from_email");
-	if(empty($new_data['login_link']))
+	if(empty($new_data['login_link'])) {
 		$new_data['login_link'] = wp_login_url();
+		$new_data['login_url'] = wp_login_url();
+	}		
 	$new_data['levels_link'] = pmpro_url("levels");        
 	
 	// User Data.

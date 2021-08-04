@@ -134,8 +134,8 @@
 									'!!display_name!!'          => __( 'Display Name (Profile/Edit User > Display name publicly as)', 'paid-memberships-pro' ),
 									'!!enddate!!'               => __( 'User Subscription End Date', 'paid-memberships-pro' ),
 									'!!user_email!!'            => __( 'User Email', 'paid-memberships-pro' ),
-									'!!login_link!!'            => __( 'Login URL', 'paid-memberships-pro' ),
-									'!!levels_link!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
+									'!!login_url!!'            => __( 'Login URL', 'paid-memberships-pro' ),
+									'!!levels_url!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
 								];
 								
 								foreach ( $email_variables as $email_variable => $description ) {
