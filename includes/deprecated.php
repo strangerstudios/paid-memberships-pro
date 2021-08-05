@@ -65,6 +65,10 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-email-templates' => array(
 			'file' => 'pmpro-email-templates.php',
 			'label' => 'Email Templates'
+		),
+		'pmpro-email-templates-addon' => array(
+			'file' => 'pmpro-email-templates.php',
+			'label' => 'Email Templates'
 		)
 	);
 	
