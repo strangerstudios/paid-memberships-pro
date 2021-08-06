@@ -355,7 +355,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
 					</th>
 					<td>
-						<div class="checkbox_box" <?php if(count($levels) > 5) { ?>style="height: 100px; overflow: auto;"<?php } ?>>
+						<div class="checkbox_box<?php if(count($levels) > 5) { ?> pmpro_scrollable<?php } ?>">
 							<?php
 								$hideadslevels = pmpro_getOption("hideadslevels");
 								if(!is_array($hideadslevels))
