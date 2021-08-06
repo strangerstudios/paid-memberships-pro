@@ -94,8 +94,8 @@ function pmpro_enqueue_scripts() {
         ! empty( $pmpro_level ) ||
 		( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("profile") ) ||
 		( isset( $pmpro_pages['member_profile_edit'] ) && is_page( $pmpro_pages['member_profile_edit'] ) ) ) {
-		wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', __FILE__), '', '4.0.3', 'screen' );
-		wp_enqueue_script( 'select2', plugins_url('js/select2.min.js', __FILE__), array( 'jquery' ), '4.0.3' );
+		wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.0.3', 'screen' );
+		wp_enqueue_script( 'select2', plugins_url('js/select2.min.js', dirname(__FILE__)), array( 'jquery' ), '4.0.3' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
@@ -104,12 +104,11 @@ add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
  * Enqueue admin JavaScript and CSS
  */
 function pmpro_admin_enqueue_scripts() {
-    // Admin JS
+    // Admin JS    
     wp_register_script( 'select2',
-                        plugins_url( 'css/select2.min.css', __FILE__),
-                        array( 'jquery' ),
-                        '4.0.3',
-                        'screen' );
+                        plugins_url( 'js/select2.min.js', dirname(__FILE__) ),
+                        array( 'jquery', 'jquery-ui-sortable' ),
+                        '4.0.3' );
     wp_register_script( 'pmpro_admin',
                         plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
                         array( 'jquery', 'jquery-ui-sortable', 'select2' ),
@@ -123,7 +122,9 @@ function pmpro_admin_enqueue_scripts() {
         'all_levels' => $all_levels,
         'all_level_values_and_labels' => $all_level_values_and_labels
     ));
-    wp_enqueue_script( 'pmpro_admin' );
+    wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.0.3', 'screen' );
+    wp_enqueue_script( 'select2' );
+    wp_enqueue_script( 'pmpro_admin' );    
 
     // Admin CSS
     $admin_css_rtl = false;
