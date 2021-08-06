@@ -199,13 +199,17 @@ function pmpro_stripe_check_api_keys() {
 
 // User Fields Code.
 jQuery(document).ready(function() {
+    pmpro_userfields_prep_click_events();
+});
+
+function pmpro_userfields_prep_click_events() {
     // Add group button.
 	jQuery('#pmpro_userfields_add_group').on( 'click', function(event){
         event.preventDefault();
                 
 		var postData = {
 			action: 'pmpro_userfields_get_group',
-            pmpro_userfield_group_name: '',            
+            group_id: '',         
 		}
 
 		jQuery.ajax({
@@ -213,9 +217,29 @@ jQuery(document).ready(function() {
 			data: postData,
 			url: ajaxurl,
 			success: function( response ) {
-                console.log( response );
-				jQuery('#pmpro_userfields_add_group').parent('p').before( response );                			
+                ///console.log( response );
+				jQuery('#pmpro_userfields_add_group').parent('p').before( response );
+                pmpro_userfields_prep_click_events();
 			}
 		})
     });
-});
+    
+    // Add field button.
+	jQuery('button[name="pmpro_userfields_add_field"]').on( 'click', function(event){
+        event.preventDefault();
+
+		var postData = {
+			action: 'pmpro_userfields_get_field',
+            field_id: '',
+		}
+
+		jQuery.ajax({
+			type: "GET",
+			data: postData,
+			url: ajaxurl,
+			success: function( response ) {
+				jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields').append( response );              			
+			}
+		})
+    });
+}

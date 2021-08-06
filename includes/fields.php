@@ -1021,3 +1021,255 @@ function pmpro_cron_delete_tmp() {
 	exit;
 }
 add_action( 'pmpro_cron_delete_tmp', 'pmpro_cron_delete_tmp' );
+
+// Code for the user fields settings page.
+/**
+ * Get user fields from settings.
+ */
+function pmpro_get_user_fields_from_settings() {
+    
+}
+
+/**
+ * Get user fields from global.
+ */
+function pmpro_get_user_fields() {
+    
+}
+
+/**
+ * Save user fields settings to DB.
+ */
+  
+/**
+ * Get field group HTML for settings.
+ */
+function pmpro_get_field_group_html( $group_id ) {
+    
+    // Get group settings.
+    $group_name = '';
+	$group_show_checkout = 'yes';
+	$group_show_profile = 'yes';
+	$group_description = '';
+	$levels = pmpro_getAllLevels( false, true );
+	$group_levels = array();		
+	
+    // Render field group HTML.
+    ?>
+    <div class="pmpro_userfield-group">
+        <div class="pmpro_userfield-group-header">
+            <div class="pmpro_userfield-group-buttons">
+                <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-up" aria-label="<?php esc_attr_e( 'Move up', 'paid-memberships-pro' ); ?>">
+                    <span class="dashicons dashicons-arrow-up-alt2"></span>
+                </button>
+                <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Group Up', 'paid-memberships-pro' ); ?></span>
+
+                <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-down" aria-label="<?php esc_attr_e( 'Move down', 'paid-memberships-pro' ); ?>">
+                    <span class="dashicons dashicons-arrow-down-alt2"></span>
+                </button>
+                <span id="pmpro_userfield-group-buttons-description-2" class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Group Down', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-group-buttons -->
+            <h3>
+                <label for="pmpro_userfields_group_name"><?php esc_html_e( 'Group Name', 'paid-memberships-pro' ); ?></label>
+                <input type="text" name="pmpro_userfields_group_name" placeholder="<?php esc_attr_e( 'Group Name', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $group_name ); ?>" />
+            </h3>
+            <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-expand-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
+                <span class="dashicons dashicons-arrow-down"></span>
+            </button>
+            <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?></span>
+        </div> <!-- end pmpro_userfield-group-header -->
+
+        <div class="pmpro_userfield-inside">
+			<div class="pmpro_userfield-field-settings">
+				
+				<div class="pmpro_userfield-field-setting">
+					<label for="pmpro_userfields_group_checkout"><?php esc_html_e( 'Show group at checkout?', 'paid-memberships-pro' ); ?></label>
+					<select name="pmpro_userfields_group_checkout">
+						<option value="yes" <?php selected( $group_show_checkout, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+						<option value="no" <?php selected( $group_show_checkout, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+					</select>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label for="pmpro_userfields_group_profile"><?php esc_html_e( 'Show group on user profile?', 'paid-memberships-pro' ); ?></label>
+					<select name="pmpro_userfields_group_profile">
+						<option value="yes" <?php selected( $group_show_profile, 'yes' ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+						<option value="admins" <?php selected( $group_show_profile, 'admins' ); ?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
+						<option value="no" <?php selected( $group_show_profile, 'no' ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+					</select>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label for="pmpro_userfields_group_description"><?php esc_html_e( 'Description (visible to users)', 'paid-memberships-pro' ); ?></label>
+					<textarea name="pmpro_userfields_group_description"><?php echo esc_html( $group_description );?></textarea>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label for="pmpro_userfields_group_membership"><?php esc_html_e( 'Restrict Group for Membership Levels', 'paid-memberships-pro' ); ?></label>
+					<div class="checkbox_box" <?php if ( count( $levels ) > 3 ) { ?>style="height: 90px; overflow: auto;"<?php } ?>>
+						<?php foreach( $levels as $level ) { ?>
+							<div class="clickable"><input type="checkbox" id="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>" name="pmpro_userfields_group_membership[]" <?php checked( true, in_array( $level->id, $group_levels ) );?>> <?php echo esc_html( $level->name ); ?></div>
+						<?php } ?>
+					</div>
+				</div> <!-- end pmpro_userfield-field-setting -->
+			
+			</div> <!-- end pmpro_userfield-field-settings -->
+			
+			<h3><?php esc_html_e( 'Manage Fields in This Group', 'paid-memberships-pro' ); ?></h3>
+			
+			<ul class="pmpro_userfield-group-thead">
+				<li class="pmpro_userfield-group-column-order"><?php esc_html_e( 'Order', 'paid-memberships-pro'); ?></li>
+				<li class="pmpro_userfield-group-column-label"><?php esc_html_e( 'Label', 'paid-memberships-pro'); ?></li>
+				<li class="pmpro_userfield-group-column-name"><?php esc_html_e( 'Name', 'paid-memberships-pro'); ?></li>
+				<li class="pmpro_userfield-group-column-type"><?php esc_html_e( 'Type', 'paid-memberships-pro'); ?></li>
+			</ul>
+			
+			<div class="pmpro_userfield-group-fields">
+
+				<div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
+					
+				</div> <!-- end pmpro_userfield-group-fields -->
+            
+            </div> <!-- end pmpro_userfield-inside -->
+
+			<div class="pmpro_userfield-group-actions">
+				<button name="pmpro_userfields_add_field" class="button button-secondary button-hero">
+					<?php
+						/* translators: a plus sign dashicon */
+						printf( esc_html__( '%s Add Field', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
+				</button>
+			</div> <!-- end pmpro_userfield-group-actions -->
+
+		</div> <!-- end pmpro_userfield-group -->
+    </div> <!-- end inside -->
+    <?php
+}
+ 
+/**
+ * Get field HTML for settings.
+ */
+function pmpro_get_field_html( $field_id ) {
+    ?>
+    <div class="pmpro_userfield-group-field pmpro_userfield-group-field-expand">
+        <ul class="pmpro_userfield-group-tbody">
+            <li class="pmpro_userfield-group-column-order">
+                <div class="pmpro_userfield-group-buttons">
+                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-up" aria-label="<?php esc_attr_e( 'Move up', 'paid-memberships-pro' ); ?>">
+                        <span class="dashicons dashicons-arrow-up-alt2"></span>
+                    </button>
+                    <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Field Up', 'paid-memberships-pro' ); ?></span>
+
+                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-down" aria-label="<?php esc_attr_e( 'Move down', 'paid-memberships-pro' ); ?>">
+                        <span class="dashicons dashicons-arrow-down-alt2"></span>
+                    </button>
+                    <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Field Down', 'paid-memberships-pro' ); ?></span>
+                </div> <!-- end pmpro_userfield-group-buttons -->
+            </li>
+            <li class="pmpro_userfield-group-column-label">
+                <span class="pmpro_userfield-label"><?php echo esc_html( $field_label );?></span>
+                <div class="pmpro_userfield-group-options">
+                    <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
+                    <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
+                    <a class="delete-field" title="<?php esc_attr_e( 'Delete field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
+                </div> <!-- end pmpro_userfield-group-options -->
+            </li>
+            <li class="pmpro_userfield-group-column-name"><?php echo esc_html( $field_name); ?></li>
+            <li class="pmpro_userfield-group-column-type"><?php echo esc_html( $field_type); ?></li>
+        </ul>
+
+        <div class="pmpro_userfield-field-settings">
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-label"><?php esc_html_e( 'Label', 'paid-memberships-pro' ); ?></label>
+                <input type="text" name="pmpro_userfields-field-label" value="<?php echo esc_attr( $field_label );?>" />
+                <span class="description"><?php esc_html_e( 'Brief descriptive text for the field. Shown on user forms.', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-name"><?php esc_html_e( 'Name', 'paid-memberships-pro' ); ?></label>
+                <input type="text" name="pmpro_userfields-field-name" value="<?php echo esc_attr( $field_name );?>" />
+                <span class="description"><?php esc_html_e( 'Single word with no spaces. Underscores are allowed.', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-name"><?php esc_html_e( 'Type', 'paid-memberships-pro' ); ?></label>
+                <select name="pmpro_userfields-field-type" />
+                    <option value="text"><?php esc_html_e( 'Text', 'paid-memberships-pro' ); ?></option>
+                    <option value="textarea"><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Checkbox and checkbox grouped', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Select', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Multi Select - ACF calls select2 "stylized UI"', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'File', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Number', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Read-Only', 'paid-memberships-pro' ); ?></option>
+                    <option value=""><?php esc_html_e( 'Hidden', 'paid-memberships-pro' ); ?></option>
+                </select>												
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
+                <div class="pmpro_userfield-field-setting">
+                    <label for="pmpro_userfields_field-required"><?php esc_html_e( 'Required?', 'paid-memberships-pro' ); ?></label>
+                    <select name="pmpro_userfields_field-required">
+                        <option value="no" selected="selected"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                        <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                    </select>
+                </div> <!-- end pmpro_userfield-field-setting -->
+
+                <div class="pmpro_userfield-field-setting">
+                    <label for="pmpro_userfields_field-readonly"><?php esc_html_e( 'Read Only?', 'paid-memberships-pro' ); ?></label>
+                <select name="pmpro_userfields_field-readonly">
+                        <option value="no" selected="selected"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                        <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                    </select>
+                </div> <!-- end pmpro_userfield-field-setting -->
+            </div> <!-- end pmpro_userfield-field-setting-dual -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-membership"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></label>
+                <select name="pmpro_userfields_field-membership">
+                    <option><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                </select>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_group_profile"><?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?></label>
+                <select name="pmpro_userfields_group_profile">
+                    <option><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                    <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                    <option value="admins"><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
+                    <option value="no"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                </select>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-class"><?php esc_html_e( 'Field Wrapper Class', 'paid-memberships-pro' ); ?></label>
+                <input type="text" name="pmpro_userfields-field-class" />
+                <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field\'s wrapping div', 'paid-memberships-pro' ); ?>.</span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-divclass"><?php esc_html_e( 'Field Element Class', 'paid-memberships-pro' ); ?></label>
+                <input type="text" name="pmpro_userfields-field-divclass" />
+                <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+
+            <div class="pmpro_userfield-field-setting">
+                <label for="pmpro_userfields_field-hint"><?php esc_html_e( 'Hint', 'paid-memberships-pro' ); ?></label>
+                <textarea name="pmpro_userfields-field-hint" /></textarea>
+                <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+        </div> <!-- end pmpro_userfield-field-settings -->
+        <div class="pmpro_userfield-field-actions">
+            <button name="pmpro_userfields_add_field" class="button button-secondary">
+                <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
+            </button>
+        </div> <!-- end pmpro_userfield-field-actions -->
+    </div> <!-- end pmpro_userfield-group-field -->
+    <?php
+}
+ 
+/**
+ * Load user field settings into the fields global var.
+ */
