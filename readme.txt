@@ -2,8 +2,8 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4.7
-Tested up to: 5.7
-Stable tag: 2.5.7
+Tested up to: 5.8
+Stable tag: 2.5.10.2
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,81 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.5.10.2 - 2021-08-02 =
+* ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
+* BUG FIX/ENHANCEMENT: Updated cancellation logic to support upcoming Cancel on Next Payment Date Add On changes.
+* BUG FIX/ENHANCEMENT: Making sure to use the correct security setting when calling setcookie from an HTTPS site. (Thanks, freax on GitHub)
+* BUG FIX: Now archiving Stripe products after checkout. We create a unique product for each checkout, and these would clutter up the Stripe reports.
+* BUG FIX: Fixing data erasure and data export request action for login page.
+* BUG FIX: Fixed issue where PMPro settings on Elementor elements could override the "should_render" setting incorrectly. (Thanks, codezz on GitHub)
+* BUG FIX: Now catching the case where you try to email an invoice for an order that has no user.
+
+= 2.5.10.1 - 2021-07-05 =
+* BUG FIX/ENHANCEMENT: The 'Edit Code: %s' string on the discount codes page is now wrapped for translation.
+* BUG FIX: Fixed issue with the getfile.php script introduced in 2.5.10.
+
+= 2.5.10 - 2021-06-25 =
+* SECURITY: Fixed XSS vulnerability on the edit order page in the dashboard. (Thanks, Scott Kingsley Clark)
+* ENHANCEMENT: Improved escaping and localization for the message returned when clicking to apply discount code.
+* ENHANCEMENT: Now hiding gateway setting API keys behind asterisks.
+* ENHANCEMENT: Added some extra hooks to the edit membership levels page in the dashboard: pmpro_membership_level_after_billing_details_settings, pmpro_membership_level_after_other_settings, pmpro_membership_level_after_content_settings.
+* ENHANCEMENT: Added a pmpro_after_order_settings_table hook to the edit order page in the dashboard.
+* BUG FIX/ENHANCEMENT: Now passing a CARDONFILE parameter with PayPal Payflow payment and subscription transactions.
+* BUG FIX/ENHANCEMENT: Using the wp.passwordStrength.userInputDisallowedList function from WP 4.5 if available.
+* BUG FIX/EHNANCEMENT: Now making sure that the pmpro_update_order and pmpro_updated_order hooks fire whenever an order is updated in the DB.
+* BUG FIX: Fixed issue in getfile script where parameters in the URL would cause File not found errors.
+* BUG FIX: Fixed how the PayPal IPN handler handles cases where a subscription is set up correctly but the initial payment failed. We now correctly cancel these users and mark their order as error.
+* BUG FIX: Improved error handling in the PayPal Express integration, particularly when a subscriptions PROFILESTATUS is missing.
+* BUG FIX: User registered date is now shown in local time.
+* BUG FIX: Fixed issue where the deprecated pmpro_getClassForField function wasn't returning a value properly. (Thanks, Elena Draculet)
+* BUG FIX: Updated the pmpro_sort_levels_by_order function to use level IDs for keys, since some code expects that for level arrays. This matches the behavior we had before introducing this function.
+* BUG FIX: Updated the pmpro_changeMembershipLevel function always set the order status to error if that was passed in as the "old level status".
+* BUG FIX: Fixed warning in searches/pages when PMPro pages is not set.
+* BUG FIX: Fixed warnings being generated when using PHP 8 and Divi
+* BUG FIX: Fixed warnings related to PayPal Express session variables.
+
+= 2.5.9.1 - 2021-05-12 =
+* BUG FIX/ENHANCEMENT: Updated pmpro_changeMembershipLevel() to return null if the user's level is not changed. For the past 2 vesions, we've been returning true in these cases, which caused PMPro to send emails to the admin when the edit use page was saved, even if there was no level change. This change has been backported to versions 2.5.8 and 2.5.9.
+
+= 2.5.9 - 2021-05-05 =
+* ENHANCEMENT: Adjusting style for prices and price parts shown on the frontend.
+* ENHANCEMENT: Adjusting HTML for links in the Orders table in the dashboard.
+* BUG FIX: Reverted the change to the pmpro_is_checkout() function. Since we default to the first available level, calling pmpro_getLevelForCheckout() was causing pmpro_is_checkout to return true on ALL pages. This disrupted a lot of functionality.
+* BUG FIX: Fixed warnings in the pmpro_getLevelAtCheckout() function.
+* BUG FIX: Fixed issue where "All Time Sales" was showing up as 0, even when there were sales.
+
+= 2.5.8 - 2021-04-30 =
+* ENHANCEMENT: Added `pmpro_membership_content_filter` filter to let other plugins change how PMPro filters member content.
+* ENHANCEMENT: Improved de_DE email template translation. (Thanks, biker238 on GitHub)
+* ENHANCEMENT: Added `pmpro_change_level` filter.
+* ENHANCEMENT: Improved display of prices on invoices and added pmpro_display_price_parts function and filters so plugins like the upcoming AvaTax add on can add subtotals to the price displays.
+* ENHANCEMENT: Added a pmpro_after_all_membesrhip_level_changes hook that fires at the end of the page load and can be used to process all membership changes in bulk.
+* ENHANCEMENT: The "User" column on the orders page now shows the username and email.
+* ENHANCEMENT: Added a pmpro_stripe_create_subscription_array filter. (Thanks, ermGit on GitHub)
+* BUG FIX/ENHANCEMENT: pmpro_change_level returns true now if the function is called to change a user’s level to one they already have.
+* BUG FIX/ENHANCEMENT: No longer calling $order->updateTimestamp() on orders adminpage.
+* BUG FIX/ENHANCEMENT: Updated conditional to check ‘street’ instead of ‘name’ when displaying billing address on Invoice/Confirmation.
+* BUG FIX/ENHANCEMENT: Improved localization and added missing strings to translation.
+* BUG FIX/ENHANCEMENT: Updated to use `get_user_locale1 to load localization.
+* BUG FIX/ENHANCEMENT: Now Preserving existing values for `post__not_in` and `category__not_in` when filtering search and archive queries.
+* BUG FIX/ENHANCEMENT: Fixed sorting of the Membership Level column on the Users List table in the WP admin dashboard.
+* BUG FIX/ENHANCEMENT: Added a pmpro_sort_levels_by_order function and using it in various places to make sure levels are listed in the order they are in on the PMPro settings page.
+* BUG FIX/ENHANCEMENT: Added an extra check in the pmpro_is_checkout function that helps with issues that were coming up in some add ons.
+* BUG FIX/ENHANCEMENT: The level cache now takes into account the $include_active parameter.
+* BUG FIX/ENHANCEMENT: The CSS class is now properly added to the body tag when a PMPro page block is used on a page.
+* BUG FIX/EHNANCEMENT: Better timezone handling in sales reports.
+* BUG FIX/ENHANCEMENT: Fixed a few places where we might think a free order was paid if using a currency with more or less than 2 decimal places.
+* BUG FIX: Fixed deprecated jQuery functions in pmpro-admin.js.
+* BUG FIX: Fixed warning for a missing/deleted level in the pmpro_post_classes function.
+* BUG FIX: Default `pmpro_longform_address` to true on Billing Information page.
+* BUG FIX: Fixed `pmpro_twocheckout_validate` filter.
+* BUG FIX: Fixed variables passed to the `pmpro_discount_code_used` filter.
+* BUG FIX: CZK currency should have 2 decimals.
+* BUG FIX: Avoiding a redirect loop if the login page is deleted. (Thanks, George Stephanis)
+* BUG FIX: Fixed the password reset link in new user notification email when not using pretty permalinks.
+* BUG FIX: Fixed issues with password reset URLs on multisite networks.
+* BUG FIX: Fixed the issue where sales weren't showing up on report charts sometimes on the 31st of the month.
+
 = 2.5.7 - 2021-03-10 =
 * ENHANCEMENT: Added a pmpro_checkout_message filter that can be used to filter error messages shown at checkout.
 * BUG FIX/ENHANCEMENT: Now making sure some billing address fields are available for the billing failure emails sent during the PayPal IPN handler.

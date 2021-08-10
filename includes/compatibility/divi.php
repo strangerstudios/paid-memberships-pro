@@ -15,11 +15,11 @@ class PMProDivi{
 
 	public function toggle( $modules ) {
 
-		if ( ! empty( $modules ) && is_object( $modules['et_pb_row'] ) ) {
+		if ( isset( $modules['et_pb_row'] ) && is_object( $modules['et_pb_row'] ) ) {
 			$modules['et_pb_row']->settings_modal_toggles['custom_css']['toggles']['paid-memberships-pro'] = __( 'Paid Memberships Pro', 'paid-memberships-pro' );
 		}
 
-		if ( ! empty( $modules ) && is_object( $modules['et_pb_section'] ) ) {
+		if ( isset( $modules['et_pb_section'] ) && is_object( $modules['et_pb_section'] ) ) {
 			$modules['et_pb_section']->settings_modal_toggles['custom_css']['toggles']['paid-memberships-pro'] = __( 'Paid Memberships Pro', 'paid-memberships-pro' );
 		}
 

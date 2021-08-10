@@ -114,8 +114,12 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
 	if ( ! empty ( $login_page_id ) ) {
-		$login_url = get_permalink( $login_page_id );
-
+		$login_page_permalink = get_permalink( $login_page_id );
+		// If the page or permalink is unavailable, don't override the url here.
+		if ( $login_page_permalink ) {
+			$login_url = $login_page_permalink;
+		}
+		
 		if ( ! empty( $redirect ) ) {
 			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 		}
@@ -335,6 +339,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			case 'recovered':
 				$message = __( 'Check your email for the confirmation link.', 'paid-memberships-pro' );
 				break;
+			case 'confirmaction':
+				// Check if we are processing a confirmaction for a Data Request.
+				$request_id = pmpro_confirmaction_handler();
+				$message = _wp_privacy_account_request_confirmed_message( $request_id );
+				$msgt = 'pmpro_success';
+				break;
 		}
 	}
 
@@ -434,7 +444,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Note we don't show messages on the widget form.
 	if ( $message && $location !== 'widget' ) {
-		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. wp_kses_post( $message ) .'</div>';
 	}
 
 	// Get the form title HTML tag.
@@ -811,39 +821,22 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  *
  * @since 2.3
  */
-function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
+function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
 		$login_url = get_permalink( $login_page_id );
 		if ( strpos( $login_url, '?' ) ) {
 			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
-			$message = str_replace( site_url( 'wp-login.php' ) . '?', site_url( 'wp-login.php' ) . '&', $message );
+			$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
 		}
-		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
-	}
-
-	return $message;
-}
-add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 4 );
-
-/**
- * Replace the default login URL in the new user notification email
- * with the membership account page login URL instead.
- *
- * @since 2.3.4
- */
-function pmpro_new_user_notification_email_filter( $message, $user, $blogname ) {
-
-	$login_page_id = pmpro_getOption( 'login_page_id' );
-    if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
 		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
 	}
 
 	return $message;
 }
-add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
+add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 3 );
+add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.
@@ -1021,4 +1014,6 @@ function pmpro_confirmaction_handler() {
 
 	/** This action is documented in wp-login.php */
 	do_action( 'user_request_action_confirmed', $request_id );
+
+	return $request_id;
 }
