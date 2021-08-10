@@ -39,6 +39,7 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_subscriptions = $wpdb->prefix . 'pmpro_subscriptions';
 }
 pmpro_setDBTables();
 
@@ -657,46 +658,11 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 	}
 
 	if ( ! $user_id ) {
-		$r = false;
+		return false;
 	} else {
-		// get last order
-		$order = new MemberOrder();
-		$order->getLastMemberOrder( $user_id, $order_status );
-
-		// get current membership level
-		$level = pmpro_getMembershipLevelForUser( $user_id );
-
-		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
-			// next payment date
-			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->timestamp );
-
-			$r = $nextdate;
-		} else {
-			// no order or level found, or level was not recurring
-			$r = false;
-		}
-	}
-
-	/**
-	 * Filter the next payment date.
-	 *
-	 * @since 1.8.5
-	 *
-	 * @param mixed $r false or the next payment date timestamp
-	 * @param int $user_id The user id to get the next payment date for
-	 * @param string $order_status Status or array of statuses to find the last order based on.
-	 */
-	$r = apply_filters( 'pmpro_next_payment', $r, $user_id, $order_status );
-
-	// return in desired format
-	if ( $r === false ) {
-		return false;               // always return false when no date found
-	} elseif ( $format == 'timestamp' ) {
-		return $r;
-	} elseif ( $format == 'date_format' ) {
-		return date_i18n( get_option( 'date_format' ), $r );
-	} else {
-		return date_i18n( $format, $r );  // assume a PHP date format
+		$subscription = new PMPro_Subscription();
+		$subscription->get_subscription_by_user( $user_id );
+		return $subscription->get_next_payment_date( $format );
 	}
 }
 

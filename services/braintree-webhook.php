@@ -475,7 +475,10 @@ if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotificati
 	/**
 	 * @since v1.9.5+ - BUG FIX: Don't process previously handled subscription cancellation
 	 */
-	if ( isset( $old_order->status ) && 'cancelled' == $old_order->status ) {
+	if ( PMPro_Subscription::subscription_exists_for_order( $old_order ) ) {
+		$subscription = new PMPro_Subscription( $old_order );
+	}
+	if ( $old_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
 		$logstr[] = "Order for subscription id {$webhookNotification->subscription->id} is cancelled already";
 		pmpro_braintreeWebhookExit();
 	}

@@ -259,8 +259,10 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 				(1) This order already has "cancelled" status.
 				(2) The user doesn't currently have the level attached to this order.
 			*/
-
-			if ( $last_subscription_order->status == "cancelled" ) {
+			if ( PMPro_Subscription::subscription_exists_for_order( $last_subscription_order ) ) {
+				$subscription = new PMPro_Subscription( $last_subscription_order );
+			}
+			if ( $last_subscription_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
