@@ -5,7 +5,7 @@ class PMProSiteHealth{
 	public static function init() {
 
 		if ( ! is_object( self::$instance ) ) {
-			self::$instance = new PodsAdmin();
+			self::$instance = new PMProSiteHealth();
 		}
 
 		return self::$instance;
@@ -17,7 +17,7 @@ class PMProSiteHealth{
 
 	}
 
-	static function debug_information( $info ) {
+	public function debug_information( $info ) {
 
 		$info['pmpro'] = array(
 			'label'       => 'Paid Memberships Pro',
@@ -54,29 +54,21 @@ class PMProSiteHealth{
 
 	}
 
-	function get_levels() {
+	public function get_levels() {
 
 		global $wpdb;
 
 		$results = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_membership_levels LIMIT 10" );                
 		if( $results ){
 			
-			$levels = array();
-
-			foreach( $results as $result ) {
-				
-				$levels[] = 'Level: '.$result->id.' Initial: '.round( $result->initial_payment, 2 ).' Billing Amount: '.round( $result->billing_amount, 2 ).' Cycle Number: '.round( $result->cycle_number, 2 ).' Cycle Period: '.round( $result->cycle_period, 2 ).' Billing Limit: '.round( $result->billing_limit, 2 ).' Trial Amount: '.round( $result->trial_amount, 2 ).' Trial Limit: '.round( $result->trial_limit, 2 ).' Expiration: '.round( $result->expiration_number, 2 ).' '.$result->expiration_period;
-
-			}
-
-			return implode(" | ", $levels );
+			return print_r( $results, true );
 
 		} else {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
 		}
 	}
 
-	function count_discount_codes() {
+	public function count_discount_codes() {
 
 		global $wpdb;
 
@@ -86,19 +78,19 @@ class PMProSiteHealth{
 
 	}
 
-	function default_gateway() {
+	public function default_gateway() {
 
 		return get_option( 'pmpro_gateway' );
 
 	}
 
-	function default_gateway_env() {
+	public function default_gateway_env() {
 
 		return get_option( 'pmpro_gateway_environment' );
 
 	}
 
-	function check_custom_templates() {
+	public function check_custom_templates() {
 
 		$theme_url = get_stylesheet_directory()."/paid-memberships-pro/";
 
@@ -110,7 +102,7 @@ class PMProSiteHealth{
 
 	}
 
-	function cron_jobs() {
+	public function cron_jobs() {
 
 		$crons = _get_cron_array();
 
@@ -132,7 +124,7 @@ class PMProSiteHealth{
 			}
 		}
 			
-		return implode( " | ", $cron_times );
+		return implode( ' | ', $cron_times );
 
 	}
 
