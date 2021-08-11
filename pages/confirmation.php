@@ -1,3 +1,11 @@
+<?php
+/**
+ * PMPro Confirmation page template.
+ * Name: confirmation
+ * Version: 2.6
+ * Author: Paid Memberships Pro
+ */
+?>
 <div class="<?php echo pmpro_get_element_class( 'pmpro_confirmation_wrap' ); ?>">
 <?php
 	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;

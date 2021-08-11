@@ -1,3 +1,11 @@
+<?php 
+/**
+ * PMPro Invoice page template.
+ * Name: invoice
+ * Version: 2.6
+ * Author: Paid Memberships Pro
+ */
+?>
 <div class="<?php echo pmpro_get_element_class( 'pmpro_invoice_wrap' ); ?>">
 	<?php
 	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
