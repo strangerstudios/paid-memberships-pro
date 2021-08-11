@@ -2,6 +2,11 @@
 
 class PMProSiteHealth{
 
+	/**
+	 * Singleton Handling
+	 *
+	 * return $instance
+	 */
 	public static function init() {
 
 		if ( ! is_object( self::$instance ) ) {
@@ -11,12 +16,21 @@ class PMProSiteHealth{
 		return self::$instance;
 	}
 
+	/**
+	 * Setup and handle Debug Information hook
+	 *
+	 */
 	public function __construct(){
 
 		add_filter( 'debug_information', array( $this, 'debug_information' ) );
 
 	}
 
+	/**
+	 * Handles debug information
+	 * @param  [array] $info [Existing Site Health data]
+	 * @return [array]       [New Site Health Data Added]
+	 */
 	public function debug_information( $info ) {
 
 		$info['pmpro'] = array(
@@ -54,6 +68,9 @@ class PMProSiteHealth{
 
 	}
 
+	/**
+	 * Gets the last 10 levels
+	 */
 	public function get_levels() {
 
 		global $wpdb;
@@ -68,6 +85,9 @@ class PMProSiteHealth{
 		}
 	}
 
+	/**
+	 * Counts the number of discount codes
+	 */
 	public function count_discount_codes() {
 
 		global $wpdb;
@@ -78,18 +98,27 @@ class PMProSiteHealth{
 
 	}
 
+	/**
+	 * Gets the selected payment gateway
+	 */
 	public function default_gateway() {
 
 		return get_option( 'pmpro_gateway' );
 
 	}
 
+	/**
+	 * Gets the selected payment gateway environment
+	 */
 	public function default_gateway_env() {
 
 		return get_option( 'pmpro_gateway_environment' );
 
 	}
 
+	/**
+	 * Checks if custom templates are in use
+	 */
 	public function check_custom_templates() {
 
 		$theme_url = get_stylesheet_directory()."/paid-memberships-pro/";
@@ -102,6 +131,9 @@ class PMProSiteHealth{
 
 	}
 
+	/**
+	 * Checks if cron jobs are working as expected
+	 */
 	public function cron_jobs() {
 
 		$crons = _get_cron_array();
