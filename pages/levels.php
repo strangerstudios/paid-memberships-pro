@@ -1,9 +1,13 @@
 <?php
 /**
- * PMPro Levels page template.
- * Name: levels
- * Version: 2.6
- * Author: Paid Memberships Pro
+ * Template: Levels
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
  */
 global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user;
 

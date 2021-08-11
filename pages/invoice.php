@@ -1,9 +1,13 @@
 <?php 
 /**
- * PMPro Invoice page template.
- * Name: invoice
- * Version: 2.6
- * Author: Paid Memberships Pro
+ * Template: Invoice
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
  */
 ?>
 <div class="<?php echo pmpro_get_element_class( 'pmpro_invoice_wrap' ); ?>">

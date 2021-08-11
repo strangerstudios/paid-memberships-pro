@@ -1,9 +1,13 @@
 <?php
 /**
- * PMPro Checkout page template.
- * Name: checkout
- * Version: 2.6
- * Author: Paid Memberships Pro
+ * Template: Checkout
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
  */
 
 global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;

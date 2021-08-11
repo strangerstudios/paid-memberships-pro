@@ -1,9 +1,13 @@
 <?php
 /**
- * PMPro Cancel page template.
- * Name: cancel
- * Version: 2.6
- * Author: Paid Memberships Pro
+ * Template: Cancel
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
  */
 global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user, $wpdb;
 

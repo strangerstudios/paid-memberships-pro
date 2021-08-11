@@ -1,8 +1,12 @@
 <?php
 /**
- * PMPro Member Profile page template.
- * Name: member_profile_edit
- * Version: 2.6
- * Author: Paid Memberships Pro
+ * Template: Member Profile Edit
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
  */
 echo pmpro_shortcode_member_profile_edit('');
