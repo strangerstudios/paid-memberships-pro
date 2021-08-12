@@ -114,3 +114,24 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 }
 add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
+
+/**
+ * The 2Checkout gateway was deprecated in v2.6.
+ * This code will add it back if it was the selected gateway.
+ * In future versions, we will remove the 2Checkout code entirely.
+ * And you will have to use a stand alone add on for 2Checkout support
+ * or choose a new gateway.
+ */
+function pmpro_check_for_deprecated_gateways() {
+	$undprepcated_gateways = (array)pmpro_getOption( 'undeprecated_gateways' );
+	$default_gateway = pmpro_getOption( 'gateway' );
+	
+	if ( $default_gateway === 'twocheckout' || in_array( 'twocheckout', $undprepcated_gateways ) ) {
+		require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php' );
+		
+		if ( ! in_array( 'twocheckout', $undprepcated_gateways ) ) {
+			$undeprecated_gateways[] = 'twocheckout';
+			pmpro_setOption( 'undeprecated_gateways', $undeprecated_gateways );
+		}
+	}
+}

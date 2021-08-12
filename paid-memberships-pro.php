@@ -106,12 +106,12 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypal.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
+pmpro_check_for_deprecated_gateways();
+
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_stripe.php' );
 	require_once( PMPRO_DIR . '/includes/lib/stripe-apple-pay/stripe-apple-pay.php' ); // rewrite rules to set up Apple Pay.
 }
-
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php' );
 
 /*
 	Setup the DB and check for upgrades
@@ -163,7 +163,6 @@ function pmpro_gateways() {
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
-		'twocheckout'       => __( '2Checkout', 'paid-memberships-pro' ),
 		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
 
