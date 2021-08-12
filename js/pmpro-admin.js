@@ -197,11 +197,9 @@ function pmpro_stripe_check_api_keys() {
 }
 
 function pmpro_stripe_get_secretkey() {
-	if ( jQuery('#live_stripe_connect_secretkey').val().length > 0 && jQuery( "select[name='gateway_environment']" ).val() === 'live' ) {
-		return jQuery('#live_stripe_connect_secretkey').val();
-	} else if ( jQuery('#test_stripe_connect_secretkey').val().length > 0 && jQuery( "select[name='gateway_environment']" ).val() === 'sandbox' ) {
-		return jQuery('#test_stripe_connect_secretkey').val();
-	} else if ( jQuery('#stripe_secretkey').val().length > 0 ) {
+    // We can't do the webhook calls with the Connect keys anyway,
+    // so we just look for the legacy key here.
+    if ( jQuery('#stripe_secretkey').val().length > 0 ) {
 		return jQuery('#stripe_secretkey').val();
 	} else {
 		return '';
