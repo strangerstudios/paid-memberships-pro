@@ -141,12 +141,12 @@ function pmpro_membership_level_profile_fields($user)
 				<td id="tos_consent_history">
 					<?php
 						if( !empty( $consent_log ) ) {
-							if( count( $consent_log ) > 10 ) {
-								$scrollable = 'pmpro_scrollable';
+							if( count( $consent_log ) > 5 ) {
+								$scrollable = ' pmpro_scrollable';
 							} else {
 								$scrollable = '';
 							}
-							echo '<ul class="pmpro_consent_log ' . $scrollable . '">';
+							echo '<ul class="pmpro_consent_log' . $scrollable . '">';
 							foreach( $consent_log as $entry ) {
 								echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
 							}
