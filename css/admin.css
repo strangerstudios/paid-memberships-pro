@@ -85,15 +85,37 @@
 	height: auto;
 }
 
-/* checkboxes */
+/* Scollable Boxes */
+.pmpro_scrollable {
+	background-color: #FFFFFF;
+	height: 170px;
+	overflow: auto;
+}
+.pmpro_scrollable::-webkit-scrollbar {
+	background-color: #c3c4c7;
+	width: 8px;
+	height: 8px;
+}
+.pmpro_scrollable::-webkit-scrollbar-thumb {
+	background: #2c3338;
+	border-radius: 5px;
+}
+.pmpro_scrollable table.widefat {
+	border: none;
+}
+
+/* Checkbox Boxes */
 .checkbox_box {
-	width: 300px;
-	background: #FFFFFF;
-	border: 1px solid #CCC;
+	background-color: #FFFFFF;
+	border: 1px solid #c3c4c7;
+	max-width: 300px;
 }
 .checkbox_box div {
 	border-bottom: 1px solid #CCC;
 	padding: 3px;
+}
+.checkbox_box div:last-child {
+	border-bottom: none;
 }
 .checkbox_box .clickable {
 	cursor: pointer;
@@ -102,14 +124,22 @@
 	background: #FFC;
 }
 
-/* consent log */
+/* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
-	padding: .5em;
-	background: #FFF;
-	border: 1px solid #CCC;
-	height: 200px;
 	max-width: 800px;
-	overflow: auto;
+	border: 1px solid #c3c4c7;
+	padding: 0;
+}
+.pmpro_consent_log li {
+	font-size: 13px;
+	line-height: 1.5em;
+	margin: 0;
+}
+.pmpro_consent_log.pmpro_scrollable li {
+	padding: 8px 10px;
+}
+.pmpro_consent_log.pmpro_scrollable li:nth-child(odd) {
+	background-color: #f6f7f7;
 }
 
 /* levels */
