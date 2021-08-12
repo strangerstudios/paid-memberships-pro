@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 4.7
 Tested up to: 5.8
-Stable tag: 2.5.10.2
+Stable tag: 2.6
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -153,6 +153,16 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6 - 2021-08-12 =
+* FEATURE: Updated Stripe integration to use Stripe Connect.
+* FEATURE: Improved REST API endpoints to support Zapier integration natively.
+* FEATURE: You can now set levels to expire after a certain number of hours, and can set users to expire at a specific time down to the minute.
+* FEATURE: The Member History Add On has been merged into the core PMPro plugin. A table of the user's membership and order history is shown on the edit user page of the admin dashboard.
+* FEATURE: The Email Templates Add On has been merged into the core PMPro plugin. You can edit PMPro-related email templates from the Memberships -> Settings -> Email Templates page in the admin dashboard.
+* BUG FIX/ENHANCEMENT: Establishing style for scrollable boxes throughout core plugin.
+* BUG FIX/ENHANCEMENT: Using HTTPS to set the pmpro_visit cookie if over HTTPS. (Thanks, freax on GitHub)
+* BUG FIX: Fixed fatal error in PHP 8 when deleting a Stripe webhook. (Thanks, Zebulan Stanphill)
+
 = 2.5.10.2 - 2021-08-02 =
 * ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
 * BUG FIX/ENHANCEMENT: Updated cancellation logic to support upcoming Cancel on Next Payment Date Add On changes.

@@ -1,10 +1,13 @@
 == Changelog ==
-= 2.6 - 2021-08-xx =
+= 2.6 - 2021-08-12 =
 * FEATURE: Updated Stripe integration to use Stripe Connect.
 * FEATURE: Improved REST API endpoints to support Zapier integration natively.
 * FEATURE: You can now set levels to expire after a certain number of hours, and can set users to expire at a specific time down to the minute.
 * FEATURE: The Member History Add On has been merged into the core PMPro plugin. A table of the user's membership and order history is shown on the edit user page of the admin dashboard.
 * FEATURE: The Email Templates Add On has been merged into the core PMPro plugin. You can edit PMPro-related email templates from the Memberships -> Settings -> Email Templates page in the admin dashboard.
+* BUG FIX/ENHANCEMENT: Establishing style for scrollable boxes throughout core plugin.
+* BUG FIX/ENHANCEMENT: Using HTTPS to set the pmpro_visit cookie if over HTTPS. (Thanks, freax on GitHub)
+* BUG FIX: Fixed fatal error in PHP 8 when deleting a Stripe webhook. (Thanks, Zebulan Stanphill)
 
 = 2.5.10.2 - 2021-08-02 =
 * ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
