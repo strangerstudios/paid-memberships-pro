@@ -424,15 +424,14 @@ jQuery(document).ready(function($) {
     }
 
     function toggleFormDisabled(disabled) {
-
         if(disabled == 'true') {
-            $("#email_template_disable").attr('checked', true);
+            $("#email_template_disable").prop('checked', true);
             $("#email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
             $("#email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
             $(".controls").hide();
         }
         else {
-            $("#email_template_disable").attr('checked', false);
+            $("#email_template_disable").prop('checked', false);
             $("#email_template_body").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
             $("#email_template_subject").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
             $(".controls").show();
