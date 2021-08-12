@@ -792,7 +792,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					`o`.`billing_phone`,
 					`o`.`subtotal`,
 					`o`.`tax`,
-					`o`.`couponamount`,
 					`o`.`total`,
 					`o`.`status`,
 					`o`.`gateway`,
