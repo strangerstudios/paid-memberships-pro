@@ -137,7 +137,7 @@ $pmpro_email_templates_defaults = array(
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>Membership Level: !!membership_level_name!!</p>
 <p>Start Date: !!startdate!!</p>
-<p>Cancellation Date: !!enddate!!</p>
+<p>End Date: !!enddate!!</p>
 
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )

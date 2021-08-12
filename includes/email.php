@@ -399,8 +399,6 @@ function pmpro_email_templates_email_data($data, $email) {
 		$user = $current_user;
 	}
 
-	$pmpro_user_meta = $wpdb->get_row("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status='active'");
-	
 	//make sure we have the current membership level data
 	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 
@@ -430,8 +428,13 @@ function pmpro_email_templates_email_data($data, $email) {
 		if ( empty( $user->membership_level ) ) { 
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
-		if ( ! empty( $user->membership_level->name ) ) {
-			$new_data["membership_change"] = sprintf(__("The new level is %s.", "paid-memberships-pro"), $user->membership_level->name);
+		if ( ! empty( $user->membership_level ) ) {
+			if ( ! empty( $user->membership_level->name ) ) {
+				$new_data["membership_change"] = sprintf(__("The new level is %s.", "paid-memberships-pro"), $user->membership_level->name);
+			}
+			if ( ! empty($user->membership_level->startdate) ) {
+				$new_data['startdate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->startdate );
+			}
 			if ( ! empty($user->membership_level->enddate) ) {
 				$new_data['enddate'] = date_i18n( get_option( 'date_format' ), $user->membership_level->enddate );
 				$new_data['membership_expiration'] = "<p>" . sprintf( __("This membership will expire on %s.", "paid-memberships-pro"), date_i18n( get_option( 'date_format' ), $user->membership_level->enddate ) ) . "</p>\n";
@@ -439,7 +442,6 @@ function pmpro_email_templates_email_data($data, $email) {
 			} else if ( ! empty( $email->expiration_changed ) ) {
 				$new_data["membership_change"] .= " " . __("This membership does not expire.", "paid-memberships-pro");
 			}
-			
 		}
 	}
 	
