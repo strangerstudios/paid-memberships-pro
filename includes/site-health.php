@@ -3,9 +3,10 @@
 class PMProSiteHealth{
 
 	/**
-	 * Singleton Handling
+	 * Singleton Handling.
 	 *
-	 * return $instance
+	 * @since TBD
+	 * @return $instance
 	 */
 	public static function init() {
 
@@ -28,8 +29,9 @@ class PMProSiteHealth{
 
 	/**
 	 * Handles debug information
-	 * @param  [array] $info [Existing Site Health data]
-	 * @return [array]       [New Site Health Data Added]
+	 * @param  [array] $info [Existing Site Health data.]
+	 * @since TBD
+	 * @return [array]       [New Site Health Data Added.]
 	 */
 	public function debug_information( $info ) {
 
@@ -69,7 +71,11 @@ class PMProSiteHealth{
 	}
 
 	/**
-	 * Gets the last 10 levels
+	 * Gets the last 10 levels.
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function get_levels() {
 
@@ -87,6 +93,10 @@ class PMProSiteHealth{
 
 	/**
 	 * Counts the number of discount codes
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function count_discount_codes() {
 
@@ -100,6 +110,10 @@ class PMProSiteHealth{
 
 	/**
 	 * Gets the selected payment gateway
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function default_gateway() {
 
@@ -109,6 +123,10 @@ class PMProSiteHealth{
 
 	/**
 	 * Gets the selected payment gateway environment
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function default_gateway_env() {
 
@@ -118,6 +136,10 @@ class PMProSiteHealth{
 
 	/**
 	 * Checks if custom templates are in use
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function check_custom_templates() {
 
@@ -133,6 +155,10 @@ class PMProSiteHealth{
 
 	/**
 	 * Checks if cron jobs are working as expected
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
 	 */
 	public function cron_jobs() {
 
