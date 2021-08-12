@@ -215,11 +215,6 @@
 			if(!$user)
 				return false;
 			
-			//check settings
-			$send = pmpro_getOption("email_admin_cancels");
-			if(empty($send))
-				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
-			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", 'paid-memberships-pro'), $user->user_login, get_option("blogname"));			
 
@@ -372,11 +367,6 @@
 			if(!$user)
 				return false;
 			
-			//check settings
-			$send = pmpro_getOption("email_admin_checkout");
-			if(empty($send))
-				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
-			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $user->membership_level->name, get_option("blogname"));	
 			
@@ -518,11 +508,6 @@
 			
 			if(!$user || !$invoice)
 				return false;
-			
-			//check settings
-			$send = pmpro_getOption("email_admin_billing");
-			if(empty($send))
-				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
 			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
@@ -932,12 +917,7 @@
 			
 			if(!$user)
 				return false;
-			
-			//check settings
-			$send = pmpro_getOption("email_admin_changes");
-			if(empty($send))
-				return true;	//didn't send, but we also don't want to indicate failure because the settings say to not send
-			
+
 			//make sure we have the current membership level data
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 						

@@ -156,25 +156,7 @@
 		<hr />
 		<h2 class="title"><?php esc_html_e( 'Other Email Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
-		<tbody>                
-			<tr>
-				<th scope="row" valign="top">
-					<label for="email_admin"><?php _e('Send the site admin emails', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="checkbox" id="email_admin_checkout" name="email_admin_checkout" value="1" <?php if(!empty($email_admin_checkout)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_checkout"><?php _e('when a member checks out.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_changes" name="email_admin_changes" value="1" <?php if(!empty($email_admin_changes)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_changes"><?php _e('when an admin changes a user\'s membership level through the dashboard.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_cancels" name="email_admin_cancels" value="1" <?php if(!empty($email_admin_cancels)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_cancels"><?php _e('when a user cancels his or her account.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_billing" name="email_admin_billing" value="1" <?php if(!empty($email_admin_billing)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_billing"><?php _e('when a user updates his or her billing information.', 'paid-memberships-pro' );?></label>
-				</td>
-			</tr>               
+		<tbody>            
 			<tr>
 				<th scope="row" valign="top">
 					<label for="email_member_notification"><?php _e('Send members emails', 'paid-memberships-pro' );?>:</label>

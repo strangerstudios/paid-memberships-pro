@@ -13,9 +13,31 @@
  * unless the level is set up to expire hourly.
  */
 function pmpro_upgrade_2_6() {
-	/**
-	 * Reschedule Cron Job for Hourly Checks
-	 */
+	// Map email settings to new email template settings.
+	// Note: the old settings were true to enable, the new settings are true to disable.
+	$admin_checkout = pmpro_getOption( 'email_admin_checkout' );
+	if ( empty( $admin_checkout ) ) {
+		pmpro_setOption( 'email_checkout_check_admin_disabled', 'true' );
+		pmpro_setOption( 'email_checkout_express_admin_disabled', 'true' );
+		pmpro_setOption( 'email_checkout_free_admin_disabled', 'true' );
+		pmpro_setOption( 'email_checkout_freetrial_admin_disabled', 'true' );
+		pmpro_setOption( 'email_checkout_paid_admin_disabled', 'true' );
+		pmpro_setOption( 'email_checkout_trial_admin_disabled', 'true' );
+	}
+	$admin_changes = pmpro_getOption( 'email_admin_changes' );
+	if ( empty( $admin_changes ) ) {
+		pmpro_setOption( 'email_admin_change_admin_disabled', 'true' );
+	}
+	$admin_cancels = pmpro_getOption( 'email_admin_cancels' );
+	if ( empty( $admin_cancels ) ) {
+		pmpro_setOption( 'email_cancel_admin_disabled', 'true' );
+	}
+	$admin_billing = pmpro_getOption( 'email_admin_billing' );
+	if ( empty( $admin_billing ) ) {
+		pmpro_setOption( 'email_billing_admin_disabled', 'true' );
+	}
+	
+	// Reschedule cron job for hourly checks.
 	$next = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
 	if ( ! empty( $next ) ) {
 		wp_unschedule_event( $next, 'pmpro_cron_expire_memberships' );
