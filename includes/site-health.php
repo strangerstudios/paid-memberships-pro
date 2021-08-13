@@ -63,6 +63,14 @@ class PMProSiteHealth{
 					'label' => __( 'Are Cron Jobs Operational?', 'paid-membership-levels' ),
 					'value' => self::cron_jobs()
 				),
+				'pmpro-stripe-legacy' => array(
+					'label' => __( 'Are Stripe Legacy Keys In Use?', 'paid-membership-levels' ),
+					'value' => self::is_stripe_legacy()
+				),
+				'pmpro-stripe-connect' => array(
+					'label' => __( 'Is Stripe Connect In Use?', 'paid-membership-levels' ),
+					'value' => self::is_stripe_connect()
+				),
 			)
 		);
 
@@ -186,5 +194,48 @@ class PMProSiteHealth{
 
 	}
 
+	/**
+	 * Checks if Stripe is using Legacy Keys or not
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
+	 */
+	
+	public function is_stripe_legacy() {
+
+		$stripe = new PMProGateway_stripe();
+
+		$legacy = $stripe->using_legacy_keys();
+
+		if( $legacy ){
+			return 'Yes';
+		}
+
+		return 'No';
+	}
+	
+	/**
+	 * Checks if Stripe Connect is setup
+	 *
+	 * @since TBD
+	 *
+	 * @return [string]
+	 */
+
+	public function is_stripe_connect() {
+
+		$stripe = new PMProGateway_stripe();
+
+		$connect = $stripe->has_connect_credentials();
+
+		if( $connect ){
+			return 'Yes';
+		}
+
+		return 'No';
+
+	}
+	
 }
 new PMProSiteHealth();
