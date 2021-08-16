@@ -155,6 +155,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.1 - 2021-08-16 =
+* BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages.
+
 = 2.6 - 2021-08-12 =
 * FEATURE: Updated Stripe integration to use Stripe Connect.
 * FEATURE: Improved REST API endpoints to support Zapier integration natively.
