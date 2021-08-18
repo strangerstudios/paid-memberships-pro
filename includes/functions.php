@@ -84,7 +84,7 @@ function pmpro_getOption( $s, $force = false ) {
 	}
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field' ) {
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
 	// no value is given, set v to the p var
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
 		if ( is_array( $_POST[ $s ] ) ) {
@@ -100,7 +100,7 @@ function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_fie
 		$v = trim( $v );
 	}
 
-	return update_option( 'pmpro_' . $s, $v );
+	return update_option( 'pmpro_' . $s, $v, $autoload );
 }
 
 function pmpro_get_slug( $post_id ) {
