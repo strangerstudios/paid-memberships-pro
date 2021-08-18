@@ -140,6 +140,9 @@ class PMProGateway_stripe extends PMProGateway {
 		) );
 		add_action( 'profile_update', array( 'PMProGateway_stripe', 'user_profile_fields_save' ) );
 
+		// Forward billing page to Stripe customer portal.
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader' ) );
+
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! pmpro_getOption( "stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
@@ -2539,68 +2542,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Helper method to update the customer info via getCustomer
-	 *
-	 * @since 1.4
-	 */
-	function update( &$order ) {
-
-		$steps = array(
-			'set_customer',
-			'set_payment_method',
-			'attach_payment_method_to_customer',
-			'update_payment_method_for_subscriptions',
-		);
-
-		foreach ( $steps as $key => $step ) {
-			do_action( "pmpro_update_billing_before_{$step}", $order );
-			$this->$step( $order );
-			do_action( "pmpro_update_billing_after_{$step}", $order );
-			if ( ! empty( $order->error ) ) {
-				return false;
-			}
-		}
-
-		return true;
-
-	}
-	
-	/**
-	 * Update the payment method for a subscription.
-	 */
-	function update_payment_method_for_subscriptions( &$order ) {
-		// get customer
-		$this->getCustomer( $order );
-		
-		if ( empty( $this->customer ) ) {
-			return false;
-		}
-		
-		// get all subscriptions
-		if ( ! empty( $this->customer->subscriptions ) ) {
-			$subscriptions = $this->customer->subscriptions->all();
-		}
-		
-		foreach( $subscriptions as $subscription ) {
-			// check if cancelled or expired
-			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
-				continue;
-			}
-			
-			// check if we have a related order for it
-			$one_order = new MemberOrder();
-			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-			if ( empty( $one_order ) || empty( $one_order->id ) ) {
-				continue;
-			}
-			
-			// update the payment method
-			$subscription->default_payment_method = $this->customer->invoice_settings->default_payment_method;
-			$subscription->save();
-		}
-	}
-
-	/**
 	 * Cancel a subscription at Stripe
 	 *
 	 * @since 1.4
@@ -3777,6 +3718,41 @@ class PMProGateway_stripe extends PMProGateway {
 			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
 			echo '</a>';
 			echo '</p></div>';
+		}
+	}
+
+	public function get_customer_portal_url( $customer_id ) {
+		try {
+			$session = \Stripe\BillingPortal\Session::create([
+				'customer' => $customer_id,
+				'return_url' => get_site_url(),
+			]);
+			return $session->url;
+		} catch ( Exception $e ) {
+			return '';
+		}
+	}
+
+	static function pmpro_billing_preheader() {
+		global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
+		$user_order = new MemberOrder();
+		$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
+
+		// Check whether the user's most recent order is a Stripe subscription.
+		if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
+			return;
+		}
+
+		$stripe = new PMProGateway_stripe();
+		$customer = $stripe->getCustomer( $user_order );
+		if ( empty( $customer->id ) ) {
+			return;
+		}
+
+		$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+		if ( ! empty( $customer_portal_url ) ) {
+			wp_redirect( $customer_portal_url );
+			exit;
 		}
 	}
 }
