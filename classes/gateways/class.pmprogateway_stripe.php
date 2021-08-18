@@ -328,15 +328,18 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_transient( 'pmpro_stripe_account_country' );
 		}
 
+		$stripe_legacy_key    = $values['stripe_publishablekey'];
+		$stripe_legacy_secret = $values['stripe_secretkey'];
+
 		// Determine if the gateway is connected in live mode and set var.
-		if ( self::has_connect_credentials( 'live' ) || ( self::using_legacy_keys() && ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) ) ) ) {
+		if ( self::has_connect_credentials( 'live' ) || ( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) ) ) {
 			$live_connection_selector = 'pmpro_gateway-mode-connected';
 		} else {
 			$live_connection_selector = 'pmpro_gateway-mode-not-connected';
 		}
 
 		// Determine if the gateway is connected in test mode and set var.
-		if ( self::has_connect_credentials( 'sandbox' ) || ( self::using_legacy_keys() && ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) ) ) ) {
+		if ( self::has_connect_credentials( 'sandbox' ) || ( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) ) ) {
 			$test_connection_selector = 'pmpro_gateway-mode-connected';
 		} else {
 			$test_connection_selector = 'pmpro_gateway-mode-not-connected';
@@ -352,7 +355,7 @@ class PMProGateway_stripe extends PMProGateway {
 						<?php esc_html_e( 'Live Mode:', 'paid-memberships-pro' ); ?>
 						<?php if ( self::has_connect_credentials( 'live' ) ) {
 							esc_html_e( 'Connected', 'paid-memberships-pro' );
-						} elseif( self::using_legacy_keys() && ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) ) ) {
+						} elseif( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) ) {
 							esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
 						} else {
 							esc_html_e( 'Not Connected', 'paid-memberships-pro' );
@@ -363,6 +366,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below.', 'paid-memberships-pro' ); ?><br />
 							<?php esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update.', 'paid-memberships-pro' ); ?>
 							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect &raquo;', 'paid-memberships-pro' ); ?></a>
 						</p>
@@ -441,7 +445,7 @@ class PMProGateway_stripe extends PMProGateway {
 						<?php esc_html_e( 'Test Mode:', 'paid-memberships-pro' ); ?>
 						<?php if ( self::has_connect_credentials( 'sandbox' ) ) {
 							esc_html_e( 'Connected', 'paid-memberships-pro' );
-						} elseif( self::using_legacy_keys() && ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) ) ) {
+						} elseif( self::using_legacy_keys() && ! empty( $stripe_legacy_key ) && ! empty( $stripe_legacy_secret ) ) {
 							esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
 						} else {
 							esc_html_e( 'Not Connected', 'paid-memberships-pro' );
@@ -452,7 +456,9 @@ class PMProGateway_stripe extends PMProGateway {
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below.', 'paid-memberships-pro' ); ?><br />
 							<?php esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect in test mode.', 'paid-memberships-pro' ); ?>
+							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect &raquo;', 'paid-memberships-pro' ); ?></a>
 						</p>
 					</div>
 				<?php } ?>
