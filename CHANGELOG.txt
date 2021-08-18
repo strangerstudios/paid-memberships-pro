@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.6.1 - 2021-08-16 =
+* BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages.
+
 = 2.6 - 2021-08-12 =
 * FEATURE: Updated Stripe integration to use Stripe Connect. See [Gateway Fees](https://www.paidmembershipspro.com/gateway/stripe/#tab-fees) for information about transaction fees for Stripe Connect and our platform fee for those without an active Plus/Unlimited license.
 * FEATURE: Improved REST API endpoints to support Zapier integration natively.

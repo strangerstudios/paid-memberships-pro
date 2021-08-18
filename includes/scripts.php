@@ -94,6 +94,11 @@ add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
  * Enqueue admin JavaScript and CSS
  */
 function pmpro_admin_enqueue_scripts() {
+	// Only enqueue PMPro admin scripts on our own pages.
+	if ( ! isset( $_GET['page'] ) || 0 !== strpos( $_GET['page'], 'pmpro' ) ) {
+		return;
+	}
+
     // Admin JS
     wp_register_script( 'pmpro_admin',
                         plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
