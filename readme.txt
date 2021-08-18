@@ -155,8 +155,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.6.1 - 2021-08-16 =
-* BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages.
+= 2.6.1 - 2021-08-19 =
+* ENHANCEMENT: Added Email Templates link to PMPro Dashboard for getting started. #1722 (@kimcoleman)
+* BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages. #1724 (@sc0ttkclark)
+* BUG FIX: Remove unused code in `pmpro_comments_filter()` that was triggering a PHP warning. #1730 (@freax)
+* BUG FIX: Stop turning on autoloading for PMPro options when saving them. #1719 (@freax)
+* BUG FIX: Prevent fatal error for PHP 8 in `pmpro_email_templates_email_data()` to strictly check for `WP_User` objects. #1729 (@ZebulanStanphill)
+* BUG FIX: Fix problem where `pmpro_round_price()` would not take into account currencies with decimals set to 0. #1732 (@dparker1005, @ipokkel, @sc0ttkclark)
 
 = 2.6 - 2021-08-12 =
 * FEATURE: Updated Stripe integration to use Stripe Connect. See [Gateway Fees](https://www.paidmembershipspro.com/gateway/stripe/#tab-fees) for information about transaction fees for Stripe Connect and our platform fee for those without an active Plus/Unlimited license.
