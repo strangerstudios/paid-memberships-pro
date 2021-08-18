@@ -1383,10 +1383,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<?php
 							// Set up the hover actions for this user
 							/**
-							 * Filter the extra actions for this user on this order
+							 * Filter the extra actions for this user on this order.
 							 *
-							 * @param stdClass $order->user The user data
-							 * @param MemberOrder $order The current order
+							 * @param array       $actions The list of actions.
+							 * @param object      $user    The user data.
+							 * @param MemberOrder $order   The current order.
 							 */
 							$actions = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
 

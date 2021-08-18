@@ -837,13 +837,13 @@
 						<span class="delete"><a title="<?php _e('Delete', 'paid-memberships-pro' ); ?>" href="javascript:pmpro_askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", 'paid-memberships-pro' ), $level->name));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ), 'delete_membership_level', 'pmpro_membershiplevels_nonce'); ?>'); void(0);"><?php _e('Delete', 'paid-memberships-pro' ); ?></a></span>
 
 						<?php
-						// Set up the hover actions for this level
 						/**
-						 * Filter the extra actions for this level
+						 * Filter the extra actions for this level.
 						 *
 						 * @since TBD
 						 *
-						 * @param stdClass $level The membership level data
+						 * @param array  $actions The list of actions.
+						 * @param object $level   The membership level data.
 						 */
 						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', array(), $level );
 
