@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.6 - 2021-08-12 =
-* FEATURE: Updated Stripe integration to use Stripe Connect.
+* FEATURE: Updated Stripe integration to use Stripe Connect. See [Gateway Fees](https://www.paidmembershipspro.com/gateway/stripe/#tab-fees) for information about transaction fees for Stripe Connect and our platform fee for those without an active Plus/Unlimited license.
 * FEATURE: Improved REST API endpoints to support Zapier integration natively.
 * FEATURE: You can now set levels to expire after a certain number of hours, and can set users to expire at a specific time down to the minute.
 * FEATURE: The Member History Add On has been merged into the core PMPro plugin. A table of the user's membership and order history is shown on the edit user page of the admin dashboard.
