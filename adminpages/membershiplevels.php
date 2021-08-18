@@ -900,7 +900,7 @@
 						 * @param array  $actions The list of actions.
 						 * @param object $level   The membership level data.
 						 */
-						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', $actions, $code );
+						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', $actions, $level );
 
 						$actions_html = [];
 
