@@ -400,7 +400,7 @@ function pmpro_email_templates_email_data($data, $email) {
 	}
 
 	// Make sure we have the current membership level data.
-	if ( $user !== false ) {
+	if ( $user instanceof WP_User ) {
 		$user->membership_level = pmpro_getMembershipLevelForUser(
 			$user->ID,
 			true
