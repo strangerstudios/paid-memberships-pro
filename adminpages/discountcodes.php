@@ -804,12 +804,6 @@
 							<td class="has-row-actions">
 								<a title="<?php echo sprintf( 'Edit Code: %s', $code->code ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>"><?php echo $code->code?></a>
 								<div class="row-actions">
-									<?php if ( (int)$uses > 0 ) { ?>
-										| <span class="orders">
-											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
-										</span>
-									<?php } ?>
-
 									<?php
 									$delete_text = esc_html(
 										sprintf(
