@@ -205,7 +205,7 @@ function pmpro_email_templates_save_template_data() {
 
 	//update this template's settings
 	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_subject', stripslashes( $_REQUEST['subject'] ) );
-	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_body', stripslashes( $_REQUEST['body'] ), 'sanitize_textarea_field' );
+	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_body', stripslashes( $_REQUEST['body'] ) );
 	delete_transient( 'pmproet_' . $_REQUEST['template'] );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
 	
