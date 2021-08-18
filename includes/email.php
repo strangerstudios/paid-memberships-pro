@@ -389,18 +389,23 @@ function pmpro_email_templates_test_template($email)
 /* Filter for Variables */
 function pmpro_email_templates_email_data($data, $email) {
 
-	global $current_user, $pmpro_currency_symbol, $wpdb;
+	global $pmpro_currency_symbol;
 
 	if ( ! empty( $data ) && ! empty( $data['user_login'] ) ) {
 		$user = get_user_by( 'login', $data['user_login'] );
 	} elseif ( ! empty( $email ) ) {
 		$user = get_user_by( 'email', $email->email );
 	} else {
-		$user = $current_user;
+		$user = wp_get_current_user();
 	}
 
-	//make sure we have the current membership level data
-	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
+	// Make sure we have the current membership level data.
+	if ( $user instanceof WP_User ) {
+		$user->membership_level = pmpro_getMembershipLevelForUser(
+			$user->ID,
+			true
+		);
+	}
 
 	//make sure data is an array
 	if(!is_array($data))
