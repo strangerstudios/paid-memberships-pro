@@ -394,8 +394,6 @@ add_filter('get_the_excerpt', 'pmpro_membership_get_excerpt_filter_end', 100);
 
 function pmpro_comments_filter($comments, $post_id = NULL) {
 	global $post, $wpdb, $current_user;
-	if(!$post_id)
-		$post_id = $post->ID;
 
 	if(!$comments)
 		return $comments;	//if they are closed anyway, we don't need to check
