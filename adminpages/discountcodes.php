@@ -810,7 +810,7 @@
 										</span>
 									<?php } ?>
 
-                                    <?php
+									<?php
 									$delete_text = esc_html(
 										sprintf(
 											// translators: %s is the Discount Code.
@@ -845,7 +845,7 @@
 												)
 											),
 											esc_html__( 'Edit', 'paid-memberships-pro' )
-                                    	),
+										),
 										'copy'   => sprintf(
 											'<a title="%1$s" href="%2$s">%3$s</a>',
 											esc_attr__( 'Copy', 'paid-memberships-pro' ),
@@ -860,7 +860,7 @@
 												)
 											),
 											esc_html__( 'Copy', 'paid-memberships-pro' )
-                                    	),
+										),
 										'delete' => sprintf(
 											'<a title="%1$s" href="%2$s">%3$s</a>',
 											esc_attr__( 'Delete', 'paid-memberships-pro' ),
@@ -884,33 +884,33 @@
 												)
 											),
 											esc_html__( 'Orders', 'paid-memberships-pro' )
-                                    	);
+										);
 									}
 
-                                    /**
-                                     * Filter the extra actions for this discount code.
-                                     *
-                                     * @since TBD
-                                     *
-                                     * @param array  $actions The list of actions.
-                                     * @param object $code    The discount code data.
-                                     */
-                                    $actions = apply_filters( 'pmpro_discountcodes_row_actions', $actions, $code );
+									/**
+									 * Filter the extra actions for this discount code.
+									 *
+									 * @since TBD
+									 *
+									 * @param array  $actions The list of actions.
+									 * @param object $code    The discount code data.
+									 */
+									$actions = apply_filters( 'pmpro_discountcodes_row_actions', $actions, $code );
 
-                                    $actions_html = [];
+									$actions_html = [];
 
-                                    foreach ( $actions as $action => $link ) {
-	                                    $actions_html[] = sprintf(
-	                                    	'<span class="%1$s">%2$s</span>',
+									foreach ( $actions as $action => $link ) {
+										$actions_html[] = sprintf(
+											'<span class="%1$s">%2$s</span>',
 											esc_attr( $action ),
 											$link
-	                                    );
-                                    }
+										);
+									}
 
-                                    if ( ! empty( $actions_html ) ) {
-	                                    echo implode( ' | ', $actions_html );
-                                    }
-                                    ?>
+									if ( ! empty( $actions_html ) ) {
+										echo implode( ' | ', $actions_html );
+									}
+									?>
 								</div>
 							</td>
 							<td>
