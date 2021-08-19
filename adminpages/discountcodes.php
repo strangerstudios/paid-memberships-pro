@@ -353,10 +353,10 @@
 			$pmpro_msgt = "error";
 		}
 	}
-	
+
 	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
 		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
-		
+
 		if( $pmpro_msgt == 'success' ) {
 			$pmpro_msgt = 'warning';
 		}
@@ -415,7 +415,7 @@
 						$copy ),
 						OBJECT
 					);
-					
+
 					$temp_code = $code;
 				}
 
@@ -427,7 +427,7 @@
 				{
 					$code = new stdClass();
 					$code->code = pmpro_getDiscountCode();
-					
+
 					if( ! empty( $copy ) && $copy > 0 ) {
 						$code->starts = $temp_code->starts;
 						$code->expires = $temp_code->expires;
@@ -795,7 +795,7 @@
 						<td colspan="6">
 							<?php echo esc_attr_e( 'Code not found.', 'paid-memberships-pro' ); ?>
 						</td>
-					</tr> 
+					</tr>
 					<?php } ?>
 					<?php
 						foreach($codes as $code) {
@@ -806,20 +806,107 @@
 							<td class="has-row-actions">
 								<a title="<?php echo sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $code->code ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>"><?php echo $code->code?></a>
 								<div class="row-actions">
-									<span class="edit">
-										<a title="<?php _e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Edit', 'paid-memberships-pro' ); ?></a>
-									</span> |
-									<span class="copy">
-										<a title="<?php _e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => -1, 'copy' => $code->id ), admin_url('admin.php' ) ); ?>"><?php _e( 'Copy', 'paid-memberships-pro' ); ?></a>
-									</span> |
-									<span class="delete">
-										<a title="<?php _e( 'Delete', 'paid-memberships-pro' ); ?>" href="javascript:pmpro_askfirst('<?php echo str_replace("'", "\'", sprintf(__('Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ), $code->code));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-discountcodes', 'delete' => $code->id), admin_url( 'admin.php' ) ), 'delete', 'pmpro_discountcodes_nonce'); ?>'); void(0);"><?php _e('Delete', 'paid-memberships-pro' ); ?></a>
-									</span>
-									<?php if ( (int)$uses > 0 ) { ?>
-										| <span class="orders">
-											<a title="<?php _e(' View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $code->id, 'filter' => 'with-discount-code' ), admin_url('admin.php' ) ); ?>"><?php _e( 'Orders', 'paid-memberships-pro' ); ?></a>
-										</span>
-									<?php } ?>
+									<?php
+									$delete_text = esc_html(
+										sprintf(
+											// translators: %s is the Discount Code.
+											__( 'Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ),
+											$code->code
+										)
+									);
+
+									$delete_nonce_url = wp_nonce_url(
+										add_query_arg(
+											[
+												'page'   => 'pmpro-discountcodes',
+												'delete' => $code->id,
+											],
+											admin_url( 'admin.php' )
+										),
+										'delete',
+										'pmpro_discountcodes_nonce'
+									);
+
+									$actions = [
+										'edit'   => sprintf(
+											'<a title="%1$s" href="%2$s">%3$s</a>',
+											esc_attr__( 'Edit', 'paid-memberships-pro' ),
+											esc_url(
+												add_query_arg(
+													[
+														'page' => 'pmpro-discountcodes',
+														'edit' => $code->id,
+													],
+													admin_url( 'admin.php' )
+												)
+											),
+											esc_html__( 'Edit', 'paid-memberships-pro' )
+										),
+										'copy'   => sprintf(
+											'<a title="%1$s" href="%2$s">%3$s</a>',
+											esc_attr__( 'Copy', 'paid-memberships-pro' ),
+											esc_url(
+												add_query_arg(
+													[
+														'page' => 'pmpro-discountcodes',
+														'edit' => - 1,
+														'copy' => $code->id,
+													],
+													admin_url( 'admin.php' )
+												)
+											),
+											esc_html__( 'Copy', 'paid-memberships-pro' )
+										),
+										'delete' => sprintf(
+											'<a title="%1$s" href="%2$s">%3$s</a>',
+											esc_attr__( 'Delete', 'paid-memberships-pro' ),
+											'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
+											esc_html__( 'Delete', 'paid-memberships-pro' )
+										),
+									];
+
+									if ( 0 < (int) $uses ) {
+										$actions['orders'] = sprintf(
+											'<a title="%1$s" href="%2$s">%3$s</a>',
+											esc_attr__( 'View Orders', 'paid-memberships-pro' ),
+											esc_url(
+												add_query_arg(
+													[
+														'page'          => 'pmpro-orders',
+														'discount-code' => $code->id,
+														'filter'        => 'with-discount-code',
+													],
+													admin_url( 'admin.php' )
+												)
+											),
+											esc_html__( 'Orders', 'paid-memberships-pro' )
+										);
+									}
+
+									/**
+									 * Filter the extra actions for this discount code.
+									 *
+									 * @since TBD
+									 *
+									 * @param array  $actions The list of actions.
+									 * @param object $code    The discount code data.
+									 */
+									$actions = apply_filters( 'pmpro_discountcodes_row_actions', $actions, $code );
+
+									$actions_html = [];
+
+									foreach ( $actions as $action => $link ) {
+										$actions_html[] = sprintf(
+											'<span class="%1$s">%2$s</span>',
+											esc_attr( $action ),
+											$link
+										);
+									}
+
+									if ( ! empty( $actions_html ) ) {
+										echo implode( ' | ', $actions_html );
+									}
+									?>
 								</div>
 							</td>
 							<td>
