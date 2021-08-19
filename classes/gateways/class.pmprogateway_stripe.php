@@ -1385,6 +1385,7 @@ class PMProGateway_stripe extends PMProGateway {
 				} else {
 					_e( "Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'paid-memberships-pro' );
 				}
+				printf( ' ' . esc_html__( 'Alternatively, you can make changes to this user\'s subscription directly in Stripe from their %sStripe Customer Page%s.' ), '<a target="_blank" href="https://dashboard.stripe.com/customers/' . esc_attr( $user->pmpro_stripe_customerid ) . '">', '</a>' );
 				?>
             </p>
             <table class="form-table">
