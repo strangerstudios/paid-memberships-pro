@@ -1921,140 +1921,124 @@ class PMProGateway_stripe extends PMProGateway {
 	function getCustomer( &$order = false, $force = false ) {
 		global $current_user;
 
-		//already have it?
+		// Already have it?
 		if ( ! empty( $this->customer ) && ! $force ) {
 			return $this->customer;
-		}
+		}		
 
-		// Is it already on the order?
-		if ( ! empty( $order->customer_id ) ) {
-			$customer_id = $order->customer_id;
-		}
-
-		//figure out user_id and user
+		// Figure out user_id.
 		if ( ! empty( $order->user_id ) ) {
 			$user_id = $order->user_id;
-		}
-
-		//if no id passed, check the current user
-		if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+		} elseif ( ! empty( $current_user->ID ) ) {
 			$user_id = $current_user->ID;
 		}
+		$user = empty( $user_id ) ? null : get_userdata( $user_id );
 
-		if ( ! empty( $user_id ) ) {
-			$user = get_userdata( $user_id );
-		} else {
-			$user = null;
+		// Make sure we have an order.
+		if ( empty ( $order ) ) {
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user_id, array(
+				'success',
+				'cancelled'
+			), null, 'stripe', $order->Gateway->gateway_environment );
 		}
 
-		//transaction id?
-		if ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "cus_" ) !== false ) {
-			$customer_id = $order->subscription_transaction_id;
-		} else {
-			//try based on user id
-			if ( ! empty( $user_id ) ) {
-				$customer_id = get_user_meta( $user_id, "pmpro_stripe_customerid", true );
+		// Try to find the customer's ID.
+		if ( ! empty( $order->customer_id ) ) {
+			// Customer ID is already in the order.
+			$customer_id = $order->customer_id;
+		} elseif ( ! empty( $user_id ) && ! empty( get_user_meta( $user_id, 'pmpro_stripe_customerid', true ) ) ) {
+			// Customer ID in user meta.
+			$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
+		} elseif ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
+			// Get the Customer ID from their subscription.
+			try {
+				$subscription = Stripe_Subscription::retrieve( $order->subscription_transaction_id );
+			} catch ( \Throwable $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
+			} catch ( \Exception $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
 			}
 
-			//look up by transaction id
-			if ( empty( $customer_id ) && ! empty( $user_id ) ) {//user id from this order or the user's last stripe order
-				if ( ! empty( $order->payment_transaction_id ) ) {
-					$payment_transaction_id = $order->payment_transaction_id;
-				} else {
-					//find the user's last stripe order
-					$last_order = new MemberOrder();
-					$last_order->getLastMemberOrder( $user_id, array(
-						'success',
-						'cancelled'
-					), null, 'stripe', $order->Gateway->gateway_environment );
-					if ( ! empty( $last_order->payment_transaction_id ) ) {
-						$payment_transaction_id = $last_order->payment_transaction_id;
-					}
-				}
-
-				//we have a transaction id to look up
-				if ( ! empty( $payment_transaction_id ) ) {
-					if ( strpos( $payment_transaction_id, "ch_" ) !== false ) {
-						//charge, look it up
-						try {
-							$charge = Stripe_Charge::retrieve( $payment_transaction_id );
-						} catch ( \Throwable $e ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
-
-							return false;
-						} catch ( \Exception $e ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
-
-							return false;
-						}
-
-						if ( ! empty( $charge ) && ! empty( $charge->customer ) ) {
-							$customer_id = $charge->customer;
-						}
-					} else if ( strpos( $payment_transaction_id, "in_" ) !== false ) {
-						//invoice look it up
-						try {
-							$invoice = Stripe_Invoice::retrieve( $payment_transaction_id );
-						} catch ( \Throwable $e ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
-
-							return false;
-						} catch ( \Exception $e ) {
-							$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
-
-							return false;
-						}
-
-						if ( ! empty( $invoice ) && ! empty( $invoice->customer ) ) {
-							$customer_id = $invoice->customer;
-						}
-					}
-				}
-
-				//if we found it, save to user meta for future reference
-				if ( ! empty( $customer_id ) ) {
-					update_user_meta( $user_id, "pmpro_stripe_customerid", $customer_id );
-				}
+			if ( ! empty( $subscription ) && ! empty( $subscription->customer ) ) {
+				$customer_id = $subscription->customer;
 			}
+		} elseif ( ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "ch_" ) !== false ) {
+			// Get the Customer ID from their charge.
+			try {
+				$charge = Stripe_Charge::retrieve( $order->payment_transaction_id );
+			} catch ( \Throwable $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
+			} catch ( \Exception $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
+			}
+
+			if ( ! empty( $charge ) && ! empty( $charge->customer ) ) {
+				$customer_id = $charge->customer;
+			}
+		} elseif ( ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "in_" ) !== false ) {
+			// Get the Customer ID from their invoice.
+			try {
+				$invoice = Stripe_Invoice::retrieve( $order->payment_transaction_id );
+			} catch ( \Throwable $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
+			} catch ( \Exception $e ) {
+				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
+
+				return false;
+			}
+
+			if ( ! empty( $invoice ) && ! empty( $invoice->customer ) ) {
+				$customer_id = $invoice->customer;
+			}
+		}		
+
+		// If we found a customer ID, save to user meta for future reference.
+		if ( ! empty(  $user_id ) && ! empty( $customer_id ) ) {
+			update_user_meta( $user_id, "pmpro_stripe_customerid", $customer_id );
 		}
 
-		//get name and email values from order in case we update
+		// Get name and email values so that we can update Stripe Customer.
 		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
 			$name = trim( $order->FirstName . " " . $order->LastName );
 		} elseif ( ! empty( $order->FirstName ) ) {
 			$name = $order->FirstName;
 		} elseif ( ! empty( $order->LastName ) ) {
 			$name = $order->LastName;
-		}
-
-		if ( empty( $name ) && ! empty( $user->ID ) ) {
+		} elseif ( ! empty( $user->ID ) ) {
 			$name = trim( $user->first_name . " " . $user->last_name );
-
-			//still empty?
 			if ( empty( $name ) ) {
+				// In case first and last names aren't set.
 				$name = $user->user_login;
 			}
-		} elseif ( empty( $name ) ) {
-			$name = "No Name";
+		} else {
+			$name = 'No Name';
 		}
 
 		if ( ! empty( $order->Email ) ) {
 			$email = $order->Email;
-		} else {
-			$email = "";
-		}
-
-		if ( empty( $email ) && ! empty( $user->ID ) && ! empty( $user->user_email ) ) {
+		} elseif ( ! empty( $user->user_email ) ) {
 			$email = $user->user_email;
-		} elseif ( empty( $email ) ) {
+		} else {
 			$email = "No Email";
 		}
 
-		//check for an existing stripe customer
+		// Check for an existing stripe customer
 		if ( ! empty( $customer_id ) ) {
 			try {
 				$this->customer = Stripe_Customer::retrieve( $customer_id );
-				// Update description.
+
+				// Update customer info if user is paying.
 				if ( ! empty( $order->payment_method_id ) ) {
 					$this->customer->description = $name . " (" . $email . ")";
 					$this->customer->email       = $email;
@@ -2080,13 +2064,13 @@ class PMProGateway_stripe extends PMProGateway {
 
 				return $this->customer;
 			} catch ( \Throwable $e ) {
-				//assume no customer found
+				// Assume no customer found.
 			} catch ( \Exception $e ) {
-				//assume no customer found
+				// Assume no customer found.
 			}
 		}
 
-		//no customer id, create one
+		// No customer id and user is paying, create one.
 		if ( ! empty( $order->payment_method_id ) ) {
 			try {
 				$this->customer = Stripe_Customer::create( array(
@@ -2111,7 +2095,7 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 			if ( ! empty( $user_id ) ) {
-				//user logged in/etc
+				// User logged in/etc.
 				update_user_meta( $user_id, "pmpro_stripe_customerid", $this->customer->id );
 			} else {
 				//user not registered yet, queue it up
