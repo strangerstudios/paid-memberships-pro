@@ -1924,7 +1924,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Already have it?
 		if ( ! empty( $this->customer ) && ! $force ) {
 			return $this->customer;
-		}		
+		}
 
 		// Figure out user_id.
 		if ( ! empty( $order->user_id ) ) {
