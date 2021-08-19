@@ -1824,13 +1824,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	function charge( &$order ) {
-		global $pmpro_currency, $pmpro_currencies;
-		$currency_unit_multiplier = 100; //ie 100 cents per USD
-
-		//account for zero-decimal currencies like the Japanese Yen
-		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
-			$currency_unit_multiplier = 1;
-		}
+		global $pmpro_currency;
 
 		//create a code for the order
 		if ( empty( $order->code ) ) {
@@ -1856,7 +1850,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//charge
 		try {
 			$params = array(
-					"amount"      => $amount * $currency_unit_multiplier, # amount in cents, again
+					"amount"      => $this->convert_price_to_unit_amount( $amount ), # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $this->customer->id,
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
@@ -2223,14 +2217,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	function subscribe( &$order, $checkout = true ) {
-		global $pmpro_currency, $pmpro_currencies;
-
-		$currency_unit_multiplier = 100; //ie 100 cents per USD
-
-		//account for zero-decimal currencies like the Japanese Yen
-		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
-			$currency_unit_multiplier = 1;
-		}
+		global $pmpro_currency;
 
 		//create a code for the order
 		if ( empty( $order->code ) ) {
@@ -2326,7 +2313,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//create a plan
 		try {
 			$plan = array(
-				"amount"                 => $amount * $currency_unit_multiplier,
+				"amount"                 => $this->convert_price_to_unit_amount( $amount ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -2977,14 +2964,7 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	function create_payment_intent( &$order ) {
-
-		global $pmpro_currencies, $pmpro_currency;
-
-		// Account for zero-decimal currencies like the Japanese Yen
-		$currency_unit_multiplier = 100; //ie 100 cents per USD
-		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
-			$currency_unit_multiplier = 1;
-		}
+		global $pmpro_currency;
 
 		$amount          = $order->InitialPayment;
 		$order->subtotal = $amount;
@@ -2995,7 +2975,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$params = array(
 			'customer'               => $this->customer->id,
 			'payment_method'         => $this->payment_method->id,
-			'amount'                 => $amount * $currency_unit_multiplier,
+			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
 			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
@@ -3082,19 +3062,12 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	function create_plan( &$order ) {
+		global $pmpro_currency;
 
-		global $pmpro_currencies, $pmpro_currency;
-		
 		//figure out the amounts
 		$amount     = $order->PaymentAmount;
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
-
-		// Account for zero-decimal currencies like the Japanese Yen
-		$currency_unit_multiplier = 100; //ie 100 cents per USD
-		if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
-			$currency_unit_multiplier = 1;
-		}
 
 		/*
 		Figure out the trial length (first payment handled by initial charge)
@@ -3146,7 +3119,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//create a plan
 		try {
 			$plan = array(
-				"amount"                 => $amount * $currency_unit_multiplier,
+				"amount"                 => $this->convert_price_to_unit_amount( $amount ),
 				"interval_count"         => $order->BillingFrequency,
 				"interval"               => strtolower( $order->BillingPeriod ),
 				"trial_period_days"      => $trial_period_days,
@@ -3778,5 +3751,28 @@ class PMProGateway_stripe extends PMProGateway {
 			echo '</a>';
 			echo '</p></div>';
 		}
+	}
+
+	/**
+	 * Convert a price to a positive integer in cents (or 0 for a free price)
+	 * representing how much to charge. This is how Stripe wants us to send price amounts.
+	 *
+	 * @param float $price to be converted into cents.
+	 * @return integer
+	 */
+	private function convert_price_to_unit_amount( $price ) {
+		global $pmpro_currencies, $pmpro_currency;
+		$currency_unit_multiplier = 100; // ie 100 cents per USD.
+
+		// Account for zero-decimal currencies like the Japanese Yen.
+		if (
+			is_array( $pmpro_currencies[ $pmpro_currency ] ) &&
+			isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) &&
+			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 
+		) {
+			$currency_unit_multiplier = 1;
+		}
+
+		return intval( $price * $currency_unit_multiplier );
 	}
 }
