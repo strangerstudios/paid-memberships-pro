@@ -61,7 +61,7 @@ function pmpro_block_editor_scripts() {
 	wp_enqueue_script(
 		'pmpro-blocks-editor-js',
 		plugins_url( 'js/blocks.build.js', PMPRO_BASE_FILE ),
-		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor', 'pmpro_admin'),
+		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-block-editor', 'pmpro_admin'),
 		PMPRO_VERSION
 	);
 

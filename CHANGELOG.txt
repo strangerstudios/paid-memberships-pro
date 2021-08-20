@@ -1,4 +1,24 @@
 == Changelog ==
+= 2.6.1 - 2021-08-19 =
+* ENHANCEMENT: Added Email Templates link to PMPro Dashboard for getting started. #1722 (@kimcoleman)
+* BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages. #1724 (@sc0ttkclark)
+* BUG FIX: Remove unused code in `pmpro_comments_filter()` that was triggering a PHP warning. #1730 (@freax)
+* BUG FIX: Stop turning on autoloading for PMPro options when saving them. #1719 (@freax)
+* BUG FIX: Prevent fatal error for PHP 8 in `pmpro_email_templates_email_data()` to strictly check for `WP_User` objects. #1729 (@ZebulanStanphill)
+* BUG FIX: Fix problem where `pmpro_round_price()` would not take into account currencies with decimals set to 0. #1732 (@dparker1005, @ipokkel, @sc0ttkclark)
+
+= 2.6 - 2021-08-12 =
+* FEATURE: Updated Stripe integration to use Stripe Connect. See [Gateway Fees](https://www.paidmembershipspro.com/gateway/stripe/#tab-fees) for information about transaction fees for Stripe Connect and our platform fee for those without an active Plus/Unlimited license.
+* FEATURE: Improved REST API endpoints to support Zapier integration natively.
+* FEATURE: You can now set levels to expire after a certain number of hours, and can set users to expire at a specific time down to the minute.
+* FEATURE: The Member History Add On has been merged into the core PMPro plugin. A table of the user's membership and order history is shown on the edit user page of the admin dashboard.
+* FEATURE: The Email Templates Add On has been merged into the core PMPro plugin. You can edit PMPro-related email templates from the Memberships -> Settings -> Email Templates page in the admin dashboard.
+* FEATURE: You can now use PMPro blocks in the new widget area of WP 5.8.
+* BUG FIX/ENHANCEMENT: Establishing style for scrollable boxes throughout core plugin.
+* BUG FIX/ENHANCEMENT: Using HTTPS to set the pmpro_visit cookie if over HTTPS. (Thanks, freax on GitHub)
+* BUG FIX: Fixed fatal error in PHP 8 when deleting a Stripe webhook. (Thanks, Zebulan Stanphill)
+* BUG FIX: Fixed warnings shown on the widget page when using WP 5.8+.
+
 = 2.5.10.2 - 2021-08-02 =
 * ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
 * BUG FIX/ENHANCEMENT: Updated cancellation logic to support upcoming Cancel on Next Payment Date Add On changes.

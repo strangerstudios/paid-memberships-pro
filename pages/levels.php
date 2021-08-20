@@ -1,4 +1,14 @@
-<?php 
+<?php
+/**
+ * Template: Levels
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
 global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user;
 
 $pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(false, true) );

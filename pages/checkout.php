@@ -1,23 +1,34 @@
 <?php
-	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
-	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+/**
+ * Template: Checkout
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
 
-	/**
-	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 *
-	 * @since 1.8.4.5
-	 *
-	 * @param bool $use_email_type, true to use email type, false to use text type
-	 */
-	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
+global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
-	// Set the wrapping class for the checkout div based on the default gateway;
-	$default_gateway = pmpro_getOption( 'gateway' );
-	if ( empty( $default_gateway ) ) {
-		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
-	} else {
-		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
-	}
+/**
+ * Filter to set if PMPro uses email or text as the type for email field inputs.
+ *
+ * @since 1.8.4.5
+ *
+ * @param bool $use_email_type, true to use email type, false to use text type
+ */
+$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+
+// Set the wrapping class for the checkout div based on the default gateway;
+$default_gateway = pmpro_getOption( 'gateway' );
+if ( empty( $default_gateway ) ) {
+	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
+} else {
+	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
+}
 ?>
 
 <?php do_action('pmpro_checkout_before_form'); ?>

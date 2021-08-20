@@ -1,18 +1,28 @@
 <?php
-	global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user, $wpdb;
+/**
+ * Template: Cancel
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
+global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user, $wpdb;
 
-	if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') {
-		//convert spaces back to +
-		$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
+if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') {
+	//convert spaces back to +
+	$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
 
-		//get the ids
-		$old_level_ids = array_map('intval', explode("+", preg_replace("/[^0-9al\+]/", "", $_REQUEST['levelstocancel'])));
+	//get the ids
+	$old_level_ids = array_map('intval', explode("+", preg_replace("/[^0-9al\+]/", "", $_REQUEST['levelstocancel'])));
 
-	} elseif(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] == 'all') {
-		$old_level_ids = 'all';
-	} else {
-		$old_level_ids = false;
-	}
+} elseif(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] == 'all') {
+	$old_level_ids = 'all';
+} else {
+	$old_level_ids = false;
+}
 ?>
 <div id="pmpro_cancel" class="<?php echo pmpro_get_element_class( 'pmpro_cancel_wrap', 'pmpro_cancel' ); ?>">
 	<?php

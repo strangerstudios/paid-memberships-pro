@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.5.10.2
+ * Version: 2.6.1
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.5.10.2' );
+define( 'PMPRO_VERSION', '2.6.1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -108,12 +108,12 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypal.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
+pmpro_check_for_deprecated_gateways();
+
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_stripe.php' );
 	require_once( PMPRO_DIR . '/includes/lib/stripe-apple-pay/stripe-apple-pay.php' ); // rewrite rules to set up Apple Pay.
 }
-
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php' );
 
 /*
 	Setup the DB and check for upgrades
@@ -165,7 +165,6 @@ function pmpro_gateways() {
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
-		'twocheckout'       => __( '2Checkout', 'paid-memberships-pro' ),
 		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
 
@@ -201,8 +200,8 @@ add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 // activation
 function pmpro_activation() {
 	// schedule crons
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'daily', 'pmpro_cron_expire_memberships' );
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'daily', 'pmpro_cron_expiration_warnings' );
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'hourly', 'pmpro_cron_expiration_warnings' );
 	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
 	pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 
