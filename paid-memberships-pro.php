@@ -80,6 +80,8 @@ require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc me
 require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
 require_once( PMPRO_DIR . '/includes/widgets.php' );          		// widgets for PMPro
 
+require_once( PMPRO_DIR . '/includes/site-health.php' ); 			//Site Health
+
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content
 require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_account] shortcode to show account information
