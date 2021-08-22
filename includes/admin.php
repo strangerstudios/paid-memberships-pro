@@ -58,8 +58,20 @@ function pmpro_block_dashboard() {
 		$block = true;
 	} else {
 		$block = false;
-	}	
+	}
 	$block = apply_filters( 'pmpro_block_dashboard', $block );
 
 	return $block;
 }
+
+/**
+ * Initialize our Site Health integration and add hooks.
+ *
+ * @since TBD
+ */
+function pmpro_init_site_health_integration() {
+	$site_health = PMPro_Site_Health::init();
+	$site_health->hook();
+}
+
+add_action( 'admin_init', 'pmpro_init_site_health_integration' );

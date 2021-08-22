@@ -80,12 +80,12 @@ require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc me
 require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
 require_once( PMPRO_DIR . '/includes/widgets.php' );          		// widgets for PMPro
 
-require_once( PMPRO_DIR . '/includes/site-health.php' ); 			//Site Health
+require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content
 require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_account] shortcode to show account information
-require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );      // [pmpro_login] shortcode to show a login form or logged in member info and menu.
+require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );          // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member_profile_edit.php' );         // [pmpro_member_profile_edit] shortcode to allow members to edit their profile
 
