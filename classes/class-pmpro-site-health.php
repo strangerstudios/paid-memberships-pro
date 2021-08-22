@@ -69,6 +69,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Discount Codes', 'paid-membership-levels' ),
 					'value' => self::get_discount_codes(),
 				],
+				'pmpro-orders'            => [
+					'label' => __( 'Orders', 'paid-membership-levels' ),
+					'value' => self::get_orders(),
+				],
 				'pmpro-gateway'           => [
 					'label' => __( 'Payment Gateway', 'paid-membership-levels' ),
 					'value' => self::get_gateway(),
@@ -122,6 +126,22 @@ class PMPro_Site_Health {
 
 		// translators: %d: The total count of discount codes.
 		return sprintf( _n( '%d discount code', '%d discount codes', $count, 'paid-memberships-pro' ), $count );
+	}
+
+	/**
+	 * Get the order information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The order information.
+	 */
+	public function get_orders() {
+		global $wpdb;
+
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" );
+
+		// translators: %d: The total count of orders.
+		return sprintf( _n( '%d order', '%d orders', $count, 'paid-memberships-pro' ), $count );
 	}
 
 	/**
