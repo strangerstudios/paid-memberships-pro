@@ -61,17 +61,9 @@ class PMPro_Site_Health {
 			'label'       => 'Paid Memberships Pro',
 			'description' => __( 'This debug information for your Paid Memberships Pro installation can assist you in getting support.', 'paid-memberships-pro' ),
 			'fields'      => [
-				'pmpro-membership-levels' => [
-					'label' => __( 'Membership Levels', 'paid-membership-levels' ),
-					'value' => self::get_levels(),
-				],
-				'pmpro-discount-codes'    => [
-					'label' => __( 'Discount Codes', 'paid-membership-levels' ),
-					'value' => self::get_discount_codes(),
-				],
-				'pmpro-orders'            => [
-					'label' => __( 'Orders', 'paid-membership-levels' ),
-					'value' => self::get_orders(),
+				'pmpro-cron-jobs'         => [
+					'label' => __( 'Cron Job Status', 'paid-membership-levels' ),
+					'value' => self::get_cron_jobs(),
 				],
 				'pmpro-gateway'           => [
 					'label' => __( 'Payment Gateway', 'paid-membership-levels' ),
@@ -81,13 +73,21 @@ class PMPro_Site_Health {
 					'label' => __( 'Payment Gateway Environment', 'paid-membership-levels' ),
 					'value' => self::get_gateway_env(),
 				],
+				'pmpro-orders'            => [
+					'label' => __( 'Orders', 'paid-membership-levels' ),
+					'value' => self::get_orders(),
+				],
+				'pmpro-discount-codes'    => [
+					'label' => __( 'Discount Codes', 'paid-membership-levels' ),
+					'value' => self::get_discount_codes(),
+				],
+				'pmpro-membership-levels' => [
+					'label' => __( 'Membership Levels', 'paid-membership-levels' ),
+					'value' => self::get_levels(),
+				],
 				'pmpro-custom-templates'  => [
 					'label' => __( 'Custom Templates', 'paid-membership-levels' ),
 					'value' => self::get_custom_templates(),
-				],
-				'pmpro-cron-jobs'         => [
-					'label' => __( 'Cron Job Status', 'paid-membership-levels' ),
-					'value' => self::get_cron_jobs(),
 				],
 			],
 		];
