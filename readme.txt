@@ -155,7 +155,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.6.1 - 2021-08-19 =
+= 2.6.1 - 2021-08-24 =
+* SECURITY: Added capability checks to further tighten security around email template settings. (@ideadude, @sc0ttkclark)
+* SECURITY: Added a pmpro_kses function and using that to sanitize email template bodies and all email bodies before sending. (@ideadude, @sc0ttkclark)
 * ENHANCEMENT: Added Email Templates link to PMPro Dashboard for getting started. #1722 (@kimcoleman)
 * ENHANCEMENT: All actions in the admin list tables are now filterable for Discount Codes (`pmpro_discountcodes_row_actions`), Membership Levels (`pmpro_membershiplevels_row_actions`), and Orders (`pmpro_orders_user_row_actions`). #1686 (@sc0ttkclark, @mircobabini)
 * BUG FIX: Ensure our admin scripts/styles only load on PMPro admin pages. #1724 (@sc0ttkclark)
