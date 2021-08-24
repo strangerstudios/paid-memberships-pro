@@ -84,7 +84,7 @@ function pmpro_getOption( $s, $force = false ) {
 	}
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field' ) {
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
 	// no value is given, set v to the p var
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
 		if ( is_array( $_POST[ $s ] ) ) {
@@ -100,7 +100,7 @@ function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_fie
 		$v = trim( $v );
 	}
 
-	return update_option( 'pmpro_' . $s, $v );
+	return update_option( 'pmpro_' . $s, $v, $autoload );
 }
 
 function pmpro_get_slug( $post_id ) {
@@ -3073,8 +3073,8 @@ function pmpro_round_price( $price, $currency = '' ) {
 	}
 
 	if ( ! empty( $pmpro_currencies[ $currency ] )
-		&& is_array( $pmpro_currencies[ $pmpro_currency ] )
-		&& ! empty( $pmpro_currencies[ $currency ]['decimals'] ) ) {
+		&& is_array( $pmpro_currencies[ $currency ] )
+		&& isset( $pmpro_currencies[ $currency ]['decimals'] ) ) {
 		$decimals = intval( $pmpro_currencies[ $currency ]['decimals'] );
 	}
 
@@ -3685,4 +3685,18 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 		return false;
 	}
 	
+}
+
+/**
+ * Sanitizing strings using wp_kses and allowing style tags.
+ * @since 2.6.1
+ * @param string $s String to sanitize.
+ * @return string The sanitized string.
+ */
+function pmpro_kses( $s ) {
+	$allowed_html = wp_kses_allowed_html( 'post' );
+	$allowed_html['style'] = [
+		'type' => true,
+	];
+	return wp_kses( $s, $allowed_html );
 }
