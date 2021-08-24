@@ -1,4 +1,7 @@
 <?php
+// Sanitize all PMPro email bodies. @since 2.6.1
+add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
+
 /**
  * The default name for WP emails is WordPress.
  * Use our setting instead.
@@ -211,10 +214,14 @@ function pmpro_email_templates_save_template_data() {
 		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
+	$template = sanitize_text_field( $_REQUEST['template'] );
+	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );	
+	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ) );
+
 	//update this template's settings
-	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_subject', stripslashes( $_REQUEST['subject'] ) );
-	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_body', stripslashes( $_REQUEST['body'] ) );
-	delete_transient( 'pmproet_' . $_REQUEST['template'] );
+	pmpro_setOption( 'email_' . $template . '_subject', $subject );
+	pmpro_setOption( 'email_' . $template . '_body', $body );
+	delete_transient( 'pmproet_' . $template );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
 	
 	exit;

@@ -3686,3 +3686,17 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 	}
 	
 }
+
+/**
+ * Sanitizing strings using wp_kses and allowing style tags.
+ * @since 2.6.1
+ * @param string $s String to sanitize.
+ * @return string The sanitized string.
+ */
+function pmpro_kses( $s ) {
+	$allowed_html = wp_kses_allowed_html( 'post' );
+	$allowed_html['style'] = [
+		'type' => true,
+	];
+	return wp_kses( $s, $allowed_html );
+}
