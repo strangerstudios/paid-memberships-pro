@@ -926,14 +926,14 @@
 		 */
 		function cancel() {			
 			// Only need to cancel on the gateway if there is a subscription id.
-			if ( empty( $this->subscription_transaction_id ) ) {
-				//just mark as cancelled
-				return true;
-			} else {
-				$subscription = new PMPro_Subscription( $this );
-				$result = $subscription->cancel();
-				return $result;
+			if ( ! empty( $this->subscription_transaction_id ) ) {
+				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+				if ( ! empty( $subscription ) ) {
+					return $subscription->cancel();
+				}
 			}
+				
+			return true;
 		}
 
 		/**
