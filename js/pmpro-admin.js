@@ -211,7 +211,7 @@ jQuery(document).ready(function($) {
     
 	/* Variables */
 	var template, disabled, $subject, $editor, $testemail;
-	$subject = $("#email_template_subject").closest("tr");
+	$subject = $("#pmpro_email_template_subject").closest("tr");
 	$editor = $("#wp-email_template_body-wrap");
 	$testemail = $("#test_email_address").closest("tr");
 	
@@ -233,15 +233,15 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $("#submit_template_data").click(function() {
+    $("#pmpro_submit_template_data").click(function() {
         pmpro_save_template()
     });
 
-    $("#reset_template_data").click(function() {
+    $("#pmpro_reset_template_data").click(function() {
         pmpro_reset_template();
     });
 
-    $("#email_template_disable").click(function(e) {
+    $("#pmpro_email_template_disable").click(function(e) {
         pmpro_disable_template();
     });
 
@@ -295,9 +295,9 @@ jQuery(document).ready(function($) {
             }
 
             // populate help text, subject, and body
-            $('#email_template_help_text').text(template_data['help_text']);
-			$('#email_template_subject').val(template_data['subject']);
-			$('#email_template_body').val(template_data['body']);
+            $('#pmpro_email_template_help_text').text(template_data['help_text']);
+			$('#pmpro_email_template_subject').val(template_data['subject']);
+			$('#pmpro_email_template_body').val(template_data['body']);
 
             // disable form
             disabled = template_data['disabled'];
@@ -313,8 +313,8 @@ jQuery(document).ready(function($) {
 
         $data = {
             template: template,
-            subject: $("#email_template_subject").val(),
-            body: $("#email_template_body").val(),
+            subject: $("#pmpro_email_template_subject").val(),
+            body: $("#pmpro_email_template_body").val(),
             action: 'pmpro_email_templates_save_template_data',
             security: $('input[name=security]').val()
         };
@@ -347,8 +347,8 @@ jQuery(document).ready(function($) {
         };
         $.post(ajaxurl, $data, function(response) {
             var template_data = $.parseJSON(response);
-            $('#email_template_subject').val(template_data['subject']);
-            $('#email_template_body').val(template_data['body']);
+            $('#pmpro_email_template_subject').val(template_data['subject']);
+            $('#pmpro_email_template_body').val(template_data['body']);
         });
 
         return true;
@@ -360,7 +360,7 @@ jQuery(document).ready(function($) {
         data = {
             template: template,
             action: 'pmpro_email_templates_disable_template',
-            disabled: $("#email_template_disable").is(":checked"),
+            disabled: $("#pmpro_email_template_disable").is(":checked"),
             security: $('input[name=security]').val()
         };
 
@@ -425,15 +425,15 @@ jQuery(document).ready(function($) {
 
     function pmpro_toggle_form_disabled(disabled) {
         if(disabled == 'true') {
-            $("#email_template_disable").prop('checked', true);
-            $("#email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
-            $("#email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
+            $("#pmpro_email_template_disable").prop('checked', true);
+            $("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
+            $("#pmpro_email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
             $(".controls").hide();
         }
         else {
-            $("#email_template_disable").prop('checked', false);
-            $("#email_template_body").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
-            $("#email_template_subject").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
+            $("#pmpro_email_template_disable").prop('checked', false);
+            $("#pmpro_email_template_body").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
+            $("#pmpro_email_template_subject").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
             $(".controls").show();
         }
 
