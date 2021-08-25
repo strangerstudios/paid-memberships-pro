@@ -4,13 +4,13 @@ Paid Memberships Pro is the "community solution" for membership sites on WordPre
 
 When contributing, please follow these guidelines to ensure things work as smoothly as possible.
 
-__Please Note:__ GitHub is for bug reports and contributions only. If you have a support or customization question, go to our [Member Support Page](http://www.paidmembershipspro.com/support/) instead.
+__Please Note:__ GitHub is for bug reports and contributions only. If you have a support or customization question, go to our [Member Support Page](https://www.paidmembershipspro.com/support/) instead.
 
 ## Getting Started
 
 * __Do not report potential security vulnerabilities here. Email them privately to [info@paidmembershipspro.com](mailto:info@paidmembershipspro.com) with the words "Security Vulnerability" in the subject.__
 * Submit a ticket for your issue, assuming one does not already exist.
-  * Raise it on our [Issue Tracker](https://github.com/strangerstudios/paid-memberships-pro//issues)
+  * Raise it on our [Issue Tracker](https://github.com/strangerstudios/paid-memberships-pro/issues/new/choose)
   * Clearly describe the issue including steps to reproduce the bug.
   * Make sure you fill in the earliest version that you know has the issue as well as the version of WordPress you're using.
 

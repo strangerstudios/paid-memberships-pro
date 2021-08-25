@@ -2,7 +2,7 @@
 
 <!-- Usage questions can also be directed to the public support forum here: https://wordpress.org/support/plugin/paid-memberships-pro, unless this is a question about a premium extension in which case you should use the helpdesk. -->
 
-<!-- If you are a developer who needs a new filter/hook raise a PR instead :) -->
+<!-- If you are a developer who needs a new filter/hook, raise a PR instead :) -->
 
 <!-- Please be as descriptive as possible; issues lacking the below details, or for any other reason than to report a bug, may be closed without action. -->
 

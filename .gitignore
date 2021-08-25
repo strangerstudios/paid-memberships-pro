@@ -17,6 +17,7 @@ $RECYCLE.BIN/
 
 # npm
 node_modules
+package-lock.json
 
 # Temporary files
 *~
@@ -27,3 +28,4 @@ log/*.txt
 tests/_build
 js/blocks.build.asset.php
 js/blocks.build.js.map
+.vscode/settings.json

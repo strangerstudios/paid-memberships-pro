@@ -39,7 +39,11 @@ if (empty($user_order->gateway)) {
 $pmpro_requirebilling = true;
 
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
-$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
+if ( ! empty( $user_order->gateway ) ) {
+    $gateway = $user_order->gateway;
+} else {
+    $gateway = NULL;
+}
 
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );

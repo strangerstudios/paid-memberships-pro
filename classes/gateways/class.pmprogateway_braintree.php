@@ -329,7 +329,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_privatekey"><?php _e('Private Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="braintree_privatekey" name="braintree_privatekey" value="<?php echo esc_attr($values['braintree_privatekey'])?>" class="regular-text code" />
+				<input type="text" id="braintree_privatekey" name="braintree_privatekey" value="<?php echo esc_attr($values['braintree_privatekey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -337,7 +337,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				<label for="braintree_encryptionkey"><?php _e('Client-Side Encryption Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" rows="3" cols="50" class="large-text code"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
+				<textarea id="braintree_encryptionkey" name="braintree_encryptionkey" autocomplete="off" rows="3" cols="50" class="large-text code pmpro-admin-secure-key"><?php echo esc_textarea($values['braintree_encryptionkey'])?></textarea>
 			</td>
 		</tr>
 		<tr class="gateway gateway_braintree" <?php if($gateway != "braintree") { ?>style="display: none;"<?php } ?>>
@@ -706,8 +706,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					$this->customer = Braintree_Customer::find($customer_id);
 
 					//update the customer address, description and card
-					if(!empty($order->accountnumber))
-					{
+					if( ! empty( $order->braintree ) && ! empty( $order->braintree->number ) ) {
 						//put data in array for Braintree API calls
 						$update_array = array(
 							'firstName' => $order->FirstName,
@@ -990,18 +989,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			
 				try {
 					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
+					    // Return, we're already processing the cancellation
+					    return true;
+		            }
 				} catch ( \Exception $e ) {
 				    // Don't do anything
 				}
 			}
 			
 			// Always cancel, even if Braintree fails
-			$order->updateStatus("cancelled" );
-			
-			if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
-			    // Return, we're already processing the cancellation
-			    return true;
-            }
+			$order->updateStatus("cancelled" );			
             
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
@@ -1070,5 +1068,45 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			* @param int $level_id the level id to make a plan id for
 			*/
 			return apply_filters( 'pmpro_braintree_plan_id', 'pmpro_' . $level_id, $level_id );
+	}
+
+	function get_subscription( &$order ) {
+		// Does order have a subscription?
+		if ( empty( $order ) || empty( $order->subscription_transaction_id ) ) {
+			return false;
+		}
+
+		try {
+			$subscription = Braintree_Subscription::find( $order->subscription_transaction_id );
+		} catch ( Exception $e ) {
+			$order->error      = __( "Error getting subscription with Braintree:", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		return $subscription;
+	}
+
+	/**
+	 * Filter pmpro_next_payment to get date via API if possible
+	 */
+	static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
+		// Check that we have a user ID...
+		if ( ! empty( $user_id ) ) {
+			// Get last order...
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user_id, $order_status );
+
+			// Check if this is a Braintree order with a subscription transaction id...
+			if ( ! empty( $order->id ) && ! empty( $order->subscription_transaction_id ) && $order->gateway == "braintree" ) {
+				// Get the subscription and return the next billing date.
+				$subscription = $order->Gateway->get_subscription( $order );
+				if ( ! empty( $subscription ) ) {
+					$timestamp = $subscription->nextBillingDate->getTimestamp();
+				}
+			}
+		}
+
+		return $timestamp;
 	}
 }

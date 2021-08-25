@@ -12,7 +12,8 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	extract(shortcode_atts(array(
 		'level' => NULL,
 		'levels' => NULL,
-		'delay' => NULL
+		'delay' => NULL,
+		'show_noaccess' => NULL
 	), $atts));
 
 	//if levels is used instead of level
@@ -54,9 +55,9 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	{		
 		//okay, this post requires membership. start by getting the user's startdate
 		if(!empty($levels))
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . implode(",", $levels) . ") AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
 		else
-			$sqlQuery = "SELECT UNIX_TIMESTAMP(startdate) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
+			$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $current_user->ID . "' ORDER BY id LIMIT 1";
 
 		$startdate = $wpdb->get_var($sqlQuery);
 
@@ -85,7 +86,13 @@ function pmpro_shortcode_membership($atts, $content=null, $code="")
 	//to show or not to show
 	if($hasaccess)
 		return do_shortcode($content);	//show content
-	else
-		return "";	//just hide it
+	else {
+		if ( empty( $show_noaccess ) ) {
+			return '';
+		} else {
+			$content = '';
+			return pmpro_get_no_access_message( $content, $levels );
+		}
+	}
 }
 add_shortcode("membership", "pmpro_shortcode_membership");

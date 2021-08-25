@@ -1,8 +1,11 @@
 <?php
 /**
  * Notes in a Pointer dialog box for guiding users in the dashboard interface.
+ *
+ * NOTE: Disabled for now until we need a new pointer.
  */
-add_action( 'admin_enqueue_scripts', 'pmpro_enqueue_admin_pointer_scripts' );
+///add_action( 'admin_enqueue_scripts', 'pmpro_enqueue_admin_pointer_scripts' );
+
 /**
  * Enqueue the scripts needed to builder admin pointers.
  * 

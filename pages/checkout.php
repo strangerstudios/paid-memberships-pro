@@ -1,35 +1,51 @@
 <?php
-	global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
-	global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
+/**
+ * Template: Checkout
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
 
-	/**
-	 * Filter to set if PMPro uses email or text as the type for email field inputs.
-	 *
-	 * @since 1.8.4.5
-	 *
-	 * @param bool $use_email_type, true to use email type, false to use text type
-	 */
-	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
+global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
-	// Set the wrapping class for the checkout div based on the default gateway;
-	$default_gateway = pmpro_getOption( 'gateway' );
-	if ( empty( $default_gateway ) ) {
-		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
-	} else {
-		$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
-	}
+/**
+ * Filter to set if PMPro uses email or text as the type for email field inputs.
+ *
+ * @since 1.8.4.5
+ *
+ * @param bool $use_email_type, true to use email type, false to use text type
+ */
+$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
+
+// Set the wrapping class for the checkout div based on the default gateway;
+$default_gateway = pmpro_getOption( 'gateway' );
+if ( empty( $default_gateway ) ) {
+	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
+} else {
+	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-' . $default_gateway;
+}
 ?>
+
+<?php do_action('pmpro_checkout_before_form'); ?>
+
 <div id="pmpro_level-<?php echo $pmpro_level->id; ?>" class="<?php echo pmpro_get_element_class( $pmpro_checkout_gateway_class, 'pmpro_level-' . $pmpro_level->id ); ?>">
 <form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php if(!empty($_REQUEST['review'])) echo pmpro_url("checkout", "?level=" . $pmpro_level->id); ?>" method="post">
 
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
 	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 	<?php if ($discount_code && $pmpro_review) { ?>
-		<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
+		<input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
 	<?php } ?>
 
 	<?php if($pmpro_msg) { ?>
-		<div id="pmpro_message" class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
+		<div id="pmpro_message" class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
+			<?php echo apply_filters( 'pmpro_checkout_message', $pmpro_msg, $pmpro_msgt ) ?>
+		</div>
 	<?php } else { ?>
 		<div id="pmpro_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></div>
 	<?php } ?>
@@ -87,7 +103,7 @@
 				<?php if($pmpro_show_discount_code) { ?>
 				<div id="other_discount_code_tr" style="display: none;">
 					<label for="other_discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo pmpro_get_element_class( 'input', 'other_discount_code' ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
+					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'other_discount_code' ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
 					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 				</div>
 				<?php } ?>
@@ -170,18 +186,6 @@
 				<input id="fullname" name="fullname" type="text" class="<?php echo pmpro_get_element_class( 'input', 'fullname' ); ?>" size="30" value="" autocomplete="off"/> <strong><?php _e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
 			</div> <!-- end pmpro_hidden -->
 
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ); ?>">
-			<?php
-				global $recaptcha, $recaptcha_publickey;
-				if($recaptcha == 2 || ($recaptcha == 1 && pmpro_isLevelFree($pmpro_level))) {
-					echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
-				}
-			?>
-			</div> <!-- end pmpro_captcha -->
-
-			<?php
-				do_action('pmpro_checkout_after_captcha');
-			?>
 		</div>  <!-- end pmpro_checkout-fields -->
 	</div> <!-- end pmpro_user_fields -->
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>
@@ -424,7 +428,7 @@
 				<?php if($pmpro_show_discount_code) { ?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
 						<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-						<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
+						<input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
 						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 						<p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ); ?>" style="display: none;"></p>
 					</div>
@@ -447,7 +451,20 @@
 			</h3>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
 				<div id="pmpro_license" class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field', 'pmpro_license' ); ?>">
-<?php echo wpautop(do_shortcode($tospage->post_content));?>
+<?php 
+	/**
+	 * Hook to run formatting filters before displaying the content of your "Terms of Service" page at checkout.
+	 *
+	 * @since 2.4.1
+	 *
+	 * @param string $pmpro_tos_content The content of the post assigned as the Terms of Service page.
+	 * @param string $tospage The post assigned as the Terms of Service page.
+	 *
+	 * @return string $pmpro_tos_content
+	 */
+	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', do_shortcode( $tospage->post_content ), $tospage );
+	echo $pmpro_tos_content;
+?>
 				</div> <!-- end pmpro_license -->
 				<?php
 					if ( isset( $_REQUEST['tos'] ) ) {
@@ -464,6 +481,19 @@
 	?>
 
 	<?php do_action("pmpro_checkout_after_tos_fields"); ?>
+
+	<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ); ?>">
+	<?php
+		global $recaptcha, $recaptcha_publickey;
+		if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+			echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+		}
+	?>
+	</div> <!-- end pmpro_captcha -->
+
+	<?php
+		do_action('pmpro_checkout_after_captcha');
+	?>
 
 	<?php do_action("pmpro_checkout_before_submit_button"); ?>
 

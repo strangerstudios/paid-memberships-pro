@@ -12,7 +12,13 @@ jQuery(document).ready(function(){
 		
 		var strength;		
 		if ( pass1 != '' ) {
-			strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputBlacklist(), pass1 );
+			// Call the disallowed list method corresponding to appropriate WP version.
+			const disallowedList = ( 'function' == typeof wp.passwordStrength.userInputDisallowedList )
+				? wp.passwordStrength.userInputDisallowedList()
+				: wp.passwordStrength.userInputBlacklist();
+
+			strength = wp.passwordStrength.meter( pass1, disallowedList, pass1 );
+
 		} else {
 			strength = -1;
 		}

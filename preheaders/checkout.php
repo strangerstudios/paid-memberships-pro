@@ -238,14 +238,14 @@ if ( isset( $_REQUEST['username'] ) ) {
 	$username = "";
 }
 if ( isset( $_REQUEST['password'] ) ) {
-	$password = sanitize_text_field($_REQUEST['password']);
+	$password = $_REQUEST['password'];
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
 } elseif ( isset( $_REQUEST['password2'] ) ) {
-	$password2 = sanitize_text_field($_REQUEST['password2']);
+	$password2 = $_REQUEST['password2'];
 } else {
 	$password2 = "";
 }
@@ -393,7 +393,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
 			global $recaptcha, $recaptcha_validated;
-			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
 
 				global $recaptcha_privatekey;
 
@@ -552,13 +552,22 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//make the user a subscriber
 			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
 
+			/**
+			 * Allow hooking before the user authentication process when setting up new user.
+			 *
+			 * @since 2.5.10
+			 *
+			 * @param int $user_id The user ID that is being setting up.
+			 */
+			do_action( 'pmpro_checkout_before_user_auth', $user_id );
+
+
 			//okay, log them in to WP
 			$creds                  = array();
 			$creds['user_login']    = $new_user_array['user_login'];
 			$creds['user_password'] = $new_user_array['user_pass'];
 			$creds['remember']      = true;
 			$user                   = wp_signon( $creds, false );
-
 			//setting some cookies
 			wp_set_current_user( $user_id, $username );
 			wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
@@ -586,7 +595,11 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			if( $pmpro_level->cycle_period == 'Hour' ){
+				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			} else {
+				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			}
 		} else {
 			$enddate = "NULL";
 		}
@@ -604,7 +617,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
-		$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+		global $pmpro_checkout_level_ids; // Set by MMPU.
+		if ( isset( $pmpro_checkout_level_ids ) ) {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+		} else {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+		}
+		
 		if ( $code_check[0] == false ) {
 			//error
 			$pmpro_msg  = $code_check[1];
@@ -680,6 +699,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				}
 
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
 			//save billing info ect, as user meta
@@ -729,6 +750,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				if ( empty( $old_lastname ) ) {
 					update_user_meta( $user_id, "last_name", $blastname );
 				}
+			}
+
+			if( $pmpro_level->expiration_period == 'Hour' ){
+				update_user_meta( $user_id, 'pmpro_disable_notifications', true );
 			}
 
 			//show the confirmation

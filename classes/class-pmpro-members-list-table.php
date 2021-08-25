@@ -242,7 +242,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	/**
 	 * Get the table data
 	 *
-	 * @return Array or integer if $count parameter = true
+	 * @return Array|integer if $count parameter = true
 	 */
 	private function sql_table_data( $count = false ) {
 		global $wpdb;
@@ -293,9 +293,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
-				UNIX_TIMESTAMP(mu.startdate) as startdate,
-				UNIX_TIMESTAMP(max(mu.enddate)) as enddate, m.name as membership
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
+				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
 				";
 		}
 			
@@ -407,7 +407,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			do_action( 'pmpro_memberslist_extra_cols_body', $user_object );
 			$extra_cols = ob_get_clean();
 			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
-			$custom_field_num = explode( 'custom_field_', $column_name )[1];
+			$custom_field_num_arr = explode( 'custom_field_', $column_name );
+			$custom_field_num     = $custom_field_num_arr[1];
 			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
 				echo( $matches[1][ intval( $custom_field_num ) ] );
 			}
@@ -542,7 +543,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} else {
 			// Display the member's initial payment.
 			if ( (float)$item['initial_payment'] > 0 ) {
-				$fee .= pmpro_formatPrice( $item['initial_payment'] );
+				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['initial_payment'] ) );
 			}
 			// If there is a recurring payment, show a plus sign.
 			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
@@ -550,7 +551,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 			// If there is a recurring payment, show the recurring payment amount and cycle.
 			if ( (float)$item['billing_amount'] > 0 ) {
-				$fee .= pmpro_formatPrice( $item['billing_amount'] );
+				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['billing_amount'] ) );
 				$fee .= esc_html( ' per ', 'paid-memberships-pro' );
 				if ( $item['cycle_number'] > 1 ) {
 					$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
@@ -573,7 +574,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		if ( empty( $joindate ) ) {
 			return;
 		}
-		return date_i18n( get_option('date_format'), $joindate );
+		return date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $joindate ) ) ) );
 	}
 
 	/**
@@ -620,7 +621,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$l = false;
 			}
 			_e('Show', 'paid-memberships-pro' );?>
-			<select name="l" onchange="jQuery('#member-list-form').submit();">
+			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').submit();">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");

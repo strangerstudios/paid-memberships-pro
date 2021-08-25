@@ -30,7 +30,17 @@ function pmpro_compatibility_checker () {
 			'file' => 'woocommerce.php',
 			'check_type' => 'constant',
 			'check_value' => 'WC_PLUGIN_FILE'
-		)
+		),
+		array(
+			'file' => 'wp-engine.php',
+			'check_type' => 'function',
+			'check_value' => 'wpe_filter_site_url'
+		),
+        array(
+            'file' => 'divi.php',
+            'check_type' => 'constant',
+            'check_value' => 'ET_BUILDER_PLUGIN_DIR'
+        )
     );
 
     foreach ( $compat_checks as $key => $value ) {
@@ -42,3 +52,25 @@ function pmpro_compatibility_checker () {
     }
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
+
+function pmpro_compatibility_checker_themes(){
+
+    $compat_checks = array(
+        array(
+            'file' => 'divi.php',
+            'check_type' => 'constant',
+            'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
+        )
+    );
+
+    foreach ( $compat_checks as $key => $value ) {
+        if ( ( $value['check_type'] == 'constant' && defined( $value['check_value'] ) )
+          || ( $value['check_type'] == 'function' && function_exists( $value['check_value'] ) )
+          || ( $value['check_type'] == 'class' && class_exists( $value['check_value'] ) ) ) {
+            include( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
+        }
+    }
+
+
+}
+add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );

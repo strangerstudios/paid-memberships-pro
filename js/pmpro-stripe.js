@@ -6,7 +6,11 @@ jQuery( document ).ready( function( $ ) {
 	var stripe, elements, cardNumber, cardExpiry, cardCvc;
 
 	// Identify with Stripe.
-	stripe = Stripe( pmproStripe.publishableKey );
+	if ( pmproStripe.user_id ) {
+		stripe = Stripe( pmproStripe.publishableKey, { stripeAccount: pmproStripe.user_id, locale: 'auto' } );
+	} else {
+		stripe = Stripe( pmproStripe.publishableKey, { locale: 'auto' } );
+	}
 	elements = stripe.elements();
 
 	// Create Elements.
@@ -14,10 +18,16 @@ jQuery( document ).ready( function( $ ) {
 	cardExpiry = elements.create('cardExpiry');
 	cardCvc = elements.create('cardCvc');
 
-	// Mount Elements.
-	cardNumber.mount('#AccountNumber');
-	cardExpiry.mount('#Expiry');
-	cardCvc.mount('#CVV');
+	// Mount Elements. Ensure CC field is present before loading Stripe.
+	if ( $( '#AccountNumber' ).length > 0 ) { 
+		cardNumber.mount('#AccountNumber');
+	}
+	if ( $( '#Expiry' ).length > 0 ) { 
+		cardExpiry.mount('#Expiry');
+	}
+	if ( $( '#CVV' ).length > 0 ) { 
+		cardCvc.mount('#CVV');
+	}
 	
 	// Handle authentication for charge if required.
 	if ( 'undefined' !== typeof( pmproStripe.paymentIntent ) ) {
@@ -27,7 +37,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardAction( pmproStripe.paymentIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 	
@@ -39,7 +49,7 @@ jQuery( document ).ready( function( $ ) {
 			$('input[type=image]', this).attr('disabled', 'disabled');
 			$('#pmpro_processing_message').css('visibility', 'visible');
 			stripe.handleCardSetup( pmproStripe.setupIntent.client_secret )
-				.then( stripeResponseHandler );
+				.then( pmpro_stripeResponseHandler );
 		}
 	}
 
@@ -78,7 +88,7 @@ jQuery( document ).ready( function( $ ) {
 					address: address,
 					name: name,
 				}
-			}).then( stripeResponseHandler );
+			}).then( pmpro_stripeResponseHandler );
 
 			// Prevent the form from submitting with the default action.
 			return false;
@@ -88,8 +98,83 @@ jQuery( document ).ready( function( $ ) {
 		}
 	});
 
+	// Check if Payment Request Button is enabled.
+	if ( $('#payment-request-button').length ) {
+		var paymentRequest = null;
+
+		// Create payment request
+		jQuery.noConflict().ajax({
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			dataType: 'json',
+			data: jQuery( "#pmpro_form" ).serialize(),
+			success: function(data) {
+				if ( data.hasOwnProperty('initial_payment') ) {
+					paymentRequest = stripe.paymentRequest({
+						country: pmproStripe.accountCountry,
+						currency: pmproStripe.currency,
+						total: {
+							label: pmproStripe.siteName,
+							amount: Math.round( data.initial_payment * 100 ),
+						},
+						requestPayerName: true,
+						requestPayerEmail: true,
+					});
+					var prButton = elements.create('paymentRequestButton', {
+						paymentRequest: paymentRequest,
+					});
+					// Mount payment request button.
+					paymentRequest.canMakePayment().then(function(result) {
+					if (result) {
+						prButton.mount('#payment-request-button');
+					} else {
+						$('#payment-request-button').hide();
+					}
+					});
+					// Handle payment request button confirmation.
+					paymentRequest.on('paymentmethod', function( event ) {
+						$('#pmpro_btn-submit').attr('disabled', 'disabled');
+						$('#pmpro_processing_message').css('visibility', 'visible');
+						$('#payment-request-button').hide();
+						event.complete('success');
+						pmpro_stripeResponseHandler( event );
+					});
+				}
+			}
+		});
+
+		// Find ALL <form> tags on your page
+		jQuery('form').submit(function(){
+			// Hide payment request button on form submit to prevent double charges.
+			jQuery('#payment-request-button').hide();
+		});	
+
+		function stripeUpdatePaymentRequestButton() {
+			jQuery.noConflict().ajax({
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				dataType: 'json',
+				data: jQuery( "#pmpro_form" ).serialize(),
+				success: function(data) {
+					if ( data.hasOwnProperty('initial_payment') ) {
+						paymentRequest.update({
+							total: {
+								label: pmproStripe.siteName,
+								amount: Math.round( data.initial_payment * 100 ),
+							},
+						});
+					}
+				}
+			});
+		}
+
+		if ( pmproStripe.updatePaymentRequestButton ) {
+			$(".pmpro_alter_price").change(function(){
+				stripeUpdatePaymentRequestButton();
+			});
+		}
+	}
+
 	// Handle the response from Stripe.
-	function stripeResponseHandler( response ) {
+	function pmpro_stripeResponseHandler( response ) {
 
 		var form, data, card, paymentMethodId, customerId;
 

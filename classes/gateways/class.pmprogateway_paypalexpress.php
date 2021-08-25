@@ -178,7 +178,7 @@
 				<label for="apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr($values['apipassword'])?>" class="regular-text code" />
+				<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr($values['apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
@@ -273,7 +273,7 @@
 				else
 					$username = "";
 				if(isset($_REQUEST['password']))
-					$password = sanitize_text_field($_REQUEST['password']);
+					$password = $_REQUEST['password'];
 				else
 					$password = "";
 				if(isset($_REQUEST['bemail']))
@@ -322,22 +322,28 @@
 
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
-				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
-				if($morder->Token)
-				{
-					if($morder->Gateway->getExpressCheckoutDetails($morder))
+				
+				if( $morder->status === 'token' ){
+					$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
+					if($morder->Token)
 					{
-						$pmpro_review = true;
+						if($morder->Gateway->getExpressCheckoutDetails($morder))
+						{
+							$pmpro_review = true;
+						}
+						else
+						{
+							$pmpro_msg = $morder->error;
+							$pmpro_msgt = "pmpro_error";
+						}
 					}
 					else
 					{
-						$pmpro_msg = $morder->error;
+						$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
 						$pmpro_msgt = "pmpro_error";
 					}
-				}
-				else
-				{
-					$pmpro_msg = __("The PayPal Token was lost.", 'paid-memberships-pro' );
+				}else{
+					$pmpro_msg = __("Checkout was already processed.", 'paid-memberships-pro' );
 					$pmpro_msgt = "pmpro_error";
 				}
 			}
@@ -415,9 +421,15 @@
 			if(!$current_user->ID)
 			{
 				//reload the user fields
-				$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
-				$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
-				$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+				if( ! empty( $_SESSION['pmpro_signup_username'] ) ){
+					$new_user_array['user_login'] = $_SESSION['pmpro_signup_username'];
+				}
+				if( ! empty( $_SESSION['pmpro_signup_password'] ) ){
+					$new_user_array['user_pass'] = $_SESSION['pmpro_signup_password'];
+				}
+				if( ! empty( $_SESSION['pmpro_signup_email'] ) ){
+					$new_user_array['user_email'] = $_SESSION['pmpro_signup_email'];
+				}
 
 				//unset the user fields in session
 				unset($_SESSION['pmpro_signup_username']);
@@ -473,7 +485,7 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
@@ -585,7 +597,6 @@
 
 				//exit('SetExpressCheckout Completed Successfully: '.print_r($this->httpParsedResponseAr, true));
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -614,11 +625,11 @@
 				$order->status = "review";
 
 				//update order
+
 				$order->saveOrder();
 
 				return true;
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -672,7 +683,6 @@
 
 				return true;
 			} else  {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -683,7 +693,7 @@
 
 		function subscribe(&$order)
 		{
-			global $pmpro_currency;
+			global $pmpro_currency, $pmpro_review;
 
 			if(empty($order->code))
 				$order->code = $order->getRandomCode();
@@ -728,8 +738,12 @@
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
+			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
+			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
+
 			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
+			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
 
 			///echo str_replace("&", "&<br />", $nvpStr);
@@ -738,16 +752,44 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('CreateRecurringPaymentsProfile', $nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->status = "success";
-				$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
-				$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+				// PayPal docs says that PROFILESTATUS can be:
+				// 1. ActiveProfile — The recurring payment profile has been successfully created and activated for scheduled payments according the billing instructions from the recurring payments profile.
+				// 2. PendingProfile — The system is in the process of creating the recurring payment profile. Please check your IPN messages for an update.
+				// Also, we have seen that PROFILESTATUS can be missing. That case would be an error.
+				if(isset($this->httpParsedResponseAr["PROFILESTATUS"]) && in_array($this->httpParsedResponseAr["PROFILESTATUS"], array("ActiveProfile", "PendingProfile"))) {
+					$order->status = "success";
 
-				//update order
-				$order->saveOrder();
+					// this is wrong, but we don't know the real transaction id at this point
+					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 
-				return true;
+					//update order
+					$order->saveOrder();
+
+					return true;
+				} else {
+					// stop processing the review request on checkout page
+					$pmpro_review = false;
+
+					$order->status = "error";
+
+					// this is wrong, but we don't know the real transaction id at this point
+					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
+
+					$order->errorcode = '';
+					$order->error = __( 'Something went wrong creating plan with PayPal; missing PROFILESTATUS.', 'paid-memberships-pro' );
+					$order->shorterror = __( 'Error creating plan with PayPal.', 'paid-memberships-pro' );
+
+					//update order
+					$order->saveOrder();
+
+					return false;
+				}
 			} else  {
-				$order->status = "error";
+				// stop processing the review request on checkout page
+				$pmpro_review = false;
+
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -785,7 +827,6 @@
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
 				return true;
 			} else {
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']) . ". " . __("Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward.", 'paid-memberships-pro' );
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
@@ -813,11 +854,119 @@
 			}
 			else
 			{
-				$order->status = "error";
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
+				return false;
+			}
+		}
+		
+		function getTransactionStatus(&$order) {
+			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
+			if( false === $transaction_details ){
+				return false;
+			}
+
+			if( ! isset( $transaction_details['PAYMENTSTATUS'] ) ){
+				return false;
+			}
+
+			return $transaction_details['PAYMENTSTATUS'];
+		}
+
+		function getTransactionDetailsByOrder(&$order)
+		{
+			if(empty($order->payment_transaction_id))
+				return false;
+
+			if( $order->payment_transaction_id == $order->subscription_transaction_id ){
+				$payment_transaction_id = $this->getRealPaymentTransactionId( $order );
+				if( ! $payment_transaction_id ){
+					return false;
+				}
+
+				return $this->getTransactionDetails( $payment_transaction_id );
+			}else{
+				/** Recurring payment **/
+				return $this->getTransactionDetails( $order->payment_transaction_id );
+			}
+		}
+		
+		/**
+		 * Try to recover the real payment_transaction_id when payment_transaction_id === subscription_transaction_id === I-xxxxxxxx.
+		 *
+		 * @since 1.8.5
+		*/
+		function getRealPaymentTransactionId(&$order)
+		{
+			/** Initial payment **/
+			$nvpStr = "";
+			// STARTDATE is Required, even if useless here. Start from 24h before the order timestamp, to avoid timezone related issues.
+			$nvpStr .= "&STARTDATE=" . urlencode( gmdate( DATE_W3C, $order->getTimestamp() - DAY_IN_SECONDS ) . 'Z' );
+			// filter results by a specific transaction id.
+			$nvpStr .= "&TRANSACTIONID=" . urlencode($order->subscription_transaction_id);
+
+			$this->httpParsedResponseAr = $this->PPHttpPost('TransactionSearch', $nvpStr);
+
+			if( ! in_array( strtoupper( $this->httpParsedResponseAr["ACK"] ), [ 'SUCCESS', 'SUCCESSWITHWARNING' ] ) ){
+				// since we are using TRANSACTIONID=I-... which is NOT a transaction id,
+				// paypal is returning an error. but the results are actually filtered by that transaction id, usually.
+
+				// let's double check it.
+				if( ! isset( $this->httpParsedResponseAr['L_TRANSACTIONID0'] ) ){
+					// really no results? it's a real error.
+					return false;
+				}
+			}
+
+			$transaction_ids = [];
+			for( $i = 0; $i < PHP_INT_MAX; $i++ ){
+				// loop until we have results
+				if( ! isset( $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ) ){
+					break;
+				}
+
+				// ignore I-... results
+				if( "I-" === substr( $this->httpParsedResponseAr["L_TRANSACTIONID$i"], 0 ,2 ) ){
+					if( $order->subscription_transaction_id != $this->httpParsedResponseAr["L_TRANSACTIONID$i"] ){
+						// if we got a result from another I- subscription transaction id,
+						// then something changed into paypal responses.
+						// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
+						throw new Exception();
+					}
+
+					continue;
+				}
+
+				$transaction_ids[] = $this->httpParsedResponseAr["L_TRANSACTIONID$i"];
+			}
+
+			// no payment_transaction_ids in results
+			if( empty( $transaction_ids ) ){
+				return false;
+			}
+
+			// found the payment transaction id, it's the last one (the oldest)
+			$payment_transaction_id = end( $transaction_ids );
+			
+			return $payment_transaction_id;
+		}
+		
+		function getTransactionDetails($payment_transaction_id)
+        	{
+			$nvpStr = "";
+			$nvpStr .= "&TRANSACTIONID=" . urlencode($payment_transaction_id);
+
+			$this->httpParsedResponseAr = $this->PPHttpPost('GetTransactionDetails', $nvpStr);
+
+			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"]))
+			{
+				return $this->httpParsedResponseAr;
+			}
+			else
+			{
+				// var_dump( $this->httpParsedResponseAr, $this->httpParsedResponseAr["L_TRANSACTIONID$i"] );
 				return false;
 			}
 		}
