@@ -94,43 +94,63 @@ add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
  * Enqueue admin JavaScript and CSS
  */
 function pmpro_admin_enqueue_scripts() {
-    // Admin JS
-    wp_register_script( 'pmpro_admin',
-                        plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
-                        array( 'jquery', 'jquery-ui-sortable' ),
-                        PMPRO_VERSION );
-    $all_levels = pmpro_getAllLevels( true, true );
-    $all_level_values_and_labels = array();
-    foreach( $all_levels as $level ) {
-        $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
-    }
-    wp_localize_script( 'pmpro_admin', 'pmpro', array(
-        'all_levels' => $all_levels,
-        'all_level_values_and_labels' => $all_level_values_and_labels
-    ));
-    wp_enqueue_script( 'pmpro_admin' );
+	// Admin JS
+	wp_register_script( 'pmpro_admin', plugins_url( 'js/pmpro-admin.js', __DIR__ ), [
+		'jquery',
+		'jquery-ui-sortable',
+	], PMPRO_VERSION );
 
-    // Admin CSS
-    $admin_css_rtl = false;
-    if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
-        $admin_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin.css";
-        if( is_rtl() && file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin-rtl.css") ) {
-            $admin_css_rtl = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin-rtl.css";
-        }
-    } elseif(file_exists(get_template_directory() . "/paid-memberships-pro/admin.css")) {
-        $admin_css = get_template_directory_uri() . "/paid-memberships-pro/admin.css";
-        if( is_rtl() && file_exists(get_template_directory() . "/paid-memberships-pro/css/admin-rtl.css") ) {
-            $admin_css_rtl = get_template_directory_uri() . "/paid-memberships-pro/css/admin-rtl.css";
-        }
-    } else {
-        $admin_css = plugins_url('css/admin.css',dirname(__FILE__) );
-        if( is_rtl() ) {
-            $admin_css_rtl = plugins_url('css/admin-rtl.css',dirname(__FILE__) );
-        }
-    }
-    wp_enqueue_style('pmpro_admin', $admin_css, array(), PMPRO_VERSION, "screen");
-    if( $admin_css_rtl ) {
-        wp_enqueue_style('pmpro_admin_rtl', $admin_css_rtl, array(), PMPRO_VERSION, "screen");
-    }
+	$all_levels                  = pmpro_getAllLevels( true, true );
+	$all_level_values_and_labels = [];
+
+	foreach ( $all_levels as $level ) {
+		$all_level_values_and_labels[] = [
+			'value' => $level->id,
+			'label' => $level->name,
+		];
+	}
+
+	wp_localize_script( 'pmpro_admin', 'pmpro', [
+		'all_levels'                  => $all_levels,
+		'all_level_values_and_labels' => $all_level_values_and_labels,
+	] );
+
+	// Admin CSS
+	$admin_css_rtl = false;
+
+	if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/admin.css' ) ) {
+		$admin_css = get_stylesheet_directory_uri() . '/paid-memberships-pro/css/admin.css';
+
+		if ( is_rtl() && file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/admin-rtl.css' ) ) {
+			$admin_css_rtl = get_stylesheet_directory_uri() . '/paid-memberships-pro/css/admin-rtl.css';
+		}
+	} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/admin.css' ) ) {
+		$admin_css = get_template_directory_uri() . '/paid-memberships-pro/admin.css';
+
+		if ( is_rtl() && file_exists( get_template_directory() . '/paid-memberships-pro/css/admin-rtl.css' ) ) {
+			$admin_css_rtl = get_template_directory_uri() . '/paid-memberships-pro/css/admin-rtl.css';
+		}
+	} else {
+		$admin_css = plugins_url( 'css/admin.css', __DIR__ );
+
+		if ( is_rtl() ) {
+			$admin_css_rtl = plugins_url( 'css/admin-rtl.css', __DIR__ );
+		}
+	}
+
+	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
+
+	if ( $admin_css_rtl ) {
+		wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );
+	}
+
+	// Only enqueue PMPro admin scripts on our own pages.
+	if ( ! isset( $_GET['page'] ) || 0 !== strpos( $_GET['page'], 'pmpro' ) ) {
+		return;
+	}
+
+	wp_enqueue_script( 'pmpro_admin' );
+	wp_enqueue_style( 'pmpro_admin' );
+	wp_enqueue_style( 'pmpro_admin_rtl' );
 }
 add_action( 'admin_enqueue_scripts', 'pmpro_admin_enqueue_scripts' );
