@@ -1009,39 +1009,6 @@
 			return $timestamp;
 		}
 
-		function get_next_payment_date( &$subscription ) {
-			// Get most recent order for this subscription.
-			$morder = $subscription->get_last_order();
-			if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
-				// No valid order found.
-				return '0000-00-00 00:00:00';
-			}
-		
-			//check if this is a paypal express order with a subscription transaction id
-			if(!empty($morder->id) && !empty($morder->subscription_transaction_id) && $morder->gateway == "paypalexpress")
-			{
-				//get the subscription status
-				$status = $morder->getGatewaySubscriptionStatus();
-
-				if(!empty($status) && !empty($status['NEXTBILLINGDATE'])) {
-					//found the next billing date at PayPal, going to use that
-					$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']));
-				}
-				elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled") {
-					//startdate is in the future and we cancelled so going to use that as the next payment date
-					$startdate_timestamp = strtotime(urldecode($status['PROFILESTARTDATE']));
-					if($startdate_timestamp > current_time('timestamp')) {
-						$timestamp = $startdate_timestamp;
-					}
-				} 
-			}
-			if ( empty( $timestamp ) ) {
-				return '0000-00-00 00:00:00';
-			} else {
-				return date( 'Y-m-d H:i:s', $timestamp );
-			}
-		}
-
 		/**
 		 * PAYPAL Function
 		 * Send HTTP POST Request
