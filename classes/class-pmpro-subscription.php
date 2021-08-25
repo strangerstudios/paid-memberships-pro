@@ -22,6 +22,7 @@ class PMPro_Subscription {
 	 */
 	function get_empty_subscription() {
 		$this->id                          = '';
+		$this->user_id                     = '';
 		$this->membership_level_id         = '';
 		$this->gateway                     = '';
 		$this->gateway_environment         = '';
@@ -115,6 +116,7 @@ class PMPro_Subscription {
 		if ( ! empty( $subscription_data ) ) {
 			$this->id                          = $subscription_data->id;
 			$this->membership_level_id         = $subscription_data->membership_level_id;
+			$this->user_id                     = $subscription_data->user_id;
 			$this->gateway                     = $subscription_data->gateway;
 			$this->gateway_environment         = $subscription_data->gateway_environment;  
 			$this->subscription_transaction_id = $subscription_data->subscription_transaction_id;
@@ -151,6 +153,7 @@ class PMPro_Subscription {
 			$subscription->gateway                     = $morder->gateway;
 			$subscription->gateway_environment         = $morder->gateway_environment;
 			$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
+			$subscription->user_id                     = $morder->user_id;
 			$subscription->membership_level_id         = $morder->membership_id;
 			$subscription->startdate                   = $morder->datetime;
 		}
@@ -354,6 +357,7 @@ class PMPro_Subscription {
 			$wpdb->pmpro_subscriptions,
 			array(
 				'id'                         => $this->id,
+				'user_id'                    => $this->user_id,
 				'membership_level_id'        => $this->membership_level_id,
 				'gateway'                    => $this->gateway,
 				'gateway_environment'        => $this->gateway_environment,
@@ -365,6 +369,7 @@ class PMPro_Subscription {
 			),
 			array(
 				'%d',		//id
+				'%d',		//user_id
 				'%d',		//membership_level_id
 				'%s',		//gateway
 				'%s',		//gateway_environment

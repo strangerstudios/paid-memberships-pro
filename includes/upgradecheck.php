@@ -489,6 +489,7 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_subscriptions . "` (
 			`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			`user_id` int(11) unsigned NOT NULL,
 			`membership_level_id` int(20) unsigned NOT NULL,
 			`gateway` varchar(64) NOT NULL,
 			`gateway_environment` varchar(64) NOT NULL,
@@ -499,6 +500,7 @@ function pmpro_db_delta()
 			`next_payment_date` datetime DEFAULT NULL,
 			`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
+			KEY `user_id` (`user_id`),
 			KEY `membership_level_id` (`membership_level_id`),
 			KEY `gateway` (`gateway`),
 			KEY `gateway_environment` (`gateway_environment`),
