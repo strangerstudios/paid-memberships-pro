@@ -58,12 +58,38 @@ if ( function_exists( 'get_default_block_categories' ) ) {
  */
 function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
-	wp_enqueue_script(
+	wp_register_script(
 		'pmpro-blocks-editor-js',
 		plugins_url( 'js/blocks.build.js', PMPRO_BASE_FILE ),
-		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-block-editor', 'pmpro_admin'),
+		[
+			'wp-i18n',
+			'wp-element',
+			'wp-blocks',
+			'wp-components',
+			'wp-api',
+			'wp-block-editor',
+			'pmpro_admin',
+		],
 		PMPRO_VERSION
 	);
+
+	// Build out information needed by the blocks.
+	$all_levels                  = pmpro_getAllLevels( true, true );
+	$all_level_values_and_labels = [];
+
+	foreach ( $all_levels as $level ) {
+		$all_level_values_and_labels[] = [
+			'value' => $level->id,
+			'label' => $level->name,
+		];
+	}
+
+	wp_localize_script( 'pmpro-blocks-editor-js', 'pmpro', [
+		'all_levels'                  => $all_levels,
+		'all_level_values_and_labels' => $all_level_values_and_labels,
+	] );
+
+	wp_enqueue_script( 'pmpro-blocks-editor-js' );
 
 	// Enqueue optional editor only styles.
 	wp_enqueue_style(
