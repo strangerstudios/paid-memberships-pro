@@ -226,7 +226,7 @@ jQuery(document).ready(function($) {
         
         //get template data
         if (template)
-            getTemplate(template);
+            pmpro_get_template(template);
         else {
             $(".hide-while-loading").hide();
             $(".controls").hide();
@@ -234,23 +234,23 @@ jQuery(document).ready(function($) {
     });
 
     $("#submit_template_data").click(function() {
-        saveTemplate()
+        pmpro_save_template()
     });
 
     $("#reset_template_data").click(function() {
-        resetTemplate();
+        pmpro_reset_template();
     });
 
     $("#email_template_disable").click(function(e) {
-        disableTemplate();
+        pmpro_disable_template();
     });
 
     $("#send_test_email").click(function(e) {       
-		saveTemplate().done(setTimeout(function(){sendTestEmail();}, '1000'));
+		pmpro_save_template().done(setTimeout(function(){pmpro_send_test_email();}, '1000'));
     });
 
     /* Functions */
-    function getTemplate(template) {        
+    function pmpro_get_template(template) {        
 				
 		//hide stuff and show ajax spinner
         $(".hide-while-loading").hide();
@@ -301,11 +301,11 @@ jQuery(document).ready(function($) {
 
             // disable form
             disabled = template_data['disabled'];
-            toggleFormDisabled(disabled);
+            pmpro_toggle_form_disabled(disabled);
         });
     }
 
-    function saveTemplate() {
+    function pmpro_save_template() {
 
         $("#submit_template_data").attr("disabled", true);
         $(".status").hide();
@@ -334,7 +334,7 @@ jQuery(document).ready(function($) {
 		return $.Deferred().resolve();
     }
 
-    function resetTemplate() {
+    function pmpro_reset_template() {
 
         var r = confirm('Are you sure? Your current template settings will be deleted permanently.');
 
@@ -354,7 +354,7 @@ jQuery(document).ready(function($) {
         return true;
     }
 
-    function disableTemplate() {
+    function pmpro_disable_template() {
 
         //update wp_options
         data = {
@@ -388,11 +388,11 @@ jQuery(document).ready(function($) {
 
             disabled = response['status'];
 
-            toggleFormDisabled(disabled);
+            pmpro_toggle_form_disabled(disabled);
         });
     }
 
-    function sendTestEmail() {
+    function pmpro_send_test_email() {
 
         //hide stuff and show ajax spinner
         $(".hide-while-loading").hide();
@@ -423,7 +423,7 @@ jQuery(document).ready(function($) {
         })
     }
 
-    function toggleFormDisabled(disabled) {
+    function pmpro_toggle_form_disabled(disabled) {
         if(disabled == 'true') {
             $("#email_template_disable").prop('checked', true);
             $("#email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
