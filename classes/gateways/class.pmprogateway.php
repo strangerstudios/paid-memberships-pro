@@ -222,8 +222,8 @@
 			}
 
 			// 2. Get the MU data if available, if not get level_id from order and assume default settings.
-			if ( ! empty( $subscription->mu_id ) ) {
-				$level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE id = '$subscription->mu_id'" );
+			if ( ! empty( $subscription->membership_level_id ) ) {
+				$level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE id = '$subscription->membership_level_id'" );
 			} else {
 				$level = new PMPro_Membership_Level( $morder->membership_id );
 			}

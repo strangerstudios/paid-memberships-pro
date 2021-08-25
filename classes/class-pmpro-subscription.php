@@ -22,7 +22,7 @@ class PMPro_Subscription {
 	 */
 	function get_empty_subscription() {
 		$this->id                          = '';
-		$this->mu_id                       = '';
+		$this->membership_level_id         = '';
 		$this->gateway                     = '';
 		$this->gateway_environment         = '';
 		$this->subscription_transaction_id = '';
@@ -114,7 +114,7 @@ class PMPro_Subscription {
 
 		if ( ! empty( $subscription_data ) ) {
 			$this->id                          = $subscription_data->id;
-			$this->mu_id                       = $subscription_data->mu_id;
+			$this->membership_level_id         = $subscription_data->membership_level_id;
 			$this->gateway                     = $subscription_data->gateway;
 			$this->gateway_environment         = $subscription_data->gateway_environment;  
 			$this->subscription_transaction_id = $subscription_data->subscription_transaction_id;
@@ -151,6 +151,7 @@ class PMPro_Subscription {
 			$subscription->gateway                     = $morder->gateway;
 			$subscription->gateway_environment         = $morder->gateway_environment;
 			$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
+			$subscription->membership_level_id         = $morder->membership_id;
 			$subscription->startdate                   = $morder->datetime;
 		}
 		// Get next payment date.
@@ -183,30 +184,6 @@ class PMPro_Subscription {
 			}
 		}
 		return $this->format_subscription_date( $this->next_payment_date, $format, $local_time );
-	}
-
-	/**
-	 * Set the mu_id for this subscription to the most recent active
-	 * Memberships Users entry that fits the passed parameters.
-	 *
-	 * @param int $user_id of user to search for MU entry for.
-	 * @param int $membership_id of level to search MU entry for.
-	 */
-	function link_membership_user( $user_id, $membership_id ) {
-		global $wpdb;
-		$this->mu_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT id 
-				FROM $wpdb->pmpro_memberships_users
-				WHERE user_id = '%d'
-				AND membership_id = '%d'
-				AND status = 'active'
-				ORDER BY startdate DESC LIMIT 1",
-				intval( $user_id ),
-				intval( $membership_id )
-			)
-		);
-		$this->save();
 	}
 
 	// **************************************
@@ -377,7 +354,7 @@ class PMPro_Subscription {
 			$wpdb->pmpro_subscriptions,
 			array(
 				'id'                         => $this->id,
-				'mu_id'                      => $this->mu_id,
+				'membership_level_id'        => $this->membership_level_id,
 				'gateway'                    => $this->gateway,
 				'gateway_environment'        => $this->gateway_environment,
 				'subscription_transaction_id'=> $this->subscription_transaction_id,
@@ -388,7 +365,7 @@ class PMPro_Subscription {
 			),
 			array(
 				'%d',		//id
-				'%d',		//mu_id
+				'%d',		//membership_level_id
 				'%s',		//gateway
 				'%s',		//gateway_environment
 				'%s',		//subscription_transaction_id
@@ -411,8 +388,6 @@ class PMPro_Subscription {
 	 * Cancels this subscription in PMPro and at the payment gateway.
 	 */
 	function cancel( $cancel_at_gateway = true ) {
-		global $wpdb;
-
 		// Cancel subscription at gateway first.
 		if ( ! empty( $cancel_at_gateway ) ) {
 			$gateway_object = $this->get_gateway_object();
@@ -446,8 +421,6 @@ class PMPro_Subscription {
 
 		// Cancel PMPro Subscription in database unless already cancelled.
 		if ( $this->status != 'cancelled' ) {
-			$sql_query = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE id = '" . $this->mu_id . "'";
-			$wpdb->query( $sql_query );
 			$this->status  = 'cancelled'; // TODO: What should we do if $result is false?
 			$this->enddate = current_time( 'Y-m-d H:i:s', true ); // GMT.
 		}
