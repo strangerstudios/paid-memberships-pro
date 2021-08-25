@@ -399,18 +399,21 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");	
+	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");
+
+	$subscriptions = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = '$user->ID' ORDER BY id DESC");
 
 	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
 	
 	$totalvalue = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = '$user->ID' AND status NOT IN('token','review','pending','error','refunded')");
 
-	if ( $invoices || $levelshistory ) { ?>
+	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
 		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
+			<li id="member-history-filters-subscriptions"><a href="javascript:void(0);" class="subscriptions tab"><?php esc_html_e( 'Subscription History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $subscriptions ); ?>)</span></li>
 			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
 		</ul>
 		<br class="clear" />
@@ -485,6 +488,43 @@ function pmpro_membership_history_profile_fields( $user ) {
 				esc_html_e( 'No membership orders found.', 'paid-memberships-pro' );
 			} ?>
 		</div>
+		<div id="member-history-subscriptions" class="widgets-holder-wrap" style="display: none;">
+		<?php if ( $subscriptions ) { ?>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>
+					<th><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Next Payment Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+				foreach ( $subscriptions as $subscription ) { 
+					$level = pmpro_getLevel( $subscription->membership_level_id );
+					?>
+					<tr>
+						<td><?php esc_html_e( $subscription->startdate ); ?></td>
+						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php esc_html_e( $subscription->subscription_transaction_id ); ?></a></td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td><?php esc_html_e( $subscription->gateway ); ?>
+						<td><?php esc_html_e( $subscription->gateway_environment ); ?>
+						<td><?php esc_html_e( $subscription->next_payment_date ); ?>
+						<td><?php esc_html_e( $subscription->status ); ?>
+					</tr>
+					<?php
+				}
+			?>
+			</tbody>
+			</table>
+			<?php } else { 
+				esc_html_e( 'No subscriptions found.', 'paid-memberships-pro' );
+			} ?>
+		</div>
 		<div id="member-history-memberships" class="widgets-holder-wrap" style="display: none;">
 		<?php if ( $levelshistory ) { ?>
 			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -554,11 +594,18 @@ function pmpro_membership_history_profile_fields( $user ) {
 					if(tab == 'orders')
 					{
 						jQuery('#member-history-memberships').hide();
+						jQuery('#member-history-subscriptions').hide();
 						jQuery('#member-history-orders').show();
+					}
+					else if (tab == 'subscriptions' ) {
+						jQuery('#member-history-memberships').hide();
+						jQuery('#member-history-subscriptions').show();
+						jQuery('#member-history-orders').hide();
 					}
 					else
 					{
 						jQuery('div#member-history-orders').hide();
+						jQuery('#member-history-subscriptions').hide();
 						jQuery('#member-history-memberships').show();
 
 						<?php if ( count( $levelshistory ) > 5 ) { ?>

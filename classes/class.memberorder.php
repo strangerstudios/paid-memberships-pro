@@ -145,6 +145,10 @@
 				if(empty($this->nogateway))
 					$this->setGateway();
 
+				if ( ! empty( $this->subscription_transaction_id ) && empty( PMPro_Subscription::subscription_exists( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment ) ) ) {
+					$subscription = PMPro_Subscription::update_subscription_from_order( $this );
+				}
+
 				return $this->id;
 			}
 			else

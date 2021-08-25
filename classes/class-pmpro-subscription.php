@@ -155,8 +155,11 @@ class PMPro_Subscription {
 			$subscription->subscription_transaction_id = $morder->subscription_transaction_id;
 			$subscription->user_id                     = $morder->user_id;
 			$subscription->membership_level_id         = $morder->membership_id;
-			$subscription->startdate                   = $morder->datetime;
+			$subscription->startdate                   = date( 'Y-m-d H:i:s', $morder->timestamp );
 		}
+
+		$subscription->save(); // Prevent infinite loop while looking up next payment date.
+
 		// Get next payment date.
 		if ( ! empty( $morder->ProfileStartDate ) ) {
 			$subscription->next_payment_date = $morder->ProfileStartDate;
