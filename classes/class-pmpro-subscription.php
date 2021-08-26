@@ -114,8 +114,8 @@ class PMPro_Subscription {
 			OBJECT
 		);
 
-		if ( ! empty( $subscription_data->id ) ) {
-			$subscription = new PMPro_Subscription( $subscription_id_obj->id );
+		if ( ! empty( $subscription_id->id ) ) {
+			$subscription = new PMPro_Subscription( $subscription_id->id );
 			if ( ! empty( $subscription->subscription_transaction_id ) ) {
 				// We have a valid subscription.
 				return $subscription;
@@ -126,6 +126,10 @@ class PMPro_Subscription {
 	}
 
 	static function create_subscription( $user_id, $membership_level_id, $subscription_transaction_id, $gateway, $gateway_environment ) {
+		if ( empty( $user_id ) ) {
+			return false;
+		}
+
 		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
 		if ( ! empty( $existing_subscription ) ) {
 			// Subscription already exists.
@@ -140,33 +144,31 @@ class PMPro_Subscription {
 		$new_subscription->subscription_transaction_id = $subscription_transaction_id;
 
 		// Try to pull as much info as possible directly from the gateway.
-		$new_subscription->pull_from_gateway();
+		$new_subscription->update_from_gateway();
 
-		// If we are still missing information, fall back on order or use defailts.
+		// If we are still missing information, fall back on order and membership history.
 		// TODO: Implement this.
 		if ( empty( $new_subscription->status ) ) {
-			$new_subscription->status = 'active';
+			$new_subscription->status = pmpro_hasMembershipLevel( $membership_level_id, $user_id ) ? 'active' : 'cancelled';
 		}
 		if ( empty( $new_subscription->startdate ) ) {
-			$new_subscription->startdate = '0000-00-00 00:00:00';
+			// Get the earliest order for this subscription or the startdate for their membership.
 		}
 		if ( empty( $new_subscription->enddate ) ) {
-			$new_subscription->enddate = '0000-00-00 00:00:00';
+			// Get the end date for their old membership. May not work well if they've changed levels a lot.
 		}
 		if ( empty( $new_subscription->next_payment_date ) ) {
-			$new_subscription->next_payment_date = '0000-00-00 00:00:00';
+			// Do math based on their current membership 
 		}
 
 		$new_subscription->save();
 		return $new_subscription;
 	}
 
-	function pull_from_gateway() {
+	function update_from_gateway() {
 		$gateway_object = $this->get_gateway_object();
-		if ( method_exists( $gateway_object, 'get_subscription_info' ) ) {
-			$subscription_info = $gateway_object->get_subscription_info( $this );
-			// TODO: Move information (will be in associative array) into $this.
-			// TODO: Add get_subscription_info() method to gateawys.
+		if ( method_exists( $gateway_object, 'update_subscription_info' ) ) {
+			$subscription_info = $gateway_object->update_subscription_info( $this );
 		}
 	}
 
@@ -177,7 +179,7 @@ class PMPro_Subscription {
 	 * @param bool   $local_time set to false for date in GMT.
 	 * @param bool   $query_gateway for next payment date.
 	 */
-	function get_next_payment_date( $format = 'timestamp', $local_time = true, $query_gateway = false ) {
+	function get_next_payment_date( $format = 'timestamp', $local_time = true ) {
 		return $this->format_subscription_date( $this->next_payment_date, $format, $local_time );
 	}
 
@@ -306,14 +308,21 @@ class PMPro_Subscription {
 	function cancel() {
 		// Cancel subscription at gateway first.
 		$gateway_object = $this->get_gateway_object();
-		// TODO: Make this not reliant on an order. Will require updates to the gateways as well.
-		$morder = $this->get_last_order();
-		if ( is_object( $gateway_object ) && is_a( $morder, 'MemberOrder' ) ) {
-			$result = $gateway_object->cancel( $morder );
+
+		if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
+			$result = $gateway_object->cancel_subscription( $this );
 		} else {
-			$result = false;
+			// Legacy cancel code.
+			// TODO: Make this work if gateway doesn't support cancel_subscription()
+			$morder = $this->get_last_order();
+			if ( is_object( $gateway_object ) && is_a( $morder, 'MemberOrder' ) ) {
+				$result = $gateway_object->cancel( $morder );
+			} else {
+				$result = false;
+			}
 		}
 
+		/*
 		if ( $result == false && is_a( $morder, 'MemberOrder' ) ) {
 			// Notify the admin.
 			$order_user = get_userdata($morder->user_id);
@@ -331,12 +340,7 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $morder->id ), admin_url( 'admin.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
-
-		// Cancel PMPro Subscription in database unless already cancelled.
-		if ( $this->status != 'cancelled' ) {
-			$this->status  = 'cancelled'; // TODO: What should we do if $result is false?
-			$this->enddate = current_time( 'Y-m-d H:i:s', true ); // GMT.
-		}
+		*/
 		$this->save();
 
 		return $result;

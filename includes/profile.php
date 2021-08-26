@@ -401,7 +401,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 	//Show all invoices for user
 	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");
 
-	$subscriptions = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = '$user->ID' ORDER BY id DESC");
+	$subscriptions = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = '$user->ID' ORDER BY startdate DESC");
 
 	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
 	
@@ -413,7 +413,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
-			<li id="member-history-filters-subscriptions"><a href="javascript:void(0);" class="subscriptions tab"><?php esc_html_e( 'Subscription History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $subscriptions ); ?>)</span></li>
+			<li id="member-history-filters-subscriptions">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Subscription History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $subscriptions ); ?>)</span></li>
 			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
 		</ul>
 		<br class="clear" />
@@ -499,6 +499,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>
 					<th><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Next Payment Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 				</tr>
 			</thead>
@@ -514,6 +515,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 						<td><?php esc_html_e( $subscription->gateway ); ?>
 						<td><?php esc_html_e( $subscription->gateway_environment ); ?>
 						<td><?php esc_html_e( $subscription->next_payment_date ); ?>
+						<td><?php esc_html_e( $subscription->enddate ); ?>
 						<td><?php esc_html_e( $subscription->status ); ?>
 					</tr>
 					<?php

@@ -2665,6 +2665,31 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Cancels a subscription in Stripe.
+	 *
+	 * @param PMPro_Subscription $subscription to cancel.
+	 */
+	function cancel_subscription( $subscription ) {
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->subscription_transaction_id );
+			return true;
+		} catch ( \Throwable $e ) {
+			//assume no subscription found
+			return false;
+		} catch ( \Exception $e ) {
+			//assume no subscription found
+			return false;
+		}
+
+		$success = false;
+		if ( $this->cancelSubscriptionAtGateway( $stripe_subscription ) ) {
+			$success = true;
+		}
+		$this->update_subscription_info( $subscription );
+		return $success;
+	}
+
+	/**
 	 * Helper method to cancel a subscription at Stripe and also clear up any upaid invoices.
 	 *
 	 * @since 1.8
@@ -3788,6 +3813,25 @@ class PMProGateway_stripe extends PMProGateway {
 			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
 			echo '</a>';
 			echo '</p></div>';
+		}
+	}
+
+	/**
+	 * Pull subscription info from Stripe.
+	 *
+	 * @param PMPro_Subscription $subscription to pull data for.
+	 */
+	function update_subscription_info( $subscription ) {
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->subscription_transaction_id );
+			$subscription->status = in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ? 'active' : 'cancelled';
+			$subscription->startdate = date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) );
+			$subscription->enddate = empty( $stripe_subscription->ended_at ) ? '' : date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+			$subscription->next_payment_date = $subscription->status === 'active' ? date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) ) : '';
+		} catch ( \Throwable $e ) {
+			//assume no subscription found
+		} catch ( \Exception $e ) {
+			//assume no subscription found
 		}
 	}
 }
