@@ -58,35 +58,55 @@
 			$this->headers = array("Content-Type: text/html");
 			
 			$this->attachments = array();
-			
-			//load the template			
+
+			//load the template
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 
-			if( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
-				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
-			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
-				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in child theme
-			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in child theme
-			elseif(file_exists(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html"))
-				$this->body = file_get_contents(get_stylesheet_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in child theme
-			elseif(file_exists(get_template_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))	
-				$this->body = file_get_contents(get_template_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in parent theme
-			elseif(file_exists(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
-				$this->body = file_get_contents(get_template_directory() . "/paid-memberships-pro/email/" . $this->template . ".html");	//email folder in parent theme
-			elseif(file_exists(get_template_directory() . "/membership-email-" . $this->template . ".html"))
-				$this->body = file_get_contents(get_template_directory() . "/membership-email-" . $this->template . ".html");			//membership-email- file in parent theme			
-			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html"))
-				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $locale . "/" . $this->template . ".html");				//localized email folder in WP language folder
-			elseif(file_exists(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html"))
-				$this->body = file_get_contents(WP_LANG_DIR . '/pmpro/email/' . $this->template . ".html");								//email folder in WP language folder
-			elseif(file_exists(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html"))
-				$this->body = file_get_contents(PMPRO_DIR . "/languages/email/" . $locale . "/" . $this->template . ".html");					//email folder in PMPro language folder
-			elseif( empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[$this->template]['body'] ) )
-				$this->body = $pmpro_email_templates_defaults[$this->template]['body'];									//default template in plugin
-			elseif(!empty($this->data) && !empty($this->data['body']))
-				$this->body = $this->data['body'];																						//data passed in
+			global $wp_filesystem;
 
+			require_once ( ABSPATH . '/wp-admin/includes/file.php' );
+
+			WP_Filesystem();
+
+			$email_template_body = pmpro_getOption( 'email_' . $this->template . '_body' );
+
+			if ( empty( $this->data['body'] ) && ! empty( $email_template_body ) ) {
+				// Email from saved template.
+				$this->body = $email_template_body;
+			} elseif ( $wp_filesystem->is_file( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $locale . '/' . $this->template . '.html' ) ) {
+				// Localized email folder in child theme.
+				$this->body = $wp_filesystem->get_contents( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $locale . '/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $this->template . '.html' ) ) {
+				// Email folder in child theme.
+				$this->body = $wp_filesystem->get_contents( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( get_stylesheet_directory() . '/membership-email-' . $this->template . '.html' ) ) {
+				// Membership email file in child theme.
+				$this->body = $wp_filesystem->get_contents( get_stylesheet_directory() . '/membership-email-' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( get_template_directory() . '/paid-memberships-pro/email/' . $locale . '/' . $this->template . '.html' ) ) {
+				// Localized email folder in parent theme.
+				$this->body = $wp_filesystem->get_contents( get_template_directory() . '/paid-memberships-pro/email/' . $locale . '/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( get_template_directory() . '/paid-memberships-pro/email/' . $this->template . '.html' ) ) {
+				// Email folder in parent theme.
+				$this->body = $wp_filesystem->get_contents( get_template_directory() . '/paid-memberships-pro/email/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( get_template_directory() . '/membership-email-' . $this->template . '.html' ) ) {
+				// Membership email file in parent theme.
+				$this->body = $wp_filesystem->get_contents( get_template_directory() . '/membership-email-' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( WP_LANG_DIR . '/pmpro/email/' . $locale . '/' . $this->template . '.html' ) ) {
+				// Localized email folder in WP language folder.
+				$this->body = $wp_filesystem->get_contents( WP_LANG_DIR . '/pmpro/email/' . $locale . '/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( WP_LANG_DIR . '/pmpro/email/' . $this->template . '.html' ) ) {
+				// Email folder in WP language folder.
+				$this->body = $wp_filesystem->get_contents( WP_LANG_DIR . '/pmpro/email/' . $this->template . '.html' );
+			} elseif ( $wp_filesystem->is_file( PMPRO_DIR . '/languages/email/' . $locale . '/' . $this->template . '.html' ) ) {
+				// Email folder in PMPro language folder.
+				$this->body = $wp_filesystem->get_contents( PMPRO_DIR . '/languages/email/' . $locale . '/' . $this->template . '.html' );
+			} elseif ( empty( $this->data['body'] ) && ! empty( $pmpro_email_templates_defaults[ $this->template ]['body'] ) ) {
+				// Default template in plugin.
+				$this->body = $pmpro_email_templates_defaults[ $this->template ]['body'];
+			} elseif ( ! empty( $this->data ) && ! empty( $this->data['body'] ) ) {
+				// The data was passed in directly.
+				$this->body = $this->data['body'];
+			}
 
 			// Get template header.
 			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
