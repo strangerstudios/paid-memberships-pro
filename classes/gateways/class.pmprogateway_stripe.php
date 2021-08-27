@@ -1943,22 +1943,26 @@ class PMProGateway_stripe extends PMProGateway {
 			), null, 'stripe', $order->Gateway->gateway_environment );
 		}
 
+	$user_customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
+
 		// Try to find the customer's ID.
 		if ( ! empty( $order->customer_id ) ) {
 			// Customer ID is already in the order.
 			$customer_id = $order->customer_id;
-		} elseif ( ! empty( $user_id ) && ! empty( get_user_meta( $user_id, 'pmpro_stripe_customerid', true ) ) ) {
+		} elseif ( ! empty( $user_id ) && ! empty( $user_customer_id ) ) {
 			// Customer ID in user meta.
-			$customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
+			$customer_id = $user_customer_id;
 		} elseif ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
 			// Get the Customer ID from their subscription.
 			try {
 				$subscription = Stripe_Subscription::retrieve( $order->subscription_transaction_id );
 			} catch ( \Throwable $e ) {
+				// translators: %s: The error message.
 				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 				return false;
 			} catch ( \Exception $e ) {
+				// translators: %s: The error message.
 				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 				return false;
@@ -1972,6 +1976,7 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$charge = Stripe_Charge::retrieve( $order->payment_transaction_id );
 			} catch ( \Throwable $e ) {
+				// translators: %s: The error message.
 				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 				return false;
@@ -1989,6 +1994,7 @@ class PMProGateway_stripe extends PMProGateway {
 			try {
 				$invoice = Stripe_Invoice::retrieve( $order->payment_transaction_id );
 			} catch ( \Throwable $e ) {
+				// translators: %s: The error message.
 				$order->error = sprintf( __( 'Error: %s', 'paid-memberships-pro' ), $e->getMessage() );
 
 				return false;
