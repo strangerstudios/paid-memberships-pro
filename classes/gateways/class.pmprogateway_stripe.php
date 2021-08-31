@@ -2672,7 +2672,6 @@ class PMProGateway_stripe extends PMProGateway {
 	function cancel_subscription( $subscription ) {
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->subscription_transaction_id );
-			return true;
 		} catch ( \Throwable $e ) {
 			//assume no subscription found
 			return false;
