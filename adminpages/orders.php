@@ -157,6 +157,9 @@ $condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $f
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
+
+	$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'delete' ), $_SERVER['REQUEST_URI'] );
+	
 	if ( $dorder->deleteMe() ) {
 		$pmpro_msg  = __( 'Order deleted successfully.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'success';
@@ -1358,8 +1361,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							</span> |
 							<span class="delete">
 							<?php $delete_prompt = sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ); ?>
-								<a href='javascript:pmpro_askfirst("<?php echo esc_attr
-								( $delete_prompt ) ?>", "admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>"); void(0);'><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
+								<a href='javascript:pmpro_askfirst("<?php echo esc_attr( $delete_prompt ) ?>", "<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'delete' => $order->id ), $_SERVER['REQUEST_URI'] ) ); ?>"); void(0);'>
+                                    <?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?>
+                                </a>
 							</span> |
 							<span class="print">
 								<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
