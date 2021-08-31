@@ -58,7 +58,7 @@
 	$start = $end - $limit;
 
 	//check nonce for saving codes
-	if (!empty($_REQUEST['saveid']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
+	if (!empty($saveid) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
 		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$saveid = false;
@@ -306,7 +306,7 @@
 	}
 
 	//check nonce for deleting codes
-	if (!empty($_REQUEST['delete']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
+	if (!empty($delete) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
 		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$delete = false;
