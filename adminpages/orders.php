@@ -162,9 +162,10 @@ if ( ! empty( $_REQUEST['delete'] ) ) {
 		$nonceokay = false;
 	}
 
-	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
+	$dorder_code = intval( $_REQUEST['delete'] );
+	$dorder = new MemberOrder( $dorder_code );
 	if ( $nonceokay && $dorder->deleteMe() ) {
-		$pmpro_msg  = __( 'Order deleted successfully.', 'paid-memberships-pro' );
+		$pmpro_msg = sprintf( __( 'Order %s deleted successfully.', 'paid-memberships-pro' ), $dorder_code );
 		$pmpro_msgt = 'success';
 	} else {
 		$pmpro_msg  = __( 'Error deleting order.', 'paid-memberships-pro' );
