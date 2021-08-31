@@ -803,7 +803,7 @@ if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
 			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}
