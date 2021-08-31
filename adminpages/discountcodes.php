@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;
 
 	$now = current_time( 'timestamp' );
 
@@ -17,6 +17,8 @@
 
 	if(isset($_REQUEST['copy']))
 		$copy = intval($_REQUEST['copy']);
+	else
+		$copy = false;
 
 	if(isset($_REQUEST['delete']))
 		$delete = intval($_REQUEST['delete']);
