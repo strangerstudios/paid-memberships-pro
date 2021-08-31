@@ -363,6 +363,9 @@
 	}
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
+
+    // Clean-up request uri from in-page actions
+    $_SERVER['REQUEST_URI'] = remove_query_arg( [ 'copy', 'delete' ], $_SERVER['REQUEST_URI'] );
 ?>
 
 	<?php if($edit) { ?>
@@ -821,7 +824,7 @@
 												'page'   => 'pmpro-discountcodes',
 												'delete' => $code->id,
 											],
-											admin_url( 'admin.php' )
+											$_SERVER['REQUEST_URI']
 										),
 										'delete',
 										'pmpro_discountcodes_nonce'
