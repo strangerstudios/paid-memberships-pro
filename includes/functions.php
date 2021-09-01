@@ -1649,7 +1649,7 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 		$username = $lastname;
 	}
 
-	// If no username yet or one based on name exisdts,
+	// If no username yet or one based on name exists,
 	// try to create username using email address.
 	if ( ( empty( $username ) || username_exists( $username ) )
 		&& ! empty( $email ) && is_email( $email ) ) {
