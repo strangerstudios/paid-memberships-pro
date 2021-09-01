@@ -730,6 +730,35 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$ExpirationMonth,
 				$ExpirationYear
 			);
+			
+			// Check if billing details are available, if not adjust the arrays.
+			if ( empty( $baddress1 ) ) {
+				$meta_keys = array(
+					"pmpro_bfirstname",
+					"pmpro_blastname",
+					"pmpro_CardType",
+					"pmpro_AccountNumber",
+					"pmpro_ExpirationMonth",
+					"pmpro_ExpirationYear"
+				);
+
+				$meta_values = array(
+					$bfirstname,
+					$blastname,
+					$CardType,
+					hideCardNumber( $AccountNumber ),
+					$ExpirationMonth,
+					$ExpirationYear
+				);
+
+				// Check if firstname and last name fields are also empty. If they are empty, remove them from the array.
+				if ( empty( $bfirstname ) && empty( $blastname ) ) {
+					unset( $meta_keys[0] );
+					unset( $meta_keys[1] );
+					unset( $meta_values[0] );
+					unset( $meta_values[1] ); 
+				}
+			}
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
