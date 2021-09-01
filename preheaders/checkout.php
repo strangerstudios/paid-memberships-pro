@@ -699,66 +699,56 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 			//save billing info ect, as user meta
 			$meta_keys   = array(
-				"pmpro_bfirstname",
-				"pmpro_blastname",
-				"pmpro_baddress1",
-				"pmpro_baddress2",
-				"pmpro_bcity",
-				"pmpro_bstate",
-				"pmpro_bzipcode",
-				"pmpro_bcountry",
-				"pmpro_bphone",
-				"pmpro_bemail",
 				"pmpro_CardType",
 				"pmpro_AccountNumber",
 				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear"
+				"pmpro_ExpirationYear",
 			);
 			$meta_values = array(
-				$bfirstname,
-				$blastname,
-				$baddress1,
-				$baddress2,
-				$bcity,
-				$bstate,
-				$bzipcode,
-				$bcountry,
-				$bphone,
-				$bemail,
 				$CardType,
 				hideCardNumber( $AccountNumber ),
 				$ExpirationMonth,
-				$ExpirationYear
+				$ExpirationYear,
 			);
-			
-			// Check if billing details are available, if not adjust the arrays.
-			if ( empty( $baddress1 ) ) {
-				$meta_keys = array(
+
+			// Check if firstname and last name fields are set.
+			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
 					"pmpro_bfirstname",
 					"pmpro_blastname",
-					"pmpro_CardType",
-					"pmpro_AccountNumber",
-					"pmpro_ExpirationMonth",
-					"pmpro_ExpirationYear"
-				);
+				) );
 
-				$meta_values = array(
+				$meta_values = array_merge( $meta_values, array(
 					$bfirstname,
 					$blastname,
-					$CardType,
-					hideCardNumber( $AccountNumber ),
-					$ExpirationMonth,
-					$ExpirationYear
-				);
-
-				// Check if firstname and last name fields are also empty. If they are empty, remove them from the array.
-				if ( empty( $bfirstname ) && empty( $blastname ) ) {
-					unset( $meta_keys[0] );
-					unset( $meta_keys[1] );
-					unset( $meta_values[0] );
-					unset( $meta_values[1] ); 
-				}
+				) );
 			}
+
+			// Check if billing details are available, if not adjust the arrays.
+			if ( ! empty( $baddress1 ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_baddress1",
+					"pmpro_baddress2",
+					"pmpro_bcity",
+					"pmpro_bstate",
+					"pmpro_bzipcode",
+					"pmpro_bcountry",
+					"pmpro_bphone",
+					"pmpro_bemail",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$baddress1,
+					$baddress2,
+					$bcity,
+					$bstate,
+					$bzipcode,
+					$bcountry,
+					$bphone,
+					$bemail,
+				) );
+			}
+
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
