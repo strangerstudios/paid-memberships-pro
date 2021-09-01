@@ -595,7 +595,11 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			if( $pmpro_level->cycle_period == 'Hour' ){
+				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			} else {
+				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			}
 		} else {
 			$enddate = "NULL";
 		}
@@ -740,6 +744,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				if ( empty( $old_lastname ) ) {
 					update_user_meta( $user_id, "last_name", $blastname );
 				}
+			}
+
+			if( $pmpro_level->expiration_period == 'Hour' ){
+				update_user_meta( $user_id, 'pmpro_disable_notifications', true );
 			}
 
 			//show the confirmation

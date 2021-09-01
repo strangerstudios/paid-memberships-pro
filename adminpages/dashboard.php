@@ -143,6 +143,10 @@ function pmpro_dashboard_welcome_callback() { ?>
     				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailsettings' );?>"><i class="dashicons dashicons-email"></i> <?php echo esc_attr_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
     			<?php } ?>
 
+				<?php if ( current_user_can( 'pmpro_emailtemplates' ) ) { ?>
+					<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailtemplates' );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php echo esc_attr_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
+				<?php } ?>
+
     			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
     				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-advancedsettings' );?>"><i class="dashicons dashicons-admin-settings"></i> <?php echo esc_attr_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>

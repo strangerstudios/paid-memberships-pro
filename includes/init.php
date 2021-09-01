@@ -7,6 +7,7 @@ function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/countries.php');
 	require_once(PMPRO_DIR . '/includes/states.php');
 	require_once(PMPRO_DIR . '/includes/currencies.php');
+	require_once(PMPRO_DIR . '/includes/email-templates.php');
 
 	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();

@@ -1100,4 +1100,46 @@
 			else
 				return false;
 		}
-	}
+
+		/*
+		* Generates a test order on the fly for orders.
+		*/
+		function get_test_order() {
+			global $current_user;
+
+			//$test_order = $this->getEmptyMemberOrder();
+			$all_levels = pmpro_getAllLevels();
+			
+			if ( ! empty( $all_levels ) ) {
+				$first_level                = array_shift( $all_levels );
+				$this->membership_id  = $first_level->id;
+				$this->InitialPayment = $first_level->initial_payment;
+			} else {
+				$this->membership_id  = 1;
+				$this->InitialPayment = 1;
+			}
+			$this->user_id             = $current_user->ID;
+			$this->cardtype            = "Visa";
+			$this->accountnumber       = "4111111111111111";
+			$this->expirationmonth     = date( 'm', current_time( 'timestamp' ) );
+			$this->expirationyear      = ( intval( date( 'Y', current_time( 'timestamp' ) ) ) + 1 );
+			$this->ExpirationDate      = $this->expirationmonth . $this->expirationyear;
+			$this->CVV2                = '123';
+			$this->FirstName           = 'Jane';
+			$this->LastName            = 'Doe';
+			$this->Address1            = '123 Street';
+			$this->billing             = new stdClass();
+			$this->billing->name       = 'Jane Doe';
+			$this->billing->street     = '123 Street';
+			$this->billing->city       = 'City';
+			$this->billing->state      = 'ST';
+			$this->billing->country    = 'US';
+			$this->billing->zip        = '12345';
+			$this->billing->phone      = '5558675309';
+			$this->gateway_environment = 'sandbox';
+			$this->timestamp		   = time();
+			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
+
+			return apply_filters( 'pmpro_test_order_data', $this );
+		}
+	} // End of Class

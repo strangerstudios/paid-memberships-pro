@@ -1,3 +1,15 @@
+<?php
+/**
+ * Template: Billing
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
+?>
 <div class="<?php echo pmpro_get_element_class( 'pmpro_billing_wrap' ); ?>">
 <?php
 	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link;

@@ -25,11 +25,14 @@ function pmpro_load_textdomain()
 add_action("init", "pmpro_load_textdomain", 1);
 
 function pmpro_translate_billing_period($period, $number = 1)
-{
+{	
 	//note as of v1.8, we stopped using _n and split things up to aid in localization
 	if($number == 1)
 	{
-		if($period == "Day")
+
+		if( $period == "Hour" ){
+			return __("Hour", "paid-memberships-pro" );
+		} else if($period == "Day")
 			return __("Day", 'paid-memberships-pro' );
 		elseif($period == "Week")
 			return __("Week", 'paid-memberships-pro' );
@@ -39,8 +42,10 @@ function pmpro_translate_billing_period($period, $number = 1)
 			return __("Year", 'paid-memberships-pro' );
 	}
 	else
-	{
-		if($period == "Day")
+	{	
+		if( $period == "Hour" ){
+			return __("Hours", "paid-memberships-pro" );
+		} else if($period == "Day")
 			return __("Days", 'paid-memberships-pro' );
 		elseif($period == "Week")
 			return __("Weeks", 'paid-memberships-pro' );

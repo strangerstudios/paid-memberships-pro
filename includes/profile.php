@@ -81,6 +81,9 @@ function pmpro_membership_level_profile_fields($user)
 			$selected_expires_day =  date( 'j', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 			$selected_expires_month =  date( 'm', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 			$selected_expires_year =  date( 'Y', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+
+			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -103,6 +106,21 @@ function pmpro_membership_level_profile_fields($user)
 					</select>
 					<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
 					<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
+					<?php _e('at', 'paid-memberships-pro'); ?>
+					<select name='expires_hour'>
+						<?php
+						for( $i = 0; $i <= 24; $i++ ){
+							echo "<option value='".$i."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+						}
+						?>
+					</select>
+					<select name='expires_minute'>
+						<?php
+						for( $i = 0; $i <= 59; $i++ ){
+							echo "<option value='".$i."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+						}
+						?>
+					</select>
 				</span>
 				<script>
 					jQuery('#expires').change(function() {
@@ -141,12 +159,12 @@ function pmpro_membership_level_profile_fields($user)
 				<td id="tos_consent_history">
 					<?php
 						if( !empty( $consent_log ) ) {
-							if( count( $consent_log ) > 10 ) {
-								$scrollable = 'pmpro_scrollable';
+							if( count( $consent_log ) > 5 ) {
+								$scrollable = ' pmpro_scrollable';
 							} else {
 								$scrollable = '';
 							}
-							echo '<ul class="pmpro_consent_log ' . $scrollable . '">';
+							echo '<ul class="pmpro_consent_log' . $scrollable . '">';
 							foreach( $consent_log as $entry ) {
 								echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
 							}
@@ -313,6 +331,14 @@ function pmpro_membership_level_profile_fields_update()
 	{
 		//update the expiration date
 		$expiration_date = intval($_REQUEST['expires_year']) . "-" . str_pad(intval($_REQUEST['expires_month']), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day']), 2, "0", STR_PAD_LEFT);
+		if( !empty( $_REQUEST['expires_hour'] ) ){
+			if( !empty( $_REQUEST['expires_minute'] ) ){
+				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":".$_REQUEST['expires_minute'].":00";
+			} else{
+				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":00:00";
+			}
+		}
+		
 		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
@@ -356,6 +382,220 @@ add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'personal_options_update', 'pmpro_membership_level_profile_fields_update' );
 add_action( 'edit_user_profile_update', 'pmpro_membership_level_profile_fields_update' );
+
+
+/**
+ * Add the history view to the user profile
+ *
+ */
+function pmpro_membership_history_profile_fields( $user ) {
+	global $current_user;
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+
+	if ( ! current_user_can( $membership_level_capability ) ) {
+		return false;
+	}
+
+	global $wpdb;
+
+	//Show all invoices for user
+	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");	
+
+	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
+	
+	$totalvalue = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = '$user->ID' AND status NOT IN('token','review','pending','error','refunded')");
+
+	if ( $invoices || $levelshistory ) { ?>
+		<hr />
+		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
+		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
+		<ul id="member-history-filters" class="subsubsub">
+			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
+			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
+		</ul>
+		<br class="clear" />
+		<div id="member-history-orders" class="widgets-holder-wrap" <?php if(count($invoices) > 5) { ?>style="height: 150px; overflow: auto;"<?php } ?>>
+		<?php if ( $invoices ) { ?>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Invoice ID', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
+					<th><?php esc_html_e( 'Total Billed', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+					<?php do_action('pmpromh_orders_extra_cols_header');?>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+				foreach ( $invoices as $invoice ) { 
+					$level = pmpro_getLevel( $invoice->membership_id );
+					?>
+					<tr>
+						<td><?php echo date_i18n( get_option( 'date_format'), $invoice->timestamp ); ?></td>
+						<td class="order_code column-order_code has-row-actions">
+							<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php echo $invoice->code; ?></a><br />
+							<div class="row-actions">
+								<span class="edit">
+									<a title="<?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
+								</span> |
+								<span class="print">
+									<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+								</span>
+								<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
+									 |
+									<span class="email">
+										<a title="<?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+									</span>
+								<?php } ?>
+							</div> <!-- end .row-actions -->
+						</td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td><?php echo pmpro_formatPrice( $invoice->total ); ?></td>
+						<td><?php 
+							if ( empty( $invoice->code_id ) ) {
+								echo '-';
+							} else {
+								$discountQuery = "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = ".$invoice->code_id." LIMIT 1";
+								$discount_code = $wpdb->get_row( $discountQuery );
+								echo '<a href="admin.php?page=pmpro-discountcodes&edit='.$invoice->code_id.'">'. esc_attr( $discount_code->code ) . '</a>';
+							}
+						?></td>
+						<td>
+							<?php
+								if ( empty( $invoice->status ) ) {
+									echo '-';
+								} else {
+									echo esc_html( $invoice->status );
+								}
+							?>
+						</td>
+						<?php do_action( 'pmpromh_orders_extra_cols_body', $invoice ); ?>
+					</tr>
+					<?php
+				}
+			?>
+			</tbody>
+			</table>
+			<?php } else { 
+				esc_html_e( 'No membership orders found.', 'paid-memberships-pro' );
+			} ?>
+		</div>
+		<div id="member-history-memberships" class="widgets-holder-wrap" style="display: none;">
+		<?php if ( $levelshistory ) { ?>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
+					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Start Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Date Modified', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'End Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Level Cost', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+					<?php do_action( 'pmpromh_member_history_extra_cols_header' ); ?>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+				foreach ( $levelshistory as $levelhistory ) {
+					$level = pmpro_getLevel( $levelhistory->membership_id );
+
+					if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
+						$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
+					} else {
+						$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
+					} ?>
+					<tr>
+						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+						<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
+						<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
+						<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
+						<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
+						<td>
+							<?php 
+								if ( empty( $levelhistory->status ) ) {
+									echo '-';
+								} else {
+									echo esc_html( $levelhistory->status ); 
+								}
+							?>
+						</td>
+						<?php do_action( 'pmpromh_member_history_extra_cols_body', $user, $level ); ?>
+					</tr>
+					<?php
+				}
+			?>
+			</tbody>
+			</table>
+			<?php } else { 
+				esc_html_e( 'No membership history found.', 'paid-memberships-pro');
+			} ?>
+		</div>
+		<script>
+			//tabs
+			jQuery(document).ready(function() {
+				jQuery('#member-history-filters a.tab').click(function() {
+					//which tab?
+					var tab = jQuery(this).parent().attr('id').replace('member-history-filters-', '');
+					
+					//un select tabs
+					jQuery('#member-history-filters a.tab').removeClass('current');
+					
+					//select this tab
+					jQuery('#member-history-filters-'+tab+' a').addClass('current');
+					
+					//show orders?
+					if(tab == 'orders')
+					{
+						jQuery('#member-history-memberships').hide();
+						jQuery('#member-history-orders').show();
+					}
+					else
+					{
+						jQuery('div#member-history-orders').hide();
+						jQuery('#member-history-memberships').show();
+
+						<?php if ( count( $levelshistory ) > 5 ) { ?>
+						jQuery('#member-history-memberships').css({'height': '150px', 'overflow': 'auto' });
+						<?php } ?>
+					}
+				});
+			});
+		</script>
+		<?php
+	}	
+}
+add_action('edit_user_profile', 'pmpro_membership_history_profile_fields');
+add_action('show_user_profile', 'pmpro_membership_history_profile_fields');
+
+
+/**
+ * Allow orders to be emailed from the member history section on user profile.
+ *
+ */
+function pmpro_membership_history_email_modal() {
+	$screen = get_current_screen();
+	if ( $screen->base == 'user-edit' || $screen->base == 'profile' ) {
+		// Require the core Paid Memberships Pro Admin Functions.
+		if ( defined( 'PMPRO_DIR' ) ) {
+			require_once( PMPRO_DIR . '/adminpages/functions.php' );
+		}
+
+		// Load the email order modal.
+		if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
+			pmpro_add_email_order_modal();
+		}
+	}
+}
+add_action( 'in_admin_header', 'pmpro_membership_history_email_modal' );
+
+
 
 /**
  * Sanitizes the passed value.

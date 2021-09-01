@@ -130,7 +130,7 @@ function pmpro_update_plugins_filter( $value ) {
 		}
 
 		// compare versions
-		if ( ! empty( $addon['License'] ) && version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
+		if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 			$value->response[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 			$value->response[ $plugin_file ]->new_version = $addon['Version'];
 		} else {

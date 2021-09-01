@@ -33,14 +33,6 @@
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
-
-	try {
-		Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
-	} catch ( Exception $e ) {
-		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
-		pmpro_stripeWebhookExit();
-	}
-
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
 	{
@@ -48,12 +40,29 @@
 		$post_event = json_decode($body);
 
 		//get the id
-		if(!empty($post_event))
+		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
+			$livemode = ! empty( $post_event->livemode );
+		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
+		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+	}
+
+	try {
+		if ( PMProGateway_stripe::using_legacy_keys() ) {
+			$secret_key = pmpro_getOption( "stripe_secretkey" );
+		} elseif ( $livemode ) {
+			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+		} else {
+			$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+		}
+		Stripe\Stripe::setApiKey( $secret_key );
+	} catch ( Exception $e ) {
+		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
+		pmpro_stripeWebhookExit();
 	}
 
 	//get the event through the API now
@@ -77,6 +86,9 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Log that we have successfully received a webhook from Stripe.
+		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{

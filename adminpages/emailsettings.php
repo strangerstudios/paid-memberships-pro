@@ -9,6 +9,8 @@
 	
 	//get/set settings
 	global $pmpro_pages;
+
+	global $current_user;
 	
 	//check nonce for saving settings
 	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_emailsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_emailsettings_nonce'))) {
@@ -116,20 +118,6 @@
 		</table>
 		<p class="submit"><input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" /></p>
 		<hr />
-		<div class="pmpro_admin_section pmpro_admin_section-email-content">
-			<h2><?php _e( 'Customizing Email Content', 'paid-memberships-pro' ); ?></h2>
-			<p><?php
-			$allowed_email_customizing_html = array (
-				'a' => array (
-					'href' => array(),
-					'target' => array(),
-					'title' => array(),
-				),
-			);
-			echo sprintf( wp_kses( __( 'There are several ways to modify the appearance of your Paid Memberships Pro emails. We recommend using the free <a href="%s" title="Paid Memberships Pro - Email Templates Admin Editor Add On" target="_blank">Email Templates Admin Editor Add On</a>, which allows you to modify the email header, footer, subject, and body content for all member and admin communications. <a title="Paid Memberships Pro - Member Communications" target="_blank" href="%s">Click here to learn more about Paid Memberships Pro emails</a>.', 'paid-memberships-pro' ), $allowed_email_customizing_html ), 'https://www.paidmembershipspro.com/add-ons/email-templates-admin-editor/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=add-ons&utm_content=email-templates-admin-editor', 'http://www.paidmembershipspro.com/documentation/member-communications/?utm_source=plugin&utm_medium=pmpro-emailsettings&utm_campaign=documentation&utm_content=member-communications' );
-		?></p>
-		</div> <!-- end pmpro_admin_section-email-content -->
-		<hr />
 		<div class="pmpro_admin_section pmpro_admin_section-email-deliverability">
 			<h2><?php _e( 'Email Deliverability', 'paid-memberships-pro' ); ?></h2>
 
@@ -168,25 +156,7 @@
 		<hr />
 		<h2 class="title"><?php esc_html_e( 'Other Email Settings', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
-		<tbody>                
-			<tr>
-				<th scope="row" valign="top">
-					<label for="email_admin"><?php _e('Send the site admin emails', 'paid-memberships-pro' );?>:</label>
-				</th>
-				<td>
-					<input type="checkbox" id="email_admin_checkout" name="email_admin_checkout" value="1" <?php if(!empty($email_admin_checkout)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_checkout"><?php _e('when a member checks out.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_changes" name="email_admin_changes" value="1" <?php if(!empty($email_admin_changes)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_changes"><?php _e('when an admin changes a user\'s membership level through the dashboard.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_cancels" name="email_admin_cancels" value="1" <?php if(!empty($email_admin_cancels)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_cancels"><?php _e('when a user cancels his or her account.', 'paid-memberships-pro' );?></label>
-					<br />
-					<input type="checkbox" id="email_admin_billing" name="email_admin_billing" value="1" <?php if(!empty($email_admin_billing)) { ?>checked="checked"<?php } ?> />
-					<label for="email_admin_billing"><?php _e('when a user updates his or her billing information.', 'paid-memberships-pro' );?></label>
-				</td>
-			</tr>               
+		<tbody>            
 			<tr>
 				<th scope="row" valign="top">
 					<label for="email_member_notification"><?php _e('Send members emails', 'paid-memberships-pro' );?>:</label>
@@ -198,13 +168,11 @@
 				</td>
 			</tr>
 		</tbody>
-		</table>
-		
+		</table>		
 		<p class="submit">            
 			<input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
 		</p> 
 	</form>
 
 <?php
-	require_once(dirname(__FILE__) . "/admin_footer.php");	
-?>
+	require_once(dirname(__FILE__) . "/admin_footer.php");

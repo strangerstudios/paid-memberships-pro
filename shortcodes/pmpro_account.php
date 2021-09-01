@@ -126,14 +126,27 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									<p><?php echo pmpro_getLevelCost($level, true, true);?></p>
 								</td>
 								<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-expiration' ); ?>">
-								<?php
-									if($level->enddate)
-										$expiration_text = date_i18n( get_option( 'date_format' ), $level->enddate );
-									else
-										$expiration_text = "---";
-
-								    	echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
-								?>
+									<?php
+										$expiration_text = '<p>';
+										if ( $level->enddate ) {
+											$expiration_text .= date_i18n( get_option( 'date_format' ), $level->enddate );
+											/**
+											 * Filter to include the expiration time with expiration date
+											 *
+											 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date (default: false).
+											 *
+											 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
+											 *
+											 */
+											if ( apply_filters( 'pmpro_show_time_on_expiration_date', false ) ) {
+												$expiration_text .= ' ' . date_i18n( get_option( 'time_format', __( 'g:i a' ) ), $level->enddate );
+											}
+										} else {
+											$expiration_text .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
+										}
+										$expiration_text .= '</p>';
+										echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
+									?>
 								</td>
 							</tr>
 							<?php } ?>

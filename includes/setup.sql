@@ -45,7 +45,7 @@ CREATE TABLE `wp_pmpro_discount_codes_levels` (
   `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
   `trial_limit` int(11) NOT NULL DEFAULT '0',
   `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`code_id`,`level_id`),
   KEY `initial_payment` (`initial_payment`)
 );
@@ -87,7 +87,7 @@ CREATE TABLE `wp_pmpro_membership_levels` (
   `trial_limit` int(11) NOT NULL DEFAULT '0',
   `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
   `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `allow_signups` (`allow_signups`),
   KEY `initial_payment` (`initial_payment`),
