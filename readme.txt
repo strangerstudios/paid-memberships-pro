@@ -3,7 +3,7 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
 Tested up to: 5.8
-Stable tag: 2.6.1
+Stable tag: 2.6.1.1
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -155,6 +155,10 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.1.1 - 2021-08-25 =
+* BUG FIX: Fixed issue with PMPro blocks not showing up in the block editor.
+* REFACTOR: Some JS functions and element IDs and names have been prefixed with pmpro_ to avoid conflicts.
+
 = 2.6.1 - 2021-08-24 =
 * SECURITY: Added capability checks to further tighten security around email template settings. (@ideadude, @sc0ttkclark)
 * SECURITY: Added a pmpro_kses function and using that to sanitize email template bodies and all email bodies before sending. (@ideadude, @sc0ttkclark)
