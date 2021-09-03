@@ -321,7 +321,7 @@ if ( $txn_type == 'recurring_payment_profile_created' ) {
 
 // Order completed (PayPal Express)
 if ( $txn_type == 'express_checkout' ) {
-	ipnlog( "Confirmation of order completion for this payment: " . print_r( $_POST, true ) );
+	ipnlog( 'Confirmation of order completion for this payment: ' . print_r( $_POST, true ) );
 
 	pmpro_ipnExit();
 }
