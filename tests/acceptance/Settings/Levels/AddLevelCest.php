@@ -13,8 +13,11 @@ class AddLevelCest {
 
 		$I->amOnAdminPage( '/admin.php?page=pmpro-membershiplevels' );
 
-		$I->see( 'Add new level', 'a.page-title-action' );
-		$I->click( 'a.page-title-action' );
+		//$I->see( 'Add new level', 'a.page-title-action' );
+		//$I->click( 'a.page-title-action' );
+
+		$I->see( 'Create a Membership Level', '.pmpro-new-install a.button-primary' );
+		$I->click( '.pmpro-new-install a.button-primary' );
 	}
 
 	/**
@@ -72,7 +75,7 @@ class AddLevelCest {
 			$I->selectOption( 'select[name="expiration_period"]', $content['expiration_period'] );
 		}
 
-		$I->cantSeeElement( 'tr.pbc_recurring_field' );
+		/*$I->cantSeeElement( 'tr.pbc_recurring_field' );
 
 		if ( '1' === $content['pbc_setting'] || '2' === $content['pbc_setting'] ) {
 			$I->selectOption( 'select[name="pbc_setting"]', $content['pbc_setting'] );
@@ -82,20 +85,18 @@ class AddLevelCest {
 			$I->fillField( 'input[name="pbc_renewal_days"]', $content['pbc_renewal_days'] );
 			$I->fillField( 'input[name="pbc_reminder_days"]', $content['pbc_reminder_days'] );
 			$I->fillField( 'input[name="pbc_cancel_days"]', $content['pbc_cancel_days'] );
-		}
+		}*/
 
 		if ( 'yes' === $content['membershipcategory_1'] ) {
 			$I->checkOption( 'input[name="membershipcategory_1"]' );
 		}
-
-		$I->click( 'input[name="save"]' );
 	}
 
 	/**
 	 * See in the add new level form.
 	 *
 	 * @param AcceptanceTester $I       The tester instance.
-	 * @param array            $content The content to fill in.
+	 * @param array            $content The content to look for.
 	 */
 	private function see_in_form( AcceptanceTester $I, array $content ) {
 		$I->seeInField( 'input[name="name"]', $content['name'] );
@@ -120,7 +121,7 @@ class AddLevelCest {
 
 		$I->seeInField( 'input[name="billing_amount"]', $content['billing_amount'] );
 		$I->seeInField( 'input[name="cycle_number"]', $content['cycle_number'] );
-		$I->seeOptionIsSelected( 'select[name="cycle_period"]', $content['cycle_period'] );
+		$I->seeInField( 'select[name="cycle_period"]', $content['cycle_period'] );
 
 		if ( 'yes' === $content['custom_trial'] ) {
 			$I->canSeeElement( 'tr.trial_info' );
@@ -148,19 +149,19 @@ class AddLevelCest {
 		}
 
 		$I->seeInField( 'input[name="expiration_number"]', $content['expiration_number'] );
-		$I->seeOptionIsSelected( 'select[name="expiration_period"]', $content['expiration_period'] );
+		$I->seeInField( 'select[name="expiration_period"]', $content['expiration_period'] );
 
-		if ( '1' === $content['pbc_setting'] || '2' === $content['pbc_setting'] ) {
+		/*if ( '1' === $content['pbc_setting'] || '2' === $content['pbc_setting'] ) {
 			$I->canSeeElement( 'tr.pbc_recurring_field' );
-			$I->seeOptionIsSelected( 'select[name="pbc_setting"]', $content['pbc_setting'] );
+			$I->seeInField( 'select[name="pbc_setting"]', $content['pbc_setting'] );
 		} else {
 			$I->cantSeeElement( 'tr.pbc_recurring_field' );
-			$I->seeOptionIsSelected( 'select[name="pbc_setting"]', $content['pbc_setting'] );
+			$I->seeInField( 'select[name="pbc_setting"]', $content['pbc_setting'] );
 		}
 
 		$I->seeInField( 'input[name="pbc_renewal_days"]', $content['pbc_renewal_days'] );
 		$I->seeInField( 'input[name="pbc_reminder_days"]', $content['pbc_reminder_days'] );
-		$I->seeInField( 'input[name="pbc_cancel_days"]', $content['pbc_cancel_days'] );
+		$I->seeInField( 'input[name="pbc_cancel_days"]', $content['pbc_cancel_days'] );*/
 
 		if ( 'yes' === $content['membershipcategory_1'] ) {
 			$I->seeCheckboxIsChecked( 'input[name="membershipcategory_1"]' );
@@ -199,7 +200,48 @@ class AddLevelCest {
 			'membershipcategory_1'  => 'yes',
 		];
 
-		$this->fill_in_form( $content );
+		$this->fill_in_form( $I, $content );
+
+		$I->click( 'input[name="save"]' );
+
+		$I->see( $content['name'], 'table.membership-levels' );
+	}
+
+	/**
+	 * It should allow cancelling add new level.
+	 *
+	 * @param AcceptanceTester $I The tester instance.
+	 */
+	public function should_allow_cancelling_add_new_level( AcceptanceTester $I ) {
+		$content = [
+			'name'                  => 'My new cancelled test level',
+			'description'           => 'My test level description',
+			'confirmation'          => 'You now have access to this level',
+			'confirmation_in_email' => 'yes',
+			'initial_payment'       => 'You now have access to this level',
+			'recurring'             => 'yes',
+			'billing_amount'        => '10',
+			'cycle_number'          => '2',
+			'cycle_period'          => 'Year',
+			'custom_trial'          => 'yes',
+			'trial_amount'          => '1',
+			'trial_limit'           => '1',
+			'disable_signups'       => 'yes',
+			'expiration'            => 'yes',
+			'expiration_number'     => '2',
+			'expiration_period'     => 'Year',
+			'pbc_setting'           => '2',
+			'pbc_renewal_days'      => '7',
+			'pbc_reminder_days'     => '7',
+			'pbc_cancel_days'       => '14',
+			'membershipcategory_1'  => 'yes',
+		];
+
+		$this->fill_in_form( $I, $content );
+
+		$I->click( 'input[name="cancel"]' );
+
+		$I->dontSee( $content['name'], 'table.membership-levels' );
 	}
 
 	/**
@@ -233,6 +275,6 @@ class AddLevelCest {
 			'membershipcategory_1'  => '',
 		];
 
-		$this->see_in_form( $content );
+		$this->see_in_form( $I, $content );
 	}
 }
