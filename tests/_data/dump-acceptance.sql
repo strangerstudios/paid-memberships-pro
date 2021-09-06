@@ -769,7 +769,7 @@ CREATE TABLE `wp_users` (
 
 LOCK TABLES `wp_users` WRITE;
 /*!40000 ALTER TABLE `wp_users` DISABLE KEYS */;
-INSERT INTO `wp_users` VALUES (1,'admin','$P$B5pIkEPhrduMesD7QUR6CJgk6vACMH1','admin','dev-email@flywheel.local','http://test.pmpro-phx.local','2021-07-27 17:04:37','',0,'admin');
+INSERT INTO `wp_users` VALUES (1,'admin','$P$BJ5SEgBWa6Bkw7Yk8jiOSb8dtrydtP.','admin','dev-email@flywheel.local','http://test.pmpro-phx.local','2021-07-27 17:04:37','',0,'admin');
 /*!40000 ALTER TABLE `wp_users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
