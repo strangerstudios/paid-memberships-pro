@@ -21,12 +21,46 @@ class AddLevelCest {
 	}
 
 	/**
+	 * Get the default content used for testing.
+	 *
+	 * @return string[] The default content.
+	 */
+	private function get_default_content() {
+		return [
+			'name'                  => '',
+			'description'           => '',
+			'confirmation'          => '',
+			'confirmation_in_email' => '',
+			'initial_payment'       => '0',
+			'recurring'             => '',
+			'billing_amount'        => '0',
+			'cycle_number'          => '1',
+			'cycle_period'          => 'Month',
+			'billing_limit'         => '',
+			'custom_trial'          => '',
+			'trial_amount'          => '0',
+			'trial_limit'           => '',
+			'disable_signups'       => '',
+			'expiration'            => '',
+			'expiration_number'     => '',
+			'expiration_period'     => 'Hour',
+			'pbc_setting'           => '0',
+			'pbc_renewal_days'      => '',
+			'pbc_reminder_days'     => '',
+			'pbc_cancel_days'       => '',
+			'membershipcategory_1'  => '',
+		];
+	}
+
+	/**
 	 * Fill in the add new level form.
 	 *
 	 * @param AcceptanceTester $I       The tester instance.
 	 * @param array            $content The content to fill in.
 	 */
-	private function fill_in_form( AcceptanceTester $I, array $content ) {
+	private function fill_in_form( AcceptanceTester $I, array $content = [] ) {
+		$content = array_merge( $this->get_default_content(), $content );
+
 		$I->fillField( 'input[name="name"]', $content['name'] );
 		$I->fillField( 'textarea[name="description"]', $content['description'] );
 		$I->fillField( 'textarea[name="confirmation"]', $content['confirmation'] );
@@ -96,9 +130,11 @@ class AddLevelCest {
 	 * See in the add new level form.
 	 *
 	 * @param AcceptanceTester $I       The tester instance.
-	 * @param array            $content The content to look for.
+	 * @param array            $content The content to look for (leave empty to use defaults).
 	 */
-	private function see_in_form( AcceptanceTester $I, array $content ) {
+	private function see_in_form( AcceptanceTester $I, array $content = [] ) {
+		$content = array_merge( $this->get_default_content(), $content );
+
 		$I->seeInField( 'input[name="name"]', $content['name'] );
 		$I->seeInField( 'textarea[name="description"]', $content['description'] );
 		$I->seeInField( 'textarea[name="confirmation"]', $content['confirmation'] );
@@ -250,31 +286,6 @@ class AddLevelCest {
 	 * @param AcceptanceTester $I The tester instance.
 	 */
 	public function should_show_default_values_in_fields( AcceptanceTester $I ) {
-		$content = [
-			'name'                  => '',
-			'description'           => '',
-			'confirmation'          => '',
-			'confirmation_in_email' => '',
-			'initial_payment'       => '0',
-			'recurring'             => '',
-			'billing_amount'        => '0',
-			'cycle_number'          => '1',
-			'cycle_period'          => 'Month',
-			'billing_limit'         => '',
-			'custom_trial'          => '',
-			'trial_amount'          => '0',
-			'trial_limit'           => '',
-			'disable_signups'       => '',
-			'expiration'            => '',
-			'expiration_number'     => '',
-			'expiration_period'     => 'Hour',
-			'pbc_setting'           => '0',
-			'pbc_renewal_days'      => '',
-			'pbc_reminder_days'     => '',
-			'pbc_cancel_days'       => '',
-			'membershipcategory_1'  => '',
-		];
-
-		$this->see_in_form( $I, $content );
+		$this->see_in_form( $I );
 	}
 }
