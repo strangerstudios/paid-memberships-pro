@@ -30,4 +30,18 @@ class SessionTest extends TestCase {
 
 		$this->assertEquals( 'Test content.', trim( pmpro_kses( $html ) ) );
 	}
+
+	/**
+	 * @covers ::pmpro_kses()
+	 * @covers ::pmpro_kses_allowed_html()
+	 */
+	public function test_pmpro_kses_with_email_context_with_disallowed_html_and_filtered_to_disable_sanitization() {
+		$html = file_get_contents( codecept_data_dir( 'kses/email-disallowed.html' ) );
+
+		add_filter( 'pmpro_kses', static function( $sanitized_string, $original_string, $context ) {
+			return 'pmpro_email' === $context ? $original_string : $sanitized_string;
+		}, 10, 3 );
+
+		$this->assertEquals( $html, pmpro_kses( $html ) );
+	}
 }
