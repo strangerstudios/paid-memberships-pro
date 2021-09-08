@@ -42,7 +42,7 @@ class PMPro_Subscription {
 			$this->gateway                     = '';
 			$this->gateway_environment         = '';
 			$this->subscription_transaction_id = '';
-			$this->status                      = 'active';
+			$this->status                      = '';
 			$this->startdate                   = ''; // UTC YYYY-MM-DD HH:MM:SS.
 			$this->enddate                     = ''; // UTC YYYY-MM-DD HH:MM:SS.
 			$this->next_payment_date           = ''; // UTC YYYY-MM-DD HH:MM:SS.
@@ -126,6 +126,8 @@ class PMPro_Subscription {
 	}
 
 	static function create_subscription( $user_id, $membership_level_id, $subscription_transaction_id, $gateway, $gateway_environment ) {
+		global $wpdb;
+
 		if ( empty( $user_id ) ) {
 			return false;
 		}
@@ -147,18 +149,60 @@ class PMPro_Subscription {
 		$new_subscription->update_from_gateway();
 
 		// If we are still missing information, fall back on order and membership history.
-		// TODO: Implement this.
 		if ( empty( $new_subscription->status ) ) {
 			$new_subscription->status = pmpro_hasMembershipLevel( $membership_level_id, $user_id ) ? 'active' : 'cancelled';
+			$last_order_for_level = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT * 
+					FROM $wpdb->pmpro_membership_orders
+					WHERE membership_id = '%s'
+					ORDER BY timestamp DESC",
+					$membership_level_id
+				),
+				OBJECT
+			);
+			if ( ! empty( $last_order_for_level->subscription_transaction_id ) && $last_order_for_level->subscription_transaction_id === $subscription_transaction_id
+				&& ! empty( $last_order_for_level->gateway ) && $last_order_for_level->gateway === $gateway
+				&& ! empty( $last_order_for_level->gateway_environment ) && $last_order_for_level->gateway_environment === $gateway_environment
+			) {
+				$new_subscription->status = 'active';
+			} else {
+				$new_subscription->status = 'cancelled';
+			}
 		}
+
 		if ( empty( $new_subscription->startdate ) ) {
-			// Get the earliest order for this subscription or the startdate for their membership.
+			// Get the earliest order for this subscription.
+			// There should be one since we are usually making a subscription from an order.
+			$first_order = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT * 
+					FROM $wpdb->pmpro_membership_orders
+					WHERE subscription_transaction_id = '%s'
+					AND gateway = '%s'
+					AND gateway_environment = '%s'
+					ORDER BY timestamp ASC",
+					$subscription_transaction_id,
+					$gateway,
+					$gateway_environment
+				),
+				OBJECT
+			);
+			if ( ! empty( $first_order->timestamp ) ) {
+				$new_subscription->startdate = $first_order->timestamp;
+			}
 		}
-		if ( empty( $new_subscription->enddate ) ) {
+
+		if ( $new_subscription->status === 'active' && empty( $new_subscription->next_payment_date ) ) {
+			// Calculate their next payment date based on their current membership.
+			// TODO: Implement this.
+
+		}
+
+		if ( $new_subscription->status !== 'active' && empty( $new_subscription->enddate ) ) {
 			// Get the end date for their old membership. May not work well if they've changed levels a lot.
-		}
-		if ( empty( $new_subscription->next_payment_date ) ) {
-			// Do math based on their current membership 
+			// TODO: Implement this.
+
 		}
 
 		$new_subscription->save();

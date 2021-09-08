@@ -835,6 +835,17 @@
 			}
 		}
 
+		/**
+		 * Cancels a subscription in PayPal.
+		 *
+		 * @param PMPro_Subscription $subscription to cancel.
+	 	 */
+		function cancel_subscription( $subscription ) {
+			// PMPro_Subscription has same `subscription_transaction_id` property
+			// as MemberOrder, so just pass it to cancelSubscriptionAtGateway().
+			return $this->cancelSubscriptionAtGateway( $subscription );
+		}
+
 		function getSubscriptionStatus(&$order)
 		{
 			if(empty($order->subscription_transaction_id))
@@ -859,6 +870,33 @@
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
 
 				return false;
+			}
+		}
+
+		/**
+		 * Pull subscription info from PayPal.
+		 *
+		 * @param PMPro_Subscription $subscription to pull data for.
+		 */
+		function update_subscription_info( $subscription ) {
+			if(empty($subscription->subscription_transaction_id))
+				return false;
+
+			//paypal profile stuff
+			$nvpStr = "";
+			$nvpStr .= "&PROFILEID=" . urlencode($subscription->subscription_transaction_id);
+
+			$nvpStr = apply_filters("pmpro_get_recurring_payments_profile_details_nvpstr", $nvpStr, $subscription);
+
+			$response = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);
+
+			if("SUCCESS" == strtoupper($response["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($response["ACK"])) {
+				$subscription->status = in_array( $response['STATUS'], array( 'Pending', 'Active' ) ) ? 'active' : 'cancelled';
+				$subscription->next_payment_date = $subscription->status === 'active' ? date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) ) : '';
+				// Note: Startdate and Enddate information is not included in recurring payments profile details.
+				// Maybe we can try to pull this from the user's membership history. We should not ovewrite
+				// it's curently set value just in case we calculated it in another way.
+				// $subscription->enddate = '';
 			}
 		}
 		
