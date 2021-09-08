@@ -3690,37 +3690,35 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 /**
  * Sanitizing strings using wp_kses and allowing style tags.
  *
- * @param string $string  The string to sanitize.
- * @param string $context The sanitization context.
+ * @param string $original_string  The string to sanitize.
+ * @param string $context          The sanitization context.
  *
  * @return string The sanitized string.
  *
  * @since 2.6.1
  */
-function pmpro_kses( $string, $context = 'email' ) {
+function pmpro_kses( $original_string, $context = 'email' ) {
 	$context = 'pmpro_' . $context;
+
+	$sanitized_string = $original_string;
+
+	if ( 'pmpro_email' === $context ) {
+		// Always remove script tags and their contents.
+		$sanitized_string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $sanitized_string );
+	}
+
+	$sanitized_string = wp_kses( $sanitized_string, $context );
 
 	/**
 	 * Allow overriding the normal pmpro_kses functionality for a context.
 	 *
-	 * @param null|string $pre_kses Provide a string to override the normal pmpro_kses processing, default is null.
-	 * @param string      $string   The string to sanitize.
-	 * @param string      $context  The sanitization context.
+	 * @param string $sanitized_string The sanitized string.
+	 * @param string $original_string  The original string.
+	 * @param string $context          The sanitization context.
 	 *
 	 * @since TBD
 	 */
-	$pre_kses = apply_filters( 'pmpro_kses_pre', null, $string, $context );
-
-	if ( is_string( $pre_kses ) ) {
-		return $pre_kses;
-	}
-
-	if ( 'pmpro_email' === $context ) {
-		// Always remove script tags and their contents.
-		$string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $string );
-	}
-
-	return wp_kses( $string, $context );
+	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
 }
 
 /**
