@@ -130,7 +130,7 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 		$page = 'levels';
 	}
 
-	global $pmpro_pages;	
+	global $pmpro_pages;
 
 	if ( ! empty( $pmpro_pages[ $page ] ) ) {
 		// start with the permalink
@@ -160,7 +160,7 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 			$url = str_replace( 'http:', 'https:', $url );
 		}
 	}
-	
+
 	/**
 	 * Filter the URL before returning.
 	 */
@@ -175,7 +175,7 @@ function pmpro_isLevelFree( &$level ) {
 	} else {
 		$r = false;
 	}
-	
+
 	$r = apply_filters( 'pmpro_is_level_free', $r, $level );
 	return $r;
 }
@@ -201,7 +201,7 @@ function pmpro_areLevelsFree( $levelarr ) {
 function pmpro_onlyFreeLevels() {
 	// Get levels that are available for checkout only.
 	$levels = pmpro_getAllLevels( false, true );
-	
+
 	return apply_filters( 'pmpro_only_free_levels', pmpro_areLevelsFree( $levels ) );
 }
 
@@ -211,7 +211,7 @@ function pmpro_isLevelRecurring( &$level ) {
 	} else {
 		$r = false;
 	}
-	
+
 	$r = apply_filters( 'pmpro_is_level_recurring', $r, $level );
 	return $r;
 }
@@ -224,26 +224,26 @@ function pmpro_isLevelRecurring( &$level ) {
  */
 function pmpro_has_recurring_level( $user_id = null ) {
 	global $current_user;
-	
+
 	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
 	}
-	
+
 	if ( empty( $user_id ) ) {
 		return false;
 	}
 
-	$levels = pmpro_getMembershipLevelsForUser( $user_id );	
-	
+	$levels = pmpro_getMembershipLevelsForUser( $user_id );
+
 	if ( empty( $levels ) ) {
 		return false;
 	}
-	
-	foreach( $levels as $level ) {		
+
+	foreach( $levels as $level ) {
 		if ( pmpro_isLevelRecurring( $level ) ) {
 			return true;
 		}
-	}	
+	}
 
 	return false;
 }
@@ -254,7 +254,7 @@ function pmpro_isLevelTrial( &$level ) {
 	} else {
 		$r = false;
 	}
-	
+
 	$r = apply_filters( 'pmpro_is_level_trial', $r, $level );
 	return $r;
 }
@@ -266,7 +266,7 @@ function pmpro_isLevelExpiring( &$level ) {
 	} else {
 		$r = false;
 	}
-	
+
 	$r = apply_filters( 'pmpro_is_level_expiring', $r, $level );
 	return $r;
 }
@@ -626,7 +626,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
 	 * Filter the levels expiration text. Note the s in levels. Similar to pmpro_levels_expiration_text
 	 */
 	$expiration_text = apply_filters( 'pmpro_levels_expiration_text', $expiration_text, $levels );
-	
+
 	// Backwards compatible
 	if ( ! empty( $levels ) ) {
 		$first_level = reset($levels);
@@ -634,7 +634,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
 		$first_level = false;
 	}
 	$expiration_text = apply_filters( 'pmpro_level_expiration_text', $expiration_text, $first_level );
-	
+
 	return $expiration_text;
 }
 
@@ -1127,7 +1127,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			if ( ! empty( $c_order->error ) ) {
 				$pmpro_error = $c_order->error;
 			}
-			
+
 			if( $old_level_status == 'error' ) {
 				$c_order->updateStatus("error");
 			}
@@ -1196,7 +1196,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// remove cached level
 	global $all_membership_levels;
 	unset( $all_membership_levels[ $user_id ] );
-	
+
 	// remove levels cache for user
 	$cache_key = 'user_' . $user_id . '_levels';
 	wp_cache_delete( $cache_key, 'pmpro' );
@@ -1693,11 +1693,11 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 // get a new random code for discount codes
 function pmpro_getDiscountCode( $seed = null ) {
 	global $wpdb;
-	
+
 	// We mix this with the seed to make sure we get unique codes.
 	static $count = 0;
 	$count++;
-	
+
 	while ( empty( $code ) ) {
 		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
 		$code = substr( $scramble, 0, 10 );
@@ -2000,7 +2000,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 		if ( empty( $all_membership_levels[ $user_id ] ) ) {
 			$all_membership_levels[ $user_id ] = false;
 		}
-		
+
 		// Round off prices
 		if ( ! empty( $all_membership_levels[$user_id] ) ) {
 			if ( isset( $all_membership_levels[$user_id]->initial_payment ) ) {
@@ -2053,19 +2053,19 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	$user_id = intval( $user_id );
 
 	global $wpdb;
-	
+
 	/**
 	 * We are going to see if cache is set before doing the query and use that if it is.
-	 * 
+	 *
 	 * In a default environment with no external object cache, the value is cached in that request and
 	 * reduces future MySQL requests. If there is an external object cache like Redis then it will be
 	 * persisted until the user level changes.
 	 **/
 	$cache_key = 'user_' . $user_id . '_levels' . ( $include_inactive ? '_all' : '_active' );
     $levels = wp_cache_get( $cache_key, 'pmpro' );
-	
+
 	if ( $levels === false ) {
-				
+
 		$levels = $wpdb->get_results(
 			"SELECT
 				l.id AS ID,
@@ -2093,7 +2093,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 		);
 		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
-	
+
 	// Round off prices
 	if ( ! empty( $levels ) ) {
 		foreach( $levels as $key => $level ) {
@@ -2102,7 +2102,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 			$levels[$key]->trial_amount = pmpro_round_price( $level->trial_amount );
 		}
 	}
-	
+
 	/**
 	 * pmpro_get_membership_levels_for_user filter.
 	 *
@@ -2186,22 +2186,22 @@ function pmpro_getLevel( $level ) {
 			return false;
 		}
 
-		$pmpro_levels[ $level_id ] = $level_obj;	
+		$pmpro_levels[ $level_id ] = $level_obj;
 	}
-	
+
 	// Round prices
 	if ( ! empty( $pmpro_levels[ $level_id ] ) ) {
 		$pmpro_levels[ $level_id ]->initial_payment = pmpro_round_price( $pmpro_levels[ $level_id ]->initial_payment );
 		$pmpro_levels[ $level_id ]->billing_amount = pmpro_round_price( $pmpro_levels[ $level_id ]->billing_amount );
 		$pmpro_levels[ $level_id ]->trial_amount = pmpro_round_price( $pmpro_levels[ $level_id ]->trial_amount );
 	}
-	
+
 	return $pmpro_levels[ $level_id ];
 }
 
 /*
 	Get all PMPro membership levels.
-	
+
 	@param	bool  $include_hidden  Include levels marked as hidden/inactive.
 	@param  bool  $use_cache	   If false, use $pmpro_levels global. If true use other caches.
 	@param  bool  $force           Resets the static var caches as well.
@@ -2248,7 +2248,7 @@ function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force
 		$raw_level->trial_amount = pmpro_round_price( $raw_level->trial_amount );
 		$pmpro_levels[ $raw_level->id ] = $raw_level;
 	}
-	
+
 	// Store an extra cache specific to the include_hidden param.
 	if ( $include_hidden ) {
 		$pmpro_all_levels = $pmpro_levels;
@@ -2308,9 +2308,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			} else {
 				$default_level = null;
 			}
-			
+
 			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
-			
+
 			// Bail back to levels page if level ID is empty or less than 1.
 			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
 				return;
@@ -2403,12 +2403,12 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 		$level = pmpro_getLevel( $level_id );
 
 		if( ! empty( $level ) ) {
-			
+
 			// default button text with name field for replacement
 			if ( empty( $button_text ) ) {
 				$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
 			}
-			
+
 			// replace vars
 			$replacements = array(
 				'!!id!!' => $level->id,
@@ -2428,21 +2428,21 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 			$button_text = str_replace( array_keys( $replacements ), $replacements, $button_text );
 		}
 	}
-	
+
 	if ( empty( $button_text ) ) {
 		$button_text = __( 'Sign Up Now', 'paid-memberships-pro' );
 	}
-	
+
 	if ( empty( $classes ) ) {
 		$classes = 'pmpro_btn';
 	}
-	
+
 	if ( ! empty( $level_id ) ) {
 		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
 	} else {
 		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . $classes . '">' . $button_text . '</a>';
 	}
-	
+
 	return $r;
 }
 
@@ -2966,12 +2966,12 @@ function pmpro_formatPrice( $price ) {
  * @since 2.5.7
  *
  * @param string $price A price value.
- * @return string $price The escaped price with allowed HTML. 
+ * @return string $price The escaped price with allowed HTML.
  *
  */
 function pmpro_escape_price( $price ) {
-	$allowed_price_html = apply_filters( 
-		'pmpro_escape_price_html', 
+	$allowed_price_html = apply_filters(
+		'pmpro_escape_price_html',
 		array(
 			'div' => array (
 				'class' => array(),
@@ -3079,12 +3079,12 @@ function pmpro_round_price( $price, $currency = '' ) {
 	}
 
 	$rounded = round( (double) $price, $decimals );
-	
+
 	/**
 	 * Filter for result of pmpro_round_price.
 	 */
 	$rounded = apply_filters( 'pmpro_round_price', $rounded );
-	
+
 	return $rounded;
 }
 
@@ -3207,7 +3207,7 @@ function pmpro_isDateThisWeek( $str ) {
 		return false;
 	}
 }
-	
+
 /**
  * Does the dave provided fall within the current year?
  * Merged in from the Better Logins Report Add On.
@@ -3275,7 +3275,7 @@ function pmpro_generatePages( $pages ) {
 			if ( ! in_array( $name, $top_level_pages ) ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
 			}
-			
+
 			// tweak the login slug
 			if ( $name == 'login' ) {
 				$insert['post_name'] = 'login';
@@ -3449,7 +3449,7 @@ function pmpro_is_checkout() {
 function pmpro_show_discount_code() {
 	global $wpdb;
 	static $show;
-	
+
 	// check DB if we haven't yet
 	if ( !isset( $show ) ) {
 		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
@@ -3458,9 +3458,9 @@ function pmpro_show_discount_code() {
 			$show = false;
 		}
 	}
-	
+
 	$show = apply_filters( "pmpro_show_discount_code", $show );
-	
+
 	return $show;
 }
 
@@ -3473,28 +3473,28 @@ function pmpro_show_discount_code() {
  function pmpro_was_checkout_form_submitted() {
 	 // Default to false.
 	 $submit = false;
-	 
+
 	 // Basic check for a field called submit-checkout.
 	 if ( isset( $_REQUEST['submit-checkout'] ) ) {
 	 	$submit = true;
 	 }
-	 
+
 	 // _x stuff in case they clicked on the image button with their mouse
 	 if ( empty( $submit ) && isset( $_REQUEST['submit-checkout_x'] ) ) {
 	 	$submit = true;
 	 }
-	 
+
 	 return $submit;
  }
- 
+
  /**
   * Build the order object used at checkout.
   * @since 2.1
   * @return mixed $order Order object.
   */
- function pmpro_build_order_for_checkout() {    
+ function pmpro_build_order_for_checkout() {
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
-	
+
 	$morder                   = new MemberOrder();
 	$morder->membership_id    = $pmpro_level->id;
 	$morder->membership_name  = $pmpro_level->name;
@@ -3513,7 +3513,7 @@ function pmpro_show_discount_code() {
 		$morder->TrialBillingCycles    = $pmpro_level->trial_limit;
 		$morder->TrialAmount           = pmpro_round_price( $pmpro_level->trial_amount );
 	}
-	
+
 	// Credit card values.
 	$morder->cardtype              = $CardType;
 	$morder->accountnumber         = $AccountNumber;
@@ -3522,21 +3522,21 @@ function pmpro_show_discount_code() {
 	$morder->ExpirationDate        = $ExpirationMonth . $ExpirationYear;
 	$morder->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
 	$morder->CVV2                  = $CVV;
-	
+
 	// Not saving email in order table, but the sites need it.
 	$morder->Email = $bemail;
-	
+
 	// Save the user ID if logged in.
 	if ( $current_user->ID ) {
 		$morder->user_id = $current_user->ID;
 	}
-	
+
 	// Sometimes we need these split up.
 	$morder->FirstName = $bfirstname;
 	$morder->LastName  = $blastname;
 	$morder->Address1  = $baddress1;
 	$morder->Address2  = $baddress2;
-	
+
 	// Set other values.
 	$morder->billing          = new stdClass();
 	$morder->billing->name    = $bfirstname . " " . $blastname;
@@ -3545,24 +3545,24 @@ function pmpro_show_discount_code() {
 	$morder->billing->state   = $bstate;
 	$morder->billing->country = $bcountry;
 	$morder->billing->zip     = $bzipcode;
-	$morder->billing->phone   = $bphone;	
+	$morder->billing->phone   = $bphone;
 	$morder->gateway = $gateway;
 	$morder->setGateway();
-	
+
 	// Set up level var.
 	$morder->getMembershipLevelAtCheckout();
-	
+
 	// Set tax.
 	$initial_tax = $morder->getTaxForPrice( $morder->InitialPayment );
 	$recurring_tax = $morder->getTaxForPrice( $morder->PaymentAmount );
-	
+
 	// Set amounts.
 	$morder->initial_amount = pmpro_round_price((float)$morder->InitialPayment + (float)$initial_tax);
 	$morder->subscription_amount = pmpro_round_price((float)$morder->PaymentAmount + (float)$recurring_tax);
-	
+
 	// Filter for order, since v1.8
 	$morder = apply_filters( 'pmpro_checkout_order', $morder );
-	
+
 	return $morder;
 }
 
@@ -3605,7 +3605,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
  * @param string $operator Operator to use, e.g. >, <, >=, <=, =.
  * @return bool true or false based on the operator passed in. Returns null for invalid operators.
  */
-function pmpro_int_compare( $a, $b, $operator ) {	
+function pmpro_int_compare( $a, $b, $operator ) {
 	switch ( $operator ) {
 		case '>':
 			$r = (int)$a > (int)$b;
@@ -3620,13 +3620,13 @@ function pmpro_int_compare( $a, $b, $operator ) {
 			$r = (int)$a <= (int)$b;
 			break;
 		case '=':
-		case '==':		
+		case '==':
 			$r = (int)$a == (int)$b;
 			break;
 		default:
 			$r = null;
 	}
-	
+
 	return $r;
 }
 
@@ -3640,7 +3640,7 @@ function pmpro_int_compare( $a, $b, $operator ) {
  */
 function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) {
 	global $wpdb;
-	
+
 	if ( empty( $data[$primary_key] ) ) {
 		// Insert. Remove keys first.
 		$index = array_search( $primary_key, array_keys( $data ) );
@@ -3676,7 +3676,7 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 			if( PMPRO_DOING_WEBHOOK == $gateway ){
 				return true;
 			} else {
-				return false;	
+				return false;
 			}
 		} else {
 			return true;
@@ -3684,7 +3684,7 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 	} else {
 		return false;
 	}
-	
+
 }
 
 /**

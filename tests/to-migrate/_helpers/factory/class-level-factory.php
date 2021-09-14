@@ -1,6 +1,9 @@
 <?php
 namespace PMPro\Tests\Helpers\Factory;
 
+/**
+ * THIS CLASS HAS BEEN MIGRATED ALREADY.
+ */
 class Level_Factory extends \WP_UnitTest_Factory_For_Thing {
 
 	private $_format = [
