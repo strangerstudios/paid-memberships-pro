@@ -352,6 +352,13 @@ if ( $txn_type == "subscr_cancel" ) {
 	}
 }
 
+// Order Refunded (PayPal Express)
+if( $txn_type == "" && 'Refunded' == $payment_status ) {
+	ipnlog( 'Refund for this payment: ' . print_r( $_POST, true ) );
+
+	pmpro_ipnExit();
+}
+
 //Other
 //if we got here, this is a different kind of txn
 ipnlog( "No recurring payment id or item number. txn_type = " . $txn_type );
