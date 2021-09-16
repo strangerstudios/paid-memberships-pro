@@ -2,8 +2,8 @@
 	global $isapage;
 	$isapage = true;
 
-	global $logstr;
-	$logstr = "";
+	global $lostr;
+	$logstr = '';
 
 	//in case the file is loaded directly
 	if(!defined("ABSPATH"))
@@ -13,6 +13,9 @@
 	}
 
 	global $wpdb;
+
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'authnet', true );
 
 	//some code taken from http://www.merchant-account-services.org/blog/handling-authorizenet-arb-subscription-failures/
 	// Flag if this is an ARB transaction. Set to false by default.
@@ -35,10 +38,28 @@
 	$fields = apply_filters("pmpro_authnet_silent_post_fields", $fields);
 	do_action("pmpro_before_authnet_silent_post", $fields);
 
-	//uncomment or add this to your wp-config to log requests by email
-	//define('PMPRO_AUTHNET_SILENT_POST_DEBUG', true);
-	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG)
-		wp_mail(get_option("admin_email"), "Authorize.net Silent Post From " . get_option("blogname"), nl2br(var_export($fields, true)));
+	// Save input values to log
+	$logstr .= "\n----\n";
+	$logstr .= 'Logged on ' . date( 'Y-m-d H:i:s', current_time('timestamp' ) );
+	$logstr .= "\n----\n";
+	$logstr .= var_export($fields, true);
+	$logstr .= "\n----\n";
+	
+	// Saving a log file or sending an email
+	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG === "log")
+	{
+		//file
+		$loghandle = fopen(dirname(__FILE__) . "/../logs/authnet-silent-post.txt", "a+");
+		fwrite($loghandle, $logstr);
+		fclose($loghandle);
+	} elseif(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && false !== PMPRO_AUTHNET_SILENT_POST_DEBUG) {
+		if(strpos(PMPRO_AUTHNET_SILENT_POST_DEBUG, "@"))
+			$log_email = PMPRO_AUTHNET_SILENT_POST_DEBUG;	//constant defines a specific email address
+		else
+			$log_email = get_option("admin_email");
+			
+		wp_mail($log_email, "Authorize.net Silent Post From " . get_option("blogname"), nl2br($logstr));
+	}	
 
 	// If it is an ARB transaction, do something with it
 	if($arb == true)
@@ -66,6 +87,9 @@
 				$morder->PaymentAmount = $fields['x_amount'];
 				$morder->payment_transaction_id = $fields['x_trans_id'];
 				$morder->subscription_transaction_id = $fields['x_subscription_id'];
+
+				//Assume no tax for now. Add ons will handle it later.
+				$morder->tax = 0;
 
 				$morder->gateway = $old_order->gateway;
 				$morder->gateway_environment = $old_order->gateway_environment;

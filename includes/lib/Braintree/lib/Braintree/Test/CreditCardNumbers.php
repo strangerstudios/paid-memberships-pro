@@ -10,7 +10,6 @@ namespace Braintree\Test;
  *
  * @package    Braintree
  * @subpackage Test
- * @copyright  2015 Braintree, a division of PayPal, Inc.
  */
 class CreditCardNumbers
 {
@@ -25,6 +24,12 @@ class CreditCardNumbers
         '6011111111111117',
         '6011000990139424',
         ];
+
+    public static $elo = '5066991111111118';
+    public static $eloCards = [
+        '5066991111111118'
+    ];
+
     public static $JCBs          = [
         '3530111333300000',
         '3566002020360505',
@@ -63,11 +68,16 @@ class CreditCardNumbers
         'InsufficientPoints' => "371544868764018",
         ];
 
+    public static $disputes = [
+        'Chargeback' => '4023898493988028',
+    ];
+
     public static function getAll()
     {
         return array_merge(
                 self::$amExes,
                 self::$discoverCards,
+                self::$eloCards,
                 self::$masterCards,
                 self::$visas
                 );

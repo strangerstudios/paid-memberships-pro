@@ -3,13 +3,21 @@
 namespace Stripe;
 
 /**
- * Class ApplePayDomain
- *
- * @package Stripe
+ * @property string $id Unique identifier for the object.
+ * @property string $object String representing the object's type. Objects of the same type share the same value.
+ * @property int $created Time at which the object was created. Measured in seconds since the Unix epoch.
+ * @property string $domain_name
+ * @property bool $livemode Has the value <code>true</code> if the object exists in live mode or the value <code>false</code> if the object exists in test mode.
  */
 class ApplePayDomain extends ApiResource
 {
-    
+    const OBJECT_NAME = 'apple_pay_domain';
+
+    use ApiOperations\All;
+    use ApiOperations\Create;
+    use ApiOperations\Delete;
+    use ApiOperations\Retrieve;
+
     /**
      * @return string The class URL for this resource. It needs to be special
      *    cased because it doesn't fit into the standard resource pattern.
@@ -17,50 +25,5 @@ class ApplePayDomain extends ApiResource
     public static function classUrl()
     {
         return '/v1/apple_pay/domains';
-    }
-
-    /**
-     * @param array|string $id The ID of the domain to retrieve, or an options
-     *     array containing an `id` key.
-     * @param array|string|null $opts
-     *
-     * @return ApplePayDomain
-     */
-    public static function retrieve($id, $opts = null)
-    {
-        return self::_retrieve($id, $opts);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return ApplePayDomain The created domain.
-     */
-    public static function create($params = null, $opts = null)
-    {
-        return self::_create($params, $opts);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return ApplePayDomain The deleted domain.
-     */
-    public function delete($params = null, $opts = null)
-    {
-        return $this->_delete($params, $opts);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return Collection of ApplePayDomains
-     */
-    public static function all($params = null, $opts = null)
-    {
-        return self::_all($params, $opts);
     }
 }

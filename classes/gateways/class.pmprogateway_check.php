@@ -98,7 +98,8 @@
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
-				<?php _e('Pay by Check Settings', 'paid-memberships-pro' ); ?>
+				<hr />
+				<h3><?php _e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -106,8 +107,8 @@
 				<label for="instructions"><?php _e('Instructions', 'paid-memberships-pro' );?></label>					
 			</th>
 			<td>
-				<textarea id="instructions" name="instructions" rows="3" cols="80"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p><small><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></small></p>
+				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
+				<p class="description"><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>	
 		<?php
@@ -149,7 +150,7 @@
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
 				$instructions = pmpro_getOption("instructions");
-				echo '<div class="pmpro_check_instructions">' . wpautop(wp_unslash( $instructions )) . '</div>';
+				echo '<div class="' . pmpro_get_element_class( 'pmpro_check_instructions' ) . '">' . wpautop(wp_unslash( $instructions )) . '</div>';
 			}
 		}
 

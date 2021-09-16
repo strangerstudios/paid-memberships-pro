@@ -53,6 +53,6 @@ li.pmpro_more {
 
 .pmpro_a-print {
 	float: left;
-	background: url(../images/printer.gif) top right no-repeat;
+	background: url(../images/printer-icon.svg) top right no-repeat;
 	padding: 0px 20px 2px 0px;
 }
