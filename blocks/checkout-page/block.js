@@ -5,7 +5,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
  /**
   * Block dependencies
@@ -27,7 +27,7 @@ const {
   * Register block
   */
  export default registerBlockType(
-     blockJSON,
+     metadata,
      {
          title: __( 'Membership Checkout Form', 'paid-memberships-pro' ),
          description: __( 'Displays the Membership Checkout form.', 'paid-memberships-pro' ),

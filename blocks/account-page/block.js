@@ -5,7 +5,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
  /**
   * Block dependencies
@@ -24,7 +24,7 @@ import blockJSON from './block.json';
   * Register block
   */
  export default registerBlockType(
-     blockJSON,
+     metadata,
      {
          title: __( 'Membership Account Page', 'paid-memberships-pro' ),
          description: __( 'Displays the sections of the Membership Account page as selected below.', 'paid-memberships-pro' ),

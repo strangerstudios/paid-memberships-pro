@@ -4,7 +4,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
  /**
   * Internal block libraries
@@ -28,7 +28,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
   * Register block
   */
  export default registerBlockType(
-     blockJSON,
+     metadata,
      {
          title: __( 'Require Membership Block', 'paid-memberships-pro' ),
          description: __( 'Control the visibility of nested blocks for members or non-members.', 'paid-memberships-pro' ),

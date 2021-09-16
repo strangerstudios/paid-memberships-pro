@@ -4,7 +4,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
 /**
  * Internal block libraries
@@ -16,7 +16,7 @@ const { registerBlockType } = wp.blocks;
  * Register block
  */
 export default registerBlockType(
-     blockJSON,
+     metadata,
 	 {
 		title: __( 'Member Profile Edit', 'paid-memberships-pro' ),
 		description: __( 'Allow member profile editing.', 'paid-memberships-pro' ),

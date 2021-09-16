@@ -5,7 +5,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
  /**
   * Internal block libraries
@@ -19,7 +19,7 @@ import blockJSON from './block.json';
   * Register block
   */
  export default registerBlockType(
-     blockJSON,
+     metadata,
      {
          title: __( 'Membership Account: Links', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s member links. This block is only visible if other Add Ons or custom code have added links.', 'paid-memberships-pro' ),

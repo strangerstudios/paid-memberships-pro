@@ -5,7 +5,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
 /**
  * Block dependencies
@@ -23,7 +23,7 @@ const { Fragment } = wp.element;
  * Register block
  */
 export default registerBlockType(
-     blockJSON,
+     metadata,
 	 {
 		title: __( 'Log in Form', 'paid-memberships-pro' ),
 		description: __( 'Displays a Log In Form for Paid Memberships Pro.', 'paid-memberships-pro' ),

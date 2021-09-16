@@ -5,7 +5,7 @@
  *
  */
 
-import blockJSON from './block.json';
+import metadata from './block.json';
 
  /**
   * Internal block libraries
@@ -19,7 +19,7 @@ import blockJSON from './block.json';
   * Register block
   */
  export default registerBlockType(
-     blockJSON,
+     metadata,
      {
          title: __( 'Membership Billing Page', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s billing information and allows them to update the payment method.', 'paid-memberships-pro' ),
