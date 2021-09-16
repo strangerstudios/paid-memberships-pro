@@ -2334,6 +2334,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 		}
 
+		// Save $trial_period_days to order for now too.
+		$order->TrialPeriodDays = $trial_period_days;
+
 		//create a plan
 		try {
 			$plan = array(

@@ -45,23 +45,31 @@ add_action( 'admin_init', 'pmpro_block_dashboard_redirect', 9 );
  * @since 2.3
  */
 function pmpro_block_dashboard() {
-	global $current_user;
+	global $current_user, $pagenow;
 
 	$block_dashboard = pmpro_getOption( 'block_dashboard' );
 
-	if ( ! wp_doing_ajax()
-			&& ! empty( $block_dashboard )
-			&& ! current_user_can( 'manage_options' )
-			&& ! current_user_can( 'edit_users' )
-			&& ! current_user_can( 'edit_posts' )
-			&& in_array( 'subscriber', (array) $current_user->roles ) ) {
+	if (
+		! wp_doing_ajax()
+		&& 'admin-post.php' !== $pagenow
+		&& ! empty( $block_dashboard )
+		&& ! current_user_can( 'manage_options' )
+		&& ! current_user_can( 'edit_users' )
+		&& ! current_user_can( 'edit_posts' )
+		&& in_array( 'subscriber', (array) $current_user->roles )
+	) {
 		$block = true;
 	} else {
 		$block = false;
 	}
 	$block = apply_filters( 'pmpro_block_dashboard', $block );
 
-	return $block;
+	/**
+	 * Allow filtering whether to block Dashboard access.
+	 *
+	 * @param bool $block Whether to block Dashboard access.
+	 */
+	return apply_filters( 'pmpro_block_dashboard', $block );
 }
 
 /**

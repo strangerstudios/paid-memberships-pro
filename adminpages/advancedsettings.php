@@ -355,7 +355,16 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
 					</th>
 					<td>
-						<div class="checkbox_box<?php if(count($levels) > 5) { ?> pmpro_scrollable<?php } ?>">
+						<?php
+							// Build the selectors for the checkbox list based on number of levels.
+							$classes = array();
+							$classes[] = "pmpro_checkbox_box";
+							if ( count( $levels ) > 5 ) {
+								$classes[] = "pmpro_scrollable";
+							}
+							$class = implode( ' ', array_unique( $classes ) );
+						?>
+						<div class="<?php echo esc_attr( $class ); ?>">
 							<?php
 								$hideadslevels = pmpro_getOption("hideadslevels");
 								if(!is_array($hideadslevels))
@@ -367,21 +376,14 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								foreach($levels as $level)
 								{
 							?>
-								<div class="clickable"><input type="checkbox" id="hideadslevels_<?php echo $level->id?>" name="hideadslevels[]" value="<?php echo $level->id?>" <?php if(in_array($level->id, $hideadslevels)) { ?>checked="checked"<?php } ?>> <?php echo $level->name?></div>
+								<div class="pmpro_clickable">
+									<input type="checkbox" id="hideadslevels_<?php echo esc_attr( $level->id ); ?>" name="hideadslevels[]" value="<?php echo esc_attr( $level->id); ?>" <?php checked( in_array( $level->id, $hideadslevels ), true ); ?>>
+									<label for="hideadslevels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></label>
+								</div>
 							<?php
 								}
 							?>
 						</div>
-						<script>
-							jQuery('.checkbox_box input').click(function(event) {
-								event.stopPropagation()
-							});
-
-							jQuery('.checkbox_box div.clickable').click(function() {
-								var checkbox = jQuery(this).find(':checkbox');
-								checkbox.attr('checked', !checkbox.attr('checked'));
-							});
-						</script>
 					</td>
 				</tr>
 				<?php if(is_multisite()) { ?>

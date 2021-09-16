@@ -1,4 +1,7 @@
 <?php
+// Sanitize all PMPro email bodies. @since 2.6.1
+add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
+
 /**
  * The default name for WP emails is WordPress.
  * Use our setting instead.
@@ -171,6 +174,10 @@ function pmpro_email_templates_get_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
 
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	global $pmpro_email_templates_defaults;
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -202,11 +209,19 @@ add_action('wp_ajax_pmpro_email_templates_get_template_data', 'pmpro_email_templ
 function pmpro_email_templates_save_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
+	
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	$template = sanitize_text_field( $_REQUEST['template'] );
+	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );	
+	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ) );
 
 	//update this template's settings
-	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_subject', stripslashes( $_REQUEST['subject'] ) );
-	pmpro_setOption( 'email_' . $_REQUEST['template'] . '_body', stripslashes( $_REQUEST['body'] ) );
-	delete_transient( 'pmproet_' . $_REQUEST['template'] );
+	pmpro_setOption( 'email_' . $template . '_subject', $subject );
+	pmpro_setOption( 'email_' . $template . '_body', $body );
+	delete_transient( 'pmproet_' . $template );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
 	
 	exit;
@@ -217,6 +232,10 @@ add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_temp
 function pmpro_email_templates_reset_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
+	
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
 
 	global $pmpro_email_templates_defaults;
 
@@ -238,6 +257,10 @@ add_action('wp_ajax_pmpro_email_templates_reset_template_data', 'pmpro_email_tem
 function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
+	
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );	
 	$disabled = sanitize_text_field( $_REQUEST['disabled'] );
@@ -252,6 +275,10 @@ add_action('wp_ajax_pmpro_email_templates_disable_template', 'pmpro_email_templa
 function pmpro_email_templates_send_test() {
 
 	check_ajax_referer('pmproet', 'security');
+	
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
 
 	global $current_user;
 
