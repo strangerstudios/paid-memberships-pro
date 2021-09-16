@@ -62,6 +62,7 @@ function pmpro_block_dashboard() {
 	} else {
 		$block = false;
 	}
+	$block = apply_filters( 'pmpro_block_dashboard', $block );
 
 	/**
 	 * Allow filtering whether to block Dashboard access.
@@ -70,3 +71,15 @@ function pmpro_block_dashboard() {
 	 */
 	return apply_filters( 'pmpro_block_dashboard', $block );
 }
+
+/**
+ * Initialize our Site Health integration and add hooks.
+ *
+ * @since TBD
+ */
+function pmpro_init_site_health_integration() {
+	$site_health = PMPro_Site_Health::init();
+	$site_health->hook();
+}
+
+add_action( 'admin_init', 'pmpro_init_site_health_integration' );
