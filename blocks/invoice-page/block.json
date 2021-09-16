@@ -5,9 +5,9 @@
   "description": "Displays the member's Membership Invoices.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "archive"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "archive"
   },
   "keywords": [
     "pmpro"

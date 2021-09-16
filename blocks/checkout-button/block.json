@@ -5,9 +5,9 @@
   "description": "Displays a button-styled link to Membership Checkout for the specified level.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "migrate"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "migrate"
   },
   "keywords": [
     "pmpro",

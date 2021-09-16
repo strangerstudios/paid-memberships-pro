@@ -5,9 +5,9 @@
   "description": "Displays the member's membership information.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "groups"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "groups"
   },
   "keywords": [
     "pmpro"

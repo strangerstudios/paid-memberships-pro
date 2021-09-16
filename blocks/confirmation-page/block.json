@@ -5,9 +5,9 @@
   "description": "Displays the member's Membership Confirmation after Membership Checkout.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "yes"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "yes"
   },
   "keywords": [
     "pmpro"

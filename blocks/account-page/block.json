@@ -5,9 +5,9 @@
   "description": "Displays the sections of the Membership Account page as selected below.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "admin-users"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "admin-users"
   },
   "keywords": [
     "pmpro"

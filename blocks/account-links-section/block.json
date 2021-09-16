@@ -5,9 +5,9 @@
   "description": "Displays the member's member links. This block is only visible if other Add Ons or custom code have added links.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "external"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "external"
   },
   "keywords": [
     "pmpro"

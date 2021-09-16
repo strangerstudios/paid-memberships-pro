@@ -5,9 +5,9 @@
   "description": "Control the visibility of nested blocks for members or non-members.",
   "category": "pmpro",
   "icon": {
-    background: "#2997c8",
-    foreground: "#ffffff",
-    src: "visibility"
+    "background": "#2997c8",
+    "foreground": "#ffffff",
+    "src": "visibility"
   },
   "keywords": [
     "pmpro",
