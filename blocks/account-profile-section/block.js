@@ -5,7 +5,9 @@
  * specific level.
  *
  */
- 
+
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -18,20 +20,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/account-profile-section',
+     blockJSON,
      {
          title: __( 'Membership Account: Profile', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s profile information.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'admin-users',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit() {
              return [

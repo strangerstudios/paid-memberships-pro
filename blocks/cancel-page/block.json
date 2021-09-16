@@ -4,11 +4,7 @@
   "title": "Membership Cancel Page",
   "description": "Generates the Membership Cancel page.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "no"
-  },
+  "icon": "no",
   "keywords": [
     "pmpro"
   ],

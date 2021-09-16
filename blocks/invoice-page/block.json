@@ -4,11 +4,7 @@
   "title": "Membership Invoice Page",
   "description": "Displays the member's Membership Invoices.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "archive"
-  },
+  "icon": "archive",
   "keywords": [
     "pmpro"
   ],

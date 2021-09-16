@@ -4,11 +4,7 @@
   "title": "Membership Account: Profile",
   "description": "Displays the member's profile information.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "admin-users"
-  },
+  "icon": "admin-users",
   "keywords": [
     "pmpro"
   ],

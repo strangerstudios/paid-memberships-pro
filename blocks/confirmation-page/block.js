@@ -5,6 +5,8 @@
  *
  */
 
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -17,20 +19,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/confirmation-page',
+     blockJSON,
      {
          title: __( 'Membership Confirmation Page', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s Membership Confirmation after Membership Checkout.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'yes',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit(){
              return [

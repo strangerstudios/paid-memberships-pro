@@ -4,11 +4,7 @@
   "title": "Membership Checkout Button",
   "description": "Displays a button-styled link to Membership Checkout for the specified level.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "migrate"
-  },
+  "icon": "migrate",
   "keywords": [
     "pmpro",
     "buy",
@@ -16,5 +12,17 @@
   ],
   "editorScript": "file:./block.js",
   "supports": {},
-  "attributes": {}
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": "Buy Now"
+    },
+    "css_class": {
+      "type": "string",
+      "default": "pmpro_btn"
+    },
+    "level": {
+      "type": "string"
+    }
+  }
 }

@@ -28,9 +28,9 @@ function register_dynamic_block() {
 	   'single' => true,
 	   'type' => 'integer',
    	) );
-	
+
 	// Hook server side rendering into render callback.
-	register_block_type( 'pmpro/checkout-page', [
+	register_block_type( __DIR__, [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }

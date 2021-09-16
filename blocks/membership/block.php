@@ -25,7 +25,7 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 function register_dynamic_block() {
 
 	// Hook server side rendering into render callback.
-	register_block_type( 'pmpro/membership', [
+	register_block_type( __DIR__, [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }

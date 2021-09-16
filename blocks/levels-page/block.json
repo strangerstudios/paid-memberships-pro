@@ -4,11 +4,7 @@
   "title": "Membership Levels List",
   "description": "Displays a list of Membership Levels. To change the order, go to Memberships > Settings > Levels.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "list-view"
-  },
+  "icon": "list-view",
   "keywords": [
     "pmpro"
   ],

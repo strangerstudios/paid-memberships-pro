@@ -4,11 +4,7 @@
   "title": "Membership Billing Page",
   "description": "Displays the member's billing information and allows them to update the payment method.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "list-view"
-  },
+  "icon": "list-view",
   "keywords": [
     "pmpro"
   ],

@@ -4,10 +4,14 @@
  * Displays the Membership Checkout form.
  *
  */
+
+import blockJSON from './block.json';
+
  /**
   * Block dependencies
   */
  import Inspector from './inspector';
+
  /**
   * Internal block libraries
   */
@@ -23,25 +27,14 @@ const {
   * Register block
   */
  export default registerBlockType(
-     'pmpro/checkout-page',
+     blockJSON,
      {
          title: __( 'Membership Checkout Form', 'paid-memberships-pro' ),
          description: __( 'Displays the Membership Checkout form.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'list-view',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
-             pmpro_default_level: {
-                 type: 'string',
-                 source: 'meta',
-                 meta: 'pmpro_default_level',
-             },
          },
          edit: props => {
              const { attributes: { pmpro_default_level }, className, setAttributes, isSelected } = props;

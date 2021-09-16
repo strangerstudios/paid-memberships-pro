@@ -4,10 +4,14 @@
  * Displays the Membership Account page.
  *
  */
+
+import blockJSON from './block.json';
+
  /**
   * Block dependencies
   */
  import Inspector from './inspector';
+
  /**
   * Internal block libraries
   */
@@ -15,40 +19,19 @@
  const {
     registerBlockType
 } = wp.blocks;
+
  /**
   * Register block
   */
  export default registerBlockType(
-     'pmpro/account-page',
+     blockJSON,
      {
          title: __( 'Membership Account Page', 'paid-memberships-pro' ),
          description: __( 'Displays the sections of the Membership Account page as selected below.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'admin-users',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
-             membership: {
-                 type: 'boolean',
-                 default: false,
-             },
-             profile: {
-                 type: 'boolean',
-                 default: false,
-             },
-             invoices: {
-                 type: 'boolean',
-                 default: false,
-             },
-             links: {
-                 type: 'boolean',
-                 default: false,
-             },
          },
          edit: props => {
              const { setAttributes, isSelected } = props;

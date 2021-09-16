@@ -23,7 +23,7 @@ if ( ! function_exists( 'register_block_type' ) ) {
  */
 function register_dynamic_block() {
 	// Hook server side rendering into render callback.
-	register_block_type( 'pmpro/billing-page', [
+	register_block_type( __DIR__, [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
 	] );
 }

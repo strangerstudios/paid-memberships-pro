@@ -5,6 +5,8 @@
  *
  */
 
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -17,20 +19,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/cancel-page',
+     blockJSON,
      {
          title: __( 'Membership Cancel Page', 'paid-memberships-pro' ),
          description: __( 'Generates the Membership Cancel page.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'no',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit(){
              return [

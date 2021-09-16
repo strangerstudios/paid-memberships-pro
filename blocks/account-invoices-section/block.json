@@ -4,11 +4,7 @@
   "title": "Membership Account: Invoices",
   "description": "Displays the member's invoices.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "archive"
-  },
+  "icon": "archive",
   "keywords": [
     "pmpro"
   ],

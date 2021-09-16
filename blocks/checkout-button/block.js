@@ -5,6 +5,8 @@
  *
  */
 
+import blockJSON from './block.json';
+
 /**
  * Block dependencies
  */
@@ -26,35 +28,14 @@ const {
  * Register block
  */
 export default registerBlockType(
-     'pmpro/checkout-button',
+     blockJSON,
      {
          title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
          description: __( 'Displays a button-styled link to Membership Checkout for the specified level.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'migrate',
-         },
-         keywords: [ 
-             __( 'pmpro', 'paid-memberships-pro' ), 
-             __( 'buy', 'paid-memberships-pro' ),
-             __( 'level', 'paid-memberships-pro' ),
-         ],
-         supports: {
-         },
-         attributes: {
-             text: {
-                 type: 'string',
-                 default: 'Buy Now',
-             },
-             css_class: {
-                 type: 'string',
-                 default: 'pmpro_btn',
-             },
-             level: {
-                  type: 'string'
-             }
          },
          edit: props => {
              const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;

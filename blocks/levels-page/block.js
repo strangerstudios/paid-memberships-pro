@@ -5,6 +5,8 @@
  *
  */
 
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -17,20 +19,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/levels-page',
+     blockJSON,
      {
          title: __( 'Membership Levels List', 'paid-memberships-pro' ),
          description: __( 'Displays a list of Membership Levels. To change the order, go to Memberships > Settings > Levels.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'list-view',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit() {
              return [

@@ -4,11 +4,7 @@
   "title": "Membership Account: Memberships",
   "description": "Displays the member's membership information.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "groups"
-  },
+  "icon": "groups",
   "keywords": [
     "pmpro"
   ],

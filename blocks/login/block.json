@@ -4,11 +4,7 @@
   "title": "Log in Form",
   "description": "Displays a Log In Form for Paid Memberships Pro.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "unlock"
-  },
+  "icon": "unlock",
   "keywords": [
     "pmpro",
     "login",

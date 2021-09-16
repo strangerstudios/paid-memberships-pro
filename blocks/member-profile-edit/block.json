@@ -4,11 +4,7 @@
   "title": "Member Profile Edit",
   "description": "Allow member profile editing.",
   "category": "pmpro",
-  "icon": {
-    "background": "#2997c8",
-    "foreground": "#ffffff",
-    "src": "admin-users"
-  },
+  "icon": "admin-users",
   "keywords": [
     "pmpro",
     "member",

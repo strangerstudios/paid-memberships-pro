@@ -4,7 +4,9 @@
  * Displays the Membership Account > Member Links page section.
  *
  */
- 
+
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -17,20 +19,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/account-links-section',
+     blockJSON,
      {
          title: __( 'Membership Account: Links', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s member links. This block is only visible if other Add Ons or custom code have added links.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'external',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit(){
              return [

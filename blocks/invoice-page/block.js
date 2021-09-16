@@ -5,6 +5,8 @@
  *
  */
 
+import blockJSON from './block.json';
+
  /**
   * Internal block libraries
   */
@@ -17,20 +19,14 @@
   * Register block
   */
  export default registerBlockType(
-     'pmpro/invoice-page',
+     blockJSON,
      {
          title: __( 'Membership Invoice Page', 'paid-memberships-pro' ),
          description: __( 'Displays the member\'s Membership Invoices.', 'paid-memberships-pro' ),
-         category: 'pmpro',
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
             src: 'archive',
-         },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
-         supports: {
-         },
-         attributes: {
          },
          edit(){
              return [

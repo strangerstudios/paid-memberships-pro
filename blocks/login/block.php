@@ -25,26 +25,23 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
 function register_dynamic_block() {
 
 	// Hook server side rendering into render callback.
-	register_block_type(
-		'pmpro/login-form',
-		array(
-			'attributes'      => array(
-				'display_if_logged_in' => array(
-					'type'    => 'boolean',
-					'default' => true,
-				),
-				'show_menu'            => array(
-					'type'    => 'boolean',
-					'default' => true,
-				),
-				'show_logout_link'     => array(
-					'type'    => 'boolean',
-					'default' => true,
-				),
-			),
-			'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
-		)
-	);
+	register_block_type( __DIR__, [
+		'attributes'      => [
+			'display_if_logged_in' => [
+				'type'    => 'boolean',
+				'default' => true,
+			],
+			'show_menu'            => [
+				'type'    => 'boolean',
+				'default' => true,
+			],
+			'show_logout_link'     => [
+				'type'    => 'boolean',
+				'default' => true,
+			],
+		],
+		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
+	] );
 }
 
 /**
