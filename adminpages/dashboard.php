@@ -299,7 +299,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
         	<?php
                 if ( empty( $order_ids ) ) { ?>
                     <tr>
-                        <td colspan="8"><p><?php _e( 'No orders found.', 'paid-memberships-pro' ); ?></p></td>
+                        <td colspan="6"><p><?php _e( 'No orders found.', 'paid-memberships-pro' ); ?></p></td>
                     </tr>
                 <?php } else {
                     foreach ( $order_ids as $order_id ) {
