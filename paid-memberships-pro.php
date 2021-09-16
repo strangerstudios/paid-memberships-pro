@@ -10,7 +10,7 @@
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2020	Stranger Studios
+ * Copyright 2011-2021	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
@@ -27,14 +27,14 @@ define( 'PMPRO_BASE_FILE', __FILE__ );
 define( 'PMPRO_DIR', dirname( __FILE__ ) );
 
 require_once( PMPRO_DIR . '/classes/class-deny-network-activation.php' );   // stop PMPro from being network activated
-require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP seession vars
+require_once( PMPRO_DIR . '/includes/sessions.php' );               // start/close PHP session vars
 
 require_once( PMPRO_DIR . '/includes/localization.php' );           // localization functions
 require_once( PMPRO_DIR . '/includes/lib/name-parser.php' );        // parses "Jason Coleman" into firstname=>Jason, lastname=>Coleman
 require_once( PMPRO_DIR . '/includes/functions.php' );              // misc functions used by the plugin
 require_once( PMPRO_DIR . '/includes/updates.php' );                // database and other updates
 require_once( PMPRO_DIR . '/includes/upgradecheck.php' );           // database and other updates
-require_once( PMPRO_DIR . '/includes/deprecated.php' );              // deprecated hooks and functions
+require_once( PMPRO_DIR . '/includes/deprecated.php' );             // deprecated hooks and functions
 
 if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
@@ -49,7 +49,7 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );    
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
-require_once( PMPRO_DIR . '/includes/admin.php' );					// admin notices and functionality
+require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
 require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
 
@@ -61,7 +61,7 @@ require_once( PMPRO_DIR . '/includes/services.php' );               // services 
 require_once( PMPRO_DIR . '/includes/metaboxes.php' );              // metaboxes for dashboard
 require_once( PMPRO_DIR . '/includes/profile.php' );                // edit user/profile fields
 require_once( PMPRO_DIR . '/includes/https.php' );                  // code related to HTTPS/SSL
-require_once( PMPRO_DIR . '/includes/menus.php' );          		// custom menu functions for PMPro
+require_once( PMPRO_DIR . '/includes/menus.php' );                  // custom menu functions for PMPro
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
@@ -77,8 +77,8 @@ require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to a
 require_once( PMPRO_DIR . '/includes/pointers.php' );
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
-require_once( PMPRO_DIR . '/includes/rest-api.php' );				// rest API endpoints
-require_once( PMPRO_DIR . '/includes/widgets.php' );          		// widgets for PMPro
+require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
+require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
 
@@ -134,8 +134,8 @@ if ( is_admin() ) {
 	Definitions
 */
 define( 'SITENAME', str_replace( '&#039;', "'", get_bloginfo( 'name' ) ) );
-$urlparts = explode( '//', home_url() );
 if ( ! defined( 'SITEURL'  ) ) {
+	$urlparts = explode( '//', home_url() );
 	define( 'SITEURL', $urlparts[1] );
 }
 
@@ -191,7 +191,7 @@ $membership_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true 
 function pmpro_cron_schedules_monthly( $schedules ) {
 	$schedules['monthly'] = array(
 		'interval' => 2635200,
-		'display' => __( 'Once a month' ),
+		'display' => __( 'Once a month', 'paid-memberships-pro' ),
 	);
 	return $schedules;
 }
