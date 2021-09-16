@@ -1649,7 +1649,7 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 		$username = $lastname;
 	}
 
-	// If no username yet or one based on name exisdts,
+	// If no username yet or one based on name exists,
 	// try to create username using email address.
 	if ( ( empty( $username ) || username_exists( $username ) )
 		&& ! empty( $email ) && is_email( $email ) ) {
@@ -3781,5 +3781,4 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 
 	return $allowed_html;
 }
-
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );

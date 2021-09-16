@@ -1545,8 +1545,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 						<br/>
-						<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>
-						:
+						<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>:
 						<?php
 						if ( ! empty( $order->subscription_transaction_id ) ) {
 							echo esc_html( $order->subscription_transaction_id );
