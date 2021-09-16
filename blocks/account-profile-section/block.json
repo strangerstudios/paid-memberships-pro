@@ -8,7 +8,7 @@
   "keywords": [
     "pmpro"
   ],
-  "editorScript": "file:./block.js",
+  "editorScript": "file:../../js/blocks.build.js",
   "supports": {},
   "attributes": {}
 }
