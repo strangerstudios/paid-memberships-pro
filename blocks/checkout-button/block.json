@@ -24,5 +24,6 @@
     "level": {
       "type": "string"
     }
-  }
+  },
+  "textdomain": "paid-memberships-pro"
 }

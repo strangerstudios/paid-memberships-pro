@@ -12,5 +12,6 @@
   ],
   "editorScript": "file:../../js/blocks.build.js",
   "supports": {},
-  "attributes": {}
+  "attributes": {},
+  "textdomain": "paid-memberships-pro"
 }

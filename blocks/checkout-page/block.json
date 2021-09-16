@@ -16,5 +16,6 @@
       "source": "meta",
       "meta": "pmpro_default_level"
     }
-  }
+  },
+  "textdomain": "paid-memberships-pro"
 }
