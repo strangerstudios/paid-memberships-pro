@@ -21,12 +21,10 @@ import metadata from './block.json';
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Levels List', 'paid-memberships-pro' ),
-         description: __( 'Displays a list of Membership Levels. To change the order, go to Memberships > Settings > Levels.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'list-view',
+            src: metadata.icon,
          },
          edit() {
              return [

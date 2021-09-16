@@ -22,12 +22,10 @@ import metadata from './block.json';
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Account: Profile', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s profile information.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'admin-users',
+            src: metadata.icon,
          },
          edit() {
              return [

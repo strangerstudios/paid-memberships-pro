@@ -26,12 +26,10 @@ import metadata from './block.json';
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Account Page', 'paid-memberships-pro' ),
-         description: __( 'Displays the sections of the Membership Account page as selected below.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'admin-users',
+            src: metadata.icon,
          },
          edit: props => {
              const { setAttributes, isSelected } = props;

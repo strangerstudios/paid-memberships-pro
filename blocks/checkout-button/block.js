@@ -30,12 +30,10 @@ const {
 export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
-         description: __( 'Displays a button-styled link to Membership Checkout for the specified level.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'migrate',
+            src: metadata.icon,
          },
          edit: props => {
              const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;

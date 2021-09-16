@@ -30,12 +30,10 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Require Membership Block', 'paid-memberships-pro' ),
-         description: __( 'Control the visibility of nested blocks for members or non-members.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'visibility',
+            src: metadata.icon,
          },
          edit: props => {
              const { attributes: {levels, uid}, setAttributes, isSelected } = props;

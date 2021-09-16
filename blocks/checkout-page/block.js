@@ -29,12 +29,10 @@ const {
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Checkout Form', 'paid-memberships-pro' ),
-         description: __( 'Displays the Membership Checkout form.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'list-view',
+            src: metadata.icon,
          },
          edit: props => {
              const { attributes: { pmpro_default_level }, className, setAttributes, isSelected } = props;

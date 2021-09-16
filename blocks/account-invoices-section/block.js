@@ -21,12 +21,10 @@ import metadata from './block.json';
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Account: Invoices', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s invoices.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'archive',
+            src: metadata.icon,
          },
          edit() {
              return [

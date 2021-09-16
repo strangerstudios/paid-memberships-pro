@@ -21,12 +21,10 @@ import metadata from './block.json';
  export default registerBlockType(
      metadata,
      {
-         title: __( 'Membership Cancel Page', 'paid-memberships-pro' ),
-         description: __( 'Generates the Membership Cancel page.', 'paid-memberships-pro' ),
          icon: {
             background: '#2997c8',
             foreground: '#ffffff',
-            src: 'no',
+            src: metadata.icon,
          },
          edit(){
              return [

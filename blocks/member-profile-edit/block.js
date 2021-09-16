@@ -18,12 +18,10 @@ const { registerBlockType } = wp.blocks;
 export default registerBlockType(
      metadata,
 	 {
-		title: __( 'Member Profile Edit', 'paid-memberships-pro' ),
-		description: __( 'Allow member profile editing.', 'paid-memberships-pro' ),
 		icon: {
-			background: "#2997c8",
-			foreground: "#ffffff",
-			src: "admin-users",
+            background: '#2997c8',
+            foreground: '#ffffff',
+			src: metadata.icon,
 		},
 		edit: (props) => {
 			return (

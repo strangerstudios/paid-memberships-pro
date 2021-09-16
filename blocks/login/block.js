@@ -25,12 +25,10 @@ const { Fragment } = wp.element;
 export default registerBlockType(
      metadata,
 	 {
-		title: __( 'Log in Form', 'paid-memberships-pro' ),
-		description: __( 'Displays a Log In Form for Paid Memberships Pro.', 'paid-memberships-pro' ),
 		icon: {
-			background: "#2997c8",
-			foreground: "#ffffff",
-			src: "unlock",
+            background: '#2997c8',
+            foreground: '#ffffff',
+			src: metadata.icon,
 		},
 		edit: (props) => {
 			return [
