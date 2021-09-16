@@ -7,9 +7,8 @@ use PMPro\Test_Support\TestCases\TestCase;
 
 /**
  * @group pmpro-functions
- * @group pmpro-sessions
  */
-class SessionTest extends TestCase {
+class KsesTest extends TestCase {
 
 	/**
 	 * @covers ::pmpro_kses()
