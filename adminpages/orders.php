@@ -966,7 +966,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			"/>
 			<input name="save" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Order', 'paid-memberships-pro' ); ?>"/>
 			<input name="cancel" type="button" class="cancel button-secondary" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' ); ?>"
-				   onclick="location.href='<?php echo esc_url( get_admin_url( null, '/admin.php?page=pmpro-orders' ) ); ?>';"/>
+				   onclick="location.href='<?php echo esc_url( admin_url( '/admin.php?page=pmpro-orders' ) ); ?>';"/>
 		</p>
 
 	</form>
@@ -976,7 +976,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	<form id="posts-filter" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), get_admin_url(null, 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
 		// build the export URL
@@ -1583,7 +1583,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	</form>
 	<?php
 	// add normal args
-	$pagination_url = esc_url( add_query_arg( $url_params, get_admin_url( null, '/admin.php?page=pmpro-orders' ) ) );
+	$pagination_url = esc_url( add_query_arg( $url_params, admin_url( '/admin.php?page=pmpro-orders' ) ) );
 	echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
 	?>
 

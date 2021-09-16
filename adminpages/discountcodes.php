@@ -726,7 +726,7 @@
 
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button button-primary" value="Save Code" />
-				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo admin_url( '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
@@ -962,7 +962,7 @@
 		</table>
 
 		<?php
-			$pagination_url = get_admin_url( null, "/admin.php?page=pmpro-discountcodes&s=" . $s );
+			$pagination_url = admin_url( "/admin.php?page=pmpro-discountcodes&s=" . $s );
 			echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
 		?>
 
