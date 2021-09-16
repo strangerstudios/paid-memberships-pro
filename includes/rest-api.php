@@ -741,7 +741,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
 				WHERE
-					`mu`.`status` = 'active' 
+					`mu`.`status` IN ( 'active', 'cancelled', 'expired', 'admin_cancelled' ) 
 				ORDER BY
 					`mu`.`modified` DESC
 				LIMIT %d
