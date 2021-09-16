@@ -20,7 +20,7 @@
      'pmpro/invoice-page',
      {
          title: __( 'Membership Invoice Page', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s  Membership Invoices.', 'paid-memberships-pro' ),
+         description: __( 'Displays the member\'s Membership Invoices.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
             background: '#2997c8',

@@ -1,0 +1,29 @@
+{
+  "apiVersion": "1",
+  "name": "pmpro/membership",
+  "title": "Require Membership Block",
+  "description": "Control the visibility of nested blocks for members or non-members.",
+  "category": "pmpro",
+  "icon": {
+    background: "#2997c8",
+    foreground: "#ffffff",
+    src: "visibility"
+  },
+  "keywords": [
+    "pmpro",
+    "member",
+    "profile"
+  ],
+  "editorScript": "file:./block.js",
+  "supports": {},
+  "attributes": {
+    levels: {
+      type: "array",
+      default: []
+    },
+    uid: {
+      type: "string",
+      default: ""
+    }
+  }
+}

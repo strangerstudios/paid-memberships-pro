@@ -1,0 +1,18 @@
+{
+  "apiVersion": "1",
+  "name": "pmpro/checkout-page",
+  "title": "Membership Checkout Form",
+  "description": "Displays the Membership Checkout form.",
+  "category": "pmpro",
+  "icon": {
+    background: "#2997c8",
+    foreground: "#ffffff",
+    src: "list-view"
+  },
+  "keywords": [
+    "pmpro"
+  ],
+  "editorScript": "file:./block.js",
+  "supports": {},
+  "attributes": {}
+}

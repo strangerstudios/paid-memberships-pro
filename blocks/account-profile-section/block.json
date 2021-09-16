@@ -1,0 +1,18 @@
+{
+  "apiVersion": "1",
+  "name": "pmpro/account-profile-section",
+  "title": "Membership Account: Profile",
+  "description": "Displays the member's profile information.",
+  "category": "pmpro",
+  "icon": {
+    background: "#2997c8",
+    foreground: "#ffffff",
+    src: "admin-users"
+  },
+  "keywords": [
+    "pmpro"
+  ],
+  "editorScript": "file:./block.js",
+  "supports": {},
+  "attributes": {}
+}

@@ -1,0 +1,21 @@
+{
+  "apiVersion": "1",
+  "name": "pmpro/login-form",
+  "title": "Log in Form",
+  "description": "Displays a Log In Form for Paid Memberships Pro.",
+  "category": "pmpro",
+  "icon": {
+    background: "#2997c8",
+    foreground: "#ffffff",
+    src: "unlock"
+  },
+  "keywords": [
+    "pmpro",
+    "login",
+    "form",
+    "log in"
+  ],
+  "editorScript": "file:./block.js",
+  "supports": {},
+  "attributes": {}
+}
