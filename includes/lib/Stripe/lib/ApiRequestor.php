@@ -3,18 +3,36 @@
 namespace Stripe;
 
 /**
- * Class ApiRequestor
- *
- * @package Stripe
+ * Class ApiRequestor.
  */
 class ApiRequestor
 {
+    /**
+     * @var null|string
+     */
     private $_apiKey;
 
+    /**
+     * @var string
+     */
     private $_apiBase;
 
+    /**
+     * @var HttpClient\ClientInterface
+     */
     private static $_httpClient;
 
+    /**
+     * @var RequestTelemetry
+     */
+    private static $requestTelemetry;
+
+    /**
+     * ApiRequestor constructor.
+     *
+     * @param null|string $apiKey
+     * @param null|string $apiBase
+     */
     public function __construct($apiKey = null, $apiBase = null)
     {
         $this->_apiKey = $apiKey;
@@ -24,78 +42,107 @@ class ApiRequestor
         $this->_apiBase = $apiBase;
     }
 
+    /**
+     * Creates a telemetry json blob for use in 'X-Stripe-Client-Telemetry' headers.
+     *
+     * @static
+     *
+     * @param RequestTelemetry $requestTelemetry
+     *
+     * @return string
+     */
+    private static function _telemetryJson($requestTelemetry)
+    {
+        $payload = [
+            'last_request_metrics' => [
+                'request_id' => $requestTelemetry->requestId,
+                'request_duration_ms' => $requestTelemetry->requestDuration,
+            ],
+        ];
+
+        $result = \json_encode($payload);
+        if (false !== $result) {
+            return $result;
+        }
+        Stripe::getLogger()->error('Serializing telemetry payload failed!');
+
+        return '{}';
+    }
+
+    /**
+     * @static
+     *
+     * @param ApiResource|array|bool|mixed $d
+     *
+     * @return ApiResource|array|mixed|string
+     */
     private static function _encodeObjects($d)
     {
         if ($d instanceof ApiResource) {
             return Util\Util::utf8($d->id);
-        } elseif ($d === true) {
+        }
+        if (true === $d) {
             return 'true';
-        } elseif ($d === false) {
+        }
+        if (false === $d) {
             return 'false';
-        } elseif (is_array($d)) {
-            $res = array();
+        }
+        if (\is_array($d)) {
+            $res = [];
             foreach ($d as $k => $v) {
                 $res[$k] = self::_encodeObjects($v);
             }
+
             return $res;
-        } else {
-            return Util\Util::utf8($d);
         }
+
+        return Util\Util::utf8($d);
     }
 
     /**
-     * @param string $method
-     * @param string $url
-     * @param array|null $params
-     * @param array|null $headers
+     * @param string     $method
+     * @param string     $url
+     * @param null|array $params
+     * @param null|array $headers
      *
-     * @return array An array whose first element is an API response and second
-     *    element is the API key used to make the request.
+     * @throws Exception\ApiErrorException
+     *
+     * @return array tuple containing (ApiReponse, API key)
      */
     public function request($method, $url, $params = null, $headers = null)
     {
-        if (!$params) {
-            $params = array();
-        }
-        if (!$headers) {
-            $headers = array();
-        }
+        $params = $params ?: [];
+        $headers = $headers ?: [];
         list($rbody, $rcode, $rheaders, $myApiKey) =
         $this->_requestRaw($method, $url, $params, $headers);
         $json = $this->_interpretResponse($rbody, $rcode, $rheaders);
         $resp = new ApiResponse($rbody, $rcode, $rheaders, $json);
-        return array($resp, $myApiKey);
+
+        return [$resp, $myApiKey];
     }
 
     /**
-     * @param string $rbody A JSON string.
+     * @param string $rbody a JSON string
      * @param int $rcode
      * @param array $rheaders
      * @param array $resp
      *
-     * @throws Error\InvalidRequest if the error is caused by the user.
-     * @throws Error\Authentication if the error is caused by a lack of
-     *    permissions.
-     * @throws Error\Permission if the error is caused by insufficient
-     *    permissions.
-     * @throws Error\Card if the error is the error code is 402 (payment
-     *    required)
-     * @throws Error\RateLimit if the error is caused by too many requests
-     *    hitting the API.
-     * @throws Error\Api otherwise.
+     * @throws Exception\UnexpectedValueException
+     * @throws Exception\ApiErrorException
      */
     public function handleErrorResponse($rbody, $rcode, $rheaders, $resp)
     {
-        if (!is_array($resp) || !isset($resp['error'])) {
-            $msg = "Invalid response object from API: $rbody "
-              . "(HTTP response code was $rcode)";
-            throw new Error\Api($msg, $rcode, $rbody, $resp, $rheaders);
+        if (!\is_array($resp) || !isset($resp['error'])) {
+            $msg = "Invalid response object from API: {$rbody} "
+              . "(HTTP response code was {$rcode})";
+
+            throw new Exception\UnexpectedValueException($msg);
         }
 
         $errorData = $resp['error'];
 
         $error = null;
-        if (is_string($errorData)) {
+        if (\is_string($errorData)) {
             $error = self::_specificOAuthError($rbody, $rcode, $rheaders, $resp, $errorData);
         }
         if (!$error) {
@@ -105,105 +152,159 @@ class ApiRequestor
         throw $error;
     }
 
+    /**
+     * @static
+     *
+     * @param string $rbody
+     * @param int    $rcode
+     * @param array  $rheaders
+     * @param array  $resp
+     * @param array  $errorData
+     *
+     * @return Exception\ApiErrorException
+     */
     private static function _specificAPIError($rbody, $rcode, $rheaders, $resp, $errorData)
     {
         $msg = isset($errorData['message']) ? $errorData['message'] : null;
         $param = isset($errorData['param']) ? $errorData['param'] : null;
         $code = isset($errorData['code']) ? $errorData['code'] : null;
+        $type = isset($errorData['type']) ? $errorData['type'] : null;
+        $declineCode = isset($errorData['decline_code']) ? $errorData['decline_code'] : null;
 
         switch ($rcode) {
             case 400:
                 // 'rate_limit' code is deprecated, but left here for backwards compatibility
                 // for API versions earlier than 2015-09-08
-                if ($code == 'rate_limit') {
-                    return new Error\RateLimit($msg, $param, $rcode, $rbody, $resp, $rheaders);
+                if ('rate_limit' === $code) {
+                    return Exception\RateLimitException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code, $param);
+                }
+                if ('idempotency_error' === $type) {
+                    return Exception\IdempotencyException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code);
                 }
 
-                // intentional fall-through
+                // no break
             case 404:
-                return new Error\InvalidRequest($msg, $param, $rcode, $rbody, $resp, $rheaders);
+                return Exception\InvalidRequestException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code, $param);
             case 401:
-                return new Error\Authentication($msg, $rcode, $rbody, $resp, $rheaders);
+                return Exception\AuthenticationException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code);
             case 402:
-                return new Error\Card($msg, $param, $code, $rcode, $rbody, $resp, $rheaders);
+                return Exception\CardException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code, $declineCode, $param);
             case 403:
-                return new Error\Permission($msg, $rcode, $rbody, $resp, $rheaders);
+                return Exception\PermissionException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code);
             case 429:
-                return new Error\RateLimit($msg, $param, $rcode, $rbody, $resp, $rheaders);
+                return Exception\RateLimitException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code, $param);
             default:
-                return new Error\Api($msg, $rcode, $rbody, $resp, $rheaders);
+                return Exception\UnknownApiErrorException::factory($msg, $rcode, $rbody, $resp, $rheaders, $code);
         }
     }
 
+    /**
+     * @static
+     *
+     * @param bool|string $rbody
+     * @param int         $rcode
+     * @param array       $rheaders
+     * @param array       $resp
+     * @param string      $errorCode
+     *
+     * @return Exception\OAuth\OAuthErrorException
+     */
     private static function _specificOAuthError($rbody, $rcode, $rheaders, $resp, $errorCode)
     {
         $description = isset($resp['error_description']) ? $resp['error_description'] : $errorCode;
 
         switch ($errorCode) {
             case 'invalid_client':
-                return new Error\OAuth\InvalidClient($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\InvalidClientException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
             case 'invalid_grant':
-                return new Error\OAuth\InvalidGrant($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\InvalidGrantException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
             case 'invalid_request':
-                return new Error\OAuth\InvalidRequest($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\InvalidRequestException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
             case 'invalid_scope':
-                return new Error\OAuth\InvalidScope($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\InvalidScopeException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
             case 'unsupported_grant_type':
-                return new Error\OAuth\UnsupportedGrantType($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\UnsupportedGrantTypeException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
             case 'unsupported_response_type':
-                return new Error\OAuth\UnsupportedResponseType($errorCode, $description, $rcode, $rbody, $resp, $rheaders);
+                return Exception\OAuth\UnsupportedResponseTypeException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
+            default:
+                return Exception\OAuth\UnknownOAuthErrorException::factory($description, $rcode, $rbody, $resp, $rheaders, $errorCode);
+        }
+    }
+
+    /**
+     * @static
+     *
+     * @param null|array $appInfo
+     *
+     * @return null|string
+     */
+    private static function _formatAppInfo($appInfo)
+    {
+        if (null !== $appInfo) {
+            $string = $appInfo['name'];
+            if (null !== $appInfo['version']) {
+                $string .= '/' . $appInfo['version'];
+            }
+            if (null !== $appInfo['url']) {
+                $string .= ' (' . $appInfo['url'] . ')';
+            }
+
+            return $string;
         }
 
         return null;
     }
 
-    private static function _formatAppInfo($appInfo)
-    {
-        if ($appInfo !== null) {
-            $string = $appInfo['name'];
-            if ($appInfo['version'] !== null) {
-                $string .= '/' . $appInfo['version'];
-            }
-            if ($appInfo['url'] !== null) {
-                $string .= ' (' . $appInfo['url'] . ')';
-            }
-            return $string;
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * @static
+     *
+     * @param string $apiKey
+     * @param null   $clientInfo
+     *
+     * @return array
+     */
     private static function _defaultHeaders($apiKey, $clientInfo = null)
     {
         $uaString = 'Stripe/v1 PhpBindings/' . Stripe::VERSION;
 
-        $langVersion = phpversion();
-        $uname = php_uname();
+        $langVersion = \PHP_VERSION;
+        $uname_disabled = \in_array('php_uname', \explode(',', \ini_get('disable_functions')), true);
+        $uname = $uname_disabled ? '(disabled)' : \php_uname();
 
         $appInfo = Stripe::getAppInfo();
-        $ua = array(
+        $ua = [
             'bindings_version' => Stripe::VERSION,
             'lang' => 'php',
             'lang_version' => $langVersion,
             'publisher' => 'stripe',
             'uname' => $uname,
-        );
+        ];
         if ($clientInfo) {
-            $ua = array_merge($clientInfo, $ua);
+            $ua = \array_merge($clientInfo, $ua);
         }
-        if ($appInfo !== null) {
+        if (null !== $appInfo) {
             $uaString .= ' ' . self::_formatAppInfo($appInfo);
             $ua['application'] = $appInfo;
         }
 
-        $defaultHeaders = array(
-            'X-Stripe-Client-User-Agent' => json_encode($ua),
+        return [
+            'X-Stripe-Client-User-Agent' => \json_encode($ua),
             'User-Agent' => $uaString,
             'Authorization' => 'Bearer ' . $apiKey,
-        );
-        return $defaultHeaders;
+        ];
     }
 
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $params
+     * @param array $headers
+     *
+     * @throws Exception\AuthenticationException
+     * @throws Exception\ApiConnectionException
+     *
+     * @return array
+     */
     private function _requestRaw($method, $url, $params, $headers)
     {
         $myApiKey = $this->_apiKey;
@@ -216,18 +317,19 @@ class ApiRequestor
               . '"Stripe::setApiKey(<API-KEY>)".  You can generate API keys from '
               . 'the Stripe web interface.  See https://stripe.com/api for '
               . 'details, or email support@stripe.com if you have any questions.';
-            throw new Error\Authentication($msg);
+
+            throw new Exception\AuthenticationException($msg);
         }
 
         // Clients can supply arbitrary additional keys to be included in the
         // X-Stripe-Client-User-Agent header via the optional getUserAgentInfo()
         // method
         $clientUAInfo = null;
-        if (method_exists($this->httpClient(), 'getUserAgentInfo')) {
+        if (\method_exists($this->httpClient(), 'getUserAgentInfo')) {
             $clientUAInfo = $this->httpClient()->getUserAgentInfo();
         }
 
-        $absUrl = $this->_apiBase.$url;
+        $absUrl = $this->_apiBase . $url;
         $params = self::_encodeObjects($params);
         $defaultHeaders = $this->_defaultHeaders($myApiKey, $clientUAInfo);
         if (Stripe::$apiVersion) {
@@ -238,13 +340,16 @@ class ApiRequestor
             $defaultHeaders['Stripe-Account'] = Stripe::$accountId;
         }
 
+        if (Stripe::$enableTelemetry && null !== self::$requestTelemetry) {
+            $defaultHeaders['X-Stripe-Client-Telemetry'] = self::_telemetryJson(self::$requestTelemetry);
+        }
+
         $hasFile = false;
-        $hasCurlFile = class_exists('\CURLFile', false);
         foreach ($params as $k => $v) {
-            if (is_resource($v)) {
+            if (\is_resource($v)) {
                 $hasFile = true;
-                $params[$k] = self::_processResourceParam($v, $hasCurlFile);
-            } elseif ($hasCurlFile && $v instanceof \CURLFile) {
+                $params[$k] = self::_processResourceParam($v);
+            } elseif ($v instanceof \CURLFile) {
                 $hasFile = true;
             }
         }
@@ -255,12 +360,14 @@ class ApiRequestor
             $defaultHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 
-        $combinedHeaders = array_merge($defaultHeaders, $headers);
-        $rawHeaders = array();
+        $combinedHeaders = \array_merge($defaultHeaders, $headers);
+        $rawHeaders = [];
 
         foreach ($combinedHeaders as $header => $value) {
             $rawHeaders[] = $header . ': ' . $value;
         }
+
+        $requestStartMs = Util\Util::currentTimeMillis();
 
         list($rbody, $rcode, $rheaders) = $this->httpClient()->request(
             $method,
@@ -269,58 +376,100 @@ class ApiRequestor
             $params,
             $hasFile
         );
-        return array($rbody, $rcode, $rheaders, $myApiKey);
+
+        if (isset($rheaders['request-id'], $rheaders['request-id'][0])) {
+            self::$requestTelemetry = new RequestTelemetry(
+                $rheaders['request-id'][0],
+                Util\Util::currentTimeMillis() - $requestStartMs
+            );
+        }
+
+        return [$rbody, $rcode, $rheaders, $myApiKey];
     }
 
-    private function _processResourceParam($resource, $hasCurlFile)
+    /**
+     * @param resource $resource
+     *
+     * @throws Exception\InvalidArgumentException
+     *
+     * @return \CURLFile|string
+     */
+    private function _processResourceParam($resource)
     {
-        if (get_resource_type($resource) !== 'stream') {
-            throw new Error\Api(
+        if ('stream' !== \get_resource_type($resource)) {
+            throw new Exception\InvalidArgumentException(
                 'Attempted to upload a resource that is not a stream'
             );
         }
 
-        $metaData = stream_get_meta_data($resource);
-        if ($metaData['wrapper_type'] !== 'plainfile') {
-            throw new Error\Api(
+        $metaData = \stream_get_meta_data($resource);
+        if ('plainfile' !== $metaData['wrapper_type']) {
+            throw new Exception\InvalidArgumentException(
                 'Only plainfile resource streams are supported'
             );
         }
 
-        if ($hasCurlFile) {
-            // We don't have the filename or mimetype, but the API doesn't care
-            return new \CURLFile($metaData['uri']);
-        } else {
-            return '@'.$metaData['uri'];
-        }
+        // We don't have the filename or mimetype, but the API doesn't care
+        return new \CURLFile($metaData['uri']);
     }
 
+    /**
+     * @param string $rbody
+     * @param int    $rcode
+     * @param array  $rheaders
+     *
+     * @throws Exception\UnexpectedValueException
+     * @throws Exception\ApiErrorException
+     *
+     * @return array
+     */
     private function _interpretResponse($rbody, $rcode, $rheaders)
     {
-        $resp = json_decode($rbody, true);
-        $jsonError = json_last_error();
-        if ($resp === null && $jsonError !== JSON_ERROR_NONE) {
-            $msg = "Invalid response body from API: $rbody "
-              . "(HTTP response code was $rcode, json_last_error() was $jsonError)";
-            throw new Error\Api($msg, $rcode, $rbody);
+        $resp = \json_decode($rbody, true);
+        $jsonError = \json_last_error();
+        if (null === $resp && \JSON_ERROR_NONE !== $jsonError) {
+            $msg = "Invalid response body from API: {$rbody} "
+              . "(HTTP response code was {$rcode}, json_last_error() was {$jsonError})";
+
+            throw new Exception\UnexpectedValueException($msg, $rcode);
         }
 
         if ($rcode < 200 || $rcode >= 300) {
             $this->handleErrorResponse($rbody, $rcode, $rheaders, $resp);
         }
+
         return $resp;
     }
 
+    /**
+     * @static
+     *
+     * @param HttpClient\ClientInterface $client
+     */
     public static function setHttpClient($client)
     {
         self::$_httpClient = $client;
     }
 
+    /**
+     * @static
+     *
+     * Resets any stateful telemetry data
+     */
+    public static function resetTelemetry()
+    {
+        self::$requestTelemetry = null;
+    }
+
+    /**
+     * @return HttpClient\ClientInterface
+     */
     private function httpClient()
     {
         if (!self::$_httpClient) {
             self::$_httpClient = HttpClient\CurlClient::instance();
         }
+
         return self::$_httpClient;
     }
 }

@@ -44,6 +44,12 @@ if ( isset( $_REQUEST['l'] ) ) {
 	$l = false;
 }
 
+if ( isset( $_REQUEST['discount-code'] ) ) {
+	$discount_code = intval( $_REQUEST['discount-code'] );
+} else {
+	$discount_code = false;
+}
+
 if ( isset( $_REQUEST['start-month'] ) ) {
 	$start_month = intval( $_REQUEST['start-month'] );
 } else {
@@ -130,7 +136,7 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = $start_date . " 00:00:00";
 	$end_date   = $end_date . " 23:59:59";
 
-	$condition = "timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
+	$condition = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
 } elseif ( $filter == "predefined-date-range" ) {
 	if ( $predefined_date == "Last Month" ) {
 		$start_date = date_i18n( "Y-m-d", strtotime( "first day of last month", current_time( "timestamp" ) ) );
@@ -152,11 +158,17 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = $start_date . " 00:00:00";
 	$end_date   = $end_date . " 23:59:59";
 
-	$condition = "timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == "within-a-level" ) {
-	$condition = "membership_id = " . esc_sql( $l );
+	$condition = "o.membership_id = " . esc_sql( $l );
+} elseif ( $filter == 'with-discount-code' ) {
+	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
 } elseif ( $filter == "within-a-status" ) {
-	$condition = "status = '" . esc_sql( $status ) . "' ";
+	$condition = "o.status = '" . esc_sql( $status ) . "' ";
+} elseif ( $filter == 'only-paid' ) {
+	$condition = "o.total > 0";
+} elseif( $filter == 'only-free' ) {
+	$condition = "o.total = 0";
 }
 
 //string search
@@ -172,6 +184,10 @@ if ( ! empty( $s ) ) {
 
 	if ( ! empty( $join_with_usermeta ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+	}
+
+	if ( $filter === 'with-discount-code' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 
 	$sqlQuery .= "WHERE (1=2 ";
@@ -214,12 +230,13 @@ if ( ! empty( $s ) ) {
 	$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 
 } else {
-	$sqlQuery = "
-		SELECT SQL_CALC_FOUND_ROWS id
-		FROM {$wpdb->pmpro_membership_orders}
-		WHERE {$condition}
-		ORDER BY id DESC, timestamp DESC
-		";
+	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
+
+	if ( $filter === 'with-discount-code' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+	}
+
+	$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
@@ -241,6 +258,7 @@ $headers[] = "Content-Disposition: attachment; filename={$filename};";
 
 $csv_file_header_array = array(
 	"id",
+	"code",
 	"user_id",
 	"user_login",
 	"first_name",
@@ -279,6 +297,7 @@ $csv_file_header_array = array(
 //these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 $default_columns = array(
 	array( "order", "id" ),
+	array( "order", "code" ),
 	array( "user", "ID" ),
 	array( "user", "user_login" ),
 	array( "user", "first_name" ),
@@ -310,6 +329,14 @@ $default_columns = array(
 	array( "discount_code", "id" ),
 	array( "discount_code", "code" )
 );
+
+// Hiding couponamount by default.
+$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
+if ( empty( $coupons ) ) {
+	$csv_file_header_array = array_diff( $csv_file_header_array, array( 'couponamount' ) );
+	$couponamount_array_key = array_keys( $default_columns, array( 'order', 'couponamount' ) );
+	unset( $default_columns[ $couponamount_array_key[0] ] );
+}
 
 $default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
 
@@ -409,11 +436,11 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	//increment starting position
-	if ( $iterations > 1 ) {
+	if ( $ic > 1 ) {
 		$i_start += $max_orders_per_loop;
 	}
 	// get the order list we should process
-	$order_list = array_slice( $order_ids, $i_start, ( $i_start + ( $max_orders_per_loop - 1 ) ) );
+	$order_list = array_slice( $order_ids, $i_start, $max_orders_per_loop );
 
 	if (PMPRO_BENCHMARK)
 	{
@@ -422,7 +449,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	foreach ( $order_list as $order_id ) {
-
 		$csvoutput = array();
 
 		$order            = new MemberOrder();
@@ -480,7 +506,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		}				
 
 		//timestamp
-		$ts = date_i18n( $dateformat, $order->timestamp );
+		$ts = date_i18n( $dateformat, $order->getTimestamp() );
 		array_push( $csvoutput, pmpro_enclose( $ts ) );
 
 		//any extra columns
@@ -518,11 +544,9 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log("PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds");
 		error_log("PMPRO_BENCHMARK - Peak memory usage: " . number_format($memory_processing_data, false, '.', ',') . " bytes");
 	}
-
 	$order_list = null;
 	wp_cache_flush();
 }
-
 pmpro_transmit_order_content( $csv_fh, $filename, $headers );
 
 function pmpro_enclose( $s ) {
@@ -548,7 +572,7 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 	if ( headers_sent() ) {
 		echo str_repeat( '-', 75 ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
-		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=banner&utm_campaign=orders_csv" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
+		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
 		echo str_repeat( "=", 75 ) . "<br/>\n";
 		echo file_get_contents( $filename );
 		echo str_repeat( "=", 75 ) . "<br/>\n";
@@ -569,10 +593,15 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 			ini_set( 'zlib.output_compression', 'Off' );
 		}
 
-		// open and send the file contents to the remote location
-		$fh = fopen( $filename, 'rb' );
-		fpassthru( $fh );
-		fclose( $fh );
+		if( function_exists( 'fpassthru' ) ) {
+			// use fpassthru to output the csv
+			$csv_fh = fopen( $filename, 'rb' );
+			fpassthru( $csv_fh );
+			fclose( $csv_fh );
+		} else {
+			// use readfile() if fpassthru() is disabled (like on Flywheel Hosted)
+			readfile( $filename );
+		}
 
 		// remove the temp file
 		unlink( $filename );

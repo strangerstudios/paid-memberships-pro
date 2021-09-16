@@ -235,7 +235,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 				array(
 					'name' => __( 'Order Date', 'paid-memberships-pro' ),
-					'value' => date( get_option( 'date_format' ), $order->timestamp ),
+					'value' => date( get_option( 'date_format' ), $order->getTimestamp() ),
 				),
 				array(
 					'name' => __( 'Level', 'paid-memberships-pro' ),
@@ -501,6 +501,11 @@ add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_after_checkout_update_con
  * @since  1.9.5
  */
 function pmpro_consent_to_text( $entry ) {
+	// Check for bad data. Shouldn't happen in practice.
+	if ( empty( $entry ) || empty( $entry['user_id'] ) ) {		
+		return '';
+	}
+	
 	$user = get_userdata( $entry['user_id'] );
 	$post = get_post( $entry['post_id'] );
 

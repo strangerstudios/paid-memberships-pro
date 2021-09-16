@@ -23,13 +23,21 @@
 	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
 	
 	global $wpdb;
-	
+
+	// Get the file path.
 	$uri = $_SERVER['REQUEST_URI'];
-	if($uri[0] == "/")
-		$uri = substr($uri, 1, strlen($uri) - 1);
+
+	// Remove the query string from the path.
+	$uri_parts = explode( '?', $uri );
+	$uri       = $uri_parts[0];
+
+	// Take the / off of the 
+	if ( '/' === $uri[0] ) {
+		$uri = substr( $uri, 1, strlen( $uri ) - 1 );
+	}
 	
 	// decode the file in case it's encoded.
-	$uri = urldecode($uri);
+	$uri = urldecode( $uri );
 	
 	/*
 		Remove ../-like strings from the URI.
@@ -99,17 +107,17 @@
         die("File not found.");
 	}
 	
-	//if blacklistsed file type, redirect to it instead
+	//if blocklisted file type, redirect to it instead
 	$basename = basename($filename);
 	$parts = explode('.', $basename);
 	$ext = strtolower($parts[count($parts)-1]);
 	
-	//build blacklist and allow for filtering
-	$blacklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
-	$blacklist = apply_filters("pmpro_getfile_extension_blacklist", $blacklist);
-	
+	//build blocklist and allow for filtering
+	$blocklist = array("inc", "php", "php3", "php4", "php5", "phps", "phtml");
+	$blocklist = apply_filters("pmpro_getfile_extension_blocklist", $blocklist);
+
 	//check
-	if(in_array($ext, $blacklist))
+	if(in_array($ext, $blocklist))
 	{		
 		//add a noloop param to avoid infinite loops
 		$uri = add_query_arg("noloop", 1, $uri);
@@ -120,7 +128,7 @@
 		else
 			$uri = "http://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
 				
-		wp_redirect($uri);
+		wp_safe_redirect($uri);
 		exit;
 	}
 		
@@ -128,4 +136,3 @@
 	header("Content-type: " . $file_mimetype); 	
 	readfile($filename);
 	exit;
-?>

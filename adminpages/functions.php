@@ -51,9 +51,18 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			if(is_numeric($level))
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
-			//check this level
-			if($level->billing_limit > 0)
-			{
+			// Check if this level uses billing limits.
+			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+				return false;
+			}
+
+			// Check if this level has a billing period longer than 1 year.
+			if ( 
+				( $level->cycle_period === 'Year' && $level->cycle_number > 1 ) ||
+				( $level->cycle_period === 'Month' && $level->cycle_number > 12 ) ||
+				( $level->cycle_period === 'Week' && $level->cycle_number > 52 ) ||
+				( $level->cycle_period === 'Day' && $level->cycle_number > 365 )
+			) {
 				return false;
 			}
 		}
@@ -159,6 +168,121 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 	return true;
 }
 
+/**
+ * Checks if a discount code's settings are compatible with the active gateway.
+ *
+ */
+function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = NULL ) {
+	// Return if no gateway is set.
+	$gateway = pmpro_getOption( 'gateway' );
+	if ( empty( $gateway ) ) {
+		return true;
+	}
+
+	global $wpdb;
+	
+	// Check ALL the discount codes if none specified.
+	if ( empty( $discount_code ) ) {
+		$discount_codes = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_discount_codes" );
+		if ( ! empty( $discount_codes ) ) {
+			foreach ( $discount_codes as $discount_code ) {
+				if ( ! pmpro_check_discount_code_for_gateway_compatibility( $discount_code ) ) {
+					return false;
+				}
+			}
+		}
+	} else {
+		if ( ! is_numeric( $discount_code ) ) {
+			// Convert the code array into a single id.
+			$discount_code = $discount_code->id;
+		}
+		// Check ALL the discount code levels for this code.
+		$discount_codes_levels = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes_levels WHERE code_id = %d", $discount_code ) );
+		if ( ! empty( $discount_codes_levels ) ) {
+			foreach ( $discount_codes_levels as $discount_code_level ) {
+				if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level ) ) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+/**
+ * Checks if a discount code's settings are compatible with the active gateway.
+ *
+ */
+function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level = NULL ) {
+	// Return if no gateway is set.
+	$gateway = pmpro_getOption( 'gateway' );
+	if ( empty( $gateway ) ) {
+		return true;
+	}
+
+	global $wpdb;
+
+	// Check ALL the discount code levels if none specified.
+	if ( empty( $discount_code_level ) ) {
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_discount_codes_levels ORDER BY id ASC";
+		$discount_codes_levels = $wpdb->get_results($sqlQuery, OBJECT);
+		if ( ! empty( $discount_codes_levels ) ) {
+			foreach ( $discount_codes_levels as $discount_code_level ) {
+				if ( ! pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level ) ) {
+					return false;
+				}
+			}
+		}
+	} else {
+		// Need to look it up?
+		if ( is_numeric( $discount_code_level ) ) {
+			$discount_code_level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes_levels WHERE id = %d LIMIT 1" , $discount_code_level ) );
+		}
+
+		// Check this discount code level for gateway compatibility
+		if ( $gateway == 'stripe' ) {
+			// Check if this code level has a billing limit.
+			if ( ( intval( $discount_code_level->billing_limit ) > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+				global $pmpro_stripe_error;
+				$pmpro_stripe_error = true;
+				return false;
+			}
+			// Check if this code level has a billing period longer than 1 year.
+			if ( 
+				( $discount_code_level->cycle_period === 'Year' && intval( $discount_code_level->cycle_number ) > 1 ) ||
+				( $discount_code_level->cycle_period === 'Month' && intval( $discount_code_level->cycle_number ) > 12 ) ||
+				( $discount_code_level->cycle_period === 'Week' && intval( $discount_code_level->cycle_number ) > 52 ) ||
+				( $discount_code_level->cycle_period === 'Day' && intval( $discount_code_level->cycle_number ) > 365 )
+			) {
+				global $pmpro_stripe_error;
+				$pmpro_stripe_error = true;
+				return false;
+			}
+		} elseif ( $gateway == 'payflowpro' ) {
+			if ( $discount_code_level->trial_amount > 0 ) {
+				global $pmpro_payflow_error;
+				$pmpro_payflow_error = true;
+				return false;
+			}
+		} elseif ( $gateway == 'braintree' ) {
+			if ( $discount_code_level->trial_amount > 0 ||
+			   ( $discount_code_level->cycle_number > 0 && ( $discount_code_level->cycle_period == "Day" || $discount_code_level->cycle_period == "Week" ) ) ) {
+			   	global $pmpro_braintree_error;
+				$pmpro_braintree_error = true;
+				return false;
+			}
+		} elseif ( $gateway == 'twocheckout' ) {
+			if ( $discount_code_level->trial_amount > $discount_code_level->billing_amount ) {
+				global $pmpro_twocheckout_error;
+				$pmpro_twocheckout_error = true;
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 /*
 	Checks if PMPro settings are complete or if there are any errors.
 	
@@ -241,4 +365,70 @@ function pmpro_getClassesForPaymentSettingsField($field, $force = false)
 
 	//return space separated string
 	return implode(" ", $rgateways);
+}
+
+
+/**
+ * Code to handle emailing billable invoices.
+ *
+ * @since 1.8.6
+ */
+
+/**
+ * Get the gateway-related classes for fields on the payment settings page.
+ *
+ * @param string $field The name of the field to check.
+ * @param bool $force If true, it will rebuild the cached results.
+ *
+ * @since  1.8
+ */
+function pmpro_add_email_order_modal() {
+
+	// emailing?
+	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
+		$email = new PMProEmail();
+		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
+		$order = new MemberOrder( $_REQUEST['order'] );
+		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
+			<div class="notice notice-success is-dismissible">
+				<p><?php _e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
+			</div>
+		<?php } else { ?>
+			<div class="notice notice-error is-dismissible">
+				<p><?php _e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
+			</div>
+		<?php }
+	}
+
+	?>
+	<script>
+		// Update fields in email modal.
+		jQuery(document).ready(function ($) {
+			var order, order_id;
+			$('.email_link').click(function () {
+				order_id = $(this).data('order');
+				$('input[name=order]').val(order_id);
+				// Get email address from order ID
+				data = {
+					action: 'pmpro_get_order_json',
+					order_id: order_id
+				};
+				$.post(ajaxurl, data, function (response) {
+					order = JSON.parse(response);
+					$('input[name=email]').val(order.Email);
+				});
+			});
+		});
+	</script>
+	<?php add_thickbox(); ?>
+	<div id="email_invoice" style="display:none;">
+		<h3><?php _e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
+		<form method="post" action="">
+			<input type="hidden" name="order" value=""/>
+			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
+			<input type="text" value="" name="email"/>
+			<button class="button button-primary alignright"><?php _e( 'Send Email', 'paid-memberships-pro' ); ?></button>
+		</form>
+	</div>
+	<?php
 }

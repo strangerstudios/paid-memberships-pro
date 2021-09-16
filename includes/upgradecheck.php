@@ -225,6 +225,49 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = '1.944';
 		pmpro_setOption('db_version', '1.944');
 	}
+
+	if ( $pmpro_db_version < 2.1 ) {
+		pmpro_db_delta();
+
+		$pmpro_db_version = 2.1;
+		pmpro_setOption( 'db_version', '2.1' );
+	}
+	
+	if ( $pmpro_db_version < 2.3 ) {
+		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+		pmpro_setOption( 'db_version', '2.3' );
+	}
+	
+	/**
+	 * Version 2.4
+	 * Fixing subscription_transaction_id
+	 * for orders created through a Stripe Update.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_4.php" );	
+ 	if($pmpro_db_version < 2.4) {
+ 		$pmpro_db_version = pmpro_upgrade_2_4();
+ 	}
+	
+	/**
+	 * Version 2.5
+	 * Running pmpro_db_delta to install the ordermeta table.
+	 */
+	if( $pmpro_db_version < 2.5 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = 2.5;
+		pmpro_setOption( 'db_version', '2.5' );
+	}
+
+	/**
+	 * Version 2.6
+	 * Running pmpro_db_delta to update column types to bigint/etc
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );
+	if( $pmpro_db_version < 2.6 ) {
+		pmpro_db_delta();		
+		$pmpro_db_version = pmpro_upgrade_2_6();
+		pmpro_setOption( 'db_version', '2.6' );
+	}
 }
 
 function pmpro_db_delta()
@@ -242,6 +285,7 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -250,17 +294,17 @@ function pmpro_db_delta()
 		  `name` varchar(255) NOT NULL,
 		  `description` longtext NOT NULL,
 		  `confirmation` longtext NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
 		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-		  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`id`),
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
 		  KEY `name` (`name`)
@@ -271,10 +315,10 @@ function pmpro_db_delta()
 	//wp_pmpro_membership_orders
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_orders . "` (
-		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
 		  `session_id` varchar(64) NOT NULL DEFAULT '',
-		  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
+		  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 		  `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
 		  `paypal_token` varchar(64) NOT NULL DEFAULT '',
 		  `billing_name` varchar(128) NOT NULL DEFAULT '',
@@ -287,7 +331,7 @@ function pmpro_db_delta()
 		  `subtotal` varchar(16) NOT NULL DEFAULT '',
 		  `tax` varchar(16) NOT NULL DEFAULT '',
 		  `couponamount` varchar(16) NOT NULL DEFAULT '',
-		  `checkout_id` int(11) NOT NULL DEFAULT '0',
+		  `checkout_id` bigint(20) NOT NULL DEFAULT '0',
 		  `certificate_id` int(11) NOT NULL DEFAULT '0',
 		  `certificateamount` varchar(16) NOT NULL DEFAULT '',
 		  `total` varchar(16) NOT NULL DEFAULT '',
@@ -305,7 +349,7 @@ function pmpro_db_delta()
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
 		  `notes` TEXT NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `session_id` (`session_id`),
 		  KEY `user_id` (`user_id`),
@@ -327,7 +371,7 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_categories . "` (
 		  `membership_id` int(11) unsigned NOT NULL,
-		  `category_id` int(11) unsigned NOT NULL,
+		  `category_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		  UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
 		  UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
@@ -339,7 +383,7 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_pages . "` (
 		  `membership_id` int(11) unsigned NOT NULL,
-		  `page_id` int(11) unsigned NOT NULL,
+		  `page_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		  UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
 		  UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
@@ -351,21 +395,21 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_users . "` (
 		   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-		   `user_id` int(11) unsigned NOT NULL,
+		   `user_id` bigint(20) unsigned NOT NULL,
 		   `membership_id` int(11) unsigned NOT NULL,
-		   `code_id` int(11) unsigned NOT NULL,
-		   `initial_payment` decimal(10,2) NOT NULL,
-		   `billing_amount` decimal(10,2) NOT NULL,
+		   `code_id` bigint(20) unsigned NOT NULL,
+		   `initial_payment` decimal(18,8) NOT NULL,
+		   `billing_amount` decimal(18,8) NOT NULL,
 		   `cycle_number` int(11) NOT NULL,
 		   `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
 		   `billing_limit` int(11) NOT NULL,
-		   `trial_amount` decimal(10,2) NOT NULL,
+		   `trial_amount` decimal(18,8) NOT NULL,
 		   `trial_limit` int(11) NOT NULL,
 		   `status` varchar(20) NOT NULL DEFAULT 'active',
 		   `startdate` datetime NOT NULL,
 		   `enddate` datetime DEFAULT NULL,
 		   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		   PRIMARY KEY (`id`),
+		   PRIMARY KEY  (`id`),
 		   KEY `membership_id` (`membership_id`),
 		   KEY `modified` (`modified`),
 		   KEY `code_id` (`code_id`),
@@ -379,12 +423,12 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
 		  `starts` date NOT NULL,
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
 		  KEY `expires` (`expires`)
@@ -395,18 +439,18 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes_levels
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
-		  `code_id` int(11) unsigned NOT NULL,
+		  `code_id` bigint(20) unsigned NOT NULL,
 		  `level_id` int(11) unsigned NOT NULL,
-		  `initial_payment` decimal(10,2) NOT NULL DEFAULT '0.00',
-		  `billing_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
 		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-		  `trial_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`code_id`,`level_id`),
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
 		);
 	";
@@ -415,12 +459,12 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes_uses
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (		  
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `code_id` int(10) unsigned NOT NULL,
-		  `user_id` int(10) unsigned NOT NULL,
-		  `order_id` int(10) unsigned NOT NULL,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `code_id` bigint(20) unsigned NOT NULL,
+		  `user_id` bigint(20) unsigned NOT NULL,
+		  `order_id` bigint(20) unsigned NOT NULL,
 		  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
 		);
@@ -430,12 +474,26 @@ function pmpro_db_delta()
 	//pmpro_membership_levelmeta
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
-		  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `pmpro_membership_level_id` int(10) unsigned NOT NULL,
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_level_id` int(11) unsigned NOT NULL,
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+		  KEY `meta_key` (`meta_key`)
+		);
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_membership_ordermeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_ordermeta . "` (
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_order_id` int(11) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`meta_id`),
+		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
 		  KEY `meta_key` (`meta_key`)
 		);
 	";

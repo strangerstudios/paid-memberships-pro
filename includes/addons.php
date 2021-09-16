@@ -130,9 +130,11 @@ function pmpro_update_plugins_filter( $value ) {
 		}
 
 		// compare versions
-		if ( ! empty( $addon['License'] ) && version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
+		if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 			$value->response[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 			$value->response[ $plugin_file ]->new_version = $addon['Version'];
+		} else {
+			$value->no_update[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 		}
 	}
 
@@ -199,6 +201,7 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 		return $api;
 	}
 
+	// add info
 	$api->name                  = isset( $addon['Name'] ) ? $addon['Name'] : '';
 	$api->slug                  = isset( $addon['Slug'] ) ? $addon['Slug'] : '';
 	$api->plugin                = isset( $addon['plugin'] ) ? $addon['plugin'] : '';
@@ -209,9 +212,22 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 	$api->tested                = isset( $addon['Tested'] ) ? $addon['Tested'] : '';
 	$api->last_updated          = isset( $addon['LastUpdated'] ) ? $addon['LastUpdated'] : '';
 	$api->homepage              = isset( $addon['URI'] ) ? $addon['URI'] : '';
-	$api->sections['changelog'] = isset( $addon['Changelog'] ) ? $addon['Changelog'] : '';
 	$api->download_link         = isset( $addon['Download'] ) ? $addon['Download'] : '';
 	$api->package               = isset( $addon['Download'] ) ? $addon['Download'] : '';
+
+	// add sections
+	if ( !empty( $addon['Description'] ) ) {
+		$api->sections['description'] = $addon['Description'];
+	}
+	if ( !empty( $addon['Installation'] ) ) {
+		$api->sections['installation'] = $addon['Installation'];
+	}
+	if ( !empty( $addon['FAQ'] ) ) {
+		$api->sections['faq'] = $addon['FAQ'];
+	}
+	if ( !empty( $addon['Changelog'] ) ) {
+		$api->sections['changelog'] = $addon['Changelog'];
+	}
 
 	// get license key if one is available
 	$key = get_option( 'pmpro_license_key', '' );
@@ -221,7 +237,7 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 	if ( ! empty( $key ) && ! empty( $api->package ) ) {
 		$api->package = add_query_arg( 'key', $key, $api->package );
 	}
-	if ( empty( $api->upgrade_notice ) && ! pmpro_license_isValid() ) {
+	if ( empty( $api->upgrade_notice ) && ! pmpro_license_isValid( null, 'plus' ) ) {
 		$api->upgrade_notice = __( 'Important: This plugin requires a valid PMPro Plus license key to update.', 'paid-memberships-pro' );
 	}
 
@@ -290,7 +306,7 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && ! pmpro_license_isValid() ) {
+		if ( ! empty( $addon ) && $addon->License == 'plus' && ! pmpro_license_isValid( null, 'plus' ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
@@ -316,7 +332,7 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && ! pmpro_license_isValid() ) {
+		if ( ! empty( $addon ) && $addon->License == 'plus' && ! pmpro_license_isValid( null, 'plus' ) ) {
 			$msg = __( 'You must enter a valid PMPro Plus License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 

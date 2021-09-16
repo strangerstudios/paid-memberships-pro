@@ -25,7 +25,7 @@ if(!function_exists("pnp_split_full_name"))
 		$name_parts = array();
 		// completely ignore any words in parentheses
 		foreach ($unfiltered_name_parts as $word) {
-			if (!empty($word) && $word{0} != "(")
+			if (!empty($word) && $word[0] != "(")
 				$name_parts[] = $word;
 		}
 		$num_words = sizeof($name_parts);
@@ -131,7 +131,7 @@ if(!function_exists("pnp_split_full_name"))
 
 	// single letter, possibly followed by a period
 	function pnp_is_initial($word) {
-		return ((strlen($word) == 1) || (strlen($word) == 2 && $word{1} == "."));
+		return ((strlen($word) == 1) || (strlen($word) == 2 && $word[1] == "."));
 	}
 
 	// detect mixed case words like "McDonald"

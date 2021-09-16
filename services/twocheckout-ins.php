@@ -20,6 +20,9 @@
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
 
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'twocheckout', true );
+
 	//validate?
 	if( ! pmpro_twocheckoutValidate() ) {
 
@@ -235,16 +238,16 @@
 
 		//is this a return call or notification
 		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 		else
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ), 'array' );
+			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
 		else if( empty ( $check['response_code'] ) )
 			$r = false;	//Invalid response
 		else
-			$r = $check['response_code'];
+			$r = $check['response_code'] === 'Success';
 
 		/**
 		 * Filter if an twocheckout request is valid or not.
@@ -256,7 +259,7 @@
 		 */
 		$r = apply_filters('pmpro_twocheckout_validate', $r, $check);
 
-		return $check['response_code'] === 'Success';
+		return $r;
 	}
 
 	/*
@@ -264,14 +267,38 @@
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
+		global $wpdb;
 		$recurring = pmpro_getParam( 'recurring', 'POST' );
+
+		// Get discount code.
+		$morder->getDiscountCode();
+		if ( ! empty( $morder->discount_code ) ) {
+			// Update membership level
+			$morder->getMembershipLevel(true);
+			$discount_code_id = $morder->discount_code->id;
+		} else {
+			$discount_code_id = "";
+		}
+
+		// If this is an initial payment...
+		if ( empty( pmpro_getParam( 'message_type', 'REQUEST' ) ) || pmpro_getParam( 'message_type', 'REQUEST' ) === 'ORDER_CREATED' ) {
+			// Apply discount code level changes.
+			if ( ! empty( $discount_code_id ) ) {
+				$sqlQuery                 = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.id = '" . esc_sql( $discount_code_id ) . "' AND cl.level_id = '" . esc_sql( $morder->membership_level->level_id ) . "' LIMIT 1";
+				$morder->membership_level = $wpdb->get_row( $sqlQuery );
+			}
+	
+			// Extend membership if renewal.
+			// Added manually because pmpro_checkout_level filter is not run.
+			$morder->membership_level = pmpro_checkout_level_extend_memberships( $morder->membership_level );
+		}
 
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_inshandler_level", $morder->membership_level, $morder->user_id);
 
 		//set the start date to current_time('mysql') but allow filters (documented in preheaders/checkout.php)
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
-
+		
 		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
@@ -284,19 +311,6 @@
 
 		//filter the enddate (documented in preheaders/checkout.php)
 		$enddate = apply_filters("pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate);
-
-		//get discount code
-		$morder->getDiscountCode();
-		if(!empty($morder->discount_code))
-		{
-			//update membership level
-			$morder->getMembershipLevel(true);
-			$discount_code_id = $morder->discount_code->id;
-		}
-		else
-			$discount_code_id = "";
-
-		
 
 		//custom level to change user to
 		$custom_level = array(
@@ -333,7 +347,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time('mysql') . "')");
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')");
 			}
 
 			//save first and last name fields
@@ -341,17 +355,17 @@
 			{
 				$old_firstname = get_user_meta($morder->user_id, "first_name", true);
 				if(!empty($old_firstname))
-					update_user_meta($morder->user_id, "first_name", $_POST['first_name']);
+					update_user_meta($morder->user_id, "first_name", sanitize_text_field($_POST['first_name']));
 			}
 			if(!empty($_POST['last_name']))
 			{
 				$old_lastname = get_user_meta($morder->user_id, "last_name", true);
 				if(!empty($old_lastname))
-					update_user_meta($morder->user_id, "last_name", $_POST['last_name']);
+					update_user_meta($morder->user_id, "last_name", sanitize_text_field($_POST['last_name']));
 			}
 
 			//hook
-			do_action("pmpro_after_checkout", $morder->user_id);
+			do_action("pmpro_after_checkout", $morder->user_id, $morder);
 
 			//setup some values for the emails
 			if(!empty($morder))
@@ -414,7 +428,7 @@
 		global $wpdb;
 
 		//check that txn_id has not been previously processed
-		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
+		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql( $txn_id ) . "' LIMIT 1");
 
 		if( empty( $old_txn ) ) {
 
@@ -424,12 +438,16 @@
 			$morder->membership_id = $last_order->membership_id;
 			$morder->payment_transaction_id = $txn_id;
 			$morder->subscription_transaction_id = $last_order->subscription_transaction_id;
-			$morder->InitialPayment = $_POST['item_list_amount_1'];	//not the initial payment, but the class is expecting that
-			$morder->PaymentAmount = $_POST['item_list_amount_1'];
+			$morder->InitialPayment = sanitize_text_field($_POST['item_list_amount_1']);	//not the initial payment, but the class is expecting that
+			$morder->PaymentAmount = sanitize_text_field($_POST['item_list_amount_1']);
+			$morder->datetime = sanitize_text_field($_POST['timestamp']);
 
-			$morder->FirstName = $_POST['customer_first_name'];
-			$morder->LastName = $_POST['customer_last_name'];
-			$morder->Email = $_POST['customer_email'];
+			//Assume no tax for now. Add ons will handle it later.
+			$morder->tax = 0;
+
+			$morder->FirstName = sanitize_text_field($_POST['customer_first_name']);
+			$morder->LastName = sanitize_text_field($_POST['customer_last_name']);
+			$morder->Email = sanitize_text_field($_POST['customer_email']);
 
 			$morder->gateway = $last_order->gateway;
 			$morder->gateway_environment = $last_order->gateway_environment;
@@ -459,9 +477,10 @@
 	*/
 	function pmpro_insRecurringStopped( $morder ) {
 		global $pmpro_error;
-		//hook to do other stuff when payments stop
-		do_action("pmpro_subscription_recuring_stopped", $last_order);
-
+		//hook to do other stuff when payments stop		
+		do_action( 'pmpro_subscription_recurring_stopped', $morder );
+    do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
+    
 		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
@@ -492,7 +511,8 @@
 	function pmpro_insRecurringRestarted( $morder ) {
 		global $pmpro_error;
 		//hook to do other stuff when payments restart
-		do_action("pmpro_subscription_recuring_restarted", $last_order);
+		do_action( 'pmpro_subscription_recuring_restarted', $morder);
+		do_action( 'pmpro_subscription_recurring_restarted', $morder);
 
 		$worked = pmpro_changeMembershipLevel( $morder->membership_level->id, $morder->user->ID );
 		if( $worked === true ) {
