@@ -311,16 +311,16 @@ if ( $txn_type == 'recurring_payment_profile_created' ) {
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		update_pmpro_membership_order_meta( $last_subscription_order->id, 'initial_payment_txn_id', $initial_payment_txn_id );
 
-		ipnlog( "Confirmation of profile creation for this recurring payment (" . $subscr_id . ")." );
+		ipnlog( 'Confirmation of profile creation for this recurring payment (' . $subscr_id . ').' );
 	} else {
-		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
+		ipnlog( 'ERROR: Could not find last order for this recurring payment (' . $subscr_id . ').' );
 	}
 
 	pmpro_ipnExit();
 }
 
 // Order completed (PayPal Express)
-if ( $txn_type == 'express_checkout' ) {
+if ( $txn_type === 'express_checkout' ) {
 	ipnlog( 'Confirmation of order completion for this payment: ' . print_r( $_POST, true ) );
 
 	pmpro_ipnExit();
