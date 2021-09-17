@@ -201,6 +201,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_memberships' ),
+					'args'	=> array(
+						'status' => array(),
+					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
 		));
@@ -723,13 +726,27 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level_status = sanitize_text_field( $params['level_status'] );
 
 			if ( empty( $params['level_status'] ) ) {
-				$level_status = array( 'active' );
+				$level_status = [ 'active' ];
 			} else {
 				$level_status = sanitize_text_field( trim( $params['level_status'] ) );
-				$level_status = explode( ',', $level_status ); // Force it into an array so we can implode it in the query itself.
+
+				// Force it into an array so we can implode it in the query itself.
+				$level_status = explode( ',', $level_status );
 			}
 
+			/**
+			 * Allow filtering the total number of recent members to show in the /recent_memberships PMPro endpoint.
+			 *
+			 * @param int $limit The total number of recent members to show.
+			 */
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+
+			// Set up values to prepare.
+			$prepare   = $level_status;
+			$prepare[] = $limit;
+
+			// Set up the placeholders we want to use.
+			$level_status_placeholders = implode( ', ', array_fill( 0, count( $level_status ), '%s' ) );
 
 			// Grab the useful information.
 			global $wpdb;
@@ -749,13 +766,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
 				WHERE
-					`mu`.`status` IN ('" . implode( "','", array_map( 'esc_sql', $level_status ) ) . "') 
+					`mu`.`status` IN ( {$level_status_placeholders} ) 
 				ORDER BY
 					`mu`.`modified` DESC
 				LIMIT %d
 			";
 
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) );
 
 			// Generate random ID for Zapier and then also add all member information.
 			if ( $response_type == 'json' ) {
