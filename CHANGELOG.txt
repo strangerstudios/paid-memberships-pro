@@ -11,6 +11,7 @@
 * BUG FIX: Fixed issue where gateway-related notices weren't showing up on the discount codes page. #1757 (@mircobabini)
 * BUG FIX: Fixed some design issues with the member history tables. #1753 (@mircobabini)
 * BUG FIX: Fixed issues where the option to block subscribers from the dashboard would interfere with other plugins, e.g. the MailPoet plugin. #1749 (@sc0ttkclark)
+* BUG FIX: Fixed issues where the RTL stylesheets might not load if your theme overrode frontend.css or admin.css but didn't have the RTL equivalents. (@ideadude, @sc0ttkclark)
 
 = 2.6.1.1 - 2021-08-25 =
 * BUG FIX: Fixed issue with PMPro blocks not showing up in the block editor.
