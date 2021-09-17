@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.1\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-23T21:00:06+00:00\n"
+"POT-Creation-Date: 2021-09-17T13:56:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -39,6 +39,11 @@ msgstr ""
 #: includes/email.php:230
 #: includes/email.php:255
 #: includes/email.php:273
+#: includes/email.php:178
+#: includes/email.php:214
+#: includes/email.php:237
+#: includes/email.php:262
+#: includes/email.php:280
 msgid "You do not have permissions to perform this action."
 msgstr "K provedení této akce nemáte dostatečná opravnění."
 
@@ -366,6 +371,10 @@ msgstr "Ano - Ukázat výňatky."
 #: adminpages/membershiplevels.php:941
 #: classes/gateways/class.pmprogateway_stripe.php:615
 #: classes/gateways/class.pmprogateway_stripe.php:629
+#: adminpages/advancedsettings.php:396
+#: adminpages/advancedsettings.php:479
+#: classes/gateways/class.pmprogateway_stripe.php:634
+#: classes/gateways/class.pmprogateway_stripe.php:648
 msgid "No"
 msgstr "Ne"
 
@@ -407,6 +416,7 @@ msgstr "Zvolte úrovně pro skrytí reklam"
 #: adminpages/advancedsettings.php:183
 #: adminpages/advancedsettings.php:190
 #: adminpages/advancedsettings.php:390
+#: adminpages/advancedsettings.php:392
 msgid "Redirect all traffic from registration page to /susbcription/?"
 msgstr "Přesměrovat veškerý provoz z registrační stránky na /subscription/?"
 
@@ -414,6 +424,7 @@ msgstr "Přesměrovat veškerý provoz z registrační stránky na /subscription
 #: adminpages/advancedsettings.php:183
 #: adminpages/advancedsettings.php:190
 #: adminpages/advancedsettings.php:390
+#: adminpages/advancedsettings.php:392
 msgid "multisite only"
 msgstr "Pouze pro multisite"
 
@@ -451,6 +462,9 @@ msgstr "Pouze pro multisite"
 #: adminpages/membershiplevels.php:938
 #: classes/gateways/class.pmprogateway_stripe.php:617
 #: classes/gateways/class.pmprogateway_stripe.php:631
+#: adminpages/advancedsettings.php:397
+#: classes/gateways/class.pmprogateway_stripe.php:636
+#: classes/gateways/class.pmprogateway_stripe.php:650
 msgid "Yes"
 msgstr "Ano"
 
@@ -534,33 +548,39 @@ msgstr "vybráno"
 #: adminpages/advancedsettings.php:525
 #: adminpages/pagesettings.php:439
 #: adminpages/paymentsettings.php:297
+#: adminpages/advancedsettings.php:527
 msgid "Save Settings"
 msgstr "Uložit nastavení"
 
 #: adminpages/discountcodes.php:48
 #: adminpages/discountcodes.php:113
+#: adminpages/discountcodes.php:115
 msgid "Discount code updated successfully."
 msgstr "Slevový kód byl úspěšně upraven."
 
 #: adminpages/discountcodes.php:55
 #: adminpages/discountcodes.php:125
+#: adminpages/discountcodes.php:127
 msgid "Error updating discount code. That code may already be in use."
 msgstr "Chyba při aktualizaci slevového kódu. Tento kód může být již používán."
 
 #: adminpages/discountcodes.php:64
 #: adminpages/discountcodes.php:107
+#: adminpages/discountcodes.php:109
 msgid "Discount code added successfully."
 msgstr "Slevový kód byl úspěšně přidán"
 
 #: adminpages/discountcodes.php:72
 #: adminpages/discountcodes.php:71
 #: adminpages/discountcodes.php:121
+#: adminpages/discountcodes.php:123
 msgid "Error adding discount code. That code may already be in use."
 msgstr "Chyba při přidání slevového kódu. Tento kód může být již používán."
 
 #: adminpages/discountcodes.php:197
 #: adminpages/discountcodes.php:196
 #: adminpages/discountcodes.php:287
+#: adminpages/discountcodes.php:289
 #, php-format
 msgid "Error saving values for the %s level."
 msgstr "Chyba při ukládání hodnot pro úroveň %s."
@@ -568,6 +588,7 @@ msgstr "Chyba při ukládání hodnot pro úroveň %s."
 #: adminpages/discountcodes.php:205
 #: adminpages/discountcodes.php:204
 #: adminpages/discountcodes.php:295
+#: adminpages/discountcodes.php:297
 msgid "There were errors updating the level values: "
 msgstr "Došlo k chybám při aktualizaci hodnot úrovní:"
 
@@ -575,6 +596,7 @@ msgstr "Došlo k chybám při aktualizaci hodnot úrovní:"
 #: adminpages/discountcodes.php:234
 #: adminpages/discountcodes.php:237
 #: adminpages/discountcodes.php:335
+#: adminpages/discountcodes.php:337
 #, php-format
 msgid "Code %s deleted successfully."
 msgstr "Kód %s byl úspěšně smazán."
@@ -583,6 +605,7 @@ msgstr "Kód %s byl úspěšně smazán."
 #: adminpages/discountcodes.php:239
 #: adminpages/discountcodes.php:242
 #: adminpages/discountcodes.php:340
+#: adminpages/discountcodes.php:342
 msgid "Error deleting discount code. The code was only partially deleted. Please try again."
 msgstr "Chyba při mazání slevového kódu. Kód byl jen částečně odstraněn. Zkuste to prosím znovu."
 
@@ -590,6 +613,7 @@ msgstr "Chyba při mazání slevového kódu. Kód byl jen částečně odstran�
 #: adminpages/discountcodes.php:245
 #: adminpages/discountcodes.php:248
 #: adminpages/discountcodes.php:346
+#: adminpages/discountcodes.php:348
 msgid "Error deleting code. Please try again."
 msgstr "Chyba při mazání kódu. Zkuste to znovu."
 
@@ -598,6 +622,8 @@ msgstr "Chyba při mazání kódu. Zkuste to znovu."
 #: adminpages/discountcodes.php:254
 #: adminpages/discountcodes.php:352
 #: adminpages/discountcodes.php:796
+#: adminpages/discountcodes.php:354
+#: adminpages/discountcodes.php:798
 msgid "Code not found."
 msgstr "Kód nenalezen."
 
@@ -605,6 +631,7 @@ msgstr "Kód nenalezen."
 #: adminpages/discountcodes.php:264
 #: adminpages/discountcodes.php:267
 #: adminpages/discountcodes.php:373
+#: adminpages/discountcodes.php:375
 msgid "Edit Discount Code"
 msgstr "Upravit slevový kód"
 
@@ -617,6 +644,8 @@ msgstr "Upravit slevový kód"
 #: adminpages/discountcodes.php:557
 #: adminpages/discountcodes.php:375
 #: adminpages/discountcodes.php:735
+#: adminpages/discountcodes.php:377
+#: adminpages/discountcodes.php:737
 msgid "Add New Discount Code"
 msgstr "Vložit nový slevový kód"
 
@@ -650,6 +679,8 @@ msgstr "Vložit nový slevový kód"
 #: adminpages/templates/orders-email.php:46
 #: adminpages/templates/orders-print.php:75
 #: adminpages/orders.php:1339
+#: adminpages/discountcodes.php:446
+#: adminpages/discountcodes.php:785
 msgid "ID"
 msgstr "ID"
 
@@ -661,6 +692,7 @@ msgstr "ID"
 #: adminpages/discountcodes.php:445
 #: adminpages/orders.php:415
 #: adminpages/orders.php:421
+#: adminpages/discountcodes.php:447
 msgid "This will be generated when you save."
 msgstr "Toto bude vygenerováno při uložení."
 
@@ -683,6 +715,8 @@ msgstr "Toto bude vygenerováno při uložení."
 #: adminpages/dashboard.php:290
 #: adminpages/orders.php:428
 #: adminpages/orders.php:1340
+#: adminpages/discountcodes.php:451
+#: adminpages/discountcodes.php:786
 msgid "Code"
 msgstr "Kód"
 
@@ -693,6 +727,7 @@ msgstr "Kód"
 #: adminpages/reports/history.php:34
 #: includes/privacy.php:186
 #: includes/profile.php:495
+#: adminpages/discountcodes.php:489
 msgid "Start Date"
 msgstr "Počáteční datum"
 
@@ -714,6 +749,8 @@ msgstr "Počáteční datum"
 #: pages/billing.php:375
 #: pages/checkout.php:393
 #: classes/gateways/class.pmprogateway_stripe.php:1301
+#: adminpages/discountcodes.php:507
+#: classes/gateways/class.pmprogateway_stripe.php:1320
 msgid "Expiration Date"
 msgstr "Datum vypršení"
 
@@ -726,6 +763,8 @@ msgstr "Datum vypršení"
 #: adminpages/discountcodes.php:589
 #: adminpages/discountcodes.php:523
 #: adminpages/discountcodes.php:787
+#: adminpages/discountcodes.php:525
+#: adminpages/discountcodes.php:789
 msgid "Uses"
 msgstr "Použití"
 
@@ -733,12 +772,14 @@ msgstr "Použití"
 #: adminpages/discountcodes.php:388
 #: adminpages/discountcodes.php:391
 #: adminpages/discountcodes.php:526
+#: adminpages/discountcodes.php:528
 msgid "Leave blank for unlimited uses."
 msgstr "Nechte prázdné pro neomezené použití."
 
 #: adminpages/discountcodes.php:401
 #: adminpages/discountcodes.php:400
 #: adminpages/discountcodes.php:535
+#: adminpages/discountcodes.php:537
 msgid "Which Levels Will This Code Apply To?"
 msgstr "Jakých úrovní se bude tento kód týkat?"
 
@@ -754,6 +795,7 @@ msgstr "Jakých úrovní se bude tento kód týkat?"
 #: pages/levels.php:14
 #: adminpages/discountcodes.php:574
 #: adminpages/membershiplevels.php:401
+#: adminpages/discountcodes.php:576
 msgid "Initial Payment"
 msgstr "Počáteční platba"
 
@@ -766,6 +808,7 @@ msgstr "Počáteční platba"
 #: adminpages/membershiplevels.php:340
 #: adminpages/discountcodes.php:585
 #: adminpages/membershiplevels.php:412
+#: adminpages/discountcodes.php:587
 msgid "The initial amount collected at registration."
 msgstr "Počáteční částka získaná při registraci."
 
@@ -778,6 +821,7 @@ msgstr "Počáteční částka získaná při registraci."
 #: adminpages/membershiplevels.php:344
 #: adminpages/discountcodes.php:590
 #: adminpages/membershiplevels.php:417
+#: adminpages/discountcodes.php:592
 msgid "Recurring Subscription"
 msgstr "Opakující se předplatné"
 
@@ -790,6 +834,7 @@ msgstr "Opakující se předplatné"
 #: adminpages/membershiplevels.php:345
 #: adminpages/discountcodes.php:591
 #: adminpages/membershiplevels.php:418
+#: adminpages/discountcodes.php:593
 msgid "Check if this level has a recurring subscription payment."
 msgstr "Zatrhněte, pokud má tato úroveň opakující se platbu předplatného."
 
@@ -801,6 +846,7 @@ msgstr "Zatrhněte, pokud má tato úroveň opakující se platbu předplatného
 #: adminpages/membershiplevels.php:349
 #: adminpages/discountcodes.php:595
 #: adminpages/membershiplevels.php:422
+#: adminpages/discountcodes.php:597
 msgid "Billing Amount"
 msgstr "Vyfakturovaná částka"
 
@@ -823,6 +869,9 @@ msgstr "Vyfakturovaná částka"
 #: adminpages/membershiplevels.php:580
 #: classes/gateways/class.pmprogateway_stripe.php:1332
 #: classes/gateways/class.pmprogateway_stripe.php:1344
+#: adminpages/discountcodes.php:612
+#: adminpages/discountcodes.php:699
+#: classes/gateways/class.pmprogateway_stripe.php:1363
 msgid "Day(s)"
 msgstr "den(y)"
 
@@ -845,6 +894,9 @@ msgstr "den(y)"
 #: adminpages/membershiplevels.php:580
 #: classes/gateways/class.pmprogateway_stripe.php:1334
 #: classes/gateways/class.pmprogateway_stripe.php:1346
+#: adminpages/discountcodes.php:612
+#: adminpages/discountcodes.php:699
+#: classes/gateways/class.pmprogateway_stripe.php:1365
 msgid "Month(s)"
 msgstr "měsíc(e)"
 
@@ -867,6 +919,9 @@ msgstr "měsíc(e)"
 #: adminpages/membershiplevels.php:580
 #: classes/gateways/class.pmprogateway_stripe.php:1333
 #: classes/gateways/class.pmprogateway_stripe.php:1345
+#: adminpages/discountcodes.php:612
+#: adminpages/discountcodes.php:699
+#: classes/gateways/class.pmprogateway_stripe.php:1364
 msgid "Week(s)"
 msgstr "týden(y)"
 
@@ -889,6 +944,9 @@ msgstr "týden(y)"
 #: adminpages/membershiplevels.php:580
 #: classes/gateways/class.pmprogateway_stripe.php:1335
 #: classes/gateways/class.pmprogateway_stripe.php:1347
+#: adminpages/discountcodes.php:612
+#: adminpages/discountcodes.php:699
+#: classes/gateways/class.pmprogateway_stripe.php:1366
 msgid "Year(s)"
 msgstr "rok(y)"
 
@@ -901,6 +959,7 @@ msgstr "rok(y)"
 #: adminpages/membershiplevels.php:364
 #: adminpages/discountcodes.php:618
 #: adminpages/membershiplevels.php:446
+#: adminpages/discountcodes.php:620
 msgid "The amount to be billed one cycle after the initial payment."
 msgstr "Částka, která má být účtována pro jeden cyklus po počáteční platbě."
 
@@ -913,6 +972,7 @@ msgstr "Částka, která má být účtována pro jeden cyklus po počáteční 
 #: adminpages/membershiplevels.php:382
 #: adminpages/discountcodes.php:628
 #: adminpages/membershiplevels.php:465
+#: adminpages/discountcodes.php:630
 msgid "Billing Cycle Limit"
 msgstr "Limit fakturačního cyklu"
 
@@ -925,6 +985,7 @@ msgstr "Limit fakturačního cyklu"
 #: adminpages/membershiplevels.php:386
 #: adminpages/discountcodes.php:632
 #: adminpages/membershiplevels.php:469
+#: adminpages/discountcodes.php:634
 msgid "The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite."
 msgstr "Počet <strong>všech</strong> opakujících se fakturačních cyklů pro tuto úroveň, včetně zkušební doby (pokud existuje), ale ne včetně počáteční platby. Nastavit na nulu, pokud je členství na dobu neurčitou."
 
@@ -937,6 +998,7 @@ msgstr "Počet <strong>všech</strong> opakujících se fakturačních cyklů pr
 #: adminpages/membershiplevels.php:395
 #: adminpages/discountcodes.php:651
 #: adminpages/membershiplevels.php:488
+#: adminpages/discountcodes.php:653
 msgid "Custom Trial"
 msgstr "Vlastní zkušební doba"
 
@@ -950,6 +1012,7 @@ msgstr "Vlastní zkušební doba"
 #: adminpages/membershiplevels.php:397
 #: adminpages/discountcodes.php:653
 #: adminpages/membershiplevels.php:490
+#: adminpages/discountcodes.php:655
 msgid "Check to add a custom trial period."
 msgstr "Zatrhněte pro přidání vlastní zkušební doby."
 
@@ -963,6 +1026,7 @@ msgstr "Zatrhněte pro přidání vlastní zkušební doby."
 #: adminpages/membershiplevels.php:406
 #: adminpages/discountcodes.php:661
 #: adminpages/membershiplevels.php:510
+#: adminpages/discountcodes.php:663
 msgid "Trial Billing Amount"
 msgstr "Částka fakturace zkušební doby"
 
@@ -976,6 +1040,7 @@ msgstr "Částka fakturace zkušební doby"
 #: adminpages/membershiplevels.php:409
 #: adminpages/discountcodes.php:672
 #: adminpages/membershiplevels.php:521
+#: adminpages/discountcodes.php:674
 msgid "for the first"
 msgstr "pro první"
 
@@ -989,6 +1054,7 @@ msgstr "pro první"
 #: adminpages/membershiplevels.php:411
 #: adminpages/discountcodes.php:674
 #: adminpages/membershiplevels.php:523
+#: adminpages/discountcodes.php:676
 msgid "subscription payments"
 msgstr "platby předplatného"
 
@@ -1003,6 +1069,7 @@ msgstr "platby předplatného"
 #: adminpages/membershiplevels.php:466
 #: adminpages/discountcodes.php:686
 #: adminpages/membershiplevels.php:559
+#: adminpages/discountcodes.php:688
 msgid "Membership Expiration"
 msgstr "Vypršení členství"
 
@@ -1016,6 +1083,7 @@ msgstr "Vypršení členství"
 #: adminpages/membershiplevels.php:467
 #: adminpages/discountcodes.php:687
 #: adminpages/membershiplevels.php:560
+#: adminpages/discountcodes.php:689
 msgid "Check this to set when membership access expires."
 msgstr "Zatrhněte pro nastavení, kdy přístup ke členství vyprší."
 
@@ -1031,6 +1099,7 @@ msgstr "Zatrhněte pro nastavení, kdy přístup ke členství vyprší."
 #: adminpages/discountcodes.php:691
 #: adminpages/membershiplevels.php:575
 #: pages/confirmation.php:140
+#: adminpages/discountcodes.php:693
 msgid "Expires In"
 msgstr "Vyprší za"
 
@@ -1044,6 +1113,7 @@ msgstr "Vyprší za"
 #: adminpages/membershiplevels.php:484
 #: adminpages/discountcodes.php:707
 #: adminpages/membershiplevels.php:586
+#: adminpages/discountcodes.php:709
 msgid "Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires."
 msgstr "Nastavte dobu trvání přístupu ke členství. Vezměte na vědomí, že všechny budoucí platby (opakující se předplatné, pokud existuje) budou zrušeny, pokud členství vyprší."
 
@@ -1052,6 +1122,7 @@ msgstr "Nastavte dobu trvání přístupu ke členství. Vezměte na vědomí, �
 #: adminpages/discountcodes.php:528
 #: adminpages/discountcodes.php:556
 #: adminpages/discountcodes.php:734
+#: adminpages/discountcodes.php:736
 msgid "Memberships Discount Codes"
 msgstr "Slevové kódy členství"
 
@@ -1060,6 +1131,7 @@ msgstr "Slevové kódy členství"
 #: adminpages/discountcodes.php:538
 #: adminpages/discountcodes.php:566
 #: adminpages/discountcodes.php:771
+#: adminpages/discountcodes.php:773
 msgid "Search Discount Codes"
 msgstr "Hledat slevové kódy"
 
@@ -1069,6 +1141,7 @@ msgstr "Hledat slevové kódy"
 #: adminpages/discountcodes.php:541
 #: adminpages/discountcodes.php:569
 #: adminpages/discountcodes.php:774
+#: adminpages/discountcodes.php:776
 msgid "Search"
 msgstr "Hledat"
 
@@ -1077,6 +1150,7 @@ msgstr "Hledat"
 #: adminpages/discountcodes.php:559
 #: adminpages/discountcodes.php:587
 #: adminpages/discountcodes.php:785
+#: adminpages/discountcodes.php:787
 msgid "Starts"
 msgstr "Začíná"
 
@@ -1097,6 +1171,7 @@ msgstr "Začíná"
 #: adminpages/reports/login.php:184
 #: includes/profile.php:89
 #: adminpages/dashboard.php:226
+#: adminpages/discountcodes.php:788
 msgid "Expires"
 msgstr "Vyprší"
 
@@ -1106,6 +1181,7 @@ msgstr "Vyprší"
 #: adminpages/discountcodes.php:590
 #: adminpages/admin_header.php:253
 #: adminpages/discountcodes.php:788
+#: adminpages/discountcodes.php:790
 msgid "Levels"
 msgstr "Úrovně"
 
@@ -1137,6 +1213,7 @@ msgstr "Slevové kódy vám umožňují nabízet vaše členství vybraným zák
 #: adminpages/orders.php:961
 #: adminpages/orders.php:1488
 #: adminpages/orders.php:1565
+#: adminpages/orders.php:1564
 msgid "edit"
 msgstr "upravit"
 
@@ -1147,6 +1224,7 @@ msgstr "upravit"
 #: adminpages/discountcodes.php:650
 #: adminpages/discountcodes.php:816
 #: adminpages/discountcodes.php:813
+#: adminpages/discountcodes.php:815
 #, php-format
 msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 msgstr "Jste si jisti, že chcete smazat %s slevový kód? Předplatné se pro stávající uživatele nezmění, ale noví uživatelé nebudou moci dále používat tento kód."
@@ -1390,6 +1468,8 @@ msgstr "Fakturační údaje"
 #: adminpages/membershiplevels.php:433
 #: classes/gateways/class.pmprogateway_stripe.php:1466
 #: classes/gateways/class.pmprogateway_stripe.php:1478
+#: adminpages/discountcodes.php:608
+#: classes/gateways/class.pmprogateway_stripe.php:1497
 msgid "per"
 msgstr "na"
 
@@ -1403,6 +1483,7 @@ msgstr "Integrace Stripe v současné době podporuje pouze fakturační období
 #: adminpages/membershiplevels.php:368
 #: adminpages/discountcodes.php:620
 #: adminpages/membershiplevels.php:448
+#: adminpages/discountcodes.php:622
 msgid "Braintree integration currently only supports billing periods of \"Month\" or \"Year\"."
 msgstr "Integrace Braintree v současné době podporuje pouze fakturační období \"Month\" nebo \"Year\"."
 
@@ -1448,6 +1529,7 @@ msgstr "Budete muset vytvořit \"Plan\" v Braintree nástěnce se stejným nasta
 #: adminpages/membershiplevels.php:388
 #: adminpages/discountcodes.php:634
 #: adminpages/membershiplevels.php:471
+#: adminpages/discountcodes.php:636
 msgid "Stripe integration currently does not support billing limits. You can still set an expiration date below."
 msgstr "Integrace Stripe v současné době nepodporuje fakturační limity. Přesto můžete nastavit datum vypršení platnosti níže."
 
@@ -1456,6 +1538,7 @@ msgstr "Integrace Stripe v současné době nepodporuje fakturační limity. Př
 #: adminpages/membershiplevels.php:400
 #: adminpages/discountcodes.php:655
 #: adminpages/membershiplevels.php:493
+#: adminpages/discountcodes.php:657
 msgid "2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount."
 msgstr "Integrace 2Checkout nepodporuje vlastní zkušební dobu. Můžete vytvořit jednorázové zkušební doby nastavením počáteční platby, která se liší od fakturované částky."
 
@@ -1465,6 +1548,7 @@ msgstr "Integrace 2Checkout nepodporuje vlastní zkušební dobu. Můžete vytvo
 #: adminpages/membershiplevels.php:414
 #: adminpages/discountcodes.php:676
 #: adminpages/membershiplevels.php:525
+#: adminpages/discountcodes.php:678
 msgid "Stripe integration currently does not support trial amounts greater than $0."
 msgstr "Integrace Stripe v současné době nepodporuje částku zkušební doby vyšší než 0 Kč."
 
@@ -1474,6 +1558,7 @@ msgstr "Integrace Stripe v současné době nepodporuje částku zkušební doby
 #: adminpages/membershiplevels.php:418
 #: adminpages/discountcodes.php:678
 #: adminpages/membershiplevels.php:527
+#: adminpages/discountcodes.php:680
 msgid "Braintree integration currently does not support trial amounts greater than $0."
 msgstr "Integrace Braintree v současné době nepodporuje částku zkušební doby vyšší než 0 Kč."
 
@@ -1483,6 +1568,7 @@ msgstr "Integrace Braintree v současné době nepodporuje částku zkušební d
 #: adminpages/membershiplevels.php:422
 #: adminpages/discountcodes.php:680
 #: adminpages/membershiplevels.php:529
+#: adminpages/discountcodes.php:682
 msgid "Payflow integration currently does not support trial amounts greater than $0."
 msgstr "Integrace Payflow v současné době nepodporuje částku zkušební doby než 0 Kč."
 
@@ -1662,6 +1748,7 @@ msgstr "Exportovat do CSV"
 #: adminpages/reports/sales.php:293
 #: classes/class-pmpro-members-list-table.php:623
 #: adminpages/orders.php:1020
+#: classes/class-pmpro-members-list-table.php:622
 msgid "Show"
 msgstr "Ukaž"
 
@@ -1678,18 +1765,23 @@ msgstr "Ukaž"
 #: classes/class-pmpro-members-list-table.php:625
 #: classes/class.pmproemail.php:202
 #: classes/class.pmproemail.php:242
+#: classes/class-pmpro-members-list-table.php:624
 msgid "All Levels"
 msgstr "Všechny úrovně"
 
 #: adminpages/memberslist.php:42
 #: classes/class-pmpro-members-list-table.php:235
 #: classes/class-pmpro-members-list-table.php:635
+#: classes/class-pmpro-members-list-table.php:234
+#: classes/class-pmpro-members-list-table.php:634
 msgid "Cancelled Members"
 msgstr "Zrušení členové"
 
 #: adminpages/memberslist.php:43
 #: classes/class-pmpro-members-list-table.php:236
 #: classes/class-pmpro-members-list-table.php:636
+#: classes/class-pmpro-members-list-table.php:235
+#: classes/class-pmpro-members-list-table.php:635
 msgid "Expired Members"
 msgstr "Expirovaní členové"
 
@@ -1697,6 +1789,8 @@ msgstr "Expirovaní členové"
 #: adminpages/memberslist.php:42
 #: classes/class-pmpro-members-list-table.php:237
 #: classes/class-pmpro-members-list-table.php:637
+#: classes/class-pmpro-members-list-table.php:236
+#: classes/class-pmpro-members-list-table.php:636
 msgid "Old Members"
 msgstr "Starší členové"
 
@@ -1815,6 +1909,7 @@ msgstr "Ukončil"
 #: adminpages/reports/login.php:263
 #: classes/class-pmpro-members-list-table.php:226
 #: adminpages/dashboard.php:232
+#: classes/class-pmpro-members-list-table.php:225
 msgid "No members found."
 msgstr "Žádní členové nebyli nalezeni"
 
@@ -1825,6 +1920,7 @@ msgstr "Žádní členové nebyli nalezeni"
 #: adminpages/reports/history.php:236
 #: adminpages/reports/login.php:263
 #: classes/class-pmpro-members-list-table.php:228
+#: classes/class-pmpro-members-list-table.php:227
 msgid "Search all levels"
 msgstr "Prohledat všechny úrovně"
 
@@ -2040,6 +2136,7 @@ msgstr "např. PayPal Express, PayPal Standard, platební karta."
 #: pages/checkout.php:378
 #: adminpages/orders.php:679
 #: classes/gateways/class.pmprogateway_stripe.php:1284
+#: classes/gateways/class.pmprogateway_stripe.php:1303
 msgid "Card Type"
 msgstr "Typ karty"
 
@@ -2143,6 +2240,7 @@ msgstr "Prostředí brány"
 #: adminpages/orders.php:789
 #: adminpages/paymentsettings.php:152
 #: adminpages/orders.php:795
+#: classes/class-pmpro-site-health.php:195
 msgid "Sandbox/Testing"
 msgstr "Sandbox/testování"
 
@@ -2156,6 +2254,7 @@ msgstr "Sandbox/testování"
 #: adminpages/orders.php:790
 #: adminpages/paymentsettings.php:153
 #: adminpages/orders.php:796
+#: classes/class-pmpro-site-health.php:196
 msgid "Live/Production"
 msgstr "Ostré/produkční"
 
@@ -2276,6 +2375,7 @@ msgstr "Zrušit"
 #: includes/adminpages.php:170
 #: adminpages/discountcodes.php:882
 #: adminpages/orders.php:978
+#: adminpages/discountcodes.php:884
 msgid "Orders"
 msgstr "Objednávky"
 
@@ -2468,6 +2568,7 @@ msgstr "Odstranění objednávek je trvalé a může mít vliv na aktivní uživ
 #: adminpages/orders.php:1500
 #: adminpages/dashboard.php:302
 #: adminpages/orders.php:1577
+#: adminpages/orders.php:1576
 msgid "No orders found."
 msgstr "Nebyly nalezeny žádné objednávky."
 
@@ -2883,6 +2984,7 @@ msgstr "Výkaz o návštěvnosti, zobrazení a přihlášení"
 #: adminpages/reports/login.php:66
 #: adminpages/reports/login.php:104
 #: classes/class-pmpro-members-list-table.php:234
+#: classes/class-pmpro-members-list-table.php:233
 msgid "All Users"
 msgstr "Všichni uživatelé"
 
@@ -3172,6 +3274,14 @@ msgstr "Potvrzení Vašeho členství v %s"
 #: adminpages/orders.php:580
 #: adminpages/orders.php:1350
 #: classes/gateways/class.pmprogateway_stripe.php:1314
+#: classes/class.pmproemail.php:339
+#: classes/class.pmproemail.php:345
+#: classes/class.pmproemail.php:351
+#: classes/class.pmproemail.php:441
+#: classes/class.pmproemail.php:447
+#: classes/class.pmproemail.php:769
+#: classes/class.pmproemail.php:771
+#: classes/gateways/class.pmprogateway_stripe.php:1333
 msgid "Discount Code"
 msgstr "Slevový kód"
 
@@ -3196,6 +3306,13 @@ msgstr "Slevový kód"
 #: includes/email.php:441
 #: includes/email.php:465
 #: includes/email.php:466
+#: classes/class.pmproemail.php:359
+#: classes/class.pmproemail.php:457
+#: classes/class.pmproemail.php:778
+#: classes/class.pmproemail.php:912
+#: classes/class.pmproemail.php:957
+#: includes/email.php:472
+#: includes/email.php:473
 #, php-format
 msgid "This membership will expire on %s."
 msgstr "Toto členství vyprší %s."
@@ -3260,6 +3377,7 @@ msgstr "VYÚČTOVÁNÍ za %s členství"
 #: classes/class.pmproemail.php:611
 #: classes/class.pmproemail.php:676
 #: classes/class.pmproemail.php:794
+#: classes/class.pmproemail.php:806
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "Vaše zkušební doba v %s brzy vyprší"
@@ -3269,6 +3387,7 @@ msgstr "Vaše zkušební doba v %s brzy vyprší"
 #: classes/class.pmproemail.php:645
 #: classes/class.pmproemail.php:710
 #: classes/class.pmproemail.php:831
+#: classes/class.pmproemail.php:843
 #, php-format
 msgid "Your membership at %s has ended"
 msgstr "Vaše členství v %s vypršelo"
@@ -3278,6 +3397,7 @@ msgstr "Vaše členství v %s vypršelo"
 #: classes/class.pmproemail.php:670
 #: classes/class.pmproemail.php:735
 #: classes/class.pmproemail.php:858
+#: classes/class.pmproemail.php:870
 #, php-format
 msgid "Your membership at %s will end soon"
 msgstr "Vaše členství v %s brzy vyprší"
@@ -3287,6 +3407,7 @@ msgstr "Vaše členství v %s brzy vyprší"
 #: classes/class.pmproemail.php:690
 #: classes/class.pmproemail.php:755
 #: classes/class.pmproemail.php:888
+#: classes/class.pmproemail.php:900
 #, php-format
 msgid "Your membership at %s has been changed"
 msgstr "Vaše členství v %s bylo změněno"
@@ -3297,6 +3418,9 @@ msgstr "Vaše členství v %s bylo změněno"
 #: classes/class.pmproemail.php:938
 #: includes/email.php:433
 #: includes/email.php:458
+#: classes/class.pmproemail.php:905
+#: classes/class.pmproemail.php:950
+#: includes/email.php:465
 #, php-format
 msgid "The new level is %s."
 msgstr "Nová úroveň je %s."
@@ -3336,6 +3460,7 @@ msgstr "Toto členství nevyprší"
 #: classes/class.pmproemail.php:728
 #: classes/class.pmproemail.php:793
 #: classes/class.pmproemail.php:933
+#: classes/class.pmproemail.php:945
 #, php-format
 msgid "Membership for %s at %s has been changed"
 msgstr "Členství uživatele %s v %s bylo změněno"
@@ -3433,6 +3558,7 @@ msgstr "Byla provedena částečná platba, kterou jsme nemohli anulovat. Pro n�
 #: paid-memberships-pro.php:122
 #: classes/gateways/class.pmprogateway_authorizenet.php:55
 #: paid-memberships-pro.php:164
+#: paid-memberships-pro.php:166
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -3491,6 +3617,7 @@ msgstr "Nelze se připojit k Authorize.net"
 #: paid-memberships-pro.php:123
 #: classes/gateways/class.pmprogateway_braintree.php:251
 #: paid-memberships-pro.php:165
+#: paid-memberships-pro.php:167
 msgid "Braintree Payments"
 msgstr "Platby Braintree"
 
@@ -3568,6 +3695,7 @@ msgstr "Chcete-li plně integrovat Braintree, ujistěte se, že máte správně 
 #: classes/gateways/class.pmprogateway_stripe.php:1251
 #: pages/checkout.php:366
 #: classes/gateways/class.pmprogateway_stripe.php:1263
+#: classes/gateways/class.pmprogateway_stripe.php:1282
 msgid "Payment Information"
 msgstr "Platební informace"
 
@@ -3582,6 +3710,7 @@ msgstr "Platební informace"
 #: classes/gateways/class.pmprogateway_stripe.php:1252
 #: pages/checkout.php:367
 #: classes/gateways/class.pmprogateway_stripe.php:1264
+#: classes/gateways/class.pmprogateway_stripe.php:1283
 #, php-format
 msgid "We Accept %s"
 msgstr "Přijímáme %s"
@@ -3600,6 +3729,7 @@ msgstr "Přijímáme %s"
 #: pages/billing.php:371
 #: pages/checkout.php:389
 #: classes/gateways/class.pmprogateway_stripe.php:1297
+#: classes/gateways/class.pmprogateway_stripe.php:1316
 msgid "Card Number"
 msgstr "Číslo karty"
 
@@ -3647,6 +3777,7 @@ msgstr "co to je?"
 #: pages/checkout.php:107
 #: pages/checkout.php:432
 #: classes/gateways/class.pmprogateway_stripe.php:1319
+#: classes/gateways/class.pmprogateway_stripe.php:1338
 msgid "Apply"
 msgstr "Použít"
 
@@ -3738,6 +3869,7 @@ msgstr "Nelze najít předplatné."
 #: adminpages/paymentsettings.php:159
 #: classes/gateways/class.pmprogateway_check.php:49
 #: paid-memberships-pro.php:158
+#: paid-memberships-pro.php:160
 msgid "Pay by Check"
 msgstr "Zaplatit šekem"
 
@@ -3847,6 +3979,7 @@ msgstr "Byla provedena částečná platba, kterou nemůžeme vrátit. Pro nápr
 #: paid-memberships-pro.php:119
 #: classes/gateways/class.pmprogateway_paypal.php:68
 #: paid-memberships-pro.php:161
+#: paid-memberships-pro.php:163
 msgid "PayPal Website Payments Pro"
 msgstr "PayPal Website Payments Pro"
 
@@ -4010,6 +4143,7 @@ msgstr "Prosíme obraťte se na vlastníka stránky nebo zrušte předplatné v 
 #: paid-memberships-pro.php:118
 #: classes/gateways/class.pmprogateway_paypalexpress.php:84
 #: paid-memberships-pro.php:160
+#: paid-memberships-pro.php:162
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -4046,6 +4180,7 @@ msgstr "Paypal Token byl ztracen."
 #: paid-memberships-pro.php:121
 #: classes/gateways/class.pmprogateway_paypalstandard.php:71
 #: paid-memberships-pro.php:163
+#: paid-memberships-pro.php:165
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -4058,6 +4193,7 @@ msgstr "Tady je váš IPN URL pro referenci. Toto byste NEMĚLI nastavit v nasta
 #: paid-memberships-pro.php:117
 #: classes/gateways/class.pmprogateway_stripe.php:252
 #: paid-memberships-pro.php:159
+#: paid-memberships-pro.php:161
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -4071,6 +4207,7 @@ msgstr "Nastavení Stripe"
 #: adminpages/paymentsettings.php:286
 #: classes/gateways/class.pmprogateway_stripe.php:539
 #: classes/gateways/class.pmprogateway_stripe.php:551
+#: classes/gateways/class.pmprogateway_stripe.php:570
 msgid "Secret Key"
 msgstr "Tajný klíč"
 
@@ -4080,6 +4217,7 @@ msgstr "Tajný klíč"
 #: adminpages/paymentsettings.php:294
 #: classes/gateways/class.pmprogateway_stripe.php:523
 #: classes/gateways/class.pmprogateway_stripe.php:535
+#: classes/gateways/class.pmprogateway_stripe.php:554
 msgid "Publishable Key"
 msgstr "Veřejný klíč"
 
@@ -4089,6 +4227,7 @@ msgstr "Veřejný klíč"
 #: adminpages/paymentsettings.php:432
 #: classes/gateways/class.pmprogateway_stripe.php:598
 #: classes/gateways/class.pmprogateway_stripe.php:610
+#: classes/gateways/class.pmprogateway_stripe.php:629
 msgid "Show Billing Address Fields"
 msgstr "Zobrazit pole fakturační adresy"
 
@@ -4097,6 +4236,7 @@ msgstr "Zobrazit pole fakturační adresy"
 #: adminpages/paymentsettings.php:439
 #: classes/gateways/class.pmprogateway_stripe.php:607
 #: classes/gateways/class.pmprogateway_stripe.php:619
+#: classes/gateways/class.pmprogateway_stripe.php:638
 msgid "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>"
 msgstr "Stripe nevyžaduje pole fakturační adresy. Zvolte 'Ne' pro jejich skrytí na stránce pokladny.<br /><strong>Pokud zvolíte Ne, ujistěte se, že jste zakázali ověření adresy v ovládacím panelu Stripe.</strong>"
 
@@ -4111,18 +4251,21 @@ msgstr "Chcete-li plně integrovat Stripe, ujistěte se, že máte správně nas
 #: classes/gateways/class.pmprogateway_stripe.php:567
 #: classes/gateways/class.pmprogateway_stripe.php:1379
 #: classes/gateways/class.pmprogateway_stripe.php:1391
+#: classes/gateways/class.pmprogateway_stripe.php:1410
 msgid "Subscription Updates"
 msgstr "Aktualizace předplatného"
 
 #: classes/gateways/class.pmprogateway_stripe.php:571
 #: classes/gateways/class.pmprogateway_stripe.php:1383
 #: classes/gateways/class.pmprogateway_stripe.php:1395
+#: classes/gateways/class.pmprogateway_stripe.php:1414
 msgid "Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes."
 msgstr "Aktualizace předplatného, umožňují změnit hodnoty předplatného v nastaveném čase. Ujistěte se, že po provedení změn klepnete na tlačítko Aktualizovat profil."
 
 #: classes/gateways/class.pmprogateway_stripe.php:573
 #: classes/gateways/class.pmprogateway_stripe.php:1385
 #: classes/gateways/class.pmprogateway_stripe.php:1397
+#: classes/gateways/class.pmprogateway_stripe.php:1416
 msgid "Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes."
 msgstr "Aktualizace předplatného, umožňují změnit hodnoty předplatného v nastaveném čase. Ujistěte se, že po provedení změn klepnete na tlačítko Aktualizovat uživatele."
 
@@ -4133,12 +4276,14 @@ msgstr "Aktualizace předplatného, umožňují změnit hodnoty předplatného v
 #: classes/gateways/class.pmprogateway_stripe.php:1391
 #: pages/billing.php:425
 #: classes/gateways/class.pmprogateway_stripe.php:1403
+#: classes/gateways/class.pmprogateway_stripe.php:1422
 msgid "Update"
 msgstr "Aktualizovat"
 
 #: classes/gateways/class.pmprogateway_stripe.php:769
 #: classes/gateways/class.pmprogateway_stripe.php:2480
 #: classes/gateways/class.pmprogateway_stripe.php:2492
+#: classes/gateways/class.pmprogateway_stripe.php:2514
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr "Nemohu zrušit staré předplatné. Aktualizace nebyly zpracovány."
 
@@ -4154,6 +4299,9 @@ msgstr "Nemohu zrušit staré předplatné. Aktualizace nebyly zpracovány."
 #: classes/gateways/class.pmprogateway_stripe.php:2108
 #: classes/gateways/class.pmprogateway_stripe.php:2113
 #: classes/gateways/class.pmprogateway_stripe.php:2118
+#: classes/gateways/class.pmprogateway_stripe.php:2127
+#: classes/gateways/class.pmprogateway_stripe.php:2132
+#: classes/gateways/class.pmprogateway_stripe.php:2137
 msgid "Error creating customer record with Stripe:"
 msgstr "Chyba při vytváření záznamu zákazníka Stripe:"
 
@@ -4171,6 +4319,8 @@ msgstr "Chyba při vytváření záznamu zákazníka Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:2344
 #: classes/gateways/class.pmprogateway_stripe.php:2351
 #: classes/gateways/class.pmprogateway_stripe.php:2356
+#: classes/gateways/class.pmprogateway_stripe.php:2373
+#: classes/gateways/class.pmprogateway_stripe.php:2378
 msgid "Error creating plan with Stripe:"
 msgstr "Chyba při vytváření plánu předplatného Stripe:"
 
@@ -4186,6 +4336,8 @@ msgstr "Chyba při vytváření plánu předplatného Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:2389
 #: classes/gateways/class.pmprogateway_stripe.php:2387
 #: classes/gateways/class.pmprogateway_stripe.php:2401
+#: classes/gateways/class.pmprogateway_stripe.php:2409
+#: classes/gateways/class.pmprogateway_stripe.php:2423
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "Chyba při přihlášení zákazníka k plánu předplatného Stripe:"
 
@@ -4196,6 +4348,7 @@ msgstr "Chyba při přihlášení zákazníka k plánu předplatného Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:1516
 #: classes/gateways/class.pmprogateway_stripe.php:2632
 #: classes/gateways/class.pmprogateway_stripe.php:2644
+#: classes/gateways/class.pmprogateway_stripe.php:2666
 msgid "Could not cancel old subscription."
 msgstr "Nelze zrušit staré předplatné."
 
@@ -4203,6 +4356,7 @@ msgstr "Nelze zrušit staré předplatné."
 #: classes/gateways/class.pmprogateway_stripe.php:1533
 #: classes/gateways/class.pmprogateway_stripe.php:2648
 #: classes/gateways/class.pmprogateway_stripe.php:2660
+#: classes/gateways/class.pmprogateway_stripe.php:2682
 msgid "Could not find the customer."
 msgstr "Nelze najít zákazníka."
 
@@ -4940,6 +5094,8 @@ msgstr "Prosím, zadejte ID úrovně."
 #: includes/init.php:198
 #: includes/profile.php:34
 #: adminpages/orders.php:591
+#: classes/class.pmproemail.php:895
+#: classes/class.pmproemail.php:940
 msgid "None"
 msgstr "žádný"
 
@@ -5753,16 +5909,19 @@ msgstr "&larr; Zpět na úvod"
 #: adminpages/orders.php:398
 #: adminpages/orders.php:448
 #: paid-memberships-pro.php:157
+#: paid-memberships-pro.php:159
 msgid "Testing Only"
 msgstr "Pouze testování"
 
 #: paid-memberships-pro.php:120
 #: paid-memberships-pro.php:162
+#: paid-memberships-pro.php:164
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
 #: paid-memberships-pro.php:125
 #: paid-memberships-pro.php:166
+#: paid-memberships-pro.php:168
 msgid "Cybersource"
 msgstr "Cybersource"
 
@@ -5870,6 +6029,8 @@ msgstr "Chyba při aktualizaci fakturačních údajů."
 #: includes/email.php:427
 #: preheaders/cancel.php:77
 #: includes/email.php:452
+#: classes/class.pmproemail.php:907
+#: includes/email.php:459
 msgid "Your membership has been cancelled."
 msgstr "Vaše členství bylo zrušeno."
 
@@ -6025,6 +6186,7 @@ msgstr "Vaše platba byla přijata, ale vyskytla se chyba při nastavení Vašeh
 #: preheaders/checkout.php:1045
 #: preheaders/checkout.php:1046
 #: preheaders/checkout.php:792
+#: preheaders/checkout.php:811
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr "DŮLEŽITÉ: Při vytváření členství se něco pokazilo. Vaše platební karta byla autorizována, ale objednávka byla vzápětí zrušena. Neměli byste se pokoušet odesílat tento formulář znovu. Pro vyřešení problému se prosím obraťte na vlastníka webu."
 
@@ -6038,6 +6200,7 @@ msgstr "DŮLEŽITÉ: Při vytváření členství se něco pokazilo. Vaše plate
 #: preheaders/checkout.php:1050
 #: preheaders/checkout.php:1051
 #: preheaders/checkout.php:795
+#: preheaders/checkout.php:814
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr "DŮLEŽITÉ: Při vytváření členství se něco pokazilo. Vaše platební karta byla zatížena debetem, ale Vaše členství nemohlo být přiřazeno. Neměli byste se pokoušet odesílat tento formulář znovu. Pro vyřešení problému se prosím obraťte na vlastníka webu."
 
@@ -6051,6 +6214,7 @@ msgstr "DŮLEŽITÉ: Při vytváření členství se něco pokazilo. Vaše plate
 #: preheaders/checkout.php:1063
 #: preheaders/checkout.php:1064
 #: preheaders/checkout.php:806
+#: preheaders/checkout.php:825
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Před zpracováním jakýchkoliv plateb musíte <a href=\"%s\">nastavit platební bránu</a>."
@@ -6065,6 +6229,7 @@ msgstr "Před zpracováním jakýchkoliv plateb musíte <a href=\"%s\">nastavit 
 #: preheaders/checkout.php:1065
 #: preheaders/checkout.php:1066
 #: preheaders/checkout.php:808
+#: preheaders/checkout.php:827
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "Předtím, než budou moci být zpracovány jakékoliv platby, musí být nastavena platební brána."
 
@@ -6491,6 +6656,7 @@ msgstr ""
 #: adminpages/orders.php:587
 #: adminpages/orders.php:1544
 #: adminpages/orders.php:1554
+#: adminpages/orders.php:1553
 msgid "N/A"
 msgstr ""
 
@@ -6587,6 +6753,8 @@ msgstr ""
 #: adminpages/pagesettings.php:29
 #: adminpages/pagesettings.php:72
 #: adminpages/paymentsettings.php:19
+#: adminpages/discountcodes.php:65
+#: adminpages/discountcodes.php:313
 msgid "Are you sure you want to do that? Try again."
 msgstr ""
 
@@ -6693,10 +6861,12 @@ msgid "Hide Ads From Members?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:473
+#: adminpages/advancedsettings.php:475
 msgid "Uninstall PMPro on deletion?"
 msgstr ""
 
 #: adminpages/advancedsettings.php:478
+#: adminpages/advancedsettings.php:480
 msgid "Yes - Delete all PMPro Data."
 msgstr ""
 
@@ -6908,45 +7078,55 @@ msgstr ""
 
 #: adminpages/discountcodes.php:358
 #: adminpages/membershiplevels.php:169
+#: adminpages/discountcodes.php:360
 msgid "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" href=\"%s\">see our post here</a>."
 msgstr ""
 
 #: adminpages/discountcodes.php:622
 #: adminpages/membershiplevels.php:450
+#: adminpages/discountcodes.php:624
 msgid "Stripe integration does not allow billing periods longer than 1 year."
 msgstr ""
 
 #: adminpages/discountcodes.php:643
 #: adminpages/membershiplevels.php:480
+#: adminpages/discountcodes.php:645
 msgid "Optional: Allow billing limits with Stripe using the <a href=\"%s\" title=\"Paid Memberships Pro - Stripe Billing Limits Add On\" target=\"_blank\">Stripe Billing Limits Add On</a>."
 msgstr ""
 
 #: adminpages/discountcodes.php:697
 #: adminpages/membershiplevels.php:580
+#: adminpages/discountcodes.php:699
 msgid "Hour(s)"
 msgstr ""
 
 #: adminpages/discountcodes.php:754
+#: adminpages/discountcodes.php:756
 msgid "No Discount Codes Found"
 msgstr ""
 
 #: adminpages/discountcodes.php:755
+#: adminpages/discountcodes.php:757
 msgid "Discount codes allow you to override your membership level's default pricing."
 msgstr ""
 
 #: adminpages/discountcodes.php:756
+#: adminpages/discountcodes.php:758
 msgid "Create a Discount Code"
 msgstr ""
 
 #: adminpages/discountcodes.php:757
+#: adminpages/discountcodes.php:759
 msgid "Documentation: Discount Codes"
 msgstr ""
 
 #: adminpages/discountcodes.php:766
+#: adminpages/discountcodes.php:768
 msgid "%d discount codes found."
 msgstr ""
 
 #: adminpages/discountcodes.php:807
+#: adminpages/discountcodes.php:809
 msgid "Edit Code: %s"
 msgstr ""
 
@@ -6960,6 +7140,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:868
 #: adminpages/orders.php:1396
 #: adminpages/orders.php:1406
+#: adminpages/discountcodes.php:835
+#: adminpages/discountcodes.php:845
 msgid "Edit"
 msgstr ""
 
@@ -6972,6 +7154,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:883
 #: adminpages/orders.php:1410
 #: adminpages/orders.php:1421
+#: adminpages/discountcodes.php:849
+#: adminpages/discountcodes.php:860
 msgid "Copy"
 msgstr ""
 
@@ -6984,6 +7168,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:889
 #: adminpages/orders.php:1425
 #: adminpages/orders.php:1427
+#: adminpages/discountcodes.php:866
 msgid "Delete"
 msgstr ""
 
@@ -7802,11 +7987,13 @@ msgid "[%1$s] PMPro Activity for %2$s: %3$s"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:232
+#: classes/class-pmpro-members-list-table.php:231
 msgid "You can also try searching:"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:542
 #: shortcodes/pmpro_account.php:145
+#: classes/class-pmpro-members-list-table.php:541
 msgid "&#8212;"
 msgstr ""
 
@@ -7823,30 +8010,37 @@ msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr ""
 
 #: classes/class.pmproemail.php:371
+#: classes/class.pmproemail.php:377
 msgid "Member checkout for %s at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:463
+#: classes/class.pmproemail.php:475
 msgid "Your billing information has been updated at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:513
+#: classes/class.pmproemail.php:525
 msgid "Billing information has been updated for %s at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:565
+#: classes/class.pmproemail.php:577
 msgid "Membership payment failed at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:614
+#: classes/class.pmproemail.php:626
 msgid "Membership payment failed For %s at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:663
+#: classes/class.pmproemail.php:675
 msgid "Credit card on file expiring soon at %s"
 msgstr ""
 
 #: classes/class.pmproemail.php:715
+#: classes/class.pmproemail.php:727
 msgid "Invoice for %s membership"
 msgstr ""
 
@@ -7854,22 +8048,29 @@ msgstr ""
 #: classes/class.pmproemail.php:949
 #: includes/email.php:443
 #: includes/email.php:468
+#: classes/class.pmproemail.php:916
+#: classes/class.pmproemail.php:961
+#: includes/email.php:475
 msgid "This membership does not expire."
 msgstr ""
 
 #: classes/class.pmproemail.php:940
+#: classes/class.pmproemail.php:952
 msgid "Membership has been cancelled."
 msgstr ""
 
 #: classes/class.pmproemail.php:980
+#: classes/class.pmproemail.php:992
 msgid "Invoice for order #: "
 msgstr ""
 
 #: classes/class.pmproemail.php:1030
+#: classes/class.pmproemail.php:1042
 msgid "Payment action required for your %s membership"
 msgstr ""
 
 #: classes/class.pmproemail.php:1068
+#: classes/class.pmproemail.php:1080
 msgid "Payment action required: membership for %s at %s"
 msgstr ""
 
@@ -8294,6 +8495,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:431
 #: classes/gateways/class.pmprogateway_stripe.php:519
 #: classes/gateways/class.pmprogateway_stripe.php:559
+#: classes/gateways/class.pmprogateway_stripe.php:578
 msgid "Webhook"
 msgstr ""
 
@@ -8303,6 +8505,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:435
 #: classes/gateways/class.pmprogateway_stripe.php:523
 #: classes/gateways/class.pmprogateway_stripe.php:594
+#: classes/gateways/class.pmprogateway_stripe.php:613
 msgid "Webhook URL"
 msgstr ""
 
@@ -8328,6 +8531,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:531
 #: classes/gateways/class.pmprogateway_stripe.php:543
+#: classes/gateways/class.pmprogateway_stripe.php:562
 msgid "Your Publishable Key appears incorrect."
 msgstr ""
 
@@ -8335,21 +8539,26 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:575
 #: classes/gateways/class.pmprogateway_stripe.php:563
 #: classes/gateways/class.pmprogateway_stripe.php:587
+#: classes/gateways/class.pmprogateway_stripe.php:582
+#: classes/gateways/class.pmprogateway_stripe.php:606
 msgid "Create Webhook"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:557
 #: classes/gateways/class.pmprogateway_stripe.php:569
+#: classes/gateways/class.pmprogateway_stripe.php:588
 msgid "A webhook is set up in Stripe, but it is disabled."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:564
 #: classes/gateways/class.pmprogateway_stripe.php:576
+#: classes/gateways/class.pmprogateway_stripe.php:595
 msgid "A webhook is set up in Stripe, but it is using an old API version."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:564
 #: classes/gateways/class.pmprogateway_stripe.php:576
+#: classes/gateways/class.pmprogateway_stripe.php:595
 msgid "Rebuild Webhook"
 msgstr ""
 
@@ -8359,11 +8568,15 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:582
 #: classes/gateways/class.pmprogateway_stripe.php:722
 #: classes/gateways/class.pmprogateway_stripe.php:838
+#: classes/gateways/class.pmprogateway_stripe.php:601
+#: classes/gateways/class.pmprogateway_stripe.php:741
+#: classes/gateways/class.pmprogateway_stripe.php:857
 msgid "Your webhook is enabled."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:570
 #: classes/gateways/class.pmprogateway_stripe.php:582
+#: classes/gateways/class.pmprogateway_stripe.php:601
 msgid "Disable Webhook"
 msgstr ""
 
@@ -8375,56 +8588,70 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:749
 #: classes/gateways/class.pmprogateway_stripe.php:766
 #: classes/gateways/class.pmprogateway_stripe.php:800
+#: classes/gateways/class.pmprogateway_stripe.php:608
+#: classes/gateways/class.pmprogateway_stripe.php:768
+#: classes/gateways/class.pmprogateway_stripe.php:785
+#: classes/gateways/class.pmprogateway_stripe.php:819
 msgid "A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:589
 #: classes/gateways/class.pmprogateway_stripe.php:601
+#: classes/gateways/class.pmprogateway_stripe.php:620
 msgid "Other Stripe Settings"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:593
 #: classes/gateways/class.pmprogateway_stripe.php:605
+#: classes/gateways/class.pmprogateway_stripe.php:624
 msgid "Stripe API Version"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:612
 #: classes/gateways/class.pmprogateway_stripe.php:624
+#: classes/gateways/class.pmprogateway_stripe.php:643
 msgid "Enable Payment Request Button"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:630
 #: classes/gateways/class.pmprogateway_stripe.php:642
+#: classes/gateways/class.pmprogateway_stripe.php:661
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information &raquo;</a>"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:643
 #: classes/gateways/class.pmprogateway_stripe.php:655
+#: classes/gateways/class.pmprogateway_stripe.php:674
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:645
 #: classes/gateways/class.pmprogateway_stripe.php:657
+#: classes/gateways/class.pmprogateway_stripe.php:676
 msgid "It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with \"pk_live_\" or \"pk_test_\". <a target=\"_blank\" href=\"%s\" title=\"Stripe Dashboard API Key Settings\">Log in to your Stripe Dashboard to roll your publishable key</a>."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:647
 #: classes/gateways/class.pmprogateway_stripe.php:659
+#: classes/gateways/class.pmprogateway_stripe.php:678
 msgid "It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with \"sk_live_\" or \"sk_test_\". <a target=\"_blank\" href=\"%s\" title=\"Stripe Dashboard API Key Settings\">Log in to your Stripe Dashboard to roll your secret key</a>."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:649
 #: classes/gateways/class.pmprogateway_stripe.php:661
+#: classes/gateways/class.pmprogateway_stripe.php:680
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:674
 #: classes/gateways/class.pmprogateway_stripe.php:686
+#: classes/gateways/class.pmprogateway_stripe.php:705
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:695
 #: classes/gateways/class.pmprogateway_stripe.php:707
+#: classes/gateways/class.pmprogateway_stripe.php:726
 msgid "Webhook creation failed. You might already have a webhook set up."
 msgstr ""
 
@@ -8432,31 +8659,38 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:835
 #: classes/gateways/class.pmprogateway_stripe.php:773
 #: classes/gateways/class.pmprogateway_stripe.php:847
+#: classes/gateways/class.pmprogateway_stripe.php:792
+#: classes/gateways/class.pmprogateway_stripe.php:866
 msgid "There was an error deleting the webhook."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:811
 #: classes/gateways/class.pmprogateway_stripe.php:823
+#: classes/gateways/class.pmprogateway_stripe.php:842
 msgid "Webhook creation failed. Please refresh and try again."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:867
 #: classes/gateways/class.pmprogateway_stripe.php:879
+#: classes/gateways/class.pmprogateway_stripe.php:898
 msgid "Verification steps confirmed. Your payment is processing."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1262
 #: classes/gateways/class.pmprogateway_stripe.php:1274
+#: classes/gateways/class.pmprogateway_stripe.php:1293
 msgid "Pay with Credit Card"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1296
 #: classes/gateways/class.pmprogateway_stripe.php:1308
+#: classes/gateways/class.pmprogateway_stripe.php:1327
 msgid "CVC"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1374
 #: classes/gateways/class.pmprogateway_stripe.php:1386
+#: classes/gateways/class.pmprogateway_stripe.php:1405
 msgid "%1$sNote:%2$s Subscription %3$s%4$s%5$s could not be found at Stripe. It may have been deleted."
 msgstr ""
 
@@ -8468,6 +8702,10 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1997
 #: classes/gateways/class.pmprogateway_stripe.php:2010
 #: classes/gateways/class.pmprogateway_stripe.php:2014
+#: classes/gateways/class.pmprogateway_stripe.php:2012
+#: classes/gateways/class.pmprogateway_stripe.php:2016
+#: classes/gateways/class.pmprogateway_stripe.php:2029
+#: classes/gateways/class.pmprogateway_stripe.php:2033
 msgid "Error: %s"
 msgstr ""
 
@@ -8475,6 +8713,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2170
 #: classes/gateways/class.pmprogateway_stripe.php:2177
 #: classes/gateways/class.pmprogateway_stripe.php:2182
+#: classes/gateways/class.pmprogateway_stripe.php:2196
+#: classes/gateways/class.pmprogateway_stripe.php:2201
 msgid "Error getting subscription with Stripe:"
 msgstr ""
 
@@ -8482,58 +8722,70 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2822
 #: classes/gateways/class.pmprogateway_stripe.php:2828
 #: classes/gateways/class.pmprogateway_stripe.php:2834
+#: classes/gateways/class.pmprogateway_stripe.php:2850
+#: classes/gateways/class.pmprogateway_stripe.php:2856
 msgid "Error: "
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2836
 #: classes/gateways/class.pmprogateway_stripe.php:2848
+#: classes/gateways/class.pmprogateway_stripe.php:2870
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3330
 #: classes/gateways/class.pmprogateway_stripe.php:3342
+#: classes/gateways/class.pmprogateway_stripe.php:3364
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3347
 #: classes/gateways/class.pmprogateway_stripe.php:3359
+#: classes/gateways/class.pmprogateway_stripe.php:3381
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3533
 #: classes/gateways/class.pmprogateway_stripe.php:3545
+#: classes/gateways/class.pmprogateway_stripe.php:3567
 msgid "Invalid response from the Stripe Connect server."
 msgstr ""
 
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:3561
 #: classes/gateways/class.pmprogateway_stripe.php:3573
+#: classes/gateways/class.pmprogateway_stripe.php:3595
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr ""
 
 #. translators: %s Error Message
 #: classes/gateways/class.pmprogateway_stripe.php:3597
 #: classes/gateways/class.pmprogateway_stripe.php:3609
+#: classes/gateways/class.pmprogateway_stripe.php:3631
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3768
 #: classes/gateways/class.pmprogateway_stripe.php:3780
+#: classes/gateways/class.pmprogateway_stripe.php:3802
 msgid "Last webhook received at"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3770
 #: classes/gateways/class.pmprogateway_stripe.php:3782
+#: classes/gateways/class.pmprogateway_stripe.php:3804
 msgid "No webhooks have been received."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3774
 #: classes/gateways/class.pmprogateway_stripe.php:3786
+#: classes/gateways/class.pmprogateway_stripe.php:3808
 msgid "Your webhook may not be working correctly."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:3776
 #: classes/gateways/class.pmprogateway_stripe.php:3788
+#: classes/gateways/class.pmprogateway_stripe.php:3810
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr ""
 
@@ -10451,11 +10703,13 @@ msgstr ""
 
 #: includes/email.php:210
 #: includes/email.php:218
+#: includes/email.php:225
 msgid "Template Saved"
 msgstr ""
 
 #: includes/email.php:376
 #: includes/email.php:396
+#: includes/email.php:403
 msgid "THIS IS A TEST EMAIL"
 msgstr ""
 
@@ -11089,6 +11343,7 @@ msgid "Security Code (CVC)"
 msgstr ""
 
 #: paid-memberships-pro.php:170
+#: paid-memberships-pro.php:172
 msgid "Default"
 msgstr ""
 
@@ -11413,6 +11668,7 @@ msgid "Customize Email Templates"
 msgstr ""
 
 #: adminpages/discountcodes.php:871
+#: adminpages/discountcodes.php:873
 msgid "View Orders"
 msgstr ""
 
@@ -11433,4 +11689,68 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:372
 #: classes/gateways/class.pmprogateway_stripe.php:462
 msgid "Read the documentation on switching to Stripe Connect &raquo;"
+msgstr ""
+
+#: adminpages/emailtemplates.php:181
+msgid "Custom Level Confirmation Message"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:62
+msgid "This debug information for your Paid Memberships Pro installation can assist you in getting support."
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:109
+msgid "No Levels Found"
+msgstr ""
+
+#. translators: %d: The total count of discount codes.
+#: classes/class-pmpro-site-health.php:128
+msgid "%d discount code"
+msgid_plural "%d discount codes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: The total count of orders.
+#: classes/class-pmpro-site-health.php:144
+msgid "%d order"
+msgid_plural "%d orders"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: The gateway name that is not registered.
+#: classes/class-pmpro-site-health.php:161
+msgid "%s (gateway not registered)"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:174
+msgid "Legacy Keys"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:178
+msgid "Stripe Connect"
+msgstr ""
+
+#. translators: %s: The environment name that is not registered.
+#: classes/class-pmpro-site-health.php:202
+msgid "%s (environment not registered)"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:226
+msgid "Unable to verify"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:302
+msgid "missing"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:533
+msgid "Having trouble connecting through the button above or otherwise need to use your own API keys?"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:534
+msgid "Click here to use the legacy API settings."
+msgstr ""
+
+#: paid-memberships-pro.php:194
+msgid "Once a month"
 msgstr ""
