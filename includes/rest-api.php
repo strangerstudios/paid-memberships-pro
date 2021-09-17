@@ -722,17 +722,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			$level_status = sanitize_text_field( $params['level_status'] );
 
-			if ( empty( $level_status ) ) {
-				/**
-				 * Allow filtering via PHP for default statuses for cases where the level_status parameter isn't passed through.
-				 * 
-				 * @param array An array of valid membership statuses to filter results on.
-				 * 
-				 * @since TBD
-				 */
-				$level_status = apply_filters( 'pmpro_rest_recent_member_default_level_status', array( 'active', 'cancelled', 'expired', 'admin_cancelled' ) );
+			if ( empty( $params['level_status'] ) ) {
+				$level_status = array( 'active' );
 			} else {
-				$level_status = sanitize_text_field( trim( $level_status ) );
+				$level_status = sanitize_text_field( trim( $params['level_status'] ) );
 				$level_status = explode( ',', $level_status ); // Force it into an array so we can implode it in the query itself.
 			}
 
