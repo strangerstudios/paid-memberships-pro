@@ -251,7 +251,7 @@
 		
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user;
+			global $wpdb, $current_user, $discount_code;
 			if(!$user)
 				$user = $current_user;
 			
@@ -284,24 +284,34 @@
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,								
 							);						
-						
-			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))
-			{									
-				if($invoice->gateway == "paypalexpress")
-					$this->template = "checkout_express";
-				elseif($invoice->gateway == "check")
-				{
-					$this->template = "checkout_check";
+			
+			// Figure out which template to use.
+			if ( empty( $this->template ) ) {
+				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $user->membership_level ) ) {
+					if( $invoice->gateway == "paypalexpress") {
+						$this->template = "checkout_express";
+					} elseif( $invoice->gateway == "check" ) {
+						$this->template = "checkout_check";						
+					} elseif( pmpro_isLevelTrial( $user->membership_level ) ) {
+						$this->template = "checkout_trial";
+					} else {
+						$this->template = "checkout_paid";
+					}										
+				} elseif( pmpro_isLevelFree( $user->membership_level ) ) {
+					$this->template = "checkout_free";					
+				} else {
+					$this->template = "checkout_freetrial";					
+				}
+			}
+			
+			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
+			
+			// Gather data depending on template being used.
+			if( in_array( $this->template, array( 'checkout_express', 'checkout_check', 'checkout_trial', 'checkout_paid' ) ) ) {									
+				if( $this->template === 'checkout_check' ) {					
 					$this->data["instructions"] = wpautop(pmpro_getOption("instructions"));
 				}
-				elseif(pmpro_isLevelTrial($user->membership_level))
-					$this->template = "checkout_trial";
-				else
-					$this->template = "checkout_paid";
-
-				//BUG: Didn't apply template filter before it was being used in sendEmail()
-				$this->template = apply_filters("pmpro_email_template", $this->template, $this);
-
+				
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
@@ -325,42 +335,38 @@
 																	 $invoice->billing->country,
 																	 $invoice->billing->phone);
 				
-				if($invoice->getDiscountCode())
+				if( $invoice->getDiscountCode() ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
-				else
+				} else {
 					$this->data["discount_code"] = "";
-			}
-			elseif(pmpro_isLevelFree($user->membership_level))
-			{
-				$this->template = "checkout_free";		
-				global $discount_code;
-				if(!empty($discount_code))
+				}
+			} elseif( $this->template === 'checkout_free' ) {				
+				if( ! empty( $discount_code ) ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
-				else
-					$this->data["discount_code"] = "";		
-			}						
-			else
-			{
-				$this->template = "checkout_freetrial";
-				global $discount_code;
-				if(!empty($discount_code))
+				} else {
+					$this->data["discount_code"] = "";
+				}
+			} elseif ( $this->template === 'checkout_freetrial' ) {				
+				if( ! empty( $discount_code ) ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
-				else
-					$this->data["discount_code"] = "";	
+				} else {
+					$this->data["discount_code"] = "";
+				}
 			}
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-			if($enddate)
+			if( $enddate ) {
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
-			else
+			} else {
 				$this->data["membership_expiration"] = "";
+			}			
 			
 			return $this->sendEmail();
 		}
 		
 		function sendCheckoutAdminEmail($user = NULL, $invoice = NULL)
 		{
-			global $wpdb, $current_user;
+			global $wpdb, $current_user, $discount_code;
 			if(!$user)
 				$user = $current_user;
 			
@@ -385,19 +391,29 @@
 								"user_email" => $user->user_email,								
 							);						
 			
-			if(!empty($invoice) && !pmpro_isLevelFree($user->membership_level))
-			{									
-				if($invoice->gateway == "paypalexpress")
-					$this->template = "checkout_express_admin";
-				elseif($invoice->gateway == "check")
-					$this->template = "checkout_check_admin";					
-				elseif(pmpro_isLevelTrial($user->membership_level))
-					$this->template = "checkout_trial_admin";
-				else
-					$this->template = "checkout_paid_admin";
-
-				$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
-
+			// Figure out which template to use.
+			if ( empty( $this->template ) ) {
+				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $user->membership_level ) ) {
+					if( $invoice->gateway == "paypalexpress") {
+						$this->template = "checkout_express_admin";
+					} elseif( $invoice->gateway == "check" ) {
+						$this->template = "checkout_check_admin";						
+					} elseif( pmpro_isLevelTrial( $user->membership_level ) ) {
+						$this->template = "checkout_trial_admin";
+					} else {
+						$this->template = "checkout_paid_admin";
+					}										
+				} elseif( pmpro_isLevelFree( $user->membership_level ) ) {
+					$this->template = "checkout_free_admin";					
+				} else {
+					$this->template = "checkout_freetrial_admin";					
+				}
+			}
+			
+			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
+			
+			// Gather data depending on template being used.
+			if( in_array( $this->template, array( 'checkout_express_admin', 'checkout_check_admin', 'checkout_trial_admin', 'checkout_paid_admin' ) ) ) {
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());
@@ -421,31 +437,27 @@
 																	 $invoice->billing->country,
 																	 $invoice->billing->phone);
 				
-				if($invoice->getDiscountCode())
+				if( $invoice->getDiscountCode() ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
-				else
+				} else {
 					$this->data["discount_code"] = "";
-			}
-			elseif(pmpro_isLevelFree($user->membership_level))
-			{
-				$this->template = "checkout_free_admin";		
-				global $discount_code;
-				if(!empty($discount_code))
+				}
+			} elseif( $this->template === 'checkout_free_admin' ) {				
+				if( ! empty( $discount_code ) ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";		
-				else
-					$this->data["discount_code"] = "";	
-			}						
-			else
-			{
-				$this->template = "checkout_freetrial_admin";
+				} else {
+					$this->data["discount_code"] = "";
+				}
+			} elseif( $this->template === 'checkout_freetrial_admin' ) {				
 				$this->data["discount_code"] = "";
-			}			
+			}
 			
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
-			if($enddate)
+			if( $enddate ) {
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
-			else
+			} else {
 				$this->data["membership_expiration"] = "";
+			}
 			
 			return $this->sendEmail();
 		}

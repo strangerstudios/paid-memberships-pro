@@ -281,7 +281,7 @@ function pmpro_isLevelExpiring( &$level ) {
 function pmpro_isLevelExpiringSoon( &$level ) {
 	if ( ! pmpro_isLevelExpiring( $level ) || empty( $level->enddate ) ) {
 		$r = false;
-	} else {		
+	} else {
 		// days til expiration for the standard level
 		$standard = pmpro_getLevel( $level->id );
 
@@ -1649,7 +1649,7 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 		$username = $lastname;
 	}
 
-	// If no username yet or one based on name exisdts,
+	// If no username yet or one based on name exists,
 	// try to create username using email address.
 	if ( ( empty( $username ) || username_exists( $username ) )
 		&& ! empty( $email ) && is_email( $email ) ) {
@@ -3649,7 +3649,7 @@ function pmpro_insert_or_replace( $table, $data, $format, $primary_key = 'id' ) 
 			unset( $format[$index] );
 		}
 		return $wpdb->insert( $table, $data, $format );
-	} else {		
+	} else {
 		// Replace.
 		$replaced = $wpdb->replace( $table, $data, $format );
 	}
@@ -3689,14 +3689,96 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 
 /**
  * Sanitizing strings using wp_kses and allowing style tags.
- * @since 2.6.1
- * @param string $s String to sanitize.
+ *
+ * @param string $original_string  The string to sanitize.
+ * @param string $context          The sanitization context.
+ *
  * @return string The sanitized string.
+ *
+ * @since 2.6.1
  */
-function pmpro_kses( $s ) {
-	$allowed_html = wp_kses_allowed_html( 'post' );
-	$allowed_html['style'] = [
-		'type' => true,
-	];
-	return wp_kses( $s, $allowed_html );
+function pmpro_kses( $original_string, $context = 'email' ) {
+	$context = 'pmpro_' . $context;
+
+	$sanitized_string = $original_string;
+
+	if ( 'pmpro_email' === $context ) {
+		// Always remove script tags and their contents.
+		$sanitized_string = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $sanitized_string );
+	}
+
+	$sanitized_string = wp_kses( $sanitized_string, $context );
+
+	/**
+	 * Allow overriding the normal pmpro_kses functionality for a context.
+	 *
+	 * @param string $sanitized_string The sanitized string.
+	 * @param string $original_string  The original string.
+	 * @param string $context          The sanitization context.
+	 *
+	 * @since TBD
+	 */
+	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
 }
+
+/**
+ * Filter the allowed HTML tags for PMPro contexts.
+ *
+ * @param array[]|string $allowed_html The allowed HTML tags.
+ * @param string         $context      The context name.
+ *
+ * @since TBD
+ */
+function pmpro_kses_allowed_html( $allowed_html, $context ) {
+	// Only override for our pmpro_* contexts.
+	if ( 0 !== strpos( $context, 'pmpro_' ) ) {
+		return $allowed_html;
+	}
+
+	$custom_tags = [];
+
+	if ( 'pmpro_email' === $context ) {
+		$custom_tags['html']  = [
+			'xmlns'   => true,
+			'xmlns:v' => true,
+			'xmlns:o' => true,
+		];
+		$custom_tags['head']  = [];
+		$custom_tags['xml']   = [];
+		$custom_tags['meta']  = [
+			'name'       => true,
+			'content'    => true,
+			'charset'    => true,
+			'http-equiv' => true,
+		];
+		$custom_tags['title'] = [];
+		$custom_tags['body']  = [];
+
+		$custom_tags['table'] = [
+			'height' => true,
+			'style'  => true,
+		];
+		$custom_tags['a']     = [
+			'style' => true,
+		];
+		$custom_tags['style'] = [
+			'type' => true,
+		];
+	}
+
+	// Our default context starts with what is available for posts.
+	$allowed_html = wp_kses_allowed_html( 'post' );
+
+	// Merge the allowed HTML tags into our custom tags in case post already has support for it + more.
+	foreach ( $custom_tags as $tag => $attributes ) {
+		// Maybe merge our attributes into an already defined tag's attributes.
+		if ( isset( $allowed_html[ $tag ] ) && true !== $attributes ) {
+			$attributes = array_merge( $allowed_html[ $tag ], $attributes );
+		}
+
+		$allowed_html[ $tag ] = $attributes;
+	}
+
+	return $allowed_html;
+}
+add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );

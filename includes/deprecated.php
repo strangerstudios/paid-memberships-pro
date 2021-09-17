@@ -135,3 +135,52 @@ function pmpro_check_for_deprecated_gateways() {
 		}
 	}
 }
+
+/**
+ * Disable uninstall script for duplicates
+ */
+function pmpro_disable_uninstall_script_for_duplicates( $file ) {
+	// bail if not a duplicate
+	if ( ! in_array( $file, array_keys( pmpro_get_plugin_duplicates() ) ) ) {
+		return;
+	}
+
+	// disable uninstall script
+	if ( file_exists( WP_PLUGIN_DIR . '/' . dirname( $file ) . '/uninstall.php' ) ) {
+		rename(
+			WP_PLUGIN_DIR . '/' . dirname( $file ) . '/uninstall.php',
+			WP_PLUGIN_DIR . '/' . dirname( $file ) . '/uninstall-disabled.php'
+		);
+	}
+}
+add_action( 'pre_uninstall_plugin', 'pmpro_disable_uninstall_script_for_duplicates' );
+
+/**
+ * @return array
+ */
+function pmpro_get_plugin_duplicates() {
+	$all_plugins          = get_plugins();
+	$active_plugins_names = get_option( 'active_plugins' );
+
+	$multiple_installations = array();
+	foreach ( $all_plugins as $plugin_name => $plugin_headers ) {
+		// skip all active plugins
+		if ( in_array( $plugin_name, $active_plugins_names ) ) {
+			continue;
+		}
+
+		// skip plugins without a folder
+		if ( false === strpos( $plugin_name, '/' ) ) {
+			continue;
+		}
+
+		// check if plugin file is paid-memberships-pro.php
+		// or Plugin Name: Paid Memberships Pro
+		list( $plugin_folder, $plugin_mainfile_php ) = explode( '/', $plugin_name );
+		if ( 'paid-memberships-pro.php' === $plugin_mainfile_php || 'Paid Memberships Pro' === $plugin_headers['Name'] ) {
+			$multiple_installations[ $plugin_name ] = $plugin_headers;
+		}
+	}
+
+	return $multiple_installations;
+}
