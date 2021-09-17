@@ -178,6 +178,7 @@
 									'!!invoice_date!!'    => __( 'Invoice Date', 'paid-memberships-pro' ),
 									'!!invoice_url!!'    => __( 'Invoice Page URL', 'paid-memberships-pro' ),
 									'!!discount_code!!'   => __( 'Discount Code Applied', 'paid-memberships-pro' ),
+									'!!membership_level_confirmation_message!!' => __( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
 									
 								];
 
