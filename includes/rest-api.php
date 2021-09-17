@@ -719,8 +719,23 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
-
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			$level_status = sanitize_text_field( $params['level_status'] );
+
+			if ( empty( $level_status ) ) {
+				/**
+				 * Allow filtering via PHP for default statuses for cases where the level_status parameter isn't passed through.
+				 * 
+				 * @param array An array of valid membership statuses to filter results on.
+				 * 
+				 * @since TBD
+				 */
+				$level_status = apply_filters( 'pmpro_rest_recent_member_default_level_status', array( 'active', 'cancelled', 'expired', 'admin_cancelled' ) );
+			} else {
+				$level_status = sanitize_text_field( trim( $level_status ) );
+				$level_status = explode( ',', $level_status ); // Force it into an array so we can implode it in the query itself.
+			}
+
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
 
 			// Grab the useful information.
@@ -741,7 +756,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
 				WHERE
-					`mu`.`status` IN ( 'active', 'cancelled', 'expired', 'admin_cancelled' ) 
+					`mu`.`status` IN ('" . implode( "','", array_map( 'esc_sql', $level_status ) ) . "') 
 				ORDER BY
 					`mu`.`modified` DESC
 				LIMIT %d
