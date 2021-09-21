@@ -58,21 +58,21 @@ class HasMembershipLevelTest extends TestCase {
 	/**
 	 * @covers ::pmpro_hasMembershipLevel()
 	 */
-	public function test_pmpro_hasMembershipLevel_is_true_with_0_level_id_array_levels_and_null_user_id() {
+	public function test_pmpro_hasMembershipLevel_is_true_with_zero_level_id_array_levels_and_null_user_id() {
 		$this->assertTrue( pmpro_hasMembershipLevel( [ 0, $this->level_id ] ) );
 	}
 
 	/**
 	 * @covers ::pmpro_hasMembershipLevel()
 	 */
-	public function test_pmpro_hasMembershipLevel_is_true_with_0_levels_and_null_user_id() {
+	public function test_pmpro_hasMembershipLevel_is_true_with_zero_levels_and_null_user_id() {
 		$this->assertTrue( pmpro_hasMembershipLevel( 0 ) );
 	}
 
 	/**
 	 * @covers ::pmpro_hasMembershipLevel()
 	 */
-	public function test_pmpro_hasMembershipLevel_is_true_with_0_string_levels_and_null_user_id() {
+	public function test_pmpro_hasMembershipLevel_is_true_with_zero_string_levels_and_null_user_id() {
 		$this->assertTrue( pmpro_hasMembershipLevel( '0' ) );
 	}
 
