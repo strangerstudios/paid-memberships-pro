@@ -1,0 +1,51 @@
+# Codeception Test Suite Configuration
+
+# suite for Acceptance tests.
+# Emulate web requests and make application process them.
+actor: AcceptanceTester
+modules:
+  enabled:
+    - \Helper\Acceptance
+    - WPWebDriver #browse
+    - WPDb #manipulate the database and look up stuff
+    - WPFilesystem #manipulate the WP filesystem, scaffold themes and plugins
+    - Asserts #PHPUnit-like assertions
+  config:
+    WPWebDriver:
+      # We have to use a URL Chromedriver will be able to resolve.
+      # See the `.env` file for more information.
+      url: %WP_CHROMEDRIVER_URL%
+      # see codeception.dist.yml for the configuration
+      adminUsername: %WP_ADMIN_USERNAME%
+      adminPassword: %WP_ADMIN_PASSWORD%
+      adminPath: '/wp-admin'
+      browser: chrome
+      host: %CHROMEDRIVER_HOST%
+      port: %CHROMEDRIVER_PORT%
+      window_size: 1366x1400
+      capabilities:
+        chromeOptions:
+          args:
+            - "--disable-gpu"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--user-agent=tribe-tester"
+            - "--high-dpi-support=1.0"
+            - "--force-device-scale-factor=1.0"
+    WPDb:
+      dsn: 'mysql:host=%WP_DB_HOST%;dbname=%WP_DB_NAME%'
+      user: %WP_DB_USER%
+      password: %WP_DB_PASSWORD%
+      dump: 'tests/_data/dump-acceptance.sql'
+      populate: true
+      waitlock: 10
+      cleanup: true
+      reconnect: false
+      url: %WP_URL%
+      tablePrefix: %WP_TABLE_PREFIX%
+    WPFilesystem:
+      wpRootFolder: %WP_ROOT_FOLDER%
+      themes: '/wp-content/themes'
+      plugins: '/wp-content/plugins'
+      mu-plugins: '/wp-content/mu-plugins'
+      uploads: '/wp-content/uploads'

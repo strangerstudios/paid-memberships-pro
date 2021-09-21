@@ -3716,7 +3716,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 	 * @param string $original_string  The original string.
 	 * @param string $context          The sanitization context.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 */
 	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
 }
@@ -3727,7 +3727,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
  * @param array[]|string $allowed_html The allowed HTML tags.
  * @param string         $context      The context name.
  *
- * @since TBD
+ * @since 2.6.2
  */
 function pmpro_kses_allowed_html( $allowed_html, $context ) {
 	// Only override for our pmpro_* contexts.

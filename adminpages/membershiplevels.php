@@ -577,7 +577,7 @@
 						<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number);?>" class="small-text" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
-							$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );													
+							$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 							foreach ( $cycles as $name => $value ) {
 							  echo "<option value='$value' ".selected( $level->expiration_period, $value, true ).">$name</option>";
 							}
@@ -893,7 +893,7 @@
 						/**
 						 * Filter the extra actions for this level.
 						 *
-						 * @since TBD
+						 * @since 2.6.2
 						 *
 						 * @param array  $actions The list of actions.
 						 * @param object $level   The membership level data.

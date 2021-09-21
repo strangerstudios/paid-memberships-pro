@@ -75,7 +75,7 @@ function pmpro_block_dashboard() {
 /**
  * Initialize our Site Health integration and add hooks.
  *
- * @since TBD
+ * @since 2.6.2
  */
 function pmpro_init_site_health_integration() {
 	$site_health = PMPro_Site_Health::init();

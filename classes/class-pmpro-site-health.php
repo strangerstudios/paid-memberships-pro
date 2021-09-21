@@ -3,7 +3,7 @@
 /**
  * The functionality that includes PMPro data within Site Health information.
  *
- * @since TBD
+ * @since 2.6.2
  */
 class PMPro_Site_Health {
 
@@ -17,7 +17,7 @@ class PMPro_Site_Health {
 	/**
 	 * Initialize class object and use it for future init calls.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return self The class object.
 	 */
@@ -32,7 +32,7 @@ class PMPro_Site_Health {
 	/**
 	 * Add hooks needed for functionality.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 */
 	public function hook() {
 		add_filter( 'debug_information', [ $this, 'debug_information' ] );
@@ -41,7 +41,7 @@ class PMPro_Site_Health {
 	/**
 	 * Remove hooks needed for functionality.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 */
 	public function unhook() {
 		remove_filter( 'debug_information', [ $this, 'debug_information' ] );
@@ -50,7 +50,7 @@ class PMPro_Site_Health {
 	/**
 	 * Add our data to Site Health information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @param array $info The Site Health information.
 	 *
@@ -98,7 +98,7 @@ class PMPro_Site_Health {
 	/**
 	 * Gets the level information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The level information.
 	 */
@@ -115,7 +115,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the discount code information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The discount code information.
 	 */
@@ -131,7 +131,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the order information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The order information.
 	 */
@@ -147,7 +147,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the payment gateway information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The payment gateway information.
 	 */
@@ -185,7 +185,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the payment gateway environment information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The payment gateway environment information.
 	 */
@@ -208,7 +208,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the custom template information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The custom template information.
 	 */
@@ -259,7 +259,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the cron job information.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 *
 	 * @return string The cron job information.
 	 */

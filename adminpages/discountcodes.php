@@ -888,7 +888,7 @@
 									/**
 									 * Filter the extra actions for this discount code.
 									 *
-									 * @since TBD
+									 * @since 2.6.2
 									 *
 									 * @param array  $actions The list of actions.
 									 * @param object $code    The discount code data.
