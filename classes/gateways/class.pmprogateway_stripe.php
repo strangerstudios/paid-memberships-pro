@@ -524,13 +524,32 @@ class PMProGateway_stripe extends PMProGateway {
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
         </tr>
-		<tr class="pmpro_settings_divider gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>		
+		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
             <td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( 'Stripe API Settings (Legacy)', 'paid-memberships-pro' ); ?></h2>				
+				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! self::show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings (Legacy)', 'paid-memberships-pro' ); ?></h2>
+				<?php if( ! self::show_legacy_keys_settings() ) {?>
+				<p>
+					<?php esc_html_e( 'Having trouble connecting through the button above or otherwise need to use your own API keys?', 'paid-memberships-pro' );?>
+					<a id="pmpro_stripe_legacy_keys_toggle" href="javascript:void(0);"><?php esc_html_e( 'Click here to use the legacy API settings.', 'paid-memberships-pro' );?></a>
+				</p>
+				<script>
+					// Toggle to show the Stripe legacy keys settings.
+					jQuery(document).ready(function(){
+						jQuery('#pmpro_stripe_legacy_keys_toggle').click(function(e){
+							var btn = jQuery('#pmpro_stripe_legacy_keys_toggle');
+							var div = btn.closest('.pmpro_settings_divider');							
+							btn.parent().remove();
+							jQuery('.pmpro_stripe_legacy_keys').show();
+							jQuery('.pmpro_stripe_legacy_keys').addClass('gateway_stripe');
+							jQuery('#stripe_publishablekey').focus();
+						});
+					});
+				</script>
+				<?php } ?>
             </td>
         </tr>
-		<tr class="gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_publishablekey"><?php _e( 'Publishable Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -546,7 +565,7 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
             </td>
         </tr>
-        <tr class="gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
+        <tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label for="stripe_secretkey"><?php _e( 'Secret Key', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -554,7 +573,7 @@ class PMProGateway_stripe extends PMProGateway {
                 <input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
             </td>
         </tr>		
-		<tr class="gateway <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -2333,6 +2352,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$amount_tax = $order->getTaxForPrice( $amount );
 			$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 		}
+
+		// Save $trial_period_days to order for now too.
+		$order->TrialPeriodDays = $trial_period_days;
 
 		//create a plan
 		try {
