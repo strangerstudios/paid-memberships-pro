@@ -53,6 +53,12 @@ class PMProGateway_stripe extends PMProGateway {
 			$this->loadStripeLibrary();
 			Stripe\Stripe::setApiKey( self::get_secretkey() );
 			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
+			Stripe\Stripe::setAppInfo(
+				'WordPress Paid Memberships Pro',
+				PMPRO_VERSION,
+				'https://www.paidmembershipspro.com',
+				'pp_partner_DKlIQ5DD7SFW3A'
+			);
 			self::$is_loaded = true;
 		}
 
