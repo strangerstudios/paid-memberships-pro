@@ -138,7 +138,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'PMProGateway_stripe',
 			'user_profile_fields'
 		) );
-		add_action( 'profile_update', array( 'PMProGateway_stripe', 'user_profile_fields_save' ) );
 
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
