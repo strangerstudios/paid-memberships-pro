@@ -697,22 +697,22 @@ class PMProGateway_stripe extends PMProGateway {
 		$stripe = new PMProGateway_stripe();
 		Stripe\Stripe::setApiKey( $secretkey );
 		
-		$r = $stripe::update_webhook_events();
+		$update_webhook_response = $stripe::update_webhook_events();
 
-		if ( empty( $r ) || is_wp_error( $r ) ) {
-			$message = empty( $r ) ? __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' ) : $r->get_error_message();
+		if ( empty( $update_webhook_response ) || is_wp_error( $update_webhook_response ) ) {
+			$message = empty( $update_webhook_response ) ? __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' ) : $update_webhook_response->get_error_message();
 			$r = array(
 				'success' => false,
 				'notice' => 'error',
 				'message' => $message,
-				'response' => $r
+				'response' => $update_webhook_response
 			);
 		} else {
 			$r = array(
 				'success' => true,
 				'notice' => 'notice-success',
 				'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
-				'response' => $r
+				'response' => $update_webhook_response
 			);
 		}
 		
@@ -741,17 +741,17 @@ class PMProGateway_stripe extends PMProGateway {
 			'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
 		);
 		if ( ! empty( $webhook ) ) {
-			$r = $stripe::delete_webhook( $webhook, $secretkey );
+			$delete_webhook_response = $stripe::delete_webhook( $webhook, $secretkey );
 
-			if ( is_wp_error( $r ) || empty( $r['deleted'] ) || $r['deleted'] != true ) {
-				$message = is_wp_error( $r ) ? $r->get_error_message() : __( 'There was an error deleting the webhook.', 'paid-memberships-pro' );
+			if ( is_wp_error( $delete_webhook_response ) || empty( $delete_webhook_response['deleted'] ) || $delete_webhook_response['deleted'] != true ) {
+				$message = is_wp_error( $delete_webhook_response ) ? $delete_webhook_response->get_error_message() : __( 'There was an error deleting the webhook.', 'paid-memberships-pro' );
 				$r = array(
 					'success' => false,
 					'notice' => 'error',
 					'message' => $message,
 				);
 			}
-			$r['response'] = $r;
+			$r['response'] = $delete_webhook_response;
 		}
 
 		if ( $silent ) {
