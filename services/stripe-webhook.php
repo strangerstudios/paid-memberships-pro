@@ -228,7 +228,6 @@
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
-			$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 			if(!empty($old_order->id))
 			{
