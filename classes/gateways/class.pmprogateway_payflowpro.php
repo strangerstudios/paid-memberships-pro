@@ -156,6 +156,8 @@
 		 */
 		function process(&$order)
 		{
+			$order->payment_type = 'Payflow Pro/PayPal Pro';
+
 			if(floatval($order->InitialPayment) == 0)
 			{
 				//auth first, then process

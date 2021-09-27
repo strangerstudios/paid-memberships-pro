@@ -43,7 +43,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		$morder->CVV2 = $authorizenet_cvv;
 		return $morder;
 	}
-	
+
 	/**
 	 * Make sure this gateway is in the gateways list
 	 *
@@ -144,6 +144,8 @@ class PMProGateway_authorizenet extends PMProGateway
 	 */
 	function process(&$order)
 	{
+		$order->payment_type = 'Authorize.net';
+
 		//check for initial payment
 		if(floatval($order->InitialPayment) == 0)
 		{
@@ -988,7 +990,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			$order->shorterror = $text;
 		}
 	}
-	
+
 	/**
 	 * This function takes the post_values and converts them to the proper format
 	 * for an http post. For example: "x_login=username&x_tran_key=a1B2c3D4"
@@ -1008,13 +1010,13 @@ class PMProGateway_authorizenet extends PMProGateway
 		 * @param string $action being performed.
 		 */
 		$post_values = apply_filters( 'pmpro_authorizenet_post_values', $post_values, $action );
-		
+
 		$post_string = '';
 		foreach( $post_values as $key => $value ) {
 			$post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&";
 		}
 		$post_string = rtrim( $post_string, "& " );
-		
+
 		return $post_string;
 	}
 

@@ -121,7 +121,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
 
       $plans = wp_cache_get( $cache_key,'pmpro_levels' );
-			
+
 			//check Braintree if no transient found
 			if($plans === false) {
 
@@ -169,16 +169,16 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 * @param $level_id
 		 */
 		public static function pmpro_save_level_action( $level_id ) {
-		    
+
 		    $BT_Gateway = new PMProGateway_braintree();
-		    
+
 		    if ( isset( $BT_Gateway->gateway_environment ) ) {
 			    $cache_key = 'pmpro_braintree_plans_' . md5($BT_Gateway->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
-			
+
 			    wp_cache_delete( $cache_key,'pmpro_levels' );
 		    }
 		}
-		
+
 		/**
 		 * Search for a plan by id
 		 */
@@ -354,7 +354,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		</tr>
 		<?php
 		}
-		
+
 		/**
 		 * Code added to checkout preheader.
 		 *
@@ -530,6 +530,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		function process(&$order)
 		{
+			$order->payment_type = 'Braintree Payments';
+
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{
@@ -888,10 +890,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			$start_ts  = strtotime($order->ProfileStartDate, current_time("timestamp") );
 			$now =  strtotime( date('Y-m-d\T00:00:00', current_time('timestamp' ) ), current_time('timestamp' ) );
-			
+
 			//convert back to days
 			$trial_period_days = ceil(abs( $now - $start_ts ) / 86400);
-			
+
 			//now add the actual trial set by the site
 			if(!empty($order->TrialBillingCycles))
 			{
@@ -909,7 +911,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//subscribe to the plan
 			try
 			{
-				
+
 				$details = array(
 				  'paymentMethodToken' => $this->customer->creditCards[0]->token,
 				  'planId' => $this->get_plan_id( $order->membership_id ),
@@ -970,7 +972,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				return false;	//couldn't find the customer
 			}
 		}
-		
+
 		/**
       * Cancel order and Braintree Subscription if applicable
       *
@@ -984,9 +986,9 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				$order->error = __("Payment error: Please contact the webmaster (braintree-load-error)", 'paid-memberships-pro');
 				return false;
 			}
-			
+
 			if ( isset( $_POST['bt_payload']) && isset( $_POST['bt_payload']) ) {
-			
+
 				try {
 					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
 					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
@@ -997,10 +999,10 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				    // Don't do anything
 				}
 			}
-			
+
 			// Always cancel, even if Braintree fails
-			$order->updateStatus("cancelled" );			
-            
+			$order->updateStatus("cancelled" );
+
 			//require a subscription id
 			if(empty($order->subscription_transaction_id))
 				return false;

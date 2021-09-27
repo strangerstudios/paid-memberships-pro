@@ -113,6 +113,8 @@
 		 */
 		function process(&$order)
 		{
+			$order->payment_type = 'CyberSource';
+
 			//check for initial payment
 			if(floatval($order->InitialPayment) == 0)
 			{
@@ -318,7 +320,7 @@
 				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
 				return false;
 			}
-			
+
 			//currency
 			$purchaseTotals = new stdClass();
 			$purchaseTotals->currency = $pmpro_currency;
@@ -343,7 +345,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -395,7 +397,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -505,7 +507,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -695,7 +697,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -779,7 +781,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -833,7 +835,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -920,7 +922,7 @@
 				$error = $error_messages[$reply->reasonCode];
 			else
 				return __( "Unknown error.", "paid-memberships-pro" );
-			
+
 			// list invalid fields from reply
 			if( isset($reply->invalidField) && !empty($reply->invalidField) )
 			{

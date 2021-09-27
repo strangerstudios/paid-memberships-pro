@@ -298,6 +298,8 @@
 		 */
 		function process(&$order)
 		{
+			$order->payment_type = 'PayPal Website Payments Pro';
+
 			if(floatval($order->InitialPayment) == 0)
 			{
 				//auth first, then process
@@ -603,12 +605,12 @@
 
 			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
 			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
-			
+
 			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
 			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
-			
+
 			///echo str_replace("&", "&<br />", $nvpStr);
 			///exit;
 
@@ -680,7 +682,7 @@
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
-		}		
+		}
 
 		function cancel(&$order) {
 			// Always cancel the order locally even if PayPal might fail
@@ -747,7 +749,7 @@
 				return false;
 			}
 		}
-		
+
 		function getTransactionStatus(&$order) {
 			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
 			if( false === $transaction_details ){
@@ -822,7 +824,7 @@
 				return $this->getTransactionDetails( $order->payment_transaction_id );
 			}
 		}
-		
+
 		function getTransactionDetails($payment_transaction_id)
         	{
 			$nvpStr = "";
