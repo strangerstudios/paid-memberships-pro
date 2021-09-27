@@ -1,6 +1,8 @@
 <?php
 namespace Braintree;
 
+use JsonSerializable;
+
 /**
  * Braintree PHP Library.
  *
@@ -8,10 +10,8 @@ namespace Braintree;
  * Provides methods to child classes. This class cannot be instantiated.
  *
  *  PHP version 5
- *
- * @copyright  2015 Braintree, a division of PayPal, Inc.
  */
-abstract class Base
+abstract class Base implements JsonSerializable
 {
     protected $_attributes = [];
 
@@ -73,5 +73,16 @@ abstract class Base
     public function _set($key, $value)
     {
         $this->_attributes[$key] = $value;
+    }
+    
+    /**
+     * Implementation of JsonSerializable 
+     * 
+     * @ignore
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+	return $this->_attributes;
     }
 }

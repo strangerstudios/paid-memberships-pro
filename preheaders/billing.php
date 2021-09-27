@@ -1,15 +1,21 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt;
-global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling;
 
-if($current_user->ID)
-    $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+// Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
+if ( ! is_user_logged_in() ) {
+	$billing_url = pmpro_url( 'billing' );
+    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
+    exit;
+} else {
+    // Get the current user's membership level. 
+    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
+}
 
 //need to be secure?
-global $besecure, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
 $user_order = new MemberOrder();
-$user_order->getLastMemberOrder();
+$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
     //no order
     $besecure = false;
@@ -22,19 +28,28 @@ if (empty($user_order->gateway)) {
         //$besecure = false;
         $show_paypal_link = true;
     }
+} elseif( $user_order->gateway == 'check' ) {
+    $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");
 }
 
-// Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
-$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
+// this variable is checked sometimes to know if the page should show billing fields
+$pmpro_requirebilling = true;
 
-//action to run extra code for gateways/etc
-do_action( 'pmpro_billing_preheader' );
+// Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
+if ( ! empty( $user_order->gateway ) ) {
+    $gateway = $user_order->gateway;
+} else {
+    $gateway = NULL;
+}
 
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+
+//action to run extra code for gateways/etc
+do_action( 'pmpro_billing_preheader' );
 
 //_x stuff in case they clicked on the image button with their mouse
 if (isset($_REQUEST['update-billing']))
@@ -243,9 +258,20 @@ if ($submit) {
     $bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
     $bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
     $bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bconfirmemail", true);
+    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
     $CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
     //$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
     $ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
     $ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);
 }
+
+// Avoid a warning in the filter below.
+if ( empty( $morder ) ) {
+	$morder = null;
+}
+
+/**
+ * Hook to run actions after the billing page preheader has loaded.
+ * @since 2.1
+ */
+do_action( 'pmpro_billing_after_preheader', $morder );

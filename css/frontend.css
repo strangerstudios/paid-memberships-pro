@@ -4,7 +4,7 @@
 .pmpro_btn, .pmpro_btn:link, .pmpro_content_message a, .pmpro_content_message a:link {
 	background-color: #EFEFEF;
 	background-image: none;
-	border: 1px solid #D6D6D6;	
+	border: 1px solid #D6D6D6;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
@@ -13,7 +13,6 @@
 	color: #444;
 	cursor: pointer;
 	display: inline-block;
-	font-size: 12px;
 	font-weight: 700;
 	margin: 0;
 	padding: 6px 12px;
@@ -33,10 +32,17 @@
 	outline: 5px auto -webkit-focus-ring-color;
 	outline-offset: -2px;
 }
-.pmpro_btn:hover, .pmpro_btn:focus, .pmpro_checkout .pmpro_btn:hover, .pmpro_checkout .pmpro_btn:focus, .pmpro_content_message a:focus, .pmpro_content_message a:hover {
+.pmpro_btn:hover,
+a.pmpro_btn:hover,
+.entry-content a.pmpro_btn:hover,
+.pmpro_btn:focus,
+.pmpro_checkout .pmpro_btn:hover,
+.pmpro_checkout .pmpro_btn:focus,
+.pmpro_content_message a:focus,
+.pmpro_content_message a:hover {
 	-webkit-box-shadow: none;
+	border-color: #D6D6D6;
 	box-shadow: none;
-	color: #000;
 	text-decoration: none;
 }
 .pmpro_btn:active,
@@ -56,31 +62,70 @@ fieldset[disabled] .pmpro_btn {
 	opacity: 0.65;
 	pointer-events: none;
 }
-input[type="button"].pmpro_btn.pmpro_btn-cancel {
-	background: #CCC;
-	margin: 0 0 0 10px;
-}
-input[type="button"].pmpro_btn.pmpro_btn-cancel:hover {
-	background: #EFEFEF;
+.pmpro_btn.pmpro_btn-cancel,
+.pmpro_btn.pmpro_btn-cancel:link,
+.pmpro_btn.pmpro_btn-cancel:hover,
+.entry-content a.pmpro_btn.pmpro_btn-cancel:hover {
+	background: none;
+	border: none;
+	box-shadow: none;
+    color: #666;
+    text-decoration: underline;
 }
 .pmpro_btn.pmpro_btn-submit-checkout {
 	width: auto;
 }
+
+input[type="button"]#discount_code_button,
+input[type="button"]#discount_code_button:hover,
+input[type="button"]#discount_code_button:focus,
+input[type="button"]#other_discount_code_button,
+input[type="button"]#other_discount_code_button:hover,
+input[type="button"]#other_discount_code_button:focus {
+	-webkit-appearance: none;
+    -moz-appearance: none;
+	background: none;
+    border: none;
+	box-shadow: none;
+	color: inherit;
+    cursor: pointer;
+	display: inline-block;
+	font-family: inherit;
+    font-size: 100%;
+	font-weight: normal;
+	margin: 0 0 0 5px;
+	outline: none;
+    padding: 0;
+	text-align: center;
+    text-decoration: underline;
+	text-transform: none;
+}
+
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
-form.pmpro_form .pmpro_checkout-fields div {
+form.pmpro_form .pmpro_checkout-fields div,
+#loginform p {
 	margin: 0 0 1em 0;
 }
-form.pmpro_form label {
+form.pmpro_form label,
+#loginform label {
 	font-weight: 700;
 	display: block;
 	margin: 0;
 	text-align: left;
 }
+form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
+	display: block;
+	float: none;
+	max-width: initial;
+	min-width: initial;
+	text-align: left;
+	width: auto;
+}
 form.pmpro_form .pmpro_checkout-field-checkbox label {
-	cursor: pointer; 
-	display: inline-block; 
+	cursor: pointer;
+	display: inline-block;
 	width: auto;
 }
 form.pmpro_form label.pmpro_label-inline {
@@ -98,9 +143,15 @@ form.pmpro_form input[type=checkbox]#tos {
 }
 form.pmpro_form .input,
 form.pmpro_form textarea,
-form.pmpro_form select {
+form.pmpro_form select,
+#loginform input[type=text],
+#loginform input[type=password] {
 	display: inline-block;
 	max-width: 90%;
+}
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
+	max-width: 30%;
 }
 form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
@@ -114,17 +165,43 @@ form.pmpro_form .pmpro_captcha div {
 	clear: none;
 	margin: 0;
 }
-form.pmpro_form .pmpro_submit{
+form.pmpro_form .pmpro_submit {
 	margin-top: 1em;
-	text-align: right;
 }
 form.pmpro_form #pmpro_processing_message {
 	color: #999;
 	display: block;
 	font-style: italic;
 	margin: 1em 0 0 0;
-	text-align: right;
+	text-align: left;
 }
+
+/* Lot Password Frontend Form */
+form.pmpro_form .pmpro_lost_password-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Member Profile Edit Frontend Form */
+form.pmpro_form .pmpro_member_profile_edit-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Change Password Frontend Form */
+form.pmpro_form .pmpro_change_password-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Password Strength Meter on Frontend Forms */
+.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+	display: inline-block;
+	max-width: 150px;
+}
+.pmpro_reset_password_wrap form.pmpro_form .lite,
+form.pmpro_form .pmpro_change_password-fields .lite {
+	margin-top: 10px;
+}
+
 /*--------------------------------------------------
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
@@ -140,13 +217,29 @@ form.pmpro_form #pmpro_processing_message {
 	line-height: 1.5em;
 	margin: .5em 0;
 	padding: 10px 15px;
+	text-align: left;
 }
 .pmpro_success {
 	background-color: #dff0d8;
 	border-color: #d6e9c6;
 	color: #3c763d;
 }
-.pmpro_error {
+.pmpro_error,
+input[type="text"].pmpro_error,
+input[type="email"].pmpro_error,
+input[type="url"].pmpro_error,
+input[type="password"].pmpro_error,
+input[type="number"].pmpro_error,
+input[type="tel"].pmpro_error,
+input[type="range"].pmpro_error,
+input[type="date"].pmpro_error,
+input[type="month"].pmpro_error,
+input[type="week"].pmpro_error,
+input[type="time"].pmpro_error,
+input[type="datetime"].pmpro_error,
+input[type="datetime-local"].pmpro_error,
+input[type="color"].pmpro_error,
+textarea.pmpro_error {
 	background-color: #f2dede;
 	border-color: #ebccd1;
 	color: #a94442;
@@ -156,8 +249,9 @@ form.pmpro_form #pmpro_processing_message {
 	border-color: #faebcc;
 	color: #8a6d3b;
 }
-.pmpro_content_message a {
-	margin: 5px 5px 0 0;
+.pmpro_content_message a,
+.pmpro_content_message a:link {
+	margin: 10px 10px 0 0;
 }
 .pmpro_message a {
 	color: #245269;
@@ -178,6 +272,36 @@ input.pmpro_error {
 select.pmpro_error {
 	background-image: none;
 }
+.pmpro_message p:last-child {
+	margin-bottom: 0;
+}
+
+#pmpro_message_bottom {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Display Price Parts
+---------------------------------------*/
+.pmpro_price_part_span {
+	display: block;
+}
+.pmpro_price_part-total {
+	border-top: 1px solid #CCC;
+	margin-top: 5px;
+	padding-top: 5px;
+}
+.pmpro_price_part_label:after {
+	content: ": ";
+}
+.pmpro_price_part_sub {
+	font-size: 75%;
+}
+span.pmpro_price_part_sub:before {
+	content: "\2022";
+	padding-right: 5px;
+}
+
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
@@ -193,14 +317,26 @@ select.pmpro_error {
 	font-size: 11px;
 	font-style: italic;
 	font-weight: normal;
+	letter-spacing: normal;
 }
 #pmpro_payment_method span.gateway_paypalexpress {
 	margin-left: 2em;
 }
 #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
+	clear: both;
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
-	grid-gap: 1em;
+	grid-column-gap: 1em;
+	grid-template-areas:
+		"leftcol rightcol";
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-leftcol {
+	grid-area: leftcol;
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-rightcol {
+	grid-area: rightcol;
 }
 #pmpro_license {
 	background: #FFF;
@@ -211,27 +347,106 @@ select.pmpro_error {
 	overflow: auto;
 	padding: 5px;
 }
+
+/* Stripe gateway Membership Checkout specific styles. */
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button {
+	grid-area: paymentrequestbutton;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
+	margin-top: 1em;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal  {
+	grid-template-areas:
+		"paymentrequestbutton rightcol"
+		"leftcol rightcol";
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
+	display: -ms-grid;
+	display: grid;
+	-ms-grid-rows: auto 1em auto 1em auto;
+	grid-template-areas:
+		"AccountNumber AccountNumber"
+		"Expiry CVV"
+		"DiscountCode DiscountCode";
+	grid-column-gap: 1em;
+	-ms-grid-columns: 1fr 1em 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV {
+	color: #666;
+	background: #FFF;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin: 0;
+	padding: 0.625em 0.4375em;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
+	-ms-grid-row: 1;
+	-ms-grid-column: 1;
+	-ms-grid-column-span: 3;
+	grid-area: AccountNumber;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration {
+	-ms-grid-row: 3;
+	-ms-grid-column: 1;
+	grid-area: Expiry;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
+	-ms-grid-row: 3;
+	-ms-grid-column: 3;
+	grid-area: CVV;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-discount-code {
+	-ms-grid-row: 5;
+	-ms-grid-column: 1;
+	-ms-grid-column-span: 3;
+	grid-area: DiscountCode;
+}
+
 /*---------------------------------------
 	Membership Confirmation
 ---------------------------------------*/
-body.pmpro-confirmation .entry-content ul {
-	margin-left: 1.5em;
-}
+
 /*---------------------------------------
 	Membership Invoice
 ---------------------------------------*/
-body.pmpro-invoice .entry-content ul {
-	margin-left: 1.5em;
+.pmpro_invoice_details {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
 }
-.pmpro_invoice_details { 
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-gap: 1em;
+.pmpro_invoice_details .pmpro_invoice-billing-address,
+.pmpro_invoice_details .pmpro_invoice-payment-method,
+.pmpro_invoice_details .pmpro_invoice-total {
+	-webkit-box-flex: 3;
+	    -ms-flex: 3 1 33%;
+	        flex: 3 1 33%;
 }
-.pmpro_invoice_details p {
-	margin: 0 0 .5em 0;
-	padding: 0;
+.pmpro_invoice_details .pmpro_invoice-billing-address,
+.pmpro_invoice_details .pmpro_invoice-payment-method {
+	padding-right: 10px;
 }
+
+.pmpro_invoice-field-billing_name,
+.pmpro_invoice-field-billing_street,
+.pmpro_invoice-field-billing_country,
+.pmpro_invoice-field-billing_phone {
+	display: block;
+}
+
+.pmpro_invoice-field-billing_city:after {
+	content: ',';
+}
+
 /*---------------------------------------
 	Membership Account
 ---------------------------------------*/
@@ -252,25 +467,26 @@ body.pmpro-invoice .entry-content ul {
 }
 #pmpro_account .pmpro_box ul {
 	margin-bottom: 0;
-	margin-left: 1.5em;
 }
 #pmpro_account #pmpro_account-membership { }
 #pmpro_account #pmpro_account-profile { }
 #pmpro_account #pmpro_account-billing { }
 #pmpro_account #pmpro_account-invoices { }
 #pmpro_account #pmpro_account-links { }
-.pmpro_actionlinks {
-	font-size: .8em;
-	margin: .25em 0 0 0;
+
+#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1) {
+	min-width: 200px;
 }
+#pmpro_account #pmpro_account-profile .pmpro_actionlinks {
+	margin-top: .5em;
+}
+
 .pmpro_actionlinks a {
 	display: inline-block;
-	margin: 0;
-	padding: 0 5px 0 0;
 	text-decoration: none;
 }
 .pmpro_actionlinks a:last-child {
-	padding: 0;
+	margin-right: 0;
 }
 .pmpro_hidden {
 	display: none;
@@ -281,11 +497,125 @@ li.pmpro_more {
 	padding-left: 0;
 	text-align: center;
 }
+
+/*---------------------------------------
+	Membership Billing Page
+---------------------------------------*/
+.pmpro_billing_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Log In and Password Reset Pages
+---------------------------------------*/
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap,
+.pmpro_reset_password_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	This section based on similar rules
+	in wp-admin/css/forms.css
+---------------------------------------*/
+#pass-strength-result {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #23282d;
+	margin: -1px 1px 5px;
+	padding: 3px 5px;
+	text-align: center;
+	width: 25em;
+	box-sizing: border-box;
+	opacity: 0;
+}
+
+#pass-strength-result.short {
+	background-color: #f1adad;
+	border-color: #e35b5b;
+	opacity: 1;
+}
+
+#pass-strength-result.bad {
+	background-color: #fbc5a9;
+	border-color: #f78b53;
+	opacity: 1;
+}
+
+#pass-strength-result.good {
+	background-color: #ffe399;
+	border-color: #ffc733;
+	opacity: 1;
+}
+
+#pass-strength-result.strong {
+	background-color: #c1e1b9;
+	border-color: #83c373;
+	opacity: 1;
+}
+
+.pass1.short, .pass1-text.short {
+	border-color: #e35b5b;
+}
+
+.pass1.bad, .pass1-text.bad {
+	border-color: #f78b53;
+}
+
+.pass1.good, .pass1-text.good {
+	border-color: #ffc733;
+}
+
+.pass1.strong, .pass1-text.strong {
+	border-color: #83c373;
+}
+
+.pw-weak {
+	display: none;
+}
+
+.indicator-hint {
+	padding-top: 8px;
+}
+
+.wp-pwd [type="text"],
+.wp-pwd [type="password"] {
+	margin-bottom: 0;
+	/* Same height as the buttons */
+	min-height: 30px;
+}
+
+/* Hide the Edge "reveal password" native button */
+.wp-pwd input::-ms-reveal {
+	display: none;
+}
+
+.pass1-text,
+.show-password #pass1 {
+	display: none;
+}
+
+.pass1-text::-ms-clear {
+	display: none;
+}
+
+.show-password #pass1-text {
+	display: inline-block;
+}
+
+/*---------------------------------------
+	Member Profile Edit Page
+---------------------------------------*/
+.pmpro_member_profile_edit_wrap,
+.pmpro_change_password_wrap {
+	margin-bottom: 1em;
+}
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
-#pmpro_levels_table {
-	background: #FFF;
+#pmpro_levels_table { }
+#pmpro_levels_table td:nth-child(1) {
+	min-width: 200px;
 }
 #pmpro_levels_table .pmpro_btn {
 	display: block;
@@ -293,6 +623,24 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
+.pmpro_actions_nav {
+	text-align: center;
+}
+.pmpro_actions_nav-left {
+	display: block;
+	float: left;
+	width: 48%;
+	text-align: left;
+}
+.pmpro_actions_nav-right {
+	display: block;
+	float: right;
+	width: 48%;
+	text-align: right;
+}
+.pmpro-levels .pmpro_actions_nav {
+	text-align: left;
+}
 .pmpro_a-right {
 	float: right;
 	font-size: 11px;
@@ -301,7 +649,7 @@ li.pmpro_more {
 	width: auto;
 }
 .pmpro_a-print {
-	background: url(../images/printer.gif) top left no-repeat;
+	background: url(../images/printer-icon.svg) top left no-repeat;
 	color: #345395;
 	cursor: pointer;
 	float: right;
@@ -332,24 +680,51 @@ li.pmpro_more {
 .pmpro_small {
 	font-size: .8em;
 }
+
+/*---------------------------------------
+	Responsive Styles
+---------------------------------------*/
+@media only screen and (min-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
 @media (max-width:768px) {
-	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
+	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
+	#pmpro_levels_table td:nth-child(1) {
+		min-width: unset;
+	}
+	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+		display: block;
+	}
+	.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
+		display: block;
+		margin-bottom: 1em;
+	}
+	form.pmpro_form input[type=text].input,
+	form.pmpro_form input[type=password].input,
+	.pmpro_login_wrap form#loginform input[type=text].input,
+	.pmpro_login_wrap form#loginform input[type=password].input {
 		width: 90%;
+	}
+	/* Password Strength Meter on Frontend Forms */
+	.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+		max-width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
 	}
-	form.pmpro_form #pmpro_payment_information_fields .pmpro_thead-msg {
-		float: none;
-		margin-bottom: 10px;
-		text-align: left;
-		text-wrap: normal;
-		white-space: normal;
-	}
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
 	}
-	form.pmpro_form .pmpro_btn {
+	form.pmpro_form .pmpro_btn,
+	.pmpro_login_wrap #loginform input[type=submit] {
 		display: block;
 		width: 100%;
 	}

@@ -11,207 +11,255 @@ abstract class Util
 
     /**
      * Whether the provided array (or other) is a list rather than a dictionary.
+     * A list is defined as an array for which all the keys are consecutive
+     * integers starting at 0. Empty arrays are considered to be lists.
      *
      * @param array|mixed $array
-     * @return boolean True if the given object is a list.
+     *
+     * @return bool true if the given object is a list
      */
     public static function isList($array)
     {
-        if (!is_array($array)) {
+        if (!\is_array($array)) {
+            return false;
+        }
+        if ($array === []) {
+            return true;
+        }
+        if (\array_keys($array) !== \range(0, \count($array) - 1)) {
             return false;
         }
 
-      // TODO: generally incorrect, but it's correct given Stripe's response
-        foreach (array_keys($array) as $k) {
-            if (!is_numeric($k)) {
-                return false;
-            }
-        }
         return true;
-    }
-
-    /**
-     * Recursively converts the PHP Stripe object to an array.
-     *
-     * @param array $values The PHP Stripe object to convert.
-     * @return array
-     */
-    public static function convertStripeObjectToArray($values)
-    {
-        $results = array();
-        foreach ($values as $k => $v) {
-            // FIXME: this is an encapsulation violation
-            if ($k[0] == '_') {
-                continue;
-            }
-            if ($v instanceof StripeObject) {
-                $results[$k] = $v->__toArray(true);
-            } elseif (is_array($v)) {
-                $results[$k] = self::convertStripeObjectToArray($v);
-            } else {
-                $results[$k] = $v;
-            }
-        }
-        return $results;
     }
 
     /**
      * Converts a response from the Stripe API to the corresponding PHP object.
      *
-     * @param array $resp The response from the Stripe API.
+     * @param array $resp the response from the Stripe API
      * @param array $opts
-     * @return StripeObject|array
+     *
+     * @return array|StripeObject
      */
     public static function convertToStripeObject($resp, $opts)
     {
-        $types = array(
-            'account' => 'Stripe\\Account',
-            'alipay_account' => 'Stripe\\AlipayAccount',
-            'apple_pay_domain' => 'Stripe\\ApplePayDomain',
-            'bank_account' => 'Stripe\\BankAccount',
-            'balance_transaction' => 'Stripe\\BalanceTransaction',
-            'card' => 'Stripe\\Card',
-            'charge' => 'Stripe\\Charge',
-            'country_spec' => 'Stripe\\CountrySpec',
-            'coupon' => 'Stripe\\Coupon',
-            'customer' => 'Stripe\\Customer',
-            'dispute' => 'Stripe\\Dispute',
-            'ephemeral_key' => 'Stripe\\EphemeralKey',
-            'list' => 'Stripe\\Collection',
-            'login_link' => 'Stripe\\LoginLink',
-            'invoice' => 'Stripe\\Invoice',
-            'invoiceitem' => 'Stripe\\InvoiceItem',
-            'event' => 'Stripe\\Event',
-            'file_upload' => 'Stripe\\FileUpload',
-            'token' => 'Stripe\\Token',
-            'transfer' => 'Stripe\\Transfer',
-            'transfer_reversal' => 'Stripe\\TransferReversal',
-            'order' => 'Stripe\\Order',
-            'order_return' => 'Stripe\\OrderReturn',
-            'payout' => 'Stripe\\Payout',
-            'plan' => 'Stripe\\Plan',
-            'product' => 'Stripe\\Product',
-            'recipient' => 'Stripe\\Recipient',
-            'recipient_transfer' => 'Stripe\\RecipientTransfer',
-            'refund' => 'Stripe\\Refund',
-            'sku' => 'Stripe\\SKU',
-            'source' => 'Stripe\\Source',
-            'subscription' => 'Stripe\\Subscription',
-            'subscription_item' => 'Stripe\\SubscriptionItem',
-            'three_d_secure' => 'Stripe\\ThreeDSecure',
-            'fee_refund' => 'Stripe\\ApplicationFeeRefund',
-            'bitcoin_receiver' => 'Stripe\\BitcoinReceiver',
-            'bitcoin_transaction' => 'Stripe\\BitcoinTransaction',
-        );
+        $types = \Stripe\Util\ObjectTypes::mapping;
         if (self::isList($resp)) {
-            $mapped = array();
+            $mapped = [];
             foreach ($resp as $i) {
-                array_push($mapped, self::convertToStripeObject($i, $opts));
+                \array_push($mapped, self::convertToStripeObject($i, $opts));
             }
+
             return $mapped;
-        } elseif (is_array($resp)) {
-            if (isset($resp['object']) && is_string($resp['object']) && isset($types[$resp['object']])) {
+        }
+        if (\is_array($resp)) {
+            if (isset($resp['object']) && \is_string($resp['object']) && isset($types[$resp['object']])) {
                 $class = $types[$resp['object']];
             } else {
-                $class = 'Stripe\\StripeObject';
+                $class = \Stripe\StripeObject::class;
             }
+
             return $class::constructFrom($resp, $opts);
-        } else {
-            return $resp;
         }
+
+        return $resp;
     }
 
     /**
-     * @param string|mixed $value A string to UTF8-encode.
+     * @param mixed|string $value a string to UTF8-encode
      *
-     * @return string|mixed The UTF8-encoded string, or the object passed in if
-     *    it wasn't a string.
+     * @return mixed|string the UTF8-encoded string, or the object passed in if
+     *    it wasn't a string
      */
     public static function utf8($value)
     {
-        if (self::$isMbstringAvailable === null) {
-            self::$isMbstringAvailable = function_exists('mb_detect_encoding');
+        if (null === self::$isMbstringAvailable) {
+            self::$isMbstringAvailable = \function_exists('mb_detect_encoding');
 
             if (!self::$isMbstringAvailable) {
-                trigger_error("It looks like the mbstring extension is not enabled. " .
-                    "UTF-8 strings will not properly be encoded. Ask your system " .
-                    "administrator to enable the mbstring extension, or write to " .
-                    "support@stripe.com if you have any questions.", E_USER_WARNING);
+                \trigger_error('It looks like the mbstring extension is not enabled. ' .
+                    'UTF-8 strings will not properly be encoded. Ask your system ' .
+                    'administrator to enable the mbstring extension, or write to ' .
+                    'support@stripe.com if you have any questions.', \E_USER_WARNING);
             }
         }
 
-        if (is_string($value) && self::$isMbstringAvailable && mb_detect_encoding($value, "UTF-8", true) != "UTF-8") {
-            return utf8_encode($value);
-        } else {
-            return $value;
+        if (\is_string($value) && self::$isMbstringAvailable && 'UTF-8' !== \mb_detect_encoding($value, 'UTF-8', true)) {
+            return \utf8_encode($value);
         }
+
+        return $value;
     }
 
     /**
      * Compares two strings for equality. The time taken is independent of the
      * number of characters that match.
      *
-     * @param string $a one of the strings to compare.
-     * @param string $b the other string to compare.
-     * @return bool true if the strings are equal, false otherwise.
+     * @param string $a one of the strings to compare
+     * @param string $b the other string to compare
+     *
+     * @return bool true if the strings are equal, false otherwise
      */
     public static function secureCompare($a, $b)
     {
-        if (self::$isHashEqualsAvailable === null) {
-            self::$isHashEqualsAvailable = function_exists('hash_equals');
+        if (null === self::$isHashEqualsAvailable) {
+            self::$isHashEqualsAvailable = \function_exists('hash_equals');
         }
 
         if (self::$isHashEqualsAvailable) {
-            return hash_equals($a, $b);
-        } else {
-            if (strlen($a) != strlen($b)) {
-                return false;
-            }
-
-            $result = 0;
-            for ($i = 0; $i < strlen($a); $i++) {
-                $result |= ord($a[$i]) ^ ord($b[$i]);
-            }
-            return ($result == 0);
+            return \hash_equals($a, $b);
         }
+        if (\strlen($a) !== \strlen($b)) {
+            return false;
+        }
+
+        $result = 0;
+        for ($i = 0; $i < \strlen($a); ++$i) {
+            $result |= \ord($a[$i]) ^ \ord($b[$i]);
+        }
+
+        return 0 === $result;
     }
 
     /**
-     * @param array $arr A map of param keys to values.
-     * @param string|null $prefix
+     * Recursively goes through an array of parameters. If a parameter is an instance of
+     * ApiResource, then it is replaced by the resource's ID.
+     * Also clears out null values.
      *
-     * @return string A querystring, essentially.
+     * @param mixed $h
+     *
+     * @return mixed
      */
-    public static function urlEncode($arr, $prefix = null)
+    public static function objectsToIds($h)
     {
-        if (!is_array($arr)) {
-            return $arr;
+        if ($h instanceof \Stripe\ApiResource) {
+            return $h->id;
+        }
+        if (static::isList($h)) {
+            $results = [];
+            foreach ($h as $v) {
+                \array_push($results, static::objectsToIds($v));
+            }
+
+            return $results;
+        }
+        if (\is_array($h)) {
+            $results = [];
+            foreach ($h as $k => $v) {
+                if (null === $v) {
+                    continue;
+                }
+                $results[$k] = static::objectsToIds($v);
+            }
+
+            return $results;
         }
 
-        $r = array();
-        foreach ($arr as $k => $v) {
-            if (is_null($v)) {
-                continue;
-            }
+        return $h;
+    }
 
-            if ($prefix) {
-                if ($k !== null && (!is_int($k) || is_array($v))) {
-                    $k = $prefix."[".$k."]";
-                } else {
-                    $k = $prefix."[]";
-                }
-            }
+    /**
+     * @param array $params
+     *
+     * @return string
+     */
+    public static function encodeParameters($params)
+    {
+        $flattenedParams = self::flattenParams($params);
+        $pieces = [];
+        foreach ($flattenedParams as $param) {
+            list($k, $v) = $param;
+            \array_push($pieces, self::urlEncode($k) . '=' . self::urlEncode($v));
+        }
 
-            if (is_array($v)) {
-                $enc = self::urlEncode($v, $k);
-                if ($enc) {
-                    $r[] = $enc;
-                }
+        return \implode('&', $pieces);
+    }
+
+    /**
+     * @param array $params
+     * @param null|string $parentKey
+     *
+     * @return array
+     */
+    public static function flattenParams($params, $parentKey = null)
+    {
+        $result = [];
+
+        foreach ($params as $key => $value) {
+            $calculatedKey = $parentKey ? "{$parentKey}[{$key}]" : $key;
+
+            if (self::isList($value)) {
+                $result = \array_merge($result, self::flattenParamsList($value, $calculatedKey));
+            } elseif (\is_array($value)) {
+                $result = \array_merge($result, self::flattenParams($value, $calculatedKey));
             } else {
-                $r[] = urlencode($k)."=".urlencode($v);
+                \array_push($result, [$calculatedKey, $value]);
             }
         }
 
-        return implode("&", $r);
+        return $result;
+    }
+
+    /**
+     * @param array $value
+     * @param string $calculatedKey
+     *
+     * @return array
+     */
+    public static function flattenParamsList($value, $calculatedKey)
+    {
+        $result = [];
+
+        foreach ($value as $i => $elem) {
+            if (self::isList($elem)) {
+                $result = \array_merge($result, self::flattenParamsList($elem, $calculatedKey));
+            } elseif (\is_array($elem)) {
+                $result = \array_merge($result, self::flattenParams($elem, "{$calculatedKey}[{$i}]"));
+            } else {
+                \array_push($result, ["{$calculatedKey}[{$i}]", $elem]);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $key a string to URL-encode
+     *
+     * @return string the URL-encoded string
+     */
+    public static function urlEncode($key)
+    {
+        $s = \urlencode((string) $key);
+
+        // Don't use strict form encoding by changing the square bracket control
+        // characters back to their literals. This is fine by the server, and
+        // makes these parameter strings easier to read.
+        $s = \str_replace('%5B', '[', $s);
+
+        return \str_replace('%5D', ']', $s);
+    }
+
+    public static function normalizeId($id)
+    {
+        if (\is_array($id)) {
+            $params = $id;
+            $id = $params['id'];
+            unset($params['id']);
+        } else {
+            $params = [];
+        }
+
+        return [$id, $params];
+    }
+
+    /**
+     * Returns UNIX timestamp in milliseconds.
+     *
+     * @return int current time in millis
+     */
+    public static function currentTimeMillis()
+    {
+        return (int) \round(\microtime(true) * 1000);
     }
 }

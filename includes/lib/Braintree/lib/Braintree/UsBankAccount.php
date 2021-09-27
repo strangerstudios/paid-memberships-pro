@@ -6,7 +6,6 @@ namespace Braintree;
  *
  * @package    Braintree
  * @category   Resources
- * @copyright  2016 Braintree, a division of PayPal, Inc.
  */
 
 /**
@@ -17,7 +16,6 @@ namespace Braintree;
  *
  * @package    Braintree
  * @category   Resources
- * @copyright  2016 Braintree, a division of PayPal, Inc.
  *
  * @property-read string $customerId
  * @property-read string $email
@@ -30,6 +28,7 @@ namespace Braintree;
  * @property-read string $bankName
  * @property-read string $achMandate
  * @property-read string $default
+ * @property-read boolean $verified
  */
 class UsBankAccount extends Base
 {
@@ -65,6 +64,18 @@ class UsBankAccount extends Base
             AchMandate::factory($usBankAccountAttribs['achMandate']) :
             null;
         $this->_set('achMandate', $achMandate);
+
+        if (isset($usBankAccountAttribs['verifications'])) {
+            $verification_records = $usBankAccountAttribs['verifications'];
+
+            $verifications = array();
+            for ($i = 0; $i < count($verification_records); $i++) {
+                $verifications[$i] = UsBankAccountVerification::factory($verification_records[$i]);
+            }
+            $this->_set('verifications', $verifications);
+        } else {
+            $this->_set('verifications', null);
+        }
     }
 
     /**
@@ -78,6 +89,15 @@ class UsBankAccount extends Base
                 Util::attributesToString($this->_attributes) . ']';
     }
 
+    /**
+     * returns false if default is null or false
+     *
+     * @return boolean
+     */
+    public function isDefault()
+    {
+        return $this->default;
+    }
 
     // static methods redirecting to gateway
 

@@ -3,74 +3,12 @@
 	Code that runs on the init, set_current_user, or wp hooks to set up PMPro
 */
 //init code
-function pmpro_init()
-{
-	require_once(PMPRO_DIR . "/includes/countries.php");
-	require_once(PMPRO_DIR . "/includes/states.php");
-	require_once(PMPRO_DIR . "/includes/currencies.php");
+function pmpro_init() {
+	require_once(PMPRO_DIR . '/includes/countries.php');
+	require_once(PMPRO_DIR . '/includes/states.php');
+	require_once(PMPRO_DIR . '/includes/currencies.php');
+	require_once(PMPRO_DIR . '/includes/email-templates.php');
 
-
-	if(is_admin())
-	{
-		wp_enqueue_script('ssmemberships_js', plugins_url('js/paid-memberships-pro.js',dirname(__FILE__) ), array('jquery'));
-
-		$admin_css_rtl = false;
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin.css")) {
-			$admin_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin.css";
-			if( is_rtl() && file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/admin-rtl.css") ) {
-				$admin_css_rtl = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/admin-rtl.css";
-			}
-		} elseif(file_exists(get_template_directory() . "/paid-memberships-pro/admin.css")) {
-			$admin_css = get_template_directory_uri() . "/paid-memberships-pro/admin.css";
-			if( is_rtl() && file_exists(get_template_directory() . "/paid-memberships-pro/css/admin-rtl.css") ) {
-				$admin_css_rtl = get_template_directory_uri() . "/paid-memberships-pro/css/admin-rtl.css";
-			}
-		} else {
-			$admin_css = plugins_url('css/admin.css',dirname(__FILE__) );
-			if( is_rtl() ) {
-				$admin_css_rtl = plugins_url('css/admin-rtl.css',dirname(__FILE__) );
-			}
-		}
-		wp_enqueue_style('pmpro_admin', $admin_css, array(), PMPRO_VERSION, "screen");
-		if( $admin_css_rtl ) {
-			wp_enqueue_style('pmpro_admin_rtl', $admin_css_rtl, array(), PMPRO_VERSION, "screen");
-		}
-
-        wp_enqueue_script('jquery-ui-sortable');
-	}
-	else
-	{		
-		$frontend_css_rtl = false;
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css")) {
-			$frontend_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/frontend.css";
-			if( is_rtl() && file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/frontend-rtl.css") ) {
-				$frontend_css_rtl = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/frontend-rtl.css";
-			}
-		} elseif(file_exists(get_template_directory() . "/paid-memberships-pro/frontend.css")) {
-			$frontend_css = get_template_directory_uri() . "/paid-memberships-pro/frontend.css";
-			if( is_rtl() && file_exists(get_template_directory() . "/paid-memberships-pro/css/frontend-rtl.css") ) {
-				$frontend_css_rtl = get_template_directory_uri() . "/paid-memberships-pro/css/frontend-rtl.css";
-			}
-		} else {
-			$frontend_css = plugins_url('css/frontend.css',dirname(__FILE__) );	
-			if( is_rtl() ) {
-				$frontend_css_rtl = plugins_url('css/frontend-rtl.css',dirname(__FILE__) );
-			}
-		}
-		wp_enqueue_style('pmpro_frontend', $frontend_css, array(), PMPRO_VERSION, "screen");
-		if( $frontend_css_rtl ) {
-			wp_enqueue_style('pmpro_frontend_rtl', $frontend_css_rtl, array(), PMPRO_VERSION, "screen");
-		}
-		
-		if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/print.css"))
-			$print_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/print.css";
-		elseif(file_exists(get_template_directory() . "/paid-memberships-pro/print.css"))
-			$print_css = get_template_directory_uri() . "/paid-memberships-pro/print.css";
-		else
-			$print_css = plugins_url('css/print.css',dirname(__FILE__) );
-		wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
-	}
-	
 	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
 	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
@@ -80,19 +18,21 @@ function pmpro_init()
 	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
 	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
+	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
 	$pmpro_core_pages = $pmpro_pages;
-	
+
 	$pmpro_ready = pmpro_is_ready();
 
 	/**
 	 * This action is documented in /adminpages/pagesettings.php
 	 */
 	$extra_pages = apply_filters('pmpro_extra_page_settings', array());
-	foreach($extra_pages as $name => $page)	
+	foreach($extra_pages as $name => $page)
 		$pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
-	
+
 
 	//set currency
 	$pmpro_currency = pmpro_getOption("currency");
@@ -103,12 +43,16 @@ function pmpro_init()
 	}
 
 	//figure out what symbol to show for currency
-	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency]))
-		$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
-	elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
-		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);	
+	if(!empty($pmpro_currencies[$pmpro_currency]) && is_array($pmpro_currencies[$pmpro_currency])) {
+		if ( isset( $pmpro_currencies[$pmpro_currency]['symbol'] ) ) {
+			$pmpro_currency_symbol = $pmpro_currencies[$pmpro_currency]['symbol'];
+		} else {
+			$pmpro_currency_symbol = '';
+		}
+	} elseif(!empty($pmpro_currencies[$pmpro_currency]) && strpos($pmpro_currencies[$pmpro_currency], "(") !== false)
+		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);
 	else
-		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code	
+		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code
 }
 add_action("init", "pmpro_init");
 
@@ -117,42 +61,28 @@ function pmpro_wp()
 {
 	if(!is_admin())
 	{
-		global $post, $pmpro_pages, $pmpro_core_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;		
-		
+		global $post, $pmpro_pages, $pmpro_core_pages, $pmpro_page_name, $pmpro_page_id, $pmpro_body_classes;
+
 		//no pages yet?
 		if(empty($pmpro_pages))
 			return;
-		
+
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false)
+			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
-								
+
 				//shortcode
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
 					$temp_content = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
-
-					/*
-					ob_start();
-
-					if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
-						include(get_stylesheet_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
-					elseif(file_exists(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php"))
-						include(get_template_directory() . "/paid-memberships-pro/pages/" . $pmpro_page_name . ".php");
-					else
-						include(PMPRO_DIR . "/pages/" . $pmpro_page_name . ".php");
-
-					$temp_content = ob_get_contents();
-//					ob_end_clean();
-					*/
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");
@@ -160,13 +90,16 @@ function pmpro_wp()
 			}
 			elseif(!empty($pmpro_page_id) && is_page($pmpro_page_id))
 			{
+				//add class to body
+				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
+				
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 			}
-		}				
+		}
 	}
 }
-add_action("wp", "pmpro_wp", 1);
+add_action("wp", "pmpro_wp", 2);
 
 /*
 	Add PMPro page names to the BODY class.
@@ -174,7 +107,7 @@ add_action("wp", "pmpro_wp", 1);
 function pmpro_body_class($classes)
 {
 	global $pmpro_body_classes;
-	
+
 	if(is_array($pmpro_body_classes))
 		$classes = array_merge($pmpro_body_classes, $classes);
 
@@ -213,7 +146,7 @@ function pmpro_set_current_user()
 			$ezCount = 100;
 			$urCount = 100;
 		}
-		
+
 		//disable ads in Easy Adsense (newer versions)
 		if(class_exists("EzAdSense"))
 		{
@@ -245,6 +178,12 @@ function pmpro_manage_users_columns($columns) {
     return $columns;
 }
 
+function pmpro_sortable_column($columns)
+{
+	$columns['pmpro_membership_level'] = array( 'level', 'desc' );
+	return $columns;
+}
+
 function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) {
 
     if($column_name == 'pmpro_membership_level') {
@@ -253,7 +192,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
         if(!empty($levels)) {
             foreach($levels as $key => $level)
                 $level_names[] = $level->name;
-            $column_data = implode(',', $level_names);
+            $column_data = implode(', ', $level_names);
         }
         else
             $column_data = __('None', 'paid-memberships-pro' );
@@ -261,6 +200,22 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
     return $column_data;
 }
 
+function pmpro_sortable_column_query( $query ) {
+    global $wpdb;
+
+	$vars = $query->query_vars;
+
+	if ( $vars['orderby'] == 'level' ){
+		$order = pmpro_sanitize_with_safelist( $vars['order'], array( 'asc', 'desc', 'ASC', 'DESC' ) );
+
+		if ( ! empty( $order ) ) {
+			$query->query_from .= " LEFT JOIN $wpdb->pmpro_memberships_users AS pmpro_mu ON $wpdb->users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels AS pmpro_ml ON pmpro_mu.membership_id = pmpro_ml.id";
+			$query->query_orderby = "ORDER BY pmpro_ml.name " . esc_sql( $order ) . ", $wpdb->users.user_registered";
+		}
+	}
+}
+
 add_filter('manage_users_columns', 'pmpro_manage_users_columns');
 add_filter('manage_users_custom_column', 'pmpro_manage_users_custom_column', 10, 3);
-
+add_filter( 'manage_users_sortable_columns', 'pmpro_sortable_column' );
+add_action('pre_user_query','pmpro_sortable_column_query');

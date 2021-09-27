@@ -1,68 +1,83 @@
 <?php
-	global $pmpro_reports;
-	
-	require_once(dirname(__FILE__) . "/admin_header.php");
-	
-	//default view, report widgets
-	if(empty($_REQUEST['report']))
-	{				
-		//wrapper
-		?>
-		<div id="dashboard-widgets-wrap">
-			<div id="dashboard-widgets" class="metabox-holder pmpro_reports-holder">	
-			<div id="postbox-container-1" class="postbox-container">
-				<div id="normal-sortables" class="meta-box-sortables ui-sortable">
-		<?php
-		
-		//report widgets
-		$count = 0;
-		$nreports = count($pmpro_reports);
-		$split = false;
-		foreach($pmpro_reports as $report => $title)
-		{
-			//make sure title is translated (since these are set before translations happen)
-			$title = __($title, "pmpro");
-			
-			//put half of the report widgets in postbox-container-2
-			if(!$split && $count++ > $nreports/2)
-			{
-				$split = true;
-				?>
-				</div></div><div id="postbox-container-2" class="postbox-container"><div id="side-sortables" class="meta-box-sortables ui-sortable">
-				<?php
-			}
-		?>
-		<div id="pmpro_report_<?php echo $report; ?>" class="postbox">			
-			<h2><span><?php echo $title; ?></span></h2>
-			<div class="inside">
-				<?php call_user_func("pmpro_report_" . $report . "_widget"); ?>
-				<?php if(function_exists('pmpro_report_' . $report . '_page')) { ?>
-				<p style="text-align:center;">
-					<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports&report=" . $report);?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
-				</p>
-				<?php } ?>
-			</div>
-		</div>
-		<?php
-		}
-		
-		//end wrapper
-		?>
-			</div>
-			</div>
-		</div>
-		<?php
-	}
-	else
-	{
-		//view a single report
-		$report = sanitize_text_field($_REQUEST['report']);
-		call_user_func("pmpro_report_" . $report . "_page");
-		?>
-		<hr />
-		<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e('Back to Reports Dashboard', 'paid-memberships-pro' );?></a>
-		<?php
+/**
+ * The Memberships Reports admin page for Paid Memberships Pro
+ */
+
+global $pmpro_reports;
+
+/**
+* Load the Paid Memberships Pro dashboard-area header
+*/
+require_once( dirname( __FILE__ ) . '/admin_header.php' );
+
+// View a single report if requested.
+if ( ! empty( $_REQUEST[ 'report' ] ) ) {
+	//view a single report
+	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
+	call_user_func( 'pmpro_report_' . $report . '_page' ); ?>
+	<hr />
+	<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a>
+	<?php
+} else {
+	$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+	foreach ( $pieces[0] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'advanced'
+		);
 	}
 	
-	require_once(dirname(__FILE__) . "/admin_footer.php");
-?>
+	foreach ( $pieces[1] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'side'
+		);
+	}
+	
+	?>
+	<form id="pmpro-reports-form" method="post" action="admin-post.php">
+
+		<div class="dashboard-widgets-wrap">
+			<div id="dashboard-widgets" class="metabox-holder">
+
+				<div id="postbox-container-1" class="postbox-container">
+					<?php do_meta_boxes( 'memberships_page_pmpro-reports', 'advanced', '' ); ?>
+				</div>
+
+				<div id="postbox-container-2" class="postbox-container">
+					<?php do_meta_boxes( 'memberships_page_pmpro-reports', 'side', '' ); ?>
+				</div>
+
+				<br class="clear">
+
+			</div> <!-- end dashboard-widgets -->
+
+			<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
+			<?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false ); ?>
+
+		</div> <!-- end dashboard-widgets-wrap -->
+	</form>
+	<script type="text/javascript">
+	  //<![CDATA[
+	  jQuery(document).ready( function($) {
+		  // close postboxes that should be closed
+		  $('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+		  // postboxes setup
+		  postboxes.add_postbox_toggles('memberships_page_pmpro-reports');
+	  });
+	  //]]>
+	</script>
+
+	<?php
+}
+
+/**
+* Load the Paid Memberships Pro dashboard-area footer
+*/
+require_once(dirname(__FILE__) . "/admin_footer.php");

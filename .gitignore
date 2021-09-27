@@ -1,0 +1,37 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac stuff
+.DS_Store
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# npm
+node_modules
+package-lock.json
+
+# composer
+vendor
+composer.js
+composer.lock
+
+# Temporary files
+*~
+
+# Log files
+log/*.log
+log/*.txt
+tests/_build
+js/blocks.build.asset.php
+js/blocks.build.js.map
+.vscode/settings.json
+/tests/_output
