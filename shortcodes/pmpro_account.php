@@ -142,7 +142,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 												$expiration_text .= ' ' . date_i18n( get_option( 'time_format', __( 'g:i a' ) ), $level->enddate );
 											}
 										} else {
-											$expiration_text .= esc_html_e( '&#8212;', 'paid-memberships-pro' );
+											$expiration_text .= '&#8212;';
 										}
 										$expiration_text .= '</p>';
 										echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
