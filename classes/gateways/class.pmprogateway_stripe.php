@@ -3798,11 +3798,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since TBD
 	 *
-	 * @param PMPro_Membership_Level $level to get product ID for.
+	 * @param PMPro_Membership_Leve|int $level to get product ID for.
 	 * @return string|null
 	 */
 	public function get_product_id_for_level( $level ) {
-		if ( ! is_a( $level, 'PMPro_Membership_Level' ) || empty( $level->ID ) ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
 			// We do not have a valid level.
 			return;
 		}
@@ -3827,11 +3833,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since TBD
 	 *
-	 * @param PMPro_Membership_Level $level to create product ID for.
+	 * @param PMPro_Membership_Level|int $level to create product ID for.
 	 * @return string|null ID of new product
 	 */
 	public function create_product_for_level( $level ) {
-		if ( ! is_a( $level, 'PMPro_Membership_Level' ) || empty( $level->ID ) ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
 			// We do not have a valid level.
 			return;
 		}
@@ -3851,7 +3863,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		try {
 			$product = Stripe_Product::create( $product_args );
-
 			if ( ! empty( $product->id ) ) {
 				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
 				return $product->id;
@@ -3881,6 +3892,7 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_currency;
 
 		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
+		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
 
 		$price_search_args = array(
 			'product'  => $product_id,
@@ -3895,8 +3907,14 @@ class PMProGateway_stripe extends PMProGateway {
 			$prices = Stripe_Price::all( $price_search_args );
 
 			foreach ( $prices as $price ) {
-				// TODO: Check whether price is the same. If not, continue.
-				// TODO: Check if recurring structure is the same. If not, continue.
+				// Check whether price is the same. If not, continue.
+				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
+					continue;
+				}
+				// Check if recurring structure is the same. If not, continue.
+				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
+					continue;
+				}
 				return $price->id;
 			}
 		} catch (\Throwable $th) {
@@ -3908,5 +3926,27 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Create a new Price.
+		$price_args = array(
+			'product'     => $product_id,
+			'currency'    => strtolower( $pmpro_currency ),
+			'unit_amount' => $unit_amount
+		);
+		if ( $is_recurring ) {
+			$price_args['recurring'] = array(
+				'interval'       => $cycle_period,
+				'inverval_count' => $cycle_number
+			);
+		}
+
+		try {
+			$price = Stripe_Price::create( $price_args );
+			if ( ! empty( $price->id ) ) {
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
 	}
 }
