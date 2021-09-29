@@ -57,7 +57,7 @@
 		} elseif ( $livemode ) {
 			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
 		} else {
-			$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
 		}
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
