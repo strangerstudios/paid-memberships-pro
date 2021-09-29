@@ -3790,4 +3790,123 @@ class PMProGateway_stripe extends PMProGateway {
 			echo '</p></div>';
 		}
 	}
+
+	/**
+	 * Get the Stripe product ID for a given membership level.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Level $level to get product ID for.
+	 * @return string|null
+	 */
+	public function get_product_id_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) || empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$stripe_product_id = $level->stripe_product_id;
+		if ( empty( $stripe_product_id ) ) {
+			$stripe_product_id = $this->create_product_for_level( $level );
+		}
+
+		if ( ! empty( $stripe_product_id ) ) {
+			return $stripe_product_id;
+		}
+	}
+
+	/**
+	 * Create a new Stripe product for a given membership level.
+	 *
+	 * WARNING: Will overwrite old Stripe product set for level if
+	 * there is already one set.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Level $level to create product ID for.
+	 * @return string|null ID of new product
+	 */
+	public function create_product_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) || empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$product_args = array(
+			'name' => $level->name,
+		);
+		/**
+		 * Filter the data sent to Stripe when creating a new product for a membership level.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $product_args being sent to Stripe.
+		 * @param PMPro_Membership_Level $level that product is being created for.
+		 */
+		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
+
+		try {
+			$product = Stripe_Product::create( $product_args );
+
+			if ( ! empty( $product->id ) ) {
+				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
+				return $product->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
+	}
+
+	/**
+	 * Get a Price for a given product, or create one if it doesn't exist.
+	 *
+	 * TODO: Add pagination.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $product_id to get Price for.
+	 * @param float $amount that the Price will charge.
+	 * @param string|null $cycle_period for subscription payments.
+	 * @param string|null $cycle_number of cycle periods between each subscription payment.
+	 *
+	 * @return string|null Price ID.
+	 */
+	public function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
+		global $pmpro_currency;
+
+		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
+
+		$price_search_args = array(
+			'product'  => $product_id,
+			'type'     => $is_recurring ? 'recurring' : 'one_time',
+			'currency' => strtolower( $pmpro_currency ),
+		);
+		if ( $is_recurring ) {
+			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
+		}
+
+		try {
+			$prices = Stripe_Price::all( $price_search_args );
+
+			foreach ( $prices as $price ) {
+				// TODO: Check whether price is the same. If not, continue.
+				// TODO: Check if recurring structure is the same. If not, continue.
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// There was an error listing prices.
+			return;
+		} catch (\Exception $e) {
+			// There was an error listing prices.
+			return;
+		}
+
+		// Create a new Price.
+	}
 }
