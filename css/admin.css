@@ -104,24 +104,44 @@
 	border: none;
 }
 
-/* Checkbox Boxes */
+/**
+ * Checkbox Boxes
+ *
+ * Note: We will eventually remove the non-prefixed class names here. They are still in some Add Ons.
+ *
+ */
+.pmpro_checkbox_box,
 .checkbox_box {
 	background-color: #FFFFFF;
 	border: 1px solid #c3c4c7;
 	max-width: 300px;
 }
+.pmpro_checkbox_box div,
 .checkbox_box div {
 	border-bottom: 1px solid #CCC;
 	padding: 3px;
 }
+.pmpro_checkbox_box div:last-child,
 .checkbox_box div:last-child {
 	border-bottom: none;
 }
+.pmpro_checkbox_box .pmpro_clickable,
 .checkbox_box .clickable {
 	cursor: pointer;
 }
+.pmpro_checkbox_box .pmpro_clickable:hover,
 .checkbox_box .clickable:hover {
 	background: #FFC;
+}
+.pmpro_checkbox_box .pmpro_clickable {
+	align-items: center;
+	display: flex;
+}
+.pmpro_checkbox_box .pmpro_clickable label {
+	flex-grow: 1;
+}
+.pmpro_checkbox_box .pmpro_clickable input[type=checkbox] {
+	margin-top: 0;
 }
 
 /* Consent Log */

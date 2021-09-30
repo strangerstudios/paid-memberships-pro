@@ -19,6 +19,11 @@ $RECYCLE.BIN/
 node_modules
 package-lock.json
 
+# composer
+vendor
+composer.js
+composer.lock
+
 # Temporary files
 *~
 
@@ -29,3 +34,4 @@ tests/_build
 js/blocks.build.asset.php
 js/blocks.build.js.map
 .vscode/settings.json
+/tests/_output
