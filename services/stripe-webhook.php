@@ -299,6 +299,7 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
+				$morder->membership_id = $old_order->membership_id;
 				
 				$morder->billing = new stdClass();
 				
