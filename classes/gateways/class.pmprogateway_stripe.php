@@ -144,7 +144,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'PMProGateway_stripe',
 			'user_profile_fields'
 		) );
-		add_action( 'profile_update', array( 'PMProGateway_stripe', 'user_profile_fields_save' ) );
 
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
@@ -1221,303 +1220,23 @@ class PMProGateway_stripe extends PMProGateway {
 	static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
 
-		$cycles        = array(
-			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
-			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
-			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
-			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
-		);
-		$current_year  = date_i18n( "Y" );
-		$current_month = date_i18n( "m" );
-
-		//make sure the current user has privileges
-		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
-		if ( ! current_user_can( $membership_level_capability ) ) {
-			return false;
-		}
-
-		//more privelges they should have
-		$show_membership_level = apply_filters( "pmpro_profile_show_membership_level", true, $user );
-		if ( ! $show_membership_level ) {
-			return false;
-		}
-
-		//check that user has a current subscription at Stripe
+		// Get the user's last order.
 		$last_order = new MemberOrder();
 		$last_order->getLastMemberOrder( $user->ID );
 
-		//assume no sub to start
-		$sub = false;
-
-		//check that gateway is Stripe
-		if ( $last_order->gateway == "stripe" && self::$is_loaded ) {
-			//is there a customer?
-			$sub = $last_order->Gateway->getSubscription( $last_order );
+		// Check that this order is for a Stripe subscription.
+		if ( $last_order->gateway == "stripe" && ! empty( $last_order->subscription_transaction_id ) ) {
+			// Get the link to edit the subscription.
+			echo '<hr>';
+			echo '<a target="_blank" href="https://dashboard.stripe.com/' . ( $last_order->gateway_environment == 'sandbox' ? 'test/' : '' ) . 'subscriptions/' . esc_attr( $last_order->subscription_transaction_id ) . '">' . esc_html__( 'Edit subscription in Stripe', 'paid-memberships-pro' ) . '</a>';
 		}
-
-		$customer_id = $user->pmpro_stripe_customerid;
-
-		if ( empty( $sub ) ) {
-			//make sure we delete stripe updates
-			update_user_meta( $user->ID, "pmpro_stripe_updates", array() );
-
-			//if the last order has a sub id, let the admin know there is no sub at Stripe
-			if ( ! empty( $last_order ) && $last_order->gateway == "stripe" && ! empty( $last_order->subscription_transaction_id ) && strpos( $last_order->subscription_transaction_id, "sub_" ) !== false ) {
-				?>
-                <p><?php printf( __( '%1$sNote:%2$s Subscription %3$s%4$s%5$s could not be found at Stripe. It may have been deleted.', 'paid-memberships-pro' ), '<strong>', '</strong>', '<strong>', esc_attr( $last_order->subscription_transaction_id ), '</strong>' ); ?></p>
-				<?php
-			}
-		} elseif ( true === self::$is_loaded ) {
-			?>
-            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
-            <p>
-				<?php
-				if ( empty( $_REQUEST['user_id'] ) ) {
-					_e( "Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update Profile after making changes.", 'paid-memberships-pro' );
-				} else {
-					_e( "Subscription updates, allow you to change the member's subscription values at predefined times. Be sure to click Update User after making changes.", 'paid-memberships-pro' );
-				}
-				?>
-            </p>
-            <table class="form-table">
-                <tr>
-                    <th><label for="membership_level"><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
-                    <td id="updates_td">
-						<?php
-						$old_updates = $user->pmpro_stripe_updates;
-						if ( is_array( $old_updates ) ) {
-							$updates = array_merge(
-								array(
-									array(
-										'template'       => true,
-										'when'           => 'now',
-										'date_month'     => '',
-										'date_day'       => '',
-										'date_year'      => '',
-										'billing_amount' => '',
-										'cycle_number'   => '',
-										'cycle_period'   => 'Month'
-									)
-								),
-								$old_updates
-							);
-						} else {
-							$updates = array(
-								array(
-									'template'       => true,
-									'when'           => 'now',
-									'date_month'     => '',
-									'date_day'       => '',
-									'date_year'      => '',
-									'billing_amount' => '',
-									'cycle_number'   => '',
-									'cycle_period'   => 'Month'
-								)
-							);
-						}
-
-						foreach ( $updates as $update ) {
-							?>
-                            <div class="updates_update"
-							     <?php if ( ! empty( $update['template'] ) ) { ?>style="display: none;"<?php } ?>>
-                                <select class="updates_when" name="updates_when[]">
-                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
-                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
-                                        Next Payment
-                                    </option>
-                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
-                                    </option>
-                                </select>
-                                <span class="updates_date"
-								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
-								<select name="updates_date_month[]">
-									<?php
-									for ( $i = 1; $i < 13; $i ++ ) {
-										?>
-                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
-										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
-										</option>
-										<?php
-									}
-									?>
-								</select>
-								<input name="updates_date_day[]" type="text" size="2"
-                                       value="<?php if ( ! empty( $update['date_day'] ) ) {
-									       echo esc_attr( $update['date_day'] );
-								       } ?>"/>
-								<input name="updates_date_year[]" type="text" size="4"
-                                       value="<?php if ( ! empty( $update['date_year'] ) ) {
-									       echo esc_attr( $update['date_year'] );
-								       } ?>"/>
-							</span>
-                                <span class="updates_billing"
-								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
-                                                                           size="10"
-                                                                           value="<?php echo esc_attr( $update['billing_amount'] ); ?>"/>
-								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
-								<input name="updates_cycle_number[]" type="text" size="5"
-                                       value="<?php echo esc_attr( $update['cycle_number'] ); ?>"/>
-								<select name="updates_cycle_period[]">
-								  <?php
-								  foreach ( $cycles as $name => $value ) {
-									  echo "<option value='$value'";
-									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
-										  echo " selected='selected'";
-									  }
-									  echo ">$name</option>";
-								  }
-								  ?>
-								</select>
-							</span>
-                                <span>
-								<a class="updates_remove" href="javascript:void(0);">Remove</a>
-							</span>
-                            </div>
-							<?php
-						}
-						?>
-                        <p><a id="updates_new_update" href="javascript:void(0);">+ New Update</a></p>
-                    </td>
-                </tr>
-            </table>
-            <script>
-                <!--
-                jQuery(document).ready(function () {
-                    //function to update dropdowns/etc based on when field
-                    function updateSubscriptionUpdateFields(when) {
-                        if (jQuery(when).val() == 'date')
-                            jQuery(when).parent().children('.updates_date').show();
-                        else
-                            jQuery(when).parent().children('.updates_date').hide();
-
-                        if (jQuery(when).val() == 'no')
-                            jQuery(when).parent().children('.updates_billing').hide();
-                        else
-                            jQuery(when).parent().children('.updates_billing').show();
-                    }
-
-                    //and update on page load
-                    jQuery('.updates_when').each(function () {
-                        if (jQuery(this).parent().css('display') != 'none') updateSubscriptionUpdateFields(this);
-                    });
-
-                    //add a new update when clicking to
-                    var num_updates_divs = <?php echo count( $updates );?>;
-                    jQuery('#updates_new_update').click(function () {
-                        //get updates
-                        updates = jQuery('.updates_update').toArray();
-
-                        //clone the first one
-                        new_div = jQuery(updates[0]).clone();
-
-                        //append
-                        new_div.insertBefore('#updates_new_update');
-
-                        //update events
-                        addUpdateEvents()
-
-                        //unhide it
-                        new_div.show();
-                        updateSubscriptionUpdateFields(new_div.children('.updates_when'));
-                    });
-
-                    function addUpdateEvents() {
-                        //update when when changes
-                        jQuery('.updates_when').change(function () {
-                            updateSubscriptionUpdateFields(this);
-                        });
-
-                        //remove updates when clicking
-                        jQuery('.updates_remove').click(function () {
-                            jQuery(this).parent().parent().remove();
-                        });
-                    }
-
-                    addUpdateEvents();
-                });
-                -->
-            </script>
-			<?php
-		}
-	}
-
-	/**
-	 * Process fields from the edit user page
-	 *
-	 * @since 1.8
-	 */
-	static function user_profile_fields_save( $user_id ) {
-		global $wpdb;
-
-		//check capabilities
-		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
-		if ( ! current_user_can( $membership_level_capability ) ) {
-			return false;
-		}
-
-		//make sure some value was passed
-		if ( ! isset( $_POST['updates_when'] ) || ! is_array( $_POST['updates_when'] ) ) {
-			return;
-		}
-
-		//vars
-		$updates             = array();
-		$next_on_date_update = "";
-
-		//build array of updates (we skip the first because it's the template field for the JavaScript
-		for ( $i = 1; $i < count( $_POST['updates_when'] ); $i ++ ) {
-			$update = array();
-
-			//all updates have these values
-			$update['when']           = pmpro_sanitize_with_safelist( $_POST['updates_when'][ $i ], array(
-				'now',
-				'payment',
-				'date'
-			) );
-			$update['billing_amount'] = sanitize_text_field( $_POST['updates_billing_amount'][ $i ] );
-			$update['cycle_number']   = intval( $_POST['updates_cycle_number'][ $i ] );
-			$update['cycle_period']   = sanitize_text_field( $_POST['updates_cycle_period'][ $i ] );
-
-			//these values only for on date updates
-			if ( $_POST['updates_when'][ $i ] == "date" ) {
-				$update['date_month'] = str_pad( intval( $_POST['updates_date_month'][ $i ] ), 2, "0", STR_PAD_LEFT );
-				$update['date_day']   = str_pad( intval( $_POST['updates_date_day'][ $i ] ), 2, "0", STR_PAD_LEFT );
-				$update['date_year']  = intval( $_POST['updates_date_year'][ $i ] );
-			}
-
-			//make sure the update is valid
-			if ( empty( $update['cycle_number'] ) ) {
-				continue;
-			}
-
-			//if when is now, update the subscription
-			if ( $update['when'] == "now" ) {
-				self::updateSubscription( $update, $user_id );
-
-				continue;
-			} elseif ( $update['when'] == 'date' ) {
-				if ( ! empty( $next_on_date_update ) ) {
-					$next_on_date_update = min( $next_on_date_update, $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] );
-				} else {
-					$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
-				}
-			}
-
-			//add to array
-			$updates[] = $update;
-		}
-
-		//save in user meta
-		update_user_meta( $user_id, "pmpro_stripe_updates", $updates );
-
-		//save date of next on-date update to make it easier to query for these in cron job
-		update_user_meta( $user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update );
 	}
 
 	/**
 	 * Cron activation for subscription updates.
+	 *
+	 * The subscription updates menu is no longer accessible as of v2.6.
+	 * This function is staying to process subscription updates that were already queued.
 	 *
 	 * @since 1.8
 	 */
@@ -1528,6 +1247,9 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Cron deactivation for subscription updates.
 	 *
+	 * The subscription updates menu is no longer accessible as of v2.6.
+	 * This function is staying to process subscription updates that were already queued.
+	 *
 	 * @since 1.8
 	 */
 	static function pmpro_deactivation() {
@@ -1536,6 +1258,9 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Cron job for subscription updates.
+	 *
+	 * The subscription updates menu is no longer accessible as of v2.6.
+	 * This function is staying to process subscription updates that were already queued.
 	 *
 	 * @since 1.8
 	 */
