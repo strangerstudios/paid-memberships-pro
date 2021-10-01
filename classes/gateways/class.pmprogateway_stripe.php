@@ -1684,6 +1684,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return Stripe_Customer|false
 	 */
 	private function update_customer_from_order( $order ) {
+		global $current_user;
+
 		// Get user's ID.
 		if ( ! empty( $order->user_id ) ) {
 			$user_id = $order->user_id;
